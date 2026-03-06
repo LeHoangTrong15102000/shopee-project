@@ -1,0 +1,23 @@
+{
+  "title": "Notifications",
+  "newNotifications": "New Notifications",
+  "unreadCount": "{{count}} unread",
+  "noUnread": "No unread notifications",
+  "types.order": "Order",
+  "types.promotion": "Promotion",
+  "types.system": "System",
+  "types.other": "Other",
+  "read": "Read",
+  "unread": "Unread",
+  "loading": "Loading notifications...",
+  "noNotifications": "No notifications",
+  "markAllRead": "Mark all as read",
+  "processing": "Processing...",
+  "toast.markAsReadError": "Cannot mark as read",
+  "toast.markAllAsReadSuccess": "Marked all notifications as read",
+  "toast.markAllAsReadError": "Cannot mark all as read",
+  "listLabel": "Notification list",
+  "markAllReadLabel": "Mark {{count}} notifications as read",
+  "allRead": "All read",
+  "viewAll": "View all"
+}

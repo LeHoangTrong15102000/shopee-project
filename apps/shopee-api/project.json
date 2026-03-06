@@ -1,0 +1,37 @@
+{
+  "name": "shopee-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/shopee-api/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --project ./ && tsc-alias",
+        "cwd": "apps/shopee-api"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nodemon --files -r tsconfig-paths/register src/index.ts",
+        "cwd": "apps/shopee-api"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "jest",
+        "cwd": "apps/shopee-api"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint src/ --ext .ts",
+        "cwd": "apps/shopee-api"
+      }
+    }
+  }
+}

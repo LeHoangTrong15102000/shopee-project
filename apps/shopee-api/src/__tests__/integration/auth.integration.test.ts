@@ -1,0 +1,117 @@
+/// <reference types="jest" />
+import supertest from 'supertest'
+import { createTestApp } from '../helpers/create-test-app'
+import { getAuthToken, getAdminToken } from '../helpers/auth-helper'
+import './setup'
+
+const app = createTestApp()
+
+describe('Auth Integration', () => {
+  describe('Register + Login flow', () => {
+    it('should register, login, get profile, and logout', async () => {
+      const email = 'test@test.com'
+      const password = 'Test123456'
+
+      const registerRes = await supertest(app)
+        .post('/register')
+        .send({ email, password })
+      expect(registerRes.status).toBeLessThan(400)
+
+      const loginRes = await supertest(app)
+        .post('/login')
+        .send({ email, password })
+      expect(loginRes.status).toBe(200)
+      expect(loginRes.body.data).toHaveProperty('access_token')
+      expect(loginRes.body.data).toHaveProperty('refresh_token')
+      const { access_token } = loginRes.body.data
+
+      const meRes = await supertest(app)
+        .get('/me')
+        .set('Authorization', access_token)
+      expect(meRes.status).toBe(200)
+      expect(meRes.body.data.email).toBe(email)
+
+      const logoutRes = await supertest(app)
+        .post('/logout')
+        .set('Authorization', access_token)
+      expect(logoutRes.status).toBeLessThan(400)
+    })
+
+    it('should return 422 when registering with duplicate email', async () => {
+      const email = 'duplicate@test.com'
+      const password = 'Test123456'
+
+      await supertest(app)
+        .post('/register')
+        .send({ email, password })
+
+      const duplicateRes = await supertest(app)
+        .post('/register')
+        .send({ email, password })
+      expect(duplicateRes.status).toBe(422)
+    })
+  })
+
+  describe('Login errors', () => {
+    it('should return error when login with wrong password', async () => {
+      const email = 'wrongpass@test.com'
+      const password = 'Test123456'
+
+      await supertest(app)
+        .post('/register')
+        .send({ email, password })
+
+      const loginRes = await supertest(app)
+        .post('/login')
+        .send({ email, password: 'WrongPassword123' })
+      expect(loginRes.status).toBeGreaterThanOrEqual(400)
+    })
+
+    it('should return error when login with non-existent email', async () => {
+      const loginRes = await supertest(app)
+        .post('/login')
+        .send({ email: 'nonexistent@test.com', password: 'Test123456' })
+      expect(loginRes.status).toBeGreaterThanOrEqual(400)
+    })
+  })
+
+  describe('Refresh token flow', () => {
+    it('should get new access token using refresh token', async () => {
+      const auth = await getAuthToken(app)
+      expect(auth.access_token).toBeDefined()
+      expect(auth.refresh_token).toBeDefined()
+
+      const refreshRes = await supertest(app)
+        .post('/refresh-access-token')
+        .send({ refresh_token: auth.refresh_token })
+      expect(refreshRes.status).toBe(200)
+      expect(refreshRes.body.data).toHaveProperty('access_token')
+    })
+  })
+
+  describe('Protected routes', () => {
+    it('should return 401 when accessing /me without token', async () => {
+      const meRes = await supertest(app).get('/me')
+      expect(meRes.status).toBe(401)
+    })
+
+    it('should return 401/403 when regular user accesses admin route', async () => {
+      const auth = await getAuthToken(app)
+
+      const adminRes = await supertest(app)
+        .get('/admin/users')
+        .set('Authorization', `Bearer ${auth.access_token}`)
+      expect([401, 403]).toContain(adminRes.status)
+    })
+
+    it('should allow admin to access admin routes', async () => {
+      const adminAuth = await getAdminToken(app)
+
+      const adminRes = await supertest(app)
+        .get('/admin/users')
+        .set('Authorization', `Bearer ${adminAuth.access_token}`)
+      expect(adminRes.status).toBe(200)
+    })
+  })
+})
+

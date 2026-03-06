@@ -1,0 +1,704 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Component Snapshots > Button component disabled state > Button-disabled 1`] = `
+<button
+  aria-disabled="true"
+  class="outline-hidden focus:outline-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange cursor-not-allowed opacity-70 transition-all duration-150"
+  disabled=""
+  type="button"
+>
+  Disabled button
+</button>
+`;
+
+exports[`Component Snapshots > Button component renders correctly > Button-default 1`] = `
+<button
+  class="outline-hidden focus:outline-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange transition-all duration-150 hover:scale-[1.02] active:scale-[0.98]"
+  type="button"
+>
+  Click me
+</button>
+`;
+
+exports[`Component Snapshots > Footer component renders correctly > Footer-default 1`] = `
+<footer
+  class="relative overflow-hidden py-12 md:py-16"
+>
+  <div
+    class="dark:via-slate-850 absolute inset-0 bg-linear-to-b from-orange-100/80 via-orange-50/60 to-gray-100 dark:from-slate-800 dark:to-slate-900"
+  />
+  <div
+    class="absolute inset-0 bg-linear-to-br from-transparent via-white/20 to-orange-50/30 dark:from-transparent dark:via-slate-800/50 dark:to-slate-900/80"
+  />
+  <div
+    class="pointer-events-none absolute inset-0 overflow-hidden"
+  >
+    <div
+      class="absolute -top-20 -left-20 h-64 w-64 rounded-full bg-linear-to-br from-orange/15 via-orange-300/10 to-transparent blur-2xl will-change-transform dark:from-orange-500/10 dark:via-orange-400/5"
+    />
+    <div
+      class="absolute top-1/3 -right-16 h-56 w-56 rounded-full bg-linear-to-bl from-orange-200/15 via-amber-100/10 to-transparent blur-2xl will-change-transform dark:from-slate-600/20 dark:via-slate-700/10"
+    />
+    <div
+      class="absolute -bottom-16 left-1/2 h-48 w-96 -translate-x-1/2 rounded-full bg-linear-to-t from-gray-200/30 via-orange-100/15 to-transparent blur-2xl will-change-transform dark:from-slate-800/30 dark:via-slate-700/20"
+    />
+  </div>
+  <div
+    class="relative z-10 container"
+  >
+    <div
+      style="opacity: 0; transform: translateY(20px);"
+    >
+      <div
+        class="grid grid-cols-1 gap-4 border-b border-orange-200/40 pb-8 lg:grid-cols-3 dark:border-slate-700/50"
+      >
+        <div
+          class="lg:col-span-1"
+        >
+          <div
+            class="text-sm font-semibold text-gray-800 dark:text-gray-100"
+          >
+            © 2015 - Bản quyền thuộc về Công ty TNHH Shopee
+          </div>
+        </div>
+        <div
+          class="lg:col-span-2"
+        >
+          <div
+            class="text-sm leading-relaxed text-gray-600 dark:text-gray-300"
+          >
+            Quốc gia & Khu vực:
+             Singapore | Indonesia | Đài Loan | Thái Lan | Malaysia | Việt Nam | Philippines | Brazil | México | Colombia | Chile
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-10"
+      style="opacity: 0;"
+    >
+      <div
+        class="text-center"
+      >
+        <div
+          class="flex flex-wrap items-center justify-center gap-4 md:gap-8"
+          style="opacity: 0; transform: translateY(20px);"
+        >
+          <a
+            class="group relative cursor-pointer text-sm font-semibold text-gray-700 transition-all duration-300 hover:text-orange dark:text-gray-200 dark:hover:text-orange-400"
+            data-discover="true"
+            href="/"
+          >
+            <span
+              class="relative px-2 py-1"
+            >
+              Chính sách bảo mật
+              <span
+                class="absolute -bottom-0.5 left-0 h-0.5 w-0 rounded-full bg-linear-to-r from-orange to-orange-400 transition-all duration-300 group-hover:w-full dark:from-orange-400 dark:to-orange-300"
+              />
+            </span>
+          </a>
+          <a
+            class="group relative cursor-pointer text-sm font-semibold text-gray-700 transition-all duration-300 hover:text-orange dark:text-gray-200 dark:hover:text-orange-400"
+            data-discover="true"
+            href="/"
+          >
+            <span
+              class="relative px-2 py-1"
+            >
+              Điều khoản dịch vụ
+              <span
+                class="absolute -bottom-0.5 left-0 h-0.5 w-0 rounded-full bg-linear-to-r from-orange to-orange-400 transition-all duration-300 group-hover:w-full dark:from-orange-400 dark:to-orange-300"
+              />
+            </span>
+          </a>
+          <a
+            class="group relative cursor-pointer text-sm font-semibold text-gray-700 transition-all duration-300 hover:text-orange dark:text-gray-200 dark:hover:text-orange-400"
+            data-discover="true"
+            href="/"
+          >
+            <span
+              class="relative px-2 py-1"
+            >
+              Chính sách vận chuyển
+              <span
+                class="absolute -bottom-0.5 left-0 h-0.5 w-0 rounded-full bg-linear-to-r from-orange to-orange-400 transition-all duration-300 group-hover:w-full dark:from-orange-400 dark:to-orange-300"
+              />
+            </span>
+          </a>
+          <a
+            class="group relative cursor-pointer text-sm font-semibold text-gray-700 transition-all duration-300 hover:text-orange dark:text-gray-200 dark:hover:text-orange-400"
+            data-discover="true"
+            href="/"
+          >
+            <span
+              class="relative px-2 py-1"
+            >
+              Chính sách trả hàng/hoàn tiền
+              <span
+                class="absolute -bottom-0.5 left-0 h-0.5 w-0 rounded-full bg-linear-to-r from-orange to-orange-400 transition-all duration-300 group-hover:w-full dark:from-orange-400 dark:to-orange-300"
+              />
+            </span>
+          </a>
+        </div>
+        <div
+          class="mt-10 flex flex-wrap items-center justify-center gap-6 md:gap-8"
+          style="opacity: 0; transform: translateY(20px);"
+        >
+          <a
+            class="group cursor-pointer transition-all duration-300 hover:scale-105"
+            data-discover="true"
+            href="/"
+          >
+            <div
+              class="h-8 w-20 bg-contain bg-no-repeat opacity-85 transition-all duration-300 group-hover:opacity-100 group-hover:drop-shadow-md sm:h-11.25 sm:w-30"
+              style="background-image: url("https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/assets/3ce17addcf90b8cd3952b8ae0ffc1299.png"); background-size: 551.6666666666666% 477.77777777777777%; background-position: 14.391143911439114% 99.41176470588235%;"
+            />
+          </a>
+          <a
+            class="group cursor-pointer transition-all duration-300 hover:scale-105"
+            data-discover="true"
+            href="/"
+          >
+            <div
+              class="h-8 w-20 bg-contain bg-no-repeat opacity-85 transition-all duration-300 group-hover:opacity-100 group-hover:drop-shadow-md sm:h-11.25 sm:w-30"
+              style="background-image: url("https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/assets/3ce17addcf90b8cd3952b8ae0ffc1299.png"); background-size: 551.6666666666666% 477.77777777777777%; background-position: 14.391143911439114% 99.41176470588235%;"
+            />
+          </a>
+          <a
+            class="group cursor-pointer transition-all duration-300 hover:scale-105"
+            data-discover="true"
+            href="/"
+          >
+            <div
+              class="h-8 w-8 bg-contain bg-no-repeat opacity-85 transition-all duration-300 group-hover:opacity-100 group-hover:drop-shadow-md sm:h-12 sm:w-12"
+              style="background-image: url("https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/assets/3ce17addcf90b8cd3952b8ae0ffc1299.png"); background-size: 1379.1666666666667% 447.9166666666667%; background-position: 1.6286644951140066% 92.21556886227545%;"
+            />
+          </a>
+        </div>
+        <div
+          class="mt-12"
+          style="opacity: 0; transform: translateY(20px);"
+        >
+          <div
+            class="mx-auto max-w-4xl space-y-3 border-t border-orange-200/30 px-4 py-6 md:px-8 dark:border-slate-700/40"
+          >
+            <div
+              class="text-base font-bold text-orange dark:text-orange-400"
+            >
+              Công ty TNHH Shopee
+            </div>
+            <div
+              class="text-sm leading-relaxed text-gray-600 dark:text-gray-400"
+            >
+              Địa chỉ: Tầng 4-5-6, Tòa nhà Capital Place, số 29 đường Liễu Giai, Phường Ngọc Khánh, Quận Ba Đình, Thành phố Hà Nội, Việt Nam. Tổng đài hỗ trợ: 19001221 - Email: cskh@hotro.shopee.vn
+            </div>
+            <div
+              class="text-sm leading-relaxed text-gray-600 dark:text-gray-400"
+            >
+              Chịu Trách Nhiệm Quản Lý Nội Dung: Nguyễn Đức Trí - Điện thoại liên hệ: 024 73081221 (ext 4678)
+            </div>
+            <div
+              class="text-sm leading-relaxed text-gray-600 dark:text-gray-400"
+            >
+              Mã số doanh nghiệp: 0106773786 do Sở Kế hoạch & Đầu tư TP Hà Nội cấp lần đầu ngày 10/02/2015
+            </div>
+            <div
+              class="mt-4 border-t border-orange-200/20 pt-4 dark:border-slate-700/30"
+            >
+              <div
+                class="text-xs text-gray-500 dark:text-gray-500"
+              >
+                © 2015 - Bản quyền thuộc về Công ty TNHH Shopee
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+`;
+
+exports[`Component Snapshots > Input component renders correctly > Input-default 1`] = `
+<div>
+  <label
+    class="pointer-events-none absolute left-[10px] z-10 bg-white px-1 text-[12px] italic transition-all duration-200 ease-out dark:bg-slate-800 top-[14px] text-gray-400 opacity-0 dark:text-gray-500"
+    for="test"
+  >
+    Test input
+  </label>
+  <input
+    aria-invalid="false"
+    class="w-full rounded-xs border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-3 shadow-xs outline-hidden focus:border-gray-500 dark:focus:border-gray-400 dark:text-gray-100 dark:placeholder-gray-500 transition-colors duration-150"
+    name="test"
+    placeholder="Test input"
+  />
+  <div
+    class="mt-1 min-h-5 text-sm text-red-600 dark:text-red-400"
+  />
+</div>
+`;
+
+exports[`Component Snapshots > Input component with error state > Input-error 1`] = `
+<div>
+  <label
+    class="pointer-events-none absolute left-[10px] z-10 bg-white px-1 text-[12px] italic transition-all duration-200 ease-out dark:bg-slate-800 top-[14px] text-gray-400 opacity-0 dark:text-gray-500"
+    for="test-error"
+  >
+    Test input
+  </label>
+  <input
+    aria-describedby="test-error-error"
+    aria-invalid="true"
+    class="w-full rounded-xs border border-red-600 dark:border-slate-600 bg-white dark:bg-slate-800 p-3 shadow-xs outline-hidden focus:border-gray-500 dark:focus:border-gray-400 dark:text-gray-100 dark:placeholder-gray-500 transition-colors duration-150"
+    name="test-error"
+    placeholder="Test input"
+  />
+  <div
+    class="mt-1 min-h-5 text-sm text-red-600 dark:text-red-400"
+    id="test-error-error"
+    style="opacity: 0; height: 0px; transform: translateY(-10px);"
+  >
+    This field is required
+  </div>
+</div>
+`;
+
+exports[`Component Snapshots > NotificationSkeleton component renders correctly > NotificationSkeleton-default 1`] = `
+<div
+  aria-busy="true"
+  aria-label="Đang tải thông báo"
+  class="min-h-[200px]"
+  role="status"
+>
+  <div
+    class="flex min-h-[80px] items-start border-b border-gray-100 p-4 last:border-b-0 dark:border-slate-700"
+  >
+    <div
+      class="mr-3 shrink-0"
+    >
+      <div
+        class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-8 w-8 rounded-full"
+      />
+    </div>
+    <div
+      class="min-w-0 flex-1"
+    >
+      <div
+        class="flex items-start justify-between"
+      >
+        <div
+          class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 mb-2 h-4 w-32"
+        />
+        <div
+          class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 ml-2 h-2 w-2 shrink-0 rounded-full"
+        />
+      </div>
+      <div
+        class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 mb-1 h-3 w-full"
+      />
+      <div
+        class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 mb-2 h-3 w-4/5"
+      />
+      <div
+        class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-16"
+      />
+    </div>
+  </div>
+  <div
+    class="flex min-h-[80px] items-start border-b border-gray-100 p-4 last:border-b-0 dark:border-slate-700"
+  >
+    <div
+      class="mr-3 shrink-0"
+    >
+      <div
+        class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-8 w-8 rounded-full"
+      />
+    </div>
+    <div
+      class="min-w-0 flex-1"
+    >
+      <div
+        class="flex items-start justify-between"
+      >
+        <div
+          class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 mb-2 h-4 w-32"
+        />
+        <div
+          class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 ml-2 h-2 w-2 shrink-0 rounded-full"
+        />
+      </div>
+      <div
+        class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 mb-1 h-3 w-full"
+      />
+      <div
+        class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 mb-2 h-3 w-4/5"
+      />
+      <div
+        class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-16"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Component Snapshots > Pagination component renders correctly > Pagination-default 1`] = `
+<nav
+  aria-label="Pagination Navigation"
+  class="mt-6 flex flex-wrap items-center justify-center"
+  role="navigation"
+>
+  <span
+    aria-disabled="true"
+    aria-label="Trang trước"
+    class="flex cursor-not-allowed items-center justify-center rounded-tl-sm rounded-bl-sm border-transparent px-2 py-2 opacity-40 transition-opacity duration-150 md:px-4 md:py-3"
+  >
+    <svg
+      class="h-5 w-5 text-[rgba(0,0,0,0.6)] dark:text-gray-500"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M15.75 19.5L8.25 12l7.5-7.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </span>
+  <a
+    aria-current="page"
+    aria-label="Trang 1"
+    class="flex cursor-pointer items-center justify-center px-2 py-2 text-sm transition-all duration-150 md:px-4 md:py-3 md:text-[18px] bg-orange text-white hover:bg-orange dark:bg-orange-500"
+    data-discover="true"
+    href="/?page=1&limit=20&sort_by=createdAt"
+  >
+    1
+  </a>
+  <a
+    aria-label="Trang 2"
+    class="flex cursor-pointer items-center justify-center px-2 py-2 text-sm transition-all duration-150 md:px-4 md:py-3 md:text-[18px] border-transparent text-black/50 hover:scale-110 hover:text-orange active:scale-95 dark:text-gray-400 dark:hover:text-orange-400"
+    data-discover="true"
+    href="/?page=2&limit=20&sort_by=createdAt"
+  >
+    2
+  </a>
+  <a
+    aria-label="Trang 3"
+    class="flex cursor-pointer items-center justify-center px-2 py-2 text-sm transition-all duration-150 md:px-4 md:py-3 md:text-[18px] border-transparent text-black/50 hover:scale-110 hover:text-orange active:scale-95 dark:text-gray-400 dark:hover:text-orange-400"
+    data-discover="true"
+    href="/?page=3&limit=20&sort_by=createdAt"
+  >
+    3
+  </a>
+  <span
+    class="flex items-center justify-center border border-gray-200 bg-white px-2 py-2 text-sm shadow-xs md:px-3 md:py-3 md:text-base dark:border-slate-700 dark:bg-slate-800 dark:text-gray-300"
+  >
+    ...
+  </span>
+  <a
+    aria-label="Trang 19"
+    class="flex cursor-pointer items-center justify-center px-2 py-2 text-sm transition-all duration-150 md:px-4 md:py-3 md:text-[18px] border-transparent text-black/50 hover:scale-110 hover:text-orange active:scale-95 dark:text-gray-400 dark:hover:text-orange-400"
+    data-discover="true"
+    href="/?page=19&limit=20&sort_by=createdAt"
+  >
+    19
+  </a>
+  <a
+    aria-label="Trang 20"
+    class="flex cursor-pointer items-center justify-center px-2 py-2 text-sm transition-all duration-150 md:px-4 md:py-3 md:text-[18px] border-transparent text-black/50 hover:scale-110 hover:text-orange active:scale-95 dark:text-gray-400 dark:hover:text-orange-400"
+    data-discover="true"
+    href="/?page=20&limit=20&sort_by=createdAt"
+  >
+    20
+  </a>
+  <a
+    aria-label="Go to next page"
+    class="flex cursor-pointer items-center justify-center rounded-tr-sm rounded-br-sm border-transparent px-2 py-2 transition-all duration-150 hover:bg-black/5 active:scale-95 md:px-4 md:py-3 dark:hover:bg-white/10"
+    data-discover="true"
+    href="/?page=2&limit=20&sort_by=createdAt"
+  >
+    <svg
+      class="h-5 w-5 text-[rgba(0,0,0,.6)] dark:text-gray-400"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M8.25 4.5l7.5 7.5-7.5 7.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </a>
+</nav>
+`;
+
+exports[`Component Snapshots > ProductCardSkeleton component renders correctly > ProductCardSkeleton-default 1`] = `
+<div
+  aria-busy="true"
+  aria-label="Đang tải sản phẩm"
+  class="min-h-[280px] overflow-hidden rounded-lg bg-white shadow-xs dark:bg-slate-800"
+  role="status"
+>
+  <div
+    class="relative w-full pt-[100%]"
+  >
+    <div
+      class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 absolute top-0 left-0 h-full w-full rounded-tl-sm rounded-tr-sm"
+    />
+  </div>
+  <div
+    class="overflow-hidden p-2"
+  >
+    <div
+      class="min-h-[1.9rem]"
+    >
+      <div
+        class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 mb-1 h-3 w-full"
+      />
+      <div
+        class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-3/4"
+      />
+    </div>
+    <div
+      class="mt-3 flex items-center gap-2"
+    >
+      <div
+        class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-4 w-16"
+      />
+      <div
+        class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-4 w-20"
+      />
+    </div>
+    <div
+      class="mt-3 flex items-center justify-start gap-2"
+    >
+      <div
+        class="flex gap-0.5"
+      >
+        <div
+          class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-3"
+        />
+        <div
+          class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-3"
+        />
+        <div
+          class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-3"
+        />
+        <div
+          class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-3"
+        />
+        <div
+          class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-3"
+        />
+      </div>
+      <div
+        class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-16"
+      />
+    </div>
+  </div>
+  <div
+    class="p-2"
+  >
+    <div
+      class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-20"
+    />
+  </div>
+</div>
+`;
+
+exports[`Component Snapshots > ProductRating component renders correctly > ProductRating-default 1`] = `
+<div
+  aria-label="4.5 out of 5 stars"
+  class="flex items-center"
+  role="img"
+>
+  <div
+    class="relative"
+  >
+    <div
+      class="absolute top-0 left-0 h-full overflow-hidden"
+      style="width: 100%;"
+    >
+      <svg
+        class="h-3 w-3 md:h-4 md:w-4 fill-orange text-orange dark:fill-orange-400 dark:text-orange-400"
+        viewBox="0 0 15 15"
+        x="0"
+        y="0"
+      >
+        <polygon
+          points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-miterlimit="10"
+        />
+      </svg>
+    </div>
+    <svg
+      class="h-3 w-3 md:h-4 md:w-4 fill-current text-gray-300 dark:text-slate-600"
+      viewBox="0 0 15 15"
+      x="0"
+      y="0"
+    >
+      <polygon
+        points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-miterlimit="10"
+      />
+    </svg>
+  </div>
+  <div
+    class="relative"
+  >
+    <div
+      class="absolute top-0 left-0 h-full overflow-hidden"
+      style="width: 100%;"
+    >
+      <svg
+        class="h-3 w-3 md:h-4 md:w-4 fill-orange text-orange dark:fill-orange-400 dark:text-orange-400"
+        viewBox="0 0 15 15"
+        x="0"
+        y="0"
+      >
+        <polygon
+          points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-miterlimit="10"
+        />
+      </svg>
+    </div>
+    <svg
+      class="h-3 w-3 md:h-4 md:w-4 fill-current text-gray-300 dark:text-slate-600"
+      viewBox="0 0 15 15"
+      x="0"
+      y="0"
+    >
+      <polygon
+        points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-miterlimit="10"
+      />
+    </svg>
+  </div>
+  <div
+    class="relative"
+  >
+    <div
+      class="absolute top-0 left-0 h-full overflow-hidden"
+      style="width: 100%;"
+    >
+      <svg
+        class="h-3 w-3 md:h-4 md:w-4 fill-orange text-orange dark:fill-orange-400 dark:text-orange-400"
+        viewBox="0 0 15 15"
+        x="0"
+        y="0"
+      >
+        <polygon
+          points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-miterlimit="10"
+        />
+      </svg>
+    </div>
+    <svg
+      class="h-3 w-3 md:h-4 md:w-4 fill-current text-gray-300 dark:text-slate-600"
+      viewBox="0 0 15 15"
+      x="0"
+      y="0"
+    >
+      <polygon
+        points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-miterlimit="10"
+      />
+    </svg>
+  </div>
+  <div
+    class="relative"
+  >
+    <div
+      class="absolute top-0 left-0 h-full overflow-hidden"
+      style="width: 100%;"
+    >
+      <svg
+        class="h-3 w-3 md:h-4 md:w-4 fill-orange text-orange dark:fill-orange-400 dark:text-orange-400"
+        viewBox="0 0 15 15"
+        x="0"
+        y="0"
+      >
+        <polygon
+          points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-miterlimit="10"
+        />
+      </svg>
+    </div>
+    <svg
+      class="h-3 w-3 md:h-4 md:w-4 fill-current text-gray-300 dark:text-slate-600"
+      viewBox="0 0 15 15"
+      x="0"
+      y="0"
+    >
+      <polygon
+        points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-miterlimit="10"
+      />
+    </svg>
+  </div>
+  <div
+    class="relative"
+  >
+    <div
+      class="absolute top-0 left-0 h-full overflow-hidden"
+      style="width: 50%;"
+    >
+      <svg
+        class="h-3 w-3 md:h-4 md:w-4 fill-orange text-orange dark:fill-orange-400 dark:text-orange-400"
+        viewBox="0 0 15 15"
+        x="0"
+        y="0"
+      >
+        <polygon
+          points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-miterlimit="10"
+        />
+      </svg>
+    </div>
+    <svg
+      class="h-3 w-3 md:h-4 md:w-4 fill-current text-gray-300 dark:text-slate-600"
+      viewBox="0 0 15 15"
+      x="0"
+      y="0"
+    >
+      <polygon
+        points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-miterlimit="10"
+      />
+    </svg>
+  </div>
+</div>
+`;
+
+exports[`Component Snapshots > SkeletonBase component renders correctly > SkeletonBase-default 1`] = `
+<div
+  class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-4 w-full"
+/>
+`;

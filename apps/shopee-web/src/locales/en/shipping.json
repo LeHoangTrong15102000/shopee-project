@@ -1,0 +1,19 @@
+{
+  "title": "Shipping",
+  "from": "From:",
+  "to": "To:",
+  "addressPlaceholder": "Enter delivery address",
+  "addressAria": "Delivery address",
+  "noAddress": "No address set",
+  "done": "Done",
+  "change": "Change",
+  "methodLabel": "Shipping method:",
+  "option.instant": "Instant",
+  "option.express": "Express",
+  "option.standard": "Standard",
+  "fastest": "Fastest",
+  "deliverOn": "Receive on {{date}}",
+  "deliverRange": "Receive from {{minDate}} - {{maxDate}}",
+  "shippingFee": "Shipping fee:"
+}
+

@@ -1,0 +1,16 @@
+{
+  "title": "Trợ lý mua sắm",
+  "welcome": "Xin chào! Tôi có thể giúp gì cho bạn?",
+  "error": "Đã xảy ra lỗi. Vui lòng thử lại.",
+  "placeholder": "Nhập tin nhắn...",
+  "typing": "Đang nhập...",
+  "send": "Gửi",
+  "online": "Trực tuyến",
+  "close": "Đóng",
+  "defaultSeller": "Người bán",
+  "status.connecting": "Kết nối...",
+  "status.noConnection": "Không có kết nối",
+  "status.online": "Trực tuyến",
+  "button.minimize": "Thu nhỏ",
+  "button.close": "Đóng"
+}

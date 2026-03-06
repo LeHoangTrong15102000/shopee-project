@@ -1,0 +1,19 @@
+{
+  "title": "Vận chuyển",
+  "from": "Từ:",
+  "to": "Đến:",
+  "addressPlaceholder": "Nhập địa chỉ giao hàng",
+  "addressAria": "Địa chỉ giao hàng",
+  "noAddress": "Chưa có địa chỉ",
+  "done": "Xong",
+  "change": "Thay đổi",
+  "methodLabel": "Phương thức vận chuyển:",
+  "option.instant": "Hỏa tốc",
+  "option.express": "Giao hàng nhanh",
+  "option.standard": "Giao hàng tiết kiệm",
+  "fastest": "Nhanh nhất",
+  "deliverOn": "Nhận hàng vào {{date}}",
+  "deliverRange": "Nhận hàng từ {{minDate}} - {{maxDate}}",
+  "shippingFee": "Phí vận chuyển:"
+}
+

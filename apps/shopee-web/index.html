@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Preconnect and DNS-prefetch for API server -->
+    <link rel="preconnect" href="https://api-ecom.duthanhduoc.com" />
+    <link rel="dns-prefetch" href="https://api-ecom.duthanhduoc.com" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="apple-touch-icon" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ee4d2d" />
+    <link rel="manifest" href="/manifest.json" />
+    <!-- Fallback meta tags for crawlers that don't execute JavaScript -->
+    <title>Shopee Clone - Mua Sắm Online Số 1 Việt Nam</title>
+    <meta name="description" content="Mua sắm trực tuyến hàng triệu sản phẩm ở tất cả ngành hàng. Giá tốt & Ưu đãi. Mua và bán online trong 30 giây. Shopee Đảm Bảo | Freeship Xtra | Hoàn Xu Xtra" />
+    <meta property="og:title" content="Shopee Clone - Mua Sắm Online Số 1 Việt Nam" />
+    <meta property="og:description" content="Mua sắm trực tuyến hàng triệu sản phẩm ở tất cả ngành hàng. Giá tốt & Ưu đãi. Mua và bán online trong 30 giây." />
+    <meta property="og:image" content="https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/26c9324913c021677768c36975d635ef.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://shop.lehoangtrong.com" />
+    <meta property="og:site_name" content="Shopee Clone" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Shopee Clone - Mua Sắm Online Số 1 Việt Nam" />
+    <meta name="twitter:description" content="Mua sắm trực tuyến hàng triệu sản phẩm ở tất cả ngành hàng. Giá tốt & Ưu đãi." />
+    <meta name="twitter:image" content="https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/26c9324913c021677768c36975d635ef.png" />
+
+    <!-- FOUC Prevention: Apply theme before React mounts -->
+    <script>
+      (function() {
+        var STORAGE_KEY = 'shopee_theme';
+        var stored = null;
+        try {
+          stored = localStorage.getItem(STORAGE_KEY);
+        } catch (e) {}
+
+        var theme = 'light';
+        if (stored === 'dark') {
+          theme = 'dark';
+        } else if (stored === 'system' || !stored) {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        document.documentElement.classList.add(theme);
+        document.documentElement.style.colorScheme = theme;
+
+        var metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (metaThemeColor) {
+          metaThemeColor.content = theme === 'dark' ? '#0f172a' : '#ee4d2d';
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

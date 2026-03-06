@@ -1,0 +1,24 @@
+{
+  "name": "@shopee/source",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "nx run-many -t serve",
+    "build": "nx run-many -t build",
+    "lint": "nx run-many -t lint",
+    "test": "nx run-many -t test",
+    "docker:start": "docker compose up -d",
+    "docker:stop": "docker compose down"
+  },
+  "devDependencies": {
+    "nx": "21.4.0",
+    "@nx/vite": "21.4.0",
+    "@nx/eslint": "21.4.0",
+    "@nx/eslint-plugin": "21.4.0",
+    "@nx/js": "21.4.0",
+    "@nx/workspace": "21.4.0",
+    "@nx/jest": "21.4.0",
+    "typescript": "~5.8.2"
+  },
+  "packageManager": "pnpm@10.12.1"
+}

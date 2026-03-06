@@ -1,0 +1,199 @@
+import { Request, Response } from 'express'
+import { responseSuccess, ErrorHandler } from '@utils/response'
+import { STATUS } from '@constants/status'
+import { uploadFile } from '@utils/upload'
+import { FOLDERS } from '@constants/config'
+import { userService } from '../container'
+import { NotFoundError, ValidationError, ConflictError } from '@services/base.service'
+
+// Local type definitions for this file only
+interface User {
+  email: string
+  password: string
+  name: string
+  date_of_birth: string
+  address: string
+  phone: string
+  roles: string[]
+  avatar?: string
+  new_password?: string
+}
+
+interface CustomRequest extends Request {
+  jwtDecoded: {
+    id: string
+    email: string
+    roles: string[]
+    created_at: string
+  }
+}
+
+const addUser = async (req: CustomRequest, res: Response) => {
+  try {
+    const form: User = req.body
+    const { email, password, address, date_of_birth, name, phone, roles, avatar } = form
+    const user = await userService.createUser({
+      email,
+      password,
+      address,
+      date_of_birth: date_of_birth ? new Date(date_of_birth) : undefined,
+      name,
+      phone,
+      roles,
+      avatar,
+    })
+    const response = {
+      message: 'Tạo người dùng thành công',
+      data: user,
+    }
+    return responseSuccess(res, response)
+  } catch (error) {
+    if (error instanceof ConflictError) {
+      throw new ErrorHandler(422, { email: error.message })
+    }
+    throw error
+  }
+}
+
+const getUsers = async (req: CustomRequest, res: Response) => {
+  const users = await userService.getUsers()
+  const response = {
+    message: 'Lấy người dùng thành công',
+    data: users,
+  }
+  return responseSuccess(res, response)
+}
+
+const getDetailMySelf = async (req: CustomRequest, res: Response) => {
+  try {
+    // Defensive check for missing jwtDecoded or id
+    if (!req.jwtDecoded || !req.jwtDecoded.id) {
+      throw new ErrorHandler(STATUS.UNAUTHORIZED, 'Token không hợp lệ hoặc thiếu thông tin người dùng')
+    }
+
+    const profile = await userService.getProfile(req.jwtDecoded.id)
+    const response = {
+      message: 'Lấy người dùng thành công',
+      data: profile,
+    }
+    return responseSuccess(res, response)
+  } catch (error) {
+    if (error instanceof NotFoundError || error instanceof ValidationError) {
+      throw new ErrorHandler(STATUS.UNAUTHORIZED, 'Không tìm thấy người dùng')
+    }
+    throw error
+  }
+}
+
+const getUser = async (req: CustomRequest, res: Response) => {
+  try {
+    const user = await userService.getUserById(req.params.user_id)
+    const response = {
+      message: 'Lấy người dùng thành công',
+      data: user,
+    }
+    return responseSuccess(res, response)
+  } catch (error) {
+    if (error instanceof NotFoundError || error instanceof ValidationError) {
+      throw new ErrorHandler(STATUS.BAD_REQUEST, 'Không tìm thấy người dùng')
+    }
+    throw error
+  }
+}
+
+const updateUser = async (req: CustomRequest, res: Response) => {
+  try {
+    const form: User = req.body
+    const { password, address, date_of_birth, name, phone, roles, avatar } = form
+    const user = await userService.updateUser(req.params.user_id, {
+      password,
+      address,
+      date_of_birth: date_of_birth ? new Date(date_of_birth) : undefined,
+      name,
+      phone,
+      roles,
+      avatar,
+    })
+    const response = {
+      message: 'Cập nhật người dùng thành công',
+      data: user,
+    }
+    return responseSuccess(res, response)
+  } catch (error) {
+    if (error instanceof NotFoundError || error instanceof ValidationError) {
+      throw new ErrorHandler(STATUS.BAD_REQUEST, 'Không tìm thấy người dùng')
+    }
+    throw error
+  }
+}
+
+const uploadAvatar = async (req: CustomRequest, res: Response) => {
+  const path = await uploadFile(req, FOLDERS.AVATAR)
+  const response = {
+    message: 'Upload ảnh đại diện thành công',
+    data: path,
+  }
+  return responseSuccess(res, response)
+}
+
+const updateMe = async (req: CustomRequest, res: Response) => {
+  try {
+    // Defensive check for missing jwtDecoded or id
+    if (!req.jwtDecoded || !req.jwtDecoded.id) {
+      throw new ErrorHandler(STATUS.UNAUTHORIZED, 'Token không hợp lệ hoặc thiếu thông tin người dùng')
+    }
+
+    const form: User = req.body
+    const { email, password, new_password, address, date_of_birth, name, phone, avatar } = form
+    const user = await userService.updateProfile(req.jwtDecoded.id, {
+      email,
+      password,
+      new_password,
+      address,
+      date_of_birth: date_of_birth ? new Date(date_of_birth) : undefined,
+      name,
+      phone,
+      avatar,
+    })
+    const response = {
+      message: 'Cập nhật thông tin thành công',
+      data: user,
+    }
+    return responseSuccess(res, response)
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      throw new ErrorHandler(STATUS.UNPROCESSABLE_ENTITY, {
+        [error.field || 'password']: error.message,
+      })
+    }
+    if (error instanceof NotFoundError) {
+      throw new ErrorHandler(STATUS.BAD_REQUEST, 'Không tìm thấy người dùng')
+    }
+    throw error
+  }
+}
+
+const deleteUser = async (req: CustomRequest, res: Response) => {
+  try {
+    await userService.deleteUser(req.params.user_id)
+    return responseSuccess(res, { message: 'Xóa thành công' })
+  } catch (error) {
+    if (error instanceof NotFoundError || error instanceof ValidationError) {
+      throw new ErrorHandler(STATUS.BAD_REQUEST, 'Không tìm thấy người dùng')
+    }
+    throw error
+  }
+}
+
+const userController = {
+  addUser,
+  getUsers,
+  getDetailMySelf,
+  getUser,
+  updateUser,
+  deleteUser,
+  updateMe,
+  uploadAvatar,
+}
+
+export default userController

@@ -1,0 +1,16 @@
+{
+  "title": "Shopping Assistant",
+  "welcome": "Hello! How can I help you?",
+  "error": "An error occurred. Please try again.",
+  "placeholder": "Type a message...",
+  "typing": "Typing...",
+  "send": "Send",
+  "online": "Online",
+  "close": "Close",
+  "defaultSeller": "Seller",
+  "status.connecting": "Connecting...",
+  "status.noConnection": "No connection",
+  "status.online": "Online",
+  "button.minimize": "Minimize",
+  "button.close": "Close"
+}

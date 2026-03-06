@@ -1,0 +1,23 @@
+{
+  "title": "Thông báo",
+  "newNotifications": "Thông báo mới",
+  "unreadCount": "{{count}} chưa đọc",
+  "noUnread": "Không có thông báo chưa đọc",
+  "types.order": "Đơn hàng",
+  "types.promotion": "Khuyến mãi",
+  "types.system": "Hệ thống",
+  "types.other": "Khác",
+  "read": "Đã đọc",
+  "unread": "Chưa đọc",
+  "loading": "Đang tải thông báo...",
+  "noNotifications": "Không có thông báo nào",
+  "markAllRead": "Đánh dấu tất cả đã đọc",
+  "processing": "Đang xử lý...",
+  "toast.markAsReadError": "Không thể đánh dấu đã đọc",
+  "toast.markAllAsReadSuccess": "Đã đánh dấu tất cả thông báo là đã đọc",
+  "toast.markAllAsReadError": "Không thể đánh dấu tất cả đã đọc",
+  "listLabel": "Danh sách thông báo",
+  "markAllReadLabel": "Đánh dấu {{count}} thông báo đã đọc",
+  "allRead": "Đã đọc tất cả",
+  "viewAll": "Xem tất cả"
+}

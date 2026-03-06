@@ -1,0 +1,388 @@
+@import 'tailwindcss';
+
+@config '../tailwind.config.cjs';
+
+/* Class-based dark mode (TW v4 defaults to prefers-color-scheme) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Include HeroUI theme classes from node_modules */
+@source '../node_modules/@heroui/theme/dist';
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+
+  /* Tailwind v4 removed cursor:pointer from buttons in preflight.
+     Restore v3 behavior so all interactive elements show pointer cursor. */
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@utility animation-delay-200 {
+  animation-delay: 0.2s;
+}
+
+@utility animation-delay-400 {
+  animation-delay: 0.4s;
+}
+
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+@utility animate-fade-in-up {
+  animation: fade-in-up 0.3s ease-out forwards;
+}
+@utility animate-scale-in {
+  animation: scale-in 0.2s ease-out forwards;
+}
+@utility animation-delay-100 {
+  animation-delay: 0.1s;
+}
+@utility animation-delay-300 {
+  animation-delay: 0.3s;
+}
+@utility animation-delay-500 {
+  animation-delay: 0.5s;
+}
+@utility focus-ring-orange {
+  @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange;
+}
+
+/* ===== THEME CSS VARIABLES ===== */
+@layer base {
+  :root {
+    color-scheme: light;
+    /* Light Theme (Default) */
+    --color-bg-primary: 255 255 255;
+    --color-bg-secondary: 245 245 245;
+    --color-bg-tertiary: 238 238 238;
+
+    --color-text-primary: 17 24 39;
+    --color-text-secondary: 107 114 128;
+    --color-text-muted: 156 163 175;
+
+    --color-border: 229 231 235;
+    --color-ring: 238 77 45;
+
+    --color-surface-card: 255 255 255;
+    --color-surface-hover: 249 250 251;
+
+    /* Input tokens */
+    --color-input-bg: 255 255 255;
+    --color-input-border: 209 213 219;
+    --color-input-text: 17 24 39;
+    --color-input-placeholder: 156 163 175;
+
+    /* Modal tokens */
+    --color-modal-bg: 255 255 255;
+    --color-modal-overlay: 0 0 0;
+    --color-modal-border: 229 231 235;
+
+    /* Card tokens */
+    --color-card-bg: 255 255 255;
+    --color-card-border: 229 231 235;
+    --color-card-hover: 249 250 251;
+
+    /* Tooltip/Badge tokens */
+    --color-tooltip-bg: 31 41 55;
+    --color-tooltip-text: 255 255 255;
+    --color-badge-bg: 243 244 246;
+    --color-badge-text: 55 65 81;
+  }
+
+  .dark {
+    color-scheme: dark;
+    /* Dark Theme - aligned with MASTER.md design system */
+    --color-bg-primary: 15 23 42;
+    --color-bg-secondary: 30 41 59;
+    --color-bg-tertiary: 51 65 85;
+
+    --color-text-primary: 248 250 252;
+    --color-text-secondary: 161 161 170;
+    --color-text-muted: 113 113 122;
+
+    --color-border: 63 63 70;
+    --color-ring: 251 146 60;
+
+    --color-surface-card: 30 41 59;
+    --color-surface-hover: 51 65 85;
+
+    /* Input tokens - dark */
+    --color-input-bg: 30 41 59;
+    --color-input-border: 71 85 105;
+    --color-input-text: 248 250 252;
+    --color-input-placeholder: 148 163 184;
+
+    /* Modal tokens - dark */
+    --color-modal-bg: 30 41 59;
+    --color-modal-overlay: 0 0 0;
+    --color-modal-border: 51 65 85;
+
+    /* Card tokens - dark */
+    --color-card-bg: 30 41 59;
+    --color-card-border: 51 65 85;
+    --color-card-hover: 51 65 85;
+
+    /* Tooltip/Badge tokens - dark (inverted for visibility) */
+    --color-tooltip-bg: 248 250 252;
+    --color-tooltip-text: 15 23 42;
+    --color-badge-bg: 51 65 85;
+    --color-badge-text: 226 232 240;
+  }
+}
+
+html {
+  height: 100%;
+  line-height: 1.2;
+}
+
+html.dark {
+  background-color: rgb(var(--color-bg-primary));
+}
+
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  background-color: rgb(var(--color-bg-primary));
+  color: rgb(var(--color-text-primary));
+}
+
+#root {
+  min-height: 100vh;
+  background-color: inherit;
+}
+
+/* Prevent HeroUI OverlayProvider wrapper from having its own background */
+[data-overlay-container] {
+  background-color: inherit !important;
+}
+
+/* Override HeroUI's :root background-color injection in dark mode.
+   HeroUI plugin adds background-color: hsl(var(--heroui-background)) on :root via addBase().
+   In dark mode, we need our CSS variable --color-bg-primary to take precedence. */
+:root.dark {
+  background-color: rgb(var(--color-bg-primary)) !important;
+}
+
+.dark [data-heroui-provider],
+.dark .heroui-provider {
+  background-color: transparent !important;
+}
+
+@utility circle {
+  @apply mx-1 my-12 h-4 w-4 rounded-full bg-[#ee4d2d/500];
+}
+
+/* ===== SHOPEE CUSTOM CHECKBOX ===== */
+/* Animation được handle bởi Framer Motion trong component */
+
+/* Animation cho notification bell */
+@keyframes bell-shake {
+  0%,
+  50%,
+  100% {
+    transform: rotate(0deg);
+  }
+  10%,
+  30% {
+    transform: rotate(-10deg);
+  }
+  20%,
+  40% {
+    transform: rotate(10deg);
+  }
+}
+
+/* Animation cho message icon */
+@keyframes message-shake {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+  10%,
+  30% {
+    transform: rotate(-8deg) scale(1.1);
+  }
+  20%,
+  40% {
+    transform: rotate(8deg) scale(1.1);
+  }
+  50% {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+/* Responsive helpers */
+@media (max-width: 767px) {
+  .mobile-hidden {
+    display: none !important;
+  }
+
+  /* Đảm bảo header container không bị overflow */
+  .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  /* Điều chỉnh placeholder text cho mobile */
+  .mobile-search-placeholder::placeholder {
+    font-size: 0.75rem;
+  }
+}
+
+/* Custom scrollbar cho SearchSuggestions */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-track-gray-100::-webkit-scrollbar-track {
+  background-color: #f3f4f6;
+}
+
+.scrollbar-thumb-gray-300::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 2px;
+}
+
+.scrollbar-thumb-gray-300:hover::-webkit-scrollbar-thumb {
+  background-color: #9ca3af;
+}
+
+/* Custom scrollbar for mobile */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Dark mode scrollbar styles */
+.dark ::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 2px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Responsive text truncation */
+@media (max-width: 640px) {
+  .truncate-mobile {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100px;
+  }
+}
+
+/* ===== ANIMATION ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Status badge pulse animation for waiting states */
+@keyframes status-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(238, 77, 45, 0.4);
+  }
+  50% {
+    opacity: 0.85;
+    box-shadow: 0 0 0 4px rgba(238, 77, 45, 0);
+  }
+}
+
+@keyframes status-pulse-blue {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    opacity: 0.85;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0);
+  }
+}
+
+/* ===== FOCUS VISIBLE STYLES ===== */
+*:focus-visible {
+  outline: 2px solid #ee4d2d;
+  outline-offset: 2px;
+}
+
+/* Form elements have their own focus styles via Tailwind classes */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+}
+
+/* Remove default focus outline and ring for mouse users */
+*:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}

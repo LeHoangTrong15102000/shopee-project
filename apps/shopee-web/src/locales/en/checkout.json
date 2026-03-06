@@ -1,0 +1,26 @@
+{
+  "title": "Checkout",
+  "subtitle": "Complete your order",
+  "section.address": "Delivery Address",
+  "section.shipping": "Shipping Method",
+  "section.payment": "Payment Method",
+  "section.voucher": "Voucher & Shopee Coins",
+  "section.note": "Order Notes",
+  "voucher.label": "Voucher code",
+  "voucher.placeholder": "Enter voucher code",
+  "voucher.apply": "Apply",
+  "voucher.applied": "Applied discount ₫{{amount}}",
+  "coins.label": "Use Shopee Coins",
+  "coins.info": "You have 10,000 coins (max 10,000 coins)",
+  "note.placeholder": "Note for seller (optional)",
+  "total": "Total:",
+  "securePayment": "Secure payment",
+  "placeOrder": "Place Order",
+  "placeOrderHint": "Click \"Place Order\" to review and confirm your order",
+  "acceptedPayments": "Accepted payments",
+  "step.address": "Address",
+  "step.shipping": "Shipping",
+  "step.payment": "Payment",
+  "step.confirm": "Confirm"
+}
+

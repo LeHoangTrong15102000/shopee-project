@@ -1,0 +1,24 @@
+{
+  "email.required": "Email là bắt buộc",
+  "email.invalid": "Email không đúng định dạng",
+  "email.length": "Độ dài từ 5 đến 160 ký tự",
+  "password.required": "Password là bắt buộc",
+  "password.length": "Độ dài từ 6 đến 160 ký tự",
+  "confirmPassword.required": "Nhập lại password là bắt buộc",
+  "confirmPassword.zodRequired": "Confirm password là bắt buộc",
+  "confirmPassword.length": "Độ dài từ 5 đến 160 ký tự",
+  "confirmPassword.mismatch": "Nhập lại password không đúng",
+  "confirmPassword.zodMismatch": "Nhập lại password không khớp!!",
+  "price.invalid": "Giá không phù hợp",
+  "productName.required": "Tên sản phẩm là bắt buộc",
+  "name.maxLength": "Độ dài tối đa là 160 ký tự",
+  "phone.maxLength": "Độ dài tối đa là 20 ký tự",
+  "address.maxLength": "Độ dài tối đa là 160 ký tự",
+  "avatar.maxLength": "Độ dài tối đa là 1000 ký tự",
+  "date.invalid": "Ngày không hợp lệ, vui lòng chỉnh ngày chính xác",
+  "forgotPassword.emailInvalid": "Email không hợp lệ",
+  "resetPassword.minLength": "Mật khẩu phải có ít nhất 6 ký tự",
+  "resetPassword.confirmRequired": "Xác nhận mật khẩu là bắt buộc",
+  "resetPassword.mismatch": "Mật khẩu xác nhận không khớp"
+}
+

@@ -1,0 +1,24 @@
+{
+  "pageTitle": "So sánh sản phẩm | Shopee Clone",
+  "pageDescription": "So sánh các sản phẩm để tìm ra lựa chọn tốt nhất cho bạn",
+  "title": "So sánh sản phẩm",
+  "comparing": "Đang so sánh {{count}} sản phẩm",
+  "addToCompare": "Thêm sản phẩm để bắt đầu so sánh",
+  "addProduct": "+ Thêm sản phẩm",
+  "recentlyViewed": "Sản phẩm đã xem gần đây",
+  "clearAll": "Xóa tất cả",
+  "compareNow": "So sánh ngay ({{count}})",
+  "removedFromCompare": "Đã xóa khỏi danh sách so sánh",
+  "addedToCompare": "Đã thêm vào danh sách so sánh",
+  "maxCompareReached": "Chỉ có thể so sánh tối đa 4 sản phẩm",
+  "addToCompareTitle": "Thêm vào so sánh",
+  "removeFromCompareTitle": "Xóa khỏi so sánh",
+  "emptyState": "Chưa có sản phẩm nào để so sánh",
+  "tableAriaLabel": "Bảng so sánh sản phẩm",
+  "removeAriaLabel": "Xóa {{name}} khỏi so sánh",
+  "compareAriaLabel": "So sánh {{count}} sản phẩm",
+  "clearAllAriaLabel": "Xóa tất cả sản phẩm khỏi danh sách so sánh",
+  "addToCompareAriaLabel": "Thêm {{name}} vào danh sách so sánh",
+  "removeFromCompareAriaLabel": "Xóa {{name}} khỏi danh sách so sánh"
+}
+

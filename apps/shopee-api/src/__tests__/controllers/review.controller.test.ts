@@ -1,0 +1,385 @@
+/// <reference types="jest" />
+import { Request, Response } from 'express'
+import { STATUS } from '@constants/status'
+
+jest.mock('../../services/base.service', () => {
+  class ValidationError extends Error {
+    constructor(m: string) {
+      super(m)
+      this.name = 'ValidationError'
+    }
+  }
+  class NotFoundError extends Error {
+    constructor(m: string) {
+      super(m)
+      this.name = 'NotFoundError'
+    }
+  }
+  class BusinessError extends Error {
+    constructor(m: string) {
+      super(m)
+      this.name = 'BusinessError'
+    }
+  }
+  return { ValidationError, NotFoundError, BusinessError }
+})
+
+jest.mock('../../container', () => ({
+  reviewService: {
+    createReview: jest.fn(),
+    getProductReviews: jest.fn(),
+    toggleReviewLike: jest.fn(),
+    createReviewComment: jest.fn(),
+    getReviewComments: jest.fn(),
+    canReviewPurchase: jest.fn(),
+  },
+}))
+
+jest.mock('../../socket/utils/review-emit', () => ({
+  emitNewReview: jest.fn(),
+  emitNewReviewComment: jest.fn(),
+  emitReviewLiked: jest.fn(),
+}))
+
+jest.mock('../../socket/utils/activity-emit', () => ({
+  emitActivityEvent: jest.fn(),
+}))
+
+import { reviewService } from '../../container'
+import {
+  createReview,
+  getProductReviews,
+  toggleReviewLike,
+  createReviewComment,
+  getReviewComments,
+  canReviewPurchase,
+} from '../../controllers/review.controller'
+import { ValidationError, NotFoundError, BusinessError } from '@services/base.service'
+
+const mockReviewService = reviewService as jest.Mocked<typeof reviewService>
+
+const createMockRequest = (options: any = {}): Partial<Request> => ({
+  body: options.body || {},
+  params: options.params || {},
+  query: options.query || {},
+  headers: options.headers || {},
+  jwtDecoded: options.jwtDecoded || { id: 'user123', email: 'test@test.com', roles: ['User'], created_at: '2024-01-01' },
+})
+
+const createMockResponse = (): Partial<Response> => {
+  const res: Partial<Response> = {}
+  res.status = jest.fn().mockReturnValue(res)
+  res.json = jest.fn().mockReturnValue(res)
+  res.send = jest.fn().mockReturnValue(res)
+  return res
+}
+
+describe('Review Controller', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  describe('createReview', () => {
+    it('should create review successfully', async () => {
+      const mockReview = {
+        _id: 'review123',
+        user: { name: 'Test User', avatar: 'avatar.jpg' },
+        rating: 5,
+        comment: 'Great product!',
+        images: ['img1.jpg'],
+        createdAt: new Date(),
+      }
+      mockReviewService.createReview.mockResolvedValue({ review: mockReview, productId: 'prod123' } as any)
+
+      const req = createMockRequest({
+        body: { purchase_id: 'purchase123', rating: 5, comment: 'Great product!', images: ['img1.jpg'] },
+      })
+      const res = createMockResponse()
+
+      await createReview(req as Request, res as Response)
+
+      expect(mockReviewService.createReview).toHaveBeenCalledWith('user123', 'purchase123', 5, 'Great product!', ['img1.jpg'])
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Đánh giá sản phẩm thành công', data: mockReview })
+    })
+
+    it('should return 400 on ValidationError', async () => {
+      mockReviewService.createReview.mockRejectedValue(new ValidationError('Invalid rating'))
+
+      const req = createMockRequest({ body: { purchase_id: 'p1', rating: 10, comment: 'Test' } })
+      const res = createMockResponse()
+
+      await createReview(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.BAD_REQUEST)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Invalid rating' })
+    })
+
+    it('should return 400 on BusinessError', async () => {
+      mockReviewService.createReview.mockRejectedValue(new BusinessError('Already reviewed'))
+
+      const req = createMockRequest({ body: { purchase_id: 'p1', rating: 5, comment: 'Test' } })
+      const res = createMockResponse()
+
+      await createReview(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.BAD_REQUEST)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Already reviewed' })
+    })
+
+    it('should return 500 on generic error', async () => {
+      mockReviewService.createReview.mockRejectedValue(new Error('Database error'))
+
+      const req = createMockRequest({ body: { purchase_id: 'p1', rating: 5, comment: 'Test' } })
+      const res = createMockResponse()
+
+      await createReview(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.INTERNAL_SERVER_ERROR)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Lỗi server khi tạo đánh giá' })
+    })
+  })
+
+  describe('getProductReviews', () => {
+    it('should return reviews with pagination and stats', async () => {
+      const mockResult = {
+        reviews: [{ _id: 'r1', rating: 5, comment: 'Great!' }],
+        pagination: { page: 1, limit: 10, total: 1, page_size: 1 },
+        stats: { average_rating: 4.5, total_reviews: 100 },
+      }
+      mockReviewService.getProductReviews.mockResolvedValue(mockResult as any)
+
+      const req = createMockRequest({ params: { product_id: 'prod123' }, query: { page: '1', limit: '10' } })
+      const res = createMockResponse()
+
+      await getProductReviews(req as Request, res as Response)
+
+      expect(mockReviewService.getProductReviews).toHaveBeenCalledWith('prod123', 'user123', { rating: undefined, sort: 'newest' }, { page: 1, limit: 10 })
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Lấy danh sách đánh giá thành công',
+        data: { reviews: mockResult.reviews, pagination: mockResult.pagination, stats: mockResult.stats },
+      })
+    })
+
+    it('should return 500 on generic error', async () => {
+      mockReviewService.getProductReviews.mockRejectedValue(new Error('Database error'))
+
+      const req = createMockRequest({ params: { product_id: 'prod123' } })
+      const res = createMockResponse()
+
+      await getProductReviews(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.INTERNAL_SERVER_ERROR)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Lỗi server khi lấy danh sách đánh giá' })
+    })
+  })
+
+  describe('toggleReviewLike', () => {
+    it('should return liked message when review is liked', async () => {
+      mockReviewService.toggleReviewLike.mockResolvedValue({ is_liked: true, helpful_count: 5, productId: 'prod123' } as any)
+
+      const req = createMockRequest({ params: { review_id: 'review123' } })
+      const res = createMockResponse()
+
+      await toggleReviewLike(req as Request, res as Response)
+
+      expect(mockReviewService.toggleReviewLike).toHaveBeenCalledWith('user123', 'review123')
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Thích đánh giá thành công', data: { is_liked: true, helpful_count: 5 } })
+    })
+
+    it('should return unliked message when review is unliked', async () => {
+      mockReviewService.toggleReviewLike.mockResolvedValue({ is_liked: false, helpful_count: 4, productId: 'prod123' } as any)
+
+      const req = createMockRequest({ params: { review_id: 'review123' } })
+      const res = createMockResponse()
+
+      await toggleReviewLike(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Bỏ thích đánh giá thành công', data: { is_liked: false, helpful_count: 4 } })
+    })
+
+    it('should return 400 on ValidationError', async () => {
+      mockReviewService.toggleReviewLike.mockRejectedValue(new ValidationError('Invalid review id'))
+
+      const req = createMockRequest({ params: { review_id: 'invalid' } })
+      const res = createMockResponse()
+
+      await toggleReviewLike(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.BAD_REQUEST)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Invalid review id' })
+    })
+
+    it('should return 404 on NotFoundError', async () => {
+      mockReviewService.toggleReviewLike.mockRejectedValue(new NotFoundError('Review not found'))
+
+      const req = createMockRequest({ params: { review_id: 'notfound' } })
+      const res = createMockResponse()
+
+      await toggleReviewLike(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.NOT_FOUND)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Review not found' })
+    })
+
+    it('should return 500 on generic error', async () => {
+      mockReviewService.toggleReviewLike.mockRejectedValue(new Error('Database error'))
+
+      const req = createMockRequest({ params: { review_id: 'review123' } })
+      const res = createMockResponse()
+
+      await toggleReviewLike(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.INTERNAL_SERVER_ERROR)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Lỗi server khi thích/bỏ thích đánh giá' })
+    })
+  })
+
+  describe('createReviewComment', () => {
+    it('should create comment successfully', async () => {
+      const mockComment = {
+        _id: 'comment123',
+        user: { name: 'Test User', avatar: 'avatar.jpg' },
+        content: 'Nice review!',
+        level: 0,
+        createdAt: new Date(),
+      }
+      mockReviewService.createReviewComment.mockResolvedValue({ comment: mockComment, productId: 'prod123' } as any)
+
+      const req = createMockRequest({ body: { review_id: 'review123', content: 'Nice review!' } })
+      const res = createMockResponse()
+
+      await createReviewComment(req as Request, res as Response)
+
+      expect(mockReviewService.createReviewComment).toHaveBeenCalledWith('user123', 'review123', 'Nice review!', undefined)
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Tạo bình luận thành công', data: mockComment })
+    })
+
+    it('should return 400 on ValidationError', async () => {
+      mockReviewService.createReviewComment.mockRejectedValue(new ValidationError('Content too short'))
+
+      const req = createMockRequest({ body: { review_id: 'r1', content: 'Hi' } })
+      const res = createMockResponse()
+
+      await createReviewComment(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.BAD_REQUEST)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Content too short' })
+    })
+
+    it('should return 404 on NotFoundError', async () => {
+      mockReviewService.createReviewComment.mockRejectedValue(new NotFoundError('Review not found'))
+
+      const req = createMockRequest({ body: { review_id: 'notfound', content: 'Test comment' } })
+      const res = createMockResponse()
+
+      await createReviewComment(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.NOT_FOUND)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Review not found' })
+    })
+
+    it('should return 500 on generic error', async () => {
+      mockReviewService.createReviewComment.mockRejectedValue(new Error('Database error'))
+
+      const req = createMockRequest({ body: { review_id: 'r1', content: 'Test' } })
+      const res = createMockResponse()
+
+      await createReviewComment(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.INTERNAL_SERVER_ERROR)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Lỗi server khi tạo bình luận' })
+    })
+  })
+
+  describe('getReviewComments', () => {
+    it('should return comments with pagination', async () => {
+      const mockResult = {
+        data: [{ _id: 'c1', content: 'Nice!' }],
+        pagination: { page: 1, limit: 10, total: 1, page_size: 1 },
+      }
+      mockReviewService.getReviewComments.mockResolvedValue(mockResult as any)
+
+      const req = createMockRequest({ params: { review_id: 'review123' }, query: { page: '1', limit: '10' } })
+      const res = createMockResponse()
+
+      await getReviewComments(req as Request, res as Response)
+
+      expect(mockReviewService.getReviewComments).toHaveBeenCalledWith('review123', { page: 1, limit: 10 })
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Lấy danh sách bình luận thành công',
+        data: { comments: mockResult.data, pagination: { page: 1, limit: 10, total: 1, total_pages: 1 } },
+      })
+    })
+
+    it('should return 400 on ValidationError', async () => {
+      mockReviewService.getReviewComments.mockRejectedValue(new ValidationError('Invalid review id'))
+
+      const req = createMockRequest({ params: { review_id: 'invalid' } })
+      const res = createMockResponse()
+
+      await getReviewComments(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.BAD_REQUEST)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Invalid review id' })
+    })
+
+    it('should return 500 on generic error', async () => {
+      mockReviewService.getReviewComments.mockRejectedValue(new Error('Database error'))
+
+      const req = createMockRequest({ params: { review_id: 'review123' } })
+      const res = createMockResponse()
+
+      await getReviewComments(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.INTERNAL_SERVER_ERROR)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Lỗi server khi lấy danh sách bình luận' })
+    })
+  })
+
+  describe('canReviewPurchase', () => {
+    it('should return can review result successfully', async () => {
+      const mockResult = { can_review: true, reason: null }
+      mockReviewService.canReviewPurchase.mockResolvedValue(mockResult as any)
+
+      const req = createMockRequest({ params: { purchase_id: 'purchase123' } })
+      const res = createMockResponse()
+
+      await canReviewPurchase(req as Request, res as Response)
+
+      expect(mockReviewService.canReviewPurchase).toHaveBeenCalledWith('user123', 'purchase123')
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Kiểm tra quyền đánh giá thành công', data: mockResult })
+    })
+
+    it('should return 400 on ValidationError', async () => {
+      mockReviewService.canReviewPurchase.mockRejectedValue(new ValidationError('Invalid purchase id'))
+
+      const req = createMockRequest({ params: { purchase_id: 'invalid' } })
+      const res = createMockResponse()
+
+      await canReviewPurchase(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.BAD_REQUEST)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Invalid purchase id' })
+    })
+
+    it('should return 500 on generic error', async () => {
+      mockReviewService.canReviewPurchase.mockRejectedValue(new Error('Database error'))
+
+      const req = createMockRequest({ params: { purchase_id: 'purchase123' } })
+      const res = createMockResponse()
+
+      await canReviewPurchase(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.INTERNAL_SERVER_ERROR)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Lỗi server khi kiểm tra quyền đánh giá' })
+    })
+  })
+})
+

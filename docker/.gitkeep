@@ -1,0 +1,2 @@
+# This directory holds Docker-related configurations.
+# docker_data/ is gitignored and used for persistent volume mounts.

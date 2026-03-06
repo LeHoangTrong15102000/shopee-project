@@ -1,0 +1,24 @@
+{
+  "email.required": "Email is required",
+  "email.invalid": "Invalid email format",
+  "email.length": "Length must be between 5 and 160 characters",
+  "password.required": "Password is required",
+  "password.length": "Length must be between 6 and 160 characters",
+  "confirmPassword.required": "Confirm password is required",
+  "confirmPassword.zodRequired": "Confirm password is required",
+  "confirmPassword.length": "Length must be between 5 and 160 characters",
+  "confirmPassword.mismatch": "Passwords do not match",
+  "confirmPassword.zodMismatch": "Passwords do not match!!",
+  "price.invalid": "Invalid price",
+  "productName.required": "Product name is required",
+  "name.maxLength": "Maximum length is 160 characters",
+  "phone.maxLength": "Maximum length is 20 characters",
+  "address.maxLength": "Maximum length is 160 characters",
+  "avatar.maxLength": "Maximum length is 1000 characters",
+  "date.invalid": "Invalid date, please enter a correct date",
+  "forgotPassword.emailInvalid": "Invalid email",
+  "resetPassword.minLength": "Password must be at least 6 characters",
+  "resetPassword.confirmRequired": "Confirm password is required",
+  "resetPassword.mismatch": "Passwords do not match"
+}
+

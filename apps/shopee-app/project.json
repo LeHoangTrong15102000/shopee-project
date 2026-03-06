@@ -1,0 +1,37 @@
+{
+  "name": "shopee-app",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/shopee-app",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "start": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "expo start",
+        "cwd": "apps/shopee-app"
+      }
+    },
+    "android": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "expo run:android",
+        "cwd": "apps/shopee-app"
+      }
+    },
+    "ios": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "expo run:ios",
+        "cwd": "apps/shopee-app"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint \"**/*.{js,jsx,ts,tsx}\"",
+        "cwd": "apps/shopee-app"
+      }
+    }
+  }
+}

@@ -109,7 +109,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>((p
         to={to}
         className={getClassName(animated)}
         data-testid='link'
-        ref={ref as React.Ref<HTMLAnchorElement>}
+        ref={ref as unknown as React.Ref<HTMLAnchorElement>}
         {...linkRest}
       >
         {isLoading && (

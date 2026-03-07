@@ -167,12 +167,6 @@ export {
   type AnswerQuestionInput,
 } from './qa.schema'
 
-// Price schemas
-export {
-  priceProductIdParamSchema,
-  type PriceProductIdParam,
-} from './price.schema'
-
 // Order schemas
 export {
   returnOrderSchema,

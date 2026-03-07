@@ -3,7 +3,7 @@ import { responseSuccess, ErrorHandler } from '@utils/response'
 import { ProductModel } from '@database/models/product.model'
 import { SearchHistoryModel } from '@database/models/search-history.model'
 import { STATUS } from '@constants/status'
-import mongoose, { FilterQuery } from 'mongoose'
+import { FilterQuery } from 'mongoose'
 import { isAdmin } from '@utils/validate'
 import { uploadFile, uploadManyFile } from '@utils/upload'
 import { HOST } from '@utils/helper'
@@ -12,10 +12,9 @@ import { omitBy } from 'lodash'
 import { ORDER, SORT_BY } from '@constants/product'
 import { IProduct } from '../@types/models.type'
 import { ProductBody, ProductQueryParams } from '../@types/request.type'
-import { emitPriceUpdate, emitPriceAlert } from '../socket/utils/product-emit'
+import { emitPriceUpdate } from '../socket/utils/product-emit'
 import { emitInventoryAlert } from '../socket/utils/inventory-emit'
 import { SOCKET_CONFIG } from '@constants/socket'
-import { PriceAlertModel } from '@database/models/price-alert.model'
 import { productService, skuRepository } from '../container'
 import { NotFoundError, ValidationError } from '@services/base.service'
 import { cacheService, CacheKeys } from '@utils/cache.service'
@@ -197,45 +196,6 @@ const updateProduct = async (req: Request, res: Response) => {
           oldProduct.price_before_discount,
           productDB.price_before_discount
         )
-
-        // Check for price alerts: when price drops, notify users with matching alerts
-        if (productDB.price < oldProduct.price) {
-          try {
-            const matchingAlerts = await PriceAlertModel.find({
-              product_id: new mongoose.Types.ObjectId(req.params.product_id),
-              is_active: true,
-              is_triggered: false,
-              target_price: { $gte: productDB.price },
-            }).lean()
-
-            for (const alert of matchingAlerts) {
-              emitPriceAlert(alert.user_id.toString(), {
-                alert_id: alert._id.toString(),
-                product_id: req.params.product_id,
-                product_name: productDB.name,
-                target_price: alert.target_price,
-                new_price: productDB.price,
-              })
-            }
-
-            // Batch update all triggered alerts
-            if (matchingAlerts.length > 0) {
-              await PriceAlertModel.updateMany(
-                {
-                  _id: { $in: matchingAlerts.map((a) => a._id) },
-                },
-                {
-                  is_triggered: true,
-                  triggered_at: new Date(),
-                  current_price: productDB.price,
-                }
-              )
-            }
-          } catch (alertError) {
-            // Don't fail the product update if alert processing fails
-            console.error('Failed to process price alerts:', alertError)
-          }
-        }
       }
 
       // Emit inventory alert if quantity is below threshold

@@ -33,7 +33,6 @@ export enum SocketEvent {
   SUBSCRIBE_PRODUCT = 'subscribe_product',
   UNSUBSCRIBE_PRODUCT = 'unsubscribe_product',
   PRICE_UPDATED = 'price_updated',
-  PRICE_ALERT_TRIGGERED = 'price_alert_triggered',
   INVENTORY_ALERT = 'inventory_alert',
 
   // Presence events
@@ -180,15 +179,6 @@ export interface PriceUpdatedPayload {
   new_price: number
   old_price_before_discount: number
   new_price_before_discount: number
-}
-
-// Price alert triggered payload (server -> client)
-export interface PriceAlertTriggeredPayload {
-  alert_id: string
-  product_id: string
-  product_name: string
-  target_price: number
-  new_price: number
 }
 
 // Inventory alert payload (server -> client)

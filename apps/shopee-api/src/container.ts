@@ -13,7 +13,6 @@ import { WishlistRepository } from '@repositories/wishlist.repository'
 import { NotificationRepository } from '@repositories/notification.repository'
 import { AddressRepository } from '@repositories/address.repository'
 import { LoyaltyRepository } from '@repositories/loyalty.repository'
-import { PriceRepository } from '@repositories/price.repository'
 import { QARepository } from '@repositories/qa.repository'
 import { ConversationRepository } from '@repositories/conversation.repository'
 import { ReviewRepository } from '@repositories/review.repository'
@@ -32,7 +31,6 @@ import { WishlistService } from '@services/wishlist.service'
 import { NotificationService } from '@services/notification.service'
 import { AddressService } from '@services/address.service'
 import { LoyaltyService } from '@services/loyalty.service'
-import { PriceService } from '@services/price.service'
 import { QAService } from '@services/qa.service'
 import { ConversationService } from '@services/conversation.service'
 import { ReviewService } from '@services/review.service'
@@ -51,7 +49,6 @@ const wishlistRepository = new WishlistRepository()
 const notificationRepository = new NotificationRepository()
 const addressRepository = new AddressRepository()
 const loyaltyRepository = new LoyaltyRepository()
-const priceRepository = new PriceRepository()
 const qaRepository = new QARepository()
 const conversationRepository = new ConversationRepository()
 const reviewRepository = new ReviewRepository()
@@ -70,7 +67,6 @@ const wishlistService = new WishlistService(wishlistRepository)
 const notificationService = new NotificationService(notificationRepository)
 const addressService = new AddressService(addressRepository)
 const loyaltyService = new LoyaltyService(loyaltyRepository)
-const priceService = new PriceService(priceRepository, productRepository)
 const qaService = new QAService(qaRepository, productRepository, userRepository)
 const conversationService = new ConversationService(conversationRepository)
 const reviewService = new ReviewService(reviewRepository, purchaseRepository, productRepository)
@@ -92,7 +88,6 @@ export const container = {
     notification: notificationRepository,
     address: addressRepository,
     loyalty: loyaltyRepository,
-    price: priceRepository,
     qa: qaRepository,
     conversation: conversationRepository,
     review: reviewRepository,
@@ -112,7 +107,6 @@ export const container = {
     notification: notificationService,
     address: addressService,
     loyalty: loyaltyService,
-    price: priceService,
     qa: qaService,
     conversation: conversationService,
     review: reviewService,
@@ -134,7 +128,6 @@ export {
   notificationService,
   addressService,
   loyaltyService,
-  priceService,
   qaService,
   conversationService,
   reviewService,

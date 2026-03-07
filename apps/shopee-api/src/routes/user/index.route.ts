@@ -5,7 +5,6 @@ import { userReviewRouter } from './review.route'
 import { userWishlistRouter } from './wishlist.route'
 import { userNotificationRouter } from './notification.route'
 import { userOrderTrackingRouter } from './order-tracking.route'
-import { userPriceAlertRouter } from './price-alert.route'
 import { userVoucherRouter } from './voucher.route'
 import { userLoyaltyRouter } from './loyalty.route'
 import { userAddressRouter } from './address.route'
@@ -48,10 +47,7 @@ const userRoutes = {
       path: 'tracking',
       route: userOrderTrackingRouter,
     },
-    {
-      path: 'price-alerts',
-      route: userPriceAlertRouter,
-    },
+
     {
       path: 'vouchers',
       route: userVoucherRouter,

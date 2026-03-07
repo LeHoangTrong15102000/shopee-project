@@ -386,8 +386,8 @@ importers:
         specifier: ^19.2.4
         version: 19.2.4(react@19.2.4)
       react-helmet-async:
-        specifier: ^2.0.5
-        version: 2.0.5(react@19.2.4)
+        specifier: ^3.0.0
+        version: 3.0.0(react@19.2.4)
       react-hook-form:
         specifier: ^7.54.2
         version: 7.71.2(react@19.2.4)
@@ -7642,10 +7642,10 @@ packages:
     peerDependencies:
       react: '>=17.0.0'
 
-  react-helmet-async@2.0.5:
-    resolution: {integrity: sha512-rYUYHeus+i27MvFE+Jaa4WsyBKGkL6qVgbJvSBoX8mbsWoABJXdEO0bZyi0F6i+4f0NuIb8AvqPMj3iXFHkMwg==}
+  react-helmet-async@3.0.0:
+    resolution: {integrity: sha512-nA3IEZfXiclgrz4KLxAhqJqIfFDuvzQwlKwpdmzZIuC1KNSghDEIXmyU0TKtbM+NafnkICcwx8CECFrZ/sL/1w==}
     peerDependencies:
-      react: ^16.6.0 || ^17.0.0 || ^18.0.0
+      react: ^16.6.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   react-hook-form@7.71.2:
     resolution: {integrity: sha512-1CHvcDYzuRUNOflt4MOq3ZM46AronNJtQ1S7tnX6YN4y72qhgiUItpacZUAQ0TyWYci3yz1X+rXaSxiuEm86PA==}
@@ -17910,7 +17910,7 @@ snapshots:
     dependencies:
       react: 19.1.0
 
-  react-helmet-async@2.0.5(react@19.2.4):
+  react-helmet-async@3.0.0(react@19.2.4):
     dependencies:
       invariant: 2.2.4
       react: 19.2.4

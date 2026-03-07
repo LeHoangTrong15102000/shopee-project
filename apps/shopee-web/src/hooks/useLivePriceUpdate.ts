@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import useSocket from './useSocket'
-import { SocketEvent, PriceUpdatedPayload, PriceAlertTriggeredPayload } from 'src/types/socket.types'
-import { toast } from 'react-toastify'
+import { SocketEvent, PriceUpdatedPayload } from 'src/types/socket.types'
 
 interface UseLivePriceUpdateReturn {
   price: number | null
@@ -42,22 +41,12 @@ const useLivePriceUpdate = (productId: string | undefined): UseLivePriceUpdateRe
       }
     }
 
-    // Handle price alert triggered
-    const handlePriceAlert = (data: PriceAlertTriggeredPayload) => {
-      toast.success(
-        `Giá ${data.product_name} đã giảm xuống ${new Intl.NumberFormat('vi-VN').format(data.new_price)}₫!`,
-        { autoClose: 5000 }
-      )
-    }
-
     socket.on(SocketEvent.PRICE_UPDATED, handlePriceUpdate)
-    socket.on(SocketEvent.PRICE_ALERT_TRIGGERED, handlePriceAlert)
 
     return () => {
       // Unsubscribe from product room
       socket.emit(SocketEvent.UNSUBSCRIBE_PRODUCT, { product_id: productId })
       socket.off(SocketEvent.PRICE_UPDATED, handlePriceUpdate)
-      socket.off(SocketEvent.PRICE_ALERT_TRIGGERED, handlePriceAlert)
 
       if (hasChangedTimerRef.current) {
         clearTimeout(hasChangedTimerRef.current)

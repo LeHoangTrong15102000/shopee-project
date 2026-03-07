@@ -24,8 +24,7 @@ const path = {
   voucherCollection: '/vouchers', // Trang thu thập voucher
   dailyCheckIn: '/user/daily-checkin', // Trang điểm danh hàng ngày
   notifications: '/user/notification', // Trang thông báo
-  conversations: '/user/conversations', // Trang lịch sử hội thoại
-  priceAlerts: '/user/price-alerts' // Trang thông báo giá
+  conversations: '/user/conversations' // Trang lịch sử hội thoại
 } as const
 
 export default path

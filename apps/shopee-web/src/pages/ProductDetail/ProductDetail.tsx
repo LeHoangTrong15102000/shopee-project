@@ -8,7 +8,6 @@ import { RetryError } from 'src/types/utils.type'
 import productApi from 'src/apis/product.api'
 
 import ProductReviews from 'src/components/ProductReviews'
-import PriceHistoryChart from 'src/components/PriceHistoryChart'
 import ProductQA from 'src/components/ProductQA'
 import ShippingEstimate from 'src/components/ShippingEstimate'
 import path from 'src/constant/path'
@@ -322,7 +321,7 @@ const ProductDetail = () => {
           </div>
         </div>
       </motion.div>
-      {/* Thông tin vận chuyển và lịch sử giá */}
+      {/* Thông tin vận chuyển */}
       <motion.div
         className='mt-8'
         variants={reducedMotion ? undefined : sectionEntrance}
@@ -331,12 +330,7 @@ const ProductDetail = () => {
         viewport={{ once: true, amount: 0.2 }}
       >
         <div className='container'>
-          <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
-            {/* Shipping Estimate */}
-            <ShippingEstimate productLocation='TP. Hồ Chí Minh' selectedAddress='' className='h-fit' />
-            {/* Price History Chart */}
-            <PriceHistoryChart productId={product._id} currentPrice={product.price} className='h-fit' />
-          </div>
+          <ShippingEstimate productLocation='TP. Hồ Chí Minh' selectedAddress='' className='h-fit' />
         </div>
       </motion.div>
       {/* Mô tả sản phẩm */}

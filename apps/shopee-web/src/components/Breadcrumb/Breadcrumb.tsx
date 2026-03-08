@@ -1,20 +1,22 @@
-import { motion } from 'framer-motion'
-import { Link } from 'react-router'
-import { useReducedMotion } from 'src/hooks/useReducedMotion'
-import { fadeIn } from 'src/styles/animations'
+import { motion } from 'framer-motion';
+import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
+import { useReducedMotion } from 'src/hooks/useReducedMotion';
+import { fadeIn } from 'src/styles/animations';
 
 export interface BreadcrumbItem {
-  label: string
-  to?: string // If undefined, it's the current page (no link)
+  label: string;
+  to?: string; // If undefined, it's the current page (no link)
 }
 
 export interface BreadcrumbProps {
-  items: BreadcrumbItem[]
-  className?: string
+  items: BreadcrumbItem[];
+  className?: string;
 }
 
 const Breadcrumb = ({ items, className = '' }: BreadcrumbProps) => {
-  const reducedMotion = useReducedMotion()
+  const { t } = useTranslation('common');
+  const reducedMotion = useReducedMotion();
 
   // Generate JSON-LD structured data for SEO
   const structuredData = {
@@ -24,36 +26,38 @@ const Breadcrumb = ({ items, className = '' }: BreadcrumbProps) => {
       '@type': 'ListItem',
       position: index + 1,
       name: item.label,
-      ...(item.to && { item: `${typeof window !== 'undefined' ? window.location.origin : ''}${item.to}` })
-    }))
-  }
+      ...(item.to && {
+        item: `${typeof window !== 'undefined' ? window.location.origin : ''}${item.to}`,
+      }),
+    })),
+  };
 
   return (
     <>
       {/* JSON-LD Structured Data for SEO */}
-      <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
 
       <motion.nav
-        aria-label='Breadcrumb'
+        aria-label={t('breadcrumb.aria')}
         className={`mb-4 text-sm ${className}`}
         variants={reducedMotion ? undefined : fadeIn}
         initial={reducedMotion ? undefined : 'hidden'}
         animate={reducedMotion ? undefined : 'visible'}
       >
-        <ol className='flex items-center gap-2'>
+        <ol className="flex items-center gap-2">
           {items.map((item, index) => {
-            const isLastItem = index === items.length - 1
+            const isLastItem = index === items.length - 1;
 
             return (
-              <li key={index} className='flex items-center gap-2'>
-                {/* Separator (not for first item) */}
-                {index > 0 && <span className='text-gray-400 dark:text-gray-500'>/</span>}
-
+              <li key={index} className="flex items-center gap-2">
                 {/* Breadcrumb item */}
                 {isLastItem || !item.to ? (
                   // Current page (last item) - no link
                   <span
-                    className='font-medium text-gray-800 dark:text-gray-200'
+                    className="font-medium text-gray-800 dark:text-gray-200"
                     aria-current={isLastItem ? 'page' : undefined}
                   >
                     {item.label}
@@ -62,18 +66,25 @@ const Breadcrumb = ({ items, className = '' }: BreadcrumbProps) => {
                   // Link item
                   <Link
                     to={item.to}
-                    className='text-gray-500 transition-colors hover:text-orange dark:text-gray-400 dark:hover:text-orange-400'
+                    className="text-gray-500 transition-colors hover:text-orange focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange dark:text-gray-400 dark:hover:text-orange-400"
                   >
                     {item.label}
                   </Link>
                 )}
+
+                {/* Separator (not for last item) */}
+                {!isLastItem && (
+                  <span aria-hidden="true" className="text-gray-400 dark:text-gray-500">
+                    {'>'}
+                  </span>
+                )}
               </li>
-            )
+            );
           })}
         </ol>
       </motion.nav>
     </>
-  )
-}
+  );
+};
 
-export default Breadcrumb
+export default Breadcrumb;

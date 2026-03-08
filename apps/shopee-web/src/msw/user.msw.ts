@@ -1,7 +1,7 @@
-import { HttpResponse, http } from 'msw'
-import config from 'src/constant/config'
-import HttpStatusCode from 'src/constant/httpStatusCode.enum'
-import { access_token_1s } from './auth.msw'
+import { HttpResponse, http } from 'msw';
+import config from 'src/constant/config';
+import HttpStatusCode from 'src/constant/httpStatusCode.enum';
+import { access_token_1s } from './auth.msw';
 // import { Request } from 'polyfill-that-msw-uses'
 
 const meRes = {
@@ -16,14 +16,14 @@ const meRes = {
     date_of_birth: '1990-04-17T17:00:00.000Z',
     name: 'Lê Hoàng Trọng',
     phone: '0773094710',
-    avatar: '77d9909d-3161-4195-a67c-db4585f80e4b.jpg'
-  }
-}
+    avatar: '77d9909d-3161-4195-a67c-db4585f80e4b.jpg',
+  },
+};
 
 const meRequest = http.get(`${config.baseUrl}me`, ({ request }) => {
-  const access_token = request.headers.get('authorization')
+  const access_token = request.headers.get('authorization');
   // const { token } = cookies
-  console.log('Checkkk access_token >>> ')
+  console.log('Checkkk access_token >>> ');
   if (access_token === access_token_1s) {
     // return res(
     //   ctx.status(HttpStatusCode.Unauthorized),
@@ -40,27 +40,27 @@ const meRequest = http.get(`${config.baseUrl}me`, ({ request }) => {
         message: 'Lỗi',
         data: {
           // message: response.message,
-          name: 'EXPIRED_TOKEN'
-        }
+          name: 'EXPIRED_TOKEN',
+        },
       },
       {
         status: HttpStatusCode.Unauthorized,
         headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    )
+          'Content-Type': 'application/json',
+        },
+      },
+    );
   }
   // return res(ctx.status(HttpStatusCode.Ok), ctx.json(meRes))
 
   return HttpResponse.json(meRes, {
     status: HttpStatusCode.Ok,
     headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-})
+      'Content-Type': 'application/json',
+    },
+  });
+});
 
-const userRequests = [meRequest]
+const userRequests = [meRequest];
 
-export default userRequests
+export default userRequests;

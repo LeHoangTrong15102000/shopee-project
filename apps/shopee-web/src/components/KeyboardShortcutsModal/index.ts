@@ -1,1 +1,1 @@
-export { default } from './KeyboardShortcutsModal'
+export { default } from './KeyboardShortcutsModal';

@@ -1,2 +1,2 @@
 // Review optimistic hooks
-export { useOptimisticReviewLike } from './useOptimisticReviewLike'
+export { useOptimisticReviewLike } from './useOptimisticReviewLike';

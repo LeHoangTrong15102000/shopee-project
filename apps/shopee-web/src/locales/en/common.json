@@ -72,5 +72,7 @@
   "days.wed": "Wed",
   "days.thu": "Thu",
   "days.fri": "Fri",
-  "days.sat": "Sat"
+  "days.sat": "Sat",
+  "breadcrumb.home": "Shopee",
+  "breadcrumb.aria": "Breadcrumb"
 }

@@ -1,1 +1,1 @@
-export { default } from './CompareFloatingBar'
+export { default } from './CompareFloatingBar';

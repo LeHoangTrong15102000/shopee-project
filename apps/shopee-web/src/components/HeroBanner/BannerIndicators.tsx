@@ -1,16 +1,16 @@
-import Button from 'src/components/Button'
-import type { BannerSlide } from './types'
+import Button from 'src/components/Button';
+import type { BannerSlide } from './types';
 
 interface Props {
-  slides: BannerSlide[]
-  currentSlide: number
-  onSlideChange: (index: number) => void
+  slides: BannerSlide[];
+  currentSlide: number;
+  onSlideChange: (index: number) => void;
 }
 
 const BannerIndicators = ({ slides, currentSlide, onSlideChange }: Props) => {
   return (
-    <div className='absolute bottom-2 left-1/2 z-20 -translate-x-1/2 transform sm:bottom-4'>
-      <div className='flex items-center space-x-1.5 sm:space-x-2'>
+    <div className="absolute bottom-2 left-1/2 z-20 -translate-x-1/2 transform sm:bottom-4">
+      <div className="flex items-center space-x-1.5 sm:space-x-2">
         {slides.map((_, index) => (
           <Button
             animated={false}
@@ -26,7 +26,7 @@ const BannerIndicators = ({ slides, currentSlide, onSlideChange }: Props) => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default BannerIndicators
+export default BannerIndicators;

@@ -1,1 +1,1 @@
-export { default } from './ChatbotWidget'
+export { default } from './ChatbotWidget';

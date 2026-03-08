@@ -1,2 +1,2 @@
-export { default } from './Breadcrumb'
-export type { BreadcrumbItem, BreadcrumbProps } from './Breadcrumb'
+export { default } from './Breadcrumb';
+export type { BreadcrumbItem, BreadcrumbProps } from './Breadcrumb';

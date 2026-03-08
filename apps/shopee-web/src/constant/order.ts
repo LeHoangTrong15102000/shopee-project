@@ -1,4 +1,4 @@
-import type { OrderStatus } from 'src/types/orderTracking.type'
+import type { OrderStatus } from 'src/types/orderTracking.type';
 
 // Numeric status values for order URL query params, following the same pattern as purchasesStatus
 export const ordersStatus = {
@@ -9,10 +9,10 @@ export const ordersStatus = {
   shipping: 4,
   delivered: 5,
   cancelled: 6,
-  returned: 7
-} as const
+  returned: 7,
+} as const;
 
-export type OrdersStatusValue = (typeof ordersStatus)[keyof typeof ordersStatus]
+export type OrdersStatusValue = (typeof ordersStatus)[keyof typeof ordersStatus];
 
 // Bidirectional conversion: numeric <-> string
 const numberToString: Record<number, OrderStatus> = {
@@ -22,8 +22,8 @@ const numberToString: Record<number, OrderStatus> = {
   [ordersStatus.shipping]: 'shipping',
   [ordersStatus.delivered]: 'delivered',
   [ordersStatus.cancelled]: 'cancelled',
-  [ordersStatus.returned]: 'returned'
-}
+  [ordersStatus.returned]: 'returned',
+};
 
 const stringToNumber: Record<string, number> = {
   pending: ordersStatus.pending,
@@ -32,11 +32,12 @@ const stringToNumber: Record<string, number> = {
   shipping: ordersStatus.shipping,
   delivered: ordersStatus.delivered,
   cancelled: ordersStatus.cancelled,
-  returned: ordersStatus.returned
-}
+  returned: ordersStatus.returned,
+};
 
 /** Convert numeric status (from URL) to OrderStatus string (for API/internal use) */
-export const orderStatusFromNumber = (num: number): OrderStatus | undefined => numberToString[num]
+export const orderStatusFromNumber = (num: number): OrderStatus | undefined => numberToString[num];
 
 /** Convert OrderStatus string to numeric value (for URL) */
-export const orderStatusToNumber = (status: string): number => stringToNumber[status] ?? ordersStatus.all
+export const orderStatusToNumber = (status: string): number =>
+  stringToNumber[status] ?? ordersStatus.all;

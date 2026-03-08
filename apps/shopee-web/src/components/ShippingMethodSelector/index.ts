@@ -1,1 +1,1 @@
-export { default } from './ShippingMethodSelector'
+export { default } from './ShippingMethodSelector';

@@ -1,23 +1,28 @@
-import { motion } from 'framer-motion'
-import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
-import path from 'src/constant/path'
-import { PROFILE_FIELDS, ProfileIcons, ShimmerEffect, FloatingParticle } from '../profileCompletion.constants'
+import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router';
+import path from 'src/constant/path';
+import {
+  PROFILE_FIELDS,
+  ProfileIcons,
+  ShimmerEffect,
+  FloatingParticle,
+} from '../profileCompletion.constants';
 
 interface ProfileFieldCardProps {
-  completedFields: (typeof PROFILE_FIELDS)[number][]
-  reducedMotion: boolean
+  completedFields: (typeof PROFILE_FIELDS)[number][];
+  reducedMotion: boolean;
 }
 
 const ProfileFieldCard = ({ completedFields, reducedMotion }: ProfileFieldCardProps) => {
-  const { t } = useTranslation('user')
+  const { t } = useTranslation('user');
 
   return (
-    <div className='w-full grow'>
-      <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-2'>
+    <div className="w-full grow">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-2">
         {PROFILE_FIELDS.map((field, index) => {
-          const isComplete = completedFields.some((f) => f.key === field.key)
-          const IconComponent = ProfileIcons[field.key]
+          const isComplete = completedFields.some((f) => f.key === field.key);
+          const IconComponent = ProfileIcons[field.key];
           return (
             <motion.div
               key={field.key}
@@ -36,9 +41,9 @@ const ProfileFieldCard = ({ completedFields, reducedMotion }: ProfileFieldCardPr
 
               {/* Floating particles for visual interest */}
               {!isComplete && !reducedMotion && (
-                <div className='pointer-events-none absolute inset-0'>
-                  <FloatingParticle delay={index * 0.3} size={4} color='bg-orange-300/40' />
-                  <FloatingParticle delay={index * 0.3 + 0.5} size={3} color='bg-amber-300/40' />
+                <div className="pointer-events-none absolute inset-0">
+                  <FloatingParticle delay={index * 0.3} size={4} color="bg-orange-300/40" />
+                  <FloatingParticle delay={index * 0.3 + 0.5} size={3} color="bg-amber-300/40" />
                 </div>
               )}
 
@@ -65,60 +70,64 @@ const ProfileFieldCard = ({ completedFields, reducedMotion }: ProfileFieldCardPr
                     | 'profileCompletion.fields.avatar'
                     | 'profileCompletion.fields.phone'
                     | 'profileCompletion.fields.address'
-                    | 'profileCompletion.fields.date_of_birth'
+                    | 'profileCompletion.fields.date_of_birth',
                 )}
               </span>
 
               {/* Status indicator */}
               {isComplete ? (
                 <motion.div
-                  className='flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-emerald-400 to-teal-500 shadow-md'
+                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-emerald-400 to-teal-500 shadow-md"
                   aria-label={t('profileCompletion.fieldCompleted')}
                   initial={reducedMotion ? {} : { scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 25, delay: 0.1 * index }}
                 >
                   <svg
-                    className='h-3.5 w-3.5 text-white drop-shadow-xs'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
+                    className="h-3.5 w-3.5 text-white drop-shadow-xs"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                     strokeWidth={3}
-                    aria-hidden='true'
+                    aria-hidden="true"
                   >
-                    <path strokeLinecap='round' strokeLinejoin='round' d='M5 13l4 4L19 7' />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 </motion.div>
               ) : (
                 <Link
                   to={path.profile}
-                  className='group relative flex shrink-0 items-center gap-1 overflow-hidden rounded-full bg-linear-to-r from-orange-500 to-amber-500 px-2.5 py-1 text-xs font-semibold text-white transition-all duration-300 hover:from-orange-600 hover:to-amber-600 hover:shadow-lg hover:shadow-orange-200/50 dark:hover:shadow-orange-900/30'
+                  className="group relative flex shrink-0 items-center gap-1 overflow-hidden rounded-full bg-linear-to-r from-orange-500 to-amber-500 px-2.5 py-1 text-xs font-semibold text-white transition-all duration-300 hover:from-orange-600 hover:to-amber-600 hover:shadow-lg hover:shadow-orange-200/50 dark:hover:shadow-orange-900/30"
                 >
-                  <span className='relative z-10'>{t('profileCompletion.fieldUpdate')}</span>
+                  <span className="relative z-10">{t('profileCompletion.fieldUpdate')}</span>
                   <svg
-                    className='relative z-10 h-3 w-3 transition-transform group-hover:translate-x-0.5'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
+                    className="relative z-10 h-3 w-3 transition-transform group-hover:translate-x-0.5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                     strokeWidth={2.5}
                   >
-                    <path strokeLinecap='round' strokeLinejoin='round' d='M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3' />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                    />
                   </svg>
                   {/* Button shine effect */}
                   <motion.div
-                    className='absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/25 to-transparent'
+                    className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/25 to-transparent"
                     animate={{ translateX: ['100%', '-100%'] }}
                     transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
-                    aria-hidden='true'
+                    aria-hidden="true"
                   />
                 </Link>
               )}
             </motion.div>
-          )
+          );
         })}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProfileFieldCard
+export default ProfileFieldCard;

@@ -1,53 +1,53 @@
-import { Navigate, Outlet, useRoutes } from 'react-router'
-import { useContext, lazy, Suspense } from 'react'
-import { AppContext } from './contexts/app.context'
-import path from './constant/path'
-import Loader from './components/Loader'
+import { Navigate, Outlet, useRoutes } from 'react-router';
+import { useContext, lazy, Suspense } from 'react';
+import { AppContext } from './contexts/app.context';
+import path from './constant/path';
+import Loader from './components/Loader';
 
 // Lazy load layouts - giảm initial bundle size
-const MainLayout = lazy(() => import('./layouts/MainLayout'))
-const RegisterLayout = lazy(() => import('./layouts/RegisterLayout'))
-const CartLayout = lazy(() => import('./layouts/CartLayout'))
-const UserLayout = lazy(() => import('./pages/User/layouts/UserLayout'))
+const MainLayout = lazy(() => import('./layouts/MainLayout'));
+const RegisterLayout = lazy(() => import('./layouts/RegisterLayout'));
+const CartLayout = lazy(() => import('./layouts/CartLayout'));
+const UserLayout = lazy(() => import('./pages/User/layouts/UserLayout'));
 // import Profile from './pages/User/pages/Profile'
 // import ChangePassword from './pages/User/pages/ChangePassword'
 // import HistoryPurchases from './pages/User/pages/HistoryPurchases'
 // import NotFound from './pages/NotFound'
 
 // Khai báo lazyload cho các page
-const Login = lazy(() => import('./pages/Login'))
-const Register = lazy(() => import('./pages/Register'))
-const Home = lazy(() => import('./pages/Home'))
-const ProductList = lazy(() => import('./pages/ProductList'))
-const ProductDetail = lazy(() => import('./pages/ProductDetail'))
-const Cart = lazy(() => import('./pages/Cart'))
-const Checkout = lazy(() => import('./pages/Checkout'))
-const Wishlist = lazy(() => import('./pages/Wishlist'))
-const Compare = lazy(() => import('./pages/Compare'))
-const Profile = lazy(() => import('./pages/User/pages/Profile'))
-const ChangePassword = lazy(() => import('./pages/User/pages/ChangePassword'))
-const HistoryPurchases = lazy(() => import('./pages/User/pages/HistoryPurchases'))
-const OrderList = lazy(() => import('./pages/User/pages/OrderList'))
-const OrderDetail = lazy(() => import('./pages/User/pages/OrderDetail'))
-const MyVouchers = lazy(() => import('./pages/User/pages/MyVouchers'))
-const DailyCheckInPage = lazy(() => import('./pages/User/pages/DailyCheckIn'))
-const AddressBook = lazy(() => import('./pages/User/pages/AddressBook'))
-const Notifications = lazy(() => import('./pages/User/pages/Notifications'))
-const ConversationHistory = lazy(() => import('./pages/User/pages/ConversationHistory'))
-const NotFound = lazy(() => import('./pages/NotFound'))
-const ForgotPassword = lazy(() => import('./pages/ForgotPassword/ForgotPassword'))
-const ResetPassword = lazy(() => import('./pages/ResetPassword/ResetPassword'))
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const Home = lazy(() => import('./pages/Home'));
+const ProductList = lazy(() => import('./pages/ProductList'));
+const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+const Cart = lazy(() => import('./pages/Cart'));
+const Checkout = lazy(() => import('./pages/Checkout'));
+const Wishlist = lazy(() => import('./pages/Wishlist'));
+const Compare = lazy(() => import('./pages/Compare'));
+const Profile = lazy(() => import('./pages/User/pages/Profile'));
+const ChangePassword = lazy(() => import('./pages/User/pages/ChangePassword'));
+const HistoryPurchases = lazy(() => import('./pages/User/pages/HistoryPurchases'));
+const OrderList = lazy(() => import('./pages/User/pages/OrderList'));
+const OrderDetail = lazy(() => import('./pages/User/pages/OrderDetail'));
+const MyVouchers = lazy(() => import('./pages/User/pages/MyVouchers'));
+const DailyCheckInPage = lazy(() => import('./pages/User/pages/DailyCheckIn'));
+const AddressBook = lazy(() => import('./pages/User/pages/AddressBook'));
+const Notifications = lazy(() => import('./pages/User/pages/Notifications'));
+const ConversationHistory = lazy(() => import('./pages/User/pages/ConversationHistory'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword/ResetPassword'));
 
 // Khai báo một Route Protected(Vì nó return về Outlet nên hàm này được coi là component)
 function ProtectedRoute() {
-  const { isAuthenticated } = useContext(AppContext)
-  return isAuthenticated ? <Outlet /> : <Navigate to='/login' />
+  const { isAuthenticated } = useContext(AppContext);
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
 }
 
 // Khi mà đã đăng nhập rồi thì không cho nó vào trang login và register
 function RejectedRoute() {
-  const { isAuthenticated } = useContext(AppContext)
-  return !isAuthenticated ? <Outlet /> : <Navigate to='/' />
+  const { isAuthenticated } = useContext(AppContext);
+  return !isAuthenticated ? <Outlet /> : <Navigate to="/" />;
 }
 
 // Đừng khai báo component trong hook em, mỗi lần hoook render là nó tạo component mới
@@ -72,7 +72,7 @@ const useRouteElements = () => {
               <Home />
             </Suspense>
           ),
-          errorElement: <NotFound />
+          errorElement: <NotFound />,
         },
         {
           path: path.products,
@@ -81,7 +81,7 @@ const useRouteElements = () => {
               <ProductList />
             </Suspense>
           ),
-          errorElement: <NotFound />
+          errorElement: <NotFound />,
         },
         {
           path: path.productDetail,
@@ -90,7 +90,7 @@ const useRouteElements = () => {
               <ProductDetail />
             </Suspense>
           ),
-          errorElement: <NotFound />
+          errorElement: <NotFound />,
         },
         {
           path: path.compare,
@@ -99,7 +99,7 @@ const useRouteElements = () => {
               <Compare />
             </Suspense>
           ),
-          errorElement: <NotFound />
+          errorElement: <NotFound />,
         },
         {
           path: '*',
@@ -107,9 +107,9 @@ const useRouteElements = () => {
             <Suspense>
               <NotFound />
             </Suspense>
-          )
-        }
-      ]
+          ),
+        },
+      ],
     },
     {
       path: '',
@@ -125,7 +125,7 @@ const useRouteElements = () => {
                 </Suspense>
               </CartLayout>
             </Suspense>
-          )
+          ),
         },
         {
           path: path.checkout,
@@ -137,19 +137,19 @@ const useRouteElements = () => {
                 </Suspense>
               </CartLayout>
             </Suspense>
-          )
+          ),
         },
         {
           path: path.wishlist,
           element: (
             <Suspense fallback={<Loader />}>
-              <CartLayout headerTitle='sản phẩm yêu thích' showStepper={false}>
+              <CartLayout headerTitle="sản phẩm yêu thích" showStepper={false}>
                 <Suspense fallback={<Loader />}>
                   <Wishlist />
                 </Suspense>
               </CartLayout>
             </Suspense>
-          )
+          ),
         },
         {
           path: path.user,
@@ -174,7 +174,7 @@ const useRouteElements = () => {
                     <Suspense>
                       <Profile />
                     </Suspense>
-                  )
+                  ),
                 },
                 {
                   path: path.changePassword,
@@ -182,7 +182,7 @@ const useRouteElements = () => {
                     <Suspense>
                       <ChangePassword />
                     </Suspense>
-                  )
+                  ),
                 },
                 {
                   path: path.historyPurchases,
@@ -190,7 +190,7 @@ const useRouteElements = () => {
                     <Suspense>
                       <HistoryPurchases />
                     </Suspense>
-                  )
+                  ),
                 },
                 {
                   path: path.orderDetail,
@@ -198,7 +198,7 @@ const useRouteElements = () => {
                     <Suspense>
                       <OrderDetail />
                     </Suspense>
-                  )
+                  ),
                 },
                 {
                   path: path.orderList,
@@ -206,7 +206,7 @@ const useRouteElements = () => {
                     <Suspense>
                       <OrderList />
                     </Suspense>
-                  )
+                  ),
                 },
                 {
                   path: path.myVouchers,
@@ -214,7 +214,7 @@ const useRouteElements = () => {
                     <Suspense>
                       <MyVouchers />
                     </Suspense>
-                  )
+                  ),
                 },
                 {
                   path: path.dailyCheckIn,
@@ -222,7 +222,7 @@ const useRouteElements = () => {
                     <Suspense>
                       <DailyCheckInPage />
                     </Suspense>
-                  )
+                  ),
                 },
                 {
                   path: path.addressBook,
@@ -230,7 +230,7 @@ const useRouteElements = () => {
                     <Suspense>
                       <AddressBook />
                     </Suspense>
-                  )
+                  ),
                 },
                 {
                   path: path.notifications,
@@ -238,7 +238,7 @@ const useRouteElements = () => {
                     <Suspense>
                       <Notifications />
                     </Suspense>
-                  )
+                  ),
                 },
                 {
                   path: path.conversations,
@@ -246,14 +246,13 @@ const useRouteElements = () => {
                     <Suspense>
                       <ConversationHistory />
                     </Suspense>
-                  )
+                  ),
                 },
-
-              ]
-            }
-          ]
-        }
-      ]
+              ],
+            },
+          ],
+        },
+      ],
     },
     {
       path: '',
@@ -276,7 +275,7 @@ const useRouteElements = () => {
                 <Suspense>
                   <Login />
                 </Suspense>
-              )
+              ),
             },
             {
               path: path.register,
@@ -284,7 +283,7 @@ const useRouteElements = () => {
                 <Suspense>
                   <Register />
                 </Suspense>
-              )
+              ),
             },
             {
               path: path.forgotPassword,
@@ -292,7 +291,7 @@ const useRouteElements = () => {
                 <Suspense>
                   <ForgotPassword />
                 </Suspense>
-              )
+              ),
             },
             {
               path: path.resetPassword,
@@ -300,14 +299,14 @@ const useRouteElements = () => {
                 <Suspense>
                   <ResetPassword />
                 </Suspense>
-              )
-            }
-          ]
-        }
-      ]
-    }
-  ])
-  return routeElements
-}
+              ),
+            },
+          ],
+        },
+      ],
+    },
+  ]);
+  return routeElements;
+};
 
-export default useRouteElements
+export default useRouteElements;

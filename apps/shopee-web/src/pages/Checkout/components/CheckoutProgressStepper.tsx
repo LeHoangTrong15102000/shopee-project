@@ -1,25 +1,25 @@
-import { motion } from 'framer-motion'
-import { useTranslation } from 'react-i18next'
+import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 export const CHECKOUT_STEPS = [
   { id: 1, name: 'address', icon: 'location' },
   { id: 2, name: 'shipping', icon: 'truck' },
   { id: 3, name: 'payment', icon: 'payment' },
-  { id: 4, name: 'confirm', icon: 'check' }
-]
+  { id: 4, name: 'confirm', icon: 'check' },
+];
 
 interface CheckoutProgressStepperProps {
-  currentStep: number
+  currentStep: number;
 }
 
 export const CheckoutProgressStepper = ({ currentStep }: CheckoutProgressStepperProps) => {
-  const { t } = useTranslation('checkout')
+  const { t } = useTranslation('checkout');
   return (
-    <div className='mb-6 md:mb-8'>
-      <div className='mx-auto flex max-w-2xl items-center justify-center'>
+    <div className="mb-6 md:mb-8">
+      <div className="mx-auto flex max-w-2xl items-center justify-center">
         {CHECKOUT_STEPS.map((step, index) => (
-          <div key={step.id} className='flex flex-1 items-center'>
-            <div className='flex flex-col items-center'>
+          <div key={step.id} className="flex flex-1 items-center">
+            <div className="flex flex-col items-center">
               <motion.div
                 initial={{ scale: 1 }}
                 animate={{ scale: 1 }}
@@ -30,11 +30,21 @@ export const CheckoutProgressStepper = ({ currentStep }: CheckoutProgressStepper
                 }`}
               >
                 {currentStep > step.id ? (
-                  <svg className='h-4 w-4 md:h-5 md:w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
+                  <svg
+                    className="h-4 w-4 md:h-5 md:w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 ) : (
-                  <span className='text-xs font-semibold md:text-sm'>{step.id}</span>
+                  <span className="text-xs font-semibold md:text-sm">{step.id}</span>
                 )}
               </motion.div>
               <span
@@ -42,16 +52,22 @@ export const CheckoutProgressStepper = ({ currentStep }: CheckoutProgressStepper
                   currentStep >= step.id ? 'text-orange' : 'text-gray-400 dark:text-gray-300'
                 }`}
               >
-                {t(`step.${step.name}` as 'step.address' | 'step.shipping' | 'step.payment' | 'step.confirm')}
+                {t(
+                  `step.${step.name}` as
+                    | 'step.address'
+                    | 'step.shipping'
+                    | 'step.payment'
+                    | 'step.confirm',
+                )}
               </span>
             </div>
             {index < CHECKOUT_STEPS.length - 1 && (
-              <div className='mx-1 h-0.5 flex-1 bg-gray-200 md:mx-2 dark:bg-slate-600'>
+              <div className="mx-1 h-0.5 flex-1 bg-gray-200 md:mx-2 dark:bg-slate-600">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: currentStep > step.id ? '100%' : '0%' }}
                   transition={{ duration: 0.3 }}
-                  className='h-full bg-orange'
+                  className="h-full bg-orange"
                 />
               </div>
             )}
@@ -59,5 +75,5 @@ export const CheckoutProgressStepper = ({ currentStep }: CheckoutProgressStepper
         ))}
       </div>
     </div>
-  )
-}
+  );
+};

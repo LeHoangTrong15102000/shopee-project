@@ -3,26 +3,26 @@
  * Single source of truth for all order status labels, colors, icons, and animation flags
  */
 
-export type { OrderStatus } from 'src/types/orderTracking.type'
-import type { OrderStatus } from 'src/types/orderTracking.type'
-import i18n from 'src/i18n/i18n'
+export type { OrderStatus } from 'src/types/orderTracking.type';
+import type { OrderStatus } from 'src/types/orderTracking.type';
+import i18n from 'src/i18n/i18n';
 
 export interface OrderStatusConfig {
-  label: string
+  label: string;
   color: {
-    light: string
-    dark: string
-  }
+    light: string;
+    dark: string;
+  };
   bgColor: {
-    light: string
-    dark: string
-  }
+    light: string;
+    dark: string;
+  };
   borderColor: {
-    light: string
-    dark: string
-  }
-  icon: string
-  animate?: boolean
+    light: string;
+    dark: string;
+  };
+  icon: string;
+  animate?: boolean;
 }
 
 export const ORDER_STATUS_CONFIG: Record<OrderStatus, OrderStatusConfig> = {
@@ -32,14 +32,14 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, OrderStatusConfig> = {
     bgColor: { light: 'bg-amber-50/80', dark: 'bg-amber-900/20' },
     borderColor: { light: 'border-amber-200/60', dark: 'border-amber-700/30' },
     icon: '⏳',
-    animate: false
+    animate: false,
   },
   confirmed: {
     label: 'Đã xác nhận',
     color: { light: 'text-blue-600', dark: 'text-blue-400' },
     bgColor: { light: 'bg-blue-50/80', dark: 'bg-blue-900/20' },
     borderColor: { light: 'border-blue-200/60', dark: 'border-blue-700/30' },
-    icon: '✓'
+    icon: '✓',
   },
   processing: {
     label: 'Đang xử lý',
@@ -47,7 +47,7 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, OrderStatusConfig> = {
     bgColor: { light: 'bg-indigo-50/80', dark: 'bg-indigo-900/20' },
     borderColor: { light: 'border-indigo-200/60', dark: 'border-indigo-700/30' },
     icon: '⟳',
-    animate: false
+    animate: false,
   },
   shipping: {
     label: 'Đang giao',
@@ -55,39 +55,42 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, OrderStatusConfig> = {
     bgColor: { light: 'bg-teal-50/80', dark: 'bg-teal-900/20' },
     borderColor: { light: 'border-teal-200/60', dark: 'border-teal-700/30' },
     icon: '➤',
-    animate: false
+    animate: false,
   },
   delivered: {
     label: 'Đã giao',
     color: { light: 'text-emerald-600', dark: 'text-emerald-400' },
     bgColor: { light: 'bg-emerald-50/80', dark: 'bg-emerald-900/20' },
     borderColor: { light: 'border-emerald-200/60', dark: 'border-emerald-700/30' },
-    icon: '✓'
+    icon: '✓',
   },
   cancelled: {
     label: 'Đã hủy',
     color: { light: 'text-rose-600', dark: 'text-rose-400' },
     bgColor: { light: 'bg-rose-50/80', dark: 'bg-rose-900/20' },
     borderColor: { light: 'border-rose-200/60', dark: 'border-rose-700/30' },
-    icon: '✕'
+    icon: '✕',
   },
   returned: {
     label: 'Đã trả hàng',
     color: { light: 'text-slate-600', dark: 'text-slate-400' },
     bgColor: { light: 'bg-slate-50/80', dark: 'bg-slate-800/20' },
     borderColor: { light: 'border-slate-200/60', dark: 'border-slate-600/30' },
-    icon: '↩'
-  }
-}
+    icon: '↩',
+  },
+};
 
 export const getStatusLabel = (status: OrderStatus): string =>
-  i18n.t(`config.${status}`, { ns: 'order', defaultValue: ORDER_STATUS_CONFIG[status]?.label ?? status })
+  i18n.t(`config.${status}`, {
+    ns: 'order',
+    defaultValue: ORDER_STATUS_CONFIG[status]?.label ?? status,
+  });
 
 export const getStatusClasses = (status: OrderStatus): string => {
-  const config = ORDER_STATUS_CONFIG[status]
-  if (!config) return ''
-  return `${config.color.light} dark:${config.color.dark} ${config.bgColor.light} dark:${config.bgColor.dark} ${config.borderColor.light} dark:${config.borderColor.dark}`
-}
+  const config = ORDER_STATUS_CONFIG[status];
+  if (!config) return '';
+  return `${config.color.light} dark:${config.color.dark} ${config.bgColor.light} dark:${config.bgColor.dark} ${config.borderColor.light} dark:${config.borderColor.dark}`;
+};
 
 // Carrier code to display name mapping (fallback values)
 export const CARRIER_DISPLAY_NAMES: Record<string, string> = {
@@ -95,8 +98,8 @@ export const CARRIER_DISPLAY_NAMES: Record<string, string> = {
   ghtk: 'Giao Hàng Tiết Kiệm',
   viettel_post: 'Viettel Post',
   'j&t': 'J&T Express',
-  other: 'Khác'
-}
+  other: 'Khác',
+};
 
 // Carrier code to i18n key mapping (backend uses codes, UI shows translated names)
 const CARRIER_I18N_KEYS: Record<string, string> = {
@@ -104,10 +107,13 @@ const CARRIER_I18N_KEYS: Record<string, string> = {
   ghtk: 'carrier.ghtk',
   viettel_post: 'carrier.viettelPost',
   'j&t': 'carrier.jt',
-  other: 'carrier.other'
-}
+  other: 'carrier.other',
+};
 
 export const getCarrierDisplayName = (carrierCode: string): string =>
   CARRIER_I18N_KEYS[carrierCode]
-    ? i18n.t(CARRIER_I18N_KEYS[carrierCode], { ns: 'order', defaultValue: CARRIER_DISPLAY_NAMES[carrierCode] })
-    : carrierCode
+    ? i18n.t(CARRIER_I18N_KEYS[carrierCode], {
+        ns: 'order',
+        defaultValue: CARRIER_DISPLAY_NAMES[carrierCode],
+      })
+    : carrierCode;

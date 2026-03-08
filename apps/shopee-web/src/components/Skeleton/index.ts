@@ -1,7 +1,7 @@
-export { default as SkeletonBase } from './SkeletonBase'
-export { default as ProductCardSkeleton } from './ProductCardSkeleton'
-export { default as ProductListSkeleton } from './ProductListSkeleton'
-export { default as ProductDetailSkeleton } from './ProductDetailSkeleton'
-export { default as CartItemSkeleton } from './CartItemSkeleton'
-export { default as NotificationSkeleton } from './NotificationSkeleton'
-export { default as AsideFilterSkeleton } from './AsideFilterSkeleton'
+export { default as SkeletonBase } from './SkeletonBase';
+export { default as ProductCardSkeleton } from './ProductCardSkeleton';
+export { default as ProductListSkeleton } from './ProductListSkeleton';
+export { default as ProductDetailSkeleton } from './ProductDetailSkeleton';
+export { default as CartItemSkeleton } from './CartItemSkeleton';
+export { default as NotificationSkeleton } from './NotificationSkeleton';
+export { default as AsideFilterSkeleton } from './AsideFilterSkeleton';

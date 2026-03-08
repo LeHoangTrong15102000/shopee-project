@@ -1,22 +1,22 @@
-import classNames from 'classnames'
-import { ORDER_STATUS_CONFIG, getStatusLabel } from 'src/config/orderStatus'
-import type { OrderStatus } from 'src/config/orderStatus'
+import classNames from 'classnames';
+import { ORDER_STATUS_CONFIG, getStatusLabel } from 'src/config/orderStatus';
+import type { OrderStatus } from 'src/config/orderStatus';
 
 interface StatusBadgeProps {
-  status: OrderStatus
-  className?: string
-  size?: 'sm' | 'md' | 'lg'
+  status: OrderStatus;
+  className?: string;
+  size?: 'sm' | 'md' | 'lg';
 }
 
 const sizeClasses = {
   sm: 'px-2 py-0.5 text-xs',
   md: 'px-3 py-1 text-xs',
-  lg: 'px-4 py-1.5 text-sm'
-}
+  lg: 'px-4 py-1.5 text-sm',
+};
 
 const StatusBadge = ({ status, className, size = 'md' }: StatusBadgeProps) => {
-  const config = ORDER_STATUS_CONFIG[status]
-  if (!config) return null
+  const config = ORDER_STATUS_CONFIG[status];
+  if (!config) return null;
 
   return (
     <span
@@ -26,12 +26,12 @@ const StatusBadge = ({ status, className, size = 'md' }: StatusBadgeProps) => {
         `${config.bgColor.light} dark:${config.bgColor.dark}`,
         `${config.borderColor.light} dark:${config.borderColor.dark}`,
         sizeClasses[size],
-        className
+        className,
       )}
     >
       {getStatusLabel(status)}
     </span>
-  )
-}
+  );
+};
 
-export default StatusBadge
+export default StatusBadge;

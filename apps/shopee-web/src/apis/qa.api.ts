@@ -1,6 +1,6 @@
-import { ProductQuestion, QAListConfig } from 'src/types/qa.type'
-import { SuccessResponseApi } from 'src/types/utils.type'
-import http from 'src/utils/http'
+import { ProductQuestion, QAListConfig } from 'src/types/qa.type';
+import { SuccessResponseApi } from 'src/types/utils.type';
+import http from 'src/utils/http';
 
 // Mock data for fallback when API is not available
 const mockQuestions: ProductQuestion[] = [
@@ -13,10 +13,11 @@ const mockQuestions: ProductQuestion[] = [
       {
         _id: 'answer1',
         user: { _id: 'seller1', name: 'Shop Official', avatar: '', is_seller: true },
-        answer: 'Dạ chào bạn, sản phẩm được bảo hành 12 tháng chính hãng ạ. Bạn cứ yên tâm mua hàng nhé!',
+        answer:
+          'Dạ chào bạn, sản phẩm được bảo hành 12 tháng chính hãng ạ. Bạn cứ yên tâm mua hàng nhé!',
         likes_count: 5,
         is_liked: false,
-        createdAt: new Date(Date.now() - 86400000 * 2).toISOString()
+        createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
       },
       {
         _id: 'answer2',
@@ -24,13 +25,13 @@ const mockQuestions: ProductQuestion[] = [
         answer: 'Mình mua rồi, bảo hành đầy đủ luôn bạn ơi.',
         likes_count: 2,
         is_liked: false,
-        createdAt: new Date(Date.now() - 86400000).toISOString()
-      }
+        createdAt: new Date(Date.now() - 86400000).toISOString(),
+      },
     ],
     likes_count: 8,
     is_liked: false,
     createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
-    updatedAt: new Date(Date.now() - 86400000 * 2).toISOString()
+    updatedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
   },
   {
     _id: 'question2',
@@ -41,16 +42,17 @@ const mockQuestions: ProductQuestion[] = [
       {
         _id: 'answer3',
         user: { _id: 'seller1', name: 'Shop Official', avatar: '', is_seller: true },
-        answer: 'Dạ sản phẩm được làm từ chất liệu cao cấp, rất bền và chắc chắn ạ. Shop cam kết chất lượng!',
+        answer:
+          'Dạ sản phẩm được làm từ chất liệu cao cấp, rất bền và chắc chắn ạ. Shop cam kết chất lượng!',
         likes_count: 3,
         is_liked: false,
-        createdAt: new Date(Date.now() - 86400000 * 4).toISOString()
-      }
+        createdAt: new Date(Date.now() - 86400000 * 4).toISOString(),
+      },
     ],
     likes_count: 5,
     is_liked: false,
     createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
-    updatedAt: new Date(Date.now() - 86400000 * 4).toISOString()
+    updatedAt: new Date(Date.now() - 86400000 * 4).toISOString(),
   },
   {
     _id: 'question3',
@@ -65,7 +67,7 @@ const mockQuestions: ProductQuestion[] = [
           'Dạ bạn ở Hà Nội thì khoảng 2-3 ngày là nhận được hàng ạ. Shop gửi hàng ngay trong ngày nếu bạn đặt trước 15h.',
         likes_count: 4,
         is_liked: false,
-        createdAt: new Date(Date.now() - 86400000 * 6).toISOString()
+        createdAt: new Date(Date.now() - 86400000 * 6).toISOString(),
       },
       {
         _id: 'answer5',
@@ -73,26 +75,29 @@ const mockQuestions: ProductQuestion[] = [
         answer: 'Mình ở Hà Nội đặt 3 ngày là có hàng luôn, giao nhanh lắm.',
         likes_count: 1,
         is_liked: false,
-        createdAt: new Date(Date.now() - 86400000 * 5).toISOString()
-      }
+        createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
+      },
     ],
     likes_count: 6,
     is_liked: false,
     createdAt: new Date(Date.now() - 86400000 * 7).toISOString(),
-    updatedAt: new Date(Date.now() - 86400000 * 5).toISOString()
-  }
-]
+    updatedAt: new Date(Date.now() - 86400000 * 5).toISOString(),
+  },
+];
 
 const qaApi = {
   // Lấy danh sách câu hỏi của sản phẩm
   getQuestions: async (params: QAListConfig) => {
     try {
       const response = await http.get<
-        SuccessResponseApi<{ questions: ProductQuestion[]; pagination: { page: number; limit: number; total: number } }>
-      >('/qa/questions', { params })
-      return response
+        SuccessResponseApi<{
+          questions: ProductQuestion[];
+          pagination: { page: number; limit: number; total: number };
+        }>
+      >('/qa/questions', { params });
+      return response;
     } catch (error) {
-      console.warn('Q&A API not available, using mock data')
+      console.warn('Q&A API not available, using mock data');
       return {
         data: {
           message: 'Lấy danh sách câu hỏi thành công',
@@ -101,20 +106,20 @@ const qaApi = {
             pagination: {
               page: Number(params.page) || 1,
               limit: Number(params.limit) || 10,
-              total: mockQuestions.length
-            }
-          }
-        }
-      }
+              total: mockQuestions.length,
+            },
+          },
+        },
+      };
     }
   },
 
   // Đặt câu hỏi mới
   askQuestion: async (body: { product_id: string; question: string }) => {
     try {
-      return await http.post<SuccessResponseApi<ProductQuestion>>('/qa/questions', body)
+      return await http.post<SuccessResponseApi<ProductQuestion>>('/qa/questions', body);
     } catch (error) {
-      console.warn('⚠️ [askQuestion] API not available, using mock data')
+      console.warn('⚠️ [askQuestion] API not available, using mock data');
       const newQuestion: ProductQuestion = {
         _id: `question-${Date.now()}`,
         product_id: body.product_id,
@@ -124,60 +129,65 @@ const qaApi = {
         likes_count: 0,
         is_liked: false,
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
+        updatedAt: new Date().toISOString(),
+      };
       return {
         data: {
           message: 'Đặt câu hỏi thành công (mock)',
-          data: newQuestion
-        }
-      }
+          data: newQuestion,
+        },
+      };
     }
   },
 
   // Trả lời câu hỏi
   answerQuestion: async (questionId: string, body: { answer: string }) => {
     try {
-      return await http.post<SuccessResponseApi<ProductQuestion>>(`/qa/questions/${questionId}/answers`, body)
+      return await http.post<SuccessResponseApi<ProductQuestion>>(
+        `/qa/questions/${questionId}/answers`,
+        body,
+      );
     } catch (error) {
-      console.warn('⚠️ [answerQuestion] API not available, using mock data')
+      console.warn('⚠️ [answerQuestion] API not available, using mock data');
       const mockAnswer = {
         _id: `answer-${Date.now()}`,
         user: { _id: 'mock-user-id', name: 'Người dùng', avatar: '' },
         answer: body.answer,
         likes_count: 0,
         is_liked: false,
-        createdAt: new Date().toISOString()
-      }
+        createdAt: new Date().toISOString(),
+      };
       // Return the question with the new answer added
       const updatedQuestion: ProductQuestion = {
         ...mockQuestions[0],
         _id: questionId,
         answers: [...mockQuestions[0].answers, mockAnswer],
-        updatedAt: new Date().toISOString()
-      }
+        updatedAt: new Date().toISOString(),
+      };
       return {
         data: {
           message: 'Trả lời câu hỏi thành công (mock)',
-          data: updatedQuestion
-        }
-      }
+          data: updatedQuestion,
+        },
+      };
     }
   },
 
   // Like câu hỏi
   likeQuestion: async (questionId: string) => {
     try {
-      const response = await http.post<SuccessResponseApi<{ likes_count: number }>>(`/qa/questions/${questionId}/like`)
-      return response
+      const response = await http.post<SuccessResponseApi<{ likes_count: number }>>(
+        `/qa/questions/${questionId}/like`,
+      );
+      return response;
     } catch (error) {
-      console.warn('⚠️ [likeQuestion] API not available, using mock data')
+      console.warn('⚠️ [likeQuestion] API not available, using mock data');
       return {
         data: {
           message: 'Thao tác thành công (mock)',
-          data: { likes_count: 1 }
-        }
-      }
+          data: { likes_count: 1 },
+        },
+      };
     }
   },
 
@@ -185,19 +195,19 @@ const qaApi = {
   likeAnswer: async (questionId: string, answerId: string) => {
     try {
       const response = await http.post<SuccessResponseApi<{ likes_count: number }>>(
-        `/qa/questions/${questionId}/answers/${answerId}/like`
-      )
-      return response
+        `/qa/questions/${questionId}/answers/${answerId}/like`,
+      );
+      return response;
     } catch (error) {
-      console.warn('⚠️ [likeAnswer] API not available, using mock data')
+      console.warn('⚠️ [likeAnswer] API not available, using mock data');
       return {
         data: {
           message: 'Thao tác thành công (mock)',
-          data: { likes_count: 1 }
-        }
-      }
+          data: { likes_count: 1 },
+        },
+      };
     }
-  }
-}
+  },
+};
 
-export default qaApi
+export default qaApi;

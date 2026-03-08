@@ -1,1 +1,1 @@
-export { default } from './LoyaltyPointsCard'
+export { default } from './LoyaltyPointsCard';

@@ -1,1 +1,1 @@
-export { default } from './AddressSelector'
+export { default } from './AddressSelector';

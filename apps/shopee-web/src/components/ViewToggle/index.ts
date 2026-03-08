@@ -1,2 +1,2 @@
-export { default } from './ViewToggle'
-export type { ViewMode } from './ViewToggle'
+export { default } from './ViewToggle';
+export type { ViewMode } from './ViewToggle';

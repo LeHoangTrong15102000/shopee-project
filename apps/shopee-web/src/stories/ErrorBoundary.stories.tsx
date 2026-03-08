@@ -1,34 +1,39 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { fn } from '@storybook/test'
-import EmptyState, { EmptyCart, EmptySearch, EmptyWishlist, EmptyOrders } from 'src/components/ErrorBoundary/EmptyState'
-import ErrorFallback from 'src/components/ErrorBoundary/ErrorFallback'
-import NetworkError from 'src/components/ErrorBoundary/NetworkError'
+import type { Meta, StoryObj } from '@storybook/react';
+import { fn } from '@storybook/test';
+import EmptyState, {
+  EmptyCart,
+  EmptySearch,
+  EmptyWishlist,
+  EmptyOrders,
+} from 'src/components/ErrorBoundary/EmptyState';
+import ErrorFallback from 'src/components/ErrorBoundary/ErrorFallback';
+import NetworkError from 'src/components/ErrorBoundary/NetworkError';
 
 const emptyStateMeta: Meta<typeof EmptyState> = {
   title: 'ErrorBoundary/EmptyState',
   component: EmptyState,
   parameters: {
-    layout: 'centered'
+    layout: 'centered',
   },
   tags: ['autodocs'],
   argTypes: {
     title: {
       control: 'text',
-      description: 'Title text'
+      description: 'Title text',
     },
     description: {
       control: 'text',
-      description: 'Description text'
+      description: 'Description text',
     },
     className: {
       control: 'text',
-      description: 'Additional CSS classes'
-    }
-  }
-}
+      description: 'Additional CSS classes',
+    },
+  },
+};
 
-export default emptyStateMeta
-type EmptyStateStory = StoryObj<typeof EmptyState>
+export default emptyStateMeta;
+type EmptyStateStory = StoryObj<typeof EmptyState>;
 
 export const EmptyStateDefault: EmptyStateStory = {
   args: {
@@ -36,37 +41,37 @@ export const EmptyStateDefault: EmptyStateStory = {
     description: 'Hiện tại chưa có dữ liệu nào để hiển thị.',
     action: {
       label: 'Tải lại',
-      onClick: fn()
-    }
-  }
-}
+      onClick: fn(),
+    },
+  },
+};
 
 export const EmptyCartState: StoryObj<typeof EmptyCart> = {
-  render: () => <EmptyCart onShopNow={fn()} />
-}
+  render: () => <EmptyCart onShopNow={fn()} />,
+};
 
 export const EmptySearchState: StoryObj<typeof EmptySearch> = {
-  render: () => <EmptySearch searchTerm='iPhone 15 Pro Max' onClear={fn()} />
-}
+  render: () => <EmptySearch searchTerm="iPhone 15 Pro Max" onClear={fn()} />,
+};
 
 export const EmptyWishlistState: StoryObj<typeof EmptyWishlist> = {
-  render: () => <EmptyWishlist onExplore={fn()} />
-}
+  render: () => <EmptyWishlist onExplore={fn()} />,
+};
 
 export const EmptyOrdersState: StoryObj<typeof EmptyOrders> = {
-  render: () => <EmptyOrders onShopNow={fn()} />
-}
+  render: () => <EmptyOrders onShopNow={fn()} />,
+};
 
 const errorFallbackMeta: Meta<typeof ErrorFallback> = {
   title: 'ErrorBoundary/ErrorFallback',
   component: ErrorFallback,
   parameters: {
-    layout: 'centered'
+    layout: 'centered',
   },
-  tags: ['autodocs']
-}
+  tags: ['autodocs'],
+};
 
-type ErrorFallbackStory = StoryObj<typeof ErrorFallback>
+type ErrorFallbackStory = StoryObj<typeof ErrorFallback>;
 
 export const ErrorFallbackDefault: ErrorFallbackStory = {
   parameters: errorFallbackMeta.parameters,
@@ -76,28 +81,28 @@ export const ErrorFallbackDefault: ErrorFallbackStory = {
     title: 'Đã xảy ra lỗi',
     message: 'Không thể tải dữ liệu. Vui lòng thử lại.',
     showRetry: true,
-    retryText: 'Thử lại'
-  }
-}
+    retryText: 'Thử lại',
+  },
+};
 
 const networkErrorMeta: Meta<typeof NetworkError> = {
   title: 'ErrorBoundary/NetworkError',
   component: NetworkError,
   parameters: {
-    layout: 'centered'
+    layout: 'centered',
   },
-  tags: ['autodocs']
-}
+  tags: ['autodocs'],
+};
 
-type NetworkErrorStory = StoryObj<typeof NetworkError>
+type NetworkErrorStory = StoryObj<typeof NetworkError>;
 
 export const NetworkErrorDefault: NetworkErrorStory = {
   parameters: networkErrorMeta.parameters,
   args: {
     onRetry: fn(),
-    autoRetry: false
-  }
-}
+    autoRetry: false,
+  },
+};
 
 export const NetworkErrorAutoRetry: NetworkErrorStory = {
   parameters: networkErrorMeta.parameters,
@@ -105,6 +110,6 @@ export const NetworkErrorAutoRetry: NetworkErrorStory = {
     onRetry: fn(),
     autoRetry: true,
     autoRetryInterval: 5000,
-    maxAutoRetries: 3
-  }
-}
+    maxAutoRetries: 3,
+  },
+};

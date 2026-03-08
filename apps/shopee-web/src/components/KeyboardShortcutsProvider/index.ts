@@ -1,1 +1,5 @@
-export { default, KeyboardShortcutsProvider, useKeyboardShortcutsContext } from './KeyboardShortcutsProvider'
+export {
+  default,
+  KeyboardShortcutsProvider,
+  useKeyboardShortcutsContext,
+} from './KeyboardShortcutsProvider';

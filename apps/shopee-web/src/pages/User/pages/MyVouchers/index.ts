@@ -1,3 +1,3 @@
-import MyVouchers from './MyVouchers'
+import MyVouchers from './MyVouchers';
 
-export default MyVouchers
+export default MyVouchers;

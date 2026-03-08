@@ -1,9 +1,9 @@
 // Viết những cái file liên quan đến product
 // Viết những  cái liên quan đến uth
 
-import { http, HttpResponse } from 'msw'
-import config from 'src/constant/config'
-import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum'
+import { http, HttpResponse } from 'msw';
+import config from 'src/constant/config';
+import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum';
 
 const productsRes = {
   message: 'Lấy các sản phẩm thành công',
@@ -17,7 +17,7 @@ const productsRes = {
           'https://api-ecom.duthanhduoc.com/images/519d5750-23b3-4ba1-8fb6-e74bf594c558.jpg',
           'https://api-ecom.duthanhduoc.com/images/3640d703-9add-45b7-b726-767c13cf3238.jpg',
           'https://api-ecom.duthanhduoc.com/images/46b7bebc-6a8d-4fb3-aa63-e9cf550f6490.jpg',
-          'https://api-ecom.duthanhduoc.com/images/30273cc8-98fb-4cc6-85e6-02c447e45f4a.jpg'
+          'https://api-ecom.duthanhduoc.com/images/30273cc8-98fb-4cc6-85e6-02c447e45f4a.jpg',
         ],
         price: 75000,
         rating: 5,
@@ -29,11 +29,11 @@ const productsRes = {
         category: {
           _id: '60aba4e24efcc70f8892e1c6',
           name: 'Áo thun',
-          __v: 0
+          __v: 0,
         },
         image: 'https://api-ecom.duthanhduoc.com/images/b18506cc-3d5f-4160-aee3-8e4242ed5717.jpg',
         createdAt: '2021-05-27T10:06:10.339Z',
-        updatedAt: '2024-01-05T07:35:25.019Z'
+        updatedAt: '2024-01-05T07:35:25.019Z',
       },
       {
         _id: '60ad02422fb52902585972a9',
@@ -44,7 +44,7 @@ const productsRes = {
           'https://api-ecom.duthanhduoc.com/images/b6425e3f-3cc3-4696-94f7-5053afca2c71.jpg',
           'https://api-ecom.duthanhduoc.com/images/4d80b312-e605-4508-ab80-14dd75f6d23d.jpg',
           'https://api-ecom.duthanhduoc.com/images/9e628716-0b94-44d8-850c-e96adc4b1c8f.jpg',
-          'https://api-ecom.duthanhduoc.com/images/20a1a8e5-1b49-4854-a221-0f96130b5fd8.jpg'
+          'https://api-ecom.duthanhduoc.com/images/20a1a8e5-1b49-4854-a221-0f96130b5fd8.jpg',
         ],
         price: 279000,
         rating: 5,
@@ -56,11 +56,11 @@ const productsRes = {
         category: {
           _id: '60aba4e24efcc70f8892e1c6',
           name: 'Áo thun',
-          __v: 0
+          __v: 0,
         },
         image: 'https://api-ecom.duthanhduoc.com/images/08b79b1d-169d-4de1-85a2-4e5e8ff535b7.jpg',
         createdAt: '2021-05-25T13:57:22.760Z',
-        updatedAt: '2023-12-06T03:59:57.975Z'
+        updatedAt: '2023-12-06T03:59:57.975Z',
       },
       {
         _id: '60ad01102fb52902585972a7',
@@ -73,7 +73,7 @@ const productsRes = {
           'https://api-ecom.duthanhduoc.com/images/986f2f5b-23cc-498f-9adb-9d07e6923eb3.jpg',
           'https://api-ecom.duthanhduoc.com/images/e383805f-e875-4398-800d-ae07f2d2e8ce.jpg',
           'https://api-ecom.duthanhduoc.com/images/c3df0eba-05f8-4ba8-9ef4-f67a28fa4b81.jpg',
-          'https://api-ecom.duthanhduoc.com/images/7cefd5f0-6ded-443d-821b-4909592e6490.jpg'
+          'https://api-ecom.duthanhduoc.com/images/7cefd5f0-6ded-443d-821b-4909592e6490.jpg',
         ],
         price: 53000,
         rating: 5,
@@ -85,11 +85,11 @@ const productsRes = {
         category: {
           _id: '60aba4e24efcc70f8892e1c6',
           name: 'Áo thun',
-          __v: 0
+          __v: 0,
         },
         image: 'https://api-ecom.duthanhduoc.com/images/b1c008a6-bb10-46a6-8caf-2b0e9ca4e175.jpg',
         createdAt: '2021-05-25T13:52:16.271Z',
-        updatedAt: '2024-01-05T04:29:28.322Z'
+        updatedAt: '2024-01-05T04:29:28.322Z',
       },
       {
         _id: '60ad004c2fb52902585972a6',
@@ -102,7 +102,7 @@ const productsRes = {
           'https://api-ecom.duthanhduoc.com/images/4788c7fd-d728-4f47-8000-e858d6466384.jpg',
           'https://api-ecom.duthanhduoc.com/images/b4614934-0164-4845-bf14-d19de6c36835.jpg',
           'https://api-ecom.duthanhduoc.com/images/1ec5e192-c2fc-4411-b170-4aa2b1635ddb.jpg',
-          'https://api-ecom.duthanhduoc.com/images/a751a941-7d74-4f2a-a238-c806b055ed11.jpg'
+          'https://api-ecom.duthanhduoc.com/images/a751a941-7d74-4f2a-a238-c806b055ed11.jpg',
         ],
         price: 49000,
         rating: 5,
@@ -114,11 +114,11 @@ const productsRes = {
         category: {
           _id: '60aba4e24efcc70f8892e1c6',
           name: 'Áo thun',
-          __v: 0
+          __v: 0,
         },
         image: 'https://api-ecom.duthanhduoc.com/images/b1c008a6-bb10-46a6-8caf-2b0e9ca4e175.jpg',
         createdAt: '2021-05-25T13:49:00.060Z',
-        updatedAt: '2023-12-27T15:44:34.265Z'
+        updatedAt: '2023-12-27T15:44:34.265Z',
       },
       {
         _id: '60acfac72fb529025859729f',
@@ -127,7 +127,7 @@ const productsRes = {
           'https://api-ecom.duthanhduoc.com/images/04001c71-9d8f-4e68-b9ac-cbb47406f30f.jpg',
           'https://api-ecom.duthanhduoc.com/images/3142a89e-8301-42c3-9621-1c901e4a097b.jpg',
           'https://api-ecom.duthanhduoc.com/images/849be86c-8880-44dd-a037-ffc447d336f3.jpg',
-          'https://api-ecom.duthanhduoc.com/images/0856c2f1-fcc7-470d-9e99-d7b9f6f32dcc.jpg'
+          'https://api-ecom.duthanhduoc.com/images/0856c2f1-fcc7-470d-9e99-d7b9f6f32dcc.jpg',
         ],
         price: 39000,
         rating: 5,
@@ -139,11 +139,11 @@ const productsRes = {
         category: {
           _id: '60aba4e24efcc70f8892e1c6',
           name: 'Áo thun',
-          __v: 0
+          __v: 0,
         },
         image: 'https://api-ecom.duthanhduoc.com/images/ad82b185-5c18-41ca-90ec-1c54c846fd49.jpg',
         createdAt: '2021-05-25T13:25:27.965Z',
-        updatedAt: '2024-01-06T03:10:55.261Z'
+        updatedAt: '2024-01-06T03:10:55.261Z',
       },
       {
         _id: '60acf0ec2fb5290258597299',
@@ -156,7 +156,7 @@ const productsRes = {
           'https://api-ecom.duthanhduoc.com/images/400b5529-01d4-42d7-be63-e179f8c0a4df.jpg',
           'https://api-ecom.duthanhduoc.com/images/f0b9ff49-824f-4a7a-8bce-a4d6599e26a6.jpg',
           'https://api-ecom.duthanhduoc.com/images/03c61a2a-f703-486b-961d-73b38be7240f.jpg',
-          'https://api-ecom.duthanhduoc.com/images/59bcd4bd-fd27-416c-b7df-dd831a3da621.jpg'
+          'https://api-ecom.duthanhduoc.com/images/59bcd4bd-fd27-416c-b7df-dd831a3da621.jpg',
         ],
         price: 119000,
         rating: 5,
@@ -168,11 +168,11 @@ const productsRes = {
         category: {
           _id: '60aba4e24efcc70f8892e1c6',
           name: 'Áo thun',
-          __v: 0
+          __v: 0,
         },
         image: 'https://api-ecom.duthanhduoc.com/images/25c409a5-9e6c-4e2d-a49e-23a8c291f749.jpg',
         createdAt: '2021-05-25T12:43:24.537Z',
-        updatedAt: '2023-12-15T01:38:01.326Z'
+        updatedAt: '2023-12-15T01:38:01.326Z',
       },
       {
         _id: '60abaa9adbfa6e153cb9962c',
@@ -181,7 +181,7 @@ const productsRes = {
           'https://api-ecom.duthanhduoc.com/images/d938561d-9ad1-4f61-822a-9d29b3cb663e.jpg',
           'https://api-ecom.duthanhduoc.com/images/7c2e9bd9-0773-4f17-9568-62ab8ce3a689.jpg',
           'https://api-ecom.duthanhduoc.com/images/a70f8655-53c8-4359-96c2-ac733f11279e.jpg',
-          'https://api-ecom.duthanhduoc.com/images/dd139f2c-14cf-43f8-ab58-2b4cadcd2140.jpg'
+          'https://api-ecom.duthanhduoc.com/images/dd139f2c-14cf-43f8-ab58-2b4cadcd2140.jpg',
         ],
         price: 69000,
         rating: 5,
@@ -193,11 +193,11 @@ const productsRes = {
         category: {
           _id: '60aba4e24efcc70f8892e1c6',
           name: 'Áo thun',
-          __v: 0
+          __v: 0,
         },
         image: 'https://api-ecom.duthanhduoc.com/images/c9e6cdf9-5d7c-4767-ab19-5d64b133fd3b.jpg',
         createdAt: '2021-05-24T13:31:06.769Z',
-        updatedAt: '2023-12-28T01:33:49.186Z'
+        updatedAt: '2023-12-28T01:33:49.186Z',
       },
       {
         _id: '60aba9a2dbfa6e153cb9962b',
@@ -210,7 +210,7 @@ const productsRes = {
           'https://api-ecom.duthanhduoc.com/images/050e6792-e9bb-4093-b198-3864eddffa3f.jpg',
           'https://api-ecom.duthanhduoc.com/images/92a099c0-b9b7-4d37-b234-ee319868bfe4.jpg',
           'https://api-ecom.duthanhduoc.com/images/23d8c0fb-8d30-4438-a973-3908a89db968.jpg',
-          'https://api-ecom.duthanhduoc.com/images/4553c8a6-dfb8-4323-97b9-bf17cac384a4.jpg'
+          'https://api-ecom.duthanhduoc.com/images/4553c8a6-dfb8-4323-97b9-bf17cac384a4.jpg',
         ],
         price: 69000,
         rating: 5,
@@ -222,20 +222,20 @@ const productsRes = {
         category: {
           _id: '60aba4e24efcc70f8892e1c6',
           name: 'Áo thun',
-          __v: 0
+          __v: 0,
         },
         image: 'https://api-ecom.duthanhduoc.com/images/2b5e1bfa-b202-46b3-b68b-f6c8a19cb1cf.jpg',
         createdAt: '2021-05-24T13:26:58.072Z',
-        updatedAt: '2023-12-17T04:49:37.165Z'
-      }
+        updatedAt: '2023-12-17T04:49:37.165Z',
+      },
     ],
     pagination: {
       page: 1,
       limit: 30,
-      page_size: 1
-    }
-  }
-}
+      page_size: 1,
+    },
+  },
+};
 
 const productDetailRes = {
   message: 'Lấy sản phẩm thành công',
@@ -248,7 +248,7 @@ const productDetailRes = {
       'https://api-ecom.duthanhduoc.com/images/5061fefa-bded-4fb0-80e5-3623656a4816.jpg',
       'https://api-ecom.duthanhduoc.com/images/02c08a86-4d9b-437b-ae02-f1d49cf2933b.jpg',
       'https://api-ecom.duthanhduoc.com/images/12c405e3-b24f-46ef-8969-54050e1022e9.jpg',
-      'https://api-ecom.duthanhduoc.com/images/d448057c-3d3d-45d2-a9bc-e984bc80555f.jpg'
+      'https://api-ecom.duthanhduoc.com/images/d448057c-3d3d-45d2-a9bc-e984bc80555f.jpg',
     ],
     price: 2590000,
     rating: 4.2,
@@ -262,49 +262,49 @@ const productDetailRes = {
     category: {
       _id: '60afafe76ef5b902180aacb5',
       name: 'Điện thoại',
-      __v: 0
+      __v: 0,
     },
     image: 'https://api-ecom.duthanhduoc.com/images/aa374023-7a5b-46ea-aca3-dad1b29fb015.jpg',
     createdAt: '2021-05-27T14:52:50.392Z',
-    updatedAt: '2022-12-19T15:19:53.312Z'
-  }
-}
+    updatedAt: '2022-12-19T15:19:53.312Z',
+  },
+};
 
 export const productsRequest = http.get(`${config.baseUrl}products`, () => {
   // return HttpResponse(ctx.status(HTTP_STATUS_CODE.Ok), ctx.json(productsRes))
   return HttpResponse.json(productsRes, {
     status: HTTP_STATUS_CODE.Ok,
     headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-})
+      'Content-Type': 'application/json',
+    },
+  });
+});
 
 export const productDetailRequest = http.get(`${config.baseUrl}products/:id`, () => {
   // return HttpResponse(ctx.status(HTTP_STATUS_CODE.Ok), ctx.json(productDetailRes))
   return HttpResponse.json(productDetailRes, {
     status: HTTP_STATUS_CODE.Ok,
     headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-})
+      'Content-Type': 'application/json',
+    },
+  });
+});
 
 export const searchHistoryRequest = http.get(`${config.baseUrl}products/search/history`, () => {
   return HttpResponse.json(
     {
       message: 'Lấy lịch sử tìm kiếm thành công',
-      data: ['áo thun', 'điện thoại', 'laptop', 'giày dép']
+      data: ['áo thun', 'điện thoại', 'laptop', 'giày dép'],
     },
     {
       status: HTTP_STATUS_CODE.Ok,
       headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-  )
-})
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+});
 
-const productRequests = [productsRequest, productDetailRequest, searchHistoryRequest]
+const productRequests = [productsRequest, productDetailRequest, searchHistoryRequest];
 
-export default productRequests
+export default productRequests;

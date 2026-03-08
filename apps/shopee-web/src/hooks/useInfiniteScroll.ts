@@ -1,16 +1,16 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react';
 
 interface UseInfiniteScrollOptions {
   /** Distance from bottom to trigger (in pixels) */
-  threshold?: number
+  threshold?: number;
   /** Whether infinite scroll is enabled */
-  enabled?: boolean
+  enabled?: boolean;
   /** Callback when threshold is reached */
-  onLoadMore: () => void
+  onLoadMore: () => void;
   /** Whether currently loading */
-  isLoading?: boolean
+  isLoading?: boolean;
   /** Whether there's more data to load */
-  hasMore?: boolean
+  hasMore?: boolean;
 }
 
 const useInfiniteScroll = ({
@@ -18,38 +18,38 @@ const useInfiniteScroll = ({
   enabled = true,
   onLoadMore,
   isLoading = false,
-  hasMore = true
+  hasMore = true,
 }: UseInfiniteScrollOptions) => {
-  const sentinelRef = useRef<HTMLDivElement>(null)
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!enabled || isLoading || !hasMore) return
+    if (!enabled || isLoading || !hasMore) return;
 
-    const sentinel = sentinelRef.current
-    if (!sentinel) return
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const [entry] = entries
+        const [entry] = entries;
         if (entry.isIntersecting && !isLoading && hasMore) {
-          onLoadMore()
+          onLoadMore();
         }
       },
       {
         root: null,
         rootMargin: `${threshold}px`,
-        threshold: 0
-      }
-    )
+        threshold: 0,
+      },
+    );
 
-    observer.observe(sentinel)
+    observer.observe(sentinel);
 
     return () => {
-      observer.disconnect()
-    }
-  }, [enabled, isLoading, hasMore, onLoadMore, threshold])
+      observer.disconnect();
+    };
+  }, [enabled, isLoading, hasMore, onLoadMore, threshold]);
 
-  return { sentinelRef }
-}
+  return { sentinelRef };
+};
 
-export default useInfiniteScroll
+export default useInfiniteScroll;

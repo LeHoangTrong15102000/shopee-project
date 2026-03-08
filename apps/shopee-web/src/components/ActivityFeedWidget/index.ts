@@ -1,1 +1,1 @@
-export { default } from './ActivityFeedWidget'
+export { default } from './ActivityFeedWidget';

@@ -1,1 +1,1 @@
-export { default } from './CompareButton'
+export { default } from './CompareButton';

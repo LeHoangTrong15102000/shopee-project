@@ -1,18 +1,18 @@
-import { AnimatePresence, motion } from 'framer-motion'
-import { memo } from 'react'
-import { Address } from 'src/types/checkout.type'
-import AddressDetailsStep from './components/AddressDetailsStep'
-import AddressFormFooter from './components/AddressFormFooter'
-import AddressFormHeader from './components/AddressFormHeader'
-import ContactInfoStep from './components/ContactInfoStep'
-import LocationStep from './components/LocationStep'
-import StepIndicator from './components/StepIndicator'
-import { useAddressForm } from './useAddressForm'
+import { AnimatePresence, motion } from 'framer-motion';
+import { memo } from 'react';
+import { Address } from 'src/types/checkout.type';
+import AddressDetailsStep from './components/AddressDetailsStep';
+import AddressFormFooter from './components/AddressFormFooter';
+import AddressFormHeader from './components/AddressFormHeader';
+import ContactInfoStep from './components/ContactInfoStep';
+import LocationStep from './components/LocationStep';
+import StepIndicator from './components/StepIndicator';
+import { useAddressForm } from './useAddressForm';
 
 interface AddressFormProps {
-  address: Address | null
-  onClose: () => void
-  onSuccess: () => void
+  address: Address | null;
+  onClose: () => void;
+  onSuccess: () => void;
 }
 
 const AddressForm = memo(function AddressForm({ address, onClose, onSuccess }: AddressFormProps) {
@@ -40,22 +40,22 @@ const AddressForm = memo(function AddressForm({ address, onClose, onSuccess }: A
     handleStreetSelect,
     handleTypeSelect,
     onSubmit,
-    isLoading
-  } = useAddressForm(address, onSuccess)
+    isLoading,
+  } = useAddressForm(address, onSuccess);
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className='fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 p-4 backdrop-blur-xs'
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 p-4 backdrop-blur-xs"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 20 }}
-        className='my-8 w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/5 dark:bg-slate-800 dark:ring-white/10'
+        className="my-8 w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/5 dark:bg-slate-800 dark:ring-white/10"
         onClick={(e) => e.stopPropagation()}
       >
         <AddressFormHeader isEditing={isEditing} onClose={onClose} />
@@ -67,8 +67,11 @@ const AddressForm = memo(function AddressForm({ address, onClose, onSuccess }: A
           onStepClick={setCurrentStep}
         />
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className='max-h-[60vh] overflow-y-auto px-6 py-5'>
-          <AnimatePresence mode='wait'>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="max-h-[60vh] overflow-y-auto px-6 py-5"
+        >
+          <AnimatePresence mode="wait">
             {currentStep === 1 && <ContactInfoStep form={form} />}
 
             {currentStep === 2 && (
@@ -113,7 +116,7 @@ const AddressForm = memo(function AddressForm({ address, onClose, onSuccess }: A
         />
       </motion.div>
     </motion.div>
-  )
-})
+  );
+});
 
-export default AddressForm
+export default AddressForm;

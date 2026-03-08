@@ -1,12 +1,12 @@
-import { useState, useCallback, useEffect } from 'react'
-import { Product } from 'src/types/product.type'
+import { useState, useCallback, useEffect } from 'react';
+import { Product } from 'src/types/product.type';
 
-const STORAGE_KEY = 'shopee_saved_for_later'
+const STORAGE_KEY = 'shopee_saved_for_later';
 
 export interface SavedItem {
-  product: Product
-  savedAt: string
-  originalBuyCount: number
+  product: Product;
+  savedAt: string;
+  originalBuyCount: number;
 }
 
 /**
@@ -15,23 +15,23 @@ export interface SavedItem {
  */
 export const useSaveForLater = () => {
   const [savedItems, setSavedItems] = useState<SavedItem[]>(() => {
-    if (typeof window === 'undefined') return []
+    if (typeof window === 'undefined') return [];
     try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      return saved ? JSON.parse(saved) : []
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
     } catch {
-      return []
+      return [];
     }
-  })
+  });
 
   // Sync to localStorage whenever savedItems changes
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(savedItems))
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(savedItems));
     } catch (error) {
-      console.warn('Failed to save items to localStorage:', error)
+      console.warn('Failed to save items to localStorage:', error);
     }
-  }, [savedItems])
+  }, [savedItems]);
 
   /**
    * Save a product for later
@@ -40,40 +40,40 @@ export const useSaveForLater = () => {
    * @returns true if saved successfully, false if already exists
    */
   const saveForLater = useCallback((product: Product, buyCount: number): boolean => {
-    let wasAdded = false
+    let wasAdded = false;
     setSavedItems((prev) => {
       // Don't add duplicates
       if (prev.some((item) => item.product._id === product._id)) {
-        return prev
+        return prev;
       }
-      wasAdded = true
+      wasAdded = true;
       return [
         ...prev,
         {
           product,
           savedAt: new Date().toISOString(),
-          originalBuyCount: buyCount
-        }
-      ]
-    })
-    return wasAdded
-  }, [])
+          originalBuyCount: buyCount,
+        },
+      ];
+    });
+    return wasAdded;
+  }, []);
 
   /**
    * Remove a product from saved items
    * @param productId - The product ID to remove
    */
   const removeFromSaved = useCallback((productId: string) => {
-    setSavedItems((prev) => prev.filter((item) => item.product._id !== productId))
-  }, [])
+    setSavedItems((prev) => prev.filter((item) => item.product._id !== productId));
+  }, []);
 
   /**
    * Clear all saved items
    */
   const clearSaved = useCallback(() => {
-    setSavedItems([])
-    localStorage.removeItem(STORAGE_KEY)
-  }, [])
+    setSavedItems([]);
+    localStorage.removeItem(STORAGE_KEY);
+  }, []);
 
   /**
    * Check if a product is already saved
@@ -81,10 +81,10 @@ export const useSaveForLater = () => {
    */
   const isSaved = useCallback(
     (productId: string): boolean => {
-      return savedItems.some((item) => item.product._id === productId)
+      return savedItems.some((item) => item.product._id === productId);
     },
-    [savedItems]
-  )
+    [savedItems],
+  );
 
   /**
    * Get a saved item by product ID
@@ -92,10 +92,10 @@ export const useSaveForLater = () => {
    */
   const getSavedItem = useCallback(
     (productId: string): SavedItem | undefined => {
-      return savedItems.find((item) => item.product._id === productId)
+      return savedItems.find((item) => item.product._id === productId);
     },
-    [savedItems]
-  )
+    [savedItems],
+  );
 
   return {
     savedItems,
@@ -104,8 +104,8 @@ export const useSaveForLater = () => {
     clearSaved,
     isSaved,
     getSavedItem,
-    savedCount: savedItems.length
-  }
-}
+    savedCount: savedItems.length,
+  };
+};
 
-export default useSaveForLater
+export default useSaveForLater;

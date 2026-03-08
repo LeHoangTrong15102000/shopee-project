@@ -1,15 +1,22 @@
-import { useState, useRef, useId, useEffect, useCallback, type ElementType } from 'react'
-import { useFloating, FloatingPortal, arrow, shift, offset, type Placement } from '@floating-ui/react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useRef, useId, useEffect, useCallback, type ElementType } from 'react';
+import {
+  useFloating,
+  FloatingPortal,
+  arrow,
+  shift,
+  offset,
+  type Placement,
+} from '@floating-ui/react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props {
-  children: React.ReactNode
-  renderPopover: React.ReactNode
-  className?: string
-  as?: ElementType // custom thẻ khi user muốn một thẻ span thay vì div
-  initialOpen?: boolean // ban đầu mình có muốn mở popover hay không
-  placement?: Placement
-  enableArrow?: boolean
+  children: React.ReactNode;
+  renderPopover: React.ReactNode;
+  className?: string;
+  as?: ElementType; // custom thẻ khi user muốn một thẻ span thay vì div
+  initialOpen?: boolean; // ban đầu mình có muốn mở popover hay không
+  placement?: Placement;
+  enableArrow?: boolean;
 }
 
 const Popover = ({
@@ -19,49 +26,49 @@ const Popover = ({
   renderPopover,
   as: Element = 'div',
   initialOpen,
-  placement = 'bottom-end'
+  placement = 'bottom-end',
 }: Props) => {
-  const [isOpen, setIsOpen] = useState(initialOpen || false)
-  const id = useId()
-  const arrowRef = useRef<HTMLElement>(null)
+  const [isOpen, setIsOpen] = useState(initialOpen || false);
+  const id = useId();
+  const arrowRef = useRef<HTMLElement>(null);
   const { x, y, refs, strategy, middlewareData } = useFloating({
     middleware: [
       offset(6),
       shift(),
       arrow({
-        element: arrowRef
-      })
+        element: arrowRef,
+      }),
     ],
-    placement: placement
-  })
+    placement: placement,
+  });
 
   const showPopover = () => {
-    setIsOpen(true)
-  }
+    setIsOpen(true);
+  };
   const hidePopover = () => {
-    setIsOpen(false)
-  }
+    setIsOpen(false);
+  };
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isOpen) {
-        event.preventDefault()
-        hidePopover()
+        event.preventDefault();
+        hidePopover();
         // Return focus to trigger element
         if (refs.reference.current && 'focus' in refs.reference.current) {
-          ;(refs.reference.current as HTMLElement).focus()
+          (refs.reference.current as HTMLElement).focus();
         }
       }
     },
-    [isOpen, refs.reference]
-  )
+    [isOpen, refs.reference],
+  );
 
   useEffect(() => {
     if (isOpen) {
-      document.addEventListener('keydown', handleKeyDown)
-      return () => document.removeEventListener('keydown', handleKeyDown)
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
     }
-  }, [isOpen, handleKeyDown])
+  }, [isOpen, handleKeyDown]);
 
   // Dùng kĩ thuật render Props, truyền vào cái props 1 dạng function component
 
@@ -72,7 +79,7 @@ const Popover = ({
       onMouseEnter={showPopover}
       onMouseLeave={hidePopover}
       aria-expanded={isOpen}
-      aria-haspopup='true'
+      aria-haspopup="true"
     >
       {children}
       {/* <svg
@@ -111,7 +118,7 @@ const Popover = ({
                 left: x ?? 0,
                 width: 'max-content',
                 transformOrigin: `${middlewareData.arrow?.x}px top`, // nơi đầu khi transform
-                zIndex: 50
+                zIndex: 50,
               }}
               initial={{ opacity: 0, transform: 'scale(0)' }}
               animate={{ opacity: 1, transform: 'scale(1)' }}
@@ -121,10 +128,10 @@ const Popover = ({
               {enableArrow && (
                 <span
                   ref={arrowRef}
-                  className='absolute z-1 translate-y-[-95%] border-11 border-x-transparent border-t-transparent border-b-white dark:border-b-slate-800'
+                  className="absolute z-1 translate-y-[-95%] border-11 border-x-transparent border-t-transparent border-b-white dark:border-b-slate-800"
                   style={{
                     left: middlewareData.arrow?.x,
-                    top: middlewareData.arrow?.y
+                    top: middlewareData.arrow?.y,
                   }}
                 ></span>
               )}
@@ -141,7 +148,7 @@ const Popover = ({
         </AnimatePresence>
       </FloatingPortal>
     </Element>
-  )
-}
+  );
+};
 
-export default Popover
+export default Popover;

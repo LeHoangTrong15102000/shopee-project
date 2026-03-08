@@ -1,4 +1,13 @@
-export { default as ProductImages } from './ProductImages'
-export { default as ProductInfo } from './ProductInfo'
-export { default as ProductActions } from './ProductActions'
-export { default as RelatedProducts } from './RelatedProducts'
+export { default as ProductImages } from './ProductImages';
+export { default as ProductInfo } from './ProductInfo';
+export { default as ProductActions } from './ProductActions';
+export { default as RelatedProducts } from './RelatedProducts';
+export { default as Breadcrumb } from './Breadcrumb';
+export { default as ProductBadges } from './ProductBadges';
+export { default as VoucherRow } from './VoucherRow';
+export { default as ShopeeProtection } from './ShopeeProtection';
+export { default as ShippingInfo } from './ShippingInfo';
+export { default as ProductSpecifications } from './ProductSpecifications';
+export { default as ShopMetrics } from './ShopMetrics';
+export { default as ShopProducts } from './ShopProducts';
+export { default as ShopInfo } from './ShopInfo';

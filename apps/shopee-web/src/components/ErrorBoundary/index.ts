@@ -1,8 +1,8 @@
-import ErrorBoundary from './ErrorBoundary'
-import ErrorFallback from './ErrorFallback'
-import QueryErrorBoundary from './QueryErrorBoundary'
-import NetworkError from './NetworkError'
-import EmptyState, { EmptyCart, EmptySearch, EmptyWishlist, EmptyOrders } from './EmptyState'
+import ErrorBoundary from './ErrorBoundary';
+import ErrorFallback from './ErrorFallback';
+import QueryErrorBoundary from './QueryErrorBoundary';
+import NetworkError from './NetworkError';
+import EmptyState, { EmptyCart, EmptySearch, EmptyWishlist, EmptyOrders } from './EmptyState';
 
 export {
   ErrorBoundary,
@@ -13,7 +13,7 @@ export {
   EmptyCart,
   EmptySearch,
   EmptyWishlist,
-  EmptyOrders
-}
+  EmptyOrders,
+};
 
-export default ErrorBoundary
+export default ErrorBoundary;

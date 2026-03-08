@@ -1,18 +1,18 @@
-import { memo } from 'react'
-import { motion } from 'framer-motion'
-import Button from 'src/components/Button'
+import { memo } from 'react';
+import { motion } from 'framer-motion';
+import Button from 'src/components/Button';
 
-export type WalletType = 'momo' | 'zalopay' | 'vnpay'
+export type WalletType = 'momo' | 'zalopay' | 'vnpay';
 
 export interface WalletInfo {
-  id: WalletType
-  name: string
-  color: string
-  bgColor: string
-  borderColor: string
-  balance: number
-  isLinked: boolean
-  deepLink: string
+  id: WalletType;
+  name: string;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+  balance: number;
+  isLinked: boolean;
+  deepLink: string;
 }
 
 export const WALLETS: WalletInfo[] = [
@@ -24,7 +24,7 @@ export const WALLETS: WalletInfo[] = [
     borderColor: 'border-pink-500',
     balance: 2500000,
     isLinked: true,
-    deepLink: 'momo://payment'
+    deepLink: 'momo://payment',
   },
   {
     id: 'zalopay',
@@ -34,7 +34,7 @@ export const WALLETS: WalletInfo[] = [
     borderColor: 'border-blue-500',
     balance: 1800000,
     isLinked: true,
-    deepLink: 'zalopay://payment'
+    deepLink: 'zalopay://payment',
   },
   {
     id: 'vnpay',
@@ -44,29 +44,29 @@ export const WALLETS: WalletInfo[] = [
     borderColor: 'border-red-500',
     balance: 3200000,
     isLinked: false,
-    deepLink: 'vnpay://payment'
-  }
-]
+    deepLink: 'vnpay://payment',
+  },
+];
 
 export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount)
-}
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+};
 
 export const WalletLogo = memo(function WalletLogo({ wallet }: { wallet: WalletType }) {
   const logoConfig: Record<WalletType, { gradient: string; text: string }> = {
     momo: { gradient: 'from-pink-500 to-pink-600', text: 'M' },
     zalopay: { gradient: 'from-blue-500 to-blue-600', text: 'Z' },
-    vnpay: { gradient: 'from-red-500 to-blue-600', text: 'V' }
-  }
-  const config = logoConfig[wallet]
+    vnpay: { gradient: 'from-red-500 to-blue-600', text: 'V' },
+  };
+  const config = logoConfig[wallet];
   return (
     <div
       className={`flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br ${config.gradient} shadow-lg`}
     >
-      <span className='text-xl font-bold text-white'>{config.text}</span>
+      <span className="text-xl font-bold text-white">{config.text}</span>
     </div>
-  )
-})
+  );
+});
 
 const LinkedBadge = memo(function LinkedBadge({ isLinked }: { isLinked: boolean }) {
   return (
@@ -79,22 +79,22 @@ const LinkedBadge = memo(function LinkedBadge({ isLinked }: { isLinked: boolean 
     >
       {isLinked ? 'Đã liên kết' : 'Chưa liên kết'}
     </span>
-  )
-})
+  );
+});
 
 const WalletCard = memo(function WalletCard({
   wallet,
   isSelected,
-  onSelect
+  onSelect,
 }: {
-  wallet: WalletInfo
-  isSelected: boolean
-  onSelect: () => void
+  wallet: WalletInfo;
+  isSelected: boolean;
+  onSelect: () => void;
 }) {
   return (
     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
       <Button
-        type='button'
+        type="button"
         onClick={onSelect}
         animated={false}
         className={`relative w-full rounded-xl border-2 p-4 text-left transition-all ${
@@ -107,28 +107,38 @@ const WalletCard = memo(function WalletCard({
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className='absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-green-500'
+            className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-green-500"
           >
-            <svg className='h-4 w-4 text-white' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
+            <svg
+              className="h-4 w-4 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
             </svg>
           </motion.div>
         )}
-        <div className='flex items-center gap-3'>
+        <div className="flex items-center gap-3">
           <WalletLogo wallet={wallet.id} />
-          <div className='flex-1'>
-            <div className='flex items-center gap-2'>
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
               <span className={`font-semibold ${wallet.color}`}>{wallet.name}</span>
               <LinkedBadge isLinked={wallet.isLinked} />
             </div>
-            <p className='mt-1 text-sm text-gray-600 dark:text-gray-400'>
-              Số dư: <span className='font-medium'>{formatCurrency(wallet.balance)}</span>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              Số dư: <span className="font-medium">{formatCurrency(wallet.balance)}</span>
             </p>
           </div>
         </div>
       </Button>
     </motion.div>
-  )
-})
+  );
+});
 
-export default WalletCard
+export default WalletCard;

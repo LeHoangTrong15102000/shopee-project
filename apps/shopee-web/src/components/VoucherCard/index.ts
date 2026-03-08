@@ -1,1 +1,1 @@
-export { default } from './VoucherCard'
+export { default } from './VoucherCard';

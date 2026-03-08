@@ -1,4 +1,4 @@
-import http from 'src/utils/http'
+import http from 'src/utils/http';
 import {
   Review,
   ReviewListResponse,
@@ -8,12 +8,12 @@ import {
   CanReviewResponse,
   ReviewQuery,
   ReviewComment,
-  ReviewStats
-} from 'src/types/review.type'
-import { SuccessResponseApi } from 'src/types/utils.type'
-import { buildCommentTree } from 'src/utils/commentTree'
+  ReviewStats,
+} from 'src/types/review.type';
+import { SuccessResponseApi } from 'src/types/utils.type';
+import { buildCommentTree } from 'src/utils/commentTree';
 
-const URL = 'reviews'
+const URL = 'reviews';
 
 // Mock data for fallback when API is not available
 const mockReviews: Review[] = [
@@ -29,7 +29,7 @@ const mockReviews: Review[] = [
     createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
     updatedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
     is_liked: false,
-    comments_count: 2
+    comments_count: 2,
   },
   {
     _id: 'review2',
@@ -43,7 +43,7 @@ const mockReviews: Review[] = [
     createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
     updatedAt: new Date(Date.now() - 86400000 * 5).toISOString(),
     is_liked: false,
-    comments_count: 1
+    comments_count: 1,
   },
   {
     _id: 'review3',
@@ -57,7 +57,7 @@ const mockReviews: Review[] = [
     createdAt: new Date(Date.now() - 86400000 * 10).toISOString(),
     updatedAt: new Date(Date.now() - 86400000 * 10).toISOString(),
     is_liked: false,
-    comments_count: 0
+    comments_count: 0,
   },
   {
     _id: 'review4',
@@ -71,9 +71,9 @@ const mockReviews: Review[] = [
     createdAt: new Date(Date.now() - 86400000).toISOString(),
     updatedAt: new Date(Date.now() - 86400000).toISOString(),
     is_liked: false,
-    comments_count: 3
-  }
-]
+    comments_count: 3,
+  },
+];
 
 const mockReviewStats: ReviewStats = {
   total_reviews: 4,
@@ -83,9 +83,9 @@ const mockReviewStats: ReviewStats = {
     2: 0,
     3: 1,
     4: 1,
-    5: 2
-  }
-}
+    5: 2,
+  },
+};
 
 const mockComments: ReviewComment[] = [
   {
@@ -107,9 +107,9 @@ const mockComments: ReviewComment[] = [
         level: 1,
         replies_count: 0,
         createdAt: new Date(Date.now() - 43200000).toISOString(),
-        updatedAt: new Date(Date.now() - 43200000).toISOString()
-      }
-    ]
+        updatedAt: new Date(Date.now() - 43200000).toISOString(),
+      },
+    ],
   },
   {
     _id: 'comment3',
@@ -119,18 +119,18 @@ const mockComments: ReviewComment[] = [
     level: 0,
     replies_count: 0,
     createdAt: new Date(Date.now() - 3600000).toISOString(),
-    updatedAt: new Date(Date.now() - 3600000).toISOString()
-  }
-]
+    updatedAt: new Date(Date.now() - 3600000).toISOString(),
+  },
+];
 
 // API functions
 const reviewApi = {
   // Tạo review mới
   createReview: async (body: CreateReviewData) => {
     try {
-      return await http.post<SuccessResponseApi<Review>>(`${URL}`, body)
+      return await http.post<SuccessResponseApi<Review>>(`${URL}`, body);
     } catch (error) {
-      console.warn('⚠️ [createReview] API not available, using mock data')
+      console.warn('⚠️ [createReview] API not available, using mock data');
       const newReview: Review = {
         _id: `review-${Date.now()}`,
         user: { _id: 'mock-user-id', name: 'Người dùng', email: 'user@example.com', avatar: '' },
@@ -143,64 +143,70 @@ const reviewApi = {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         is_liked: false,
-        comments_count: 0
-      }
+        comments_count: 0,
+      };
       return {
         data: {
           message: 'Tạo đánh giá thành công (mock)',
-          data: newReview
-        }
-      }
+          data: newReview,
+        },
+      };
     }
   },
 
   // Cập nhật review
-  updateReview: async (reviewId: string, body: { rating?: number; comment?: string; images?: string[] }) => {
+  updateReview: async (
+    reviewId: string,
+    body: { rating?: number; comment?: string; images?: string[] },
+  ) => {
     try {
-      return await http.put<SuccessResponseApi<Review>>(`${URL}/${reviewId}`, body)
+      return await http.put<SuccessResponseApi<Review>>(`${URL}/${reviewId}`, body);
     } catch (error) {
-      console.warn('⚠️ [updateReview] API not available, using mock data')
+      console.warn('⚠️ [updateReview] API not available, using mock data');
       const updatedReview: Review = {
         ...mockReviews[0],
         _id: reviewId,
         rating: body.rating ?? mockReviews[0].rating,
         comment: body.comment ?? mockReviews[0].comment,
         images: body.images ?? mockReviews[0].images,
-        updatedAt: new Date().toISOString()
-      }
+        updatedAt: new Date().toISOString(),
+      };
       return {
         data: {
           message: 'Cập nhật đánh giá thành công (mock)',
-          data: updatedReview
-        }
-      }
+          data: updatedReview,
+        },
+      };
     }
   },
 
   // Xóa review
   deleteReview: async (reviewId: string) => {
     try {
-      return await http.delete<SuccessResponseApi<{ deleted: boolean }>>(`${URL}/${reviewId}`)
+      return await http.delete<SuccessResponseApi<{ deleted: boolean }>>(`${URL}/${reviewId}`);
     } catch (error) {
-      console.warn('⚠️ [deleteReview] API not available, using mock data')
+      console.warn('⚠️ [deleteReview] API not available, using mock data');
       return {
         data: {
           message: 'Xóa đánh giá thành công (mock)',
-          data: { deleted: true }
-        }
-      }
+          data: { deleted: true },
+        },
+      };
     }
   },
 
   // Lấy reviews của sản phẩm
   getProductReviews: async (productId: string, params?: ReviewQuery) => {
     try {
-      const response = await http.get<SuccessResponseApi<ReviewListResponse>>(`${URL}/product/${productId}`, {
-        params
-      })
-      return response
+      const response = await http.get<SuccessResponseApi<ReviewListResponse>>(
+        `${URL}/product/${productId}`,
+        {
+          params,
+        },
+      );
+      return response;
     } catch (error) {
-      console.warn('Review API not available, using mock data')
+      console.warn('Review API not available, using mock data');
       return {
         data: {
           message: 'Lấy danh sách đánh giá thành công',
@@ -210,39 +216,39 @@ const reviewApi = {
               page: params?.page || 1,
               limit: params?.limit || 10,
               total: mockReviews.length,
-              total_pages: 1
+              total_pages: 1,
             },
-            stats: mockReviewStats
-          } as ReviewListResponse
-        }
-      }
+            stats: mockReviewStats,
+          } as ReviewListResponse,
+        },
+      };
     }
   },
 
   // Like/Unlike review
   toggleReviewLike: async (reviewId: string) => {
     try {
-      const response = await http.post<SuccessResponseApi<{ is_liked: boolean; helpful_count: number }>>(
-        `${URL}/like/${reviewId}`
-      )
-      return response
+      const response = await http.post<
+        SuccessResponseApi<{ is_liked: boolean; helpful_count: number }>
+      >(`${URL}/like/${reviewId}`);
+      return response;
     } catch (error) {
-      console.warn('Review like API not available, using mock data')
+      console.warn('Review like API not available, using mock data');
       return {
         data: {
           message: 'Thao tác thành công',
-          data: { is_liked: true, helpful_count: 1 }
-        }
-      }
+          data: { is_liked: true, helpful_count: 1 },
+        },
+      };
     }
   },
 
   // Tạo comment
   createComment: async (body: CreateCommentData) => {
     try {
-      return await http.post<SuccessResponseApi<ReviewComment>>(`${URL}/comment`, body)
+      return await http.post<SuccessResponseApi<ReviewComment>>(`${URL}/comment`, body);
     } catch (error) {
-      console.warn('⚠️ [createComment] API not available, using mock data')
+      console.warn('⚠️ [createComment] API not available, using mock data');
       const newComment: ReviewComment = {
         _id: `comment-${Date.now()}`,
         user: { _id: 'mock-user-id', name: 'Người dùng', email: 'user@example.com', avatar: '' },
@@ -252,30 +258,33 @@ const reviewApi = {
         level: body.parent_comment_id ? 1 : 0,
         replies_count: 0,
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
+        updatedAt: new Date().toISOString(),
+      };
       return {
         data: {
           message: 'Tạo bình luận thành công (mock)',
-          data: newComment
-        }
-      }
+          data: newComment,
+        },
+      };
     }
   },
 
   // Lấy comments của review
   getReviewComments: async (reviewId: string, params?: { page?: number; limit?: number }) => {
     try {
-      const response = await http.get<SuccessResponseApi<CommentListResponse>>(`${URL}/comments/${reviewId}`, {
-        params
-      })
+      const response = await http.get<SuccessResponseApi<CommentListResponse>>(
+        `${URL}/comments/${reviewId}`,
+        {
+          params,
+        },
+      );
       // Rebuild tree từ flat array response của API
       if (response.data?.data?.comments) {
-        response.data.data.comments = buildCommentTree(response.data.data.comments)
+        response.data.data.comments = buildCommentTree(response.data.data.comments);
       }
-      return response
+      return response;
     } catch (error) {
-      console.warn('Review comments API not available, using mock data')
+      console.warn('Review comments API not available, using mock data');
       return {
         data: {
           message: 'Lấy danh sách bình luận thành công',
@@ -285,29 +294,31 @@ const reviewApi = {
               page: params?.page || 1,
               limit: params?.limit || 10,
               total: mockComments.length,
-              total_pages: 1
-            }
-          } as CommentListResponse
-        }
-      }
+              total_pages: 1,
+            },
+          } as CommentListResponse,
+        },
+      };
     }
   },
 
   // Kiểm tra có thể đánh giá purchase không
   canReviewPurchase: async (purchaseId: string) => {
     try {
-      const response = await http.get<SuccessResponseApi<CanReviewResponse>>(`${URL}/can-review/${purchaseId}`)
-      return response
+      const response = await http.get<SuccessResponseApi<CanReviewResponse>>(
+        `${URL}/can-review/${purchaseId}`,
+      );
+      return response;
     } catch (error) {
-      console.warn('Can review API not available, using mock data')
+      console.warn('Can review API not available, using mock data');
       return {
         data: {
           message: 'Kiểm tra quyền đánh giá thành công',
-          data: { can_review: false, reason: 'Bạn chưa mua sản phẩm này' } as CanReviewResponse
-        }
-      }
+          data: { can_review: false, reason: 'Bạn chưa mua sản phẩm này' } as CanReviewResponse,
+        },
+      };
     }
-  }
-}
+  },
+};
 
-export default reviewApi
+export default reviewApi;

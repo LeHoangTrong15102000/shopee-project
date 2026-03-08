@@ -1,1 +1,1 @@
-export { default } from './SellerDashboardPanel'
+export { default } from './SellerDashboardPanel';

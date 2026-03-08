@@ -1,6 +1,6 @@
-export { default } from './PaymentForm'
-export { default as CreditCardForm } from './CreditCardForm'
-export { default as BankTransferPayment } from './BankTransferPayment'
-export { default as EWalletPayment } from './EWalletPayment'
-export type { PaymentFormData } from './CreditCardForm'
-export type { EWalletPaymentProps, WalletType, PaymentFlowState } from './EWalletPayment'
+export { default } from './PaymentForm';
+export { default as CreditCardForm } from './CreditCardForm';
+export { default as BankTransferPayment } from './BankTransferPayment';
+export { default as EWalletPayment } from './EWalletPayment';
+export type { PaymentFormData } from './CreditCardForm';
+export type { EWalletPaymentProps, WalletType, PaymentFlowState } from './EWalletPayment';

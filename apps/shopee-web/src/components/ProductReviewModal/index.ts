@@ -1,3 +1,3 @@
-import ProductReviewModal from './ProductReviewModal'
+import ProductReviewModal from './ProductReviewModal';
 
-export default ProductReviewModal
+export default ProductReviewModal;

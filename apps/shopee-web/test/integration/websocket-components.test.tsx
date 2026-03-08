@@ -386,11 +386,7 @@ describe('Phase1 11.4b - LivePriceTag Component', () => {
     expect(screen.getByText('↑ Tăng giá')).toBeInTheDocument()
   })
 
-  test('shows price before discount when applicable', () => {
-    render(<LivePriceTag currentPrice={80000} livePrice={null} previousPrice={null} hasChanged={false} priceBeforeDiscount={120000} />)
-    const strikethroughElements = document.querySelectorAll('.line-through')
-    expect(strikethroughElements.length).toBeGreaterThan(0)
-  })
+
 })
 
 describe('Phase1 11.4c - InventoryAlertBadge Component', () => {

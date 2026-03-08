@@ -1,1 +1,1 @@
-export { default } from './AvatarCropModal'
+export { default } from './AvatarCropModal';

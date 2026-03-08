@@ -1,3 +1,3 @@
-import ProductVariantSelector from './ProductVariantSelector'
+import ProductVariantSelector from './ProductVariantSelector';
 
-export default ProductVariantSelector
+export default ProductVariantSelector;

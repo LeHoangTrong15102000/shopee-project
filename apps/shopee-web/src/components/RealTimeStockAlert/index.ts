@@ -1,1 +1,1 @@
-export { default, InlineStockAlert } from './RealTimeStockAlert'
+export { default, InlineStockAlert } from './RealTimeStockAlert';

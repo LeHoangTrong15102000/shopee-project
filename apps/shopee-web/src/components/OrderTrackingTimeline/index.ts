@@ -1,1 +1,1 @@
-export { default } from './OrderTrackingTimeline'
+export { default } from './OrderTrackingTimeline';

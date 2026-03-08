@@ -1,3 +1,3 @@
-import UserChatButton from './UserChatButton'
+import UserChatButton from './UserChatButton';
 
-export default UserChatButton
+export default UserChatButton;

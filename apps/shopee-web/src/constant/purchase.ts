@@ -5,5 +5,5 @@ export const purchasesStatus = {
   waitForGetting: 2,
   inProgress: 3,
   delivered: 4,
-  cancelled: 5
-} as const
+  cancelled: 5,
+} as const;

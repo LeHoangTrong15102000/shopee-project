@@ -1,2 +1,2 @@
-export * from './motion.config'
-export * from './variants'
+export * from './motion.config';
+export * from './variants';

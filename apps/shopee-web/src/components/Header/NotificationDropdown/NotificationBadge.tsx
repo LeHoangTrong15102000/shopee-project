@@ -1,10 +1,10 @@
 interface Props {
-  count: number
-  className?: string
+  count: number;
+  className?: string;
 }
 
 const NotificationBadge = ({ count, className = '' }: Props) => {
-  if (count <= 0) return null
+  if (count <= 0) return null;
 
   return (
     <span
@@ -12,7 +12,7 @@ const NotificationBadge = ({ count, className = '' }: Props) => {
     >
       {count > 99 ? '99+' : count}
     </span>
-  )
-}
+  );
+};
 
-export default NotificationBadge
+export default NotificationBadge;

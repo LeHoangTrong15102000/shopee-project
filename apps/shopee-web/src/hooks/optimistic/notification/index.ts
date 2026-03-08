@@ -1,1 +1,1 @@
-export { useOptimisticNotification } from './useOptimisticNotification'
+export { useOptimisticNotification } from './useOptimisticNotification';

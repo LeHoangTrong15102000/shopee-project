@@ -1,13 +1,13 @@
-import { useQueryClient, Query } from '@tanstack/react-query'
-import { QueryFilters, QueryPredicates } from '../utils/queryFilters'
-import { PurchaseListStatus } from '../types/purchases.type'
+import { useQueryClient, Query } from '@tanstack/react-query';
+import { QueryFilters, QueryPredicates } from '../utils/queryFilters';
+import { PurchaseListStatus } from '../types/purchases.type';
 
 /**
  * Hook quản lý invalidation của queries một cách thông minh
  * Sử dụng QueryFilters để invalidate selective thay vì invalidate all
  */
 export const useQueryInvalidation = () => {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return {
     // === PRODUCTS ===
@@ -17,7 +17,7 @@ export const useQueryInvalidation = () => {
      * Sử dụng khi có thay đổi lớn ảnh hưởng đến toàn bộ hệ thống products
      */
     invalidateProducts: () => {
-      queryClient.invalidateQueries(QueryFilters.products.all())
+      queryClient.invalidateQueries(QueryFilters.products.all());
     },
 
     /**
@@ -25,7 +25,7 @@ export const useQueryInvalidation = () => {
      * Sử dụng khi update thông tin của một sản phẩm cụ thể
      */
     invalidateProductDetail: (productId: string) => {
-      queryClient.invalidateQueries(QueryFilters.products.detail(productId))
+      queryClient.invalidateQueries(QueryFilters.products.detail(productId));
     },
 
     /**
@@ -33,7 +33,7 @@ export const useQueryInvalidation = () => {
      * Sử dụng khi có sản phẩm mới được thêm/xóa, price thay đổi
      */
     invalidateProductLists: () => {
-      queryClient.invalidateQueries(QueryFilters.products.lists())
+      queryClient.invalidateQueries(QueryFilters.products.lists());
     },
 
     /**
@@ -42,8 +42,8 @@ export const useQueryInvalidation = () => {
      */
     invalidateProductsByCategory: (categoryId: string) => {
       queryClient.invalidateQueries({
-        predicate: QueryPredicates.productsByCategory(categoryId)
-      })
+        predicate: QueryPredicates.productsByCategory(categoryId),
+      });
     },
 
     /**
@@ -52,8 +52,8 @@ export const useQueryInvalidation = () => {
      */
     invalidateProductsByPriceRange: (minPrice: number, maxPrice: number) => {
       queryClient.invalidateQueries({
-        predicate: QueryPredicates.productsByPriceRange(minPrice, maxPrice)
-      })
+        predicate: QueryPredicates.productsByPriceRange(minPrice, maxPrice),
+      });
     },
 
     /**
@@ -62,15 +62,15 @@ export const useQueryInvalidation = () => {
      */
     invalidateAffectedByProductUpdate: (productId: string) => {
       queryClient.invalidateQueries({
-        predicate: QueryPredicates.affectedByProductUpdate(productId)
-      })
+        predicate: QueryPredicates.affectedByProductUpdate(productId),
+      });
     },
 
     /**
      * Invalidate search results
      */
     invalidateSearchResults: () => {
-      queryClient.invalidateQueries(QueryFilters.search.all())
+      queryClient.invalidateQueries(QueryFilters.search.all());
     },
 
     // === CART & PURCHASES ===
@@ -80,7 +80,7 @@ export const useQueryInvalidation = () => {
      * Sử dụng khi add/remove/update items trong cart
      */
     invalidateCart: () => {
-      queryClient.invalidateQueries(QueryFilters.purchases.cart())
+      queryClient.invalidateQueries(QueryFilters.purchases.cart());
     },
 
     /**
@@ -88,14 +88,14 @@ export const useQueryInvalidation = () => {
      * Sử dụng khi có thay đổi lớn trong purchase history
      */
     invalidatePurchases: () => {
-      queryClient.invalidateQueries(QueryFilters.purchases.all())
+      queryClient.invalidateQueries(QueryFilters.purchases.all());
     },
 
     /**
      * Invalidate purchases theo status
      */
     invalidatePurchasesByStatus: (status: PurchaseListStatus) => {
-      queryClient.invalidateQueries(QueryFilters.purchases.byStatus(status))
+      queryClient.invalidateQueries(QueryFilters.purchases.byStatus(status));
     },
 
     // === USER ===
@@ -105,14 +105,14 @@ export const useQueryInvalidation = () => {
      * Sử dụng khi user login/logout hoặc update profile
      */
     invalidateUser: () => {
-      queryClient.invalidateQueries(QueryFilters.user.all())
+      queryClient.invalidateQueries(QueryFilters.user.all());
     },
 
     /**
      * Invalidate user profile
      */
     invalidateUserProfile: () => {
-      queryClient.invalidateQueries(QueryFilters.user.profile())
+      queryClient.invalidateQueries(QueryFilters.user.profile());
     },
 
     // === CATEGORIES ===
@@ -122,7 +122,7 @@ export const useQueryInvalidation = () => {
      * Sử dụng khi có thay đổi trong category structure
      */
     invalidateCategories: () => {
-      queryClient.invalidateQueries(QueryFilters.categories.all())
+      queryClient.invalidateQueries(QueryFilters.categories.all());
     },
 
     // === REVIEWS ===
@@ -131,14 +131,14 @@ export const useQueryInvalidation = () => {
      * Invalidate reviews của một product
      */
     invalidateProductReviews: (productId: string) => {
-      queryClient.invalidateQueries(QueryFilters.reviews.byProduct(productId))
+      queryClient.invalidateQueries(QueryFilters.reviews.byProduct(productId));
     },
 
     /**
      * Invalidate user reviews
      */
     invalidateUserReviews: () => {
-      queryClient.invalidateQueries(QueryFilters.reviews.byUser())
+      queryClient.invalidateQueries(QueryFilters.reviews.byUser());
     },
 
     // === NOTIFICATIONS ===
@@ -147,14 +147,14 @@ export const useQueryInvalidation = () => {
      * Invalidate notifications
      */
     invalidateNotifications: () => {
-      queryClient.invalidateQueries(QueryFilters.notifications.all())
+      queryClient.invalidateQueries(QueryFilters.notifications.all());
     },
 
     /**
      * Invalidate unread notifications count
      */
     invalidateNotificationCount: () => {
-      queryClient.invalidateQueries(QueryFilters.notifications.count())
+      queryClient.invalidateQueries(QueryFilters.notifications.count());
     },
 
     // === ADVANCED OPERATIONS ===
@@ -165,22 +165,22 @@ export const useQueryInvalidation = () => {
      */
     invalidateUserSpecificData: () => {
       queryClient.invalidateQueries({
-        predicate: QueryPredicates.userSpecificData()
-      })
+        predicate: QueryPredicates.userSpecificData(),
+      });
     },
 
     /**
      * Selective invalidation - chỉ invalidate queries match với predicate
      */
     invalidateByPredicate: (predicate: (query: Query) => boolean) => {
-      queryClient.invalidateQueries({ predicate })
+      queryClient.invalidateQueries({ predicate });
     },
 
     /**
      * Batch invalidation - invalidate nhiều types cùng lúc
      */
     batchInvalidate: (operations: (() => void)[]) => {
-      operations.forEach((operation) => operation())
+      operations.forEach((operation) => operation());
     },
 
     // === UTILITY FUNCTIONS ===
@@ -189,23 +189,23 @@ export const useQueryInvalidation = () => {
      * Get all cached data for debugging
      */
     getAllCachedData: () => {
-      return queryClient.getQueryCache().getAll()
+      return queryClient.getQueryCache().getAll();
     },
 
     /**
      * Clear all cache
      */
     clearAllCache: () => {
-      queryClient.clear()
+      queryClient.clear();
     },
 
     /**
      * Remove specific query from cache
      */
     removeQuery: (queryKey: unknown[]) => {
-      queryClient.removeQueries({ queryKey })
-    }
-  }
-}
+      queryClient.removeQueries({ queryKey });
+    },
+  };
+};
 
-export default useQueryInvalidation
+export default useQueryInvalidation;

@@ -17,7 +17,7 @@ const config = {
    * - Set `false` (default) for frontend-only mode → SocketProvider will
    *   simulate 'connected' status to avoid showing the connection error banner.
    */
-  enableSocket: false
-}
+  enableSocket: false,
+};
 
-export default config
+export default config;

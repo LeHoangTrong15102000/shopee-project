@@ -1,3 +1,3 @@
-import InputFile from './InputFile'
+import InputFile from './InputFile';
 
-export default InputFile
+export default InputFile;

@@ -1,6 +1,12 @@
-import { SuccessResponseApi } from 'src/types/utils.type'
-import { ShippingMethod, PaymentMethod, Order, CreateOrderBody, CheckoutSummary } from 'src/types/checkout.type'
-import http from 'src/utils/http'
+import { SuccessResponseApi } from 'src/types/utils.type';
+import {
+  ShippingMethod,
+  PaymentMethod,
+  Order,
+  CreateOrderBody,
+  CheckoutSummary,
+} from 'src/types/checkout.type';
+import http from 'src/utils/http';
 
 // Mock shipping methods
 const mockShippingMethods: ShippingMethod[] = [
@@ -10,7 +16,7 @@ const mockShippingMethods: ShippingMethod[] = [
     description: 'Giao hàng trong 3-5 ngày làm việc',
     price: 30000,
     estimatedDays: '3-5 ngày',
-    icon: 'truck'
+    icon: 'truck',
   },
   {
     _id: 'express',
@@ -18,7 +24,7 @@ const mockShippingMethods: ShippingMethod[] = [
     description: 'Giao hàng trong 1-2 ngày làm việc',
     price: 50000,
     estimatedDays: '1-2 ngày',
-    icon: 'rocket'
+    icon: 'rocket',
   },
   {
     _id: 'same_day',
@@ -26,9 +32,9 @@ const mockShippingMethods: ShippingMethod[] = [
     description: 'Nhận hàng trong ngày (đặt trước 12h)',
     price: 80000,
     estimatedDays: 'Trong ngày',
-    icon: 'lightning'
-  }
-]
+    icon: 'lightning',
+  },
+];
 
 // Mock payment methods
 const mockPaymentMethods: PaymentMethod[] = [
@@ -38,7 +44,7 @@ const mockPaymentMethods: PaymentMethod[] = [
     name: 'Thanh toán khi nhận hàng (COD)',
     description: 'Thanh toán bằng tiền mặt khi nhận hàng',
     icon: 'cod',
-    isAvailable: true
+    isAvailable: true,
   },
   {
     _id: 'bank_transfer',
@@ -46,7 +52,7 @@ const mockPaymentMethods: PaymentMethod[] = [
     name: 'Chuyển khoản ngân hàng',
     description: 'Chuyển khoản qua tài khoản ngân hàng',
     icon: 'bank_transfer',
-    isAvailable: true
+    isAvailable: true,
   },
   {
     _id: 'e_wallet',
@@ -54,7 +60,7 @@ const mockPaymentMethods: PaymentMethod[] = [
     name: 'Ví điện tử',
     description: 'Thanh toán qua MoMo, ZaloPay, VNPay',
     icon: 'e_wallet',
-    isAvailable: true
+    isAvailable: true,
   },
   {
     _id: 'credit_card',
@@ -62,57 +68,61 @@ const mockPaymentMethods: PaymentMethod[] = [
     name: 'Thẻ tín dụng/Ghi nợ',
     description: 'Visa, Mastercard, JCB',
     icon: 'credit_card',
-    isAvailable: true
-  }
-]
+    isAvailable: true,
+  },
+];
 
 const checkoutApi = {
   getShippingMethods: async () => {
     try {
-      const response = await http.get<SuccessResponseApi<ShippingMethod[]>>('/orders/shipping/methods')
-      return response
+      const response = await http.get<SuccessResponseApi<ShippingMethod[]>>(
+        '/orders/shipping/methods',
+      );
+      return response;
     } catch (error) {
-      console.warn('Shipping API not available, using mock data')
+      console.warn('Shipping API not available, using mock data');
       return {
         data: {
           message: 'Lấy phương thức vận chuyển thành công',
-          data: mockShippingMethods
-        }
-      }
+          data: mockShippingMethods,
+        },
+      };
     }
   },
 
   getPaymentMethods: async () => {
     try {
-      const response = await http.get<SuccessResponseApi<PaymentMethod[]>>('/orders/payment/methods')
-      return response
+      const response =
+        await http.get<SuccessResponseApi<PaymentMethod[]>>('/orders/payment/methods');
+      return response;
     } catch (error) {
-      console.warn('Payment API not available, using mock data')
+      console.warn('Payment API not available, using mock data');
       return {
         data: {
           message: 'Lấy phương thức thanh toán thành công',
-          data: mockPaymentMethods
-        }
-      }
+          data: mockPaymentMethods,
+        },
+      };
     }
   },
 
   calculateSummary: async (body: {
-    purchaseIds: string[]
-    shippingMethodId?: string
-    voucherCode?: string
-    coinsUsed?: number
+    purchaseIds: string[];
+    shippingMethodId?: string;
+    voucherCode?: string;
+    coinsUsed?: number;
   }) => {
     try {
       const response = await http.post<SuccessResponseApi<CheckoutSummary>>('/checkout/summary', {
         purchase_ids: body.purchaseIds,
         shipping_method_id: body.shippingMethodId,
         voucher_code: body.voucherCode,
-        coins_used: body.coinsUsed
-      })
-      return response
+        coins_used: body.coinsUsed,
+      });
+      return response;
     } catch (error) {
-      const shippingMethod = mockShippingMethods.find((m) => m._id === body.shippingMethodId) || mockShippingMethods[0]
+      const shippingMethod =
+        mockShippingMethods.find((m) => m._id === body.shippingMethodId) || mockShippingMethods[0];
       return {
         data: {
           message: 'Tính toán thành công',
@@ -122,10 +132,10 @@ const checkoutApi = {
             shippingFee: shippingMethod.price,
             discount: 0,
             coinsDiscount: body.coinsUsed || 0,
-            total: shippingMethod.price
-          }
-        }
-      }
+            total: shippingMethod.price,
+          },
+        },
+      };
     }
   },
 
@@ -138,11 +148,11 @@ const checkoutApi = {
         payment_method: body.paymentMethod,
         voucher_code: body.voucherCode,
         coins_used: body.coinsUsed,
-        note: body.note
-      })
-      return response
+        note: body.note,
+      });
+      return response;
     } catch (error) {
-      console.warn('⚠️ [createOrder] API not available, using mock data')
+      console.warn('⚠️ [createOrder] API not available, using mock data');
       const mockOrder: Order = {
         _id: `order-${Date.now()}`,
         userId: 'mock-user-id',
@@ -158,7 +168,7 @@ const checkoutApi = {
           street: '123 Nguyễn Huệ',
           isDefault: true,
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         },
         shippingMethod: mockShippingMethods[0],
         paymentMethod: body.paymentMethod,
@@ -172,16 +182,16 @@ const checkoutApi = {
         note: body.note,
         voucherCode: body.voucherCode,
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
+        updatedAt: new Date().toISOString(),
+      };
       return {
         data: {
           message: 'Tạo đơn hàng thành công (mock)',
-          data: mockOrder
-        }
-      }
+          data: mockOrder,
+        },
+      };
     }
-  }
-}
+  },
+};
 
-export default checkoutApi
+export default checkoutApi;

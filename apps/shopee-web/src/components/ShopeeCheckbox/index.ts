@@ -1,1 +1,1 @@
-export { default } from './ShopeeCheckbox'
+export { default } from './ShopeeCheckbox';

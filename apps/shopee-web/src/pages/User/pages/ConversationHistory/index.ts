@@ -1,3 +1,3 @@
-import ConversationHistory from './ConversationHistory'
+import ConversationHistory from './ConversationHistory';
 
-export default ConversationHistory
+export default ConversationHistory;

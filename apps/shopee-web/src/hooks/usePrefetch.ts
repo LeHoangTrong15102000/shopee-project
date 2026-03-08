@@ -1,20 +1,20 @@
-import { useQueryClient } from '@tanstack/react-query'
-import { useCallback } from 'react'
+import { useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
 
-import productApi from 'src/apis/product.api'
-import categoryApi from 'src/apis/category.api'
-import userApi from 'src/apis/user.api'
-import purchasesApi from 'src/apis/purchases.api'
-import { QueryFilters } from 'src/utils/queryFilters'
-import { ProductListConfig } from 'src/types/product.type'
-import { purchasesStatus } from 'src/constant/purchase'
+import productApi from 'src/apis/product.api';
+import categoryApi from 'src/apis/category.api';
+import userApi from 'src/apis/user.api';
+import purchasesApi from 'src/apis/purchases.api';
+import { QueryFilters } from 'src/utils/queryFilters';
+import { ProductListConfig } from 'src/types/product.type';
+import { purchasesStatus } from 'src/constant/purchase';
 
 /**
  * Hook quản lý prefetching data để cải thiện UX
  * Prefetch data trước khi user thực sự cần đến
  */
 export const usePrefetch = () => {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return {
     // === PRODUCTS ===
@@ -29,10 +29,10 @@ export const usePrefetch = () => {
           ...QueryFilters.products.detail(productId),
           queryFn: ({ signal }) => productApi.getProductDetail(productId, { signal }),
           staleTime: 5 * 60 * 1000, // 5 phút
-          gcTime: 10 * 60 * 1000 // 10 phút
-        })
+          gcTime: 10 * 60 * 1000, // 10 phút
+        });
       },
-      [queryClient]
+      [queryClient],
     ),
 
     /**
@@ -45,10 +45,10 @@ export const usePrefetch = () => {
           ...QueryFilters.products.list(filters),
           queryFn: ({ signal }) => productApi.getProducts(filters, { signal }),
           staleTime: 3 * 60 * 1000, // 3 phút
-          gcTime: 8 * 60 * 1000 // 8 phút
-        })
+          gcTime: 8 * 60 * 1000, // 8 phút
+        });
       },
-      [queryClient]
+      [queryClient],
     ),
 
     /**
@@ -57,16 +57,16 @@ export const usePrefetch = () => {
      */
     prefetchSearchSuggestions: useCallback(
       (searchTerm: string) => {
-        if (searchTerm.length < 2) return
+        if (searchTerm.length < 2) return;
 
         queryClient.prefetchQuery({
           ...QueryFilters.search.suggestions(searchTerm),
           queryFn: ({ signal }) => productApi.getSearchSuggestions({ q: searchTerm }, { signal }),
           staleTime: 2 * 60 * 1000, // 2 phút
-          gcTime: 5 * 60 * 1000 // 5 phút
-        })
+          gcTime: 5 * 60 * 1000, // 5 phút
+        });
       },
-      [queryClient]
+      [queryClient],
     ),
 
     // === CATEGORIES ===
@@ -80,8 +80,8 @@ export const usePrefetch = () => {
         ...QueryFilters.categories.all(),
         queryFn: ({ signal }) => categoryApi.getCategories({ signal }),
         staleTime: 15 * 60 * 1000, // 15 phút
-        gcTime: 30 * 60 * 1000 // 30 phút
-      })
+        gcTime: 30 * 60 * 1000, // 30 phút
+      });
     }, [queryClient]),
 
     // === USER ===
@@ -95,8 +95,8 @@ export const usePrefetch = () => {
         ...QueryFilters.user.profile(),
         queryFn: () => userApi.getProfile(),
         staleTime: 5 * 60 * 1000, // 5 phút
-        gcTime: 10 * 60 * 1000 // 10 phút
-      })
+        gcTime: 10 * 60 * 1000, // 10 phút
+      });
     }, [queryClient]),
 
     // === CART & PURCHASES ===
@@ -110,8 +110,8 @@ export const usePrefetch = () => {
         ...QueryFilters.purchases.cart(),
         queryFn: () => purchasesApi.getPurchases({ status: purchasesStatus.inCart }),
         staleTime: 1 * 60 * 1000, // 1 phút
-        gcTime: 5 * 60 * 1000 // 5 phút
-      })
+        gcTime: 5 * 60 * 1000, // 5 phút
+      });
     }, [queryClient]),
 
     // === SMART PREFETCHING ===
@@ -125,15 +125,15 @@ export const usePrefetch = () => {
        */
       nextPage: useCallback(
         (currentPage: number, filters: ProductListConfig) => {
-          const nextPageFilters = { ...filters, page: String(currentPage + 1) }
+          const nextPageFilters = { ...filters, page: String(currentPage + 1) };
           queryClient.prefetchQuery({
             ...QueryFilters.products.list(nextPageFilters),
             queryFn: ({ signal }) => productApi.getProducts(nextPageFilters, { signal }),
             staleTime: 2 * 60 * 1000,
-            gcTime: 5 * 60 * 1000
-          })
+            gcTime: 5 * 60 * 1000,
+          });
         },
-        [queryClient]
+        [queryClient],
       ),
 
       /**
@@ -141,29 +141,29 @@ export const usePrefetch = () => {
        */
       relatedProducts: useCallback(
         (categoryId: string) => {
-          const relatedFilters = { category: categoryId, limit: '20' }
+          const relatedFilters = { category: categoryId, limit: '20' };
           queryClient.prefetchQuery({
             queryKey: ['products', 'related', categoryId],
             queryFn: ({ signal }) => productApi.getProducts(relatedFilters, { signal }),
             staleTime: 10 * 60 * 1000,
-            gcTime: 20 * 60 * 1000
-          })
+            gcTime: 20 * 60 * 1000,
+          });
         },
-        [queryClient]
+        [queryClient],
       ),
 
       /**
        * Prefetch trending products
        */
       trendingProducts: useCallback(() => {
-        const trendingFilters: ProductListConfig = { sort_by: 'sold', order: 'desc', limit: '20' }
+        const trendingFilters: ProductListConfig = { sort_by: 'sold', order: 'desc', limit: '20' };
         queryClient.prefetchQuery({
           ...QueryFilters.products.trending(),
           queryFn: ({ signal }) => productApi.getProducts(trendingFilters, { signal }),
           staleTime: 15 * 60 * 1000,
-          gcTime: 30 * 60 * 1000
-        })
-      }, [queryClient])
+          gcTime: 30 * 60 * 1000,
+        });
+      }, [queryClient]),
     },
 
     // === UTILITY FUNCTIONS ===
@@ -173,9 +173,9 @@ export const usePrefetch = () => {
      */
     isCached: useCallback(
       (queryKey: unknown[]) => {
-        return queryClient.getQueryData(queryKey) !== undefined
+        return queryClient.getQueryData(queryKey) !== undefined;
       },
-      [queryClient]
+      [queryClient],
     ),
 
     /**
@@ -183,16 +183,16 @@ export const usePrefetch = () => {
      */
     getCachedData: useCallback(
       (queryKey: unknown[]) => {
-        return queryClient.getQueryData(queryKey)
+        return queryClient.getQueryData(queryKey);
       },
-      [queryClient]
+      [queryClient],
     ),
 
     /**
      * Batch prefetch multiple items
      */
     batchPrefetch: useCallback((prefetchFunctions: (() => void)[]) => {
-      prefetchFunctions.forEach((fn) => fn())
-    }, [])
-  }
-}
+      prefetchFunctions.forEach((fn) => fn());
+    }, []),
+  };
+};

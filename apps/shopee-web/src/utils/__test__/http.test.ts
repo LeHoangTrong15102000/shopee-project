@@ -1,17 +1,17 @@
-import { beforeEach, describe, expect, it } from 'vitest'
-import { Http } from '../http'
-import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum'
-import { setAccessTokenToLS, setRefreshTokenToLS } from 'src/utils/auth'
-import { access_token_1s, refresh_token_1000days } from 'src/msw/auth.msw'
+import { beforeEach, describe, expect, it } from 'vitest';
+import { Http } from '../http';
+import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum';
+import { setAccessTokenToLS, setRefreshTokenToLS } from 'src/utils/auth';
+import { access_token_1s, refresh_token_1000days } from 'src/msw/auth.msw';
 
 describe('http axios', () => {
   // Tạo một instance mới tránh ảnh hưởng từ thằng instance cũ
-  let http = new Http().instance
+  let http = new Http().instance;
   beforeEach(() => {
     // Mỗi lần trước khi chạy it() thì tạo mới thằng http() để reset cái http trước đó
-    localStorage.clear()
-    http = new Http().instance
-  })
+    localStorage.clear();
+    http = new Http().instance;
+  });
 
   // Hàm xử lý lỗi 401 Auth Request
   // function getAsyncAuthRequest() {
@@ -23,10 +23,10 @@ describe('http axios', () => {
     // Vì chúng ta test riêng file http thì chỉ nên dùng `http` thôi
     // Vì lỡ như file Apis có thay đổi gì đó thì cũng không ảnh hưởng đến file test này
 
-    const res = await http.get('products')
+    const res = await http.get('products');
     // const res = await productsRequest
-    expect(res.status).toBe(HTTP_STATUS_CODE.Ok)
-  })
+    expect(res.status).toBe(HTTP_STATUS_CODE.Ok);
+  });
 
   // Test những cái request cần access_token
   it('Auth Request', async () => {
@@ -34,12 +34,12 @@ describe('http axios', () => {
     // Và 1 server test
     await http.post('login', {
       email: 'langtupro0456@gmail.com',
-      password: '123123123'
-    })
-    const res = await http.get('me')
-    expect(res.status).toBe(HTTP_STATUS_CODE.Ok)
+      password: '123123123',
+    });
+    const res = await http.get('me');
+    expect(res.status).toBe(HTTP_STATUS_CODE.Ok);
     // await expect(() => getAsyncAuthRequest()).rejects.toThrowError('Unauthorized User')
-  })
+  });
 
   // it('Refresh Token', async () => {
   //   // dưới đây cũng phải tạo một cái http mới sau khi thằng beforeEach() nó đã reset cái http() trước đó rồi
@@ -52,12 +52,12 @@ describe('http axios', () => {
   // })
 
   it('Refresh Token', async () => {
-    setAccessTokenToLS(access_token_1s)
-    setRefreshTokenToLS(refresh_token_1000days)
-    const httpNew = new Http().instance
-    const res = await httpNew.get('me')
+    setAccessTokenToLS(access_token_1s);
+    setRefreshTokenToLS(refresh_token_1000days);
+    const httpNew = new Http().instance;
+    const res = await httpNew.get('me');
     // console.log('Lấy dự liệu khi refresh token thành công', res)
-    expect(res.status).toBe(HTTP_STATUS_CODE.Ok)
+    expect(res.status).toBe(HTTP_STATUS_CODE.Ok);
     // await expect(() => getAsyncAuthRequest()).rejects.toThrowError('Unauthorized User')
-  })
-})
+  });
+});

@@ -4,30 +4,32 @@ import {
   parseAsStringLiteral,
   useQueryStates,
   inferParserType,
-  createSerializer
-} from 'nuqs'
+  createSerializer,
+} from 'nuqs';
 
 export const productSearchParsers = {
   page: parseAsInteger.withDefault(1),
   limit: parseAsInteger.withDefault(20),
-  sort_by: parseAsStringLiteral(['createdAt', 'view', 'sold', 'price'] as const).withDefault('createdAt'),
+  sort_by: parseAsStringLiteral(['createdAt', 'view', 'sold', 'price'] as const).withDefault(
+    'createdAt',
+  ),
   order: parseAsStringLiteral(['asc', 'desc'] as const),
   exclude: parseAsString,
   name: parseAsString,
   price_min: parseAsInteger,
   price_max: parseAsInteger,
   rating_filter: parseAsInteger,
-  category: parseAsString
-}
+  category: parseAsString,
+};
 
-export type ProductQueryConfig = inferParserType<typeof productSearchParsers>
+export type ProductQueryConfig = inferParserType<typeof productSearchParsers>;
 
 export function useProductQueryStates() {
-  const [filters, setFilters] = useQueryStates(productSearchParsers)
-  return [filters, setFilters] as const
+  const [filters, setFilters] = useQueryStates(productSearchParsers);
+  return [filters, setFilters] as const;
 }
 
-export const createProductSearchURL = createSerializer(productSearchParsers)
+export const createProductSearchURL = createSerializer(productSearchParsers);
 
 /**
  * Normalizes ProductQueryConfig values back to strings for TanStack Query key compatibility.
@@ -35,7 +37,9 @@ export const createProductSearchURL = createSerializer(productSearchParsers)
  * so existing cache entries (with string values) are still matched.
  * Can be removed after cache transition period (gcTime = 10 min).
  */
-export function normalizeProductQueryKey(filters: ProductQueryConfig): Record<string, string | undefined> {
+export function normalizeProductQueryKey(
+  filters: ProductQueryConfig,
+): Record<string, string | undefined> {
   return {
     page: String(filters.page),
     limit: String(filters.limit),
@@ -46,6 +50,6 @@ export function normalizeProductQueryKey(filters: ProductQueryConfig): Record<st
     price_min: filters.price_min != null ? String(filters.price_min) : undefined,
     price_max: filters.price_max != null ? String(filters.price_max) : undefined,
     rating_filter: filters.rating_filter != null ? String(filters.rating_filter) : undefined,
-    category: filters.category ?? undefined
-  }
+    category: filters.category ?? undefined,
+  };
 }

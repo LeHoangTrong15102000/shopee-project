@@ -1,17 +1,17 @@
 // Viết những  cái liên quan đến uth
 
-import { http, HttpResponse } from 'msw'
-import config from 'src/constant/config'
-import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum'
+import { http, HttpResponse } from 'msw';
+import config from 'src/constant/config';
+import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum';
 
 export const access_token_1s =
-  'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZTBmMDM4NmQ3YzYyMDM0MDg1MGU2ZSIsImVtYWlsIjoibGFuZ3R1cHJvMDQ1NkBnbWFpbC5jb20iLCJyb2xlcyI6WyJVc2VyIl0sImNyZWF0ZWRfYXQiOiIyMDI0LTAxLTAzVDA3OjU4OjEzLjI1MVoiLCJpYXQiOjE3MDQyNjg2OTMsImV4cCI6MTcwNDI2ODY5NH0.zMLnzrH-oOGnzs3-XQBtBU_RQYiPB4w_OPX00e2UVVc'
+  'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZTBmMDM4NmQ3YzYyMDM0MDg1MGU2ZSIsImVtYWlsIjoibGFuZ3R1cHJvMDQ1NkBnbWFpbC5jb20iLCJyb2xlcyI6WyJVc2VyIl0sImNyZWF0ZWRfYXQiOiIyMDI0LTAxLTAzVDA3OjU4OjEzLjI1MVoiLCJpYXQiOjE3MDQyNjg2OTMsImV4cCI6MTcwNDI2ODY5NH0.zMLnzrH-oOGnzs3-XQBtBU_RQYiPB4w_OPX00e2UVVc';
 
 export const refresh_token_1000days =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZTBmMDM4NmQ3YzYyMDM0MDg1MGU2ZSIsImVtYWlsIjoibGFuZ3R1cHJvMDQ1NkBnbWFpbC5jb20iLCJyb2xlcyI6WyJVc2VyIl0sImNyZWF0ZWRfYXQiOiIyMDI0LTAyLTA2VDA4OjM1OjQ1LjE1OVoiLCJpYXQiOjE3MDcyMDg1NDUsImV4cCI6MTc5MzYwODU0NX0.1-G282S-oOgn141fr5khQNx7m3n4kLpqeu2nLOQLaG4'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZTBmMDM4NmQ3YzYyMDM0MDg1MGU2ZSIsImVtYWlsIjoibGFuZ3R1cHJvMDQ1NkBnbWFpbC5jb20iLCJyb2xlcyI6WyJVc2VyIl0sImNyZWF0ZWRfYXQiOiIyMDI0LTAyLTA2VDA4OjM1OjQ1LjE1OVoiLCJpYXQiOjE3MDcyMDg1NDUsImV4cCI6MTc5MzYwODU0NX0.1-G282S-oOgn141fr5khQNx7m3n4kLpqeu2nLOQLaG4';
 
 export const access_token =
-  'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZTBmMDM4NmQ3YzYyMDM0MDg1MGU2ZSIsImVtYWlsIjoibGFuZ3R1cHJvMDQ1NkBnbWFpbC5jb20iLCJyb2xlcyI6WyJVc2VyIl0sImNyZWF0ZWRfYXQiOiIyMDI0LTAyLTA2VDA4OjM1OjQ1LjE1OVoiLCJpYXQiOjE3MDcyMDg1NDUsImV4cCI6MTcwODIwODU0NH0.GOwVFVH3wMDjgWEHOCFNTogz_0Ow1pCTa3-jkegm-jM'
+  'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZTBmMDM4NmQ3YzYyMDM0MDg1MGU2ZSIsImVtYWlsIjoibGFuZ3R1cHJvMDQ1NkBnbWFpbC5jb20iLCJyb2xlcyI6WyJVc2VyIl0sImNyZWF0ZWRfYXQiOiIyMDI0LTAyLTA2VDA4OjM1OjQ1LjE1OVoiLCJpYXQiOjE3MDcyMDg1NDUsImV4cCI6MTcwODIwODU0NH0.GOwVFVH3wMDjgWEHOCFNTogz_0Ow1pCTa3-jkegm-jM';
 
 const loginRes = {
   message: 'Đăng nhập thành công',
@@ -33,32 +33,32 @@ const loginRes = {
       date_of_birth: '1990-04-17T17:00:00.000Z',
       name: 'Lê Hoàng Trọng',
       phone: '0773094710',
-      avatar: '77d9909d-3161-4195-a67c-db4585f80e4b.jpg'
-    }
-  }
-}
+      avatar: '77d9909d-3161-4195-a67c-db4585f80e4b.jpg',
+    },
+  },
+};
 
 // Res khi mà refresh-access-token thành công
 const refreshTokenRes = {
   message: 'Refresh Token thành công',
   data: {
     access_token:
-      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZTBmMDM4NmQ3YzYyMDM0MDg1MGU2ZSIsImVtYWlsIjoibGFuZ3R1cHJvMDQ1NkBnbWFpbC5jb20iLCJyb2xlcyI6WyJVc2VyIl0sImNyZWF0ZWRfYXQiOiIyMDI0LTAyLTA2VDA4OjM2OjM0Ljc0M1oiLCJpYXQiOjE3MDcyMDg1OTQsImV4cCI6MTcwNzgxMzM5NH0.cePhoZ02rx59VCNE8pssex4INLmWmk586t6xIVJeUns'
-  }
-}
+      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZTBmMDM4NmQ3YzYyMDM0MDg1MGU2ZSIsImVtYWlsIjoibGFuZ3R1cHJvMDQ1NkBnbWFpbC5jb20iLCJyb2xlcyI6WyJVc2VyIl0sImNyZWF0ZWRfYXQiOiIyMDI0LTAyLTA2VDA4OjM2OjM0Ljc0M1oiLCJpYXQiOjE3MDcyMDg1OTQsImV4cCI6MTcwNzgxMzM5NH0.cePhoZ02rx59VCNE8pssex4INLmWmk586t6xIVJeUns',
+  },
+};
 
 export const loginRequest = http.post(`${config.baseUrl}login`, () => {
   // return res(ctx.status(HTTP_STATUS_CODE.Ok), ctx.json(loginRes))
-  return HttpResponse.json(loginRes, { status: HTTP_STATUS_CODE.Ok })
-})
+  return HttpResponse.json(loginRes, { status: HTTP_STATUS_CODE.Ok });
+});
 
 // Tạo thêm Refresh Token ở đây luôn
 
 export const refreshToken = http.post(`${config.baseUrl}refresh-access-token`, () => {
   // return res(ctx.status(HTTP_STATUS_CODE.Ok), ctx.json(refreshTokenRes))
-  return HttpResponse.json(refreshTokenRes, { status: HTTP_STATUS_CODE.Ok })
-})
+  return HttpResponse.json(refreshTokenRes, { status: HTTP_STATUS_CODE.Ok });
+});
 
-const authRequests = [loginRequest, refreshToken]
+const authRequests = [loginRequest, refreshToken];
 
-export default authRequests
+export default authRequests;

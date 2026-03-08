@@ -1,18 +1,18 @@
 export interface Ward {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 export interface District {
-  id: string
-  name: string
-  wards: Ward[]
+  id: string;
+  name: string;
+  wards: Ward[];
 }
 
 export interface Province {
-  id: string
-  name: string
-  districts: District[]
+  id: string;
+  name: string;
+  districts: District[];
 }
 
 export const vietnamProvinces: Province[] = [
@@ -32,8 +32,8 @@ export const vietnamProvinces: Province[] = [
           { id: 'nguyen-cu-trinh', name: 'Phường Nguyễn Cư Trinh' },
           { id: 'nguyen-thai-binh', name: 'Phường Nguyễn Thái Bình' },
           { id: 'pham-ngu-lao', name: 'Phường Phạm Ngũ Lão' },
-          { id: 'tan-dinh', name: 'Phường Tân Định' }
-        ]
+          { id: 'tan-dinh', name: 'Phường Tân Định' },
+        ],
       },
       {
         id: 'q3',
@@ -44,8 +44,8 @@ export const vietnamProvinces: Province[] = [
           { id: 'p2', name: 'Phường 2' },
           { id: 'p3', name: 'Phường 3' },
           { id: 'p4', name: 'Phường 4' },
-          { id: 'p5', name: 'Phường 5' }
-        ]
+          { id: 'p5', name: 'Phường 5' },
+        ],
       },
       {
         id: 'q7',
@@ -56,8 +56,8 @@ export const vietnamProvinces: Province[] = [
           { id: 'tan-thuan-tay', name: 'Phường Tân Thuận Tây' },
           { id: 'tan-kieng', name: 'Phường Tân Kiểng' },
           { id: 'phu-my', name: 'Phường Phú Mỹ' },
-          { id: 'phu-thuan', name: 'Phường Phú Thuận' }
-        ]
+          { id: 'phu-thuan', name: 'Phường Phú Thuận' },
+        ],
       },
       {
         id: 'binh-thanh',
@@ -69,8 +69,8 @@ export const vietnamProvinces: Province[] = [
           { id: 'p11-bt', name: 'Phường 11' },
           { id: 'p12-bt', name: 'Phường 12' },
           { id: 'p13-bt', name: 'Phường 13' },
-          { id: 'p14-bt', name: 'Phường 14' }
-        ]
+          { id: 'p14-bt', name: 'Phường 14' },
+        ],
       },
       {
         id: 'thu-duc',
@@ -83,10 +83,10 @@ export const vietnamProvinces: Province[] = [
           { id: 'hiep-binh-chanh', name: 'Phường Hiệp Bình Chánh' },
           { id: 'hiep-binh-phuoc', name: 'Phường Hiệp Bình Phước' },
           { id: 'tam-binh', name: 'Phường Tam Bình' },
-          { id: 'tam-phu', name: 'Phường Tam Phú' }
-        ]
-      }
-    ]
+          { id: 'tam-phu', name: 'Phường Tam Phú' },
+        ],
+      },
+    ],
   },
   {
     id: 'hn',
@@ -103,8 +103,8 @@ export const vietnamProvinces: Province[] = [
           { id: 'hang-gai', name: 'Phường Hàng Gai' },
           { id: 'hang-ma', name: 'Phường Hàng Mã' },
           { id: 'hang-trong', name: 'Phường Hàng Trống' },
-          { id: 'cua-dong', name: 'Phường Cửa Đông' }
-        ]
+          { id: 'cua-dong', name: 'Phường Cửa Đông' },
+        ],
       },
       {
         id: 'ba-dinh',
@@ -115,8 +115,8 @@ export const vietnamProvinces: Province[] = [
           { id: 'doi-can', name: 'Phường Đội Cấn' },
           { id: 'giang-vo', name: 'Phường Giảng Võ' },
           { id: 'kim-ma', name: 'Phường Kim Mã' },
-          { id: 'lieu-giai', name: 'Phường Liễu Giai' }
-        ]
+          { id: 'lieu-giai', name: 'Phường Liễu Giai' },
+        ],
       },
       {
         id: 'dong-da',
@@ -127,8 +127,8 @@ export const vietnamProvinces: Province[] = [
           { id: 'kham-thien', name: 'Phường Khâm Thiên' },
           { id: 'kim-lien', name: 'Phường Kim Liên' },
           { id: 'lang-ha', name: 'Phường Láng Hạ' },
-          { id: 'lang-thuong', name: 'Phường Láng Thượng' }
-        ]
+          { id: 'lang-thuong', name: 'Phường Láng Thượng' },
+        ],
       },
       {
         id: 'cau-giay',
@@ -141,10 +141,10 @@ export const vietnamProvinces: Province[] = [
           { id: 'nghia-tan', name: 'Phường Nghĩa Tân' },
           { id: 'quan-hoa', name: 'Phường Quan Hoa' },
           { id: 'trung-hoa', name: 'Phường Trung Hòa' },
-          { id: 'yen-hoa', name: 'Phường Yên Hòa' }
-        ]
-      }
-    ]
+          { id: 'yen-hoa', name: 'Phường Yên Hòa' },
+        ],
+      },
+    ],
   },
   {
     id: 'dn',
@@ -158,8 +158,8 @@ export const vietnamProvinces: Province[] = [
           { id: 'hai-chau-2', name: 'Phường Hải Châu 2' },
           { id: 'thach-thang', name: 'Phường Thạch Thang' },
           { id: 'thanh-binh', name: 'Phường Thanh Bình' },
-          { id: 'thuan-phuoc', name: 'Phường Thuận Phước' }
-        ]
+          { id: 'thuan-phuoc', name: 'Phường Thuận Phước' },
+        ],
       },
       {
         id: 'thanh-khe',
@@ -169,10 +169,10 @@ export const vietnamProvinces: Province[] = [
           { id: 'chinh-gian', name: 'Phường Chính Gián' },
           { id: 'hoa-khe', name: 'Phường Hòa Khê' },
           { id: 'tam-thuan', name: 'Phường Tam Thuận' },
-          { id: 'tan-chinh', name: 'Phường Tân Chính' }
-        ]
-      }
-    ]
+          { id: 'tan-chinh', name: 'Phường Tân Chính' },
+        ],
+      },
+    ],
   },
   {
     id: 'ct',
@@ -187,8 +187,8 @@ export const vietnamProvinces: Province[] = [
           { id: 'an-hoa', name: 'Phường An Hòa' },
           { id: 'an-nghiep', name: 'Phường An Nghiệp' },
           { id: 'cai-khe', name: 'Phường Cái Khế' },
-          { id: 'hung-loi', name: 'Phường Hưng Lợi' }
-        ]
+          { id: 'hung-loi', name: 'Phường Hưng Lợi' },
+        ],
       },
       {
         id: 'binh-thuy',
@@ -198,10 +198,10 @@ export const vietnamProvinces: Province[] = [
           { id: 'bui-huu-nghia', name: 'Phường Bùi Hữu Nghĩa' },
           { id: 'long-hoa', name: 'Phường Long Hòa' },
           { id: 'long-tuyen', name: 'Phường Long Tuyền' },
-          { id: 'tra-an', name: 'Phường Trà An' }
-        ]
-      }
-    ]
+          { id: 'tra-an', name: 'Phường Trà An' },
+        ],
+      },
+    ],
   },
   {
     id: 'hp',
@@ -215,8 +215,8 @@ export const vietnamProvinces: Province[] = [
           { id: 'minh-khai', name: 'Phường Minh Khai' },
           { id: 'phan-boi-chau', name: 'Phường Phan Bội Châu' },
           { id: 'quang-trung', name: 'Phường Quang Trung' },
-          { id: 'trai-cau', name: 'Phường Trại Cau' }
-        ]
+          { id: 'trai-cau', name: 'Phường Trại Cau' },
+        ],
       },
       {
         id: 'le-chan',
@@ -226,20 +226,20 @@ export const vietnamProvinces: Province[] = [
           { id: 'an-duong', name: 'Phường An Dương' },
           { id: 'cat-dai', name: 'Phường Cát Dài' },
           { id: 'dong-hai', name: 'Phường Đông Hải' },
-          { id: 'hang-kenh', name: 'Phường Hàng Kênh' }
-        ]
-      }
-    ]
-  }
-]
+          { id: 'hang-kenh', name: 'Phường Hàng Kênh' },
+        ],
+      },
+    ],
+  },
+];
 
-export type AddressType = 'home' | 'office' | 'other'
+export type AddressType = 'home' | 'office' | 'other';
 
 export interface RecentAddress {
-  id: string
-  street: string
-  fullAddress: string
-  timestamp: number
+  id: string;
+  street: string;
+  fullAddress: string;
+  timestamp: number;
 }
 
 export const streetSuggestions: string[] = [
@@ -257,31 +257,31 @@ export const streetSuggestions: string[] = [
   '909 Đường Lê Duẩn',
   '111 Đường Phạm Ngọc Thạch',
   '222 Đường Nguyễn Đình Chiểu',
-  '333 Đường Võ Thị Sáu'
-]
+  '333 Đường Võ Thị Sáu',
+];
 
 export const getDistrictsByProvince = (provinceId: string): District[] => {
-  const province = vietnamProvinces.find((p) => p.id === provinceId)
-  return province?.districts || []
-}
+  const province = vietnamProvinces.find((p) => p.id === provinceId);
+  return province?.districts || [];
+};
 
 export const getWardsByDistrict = (provinceId: string, districtId: string): Ward[] => {
-  const province = vietnamProvinces.find((p) => p.id === provinceId)
-  const district = province?.districts.find((d) => d.id === districtId)
-  return district?.wards || []
-}
+  const province = vietnamProvinces.find((p) => p.id === provinceId);
+  const district = province?.districts.find((d) => d.id === districtId);
+  return district?.wards || [];
+};
 
 export const getProvinceNameById = (provinceId: string): string => {
-  return vietnamProvinces.find((p) => p.id === provinceId)?.name || ''
-}
+  return vietnamProvinces.find((p) => p.id === provinceId)?.name || '';
+};
 
 export const getDistrictNameById = (provinceId: string, districtId: string): string => {
-  const province = vietnamProvinces.find((p) => p.id === provinceId)
-  return province?.districts.find((d) => d.id === districtId)?.name || ''
-}
+  const province = vietnamProvinces.find((p) => p.id === provinceId);
+  return province?.districts.find((d) => d.id === districtId)?.name || '';
+};
 
 export const getWardNameById = (provinceId: string, districtId: string, wardId: string): string => {
-  const province = vietnamProvinces.find((p) => p.id === provinceId)
-  const district = province?.districts.find((d) => d.id === districtId)
-  return district?.wards.find((w) => w.id === wardId)?.name || ''
-}
+  const province = vietnamProvinces.find((p) => p.id === provinceId);
+  const district = province?.districts.find((d) => d.id === districtId);
+  return district?.wards.find((w) => w.id === wardId)?.name || '';
+};

@@ -12,6 +12,7 @@ import { useOrderStatus } from 'src/hooks/nuqs/orderSearchParams';
 import { ordersStatus, orderStatusFromNumber, orderStatusToNumber } from 'src/constant/order';
 import { useIsMobile } from 'src/hooks/useIsMobile';
 import SEO from 'src/components/SEO';
+import Pagination from 'src/components/Pagination';
 import { useTranslation } from 'react-i18next';
 
 const orderTabKeys = [
@@ -200,26 +201,8 @@ export default function OrderList() {
       </div>
 
       {/* Pagination */}
-      {pagination && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 rounded-xl border border-gray-100 bg-linear-to-r from-white via-gray-50 to-white p-4 shadow-md dark:border-slate-600 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:border-orange hover:bg-orange hover:text-white disabled:opacity-50 disabled:hover:border-gray-200 disabled:hover:bg-white disabled:hover:text-gray-700 dark:border-slate-600 dark:bg-slate-800 dark:text-gray-300 dark:disabled:hover:border-slate-600 dark:disabled:hover:bg-slate-800 dark:disabled:hover:text-gray-300"
-          >
-            Trước
-          </button>
-          <span className="px-4 text-sm text-gray-600 dark:text-gray-400">
-            {t('pagination.page', { page, total: pagination.totalPages })}
-          </span>
-          <button
-            onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
-            disabled={page === pagination.totalPages}
-            className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:border-orange hover:bg-orange hover:text-white disabled:opacity-50 disabled:hover:border-gray-200 disabled:hover:bg-white disabled:hover:text-gray-700 dark:border-slate-600 dark:bg-slate-800 dark:text-gray-300 dark:disabled:hover:border-slate-600 dark:disabled:hover:bg-slate-800 dark:disabled:hover:text-gray-300"
-          >
-            {t('pagination.next')}
-          </button>
-        </div>
+      {pagination && (
+        <Pagination currentPage={page} totalPages={pagination.totalPages} onPageChange={setPage} />
       )}
 
       {/* Cancel Order Confirmation Modal */}

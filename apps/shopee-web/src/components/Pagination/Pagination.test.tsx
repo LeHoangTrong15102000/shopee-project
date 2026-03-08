@@ -1,5 +1,5 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router';
 import { NuqsTestingAdapter } from 'nuqs/adapters/testing';
 import Pagination from './Pagination';
@@ -77,14 +77,14 @@ describe('Pagination Component Unit Tests', () => {
     test('should render previous button when not on first page', () => {
       renderWithUrl('page=3', 20);
 
-      const prevButton = screen.getByLabelText('Go to previous page');
+      const prevButton = screen.getByLabelText('Đi đến trang trước');
       expect(prevButton).toBeInTheDocument();
     });
 
     test('should render next button when not on last page', () => {
       renderWithUrl('page=1', 20);
 
-      const nextButton = screen.getByLabelText('Go to next page');
+      const nextButton = screen.getByLabelText('Đi đến trang sau');
       expect(nextButton).toBeInTheDocument();
     });
 
@@ -134,11 +134,12 @@ describe('Pagination Component Unit Tests', () => {
       expect(dotsWithEllipsis.length).toBeGreaterThan(0);
     });
 
-    test('should handle edge cases with dots', () => {
+    test('should render dots when near start of pages', () => {
       renderWithUrl('page=2', 20);
 
-      const pagination = screen.getByRole('navigation');
-      expect(pagination).toBeInTheDocument();
+      const dots = document.querySelectorAll('span[aria-hidden="true"]');
+      const dotsWithEllipsis = Array.from(dots).filter((span) => span.textContent?.includes('...'));
+      expect(dotsWithEllipsis.length).toBeGreaterThan(0);
     });
 
     test('should render appropriate number of links for large pagination', () => {
@@ -160,19 +161,20 @@ describe('Pagination Component Unit Tests', () => {
     test('should provide clickable navigation controls', () => {
       renderWithUrl('page=5', 20);
 
-      const prevButton = screen.getByLabelText('Go to previous page');
-      const nextButton = screen.getByLabelText('Go to next page');
+      const prevButton = screen.getByLabelText('Đi đến trang trước');
+      const nextButton = screen.getByLabelText('Đi đến trang sau');
 
       expect(prevButton).toHaveAttribute('href');
       expect(nextButton).toHaveAttribute('href');
     });
 
-    test('should support keyboard navigation', () => {
+    test('should render focusable link elements for keyboard navigation', () => {
       renderWithUrl('', 20);
 
       const links = screen.getAllByRole('link');
       links.forEach((link) => {
         expect(link.tagName).toBe('A');
+        expect(link).toHaveAttribute('href');
       });
     });
   });
@@ -199,11 +201,13 @@ describe('Pagination Component Unit Tests', () => {
       expect(pagination).toBeInTheDocument();
     });
 
-    test('should handle very large page numbers', () => {
+    test('should handle very large page numbers by clamping to last page', () => {
       renderWithUrl('page=9999', 20);
 
       const pagination = screen.getByRole('navigation');
       expect(pagination).toBeInTheDocument();
+      const page20 = screen.getByText('20');
+      expect(page20).toHaveAttribute('aria-current', 'page');
     });
 
     test('should handle missing pageSize', () => {
@@ -213,11 +217,16 @@ describe('Pagination Component Unit Tests', () => {
       expect(pagination).toBeInTheDocument();
     });
 
-    test('should handle zero pageSize', () => {
-      renderWithUrl('page=1', 0);
+    test('should return null for zero pageSize', () => {
+      const { container } = renderWithUrl('page=1', 0);
 
-      const pagination = screen.getByRole('navigation');
-      expect(pagination).toBeInTheDocument();
+      expect(container.querySelector('nav')).toBeNull();
+    });
+
+    test('should return null for pageSize of 1', () => {
+      const { container } = renderWithUrl('page=1', 1);
+
+      expect(container.querySelector('nav')).toBeNull();
     });
   });
 
@@ -229,18 +238,21 @@ describe('Pagination Component Unit Tests', () => {
       expect(pagination).toHaveClass('mt-6', 'flex', 'justify-center');
     });
 
-    test('should highlight current page', () => {
+    test('should highlight current page with active styling', () => {
       renderWithUrl('page=3', 20);
 
       const currentPage = screen.getByText('3');
       expect(currentPage).toBeInTheDocument();
+      expect(currentPage.className).toContain('bg-orange');
+      expect(currentPage.className).toContain('text-white');
     });
 
-    test('should style disabled navigation elements', () => {
+    test('should style disabled prev button on first page', () => {
       renderWithUrl('page=1', 20);
 
-      const pagination = screen.getByRole('navigation');
-      expect(pagination).toBeInTheDocument();
+      const disabledPrev = document.querySelector('.cursor-not-allowed');
+      expect(disabledPrev).toBeInTheDocument();
+      expect(disabledPrev?.className).toContain('opacity-40');
     });
 
     test('should apply hover states to clickable elements', () => {
@@ -270,14 +282,14 @@ describe('Pagination Component Unit Tests', () => {
       renderWithUrl('', 20);
 
       const pagination = screen.getByRole('navigation');
-      expect(pagination).toHaveAttribute('aria-label', 'Pagination Navigation');
+      expect(pagination).toHaveAttribute('aria-label', 'Điều hướng phân trang');
     });
 
     test('should provide accessible labels for navigation controls', () => {
       renderWithUrl('page=5', 20);
 
-      expect(screen.getByLabelText('Go to previous page')).toBeInTheDocument();
-      expect(screen.getByLabelText('Go to next page')).toBeInTheDocument();
+      expect(screen.getByLabelText('Đi đến trang trước')).toBeInTheDocument();
+      expect(screen.getByLabelText('Đi đến trang sau')).toBeInTheDocument();
     });
 
     test('should support screen readers', () => {
@@ -292,7 +304,7 @@ describe('Pagination Component Unit Tests', () => {
   });
 
   describe('Performance', () => {
-    test('should not re-render unnecessarily', () => {
+    test('should survive re-render without error', () => {
       const { rerender } = renderWithUrl('', 20);
 
       rerender(
@@ -327,6 +339,206 @@ describe('Pagination Component Unit Tests', () => {
 
       const pagination = screen.getByRole('navigation');
       expect(pagination).toBeInTheDocument();
+    });
+  });
+});
+
+
+const renderControlled = (currentPage: number, totalPages: number, onPageChange?: (page: number) => void) => {
+  return render(
+    <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange || vi.fn()} />,
+  );
+};
+
+describe('Pagination Controlled Mode', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    document.body.innerHTML = '';
+  });
+
+  describe('Rendering', () => {
+    test('should render with controlled props', () => {
+      renderControlled(1, 20);
+      const pagination = screen.getByRole('navigation');
+      expect(pagination).toBeInTheDocument();
+    });
+
+    test('should render buttons instead of links', () => {
+      renderControlled(5, 20);
+      const buttons = screen.getAllByRole('button');
+      expect(buttons.length).toBeGreaterThan(0);
+      expect(screen.queryAllByRole('link')).toHaveLength(0);
+    });
+
+    test('should return null for totalPages <= 1', () => {
+      const { container } = renderControlled(1, 1);
+      expect(container.querySelector('nav')).toBeNull();
+    });
+
+    test('should return null for totalPages = 0', () => {
+      const { container } = renderControlled(1, 0);
+      expect(container.querySelector('nav')).toBeNull();
+    });
+  });
+
+  describe('Page Change Callback', () => {
+    test('should call onPageChange when clicking a page button', () => {
+      const onPageChange = vi.fn();
+      renderControlled(1, 20, onPageChange);
+
+      fireEvent.click(screen.getByText('2'));
+      expect(onPageChange).toHaveBeenCalledWith(2);
+    });
+
+    test('should call onPageChange with correct page for next button', () => {
+      const onPageChange = vi.fn();
+      renderControlled(5, 20, onPageChange);
+
+      const nextButton = screen.getByLabelText('Đi đến trang sau');
+      fireEvent.click(nextButton);
+      expect(onPageChange).toHaveBeenCalledWith(6);
+    });
+
+    test('should call onPageChange with correct page for prev button', () => {
+      const onPageChange = vi.fn();
+      renderControlled(5, 20, onPageChange);
+
+      const prevButton = screen.getByLabelText('Đi đến trang trước');
+      fireEvent.click(prevButton);
+      expect(onPageChange).toHaveBeenCalledWith(4);
+    });
+  });
+
+  describe('Disabled States', () => {
+    test('should disable prev button on first page with correct styling', () => {
+      renderControlled(1, 20);
+      const disabledPrev = document.querySelector('span[aria-disabled="true"]');
+      expect(disabledPrev).toBeInTheDocument();
+      expect(disabledPrev?.className).toContain('cursor-not-allowed');
+      expect(disabledPrev?.className).toContain('opacity-40');
+    });
+
+    test('should disable next button on last page with correct styling', () => {
+      renderControlled(20, 20);
+      const disabledSpans = document.querySelectorAll('span[aria-disabled="true"]');
+      expect(disabledSpans.length).toBeGreaterThan(0);
+      const lastDisabled = disabledSpans[disabledSpans.length - 1];
+      expect(lastDisabled?.className).toContain('cursor-not-allowed');
+      expect(lastDisabled?.className).toContain('opacity-40');
+    });
+
+    test('should enable both prev and next on middle page', () => {
+      renderControlled(10, 20);
+      const prevButton = screen.getByLabelText('Đi đến trang trước');
+      const nextButton = screen.getByLabelText('Đi đến trang sau');
+      expect(prevButton.tagName).toBe('BUTTON');
+      expect(nextButton.tagName).toBe('BUTTON');
+    });
+
+    test('should not trigger onPageChange when clicking disabled prev span', () => {
+      const onPageChange = vi.fn();
+      renderControlled(1, 20, onPageChange);
+      const disabledPrev = document.querySelector('span[aria-disabled="true"]');
+      if (disabledPrev) fireEvent.click(disabledPrev);
+      expect(onPageChange).not.toHaveBeenCalled();
+    });
+
+    test('should not trigger onPageChange when clicking disabled next span', () => {
+      const onPageChange = vi.fn();
+      renderControlled(20, 20, onPageChange);
+      const disabledSpans = document.querySelectorAll('span[aria-disabled="true"]');
+      const disabledNext = disabledSpans[disabledSpans.length - 1];
+      if (disabledNext) fireEvent.click(disabledNext);
+      expect(onPageChange).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('RANGE 2 Algorithm', () => {
+    test('should render correct page sequence for page 5 of 20', () => {
+      renderControlled(5, 20);
+      const buttons = screen.getAllByRole('button');
+      const pageTexts = buttons
+        .map((b) => b.textContent)
+        .filter((t) => t && /^\d+$/.test(t));
+      expect(pageTexts).toEqual(['1', '2', '3', '4', '5', '6', '7', '19', '20']);
+    });
+
+    test('should render dots for large page counts with correct styling', () => {
+      renderControlled(10, 20);
+      const dots = document.querySelectorAll('span[aria-hidden="true"]');
+      const dotsWithEllipsis = Array.from(dots).filter((span) => span.textContent === '...');
+      expect(dotsWithEllipsis.length).toBeGreaterThan(0);
+      dotsWithEllipsis.forEach((dot) => {
+        expect(dot.className).toContain('border-gray-200');
+        expect(dot.className).toContain('bg-white');
+        expect(dot.className).toContain('shadow-xs');
+      });
+    });
+
+    test('should render all pages for small page counts', () => {
+      renderControlled(1, 3);
+      expect(screen.getByText('1')).toBeInTheDocument();
+      expect(screen.getByText('2')).toBeInTheDocument();
+      expect(screen.getByText('3')).toBeInTheDocument();
+    });
+  });
+
+  describe('Accessibility', () => {
+    test('should have proper navigation role and aria-label', () => {
+      renderControlled(1, 20);
+      const nav = screen.getByRole('navigation');
+      expect(nav).toHaveAttribute('aria-label', 'Điều hướng phân trang');
+    });
+
+    test('should mark current page with aria-current', () => {
+      renderControlled(5, 20);
+      const currentPageButton = screen.getByText('5');
+      expect(currentPageButton).toHaveAttribute('aria-current', 'page');
+    });
+
+    test('should have aria-labels on page buttons', () => {
+      renderControlled(5, 20);
+      const page3Button = screen.getByText('3');
+      expect(page3Button).toHaveAttribute('aria-label');
+    });
+
+    test('should trigger onPageChange on keyboard Enter via click', () => {
+      const onPageChange = vi.fn();
+      renderControlled(5, 20, onPageChange);
+      const page3 = screen.getByText('3');
+      fireEvent.click(page3);
+      expect(onPageChange).toHaveBeenCalledWith(3);
+    });
+  });
+
+  describe('Edge Cases', () => {
+    test('should call onPageChange when clicking already-active page', () => {
+      const onPageChange = vi.fn();
+      renderControlled(5, 20, onPageChange);
+      const activePage = screen.getByText('5');
+      fireEvent.click(activePage);
+      expect(onPageChange).toHaveBeenCalledWith(5);
+    });
+
+    test('should clamp currentPage=0 and render as page 1', () => {
+      renderControlled(0, 20);
+      const page1 = screen.getByText('1');
+      expect(page1).toHaveAttribute('aria-current', 'page');
+      expect(page1.className).toContain('bg-orange');
+    });
+
+    test('should return null for negative totalPages', () => {
+      const { container } = renderControlled(1, -5);
+      expect(container.querySelector('nav')).toBeNull();
+    });
+  });
+
+  describe('Styling', () => {
+    test('should apply active styling to current page', () => {
+      renderControlled(5, 20);
+      const currentPage = screen.getByText('5');
+      expect(currentPage.className).toContain('bg-orange');
+      expect(currentPage.className).toContain('text-white');
     });
   });
 });

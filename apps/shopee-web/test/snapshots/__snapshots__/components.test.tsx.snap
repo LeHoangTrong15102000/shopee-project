@@ -345,17 +345,20 @@ exports[`Component Snapshots > NotificationSkeleton component renders correctly 
 
 exports[`Component Snapshots > Pagination component renders correctly > Pagination-default 1`] = `
 <nav
-  aria-label="Pagination Navigation"
+  aria-label="Điều hướng phân trang"
   class="mt-6 flex flex-wrap items-center justify-center"
   role="navigation"
 >
   <span
     aria-disabled="true"
     aria-label="Trang trước"
-    class="flex cursor-not-allowed items-center justify-center rounded-tl-sm rounded-bl-sm border-transparent px-2 py-2 opacity-40 transition-opacity duration-150 md:px-4 md:py-3"
+    class="flex cursor-not-allowed items-center justify-center min-h-[44px] min-w-[44px] rounded-tl-sm rounded-bl-sm border-transparent px-2 py-2 opacity-40 transition-opacity duration-150 motion-reduce:transition-none md:px-4 md:py-3"
+    role="button"
+    tabindex="-1"
   >
     <svg
-      class="h-5 w-5 text-[rgba(0,0,0,0.6)] dark:text-gray-500"
+      aria-hidden="true"
+      class="h-5 w-5 text-black/60 dark:text-gray-400"
       fill="none"
       stroke="currentColor"
       stroke-width="1.5"
@@ -372,7 +375,7 @@ exports[`Component Snapshots > Pagination component renders correctly > Paginati
   <a
     aria-current="page"
     aria-label="Trang 1"
-    class="flex cursor-pointer items-center justify-center px-2 py-2 text-sm transition-all duration-150 md:px-4 md:py-3 md:text-[18px] bg-orange text-white hover:bg-orange dark:bg-orange-500"
+    class="flex cursor-pointer items-center justify-center min-h-[44px] min-w-[44px] px-2 py-2 text-sm transition-all duration-150 motion-reduce:transition-none md:px-4 md:py-3 md:text-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange bg-orange text-white hover:bg-orange dark:bg-orange-500"
     data-discover="true"
     href="/?page=1&limit=20&sort_by=createdAt"
   >
@@ -380,7 +383,7 @@ exports[`Component Snapshots > Pagination component renders correctly > Paginati
   </a>
   <a
     aria-label="Trang 2"
-    class="flex cursor-pointer items-center justify-center px-2 py-2 text-sm transition-all duration-150 md:px-4 md:py-3 md:text-[18px] border-transparent text-black/50 hover:scale-110 hover:text-orange active:scale-95 dark:text-gray-400 dark:hover:text-orange-400"
+    class="flex cursor-pointer items-center justify-center min-h-[44px] min-w-[44px] px-2 py-2 text-sm transition-all duration-150 motion-reduce:transition-none md:px-4 md:py-3 md:text-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange border-transparent text-black/70 hover:scale-110 hover:text-orange active:scale-95 motion-reduce:hover:scale-100 motion-reduce:active:scale-100 dark:text-gray-400 dark:hover:text-orange-400"
     data-discover="true"
     href="/?page=2&limit=20&sort_by=createdAt"
   >
@@ -388,20 +391,21 @@ exports[`Component Snapshots > Pagination component renders correctly > Paginati
   </a>
   <a
     aria-label="Trang 3"
-    class="flex cursor-pointer items-center justify-center px-2 py-2 text-sm transition-all duration-150 md:px-4 md:py-3 md:text-[18px] border-transparent text-black/50 hover:scale-110 hover:text-orange active:scale-95 dark:text-gray-400 dark:hover:text-orange-400"
+    class="flex cursor-pointer items-center justify-center min-h-[44px] min-w-[44px] px-2 py-2 text-sm transition-all duration-150 motion-reduce:transition-none md:px-4 md:py-3 md:text-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange border-transparent text-black/70 hover:scale-110 hover:text-orange active:scale-95 motion-reduce:hover:scale-100 motion-reduce:active:scale-100 dark:text-gray-400 dark:hover:text-orange-400"
     data-discover="true"
     href="/?page=3&limit=20&sort_by=createdAt"
   >
     3
   </a>
   <span
+    aria-hidden="true"
     class="flex items-center justify-center border border-gray-200 bg-white px-2 py-2 text-sm shadow-xs md:px-3 md:py-3 md:text-base dark:border-slate-700 dark:bg-slate-800 dark:text-gray-300"
   >
     ...
   </span>
   <a
     aria-label="Trang 19"
-    class="flex cursor-pointer items-center justify-center px-2 py-2 text-sm transition-all duration-150 md:px-4 md:py-3 md:text-[18px] border-transparent text-black/50 hover:scale-110 hover:text-orange active:scale-95 dark:text-gray-400 dark:hover:text-orange-400"
+    class="flex cursor-pointer items-center justify-center min-h-[44px] min-w-[44px] px-2 py-2 text-sm transition-all duration-150 motion-reduce:transition-none md:px-4 md:py-3 md:text-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange border-transparent text-black/70 hover:scale-110 hover:text-orange active:scale-95 motion-reduce:hover:scale-100 motion-reduce:active:scale-100 dark:text-gray-400 dark:hover:text-orange-400"
     data-discover="true"
     href="/?page=19&limit=20&sort_by=createdAt"
   >
@@ -409,20 +413,21 @@ exports[`Component Snapshots > Pagination component renders correctly > Paginati
   </a>
   <a
     aria-label="Trang 20"
-    class="flex cursor-pointer items-center justify-center px-2 py-2 text-sm transition-all duration-150 md:px-4 md:py-3 md:text-[18px] border-transparent text-black/50 hover:scale-110 hover:text-orange active:scale-95 dark:text-gray-400 dark:hover:text-orange-400"
+    class="flex cursor-pointer items-center justify-center min-h-[44px] min-w-[44px] px-2 py-2 text-sm transition-all duration-150 motion-reduce:transition-none md:px-4 md:py-3 md:text-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange border-transparent text-black/70 hover:scale-110 hover:text-orange active:scale-95 motion-reduce:hover:scale-100 motion-reduce:active:scale-100 dark:text-gray-400 dark:hover:text-orange-400"
     data-discover="true"
     href="/?page=20&limit=20&sort_by=createdAt"
   >
     20
   </a>
   <a
-    aria-label="Go to next page"
-    class="flex cursor-pointer items-center justify-center rounded-tr-sm rounded-br-sm border-transparent px-2 py-2 transition-all duration-150 hover:bg-black/5 active:scale-95 md:px-4 md:py-3 dark:hover:bg-white/10"
+    aria-label="Đi đến trang sau"
+    class="flex cursor-pointer items-center justify-center min-h-[44px] min-w-[44px] rounded-tr-sm rounded-br-sm border-transparent px-2 py-2 transition-all duration-150 motion-reduce:transition-none hover:bg-black/5 active:scale-95 motion-reduce:active:scale-100 md:px-4 md:py-3 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange"
     data-discover="true"
     href="/?page=2&limit=20&sort_by=createdAt"
   >
     <svg
-      class="h-5 w-5 text-[rgba(0,0,0,.6)] dark:text-gray-400"
+      aria-hidden="true"
+      class="h-5 w-5 text-black/60 dark:text-gray-400"
       fill="none"
       stroke="currentColor"
       stroke-width="1.5"

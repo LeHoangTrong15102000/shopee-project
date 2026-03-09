@@ -19,6 +19,7 @@ export interface Voucher {
   applicable_categories?: string[];
   applicable_products?: string[];
   terms?: string[];
+  is_collected?: boolean;
   createdAt: string;
   updatedAt: string;
 }

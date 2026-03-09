@@ -33,7 +33,7 @@ import {
 
 const mockOrderService = orderService as jest.Mocked<typeof orderService>
 
-const createMockRequest = (options: { body?: any; params?: any; query?: any; jwtDecoded?: any } = {}): Partial<Request> => ({
+const createMockRequest = (options: { body?: any; params?: any; query?: any; jwtDecoded?: any } = {}): any => ({
   body: options.body || {},
   params: options.params || {},
   query: options.query || {},
@@ -68,7 +68,7 @@ describe('Order Controller', () => {
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await getShippingMethods(req as Request, res as Response)
+      await getShippingMethods(req as any, res as Response)
 
       expect(mockOrderService.getShippingMethods).toHaveBeenCalled()
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
@@ -82,7 +82,7 @@ describe('Order Controller', () => {
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await getPaymentMethods(req as Request, res as Response)
+      await getPaymentMethods(req as any, res as Response)
 
       expect(mockOrderService.getPaymentMethods).toHaveBeenCalled()
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
@@ -102,7 +102,7 @@ describe('Order Controller', () => {
       })
       const res = createMockResponse()
 
-      await createOrder(req as Request, res as Response)
+      await createOrder(req as any, res as Response)
 
       expect(mockOrderService.createOrder).toHaveBeenCalledWith('user_1', expect.objectContaining({
         items: [{ product_id: 'p1', buy_count: 2 }],
@@ -116,7 +116,7 @@ describe('Order Controller', () => {
       const req = createMockRequest({ body: { items: [] } })
       const res = createMockResponse()
 
-      await expect(createOrder(req as Request, res as Response))
+      await expect(createOrder(req as any, res as Response))
         .rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
     })
 
@@ -125,7 +125,7 @@ describe('Order Controller', () => {
       const req = createMockRequest({ body: { items: [{ product_id: 'p1', buy_count: 1 }] } })
       const res = createMockResponse()
 
-      await expect(createOrder(req as Request, res as Response))
+      await expect(createOrder(req as any, res as Response))
         .rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
     })
 
@@ -134,7 +134,7 @@ describe('Order Controller', () => {
       const req = createMockRequest({ body: { items: [{ product_id: 'p1', buy_count: 1 }], shipping_address_id: 'addr_999' } })
       const res = createMockResponse()
 
-      await expect(createOrder(req as Request, res as Response))
+      await expect(createOrder(req as any, res as Response))
         .rejects.toMatchObject({ status: STATUS.NOT_FOUND })
     })
   })
@@ -149,7 +149,7 @@ describe('Order Controller', () => {
       const req = createMockRequest({ query: { page: '1', limit: '10' } })
       const res = createMockResponse()
 
-      await getOrders(req as Request, res as Response)
+      await getOrders(req as any, res as Response)
 
       expect(mockOrderService.getOrders).toHaveBeenCalledWith('user_1', undefined, { page: 1, limit: 10 })
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
@@ -164,7 +164,7 @@ describe('Order Controller', () => {
       const req = createMockRequest({ query: { status: 'pending', page: '1', limit: '10' } })
       const res = createMockResponse()
 
-      await getOrders(req as Request, res as Response)
+      await getOrders(req as any, res as Response)
 
       expect(mockOrderService.getOrders).toHaveBeenCalledWith('user_1', 'pending', { page: 1, limit: 10 })
     })
@@ -174,7 +174,7 @@ describe('Order Controller', () => {
       const req = createMockRequest({ query: { status: 'invalid' } })
       const res = createMockResponse()
 
-      await expect(getOrders(req as Request, res as Response))
+      await expect(getOrders(req as any, res as Response))
         .rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
     })
   })
@@ -185,7 +185,7 @@ describe('Order Controller', () => {
       const req = createMockRequest({ params: { id: 'order_1' } })
       const res = createMockResponse()
 
-      await getOrderById(req as Request, res as Response)
+      await getOrderById(req as any, res as Response)
 
       expect(mockOrderService.getOrderById).toHaveBeenCalledWith('user_1', 'order_1')
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
@@ -196,7 +196,7 @@ describe('Order Controller', () => {
       const req = createMockRequest({ params: { id: 'order_999' } })
       const res = createMockResponse()
 
-      await expect(getOrderById(req as Request, res as Response))
+      await expect(getOrderById(req as any, res as Response))
         .rejects.toMatchObject({ status: STATUS.NOT_FOUND })
     })
 
@@ -205,7 +205,7 @@ describe('Order Controller', () => {
       const req = createMockRequest({ params: { id: 'invalid' } })
       const res = createMockResponse()
 
-      await expect(getOrderById(req as Request, res as Response))
+      await expect(getOrderById(req as any, res as Response))
         .rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
     })
   })
@@ -217,7 +217,7 @@ describe('Order Controller', () => {
       const req = createMockRequest({ params: { id: 'order_1' }, body: { reason: 'Đổi ý' } })
       const res = createMockResponse()
 
-      await cancelOrder(req as Request, res as Response)
+      await cancelOrder(req as any, res as Response)
 
       expect(mockOrderService.cancelOrder).toHaveBeenCalledWith('user_1', 'order_1', 'Đổi ý')
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
@@ -228,7 +228,7 @@ describe('Order Controller', () => {
       const req = createMockRequest({ params: { id: 'order_1' }, body: { reason: 'test' } })
       const res = createMockResponse()
 
-      await expect(cancelOrder(req as Request, res as Response))
+      await expect(cancelOrder(req as any, res as Response))
         .rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
     })
 
@@ -237,7 +237,7 @@ describe('Order Controller', () => {
       const req = createMockRequest({ params: { id: 'order_999' }, body: { reason: 'test' } })
       const res = createMockResponse()
 
-      await expect(cancelOrder(req as Request, res as Response))
+      await expect(cancelOrder(req as any, res as Response))
         .rejects.toMatchObject({ status: STATUS.NOT_FOUND })
     })
   })
@@ -249,7 +249,7 @@ describe('Order Controller', () => {
       const req = createMockRequest({ params: { id: 'order_1' } })
       const res = createMockResponse()
 
-      await confirmReceived(req as Request, res as Response)
+      await confirmReceived(req as any, res as Response)
 
       expect(mockOrderService.confirmReceived).toHaveBeenCalledWith('user_1', 'order_1')
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
@@ -260,7 +260,7 @@ describe('Order Controller', () => {
       const req = createMockRequest({ params: { id: 'order_1' } })
       const res = createMockResponse()
 
-      await expect(confirmReceived(req as Request, res as Response))
+      await expect(confirmReceived(req as any, res as Response))
         .rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
     })
 
@@ -269,7 +269,7 @@ describe('Order Controller', () => {
       const req = createMockRequest({ params: { id: 'order_999' } })
       const res = createMockResponse()
 
-      await expect(confirmReceived(req as Request, res as Response))
+      await expect(confirmReceived(req as any, res as Response))
         .rejects.toMatchObject({ status: STATUS.NOT_FOUND })
     })
   })

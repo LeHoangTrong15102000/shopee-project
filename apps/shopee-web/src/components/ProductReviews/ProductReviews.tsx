@@ -173,7 +173,10 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
           <span className="text-sm font-medium dark:text-gray-300"></span>
           <Button
             animated={false}
-            onClick={() => { setRatingFilter(undefined); setCurrentPage(1); }}
+            onClick={() => {
+              setRatingFilter(undefined);
+              setCurrentPage(1);
+            }}
             className={`rounded-sm px-3 py-1 text-sm ${!ratingFilter ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600'}`}
           >
             {t('reviews.all')}
@@ -182,7 +185,10 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
             <Button
               animated={false}
               key={rating}
-              onClick={() => { setRatingFilter(rating); setCurrentPage(1); }}
+              onClick={() => {
+                setRatingFilter(rating);
+                setCurrentPage(1);
+              }}
               className={`flex items-center rounded-sm px-3 py-1 text-sm ${ratingFilter === rating ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600'}`}
             >
               {t('reviews.stars', { count: rating })}{' '}
@@ -195,7 +201,10 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
 
         <select
           value={sortBy}
-          onChange={(e) => { setSortBy(e.target.value as typeof sortBy); setCurrentPage(1); }}
+          onChange={(e) => {
+            setSortBy(e.target.value as typeof sortBy);
+            setCurrentPage(1);
+          }}
           className="rounded-sm border border-gray-300 bg-white px-3 py-1 text-sm text-gray-900 dark:border-slate-600 dark:bg-slate-700 dark:text-gray-100"
         >
           <option value="newest">{t('reviews.newest')}</option>
@@ -227,7 +236,11 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
 
       {/* Pagination */}
       {pagination && (
-        <Pagination currentPage={currentPage} totalPages={pagination.total_pages} onPageChange={setCurrentPage} />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={pagination.total_pages}
+          onPageChange={setCurrentPage}
+        />
       )}
     </div>
   );

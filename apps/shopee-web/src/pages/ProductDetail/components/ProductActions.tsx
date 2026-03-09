@@ -9,6 +9,8 @@ import { Product as ProductType } from 'src/types/product.type';
 import { useOptimisticAddToCart } from 'src/hooks/optimistic';
 import path from 'src/constant/path';
 import { staggerItem } from 'src/styles/animations';
+import { useCartItems } from 'src/stores/cart.store';
+import { getProductQuantityInCart } from 'src/utils/cart.utils';
 
 interface ProductActionsProps {
   product: ProductType;
@@ -64,13 +66,37 @@ const ProductActions = ({ product, isAuthenticated, reducedMotion }: ProductActi
   const navigate = useNavigate();
   const [buyCount, setBuyCount] = useState(1);
   const addToCartMutation = useOptimisticAddToCart();
+  const cartItems = useCartItems();
+
+  const existingQuantity = getProductQuantityInCart(product._id, cartItems);
+  const availableToAdd = Math.max(product.quantity - existingQuantity, 0);
 
   const handleBuyCount = (value: number) => {
     setBuyCount(value);
   };
 
+  const validateCartQuantity = (quantity: number): boolean => {
+    const totalQuantity = existingQuantity + quantity;
+    if (totalQuantity > product.quantity) {
+      if (availableToAdd <= 0) {
+        toast.error(t('cart.validationErrorFull', { existing: existingQuantity }), {
+          autoClose: 3000,
+          position: 'top-center',
+        });
+      } else {
+        toast.error(
+          t('cart.validationError', { existing: existingQuantity, remaining: availableToAdd }),
+          { autoClose: 3000, position: 'top-center' },
+        );
+      }
+      return false;
+    }
+    return true;
+  };
+
   const addToCart = () => {
     if (!product) return;
+    if (!validateCartQuantity(buyCount)) return;
 
     addToCartMutation.mutate({
       product_id: product._id,
@@ -80,6 +106,7 @@ const ProductActions = ({ product, isAuthenticated, reducedMotion }: ProductActi
 
   const handleBuyNow = async () => {
     if (!product) return;
+    if (!validateCartQuantity(buyCount)) return;
 
     try {
       const res = await addToCartMutation.mutateAsync({
@@ -120,7 +147,7 @@ const ProductActions = ({ product, isAuthenticated, reducedMotion }: ProductActi
             {t('actions.quantity')}
           </div>
           <QuantityController
-            max={product?.quantity}
+            max={availableToAdd > 0 ? availableToAdd : 1}
             value={buyCount}
             onDecrease={handleBuyCount}
             onIncrease={handleBuyCount}
@@ -143,6 +170,8 @@ const ProductActions = ({ product, isAuthenticated, reducedMotion }: ProductActi
               variant="outline"
               animated={false}
               onClick={isAuthenticated ? addToCart : handleLoginRedirect}
+              isLoading={addToCartMutation.isPending}
+              disabled={addToCartMutation.isPending}
               className="flex h-12 items-center justify-center rounded-xs px-5 capitalize shadow-xs"
             >
               <CartIcon />
@@ -159,6 +188,8 @@ const ProductActions = ({ product, isAuthenticated, reducedMotion }: ProductActi
               variant="primary"
               animated={false}
               onClick={isAuthenticated ? handleBuyNow : handleLoginRedirect}
+              isLoading={addToCartMutation.isPending}
+              disabled={addToCartMutation.isPending}
               className="flex h-12 min-w-20 items-center justify-center rounded-xs px-4 capitalize shadow-xs"
             >
               {t('actions.buyNow')}

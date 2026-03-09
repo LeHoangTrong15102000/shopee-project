@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+type Req = Request<Record<string, string>>
 import { STATUS } from '@constants/status'
 import { voucherService } from '../container'
 import { ValidationError, NotFoundError, BusinessError } from '@services/base.service'
@@ -26,7 +27,7 @@ export const getVouchers = async (req: Request, res: Response) => {
   })
 }
 
-export const getVoucherByCode = async (req: Request, res: Response): Promise<void> => {
+export const getVoucherByCode = async (req: Req, res: Response): Promise<void> => {
   try {
     const { code } = req.params
     const result = await voucherService.getVoucherByCode(code)
@@ -66,7 +67,7 @@ export const applyVoucher = async (req: Request, res: Response): Promise<void> =
   }
 }
 
-export const saveVoucher = async (req: Request, res: Response): Promise<void> => {
+export const saveVoucher = async (req: Req, res: Response): Promise<void> => {
   try {
     const user_id = req.jwtDecoded?.id
     const voucher_id = req.params.id
@@ -174,7 +175,7 @@ export const getMyVouchers = async (req: Request, res: Response) => {
   }
 }
 
-export const collectVoucher = async (req: Request, res: Response): Promise<void> => {
+export const collectVoucher = async (req: Req, res: Response): Promise<void> => {
   try {
     const user_id = req.jwtDecoded?.id
     const voucher_id = req.params.id

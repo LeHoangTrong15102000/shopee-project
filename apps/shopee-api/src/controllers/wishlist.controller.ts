@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+type Req = Request<Record<string, string>>
 import { STATUS } from '@constants/status'
 import { container } from '../container'
 
@@ -39,7 +40,7 @@ export const addToWishlist = async (req: Request, res: Response): Promise<void> 
   })
 }
 
-export const removeFromWishlist = async (req: Request, res: Response): Promise<void> => {
+export const removeFromWishlist = async (req: Req, res: Response): Promise<void> => {
   const user_id = req.jwtDecoded?.id
   const product_id = req.params.product_id
 
@@ -50,7 +51,7 @@ export const removeFromWishlist = async (req: Request, res: Response): Promise<v
   })
 }
 
-export const checkInWishlist = async (req: Request, res: Response) => {
+export const checkInWishlist = async (req: Req, res: Response) => {
   const user_id = req.jwtDecoded?.id
   const product_id = req.params.product_id
 

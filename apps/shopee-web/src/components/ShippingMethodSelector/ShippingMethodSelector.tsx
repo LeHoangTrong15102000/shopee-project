@@ -1,21 +1,32 @@
 import { memo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { ShippingMethod } from 'src/types/checkout.type';
 import checkoutApi from 'src/apis/checkout.api';
 import { formatCurrency } from 'src/utils/utils';
 import { getEstimatedDeliveryDate } from 'src/utils/date';
 import { ShippingIcon } from 'src/components/Icons';
+import { useReducedMotion } from 'src/hooks/useReducedMotion';
 
 interface ShippingMethodSelectorProps {
   selectedMethodId: string | null;
   onSelect: (method: ShippingMethod) => void;
+  viewOnly?: boolean;
 }
+
+const isExpressShipping = (estimatedDays: string): boolean => {
+  const match = estimatedDays.match(/(\d+)/);
+  return match ? parseInt(match[1], 10) <= 1 : false;
+};
 
 const ShippingMethodSelector = memo(function ShippingMethodSelector({
   selectedMethodId,
   onSelect,
+  viewOnly = false,
 }: ShippingMethodSelectorProps) {
+  const { t } = useTranslation('product');
+  const reducedMotion = useReducedMotion();
   const { data: methodsData, isLoading } = useQuery({
     queryKey: ['shipping-methods'],
     queryFn: async () => {
@@ -28,7 +39,7 @@ const ShippingMethodSelector = memo(function ShippingMethodSelector({
 
   if (isLoading) {
     return (
-      <div className="animate-pulse space-y-3">
+      <div className="animate-pulse motion-reduce:animate-none space-y-3">
         {[1, 2, 3].map((i) => (
           <div key={i} className="h-20 rounded-lg bg-gray-200 dark:bg-slate-700" />
         ))}
@@ -37,35 +48,48 @@ const ShippingMethodSelector = memo(function ShippingMethodSelector({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" role={viewOnly ? 'list' : 'radiogroup'} aria-label={t('shipping.selectMethod')}>
       {methods.map((method) => (
         <motion.div
           key={method._id}
-          initial={{ opacity: 0, y: 10 }}
+          initial={reducedMotion ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`cursor-pointer rounded-lg border-2 bg-white p-3 transition-all md:p-4 dark:bg-slate-800 ${
-            selectedMethodId === method._id
-              ? 'border-orange'
-              : 'border-gray-200 hover:border-gray-300 dark:border-slate-600 dark:hover:border-slate-500'
+          className={`rounded-lg border-2 bg-white p-3 transition-all md:p-4 dark:bg-slate-800 ${
+            viewOnly
+              ? 'border-gray-200 dark:border-slate-600'
+              : `cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2 ${
+                  selectedMethodId === method._id
+                    ? 'border-orange'
+                    : 'border-gray-200 hover:border-gray-300 dark:border-slate-600 dark:hover:border-slate-500'
+                }`
           }`}
-          onClick={() => onSelect(method)}
-          role="button"
-          tabIndex={0}
-          aria-pressed={selectedMethodId === method._id}
-          onKeyDown={(e) => e.key === 'Enter' && onSelect(method)}
+          {...(!viewOnly && {
+            onClick: () => onSelect(method),
+            tabIndex: 0,
+            'aria-checked': selectedMethodId === method._id,
+            onKeyDown: (e: React.KeyboardEvent) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onSelect(method);
+              }
+            },
+          })}
+          role={viewOnly ? 'listitem' : 'radio'}
         >
           <div className="flex items-center gap-2.5 sm:gap-4">
-            <div
-              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
-                selectedMethodId === method._id
-                  ? 'border-orange'
-                  : 'border-gray-300 dark:border-slate-500'
-              }`}
-            >
-              {selectedMethodId === method._id && (
-                <div className="h-3 w-3 rounded-full bg-orange" />
-              )}
-            </div>
+            {!viewOnly && (
+              <div
+                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
+                  selectedMethodId === method._id
+                    ? 'border-orange'
+                    : 'border-gray-300 dark:border-slate-500'
+                }`}
+              >
+                {selectedMethodId === method._id && (
+                  <div className="h-3 w-3 rounded-full bg-orange" />
+                )}
+              </div>
+            )}
 
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 text-orange sm:gap-2">
@@ -73,17 +97,23 @@ const ShippingMethodSelector = memo(function ShippingMethodSelector({
                 <span className="text-sm font-medium text-gray-900 sm:text-base dark:text-gray-100">
                   {method.name}
                 </span>
+                {isExpressShipping(method.estimatedDays) && (
+                  <span className="rounded-sm bg-orange/10 px-1.5 py-0.5 text-xs font-medium text-orange dark:bg-orange-400/10 dark:text-orange-400">
+                    {t('shipping.express')}
+                  </span>
+                )}
               </div>
               <p className="mt-0.5 line-clamp-2 text-xs text-gray-500 sm:mt-1 sm:text-sm dark:text-gray-400">
                 {method.description}
               </p>
               <p className="mt-0.5 text-xs text-gray-600 sm:mt-1 sm:text-sm dark:text-gray-400">
-                Thời gian: <span className="font-medium">{method.estimatedDays}</span>
+                {t('shipping.estimatedTime')}:{' '}
+                <span className="font-medium">{method.estimatedDays}</span>
               </p>
               <motion.p
-                initial={{ opacity: 0, y: -5 }}
+                initial={reducedMotion ? false : { opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
+                transition={reducedMotion ? { duration: 0 } : { delay: 0.1 }}
                 className="mt-1 flex items-center gap-1 text-xs font-medium text-green-600 sm:mt-1.5 sm:gap-1.5 sm:text-sm dark:text-green-400"
               >
                 <svg
@@ -91,6 +121,7 @@ const ShippingMethodSelector = memo(function ShippingMethodSelector({
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -100,14 +131,15 @@ const ShippingMethodSelector = memo(function ShippingMethodSelector({
                   />
                 </svg>
                 <span className="truncate">
-                  Dự kiến giao: {getEstimatedDeliveryDate(method.estimatedDays)}
+                  {t('shipping.estimatedDeliveryLabel')}:{' '}
+                  {getEstimatedDeliveryDate(method.estimatedDays)}
                 </span>
               </motion.p>
             </div>
 
             <div className="shrink-0 text-right">
               <span className="text-sm font-semibold text-orange sm:text-lg">
-                ₫{formatCurrency(method.price)}
+                {method.price === 0 ? t('shipping.free') : `₫${formatCurrency(method.price)}`}
               </span>
             </div>
           </div>

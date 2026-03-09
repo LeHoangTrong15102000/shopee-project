@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+type Req = Request<Record<string, string>>
 import { responseSuccess, ErrorHandler } from '@utils/response'
 import { STATUS } from '@constants/status'
 import { orderService } from '../container'
@@ -80,7 +81,7 @@ export const getOrders = async (req: Request, res: Response) => {
   }
 }
 
-export const getOrderById = async (req: Request, res: Response) => {
+export const getOrderById = async (req: Req, res: Response) => {
   try {
     const user_id = req.jwtDecoded.id
     const { id } = req.params
@@ -102,7 +103,7 @@ export const getOrderById = async (req: Request, res: Response) => {
   }
 }
 
-export const cancelOrder = async (req: Request, res: Response) => {
+export const cancelOrder = async (req: Req, res: Response) => {
   try {
     const user_id = req.jwtDecoded.id
     const { id } = req.params
@@ -125,7 +126,7 @@ export const cancelOrder = async (req: Request, res: Response) => {
   }
 }
 
-export const confirmReceived = async (req: Request, res: Response) => {
+export const confirmReceived = async (req: Req, res: Response) => {
   try {
     const user_id = req.jwtDecoded.id
     const { id } = req.params
@@ -147,7 +148,7 @@ export const confirmReceived = async (req: Request, res: Response) => {
   }
 }
 
-export const returnOrder = async (req: Request, res: Response) => {
+export const returnOrder = async (req: Req, res: Response) => {
   try {
     const user_id = req.jwtDecoded.id
     const { id } = req.params
@@ -170,7 +171,7 @@ export const returnOrder = async (req: Request, res: Response) => {
   }
 }
 
-export const adminUpdateStatus = async (req: Request, res: Response) => {
+export const adminUpdateStatus = async (req: Req, res: Response) => {
   try {
     const { id } = req.params
     const { status, reason } = req.body
@@ -192,7 +193,7 @@ export const adminUpdateStatus = async (req: Request, res: Response) => {
   }
 }
 
-export const adminGetOrder = async (req: Request, res: Response) => {
+export const adminGetOrder = async (req: Req, res: Response) => {
   try {
     const { id } = req.params
 

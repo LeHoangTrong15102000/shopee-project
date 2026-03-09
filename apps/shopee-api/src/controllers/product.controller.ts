@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+type Req = Request<Record<string, string>>
 import { responseSuccess, ErrorHandler } from '@utils/response'
 import { ProductModel } from '@database/models/product.model'
 import { SearchHistoryModel } from '@database/models/search-history.model'
@@ -117,7 +118,7 @@ const getAllProducts = async (req: Request, res: Response) => {
   return responseSuccess(res, response)
 }
 
-const getProduct = async (req: Request, res: Response) => {
+const getProduct = async (req: Req, res: Response) => {
   try {
     const product = await productService.getProductById(req.params.product_id)
     const response = {
@@ -133,7 +134,7 @@ const getProduct = async (req: Request, res: Response) => {
   }
 }
 
-const updateProduct = async (req: Request, res: Response) => {
+const updateProduct = async (req: Req, res: Response) => {
   const form: ProductBody = req.body
   const {
     name,
@@ -261,7 +262,7 @@ const updateProduct = async (req: Request, res: Response) => {
   }
 }
 
-const deleteProduct = async (req: Request, res: Response) => {
+const deleteProduct = async (req: Req, res: Response) => {
   try {
     await productService.deleteProduct(req.params.product_id)
     return responseSuccess(res, { message: 'Xóa thành công' })
@@ -522,7 +523,7 @@ const deleteSearchHistory = async (req: Request, res: Response): Promise<void> =
   }
 }
 
-const deleteSearchHistoryItem = async (req: Request, res: Response): Promise<void> => {
+const deleteSearchHistoryItem = async (req: Req, res: Response): Promise<void> => {
   try {
     // Yêu cầu authentication
     if (!req.jwtDecoded?.id) {

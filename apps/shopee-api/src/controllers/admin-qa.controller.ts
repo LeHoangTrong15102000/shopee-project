@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+type Req = Request<Record<string, string>>
 import { responseSuccess, ErrorHandler } from '@utils/response'
 import { STATUS } from '@constants/status'
 import { qaService } from '../container'
@@ -19,14 +20,14 @@ export const adminGetQuestions = async (req: Request, res: Response) => {
   return responseSuccess(res, { message: 'Lấy danh sách câu hỏi thành công', data })
 }
 
-export const adminDeleteQuestion = async (req: Request, res: Response) => {
+export const adminDeleteQuestion = async (req: Req, res: Response) => {
   try {
     const data = await qaService.adminDeleteQuestion(req.params.id)
     return responseSuccess(res, { message: 'Xóa câu hỏi thành công', data })
   } catch (error) { handleError(error) }
 }
 
-export const adminDeleteAnswer = async (req: Request, res: Response) => {
+export const adminDeleteAnswer = async (req: Req, res: Response) => {
   try {
     const data = await qaService.adminDeleteAnswer(req.params.question_id, req.params.answer_id)
     return responseSuccess(res, { message: 'Xóa câu trả lời thành công', data })

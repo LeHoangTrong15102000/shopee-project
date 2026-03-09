@@ -14,7 +14,7 @@ import { ValidationError, NotFoundError } from '@services/base.service'
 
 const mockOrderService = orderService as jest.Mocked<typeof orderService>
 
-const createMockRequest = (overrides: Partial<Request> = {}): Partial<Request> => ({
+const createMockRequest = (overrides: Partial<Request> = {}): any => ({
   query: {},
   params: {},
   body: {},
@@ -61,7 +61,7 @@ describe('Order Tracking Controller', () => {
       const req = createMockRequest({ query: { order_id: 'order-123' } })
       const res = createMockResponse()
 
-      await getTracking(req as Request, res as Response)
+      await getTracking(req as any, res as Response)
 
       expect(mockOrderService.getTracking).toHaveBeenCalledWith('user-123', 'order-123')
       expect(res.status).toHaveBeenCalledWith(200)
@@ -72,7 +72,7 @@ describe('Order Tracking Controller', () => {
       const req = createMockRequest({ query: {} })
       const res = createMockResponse()
 
-      await getTracking(req as Request, res as Response)
+      await getTracking(req as any, res as Response)
 
       expect(mockOrderService.getTracking).not.toHaveBeenCalled()
       expect(res.status).toHaveBeenCalledWith(400)
@@ -85,7 +85,7 @@ describe('Order Tracking Controller', () => {
       const req = createMockRequest({ query: { order_id: 'order-123' } })
       const res = createMockResponse()
 
-      await getTracking(req as Request, res as Response)
+      await getTracking(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(404)
       expect(res.json).toHaveBeenCalledWith({ message: 'Không tìm thấy thông tin tracking cho đơn hàng này' })
@@ -97,7 +97,7 @@ describe('Order Tracking Controller', () => {
       const req = createMockRequest({ query: { order_id: 'order-123' } })
       const res = createMockResponse()
 
-      await getTracking(req as Request, res as Response)
+      await getTracking(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(400)
       expect(res.json).toHaveBeenCalledWith({ message: 'Invalid data' })
@@ -109,7 +109,7 @@ describe('Order Tracking Controller', () => {
       const req = createMockRequest({ query: { order_id: 'order-123' } })
       const res = createMockResponse()
 
-      await getTracking(req as Request, res as Response)
+      await getTracking(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(500)
       expect(res.json).toHaveBeenCalledWith({ message: 'Lỗi server khi lấy thông tin tracking' })
@@ -143,7 +143,7 @@ describe('Order Tracking Controller', () => {
       const req = createMockRequest({ params: { trackingNumber: 'TRK123' } })
       const res = createMockResponse()
 
-      await getTrackingByNumber(req as Request, res as Response)
+      await getTrackingByNumber(req as any, res as Response)
 
       expect(mockOrderService.getTrackingByNumber).toHaveBeenCalledWith('TRK123')
       expect(res.status).toHaveBeenCalledWith(200)
@@ -156,7 +156,7 @@ describe('Order Tracking Controller', () => {
       const req = createMockRequest({ params: { trackingNumber: 'TRK123' } })
       const res = createMockResponse()
 
-      await getTrackingByNumber(req as Request, res as Response)
+      await getTrackingByNumber(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(404)
       expect(res.json).toHaveBeenCalledWith({ message: 'Không tìm thấy thông tin tracking' })
@@ -168,7 +168,7 @@ describe('Order Tracking Controller', () => {
       const req = createMockRequest({ params: { trackingNumber: 'TRK123' } })
       const res = createMockResponse()
 
-      await getTrackingByNumber(req as Request, res as Response)
+      await getTrackingByNumber(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(400)
       expect(res.json).toHaveBeenCalledWith({ message: 'Invalid tracking number' })
@@ -180,7 +180,7 @@ describe('Order Tracking Controller', () => {
       const req = createMockRequest({ params: { trackingNumber: 'TRK123' } })
       const res = createMockResponse()
 
-      await getTrackingByNumber(req as Request, res as Response)
+      await getTrackingByNumber(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(500)
       expect(res.json).toHaveBeenCalledWith({ message: 'Lỗi server khi lấy thông tin tracking' })

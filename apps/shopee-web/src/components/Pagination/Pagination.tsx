@@ -97,7 +97,13 @@ const PaginationUrl = ({ pageSize = 20, basePath = path.home }: UrlModeProps) =>
       aria-label={t('pagination.navLabel')}
     >
       {safePage === 1 ? (
-        <span role="button" tabIndex={-1} aria-label={t('pagination.prev')} aria-disabled="true" className={PREV_DISABLED_CLASS}>
+        <span
+          role="button"
+          tabIndex={-1}
+          aria-label={t('pagination.prev')}
+          aria-disabled="true"
+          className={PREV_DISABLED_CLASS}
+        >
           <ChevronLeft />
         </span>
       ) : (
@@ -142,7 +148,13 @@ const PaginationUrl = ({ pageSize = 20, basePath = path.home }: UrlModeProps) =>
         ),
       )}
       {safePage === safePageSize ? (
-        <span role="button" tabIndex={-1} aria-label={t('pagination.next')} aria-disabled="true" className={NEXT_DISABLED_CLASS}>
+        <span
+          role="button"
+          tabIndex={-1}
+          aria-label={t('pagination.next')}
+          aria-disabled="true"
+          className={NEXT_DISABLED_CLASS}
+        >
           <ChevronRight />
         </span>
       ) : (
@@ -180,7 +192,13 @@ const PaginationControlled = ({ currentPage, totalPages, onPageChange }: Control
       aria-label={t('pagination.navLabel')}
     >
       {safePage === 1 ? (
-        <span role="button" tabIndex={-1} aria-label={t('pagination.prev')} aria-disabled="true" className={PREV_DISABLED_CLASS}>
+        <span
+          role="button"
+          tabIndex={-1}
+          aria-label={t('pagination.prev')}
+          aria-disabled="true"
+          className={PREV_DISABLED_CLASS}
+        >
           <ChevronLeft />
         </span>
       ) : (
@@ -215,7 +233,13 @@ const PaginationControlled = ({ currentPage, totalPages, onPageChange }: Control
         ),
       )}
       {safePage === totalPages ? (
-        <span role="button" tabIndex={-1} aria-label={t('pagination.next')} aria-disabled="true" className={NEXT_DISABLED_CLASS}>
+        <span
+          role="button"
+          tabIndex={-1}
+          aria-label={t('pagination.next')}
+          aria-disabled="true"
+          className={NEXT_DISABLED_CLASS}
+        >
           <ChevronRight />
         </span>
       ) : (

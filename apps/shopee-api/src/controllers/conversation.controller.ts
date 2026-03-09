@@ -49,7 +49,7 @@ export const getConversations = async (req: Request, res: Response): Promise<voi
  */
 export const getConversation = async (req: Request, res: Response): Promise<void> => {
   const userId = req.jwtDecoded.id
-  const conversationId = req.params.id
+  const conversationId = req.params.id as string
 
   const conversation = await conversationService.getConversation(userId, conversationId)
 
@@ -85,7 +85,7 @@ export const createConversation = async (req: Request, res: Response): Promise<v
  */
 export const sendMessage = async (req: Request, res: Response): Promise<void> => {
   const userId = req.jwtDecoded.id
-  const conversationId = req.params.id
+  const conversationId = req.params.id as string
   const { message }: SendMessageBody = req.body
 
   const { conversation, aiMessage } = await conversationService.sendMessage(userId, conversationId, message)
@@ -106,7 +106,7 @@ export const sendMessage = async (req: Request, res: Response): Promise<void> =>
  */
 export const updateConversation = async (req: Request, res: Response): Promise<void> => {
   const userId = req.jwtDecoded.id
-  const conversationId = req.params.id
+  const conversationId = req.params.id as string
   const { title, status }: UpdateConversationBody = req.body
 
   const conversation = await conversationService.updateConversation(userId, conversationId, { title, status })
@@ -123,7 +123,7 @@ export const updateConversation = async (req: Request, res: Response): Promise<v
  */
 export const deleteConversation = async (req: Request, res: Response): Promise<void> => {
   const userId = req.jwtDecoded.id
-  const conversationId = req.params.id
+  const conversationId = req.params.id as string
 
   await conversationService.deleteConversation(userId, conversationId)
 

@@ -33,7 +33,7 @@ const getCategories = async (req: Request, res: Response) => {
 
 const getCategory = async (req: Request, res: Response) => {
   try {
-    const category = await categoryService.getCategoryById(req.params.category_id)
+    const category = await categoryService.getCategoryById(req.params.category_id as string)
     const response = {
       message: 'Lấy category thành công',
       data: category,
@@ -50,7 +50,7 @@ const getCategory = async (req: Request, res: Response) => {
 const updateCategory = async (req: Request, res: Response) => {
   try {
     const { name } = req.body
-    const category = await categoryService.updateCategory(req.params.category_id, { name })
+    const category = await categoryService.updateCategory(req.params.category_id as string, { name })
     const response = {
       message: 'Cập nhật category thành công',
       data: category,
@@ -69,7 +69,7 @@ const updateCategory = async (req: Request, res: Response) => {
 
 const deleteCategory = async (req: Request, res: Response) => {
   try {
-    await categoryService.deleteCategory(req.params.category_id)
+    await categoryService.deleteCategory(req.params.category_id as string)
     return responseSuccess(res, { message: 'Xóa thành công' })
   } catch (error) {
     if (error instanceof NotFoundError || error instanceof ValidationError) {

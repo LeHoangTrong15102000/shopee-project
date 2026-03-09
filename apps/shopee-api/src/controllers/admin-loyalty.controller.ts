@@ -32,21 +32,21 @@ export const adminCreateReward = async (req: Request, res: Response) => {
 
 export const adminUpdateReward = async (req: Request, res: Response) => {
   try {
-    const data = await loyaltyService.adminUpdateReward(req.params.id, req.body)
+    const data = await loyaltyService.adminUpdateReward(req.params.id as string, req.body)
     return responseSuccess(res, { message: 'Cập nhật phần thưởng thành công', data })
   } catch (error) { handleError(error) }
 }
 
 export const adminDeleteReward = async (req: Request, res: Response) => {
   try {
-    await loyaltyService.adminDeleteReward(req.params.id)
+    await loyaltyService.adminDeleteReward(req.params.id as string)
     return responseSuccess(res, { message: 'Xóa phần thưởng thành công' })
   } catch (error) { handleError(error) }
 }
 
 export const adminToggleReward = async (req: Request, res: Response) => {
   try {
-    const data = await loyaltyService.adminToggleReward(req.params.id)
+    const data = await loyaltyService.adminToggleReward(req.params.id as string)
     return responseSuccess(res, { message: 'Cập nhật trạng thái phần thưởng thành công', data })
   } catch (error) { handleError(error) }
 }

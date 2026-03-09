@@ -343,10 +343,17 @@ describe('Pagination Component Unit Tests', () => {
   });
 });
 
-
-const renderControlled = (currentPage: number, totalPages: number, onPageChange?: (page: number) => void) => {
+const renderControlled = (
+  currentPage: number,
+  totalPages: number,
+  onPageChange?: (page: number) => void,
+) => {
   return render(
-    <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange || vi.fn()} />,
+    <Pagination
+      currentPage={currentPage}
+      totalPages={totalPages}
+      onPageChange={onPageChange || vi.fn()}
+    />,
   );
 };
 
@@ -457,9 +464,7 @@ describe('Pagination Controlled Mode', () => {
     test('should render correct page sequence for page 5 of 20', () => {
       renderControlled(5, 20);
       const buttons = screen.getAllByRole('button');
-      const pageTexts = buttons
-        .map((b) => b.textContent)
-        .filter((t) => t && /^\d+$/.test(t));
+      const pageTexts = buttons.map((b) => b.textContent).filter((t) => t && /^\d+$/.test(t));
       expect(pageTexts).toEqual(['1', '2', '3', '4', '5', '6', '7', '19', '20']);
     });
 

@@ -36,7 +36,7 @@ import {
 
 const mockVoucherService = voucherService as jest.Mocked<typeof voucherService>
 
-const createMockRequest = (options: any = {}): Partial<Request> => ({
+const createMockRequest = (options: any = {}): any => ({
   body: options.body || {},
   params: options.params || {},
   query: options.query || {},
@@ -81,7 +81,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ query: {} })
       const res = createMockResponse()
 
-      await getVouchers(req as Request, res as Response)
+      await getVouchers(req as any, res as Response)
 
       expect(mockVoucherService.getAvailableVouchers).toHaveBeenCalledWith({ page: 1, limit: 10 }, undefined, undefined)
       expect(res.status).toHaveBeenCalledWith(200)
@@ -99,7 +99,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ query: { page: '2', limit: '20', discount_type: 'percentage' } })
       const res = createMockResponse()
 
-      await getVouchers(req as Request, res as Response)
+      await getVouchers(req as any, res as Response)
 
       expect(mockVoucherService.getAvailableVouchers).toHaveBeenCalledWith(
         { page: 2, limit: 20 },
@@ -113,7 +113,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await expect(getVouchers(req as Request, res as Response)).rejects.toThrow('Service error')
+      await expect(getVouchers(req as any, res as Response)).rejects.toThrow('Service error')
     })
   })
 
@@ -123,7 +123,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { code: 'DISCOUNT10' } })
       const res = createMockResponse()
 
-      await getVoucherByCode(req as Request, res as Response)
+      await getVoucherByCode(req as any, res as Response)
 
       expect(mockVoucherService.getVoucherByCode).toHaveBeenCalledWith('DISCOUNT10')
       expect(res.status).toHaveBeenCalledWith(200)
@@ -138,7 +138,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { code: 'INVALID' } })
       const res = createMockResponse()
 
-      await getVoucherByCode(req as Request, res as Response)
+      await getVoucherByCode(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(404)
       expect(res.json).toHaveBeenCalledWith({ message: 'Không tìm thấy voucher' })
@@ -149,7 +149,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { code: 'DISCOUNT10' } })
       const res = createMockResponse()
 
-      await expect(getVoucherByCode(req as Request, res as Response)).rejects.toThrow('Service error')
+      await expect(getVoucherByCode(req as any, res as Response)).rejects.toThrow('Service error')
     })
   })
 
@@ -163,7 +163,7 @@ describe('Voucher Controller', () => {
       })
       const res = createMockResponse()
 
-      await applyVoucher(req as Request, res as Response)
+      await applyVoucher(req as any, res as Response)
 
       expect(mockVoucherService.applyVoucher).toHaveBeenCalledWith({
         code: 'DISCOUNT10',
@@ -183,7 +183,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_value: 100000 } })
       const res = createMockResponse()
 
-      await applyVoucher(req as Request, res as Response)
+      await applyVoucher(req as any, res as Response)
 
       expect(mockVoucherService.applyVoucher).toHaveBeenCalledWith({
         code: 'DISCOUNT10',
@@ -198,7 +198,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'INVALID', order_value: 100000 } })
       const res = createMockResponse()
 
-      await applyVoucher(req as Request, res as Response)
+      await applyVoucher(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(404)
       expect(res.json).toHaveBeenCalledWith({ message: 'Không tìm thấy voucher' })
@@ -209,7 +209,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_value: 100000 } })
       const res = createMockResponse()
 
-      await applyVoucher(req as Request, res as Response)
+      await applyVoucher(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(400)
       expect(res.json).toHaveBeenCalledWith({ message: 'Voucher đã hết lượt sử dụng' })
@@ -220,7 +220,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_value: 1000 } })
       const res = createMockResponse()
 
-      await applyVoucher(req as Request, res as Response)
+      await applyVoucher(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(400)
       expect(res.json).toHaveBeenCalledWith({ message: 'Giá trị đơn hàng không đủ' })
@@ -231,7 +231,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_value: 100000 } })
       const res = createMockResponse()
 
-      await expect(applyVoucher(req as Request, res as Response)).rejects.toThrow('Service error')
+      await expect(applyVoucher(req as any, res as Response)).rejects.toThrow('Service error')
     })
   })
 
@@ -243,7 +243,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { id: 'voucher123' } })
       const res = createMockResponse()
 
-      await saveVoucher(req as Request, res as Response)
+      await saveVoucher(req as any, res as Response)
 
       expect(mockVoucherService.collectVoucher).toHaveBeenCalledWith('user123', 'voucher123')
       expect(res.status).toHaveBeenCalledWith(200)
@@ -258,7 +258,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { id: 'invalid' } })
       const res = createMockResponse()
 
-      await saveVoucher(req as Request, res as Response)
+      await saveVoucher(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(404)
       expect(res.json).toHaveBeenCalledWith({ message: 'Không tìm thấy voucher' })
@@ -269,7 +269,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { id: 'voucher123' } })
       const res = createMockResponse()
 
-      await saveVoucher(req as Request, res as Response)
+      await saveVoucher(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(400)
       expect(res.json).toHaveBeenCalledWith({ message: 'Voucher đã được lưu' })
@@ -280,7 +280,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { id: 'invalid' } })
       const res = createMockResponse()
 
-      await saveVoucher(req as Request, res as Response)
+      await saveVoucher(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(400)
       expect(res.json).toHaveBeenCalledWith({ message: 'Invalid voucher id' })
@@ -291,7 +291,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { id: 'voucher123' } })
       const res = createMockResponse()
 
-      await expect(saveVoucher(req as Request, res as Response)).rejects.toThrow('Service error')
+      await expect(saveVoucher(req as any, res as Response)).rejects.toThrow('Service error')
     })
   })
 
@@ -306,7 +306,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ query: {} })
       const res = createMockResponse()
 
-      await getSavedVouchers(req as Request, res as Response)
+      await getSavedVouchers(req as any, res as Response)
 
       expect(mockVoucherService.getSavedVouchers).toHaveBeenCalledWith('user123', { page: 1, limit: 10 })
       expect(res.status).toHaveBeenCalledWith(200)
@@ -324,7 +324,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ query: { page: '2', limit: '20' } })
       const res = createMockResponse()
 
-      await getSavedVouchers(req as Request, res as Response)
+      await getSavedVouchers(req as any, res as Response)
 
       expect(mockVoucherService.getSavedVouchers).toHaveBeenCalledWith('user123', { page: 2, limit: 20 })
     })
@@ -334,7 +334,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ query: { page: '-1' } })
       const res = createMockResponse()
 
-      await getSavedVouchers(req as Request, res as Response)
+      await getSavedVouchers(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(400)
       expect(res.json).toHaveBeenCalledWith({ message: 'Invalid pagination' })
@@ -345,7 +345,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await expect(getSavedVouchers(req as Request, res as Response)).rejects.toThrow('Service error')
+      await expect(getSavedVouchers(req as any, res as Response)).rejects.toThrow('Service error')
     })
   })
 
@@ -355,7 +355,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ query: {} })
       const res = createMockResponse()
 
-      await getAvailableVouchers(req as Request, res as Response)
+      await getAvailableVouchers(req as any, res as Response)
 
       expect(mockVoucherService.getAvailableVouchers).toHaveBeenCalledWith({ page: 1, limit: 10 }, 'user123', undefined)
       expect(res.status).toHaveBeenCalledWith(200)
@@ -373,7 +373,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ query: { page: '2', limit: '20', discount_type: 'fixed' } })
       const res = createMockResponse()
 
-      await getAvailableVouchers(req as Request, res as Response)
+      await getAvailableVouchers(req as any, res as Response)
 
       expect(mockVoucherService.getAvailableVouchers).toHaveBeenCalledWith(
         { page: 2, limit: 20 },
@@ -387,7 +387,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await expect(getAvailableVouchers(req as Request, res as Response)).rejects.toThrow('Service error')
+      await expect(getAvailableVouchers(req as any, res as Response)).rejects.toThrow('Service error')
     })
   })
 
@@ -402,7 +402,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ query: {} })
       const res = createMockResponse()
 
-      await getMyVouchers(req as Request, res as Response)
+      await getMyVouchers(req as any, res as Response)
 
       expect(mockVoucherService.getSavedVouchers).toHaveBeenCalledWith('user123', { page: 1, limit: 10 }, undefined)
       expect(res.status).toHaveBeenCalledWith(200)
@@ -420,7 +420,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ query: { page: '2', limit: '20', status: 'available' } })
       const res = createMockResponse()
 
-      await getMyVouchers(req as Request, res as Response)
+      await getMyVouchers(req as any, res as Response)
 
       expect(mockVoucherService.getSavedVouchers).toHaveBeenCalledWith('user123', { page: 2, limit: 20 }, 'available')
     })
@@ -430,7 +430,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ query: { status: 'invalid' } })
       const res = createMockResponse()
 
-      await getMyVouchers(req as Request, res as Response)
+      await getMyVouchers(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(400)
       expect(res.json).toHaveBeenCalledWith({ message: 'Invalid status' })
@@ -441,7 +441,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await expect(getMyVouchers(req as Request, res as Response)).rejects.toThrow('Service error')
+      await expect(getMyVouchers(req as any, res as Response)).rejects.toThrow('Service error')
     })
   })
 
@@ -453,7 +453,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { id: 'voucher123' } })
       const res = createMockResponse()
 
-      await collectVoucher(req as Request, res as Response)
+      await collectVoucher(req as any, res as Response)
 
       expect(mockVoucherService.collectVoucher).toHaveBeenCalledWith('user123', 'voucher123')
       expect(res.status).toHaveBeenCalledWith(200)
@@ -468,7 +468,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { id: 'invalid' } })
       const res = createMockResponse()
 
-      await collectVoucher(req as Request, res as Response)
+      await collectVoucher(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(404)
       expect(res.json).toHaveBeenCalledWith({ message: 'Không tìm thấy voucher' })
@@ -479,7 +479,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { id: 'voucher123' } })
       const res = createMockResponse()
 
-      await collectVoucher(req as Request, res as Response)
+      await collectVoucher(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(400)
       expect(res.json).toHaveBeenCalledWith({ message: 'Voucher đã được thu thập' })
@@ -490,7 +490,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { id: 'invalid' } })
       const res = createMockResponse()
 
-      await collectVoucher(req as Request, res as Response)
+      await collectVoucher(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(400)
       expect(res.json).toHaveBeenCalledWith({ message: 'Invalid voucher id' })
@@ -501,7 +501,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { id: 'voucher123' } })
       const res = createMockResponse()
 
-      await expect(collectVoucher(req as Request, res as Response)).rejects.toThrow('Service error')
+      await expect(collectVoucher(req as any, res as Response)).rejects.toThrow('Service error')
     })
   })
 
@@ -513,7 +513,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_total: 100000 } })
       const res = createMockResponse()
 
-      await validateVoucher(req as Request, res as Response)
+      await validateVoucher(req as any, res as Response)
 
       expect(mockVoucherService.validateVoucher).toHaveBeenCalledWith('user123', 'DISCOUNT10', 100000)
       expect(res.status).toHaveBeenCalledWith(200)
@@ -528,7 +528,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'INVALID', order_total: 100000 } })
       const res = createMockResponse()
 
-      await validateVoucher(req as Request, res as Response)
+      await validateVoucher(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(404)
       expect(res.json).toHaveBeenCalledWith({
@@ -542,7 +542,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_total: 100000 } })
       const res = createMockResponse()
 
-      await validateVoucher(req as Request, res as Response)
+      await validateVoucher(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(400)
       expect(res.json).toHaveBeenCalledWith({
@@ -556,7 +556,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_total: 1000 } })
       const res = createMockResponse()
 
-      await validateVoucher(req as Request, res as Response)
+      await validateVoucher(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(400)
       expect(res.json).toHaveBeenCalledWith({
@@ -570,7 +570,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_total: 100000 } })
       const res = createMockResponse()
 
-      await expect(validateVoucher(req as Request, res as Response)).rejects.toThrow('Service error')
+      await expect(validateVoucher(req as any, res as Response)).rejects.toThrow('Service error')
     })
   })
 })

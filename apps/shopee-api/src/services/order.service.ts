@@ -34,6 +34,7 @@ export interface CreateOrderInput {
   shipping_method_id: string
   payment_method: PaymentMethodType
   voucher_code?: string
+  voucher_discount?: number
   coins_used?: number
   note?: string
 }
@@ -126,9 +127,9 @@ export class OrderService extends BaseService {
     }
 
     const shippingFee = shippingMethod.price
-    const discount = 0
+    const discount = input.voucher_discount || 0
     const coinsDiscount = input.coins_used || 0
-    const total = subtotal + shippingFee - discount - coinsDiscount
+    const total = Math.max(0, subtotal + shippingFee - discount - coinsDiscount)
 
     const order = await this.orderRepository.create({
       user: new Types.ObjectId(userId),

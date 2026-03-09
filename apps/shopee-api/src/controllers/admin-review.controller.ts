@@ -21,21 +21,21 @@ export const adminGetReviews = async (req: Request, res: Response) => {
 
 export const adminGetReviewById = async (req: Request, res: Response) => {
   try {
-    const data = await reviewService.adminGetReviewById(req.params.id)
+    const data = await reviewService.adminGetReviewById(req.params.id as string)
     return responseSuccess(res, { message: 'Lấy chi tiết đánh giá thành công', data })
   } catch (error) { handleError(error) }
 }
 
 export const adminDeleteReview = async (req: Request, res: Response) => {
   try {
-    const data = await reviewService.adminDeleteReview(req.params.id)
+    const data = await reviewService.adminDeleteReview(req.params.id as string)
     return responseSuccess(res, { message: 'Xóa đánh giá thành công', data })
   } catch (error) { handleError(error) }
 }
 
 export const adminDeleteComment = async (req: Request, res: Response) => {
   try {
-    const data = await reviewService.adminDeleteComment(req.params.id)
+    const data = await reviewService.adminDeleteComment(req.params.id as string)
     return responseSuccess(res, { message: 'Xóa bình luận thành công', data })
   } catch (error) { handleError(error) }
 }

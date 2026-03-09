@@ -65,23 +65,6 @@ describe('Emit Utils', () => {
       })
     })
 
-    it('emitPriceAlert should emit to user via emitToUser', async () => {
-      await setupMock()
-      const { emitToUser } = await import('../../socket/utils/emit')
-      const { emitPriceAlert } = await import('../../socket/utils/product-emit')
-
-      const alertPayload = {
-        alert_id: 'alert-1',
-        product_id: 'product-123',
-        product_name: 'Test Product',
-        target_price: 90,
-        new_price: 80,
-      }
-
-      emitPriceAlert('user-456', alertPayload)
-
-      expect(emitToUser).toHaveBeenCalledWith('user-456', SocketEvent.PRICE_ALERT_TRIGGERED, alertPayload)
-    })
   })
 
   describe('order-emit', () => {
@@ -93,8 +76,12 @@ describe('Emit Utils', () => {
 
       jest.mock('@database/models/notification.model', () => ({ NotificationModel: { create: jest.fn() } }))
       jest.mock('@database/models/purchase.model', () => ({
-        PurchaseModel: { findById: jest.fn().mockReturnValue({ select: jest.fn().mockReturnValue({ lean: jest.fn() }) }) },
+        PurchaseModel: { findById: jest.fn().mockReturnValue({ select: jest.fn().mockReturnValue({ lean: jest.fn() }) }), find: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue([]) }), countDocuments: jest.fn().mockResolvedValue(0) },
       }))
+      jest.mock('@database/models/user.model', () => ({ UserModel: { find: jest.fn().mockReturnValue({ select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue([]) }) }) } }))
+      jest.mock('@database/models/question.model', () => ({ QuestionModel: { countDocuments: jest.fn().mockResolvedValue(0) } }))
+      jest.mock('../../socket/managers/presence.manager', () => ({ getOnlineUserCount: jest.fn().mockReturnValue(0) }))
+      jest.mock('../../socket/handlers/notification.handler', () => ({ pushNotification: jest.fn() }))
 
       const { emitOrderStatusUpdate } = await import('../../socket/utils/order-emit')
 

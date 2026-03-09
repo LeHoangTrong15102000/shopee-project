@@ -23,7 +23,7 @@ import { Request, Response, NextFunction, RequestHandler } from 'express'
  */
 
 type AsyncRequestHandler = (
-  req: Request,
+  req: Request<any>,
   res: Response,
   next: NextFunction
 ) => Promise<any>

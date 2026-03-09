@@ -38,6 +38,7 @@ import { OrderService } from '@services/order.service'
 import { VoucherService } from '@services/voucher.service'
 import { CheckInService } from '@services/checkin.service'
 import { PasswordResetService } from '@services/password-reset.service'
+import { PriceService } from '@services/price.service'
 
 // Repository instances (singletons)
 const productRepository = new ProductRepository()
@@ -74,6 +75,7 @@ const orderService = new OrderService(orderRepository, productRepository, addres
 const voucherService = new VoucherService(voucherRepository)
 const checkinService = new CheckInService()
 const passwordResetService = new PasswordResetService(userRepository, authRepository)
+const priceService = new PriceService()
 
 // Export container with all services
 export const container = {
@@ -114,6 +116,7 @@ export const container = {
     voucher: voucherService,
     checkin: checkinService,
     passwordReset: passwordResetService,
+    price: priceService,
   },
 }
 
@@ -135,6 +138,7 @@ export {
   voucherService,
   checkinService,
   passwordResetService,
+  priceService,
   skuRepository,
   productSkuSnapshotRepository,
 }

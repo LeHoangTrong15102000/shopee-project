@@ -117,6 +117,21 @@ export const createCheckoutOrder = async (req: Request, res: Response) => {
       }
     })
 
+    // Calculate voucher discount before creating order
+    let voucherDiscount = 0
+    if (voucher_code) {
+      try {
+        const subtotal = purchases.reduce((sum, p) => {
+          const product = p.product as any
+          return sum + product.price * p.buy_count
+        }, 0)
+        const voucherResult = await voucherService.applyVoucher({ code: voucher_code, order_value: subtotal })
+        voucherDiscount = voucherResult.discount_amount
+      } catch {
+        // Voucher invalid - continue without discount
+      }
+    }
+
     // Create order using orderService
     const order = await orderService.createOrder(user_id, {
       items,
@@ -124,6 +139,7 @@ export const createCheckoutOrder = async (req: Request, res: Response) => {
       shipping_method_id,
       payment_method,
       voucher_code,
+      voucher_discount: voucherDiscount,
       coins_used,
       note,
     })

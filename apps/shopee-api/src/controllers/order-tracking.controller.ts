@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+type Req = Request<Record<string, string>>
 import { STATUS } from '@constants/status'
 import { orderService } from '../container'
 import { ValidationError, NotFoundError } from '@services/base.service'
@@ -36,7 +37,7 @@ export const getTracking = async (req: Request, res: Response) => {
   }
 }
 
-export const getTrackingByNumber = async (req: Request, res: Response) => {
+export const getTrackingByNumber = async (req: Req, res: Response) => {
   try {
     const { trackingNumber } = req.params
 

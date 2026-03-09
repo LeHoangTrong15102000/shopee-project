@@ -1,7 +1,9 @@
 import classNames from 'classnames';
+import { differenceInDays, parseISO } from 'date-fns';
 import { memo, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Voucher } from 'src/types/voucher.type';
-import { formatCurrency } from 'src/utils/utils';
+import { formatCurrency, formatDate } from 'src/utils/utils';
 import Button from 'src/components/Button';
 
 interface VoucherCardProps {
@@ -39,19 +41,9 @@ const getVoucherStatus = (
   return 'active';
 };
 
-const formatExpiryDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
-};
-
 const getDaysRemaining = (dateString: string): number => {
-  const endDate = new Date(dateString);
-  const now = new Date();
-  const diffTime = endDate.getTime() - now.getTime();
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const endDate = parseISO(dateString);
+  return differenceInDays(endDate, new Date());
 };
 
 function VoucherCard({
@@ -61,6 +53,7 @@ function VoucherCard({
   onApply,
   isLoading = false,
 }: VoucherCardProps) {
+  const { t } = useTranslation('product');
   const status = useMemo(() => getVoucherStatus(voucher, isSaved), [voucher, isSaved]);
 
   const daysRemaining = useMemo(() => getDaysRemaining(voucher.end_date), [voucher.end_date]);
@@ -85,44 +78,51 @@ function VoucherCard({
     }
   }, [isLoading, isExpired, isSaved, onApply, onSave, voucher.code, voucher._id]);
 
-  const buttonText = isLoading ? 'Đang xử lý...' : isSaved ? 'Sử dụng' : 'Lưu';
+  const isSavedWithoutApply = isSaved && !onApply;
+  const buttonText = isLoading
+    ? t('voucher.processing')
+    : isSavedWithoutApply
+      ? t('voucher.saved')
+      : isSaved
+        ? t('voucher.apply')
+        : t('voucher.save');
 
   const buttonAriaLabel = useMemo(() => {
-    if (isExpired) return `Voucher ${voucher.name} đã hết hạn`;
-    if (isLoading) return 'Đang xử lý';
+    if (isExpired) return t('voucher.ariaExpired', { name: voucher.name });
+    if (isLoading) return t('voucher.ariaProcessing');
+    if (isSavedWithoutApply) return t('voucher.ariaSaved', { name: voucher.name });
     return isSaved
-      ? `Sử dụng voucher ${voucher.name} giảm ${discountDisplay}`
-      : `Lưu voucher ${voucher.name} giảm ${discountDisplay}`;
-  }, [isExpired, isLoading, isSaved, voucher.name, discountDisplay]);
+      ? t('voucher.ariaApply', { name: voucher.name, discount: discountDisplay })
+      : t('voucher.ariaSave', { name: voucher.name, discount: discountDisplay });
+  }, [isExpired, isLoading, isSaved, isSavedWithoutApply, voucher.name, discountDisplay, t]);
 
   return (
     <div
       role="article"
-      aria-label={`Voucher ${voucher.name} - Giảm ${discountDisplay}`}
+      aria-label={t('voucher.ariaCard', { name: voucher.name, discount: discountDisplay })}
       className={classNames(
-        'relative flex overflow-hidden rounded-lg bg-white shadow-xs transition-all duration-200 dark:bg-slate-800',
+        'relative flex overflow-hidden rounded-lg bg-white shadow-xs transition-all duration-200 motion-reduce:transition-none dark:bg-slate-800',
         {
           'opacity-60': isExpired,
-          'hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]': !isExpired,
+          'motion-safe:hover:scale-[1.02] hover:shadow-lg motion-safe:active:scale-[0.98]':
+            !isExpired,
         },
       )}
     >
       <div
-        className="absolute top-0 bottom-0 left-0 w-1 border-l-4 border-dashed border-[#ee4d2d]"
+        className="absolute top-0 bottom-0 left-0 w-1 border-l-4 border-dashed border-orange"
         aria-hidden="true"
       />
 
       <div
-        className="flex w-20 shrink-0 flex-col items-center justify-center bg-linear-to-br from-[#ee4d2d] to-[#ff6633] p-2 text-white sm:w-24 sm:p-3"
+        className="flex w-20 shrink-0 flex-col items-center justify-center bg-linear-to-br from-orange to-orange-400 p-2 text-white sm:w-24 sm:p-3"
         aria-hidden="true"
       >
-        <span className="text-xs font-medium uppercase">
-          {voucher.discount_type === 'percentage' ? 'Giảm' : 'Giảm'}
-        </span>
+        <span className="text-xs font-medium uppercase">{t('voucher.discount')}</span>
         <span className="text-lg font-bold sm:text-xl">{discountDisplay}</span>
         {voucher.discount_type === 'percentage' && voucher.max_discount && (
           <span className="mt-1 text-[10px] opacity-90">
-            Tối đa ₫{formatCurrency(voucher.max_discount)}
+            {t('voucher.maxDiscount', { amount: formatCurrency(voucher.max_discount) })}
           </span>
         )}
       </div>
@@ -136,13 +136,15 @@ function VoucherCard({
             {voucher.description}
           </p>
           <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-            Đơn tối thiểu ₫{formatCurrency(voucher.min_order_value)}
+            {t('voucher.minOrder', { amount: formatCurrency(voucher.min_order_value) })}
           </p>
         </div>
 
         <div className="mt-2 flex items-center justify-between">
           <div className="flex flex-col">
-            <span className="text-[10px] text-gray-400 dark:text-gray-500">Mã: {voucher.code}</span>
+            <span className="text-[10px] text-gray-400 dark:text-gray-500">
+              {t('voucher.code', { code: voucher.code })}
+            </span>
             <span
               className={classNames('text-[10px]', {
                 'text-red-500 dark:text-red-400': daysRemaining <= 3 && !isExpired,
@@ -150,30 +152,33 @@ function VoucherCard({
               })}
             >
               {isExpired
-                ? 'Đã hết hạn'
+                ? t('voucher.expired')
                 : daysRemaining <= 0
-                  ? 'Hết hạn hôm nay'
-                  : `HSD: ${formatExpiryDate(voucher.end_date)}`}
+                  ? t('voucher.expiringToday')
+                  : t('voucher.expiryDate', { date: formatDate(voucher.end_date) })}
             </span>
           </div>
 
           <Button
             type="button"
             onClick={handleButtonClick}
-            disabled={isLoading || isExpired}
+            disabled={isLoading || isExpired || isSavedWithoutApply}
             aria-label={buttonAriaLabel}
-            aria-disabled={isLoading || isExpired}
+            aria-disabled={isLoading || isExpired || isSavedWithoutApply}
             animated={false}
             className={classNames(
-              'rounded-sm px-3 py-1.5 text-xs font-medium transition-all duration-200 sm:px-4',
+              'rounded-sm px-3 py-2.5 text-xs font-medium transition-all duration-200 motion-reduce:transition-none sm:px-4 sm:py-3 min-h-11',
               {
-                'bg-[#ee4d2d] text-white hover:bg-[#d73211]': !isExpired && !isSaved,
-                'border border-[#ee4d2d] text-[#ee4d2d] hover:bg-[#ee4d2d]/10':
-                  !isExpired && isSaved,
+                'bg-orange text-white hover:bg-orange-700': !isExpired && !isSaved,
+                'border border-orange text-orange hover:bg-orange/10 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-400/10':
+                  !isExpired && isSaved && !isSavedWithoutApply,
+                'cursor-not-allowed border border-gray-300 text-gray-400 dark:border-slate-600 dark:text-gray-500':
+                  isSavedWithoutApply,
                 'cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-slate-700 dark:text-gray-500':
                   isExpired,
                 'cursor-not-allowed opacity-50': isLoading,
-                'hover:scale-105 active:scale-95': !isExpired && !isLoading,
+                'motion-safe:hover:scale-105 motion-safe:active:scale-95':
+                  !isExpired && !isLoading && !isSavedWithoutApply,
               },
             )}
           >
@@ -188,7 +193,7 @@ function VoucherCard({
           aria-hidden="true"
         >
           <span className="rotate-[-15deg] rounded-sm border-2 border-gray-400 px-3 py-1 text-sm font-bold text-gray-400 uppercase dark:border-gray-500 dark:text-gray-500">
-            Hết hạn
+            {t('voucher.expiredOverlay')}
           </span>
         </div>
       )}

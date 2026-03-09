@@ -1,17 +1,17 @@
 import { Router } from 'express'
 import categoryController from '@controllers/category.controller'
-import { wrapAsync } from '@utils/response'
+import { asyncHandler } from '@utils/async-handler'
 import { validate, getCategorySchema, categoryIdParamSchema } from '@schemas/index'
 
 const commonCategoryRouter = Router()
 commonCategoryRouter.get(
   '/',
   validate(getCategorySchema),
-  wrapAsync(categoryController.getCategories)
+  asyncHandler(categoryController.getCategories)
 )
 commonCategoryRouter.get(
   '/:category_id',
   validate(categoryIdParamSchema),
-  wrapAsync(categoryController.getCategory)
+  asyncHandler(categoryController.getCategory)
 )
 export default commonCategoryRouter

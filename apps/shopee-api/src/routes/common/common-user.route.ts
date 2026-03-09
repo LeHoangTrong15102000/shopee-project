@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import authMiddleware from '@middleware/auth.middleware'
 import userController from '@controllers/user.controller'
-import { wrapAsync } from '@utils/response'
+import { asyncHandler } from '@utils/async-handler'
 import { validate, updateMeSchema } from '@schemas/index'
 
 const commonUserRouter = Router()
@@ -9,12 +9,12 @@ const commonUserRouter = Router()
 commonUserRouter.get(
   '/me',
   authMiddleware.verifyAccessToken,
-  wrapAsync(userController.getDetailMySelf)
+  asyncHandler(userController.getDetailMySelf)
 )
 commonUserRouter.put(
   '/me',
   authMiddleware.verifyAccessToken,
   validate(updateMeSchema),
-  wrapAsync(userController.updateMe)
+  asyncHandler(userController.updateMe)
 )
 export default commonUserRouter

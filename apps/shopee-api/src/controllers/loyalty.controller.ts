@@ -67,7 +67,7 @@ export const getRewards = async (req: Request, res: Response) => {
 
 export const redeemPoints = async (req: Request, res: Response): Promise<void> => {
   const user_id = req.jwtDecoded?.id
-  const { rewardId } = req.params
+  const { rewardId } = req.params as Record<string, string>
 
   const result = await loyaltyService.redeemPoints(user_id!, rewardId)
 

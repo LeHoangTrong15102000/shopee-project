@@ -13,7 +13,9 @@ const toReadable = (items: PageItem[], currentPage?: number) =>
 
 /** Helper to extract just page numbers (no dots) */
 const pageNumbers = (items: PageItem[]) =>
-  items.filter((i): i is Extract<PageItem, { type: 'page' }> => i.type === 'page').map((i) => i.number);
+  items
+    .filter((i): i is Extract<PageItem, { type: 'page' }> => i.type === 'page')
+    .map((i) => i.number);
 
 describe('generatePageNumbers', () => {
   describe('First page (page 1, totalPages 20)', () => {
@@ -120,4 +122,3 @@ describe('generatePageNumbers', () => {
     });
   });
 });
-

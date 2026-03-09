@@ -40,7 +40,7 @@ export const getNotifications = async (req: Request, res: Response) => {
 
 export const markAsRead = async (req: Request, res: Response): Promise<void> => {
   const user_id = req.jwtDecoded?.id
-  const notification_id = req.params.id
+  const notification_id = req.params.id as string
 
   const notification = await notificationService.markAsRead(user_id!, notification_id)
 
@@ -74,7 +74,7 @@ export const getUnreadCount = async (req: Request, res: Response) => {
 
 export const deleteNotification = async (req: Request, res: Response) => {
   const user_id = req.jwtDecoded?.id
-  const notification_id = req.params.id
+  const notification_id = req.params.id as string
 
   await notificationService.deleteNotification(user_id!, notification_id)
 
@@ -167,7 +167,7 @@ export const adminGetNotifications = async (req: Request, res: Response) => {
 }
 
 export const adminDeleteNotification = async (req: Request, res: Response) => {
-  const notification_id = req.params.id
+  const notification_id = req.params.id as string
 
   await notificationService.adminDeleteNotification(notification_id)
 

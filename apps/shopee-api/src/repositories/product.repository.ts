@@ -166,7 +166,7 @@ export class ProductRepository implements IProductRepository {
         update: { $set: data },
       },
     }))
-    const result = await ProductModel.bulkWrite(bulkOps)
+    const result = await ProductModel.bulkWrite(bulkOps as any)
     return result.modifiedCount
   }
 

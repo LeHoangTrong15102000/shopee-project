@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+type Req = Request<Record<string, string>>
 import { STATUS } from '@constants/status'
 import { container } from '../container'
 
@@ -20,7 +21,7 @@ export const getAddresses = async (req: Request, res: Response) => {
 
 export const getAddressById = async (req: Request, res: Response): Promise<void> => {
   const user_id = req.jwtDecoded?.id
-  const { id } = req.params
+  const { id } = req.params as Record<string, string>
 
   const address = await addressService.getAddressById(user_id!, id)
 
@@ -52,7 +53,7 @@ export const createAddress = async (req: Request, res: Response) => {
 
 export const updateAddress = async (req: Request, res: Response): Promise<void> => {
   const user_id = req.jwtDecoded?.id
-  const { id } = req.params
+  const { id } = req.params as Record<string, string>
   const { full_name, phone, province, district, ward, street, is_default } = req.body
 
   const address = await addressService.updateAddress(user_id!, id, {
@@ -73,7 +74,7 @@ export const updateAddress = async (req: Request, res: Response): Promise<void> 
 
 export const deleteAddress = async (req: Request, res: Response): Promise<void> => {
   const user_id = req.jwtDecoded?.id
-  const { id } = req.params
+  const { id } = req.params as Record<string, string>
 
   await addressService.deleteAddress(user_id!, id)
 
@@ -84,7 +85,7 @@ export const deleteAddress = async (req: Request, res: Response): Promise<void> 
 
 export const setDefaultAddress = async (req: Request, res: Response): Promise<void> => {
   const user_id = req.jwtDecoded?.id
-  const { id } = req.params
+  const { id } = req.params as Record<string, string>
 
   const address = await addressService.setDefaultAddress(user_id!, id)
 

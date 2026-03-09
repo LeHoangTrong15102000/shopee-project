@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+type Req = Request<Record<string, string>>
 import { STATUS } from '@constants/status'
 import { reviewService } from '../container'
 import { emitNewReview, emitNewReviewComment, emitReviewLiked } from '../socket/utils/review-emit'
@@ -53,7 +54,7 @@ export const createReview = async (req: Request, res: Response): Promise<void> =
 }
 
 // Lấy reviews của sản phẩm
-export const getProductReviews = async (req: Request, res: Response): Promise<void> => {
+export const getProductReviews = async (req: Req, res: Response): Promise<void> => {
   try {
     const product_id = req.params.product_id
     const user_id = req.jwtDecoded?.id
@@ -82,7 +83,7 @@ export const getProductReviews = async (req: Request, res: Response): Promise<vo
 }
 
 // Like/Unlike review
-export const toggleReviewLike = async (req: Request, res: Response): Promise<void> => {
+export const toggleReviewLike = async (req: Req, res: Response): Promise<void> => {
   try {
     const user_id = req.jwtDecoded?.id
     const review_id = req.params.review_id
@@ -165,7 +166,7 @@ export const createReviewComment = async (req: Request, res: Response): Promise<
 }
 
 // Lấy comments của review
-export const getReviewComments = async (req: Request, res: Response): Promise<void> => {
+export const getReviewComments = async (req: Req, res: Response): Promise<void> => {
   try {
     const review_id = req.params.review_id
     const { page = 1, limit = 10 } = req.query
@@ -199,7 +200,7 @@ export const getReviewComments = async (req: Request, res: Response): Promise<vo
 }
 
 // Kiểm tra có thể review không
-export const canReviewPurchase = async (req: Request, res: Response): Promise<void> => {
+export const canReviewPurchase = async (req: Req, res: Response): Promise<void> => {
   try {
     const user_id = req.jwtDecoded?.id
     const purchase_id = req.params.purchase_id
@@ -222,7 +223,7 @@ export const canReviewPurchase = async (req: Request, res: Response): Promise<vo
 }
 
 // Cập nhật review
-export const updateReview = async (req: Request, res: Response): Promise<void> => {
+export const updateReview = async (req: Req, res: Response): Promise<void> => {
   try {
     const user_id = req.jwtDecoded?.id
     const review_id = req.params.review_id
@@ -258,7 +259,7 @@ export const updateReview = async (req: Request, res: Response): Promise<void> =
 }
 
 // Xóa review
-export const deleteReview = async (req: Request, res: Response): Promise<void> => {
+export const deleteReview = async (req: Req, res: Response): Promise<void> => {
   try {
     const user_id = req.jwtDecoded?.id
     const review_id = req.params.review_id

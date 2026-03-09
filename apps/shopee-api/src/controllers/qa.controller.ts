@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+type Req = Request<Record<string, string>>
 import { STATUS } from '@constants/status'
 import { container } from '../container'
 import { emitNewQuestion, emitNewAnswer, emitQuestionLiked } from '../socket/utils/qa-emit'
@@ -67,7 +68,7 @@ export const askQuestion = async (req: Request, res: Response): Promise<void> =>
   })
 }
 
-export const answerQuestion = async (req: Request, res: Response): Promise<void> => {
+export const answerQuestion = async (req: Req, res: Response): Promise<void> => {
   const user_id = req.jwtDecoded?.id
   const { questionId } = req.params
   const { answer, is_seller = false } = req.body
@@ -93,7 +94,7 @@ export const answerQuestion = async (req: Request, res: Response): Promise<void>
   })
 }
 
-export const likeQuestion = async (req: Request, res: Response): Promise<void> => {
+export const likeQuestion = async (req: Req, res: Response): Promise<void> => {
   const user_id = req.jwtDecoded?.id
   const { questionId } = req.params
 
@@ -112,7 +113,7 @@ export const likeQuestion = async (req: Request, res: Response): Promise<void> =
   })
 }
 
-export const likeAnswer = async (req: Request, res: Response): Promise<void> => {
+export const likeAnswer = async (req: Req, res: Response): Promise<void> => {
   try {
     const user_id = req.jwtDecoded?.id
     const { questionId, answerId } = req.params

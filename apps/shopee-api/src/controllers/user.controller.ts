@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+type Req = Request<Record<string, string>>
 import { responseSuccess, ErrorHandler } from '@utils/response'
 import { STATUS } from '@constants/status'
 import { uploadFile } from '@utils/upload'
@@ -19,7 +20,7 @@ interface User {
   new_password?: string
 }
 
-interface CustomRequest extends Request {
+interface CustomRequest extends Req {
   jwtDecoded: {
     id: string
     email: string

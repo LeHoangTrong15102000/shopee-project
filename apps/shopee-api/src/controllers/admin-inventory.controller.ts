@@ -29,7 +29,7 @@ export const adminGetOutOfStock = async (req: Request, res: Response) => {
 
 export const adminUpdateStock = async (req: Request, res: Response) => {
   try {
-    const data = await productService.updateStock(req.params.product_id, req.body.quantity)
+    const data = await productService.updateStock(req.params.product_id as string, req.body.quantity)
     return responseSuccess(res, { message: 'Cập nhật tồn kho thành công', data })
   } catch (error) { handleError(error) }
 }

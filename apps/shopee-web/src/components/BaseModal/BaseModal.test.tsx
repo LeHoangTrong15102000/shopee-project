@@ -42,4 +42,20 @@ describe('BaseModal', () => {
       expect(onClose).not.toHaveBeenCalled();
     }
   });
+
+  it('calls onClose when Escape key is pressed', async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+    render(<BaseModal {...defaultProps} onClose={onClose} />);
+    await user.keyboard('{Escape}');
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('does not call onClose on Escape when closeOnEscape is false', async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+    render(<BaseModal {...defaultProps} onClose={onClose} closeOnEscape={false} />);
+    await user.keyboard('{Escape}');
+    expect(onClose).not.toHaveBeenCalled();
+  });
 });

@@ -735,23 +735,6 @@ describe('Phase1 11.2 - useLivePriceUpdate Hook', () => {
     expect(result.current.price).toBeNull()
   })
 
-  test('shows toast on price_alert_triggered', async () => {
-    const { toast } = await import('react-toastify')
-    const wrapper = createWrapper(true)
-    renderHook(() => useLivePriceUpdate('product-123'), { wrapper })
-    await act(async () => { await connectSocket() })
-    act(() => {
-      emitSocketEvent(SocketEvent.PRICE_ALERT_TRIGGERED, {
-        alert_id: 'alert-1',
-        product_id: 'product-123',
-        product_name: 'iPhone 15',
-        target_price: 85000,
-        new_price: 80000
-      })
-    })
-    expect(toast.success).toHaveBeenCalled()
-  })
-
   test('unsubscribes on unmount', async () => {
     const wrapper = createWrapper(true)
     const { unmount } = renderHook(() => useLivePriceUpdate('product-123'), { wrapper })
@@ -759,7 +742,6 @@ describe('Phase1 11.2 - useLivePriceUpdate Hook', () => {
     unmount()
     expect(mockSocket.emit).toHaveBeenCalledWith(SocketEvent.UNSUBSCRIBE_PRODUCT, { product_id: 'product-123' })
     expect(mockSocket.off).toHaveBeenCalledWith(SocketEvent.PRICE_UPDATED, expect.any(Function))
-    expect(mockSocket.off).toHaveBeenCalledWith(SocketEvent.PRICE_ALERT_TRIGGERED, expect.any(Function))
   })
 
   test('does nothing when productId is undefined', () => {

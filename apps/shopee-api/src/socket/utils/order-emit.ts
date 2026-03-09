@@ -47,7 +47,7 @@ export const emitOrderStatusUpdate = (
       try {
         const purchase = await PurchaseModel.findById(orderId).select('user').lean()
 
-        if (!purchase) {
+        if (!purchase || !purchase.user) {
           Logger.apiWarn('Purchase not found for notification persistence', { orderId })
           return
         }

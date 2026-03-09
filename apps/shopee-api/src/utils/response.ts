@@ -23,16 +23,6 @@ const isProduction = (): boolean => {
 }
 
 /**
- * @deprecated Sử dụng asyncHandler từ @utils/async-handler thay thế
- * Wrapper cho async functions để tự động catch errors
- */
-export const wrapAsync = (func: Function) => {
-  return function (req: Request, res: Response, next: NextFunction): void {
-    Promise.resolve(func(req, res, next)).catch(next)
-  }
-}
-
-/**
  * Interface cho error response JSON
  */
 interface ErrorJSON {

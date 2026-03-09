@@ -25,6 +25,14 @@ jest.mock('../../socket/utils/seller-emit', () => ({
   emitSellerMetricsUpdate: jest.fn(),
 }))
 
+jest.mock('../../socket/managers/presence.manager', () => ({
+  getOnlineUserCount: jest.fn().mockReturnValue(0),
+}))
+
+jest.mock('../../socket/socket.init', () => ({
+  getIO: jest.fn(),
+}))
+
 jest.mock('@constants/purchase', () => ({
   STATUS_PURCHASE: { WAIT_FOR_CONFIRMATION: 1 },
 }))
@@ -60,6 +68,8 @@ describe('Seller Metrics Service', () => {
         today_revenue: 100000 * 2 + 50000 * 3 + 200000 * 1,
         pending_orders: 5,
         pending_qa: 8,
+        active_users: 0,
+        orders_per_hour: expect.any(Number),
       })
 
       expect(PurchaseModel.find).toHaveBeenCalledWith({
@@ -91,6 +101,8 @@ describe('Seller Metrics Service', () => {
         today_revenue: 0,
         pending_orders: 0,
         pending_qa: 0,
+        active_users: 0,
+        orders_per_hour: 0,
       })
       expect(Logger.apiError).toHaveBeenCalledWith('Failed to get seller metrics', {
         error: 'Database error',
@@ -122,6 +134,8 @@ describe('Seller Metrics Service', () => {
         today_revenue: 300000,
         pending_orders: 3,
         pending_qa: 2,
+        active_users: 0,
+        orders_per_hour: expect.any(Number),
       })
       expect(Logger.apiInfo).toHaveBeenCalledWith('Seller metrics emitted with real data', {
         sellerId: 'seller-123',
@@ -130,6 +144,8 @@ describe('Seller Metrics Service', () => {
           today_revenue: 300000,
           pending_orders: 3,
           pending_qa: 2,
+          active_users: 0,
+          orders_per_hour: expect.any(Number),
         },
       })
     })
@@ -152,6 +168,8 @@ describe('Seller Metrics Service', () => {
         today_revenue: 0,
         pending_orders: 0,
         pending_qa: 0,
+        active_users: 0,
+        orders_per_hour: 0,
       })
     })
   })

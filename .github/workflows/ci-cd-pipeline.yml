@@ -3,7 +3,6 @@ name: Shopee Web CI/CD Pipeline
 env:
   NODE_VERSION: '22'
   PNPM_VERSION: '10.12.1'
-  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
 on:
   push:
@@ -38,8 +37,7 @@ jobs:
     name: Detect Changes
     runs-on: ubuntu-latest
     outputs:
-      shopee-web: ${{ steps.filter.outputs.shopee-web }}
-      libs: ${{ steps.filter.outputs.libs }}
+      src: ${{ steps.filter.outputs.src }}
       tests: ${{ steps.filter.outputs.tests }}
     steps:
       - uses: actions/checkout@v4
@@ -48,32 +46,32 @@ jobs:
         id: filter
         with:
           filters: |
-            shopee-web:
+            src:
               - 'apps/shopee-web/src/**'
               - 'apps/shopee-web/public/**'
               - 'apps/shopee-web/package.json'
               - 'apps/shopee-web/vite.config.ts'
               - 'apps/shopee-web/tsconfig.json'
-              - 'apps/shopee-web/tsconfig.node.json'
-              - 'apps/shopee-web/tailwind.config.cjs'
               - 'apps/shopee-web/index.html'
-            libs:
               - 'libs/**'
+              - '.github/workflows/**'
+              - 'nx.json'
+              - 'pnpm-lock.yaml'
+              - 'package.json'
+              - 'tsconfig.base.json'
             tests:
+              - 'apps/shopee-web/src/**/*.test.{ts,tsx}'
               - 'apps/shopee-web/test/**'
               - 'apps/shopee-web/vitest.setup.js'
-              - 'apps/shopee-web/src/**/*.test.{ts,tsx}'
 
   # ==================== LINT ====================
   lint:
     name: Lint
     runs-on: ubuntu-latest
     needs: changes
-    if: needs.changes.outputs.shopee-web == 'true' || needs.changes.outputs.libs == 'true'
+    if: needs.changes.outputs.src == 'true'
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
         with:
@@ -87,7 +85,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: TypeScript Type Check
-        run: pnpm nx run shopee-web:build --skip-nx-cache
+        run: cd apps/shopee-web && npx tsc --noEmit
         env:
           NODE_OPTIONS: '--max-old-space-size=4096'
 
@@ -99,14 +97,9 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     needs: changes
-    if: |
-      needs.changes.outputs.shopee-web == 'true' ||
-      needs.changes.outputs.libs == 'true' ||
-      needs.changes.outputs.tests == 'true'
+    if: needs.changes.outputs.src == 'true' || needs.changes.outputs.tests == 'true'
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
         with:
@@ -125,41 +118,21 @@ jobs:
           CI: 'true'
           NODE_OPTIONS: '--max-old-space-size=4096'
 
-      - name: Check Coverage Threshold
-        run: |
-          COVERAGE_FILE="apps/shopee-web/coverage/coverage-summary.json"
-          if [ -f "$COVERAGE_FILE" ]; then
-            COVERAGE=$(node -e "
-              const report = require('./$COVERAGE_FILE');
-              const total = report.total;
-              const avg = (total.lines.pct + total.statements.pct + total.functions.pct + total.branches.pct) / 4;
-              console.log(avg.toFixed(2));
-            " 2>/dev/null || echo "0")
-            echo "Coverage: ${COVERAGE}%"
-            if (( $(echo "$COVERAGE < 75" | bc -l 2>/dev/null || echo "0") )); then
-              echo "::warning::Coverage ${COVERAGE}% is below 75% threshold"
-            fi
-          else
-            echo "::warning::Coverage report not found"
-          fi
-
       - name: Upload Coverage
+        if: always()
         uses: codecov/codecov-action@v5
         with:
           files: apps/shopee-web/coverage/lcov.info
           flags: shopee-web
-          name: shopee-web-coverage
           fail_ci_if_error: false
 
-  # ==================== BUILD ====================
+  # ==================== BUILD & DEPLOY ====================
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: [lint]
+    needs: [lint, test]
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
         with:
@@ -173,9 +146,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Build shopee-web
-        run: |
-          cd apps/shopee-web
-          pnpm run build:production
+        run: cd apps/shopee-web && pnpm run build:production
         env:
           NODE_OPTIONS: '--max-old-space-size=4096'
 
@@ -212,7 +183,7 @@ jobs:
           name: shopee-web-build
           path: apps/shopee-web/dist
 
-      - name: Create Vercel Output Structure
+      - name: Create Vercel Output & Deploy
         run: |
           mkdir -p .vercel/output/static
           cp -r dist/* .vercel/output/static/
@@ -225,8 +196,5 @@ jobs:
             ]
           }
           EOF
-        working-directory: apps/shopee-web
-
-      - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+          vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
         working-directory: apps/shopee-web

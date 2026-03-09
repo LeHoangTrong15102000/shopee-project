@@ -44,6 +44,7 @@ const createMockCartItem = (productId: string, buyCount: number): ExtendedPurcha
     image: 'https://example.com/image.jpg',
     images: ['https://example.com/image.jpg'],
     description: 'Test',
+    location: 'Hồ Chí Minh',
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
   },
@@ -66,6 +67,7 @@ const mockProduct = {
   image: 'https://example.com/image.jpg',
   images: ['https://example.com/image.jpg'],
   description: 'Test product',
+  location: 'Hồ Chí Minh',
   createdAt: '2024-01-01T00:00:00.000Z',
   updatedAt: '2024-01-01T00:00:00.000Z',
 };
@@ -174,7 +176,7 @@ describe('ProductActions - Cart Validation (Task 1.9)', () => {
   it('shows remaining count in error when partial overflow on add to cart', async () => {
     const { toast } = await import('react-toastify');
     // Render with empty cart so max=10, then increase buyCount to 5
-    const { rerender } = renderWithProviders(
+    renderWithProviders(
       <ProductActions product={mockProduct as any} isAuthenticated={true} reducedMotion={true} />,
     );
     // Increase buyCount to 5 by clicking increase button 4 times

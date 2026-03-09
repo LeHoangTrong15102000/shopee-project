@@ -8,7 +8,7 @@ interface ShopeeProtectionModalProps {
 }
 
 interface SectionProps {
-  t: TFunction;
+  t: TFunction<'product'>;
 }
 
 const ReturnPolicySection = ({ t }: SectionProps) => (

@@ -52,17 +52,13 @@ describe('ShippingMethodSelector', () => {
   });
 
   it('shows loading skeletons while fetching', () => {
-    renderWithProviders(
-      <ShippingMethodSelector selectedMethodId={null} onSelect={onSelect} />,
-    );
+    renderWithProviders(<ShippingMethodSelector selectedMethodId={null} onSelect={onSelect} />);
     const skeletons = document.querySelectorAll('.animate-pulse');
     expect(skeletons.length).toBeGreaterThan(0);
   });
 
   it('renders shipping methods from API', async () => {
-    renderWithProviders(
-      <ShippingMethodSelector selectedMethodId={null} onSelect={onSelect} />,
-    );
+    renderWithProviders(<ShippingMethodSelector selectedMethodId={null} onSelect={onSelect} />);
     await waitFor(() => {
       expect(screen.getByText('Giao hàng tiêu chuẩn')).toBeInTheDocument();
     });
@@ -71,27 +67,21 @@ describe('ShippingMethodSelector', () => {
   });
 
   it('shows "Miễn phí" for price=0 methods', async () => {
-    renderWithProviders(
-      <ShippingMethodSelector selectedMethodId={null} onSelect={onSelect} />,
-    );
+    renderWithProviders(<ShippingMethodSelector selectedMethodId={null} onSelect={onSelect} />);
     await waitFor(() => {
       expect(screen.getByText('Miễn phí')).toBeInTheDocument();
     });
   });
 
   it('shows "Giao nhanh" badge for estimatedDays<=1', async () => {
-    renderWithProviders(
-      <ShippingMethodSelector selectedMethodId={null} onSelect={onSelect} />,
-    );
+    renderWithProviders(<ShippingMethodSelector selectedMethodId={null} onSelect={onSelect} />);
     await waitFor(() => {
       expect(screen.getByText('Giao nhanh')).toBeInTheDocument();
     });
   });
 
   it('calls onSelect when method clicked', async () => {
-    renderWithProviders(
-      <ShippingMethodSelector selectedMethodId={null} onSelect={onSelect} />,
-    );
+    renderWithProviders(<ShippingMethodSelector selectedMethodId={null} onSelect={onSelect} />);
     await waitFor(() => {
       expect(screen.getByText('Giao hàng tiêu chuẩn')).toBeInTheDocument();
     });
@@ -102,23 +92,17 @@ describe('ShippingMethodSelector', () => {
   });
 
   it('activates on Space key', async () => {
-    renderWithProviders(
-      <ShippingMethodSelector selectedMethodId={null} onSelect={onSelect} />,
-    );
+    renderWithProviders(<ShippingMethodSelector selectedMethodId={null} onSelect={onSelect} />);
     await waitFor(() => {
       expect(screen.getByText('Giao hàng tiêu chuẩn')).toBeInTheDocument();
     });
     const methodEl = screen.getByText('Giao hàng tiêu chuẩn').closest('[role="radio"]')!;
     fireEvent.keyDown(methodEl, { key: ' ' });
-    expect(onSelect).toHaveBeenCalledWith(
-      expect.objectContaining({ _id: 'standard' }),
-    );
+    expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ _id: 'standard' }));
   });
 
   it('highlights selected method with border-orange', async () => {
-    renderWithProviders(
-      <ShippingMethodSelector selectedMethodId="standard" onSelect={onSelect} />,
-    );
+    renderWithProviders(<ShippingMethodSelector selectedMethodId="standard" onSelect={onSelect} />);
     await waitFor(() => {
       expect(screen.getByText('Giao hàng tiêu chuẩn')).toBeInTheDocument();
     });
@@ -127,20 +111,15 @@ describe('ShippingMethodSelector', () => {
   });
 
   it('shows formatted price for paid methods', async () => {
-    renderWithProviders(
-      <ShippingMethodSelector selectedMethodId={null} onSelect={onSelect} />,
-    );
+    renderWithProviders(<ShippingMethodSelector selectedMethodId={null} onSelect={onSelect} />);
     await waitFor(() => {
       expect(screen.getByText('₫30.000')).toBeInTheDocument();
     });
   });
 
   it('has loading skeleton with motion-reduce:animate-none', () => {
-    renderWithProviders(
-      <ShippingMethodSelector selectedMethodId={null} onSelect={onSelect} />,
-    );
+    renderWithProviders(<ShippingMethodSelector selectedMethodId={null} onSelect={onSelect} />);
     const skeleton = document.querySelector('.animate-pulse');
     expect(skeleton?.classList.contains('motion-reduce:animate-none')).toBe(true);
   });
 });
-

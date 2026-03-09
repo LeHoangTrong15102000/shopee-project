@@ -48,7 +48,11 @@ const ShippingMethodSelector = memo(function ShippingMethodSelector({
   }
 
   return (
-    <div className="space-y-3" role={viewOnly ? 'list' : 'radiogroup'} aria-label={t('shipping.selectMethod')}>
+    <div
+      className="space-y-3"
+      role={viewOnly ? 'list' : 'radiogroup'}
+      aria-label={t('shipping.selectMethod')}
+    >
       {methods.map((method) => (
         <motion.div
           key={method._id}

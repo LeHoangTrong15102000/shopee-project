@@ -131,9 +131,7 @@ describe('ShippingMethodModal - Error & Empty States', () => {
     });
     renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
     await waitFor(() => {
-      expect(
-        screen.getByText('Không có phương thức vận chuyển khả dụng'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Không có phương thức vận chuyển khả dụng')).toBeInTheDocument();
     });
   });
 });

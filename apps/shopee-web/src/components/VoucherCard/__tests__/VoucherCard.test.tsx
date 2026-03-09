@@ -80,9 +80,7 @@ describe('VoucherCard', () => {
   });
 
   it('shows expired overlay for inactive voucher', () => {
-    renderWithProviders(
-      <VoucherCard voucher={createMockVoucher({ is_active: false })} />,
-    );
+    renderWithProviders(<VoucherCard voucher={createMockVoucher({ is_active: false })} />);
     expect(screen.getByText('Hết hạn')).toBeInTheDocument();
   });
 
@@ -145,4 +143,3 @@ describe('VoucherCard', () => {
     expect(screen.getByRole('article')).toBeInTheDocument();
   });
 });
-

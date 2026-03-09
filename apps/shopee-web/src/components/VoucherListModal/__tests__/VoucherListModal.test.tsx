@@ -196,9 +196,7 @@ describe('VoucherListModal - Error & Empty States', () => {
     );
     renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />);
     await waitFor(() => {
-      expect(
-        screen.getByText('Không thể tải voucher. Vui lòng thử lại.'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Không thể tải voucher. Vui lòng thử lại.')).toBeInTheDocument();
     });
     expect(screen.getByText('Thử lại')).toBeInTheDocument();
   });

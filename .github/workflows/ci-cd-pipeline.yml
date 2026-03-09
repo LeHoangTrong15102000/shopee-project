@@ -175,7 +175,6 @@ jobs:
 
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: apps/shopee-web
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
@@ -186,7 +185,7 @@ jobs:
       - name: Create Vercel Output & Deploy
         run: |
           mkdir -p .vercel/output/static
-          cp -r dist/* .vercel/output/static/
+          cp -r apps/shopee-web/dist/* .vercel/output/static/
           cat > .vercel/output/config.json << 'EOF'
           {
             "version": 3,
@@ -197,4 +196,3 @@ jobs:
           }
           EOF
           vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: apps/shopee-web

@@ -48,12 +48,7 @@ const ShippingMethodModal = ({ isOpen, onClose, location }: ShippingMethodModalP
       return (
         <span className="inline-flex items-stretch">
           {/* Icon truck - giữ nguyên aspect ratio gốc 43:22, không ép vuông */}
-          <img
-            src={SHOPEE_TRUCK_ICON_URL}
-            alt=""
-            className="h-[18px] w-auto"
-            aria-hidden="true"
-          />
+          <img src={SHOPEE_TRUCK_ICON_URL} alt="" className="h-[18px] w-auto" aria-hidden="true" />
           {/* Badge text - cùng chiều cao với icon, nằm sát, nối liền mạch */}
           <span className="-ml-px flex items-center rounded-r-sm bg-[#26aa99] px-1.5 text-[10px] leading-none font-medium text-white">
             Ngày Mai 12:00
@@ -204,10 +199,7 @@ const ShippingMethodModal = ({ isOpen, onClose, location }: ShippingMethodModalP
                   {method.details && method.details.length > 0 && (
                     <ul className="mt-2 space-y-1">
                       {method.details.map((detail, idx) => (
-                        <li
-                          key={idx}
-                          className="text-xs text-gray-400 dark:text-gray-500"
-                        >
+                        <li key={idx} className="text-xs text-gray-400 dark:text-gray-500">
                           {detail.text}
                         </li>
                       ))}

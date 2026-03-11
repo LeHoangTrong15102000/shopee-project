@@ -51,7 +51,7 @@ const ShippingMethodModal = ({ isOpen, onClose, location }: ShippingMethodModalP
           <img src={SHOPEE_TRUCK_ICON_URL} alt="" className="h-[18px] w-auto" aria-hidden="true" />
           {/* Badge text - cùng chiều cao với icon, nằm sát, nối liền mạch */}
           <span className="-ml-px flex items-center rounded-r-sm bg-[#26aa99] px-1.5 text-[10px] leading-none font-medium text-white">
-            Ngày Mai 12:00
+            {method.deliveryHours} Giờ
           </span>
         </span>
       );

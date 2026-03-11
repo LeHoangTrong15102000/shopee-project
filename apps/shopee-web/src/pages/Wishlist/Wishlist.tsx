@@ -220,7 +220,7 @@ export default function Wishlist() {
                   variant="text"
                   animated={false}
                   onClick={() => setActiveFilter('all')}
-                  className="mt-3 cursor-pointer rounded-sm text-sm text-[#ee4d2d] hover:underline focus:ring-2 focus:ring-orange-500 focus:outline-hidden dark:text-orange-400 dark:focus:ring-orange-400"
+                  className="mt-3 cursor-pointer rounded-sm text-sm text-[#ee4d2d] hover:underline focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:outline-hidden dark:text-orange-400 dark:focus-visible:ring-orange-400"
                 >
                   {t('viewAll')}
                 </Button>
@@ -246,7 +246,7 @@ export default function Wishlist() {
                 </div>
                 <Button
                   animated={false}
-                  className="mt-3 cursor-pointer rounded-full bg-white px-5 py-2 text-xs font-semibold text-[#ee4d2d] transition-all duration-200 hover:bg-white/90 hover:shadow-md focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-orange-500 focus:outline-hidden dark:text-orange-600"
+                  className="mt-3 cursor-pointer rounded-full bg-white px-5 py-2 text-xs font-semibold text-[#ee4d2d] transition-all duration-200 hover:bg-white/90 hover:shadow-md focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-500 focus-visible:outline-hidden dark:text-orange-600"
                 >
                   {t('priceTracking.enable')}
                 </Button>
@@ -375,7 +375,7 @@ export default function Wishlist() {
             </p>
             <Link
               to={path.home}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-linear-to-r from-[#ee4d2d] to-[#ff6b4a] px-8 py-3 font-medium text-white transition-all duration-200 hover:shadow-lg hover:shadow-orange-500/30 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-hidden dark:from-orange-500 dark:to-orange-400 dark:focus:ring-orange-400"
+              className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-linear-to-r from-[#ee4d2d] to-[#ff6b4a] px-8 py-3 font-medium text-white transition-all duration-200 hover:shadow-lg hover:shadow-orange-500/30 focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:outline-hidden dark:from-orange-500 dark:to-orange-400 dark:focus-visible:ring-orange-400"
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path

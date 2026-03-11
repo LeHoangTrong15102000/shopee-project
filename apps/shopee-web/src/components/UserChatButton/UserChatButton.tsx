@@ -14,7 +14,7 @@ const UserChatButton = () => {
       {/* Floating chat button - positioned above ChatbotWidget */}
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="fixed right-5 bottom-24 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-blue-500 text-white shadow-lg transition-all hover:bg-blue-600 hover:shadow-xl focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:outline-none"
+        className="fixed right-5 bottom-24 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-blue-500 text-white shadow-lg transition-all hover:bg-blue-600 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:outline-none"
         aria-label="Mở chat hỗ trợ"
         title="Chat với hỗ trợ"
       >

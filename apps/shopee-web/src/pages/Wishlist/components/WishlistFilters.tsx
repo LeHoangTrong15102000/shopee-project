@@ -32,7 +32,7 @@ export default function WishlistFilters({
             animated={false}
             key={pill.id}
             onClick={() => onFilterChange(pill.id)}
-            className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 focus:outline-hidden dark:focus:ring-orange-400 ${
+            className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-1 focus-visible:outline-hidden dark:focus-visible:ring-orange-400 ${
               activeFilter === pill.id
                 ? 'bg-[#ee4d2d] text-white shadow-md shadow-orange-500/25 dark:bg-orange-500'
                 : 'border border-gray-200 bg-white text-gray-600 hover:border-[#ee4d2d] hover:text-[#ee4d2d] dark:border-slate-600 dark:bg-slate-800 dark:text-gray-300 dark:hover:border-orange-400 dark:hover:text-orange-400'
@@ -48,7 +48,7 @@ export default function WishlistFilters({
         <Button
           animated={false}
           onClick={onToggleSortDropdown}
-          className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm text-gray-600 transition-colors hover:border-[#ee4d2d] focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 focus:outline-hidden dark:border-slate-600 dark:bg-slate-800 dark:text-gray-300 dark:hover:border-orange-400 dark:focus:ring-orange-400"
+          className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm text-gray-600 transition-colors hover:border-[#ee4d2d] focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-1 focus-visible:outline-hidden dark:border-slate-600 dark:bg-slate-800 dark:text-gray-300 dark:hover:border-orange-400 dark:focus-visible:ring-orange-400"
         >
           <span>Sắp xếp: {sortOptions.find((s) => s.id === activeSort)?.label}</span>
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -71,7 +71,7 @@ export default function WishlistFilters({
                     onSortChange(opt.id);
                     onToggleSortDropdown();
                   }}
-                  className={`flex w-full cursor-pointer items-center gap-2 px-4 py-2 text-sm transition-colors focus:ring-2 focus:ring-orange-500 focus:outline-hidden focus:ring-inset dark:focus:ring-orange-400 ${
+                  className={`flex w-full cursor-pointer items-center gap-2 px-4 py-2 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:outline-hidden focus-visible:ring-inset dark:focus-visible:ring-orange-400 ${
                     activeSort === opt.id
                       ? 'bg-orange-50 font-medium text-[#ee4d2d] dark:bg-orange-900/20 dark:text-orange-400'
                       : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-slate-700'

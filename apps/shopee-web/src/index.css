@@ -368,25 +368,32 @@ body {
   }
 }
 
-/* ===== FOCUS VISIBLE STYLES ===== */
-a:focus-visible,
-button:focus-visible,
-[role='button']:focus-visible,
-[tabindex='0']:focus-visible,
-summary:focus-visible {
-  outline: 2px solid #ee4d2d;
-  outline-offset: 2px;
-}
+/* ===== FOCUS VISIBLE STYLES =====
+   Wrapped in @layer base so Tailwind utilities (@layer utilities) can
+   override these defaults when components need custom focus styling
+   (e.g. focus-visible:outline-none + focus-visible:ring-2).
+   Without @layer, these rules are "unlayered" and always win over
+   layered Tailwind utilities per CSS Cascade Layers spec. */
+@layer base {
+  a:focus-visible,
+  button:focus-visible,
+  [role='button']:focus-visible,
+  [tabindex='0']:focus-visible,
+  summary:focus-visible {
+    outline: 2px solid #ee4d2d;
+    outline-offset: 2px;
+  }
 
-/* Form elements have their own focus styles via Tailwind classes */
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-  outline: none;
-}
+  /* Form elements have their own focus styles via Tailwind classes */
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none;
+  }
 
-/* Remove default focus outline and ring for mouse users */
-*:focus:not(:focus-visible) {
-  outline: none;
-  box-shadow: none;
+  /* Remove default focus outline and ring for mouse users */
+  *:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
+  }
 }

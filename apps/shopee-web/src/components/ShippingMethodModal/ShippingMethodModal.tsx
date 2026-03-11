@@ -4,8 +4,9 @@ import BaseModal from 'src/components/BaseModal/BaseModal';
 import checkoutApi from 'src/apis/checkout.api';
 import { formatCurrency } from 'src/utils/utils';
 import { getShopeeDeliveryRange } from 'src/utils/date';
+import { ShippingMethod } from 'src/types/checkout.type';
 
-// Shopee official truck icon URL
+// Shopee official truck icon URL - only for instant delivery
 const SHOPEE_TRUCK_ICON_URL =
   'https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/productdetailspage/6b56a09bbc0bcca75e85.svg';
 
@@ -39,15 +40,31 @@ const ShippingMethodModal = ({ isOpen, onClose, location }: ShippingMethodModalP
   const methods = methodsData || [];
   const hasMethods = !isLoading && !isError && methods.length > 0;
 
-  // Find the fastest method (lowest estimatedDays)
-  const fastestId = hasMethods
-    ? methods.reduce((fastest, m) => {
-        const cur = parseInt((m.estimatedDays.match(/(\d+)/) || ['0', '0'])[1], 10);
-        const prev = parseInt((fastest.estimatedDays.match(/(\d+)/) || ['0', '0'])[1], 10);
-        return cur < prev ? m : fastest;
-      })._id
-    : null;
+  // Render delivery time badge for instant delivery - Shopee style
+  // SVG gốc Shopee: 43x22px, đã có nền teal + truck icon tích hợp sẵn
+  // Badge text nối tiếp bên phải, cùng chiều cao, tạo badge liền mạch
+  const renderDeliveryBadge = (method: ShippingMethod) => {
+    if (method.type === 'instant' && method.deliveryHours) {
+      return (
+        <span className="inline-flex items-stretch">
+          {/* Icon truck - giữ nguyên aspect ratio gốc 43:22, không ép vuông */}
+          <img
+            src={SHOPEE_TRUCK_ICON_URL}
+            alt=""
+            className="h-[18px] w-auto"
+            aria-hidden="true"
+          />
+          {/* Badge text - cùng chiều cao với icon, nằm sát, nối liền mạch */}
+          <span className="-ml-px flex items-center rounded-r-sm bg-[#26aa99] px-1.5 text-[10px] leading-none font-medium text-white">
+            Ngày Mai 12:00
+          </span>
+        </span>
+      );
+    }
+    return null;
+  };
 
+  // PLACEHOLDER_MODAL_CONTENT
   return (
     <BaseModal
       isOpen={isOpen}
@@ -55,13 +72,13 @@ const ShippingMethodModal = ({ isOpen, onClose, location }: ShippingMethodModalP
       className="max-w-[520px] sm:w-11/12 !p-0"
       ariaLabelledBy="shipping-modal-title"
     >
-      {/* Header */}
+      {/* Header - Shopee style */}
       <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-slate-700">
         <h2
           id="shipping-modal-title"
-          className="text-base font-medium text-gray-900 dark:text-gray-100"
+          className="text-lg font-medium text-gray-900 dark:text-gray-100"
         >
-          {tProduct('shipping.modalTitle')}
+          {t('modalTitle')}
         </h2>
         <button
           onClick={onClose}
@@ -85,60 +102,29 @@ const ShippingMethodModal = ({ isOpen, onClose, location }: ShippingMethodModalP
         </button>
       </div>
 
-      {/* Free shipping promotion — Shopee style */}
-      <div className="border-b border-gray-100 px-6 py-4 dark:border-slate-700">
-        <div className="flex items-center gap-3">
-          <img src={SHOPEE_TRUCK_ICON_URL} alt="" className="h-6 w-6" aria-hidden="true" />
-          <span
-            className="rounded px-2 py-0.5 text-xs font-medium"
-            style={{ color: SHOPEE_TEAL, backgroundColor: 'rgba(33, 151, 135, 0.1)' }}
-          >
-            {t('freeShipPromo')}
+      {/* Delivery address section - Shopee style */}
+      <div className="border-b border-gray-100 px-6 py-3 dark:border-slate-700">
+        <span className="text-sm text-gray-600 dark:text-gray-400">
+          {t('deliverTo')}:{' '}
+          <span className="font-medium text-gray-800 dark:text-gray-200">
+            {location || tProduct('shipping.defaultLocation')}
           </span>
-          <span className="text-sm text-gray-600 dark:text-gray-400">{t('shippingCostFree')}</span>
-        </div>
-        <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">{t('lateDeliveryVoucher')}</p>
+        </span>
       </div>
 
-      {/* Address section — Từ / Đến with dot connector */}
-      <div className="border-b border-gray-100 px-6 py-5 dark:border-slate-700">
-        <div className="flex items-start gap-3">
-          <div className="flex flex-col items-center pt-1" aria-hidden="true">
-            <span className="h-2.5 w-2.5 rounded-full border-2 border-teal-500 bg-white dark:bg-slate-800" />
-            <span className="my-1 h-6 w-px border-l border-dashed border-gray-300 dark:border-slate-600" />
-            <span className="h-2.5 w-2.5 rounded-full border-2 border-orange bg-white dark:bg-slate-800" />
-          </div>
-          <div className="flex-1 space-y-3 text-sm">
-            <div className="flex items-center gap-3">
-              <span className="w-7 shrink-0 text-xs text-gray-400 dark:text-gray-500">
-                {t('from')}
-              </span>
-              <span className="text-gray-700 dark:text-gray-300">
-                {location || tProduct('shipping.defaultLocation')}
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="w-7 shrink-0 text-xs text-gray-400 dark:text-gray-500">
-                {t('to')}
-              </span>
-              <span className="text-gray-700 dark:text-gray-300">{t('addressPlaceholder')}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="px-6 py-5" aria-busy={isLoading} aria-live="polite">
+      {/* Content - Shipping methods list */}
+      <div
+        className="max-h-[400px] overflow-y-auto px-6 py-4"
+        aria-busy={isLoading}
+        aria-live="polite"
+      >
         {isLoading && (
           <div className="animate-pulse motion-reduce:animate-none space-y-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="flex items-center gap-4 py-2">
-                <div className="h-6 w-6 rounded bg-gray-200 dark:bg-slate-700" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 w-32 rounded bg-gray-200 dark:bg-slate-700" />
-                  <div className="h-3.5 w-40 rounded bg-gray-200 dark:bg-slate-700" />
-                </div>
-                <div className="h-4 w-20 rounded bg-gray-200 dark:bg-slate-700" />
+              <div key={i} className="space-y-2 py-3">
+                <div className="h-4 w-24 rounded bg-gray-200 dark:bg-slate-700" />
+                <div className="h-3.5 w-40 rounded bg-gray-200 dark:bg-slate-700" />
+                <div className="h-3 w-64 rounded bg-gray-200 dark:bg-slate-700" />
               </div>
             ))}
           </div>
@@ -166,67 +152,75 @@ const ShippingMethodModal = ({ isOpen, onClose, location }: ShippingMethodModalP
           </div>
         )}
 
-        {/* Shipping methods — Shopee flat row layout with truck icons */}
+        {/* Shipping methods - Shopee flat layout */}
         {hasMethods && (
-          <>
-            <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
-              {t('supportedMethods')}
-            </h3>
-            <ul className="divide-y divide-gray-50 dark:divide-slate-700/50" role="list">
-              {methods.map((method) => {
-                const deliveryRange = getShopeeDeliveryRange(method.estimatedDays);
-                return (
-                  <li
-                    key={method._id}
-                    className="flex items-center gap-4 py-4 first:pt-0 last:pb-0"
-                    role="listitem"
-                  >
-                    <img
-                      src={SHOPEE_TRUCK_ICON_URL}
-                      alt=""
-                      className="h-6 w-6 shrink-0"
-                      aria-hidden="true"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-800 dark:text-gray-200">
+          <ul className="divide-y divide-gray-100 dark:divide-slate-700" role="list">
+            {methods.map((method) => {
+              const deliveryRange = getShopeeDeliveryRange(method.estimatedDays);
+              const isInstant = method.type === 'instant';
+              const isPickup = method.type === 'pickup';
+
+              return (
+                <li key={method._id} className="py-4 first:pt-0 last:pb-0" role="listitem">
+                  {/* Method header row */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      {/* Method name */}
+                      <div className="flex items-center">
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                           {method.name}
                         </span>
-                        {method._id === fastestId && (
-                          <span className="rounded-sm bg-orange/10 px-1.5 py-0.5 text-[10px] font-semibold text-orange uppercase dark:bg-orange-400/10 dark:text-orange-400">
-                            {t('fastest')}
+                      </div>
+
+                      {/* Delivery time */}
+                      <div className="mt-1 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                        {isPickup ? (
+                          <span>{t('pickupPoint')}</span>
+                        ) : isInstant ? (
+                          <span className="flex items-center gap-2">
+                            {t('receiveIn')}
+                            {renderDeliveryBadge(method)}
+                          </span>
+                        ) : (
+                          <span style={{ color: SHOPEE_TEAL }}>
+                            {t('receiveFrom', { date: deliveryRange })}
                           </span>
                         )}
                       </div>
-                      <p className="mt-1 text-xs" style={{ color: SHOPEE_TEAL }}>
-                        {t('receiveFrom', { date: deliveryRange })}
-                      </p>
                     </div>
-                    <div className="shrink-0 pl-3 text-right">
-                      {method.price === 0 ? (
-                        <span className="text-sm font-medium" style={{ color: SHOPEE_TEAL }}>
-                          {tProduct('shipping.free')}
-                        </span>
-                      ) : (
-                        <div className="flex flex-col items-end">
-                          <span className="text-xs text-gray-400 line-through dark:text-gray-500">
-                            ₫{formatCurrency(method.price)}
-                          </span>
-                          <span className="text-sm font-medium" style={{ color: SHOPEE_TEAL }}>
-                            ₫0
-                          </span>
-                        </div>
-                      )}
+
+                    {/* Price section */}
+                    <div className="shrink-0 text-right">
+                      <span className="text-xs text-gray-400 line-through dark:text-gray-500">
+                        {formatCurrency(method.price)}₫
+                      </span>
+                      <span className="ml-2 text-sm font-medium" style={{ color: SHOPEE_TEAL }}>
+                        {t('free')}
+                      </span>
                     </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </>
+                  </div>
+
+                  {/* Method details - additional info */}
+                  {method.details && method.details.length > 0 && (
+                    <ul className="mt-2 space-y-1">
+                      {method.details.map((detail, idx) => (
+                        <li
+                          key={idx}
+                          className="text-xs text-gray-400 dark:text-gray-500"
+                        >
+                          {detail.text}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
         )}
       </div>
 
-      {/* Footer — Đã hiểu button */}
+      {/* Footer - Đã hiểu button */}
       <div className="border-t border-gray-100 px-6 py-4 dark:border-slate-700">
         <button
           onClick={onClose}

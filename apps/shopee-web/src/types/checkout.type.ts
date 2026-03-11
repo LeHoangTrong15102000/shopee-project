@@ -38,6 +38,13 @@ export interface AddressFormData {
 }
 
 // Shipping types
+export type ShippingMethodType = 'instant' | 'express' | 'standard' | 'economy' | 'pickup';
+
+export interface ShippingMethodDetail {
+  text: string;
+  type?: 'voucher' | 'discount' | 'free_threshold' | 'note';
+}
+
 export interface ShippingMethod {
   _id: string;
   name: string;
@@ -45,6 +52,9 @@ export interface ShippingMethod {
   price: number;
   estimatedDays: string; // e.g., "2-3 ngày"
   icon: string;
+  type?: ShippingMethodType;
+  deliveryHours?: number; // For instant delivery (e.g., 4 hours)
+  details?: ShippingMethodDetail[]; // Additional info like voucher, discount, etc.
 }
 
 // Payment types

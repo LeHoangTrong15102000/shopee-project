@@ -1,11 +1,13 @@
 {
   "title": "Vận chuyển",
+  "modalTitle": "Thông tin về phí vận chuyển",
   "from": "Từ:",
   "to": "Đến:",
+  "deliverTo": "Vận chuyển tới",
   "addressPlaceholder": "Nhập địa chỉ giao hàng",
   "addressAria": "Địa chỉ giao hàng",
   "noAddress": "Chưa có địa chỉ",
-  "done": "Đã hiểu",
+  "done": "Đã Hiểu",
   "change": "Thay đổi",
   "methodLabel": "Phương thức vận chuyển:",
   "option.instant": "Hỏa tốc",
@@ -19,6 +21,10 @@
   "shippingCostFree": "Phí ship 0₫",
   "lateDeliveryVoucher": "Tặng Voucher ₫15.000 nếu đơn giao sau thời gian trên",
   "supportedMethods": "Phương thức vận chuyển được hỗ trợ",
-  "receiveFrom": "Nhận từ {{date}}"
+  "receiveFrom": "Nhận từ {{date}}",
+  "receiveIn": "Nhận trong",
+  "hours": "Giờ",
+  "free": "Miễn phí",
+  "pickupPoint": "Điểm nhận hàng"
 }
 

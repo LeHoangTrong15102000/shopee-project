@@ -10,28 +10,39 @@ vi.mock('src/apis/checkout.api', () => ({
       data: {
         data: [
           {
-            _id: 'standard',
-            name: 'Giao hàng tiêu chuẩn',
-            description: '3-5 ngày',
-            price: 30000,
-            estimatedDays: '3-5 ngày',
+            _id: 'instant',
+            name: 'Hỏa Tốc',
+            description: 'Giao hàng siêu nhanh trong vòng 4 giờ',
+            price: 112600,
+            estimatedDays: '4 giờ',
             icon: 'truck',
+            type: 'instant',
+            deliveryHours: 4,
+            details: [
+              { text: 'Tặng Voucher ₫20.000 nếu đơn giao sau thời gian trên', type: 'voucher' },
+              { text: 'Miễn phí vận chuyển đơn tối thiểu 0₫', type: 'free_threshold' },
+            ],
           },
           {
             _id: 'express',
-            name: 'Giao hàng nhanh',
-            description: '1-2 ngày',
-            price: 50000,
-            estimatedDays: '1-2 ngày',
+            name: 'Nhanh',
+            description: 'Giao hàng nhanh trong 1-2 ngày',
+            price: 30800,
+            estimatedDays: '1 ngày',
             icon: 'rocket',
+            type: 'express',
+            details: [
+              { text: 'Tặng Voucher ₫15.000 nếu đơn giao sau thời gian trên', type: 'voucher' },
+            ],
           },
           {
-            _id: 'same_day',
-            name: 'Giao trong ngày',
-            description: 'Trong ngày',
-            price: 80000,
-            estimatedDays: 'Trong ngày',
-            icon: 'lightning',
+            _id: 'standard',
+            name: 'Tiết Kiệm',
+            description: 'Giao hàng tiết kiệm trong 3-5 ngày',
+            price: 16500,
+            estimatedDays: '3-5 ngày',
+            icon: 'standard',
+            type: 'economy',
           },
         ],
       },
@@ -50,13 +61,13 @@ describe('ShippingMethodModal (Task 4.8)', () => {
   it('renders modal with title when open', async () => {
     renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
     await waitFor(() => {
-      expect(screen.getByText('Phương Thức Vận Chuyển')).toBeInTheDocument();
+      expect(screen.getByText('Thông tin về phí vận chuyển')).toBeInTheDocument();
     });
   });
 
   it('does not render when closed', () => {
     renderWithProviders(<ShippingMethodModal isOpen={false} onClose={onClose} />);
-    expect(screen.queryByText('Phương Thức Vận Chuyển')).not.toBeInTheDocument();
+    expect(screen.queryByText('Thông tin về phí vận chuyển')).not.toBeInTheDocument();
   });
 
   it('shows loading skeletons initially', () => {
@@ -68,7 +79,7 @@ describe('ShippingMethodModal (Task 4.8)', () => {
   it('calls onClose when close button clicked', async () => {
     renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
     await waitFor(() => {
-      expect(screen.getByText('Phương Thức Vận Chuyển')).toBeInTheDocument();
+      expect(screen.getByText('Thông tin về phí vận chuyển')).toBeInTheDocument();
     });
     const closeBtn = screen.getByLabelText('Đóng');
     await user.click(closeBtn);
@@ -96,60 +107,52 @@ describe('ShippingMethodModal (Task 4.8)', () => {
   it('displays shipping methods after loading', async () => {
     renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
     await waitFor(() => {
-      expect(screen.getByText('Giao hàng tiêu chuẩn')).toBeInTheDocument();
+      expect(screen.getByText('Hỏa Tốc')).toBeInTheDocument();
     });
-    expect(screen.getByText('Giao hàng nhanh')).toBeInTheDocument();
-    expect(screen.getByText('Giao trong ngày')).toBeInTheDocument();
+    expect(screen.getByText('Nhanh')).toBeInTheDocument();
+    expect(screen.getByText('Tiết Kiệm')).toBeInTheDocument();
   });
 
-  it('shows free shipping promotion section', async () => {
+  it('shows delivery address section', async () => {
+    renderWithProviders(
+      <ShippingMethodModal isOpen={true} onClose={onClose} location="Phường Linh Trung, Thủ Đức" />,
+    );
+    await waitFor(() => {
+      expect(screen.getByText(/Vận chuyển tới/)).toBeInTheDocument();
+    });
+    expect(screen.getByText('Phường Linh Trung, Thủ Đức')).toBeInTheDocument();
+  });
+
+  it('shows instant delivery badge with hours', async () => {
     renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
     await waitFor(() => {
-      expect(screen.getByText('Miễn Phí Vận Chuyển')).toBeInTheDocument();
+      expect(screen.getByText('4 Giờ')).toBeInTheDocument();
     });
-    expect(screen.getByText('Phí ship 0₫')).toBeInTheDocument();
   });
 
-  it('shows late delivery voucher text', async () => {
+  it('shows free text instead of 0đ', async () => {
+    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
+    await waitFor(() => {
+      const freeTexts = screen.getAllByText('Miễn phí');
+      expect(freeTexts.length).toBeGreaterThan(0);
+    });
+  });
+
+  it('shows method details for instant delivery', async () => {
     renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
     await waitFor(() => {
       expect(
-        screen.getByText('Tặng Voucher ₫15.000 nếu đơn giao sau thời gian trên'),
+        screen.getByText('Tặng Voucher ₫20.000 nếu đơn giao sau thời gian trên'),
       ).toBeInTheDocument();
-    });
-  });
-
-  it('shows supported methods section header', async () => {
-    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
-    await waitFor(() => {
-      expect(screen.getByText('Phương thức vận chuyển được hỗ trợ')).toBeInTheDocument();
-    });
-  });
-
-  it('shows address section with Từ/Đến', async () => {
-    renderWithProviders(
-      <ShippingMethodModal isOpen={true} onClose={onClose} location="Hồ Chí Minh" />,
-    );
-    await waitFor(() => {
-      expect(screen.getByText('Từ:')).toBeInTheDocument();
-    });
-    expect(screen.getByText('Đến:')).toBeInTheDocument();
-    expect(screen.getByText('Hồ Chí Minh')).toBeInTheDocument();
-  });
-
-  it('shows fastest badge on quickest method', async () => {
-    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
-    await waitFor(() => {
-      expect(screen.getByText('Nhanh nhất')).toBeInTheDocument();
     });
   });
 
   it('shows understood button and calls onClose', async () => {
     renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
     await waitFor(() => {
-      expect(screen.getByText('Đã hiểu')).toBeInTheDocument();
+      expect(screen.getByText('Đã Hiểu')).toBeInTheDocument();
     });
-    await user.click(screen.getByText('Đã hiểu'));
+    await user.click(screen.getByText('Đã Hiểu'));
     expect(onClose).toHaveBeenCalled();
   });
 });

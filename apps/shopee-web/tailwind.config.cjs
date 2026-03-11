@@ -182,7 +182,6 @@ module.exports = {
     plugin(function ({ addComponents, theme }) {
       addComponents({
         '.container': {
-          maxHeight: theme('columns.8xl'),
           maxWidth: theme('columns.7xl'),
           marginLeft: 'auto',
           marginRight: 'auto',

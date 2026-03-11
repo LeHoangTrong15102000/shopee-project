@@ -47,7 +47,7 @@ const RelatedProducts = ({ categoryId, reducedMotion }: RelatedProductsProps) =>
         </h2>
         {isLoading && (
           <div
-            className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+            className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
             role="status"
             aria-label={t('related.loading')}
           >
@@ -66,7 +66,7 @@ const RelatedProducts = ({ categoryId, reducedMotion }: RelatedProductsProps) =>
           </div>
         )}
         {productsData && (
-          <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+          <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {productsData.data.data.products.map((product) => (
               <div className="col-span-1" key={product._id}>
                 <Product product={product} />

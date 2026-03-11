@@ -18,12 +18,17 @@ vi.mock('src/apis/checkout.api', () => ({
       data: {
         data: [
           {
-            _id: 'standard',
-            name: 'Giao hàng tiêu chuẩn',
-            description: '3-5 ngày',
-            price: 30000,
-            estimatedDays: '3-5 ngày',
+            _id: 'instant',
+            name: 'Hỏa Tốc',
+            description: 'Giao hàng siêu nhanh trong vòng 4 giờ',
+            price: 112600,
+            estimatedDays: '4 giờ',
             icon: 'truck',
+            type: 'instant',
+            deliveryHours: 4,
+            details: [
+              { text: 'Tặng Voucher ₫20.000 nếu đơn giao sau thời gian trên', type: 'voucher' },
+            ],
           },
         ],
       },
@@ -77,7 +82,7 @@ describe('ShippingInfo (Task 5.7)', () => {
     const row = screen.getByRole('button', { name: 'Vận Chuyển' });
     await user.click(row);
     await waitFor(() => {
-      expect(screen.getByText('Phương Thức Vận Chuyển')).toBeInTheDocument();
+      expect(screen.getByText('Thông tin về phí vận chuyển')).toBeInTheDocument();
     });
   });
 
@@ -87,7 +92,7 @@ describe('ShippingInfo (Task 5.7)', () => {
     row.focus();
     await user.keyboard('{Enter}');
     await waitFor(() => {
-      expect(screen.getByText('Phương Thức Vận Chuyển')).toBeInTheDocument();
+      expect(screen.getByText('Thông tin về phí vận chuyển')).toBeInTheDocument();
     });
   });
 
@@ -97,7 +102,7 @@ describe('ShippingInfo (Task 5.7)', () => {
     row.focus();
     await user.keyboard(' ');
     await waitFor(() => {
-      expect(screen.getByText('Phương Thức Vận Chuyển')).toBeInTheDocument();
+      expect(screen.getByText('Thông tin về phí vận chuyển')).toBeInTheDocument();
     });
   });
 

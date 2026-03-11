@@ -1,7 +1,9 @@
 {
   "title": "Shipping",
+  "modalTitle": "Shipping Fee Information",
   "from": "From:",
   "to": "To:",
+  "deliverTo": "Ship to",
   "addressPlaceholder": "Enter delivery address",
   "addressAria": "Delivery address",
   "noAddress": "No address set",
@@ -19,6 +21,10 @@
   "shippingCostFree": "Shipping ₫0",
   "lateDeliveryVoucher": "Get ₫15,000 voucher if order arrives late",
   "supportedMethods": "Supported shipping methods",
-  "receiveFrom": "Receive from {{date}}"
+  "receiveFrom": "Receive from {{date}}",
+  "receiveIn": "Receive in",
+  "hours": "Hours",
+  "free": "Free",
+  "pickupPoint": "Pickup point"
 }
 

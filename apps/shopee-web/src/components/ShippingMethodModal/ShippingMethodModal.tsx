@@ -88,12 +88,7 @@ const ShippingMethodModal = ({ isOpen, onClose, location }: ShippingMethodModalP
       {/* Free shipping promotion — Shopee style */}
       <div className="border-b border-gray-100 px-6 py-4 dark:border-slate-700">
         <div className="flex items-center gap-3">
-          <img
-            src={SHOPEE_TRUCK_ICON_URL}
-            alt=""
-            className="h-6 w-6"
-            aria-hidden="true"
-          />
+          <img src={SHOPEE_TRUCK_ICON_URL} alt="" className="h-6 w-6" aria-hidden="true" />
           <span
             className="rounded px-2 py-0.5 text-xs font-medium"
             style={{ color: SHOPEE_TEAL, backgroundColor: 'rgba(33, 151, 135, 0.1)' }}
@@ -102,9 +97,7 @@ const ShippingMethodModal = ({ isOpen, onClose, location }: ShippingMethodModalP
           </span>
           <span className="text-sm text-gray-600 dark:text-gray-400">{t('shippingCostFree')}</span>
         </div>
-        <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
-          {t('lateDeliveryVoucher')}
-        </p>
+        <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">{t('lateDeliveryVoucher')}</p>
       </div>
 
       {/* Address section — Từ / Đến with dot connector */}

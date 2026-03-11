@@ -1,78 +1,54 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
-import voucherApi from 'src/apis/voucher.api';
-import { formatCurrency } from 'src/utils/utils';
-import VoucherListModal from 'src/components/VoucherListModal';
+import { formatDiscount } from 'src/utils/utils';
+import Popover from 'src/components/Popover';
+import { ChevronRightIcon } from 'src/components/Icons';
+import VoucherPopupContent from './VoucherPopupContent';
+import useVoucherSave from 'src/hooks/useVoucherSave';
+
+/**
+ * Shopee-style voucher ticket badge with sawtooth left edge.
+ * Uses CSS clip-path to create the coupon/ticket cutout effect.
+ */
+const VoucherTicketBadge = ({ label }: { label: string }) => (
+  <span
+    className="relative inline-block bg-orange px-2.5 py-1 text-xs font-medium text-white
+      before:absolute before:top-0 before:left-0 before:h-full before:w-1 before:bg-[radial-gradient(circle,_white_1.5px,_transparent_1.5px)] before:bg-[length:4px_6px]
+      dark:bg-orange/90"
+    style={{
+      clipPath:
+        'polygon(4px 0%, 100% 0%, 100% 100%, 4px 100%, 0% 85%, 4px 70%, 0% 55%, 4px 40%, 0% 25%, 4px 10%)',
+    }}
+  >
+    {label}
+  </span>
+);
 
 const VoucherRow = () => {
   const { t } = useTranslation('product');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Cleanup timer on unmount
-  useEffect(() => {
-    return () => {
-      if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
-    };
-  }, []);
-
-  const { data: vouchersData, isLoading } = useQuery({
-    queryKey: ['available-vouchers'],
-    queryFn: async () => {
-      const res = await voucherApi.getAvailableVouchers();
-      return res.data.data;
-    },
-  });
-
-  const vouchers = vouchersData?.vouchers || [];
+  const voucherData = useVoucherSave();
+  const { vouchers, isLoading } = voucherData;
   const previewVouchers = vouchers.slice(0, 3);
 
-  const handleMouseEnter = useCallback(() => {
-    hoverTimerRef.current = setTimeout(() => {
-      setIsModalOpen(true);
-    }, 200);
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    if (hoverTimerRef.current) {
-      clearTimeout(hoverTimerRef.current);
-      hoverTimerRef.current = null;
-    }
-  }, []);
-
-  const handleClick = useCallback(() => {
-    setIsModalOpen(true);
-  }, []);
-
   const formatVoucherBadge = (voucher: (typeof vouchers)[0]) => {
-    if (voucher.discount_type === 'percentage') {
-      return t('voucher.discountPercent', { percent: voucher.discount_value });
-    }
-    return t('voucher.discountAmount', { amount: formatCurrency(voucher.discount_value) });
+    return formatDiscount(voucher.discount_type, voucher.discount_value);
   };
 
   return (
-    <>
-      <div
-        className="flex cursor-pointer items-center gap-3 border-t border-gray-100 py-4 transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange dark:border-slate-700 dark:hover:bg-slate-700/50"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        onClick={handleClick}
-        role="button"
-        tabIndex={0}
-        aria-label={t('voucher.shopDiscount')}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            handleClick();
-          }
-        }}
-      >
+    <Popover
+      placement="bottom-start"
+      enableArrow={true}
+      renderPopover={<VoucherPopupContent voucherData={voucherData} />}
+      role="button"
+      tabIndex={0}
+      popoverLabel={t('voucher.modalTitle')}
+      ariaLabel={t('voucher.shopDiscount')}
+      className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange"
+    >
+      <div className="flex cursor-pointer items-center gap-3 border-t border-gray-100 py-4 transition-colors hover:bg-gray-50 dark:border-slate-700 dark:hover:bg-slate-700/50">
         <span className="w-28 shrink-0 text-sm text-gray-500 dark:text-gray-400">
           {t('voucher.shopDiscount')}
         </span>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-1 flex-wrap items-center gap-2">
           {isLoading &&
             [1, 2, 3].map((i) => (
               <span
@@ -82,20 +58,16 @@ const VoucherRow = () => {
             ))}
           {!isLoading &&
             previewVouchers.map((v) => (
-              <span
-                key={v._id}
-                className="rounded-sm bg-orange-50 px-2 py-0.5 text-xs font-medium text-orange dark:bg-orange-900/30 dark:text-orange-400"
-              >
-                {formatVoucherBadge(v)}
-              </span>
+              <VoucherTicketBadge key={v._id} label={formatVoucherBadge(v)} />
             ))}
           {!isLoading && vouchers.length > 3 && (
             <span className="text-xs text-orange dark:text-orange-400">{t('voucher.seeMore')}</span>
           )}
         </div>
+        {/* Chevron right - Shopee style */}
+        <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-gray-500" />
       </div>
-      <VoucherListModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-    </>
+    </Popover>
   );
 };
 

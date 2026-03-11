@@ -70,7 +70,7 @@ const BaseModal = ({
               role="dialog"
               aria-modal="true"
               aria-labelledby={ariaLabelledBy}
-              className={`pointer-events-auto mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-slate-800 ${className}`}
+              className={`pointer-events-auto mx-4 w-full rounded-lg bg-white p-6 shadow-xl dark:bg-slate-800 ${className || 'max-w-md'}`}
               onClick={(e) => e.stopPropagation()}
             >
               {children}

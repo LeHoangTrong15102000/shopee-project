@@ -3,7 +3,7 @@ import { differenceInDays, parseISO } from 'date-fns';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Voucher } from 'src/types/voucher.type';
-import { formatCurrency, formatDate } from 'src/utils/utils';
+import { formatCurrency, formatDate, formatDiscount } from 'src/utils/utils';
 import Button from 'src/components/Button';
 
 interface VoucherCardProps {
@@ -61,10 +61,7 @@ function VoucherCard({
   const isExpired = status === 'expired';
 
   const discountDisplay = useMemo(
-    () =>
-      voucher.discount_type === 'percentage'
-        ? `${voucher.discount_value}%`
-        : `₫${formatCurrency(voucher.discount_value)}`,
+    () => formatDiscount(voucher.discount_type, voucher.discount_value),
     [voucher.discount_type, voucher.discount_value],
   );
 
@@ -101,11 +98,10 @@ function VoucherCard({
       role="article"
       aria-label={t('voucher.ariaCard', { name: voucher.name, discount: discountDisplay })}
       className={classNames(
-        'relative flex overflow-hidden rounded-lg bg-white shadow-xs transition-all duration-200 motion-reduce:transition-none dark:bg-slate-800',
+        'relative flex overflow-hidden rounded-lg bg-white shadow-xs transition-shadow duration-200 motion-reduce:transition-none dark:bg-slate-800',
         {
           'opacity-60': isExpired,
-          'motion-safe:hover:scale-[1.02] hover:shadow-lg motion-safe:active:scale-[0.98]':
-            !isExpired,
+          'hover:shadow-md': !isExpired,
         },
       )}
     >
@@ -177,8 +173,6 @@ function VoucherCard({
                 'cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-slate-700 dark:text-gray-500':
                   isExpired,
                 'cursor-not-allowed opacity-50': isLoading,
-                'motion-safe:hover:scale-105 motion-safe:active:scale-95':
-                  !isExpired && !isLoading && !isSavedWithoutApply,
               },
             )}
           >

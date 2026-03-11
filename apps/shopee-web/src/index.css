@@ -369,7 +369,11 @@ body {
 }
 
 /* ===== FOCUS VISIBLE STYLES ===== */
-*:focus-visible {
+a:focus-visible,
+button:focus-visible,
+[role='button']:focus-visible,
+[tabindex='0']:focus-visible,
+summary:focus-visible {
   outline: 2px solid #ee4d2d;
   outline-offset: 2px;
 }

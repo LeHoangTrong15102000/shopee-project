@@ -113,13 +113,16 @@ const voucherApi = {
       );
       return response;
     } catch {
-      const availableVouchers = mockVouchers.filter((v) => !savedVoucherIds.includes(v._id));
+      const allVouchers = mockVouchers.map((v) => ({
+        ...v,
+        is_collected: savedVoucherIds.includes(v._id),
+      }));
       return {
         data: {
           message: 'Lấy danh sách voucher có sẵn thành công',
           data: {
-            vouchers: availableVouchers,
-            pagination: { page: 1, limit: 10, total: availableVouchers.length, totalPages: 1 },
+            vouchers: allVouchers,
+            pagination: { page: 1, limit: 10, total: allVouchers.length, totalPages: 1 },
           },
         },
       };

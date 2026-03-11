@@ -29,26 +29,37 @@ export function formatVietnameseDate(date: Date): string {
 }
 
 /**
+ * Parse estimatedDays string → { minDays, maxDays, minDate, maxDate }
+ * Shared by all delivery date formatters.
+ */
+function parseDeliveryDays(estimatedDays: string): {
+  minDays: number;
+  maxDays: number;
+  minDate: Date;
+  maxDate: Date;
+} | null {
+  const match = estimatedDays.match(/(\d+)(?:\s*-\s*(\d+))?/);
+  if (!match) return null;
+
+  const minDays = parseInt(match[1], 10);
+  const maxDays = match[2] ? parseInt(match[2], 10) : minDays;
+  const now = new Date();
+  const minDate = new Date(now.getTime() + minDays * 24 * 60 * 60 * 1000);
+  const maxDate = new Date(now.getTime() + maxDays * 24 * 60 * 60 * 1000);
+
+  return { minDays, maxDays, minDate, maxDate };
+}
+
+/**
  * Calculate estimated delivery date range
  * @param estimatedDays - e.g., "2-3 ngày" or "3-5 ngày" or "1 ngày"
  * @returns formatted date range string, e.g., "Thứ 3, 11/02 - Thứ 4, 12/02"
  */
 export function getEstimatedDeliveryDate(estimatedDays: string): string {
-  // Parse the estimatedDays string to extract min and max days
-  // e.g., "2-3 ngày" → min=2, max=3
-  // e.g., "3-5 ngày" → min=3, max=5
-  // e.g., "1 ngày" → min=1, max=1
+  const parsed = parseDeliveryDays(estimatedDays);
+  if (!parsed) return estimatedDays;
 
-  const match = estimatedDays.match(/(\d+)(?:\s*-\s*(\d+))?/);
-  if (!match) return estimatedDays;
-
-  const minDays = parseInt(match[1], 10);
-  const maxDays = match[2] ? parseInt(match[2], 10) : minDays;
-
-  const now = new Date();
-  const minDate = new Date(now.getTime() + minDays * 24 * 60 * 60 * 1000);
-  const maxDate = new Date(now.getTime() + maxDays * 24 * 60 * 60 * 1000);
-
+  const { minDays, maxDays, minDate, maxDate } = parsed;
   if (minDays === maxDays) {
     return formatVietnameseDate(minDate);
   }
@@ -67,8 +78,8 @@ export function getEstimatedDeliveryDateDetails(estimatedDays: string): {
   minDays: number;
   maxDays: number;
 } {
-  const match = estimatedDays.match(/(\d+)(?:\s*-\s*(\d+))?/);
-  if (!match) {
+  const parsed = parseDeliveryDays(estimatedDays);
+  if (!parsed) {
     return {
       minDate: null,
       maxDate: null,
@@ -78,23 +89,32 @@ export function getEstimatedDeliveryDateDetails(estimatedDays: string): {
     };
   }
 
-  const minDays = parseInt(match[1], 10);
-  const maxDays = match[2] ? parseInt(match[2], 10) : minDays;
-
-  const now = new Date();
-  const minDate = new Date(now.getTime() + minDays * 24 * 60 * 60 * 1000);
-  const maxDate = new Date(now.getTime() + maxDays * 24 * 60 * 60 * 1000);
-
+  const { minDays, maxDays, minDate, maxDate } = parsed;
   const formatted =
     minDays === maxDays
       ? formatVietnameseDate(minDate)
       : `${formatVietnameseDate(minDate)} - ${formatVietnameseDate(maxDate)}`;
 
-  return {
-    minDate,
-    maxDate,
-    formatted,
-    minDays,
-    maxDays,
-  };
+  return { minDate, maxDate, formatted, minDays, maxDays };
+}
+
+/**
+ * Format date theo kiểu Shopee chính thống: "13 Th03"
+ */
+function formatShopeeDate(date: Date): string {
+  const dd = date.getDate();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  return `${dd} Th${mm}`;
+}
+
+/**
+ * Parse estimatedDays string → Shopee-style date range: "13 Th03 - 16 Th03"
+ */
+export function getShopeeDeliveryRange(estimatedDays: string): string {
+  const parsed = parseDeliveryDays(estimatedDays);
+  if (!parsed) return estimatedDays;
+
+  const { minDays, maxDays, minDate, maxDate } = parsed;
+  if (minDays === maxDays) return formatShopeeDate(minDate);
+  return `${formatShopeeDate(minDate)} - ${formatShopeeDate(maxDate)}`;
 }

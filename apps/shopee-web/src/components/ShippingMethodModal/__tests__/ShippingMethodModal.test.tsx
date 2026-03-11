@@ -90,7 +90,7 @@ describe('ShippingMethodModal (Task 4.8)', () => {
     });
     const dialog = screen.getByRole('dialog');
     expect(dialog.classList.contains('w-full')).toBe(true);
-    expect(dialog.classList.contains('max-w-2xl')).toBe(true);
+    expect(dialog.classList.contains('max-w-[520px]')).toBe(true);
   });
 
   it('displays shipping methods after loading', async () => {
@@ -100,6 +100,57 @@ describe('ShippingMethodModal (Task 4.8)', () => {
     });
     expect(screen.getByText('Giao hàng nhanh')).toBeInTheDocument();
     expect(screen.getByText('Giao trong ngày')).toBeInTheDocument();
+  });
+
+  it('shows free shipping promotion section', async () => {
+    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
+    await waitFor(() => {
+      expect(screen.getByText('Miễn Phí Vận Chuyển')).toBeInTheDocument();
+    });
+    expect(screen.getByText('Phí ship 0₫')).toBeInTheDocument();
+  });
+
+  it('shows late delivery voucher text', async () => {
+    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
+    await waitFor(() => {
+      expect(
+        screen.getByText('Tặng Voucher ₫15.000 nếu đơn giao sau thời gian trên'),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('shows supported methods section header', async () => {
+    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
+    await waitFor(() => {
+      expect(screen.getByText('Phương thức vận chuyển được hỗ trợ')).toBeInTheDocument();
+    });
+  });
+
+  it('shows address section with Từ/Đến', async () => {
+    renderWithProviders(
+      <ShippingMethodModal isOpen={true} onClose={onClose} location="Hồ Chí Minh" />,
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Từ:')).toBeInTheDocument();
+    });
+    expect(screen.getByText('Đến:')).toBeInTheDocument();
+    expect(screen.getByText('Hồ Chí Minh')).toBeInTheDocument();
+  });
+
+  it('shows fastest badge on quickest method', async () => {
+    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
+    await waitFor(() => {
+      expect(screen.getByText('Nhanh nhất')).toBeInTheDocument();
+    });
+  });
+
+  it('shows understood button and calls onClose', async () => {
+    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
+    await waitFor(() => {
+      expect(screen.getByText('Đã hiểu')).toBeInTheDocument();
+    });
+    await user.click(screen.getByText('Đã hiểu'));
+    expect(onClose).toHaveBeenCalled();
   });
 });
 

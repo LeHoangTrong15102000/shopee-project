@@ -39,9 +39,13 @@ vi.mock('src/apis/checkout.api', () => ({
   },
 }));
 
-vi.mock('src/utils/date', () => ({
-  getEstimatedDeliveryDate: vi.fn(() => '15/03 - 18/03'),
-}));
+vi.mock('src/utils/date', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('src/utils/date')>();
+  return {
+    ...actual,
+    getEstimatedDeliveryDate: vi.fn(() => '15/03 - 18/03'),
+  };
+});
 
 describe('ShippingMethodSelector', () => {
   const onSelect = vi.fn();

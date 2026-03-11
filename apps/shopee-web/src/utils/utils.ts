@@ -47,6 +47,13 @@ export function formatCurrency(currency: number) {
   return new Intl.NumberFormat('de-DE').format(currency);
 }
 
+/**
+ * Format voucher discount display: "50%" hoặc "₫50.000"
+ */
+export function formatDiscount(discountType: string, discountValue: number): string {
+  return discountType === 'percentage' ? `${discountValue}%` : `₫${formatCurrency(discountValue)}`;
+}
+
 export function formatNumberToSocialStyle(value: number) {
   return new Intl.NumberFormat('en', {
     notation: 'compact',

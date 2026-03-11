@@ -112,7 +112,7 @@ const ShopeeProtectionModal = ({ isOpen, onClose }: ShopeeProtectionModalProps) 
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      className="w-full max-w-2xl sm:w-11/12"
+      className="max-w-2xl sm:w-11/12"
       ariaLabelledBy="protection-modal-title"
     >
       {/* Header */}

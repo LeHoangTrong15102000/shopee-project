@@ -5,7 +5,7 @@
   "addressPlaceholder": "Enter delivery address",
   "addressAria": "Delivery address",
   "noAddress": "No address set",
-  "done": "Done",
+  "done": "Got it",
   "change": "Change",
   "methodLabel": "Shipping method:",
   "option.instant": "Instant",
@@ -14,6 +14,11 @@
   "fastest": "Fastest",
   "deliverOn": "Receive on {{date}}",
   "deliverRange": "Receive from {{minDate}} - {{maxDate}}",
-  "shippingFee": "Shipping fee:"
+  "shippingFee": "Shipping fee:",
+  "freeShipPromo": "Free Shipping",
+  "shippingCostFree": "Shipping ₫0",
+  "lateDeliveryVoucher": "Get ₫15,000 voucher if order arrives late",
+  "supportedMethods": "Supported shipping methods",
+  "receiveFrom": "Receive from {{date}}"
 }
 

@@ -74,9 +74,11 @@ describe('VoucherListModal (Task 2.13)', () => {
 
   it('shows loading skeletons initially', () => {
     renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />);
-    // 6 skeleton cards
-    const skeletons = document.querySelectorAll('.animate-pulse');
-    expect(skeletons.length).toBeGreaterThan(0);
+    // 6 skeleton cards rendered inside the grid container
+    const grid = document.querySelector('.grid');
+    expect(grid).toBeInTheDocument();
+    const skeletonCards = grid!.querySelectorAll(':scope > .animate-pulse');
+    expect(skeletonCards).toHaveLength(6);
   });
 
   it('displays voucher cards after loading', async () => {

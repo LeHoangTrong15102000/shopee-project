@@ -4,9 +4,13 @@ import userEvent from '@testing-library/user-event';
 import ShippingInfo from '../ShippingInfo';
 import { renderWithProviders } from 'src/utils/testUtils';
 
-vi.mock('src/utils/date', () => ({
-  getEstimatedDeliveryDate: vi.fn(() => '15/03 - 18/03'),
-}));
+vi.mock('src/utils/date', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('src/utils/date')>();
+  return {
+    ...actual,
+    getEstimatedDeliveryDate: vi.fn(() => '15/03 - 18/03'),
+  };
+});
 
 vi.mock('src/apis/checkout.api', () => ({
   default: {
@@ -64,7 +68,7 @@ describe('ShippingInfo (Task 5.7)', () => {
   it('has chevron-right icon', () => {
     renderWithProviders(<ShippingInfo location="Hồ Chí Minh" />);
     const svgs = document.querySelectorAll('svg[aria-hidden="true"]');
-    // Should have truck icon + chevron icon
+    // Should have truck icon + chevron icon (compact layout)
     expect(svgs.length).toBeGreaterThanOrEqual(2);
   });
 

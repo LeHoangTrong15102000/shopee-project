@@ -5,9 +5,11 @@ import {
   arrow,
   shift,
   offset,
+  flip,
+  useMergeRefs,
   type Placement,
 } from '@floating-ui/react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
 interface Props {
   children: React.ReactNode;
@@ -17,6 +19,10 @@ interface Props {
   initialOpen?: boolean; // ban đầu mình có muốn mở popover hay không
   placement?: Placement;
   enableArrow?: boolean;
+  role?: string;
+  tabIndex?: number;
+  popoverLabel?: string;
+  ariaLabel?: string;
 }
 
 const Popover = ({
@@ -27,14 +33,25 @@ const Popover = ({
   as: Element = 'div',
   initialOpen,
   placement = 'bottom-end',
+  role: triggerRole,
+  tabIndex: triggerTabIndex,
+  popoverLabel,
+  ariaLabel,
 }: Props) => {
   const [isOpen, setIsOpen] = useState(initialOpen || false);
+  const openedViaKeyboard = useRef(false);
+  const justOpenedViaHover = useRef(false);
+  const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const floatingRef = useRef<HTMLDivElement>(null);
   const id = useId();
+  const popoverId = `popover-content-${id}`;
+  const prefersReducedMotion = useReducedMotion();
   const arrowRef = useRef<HTMLElement>(null);
   const { x, y, refs, strategy, middlewareData } = useFloating({
     middleware: [
-      offset(6),
-      shift(),
+      offset(10),
+      flip(),
+      shift({ padding: 8 }),
       arrow({
         element: arrowRef,
       }),
@@ -42,18 +59,41 @@ const Popover = ({
     placement: placement,
   });
 
-  const showPopover = () => {
+  const mergedFloatingRef = useMergeRefs([refs.setFloating, floatingRef]);
+
+  const showPopover = useCallback(() => {
+    // Cancel any pending hide when mouse re-enters trigger or popup
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
+    justOpenedViaHover.current = true;
     setIsOpen(true);
-  };
-  const hidePopover = () => {
-    setIsOpen(false);
-  };
+    // Reset after a tick so the subsequent click event sees it as stale
+    requestAnimationFrame(() => {
+      justOpenedViaHover.current = false;
+    });
+  }, []);
+
+  const hidePopover = useCallback(() => {
+    // Delay hide to allow mouse to travel from trigger to popup (or vice versa)
+    hideTimeoutRef.current = setTimeout(() => {
+      setIsOpen(false);
+      hideTimeoutRef.current = null;
+    }, 150);
+  }, []);
+
+  const togglePopover = useCallback(() => {
+    // Skip toggle if mouseenter just opened the popover (touch device tap fires both)
+    if (justOpenedViaHover.current) return;
+    setIsOpen((prev) => !prev);
+  }, []);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isOpen) {
         event.preventDefault();
-        hidePopover();
+        setIsOpen(false);
         // Return focus to trigger element
         if (refs.reference.current && 'focus' in refs.reference.current) {
           (refs.reference.current as HTMLElement).focus();
@@ -63,12 +103,63 @@ const Popover = ({
     [isOpen, refs.reference],
   );
 
+  const handleTriggerKeyDown = useCallback((event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openedViaKeyboard.current = true;
+      setIsOpen((prev) => !prev);
+    }
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
       document.addEventListener('keydown', handleKeyDown);
       return () => document.removeEventListener('keydown', handleKeyDown);
     }
   }, [isOpen, handleKeyDown]);
+
+  // Cleanup hide timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Focus first focusable element when opened via keyboard; reset ref on close
+  useEffect(() => {
+    if (isOpen && openedViaKeyboard.current && floatingRef.current) {
+      const focusable = floatingRef.current.querySelector<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusable) {
+        focusable.focus();
+      } else {
+        // Fallback for info-only dialogs (e.g., ShopeeProtectionPopupContent with tabIndex={-1})
+        const fallback = floatingRef.current.querySelector<HTMLElement>('[tabindex="-1"]');
+        if (fallback) fallback.focus();
+      }
+      openedViaKeyboard.current = false;
+    }
+    if (!isOpen) {
+      openedViaKeyboard.current = false;
+    }
+  }, [isOpen]);
+
+  // Click outside to close
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      const reference = refs.reference.current as HTMLElement | null;
+      const floating = floatingRef.current;
+      if (reference?.contains(target) || floating?.contains(target)) return;
+      setIsOpen(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen, refs.reference]);
 
   // Dùng kĩ thuật render Props, truyền vào cái props 1 dạng function component
 
@@ -78,70 +169,67 @@ const Popover = ({
       ref={refs.setReference}
       onMouseEnter={showPopover}
       onMouseLeave={hidePopover}
+      onClick={togglePopover}
+      onKeyDown={handleTriggerKeyDown}
       aria-expanded={isOpen}
-      aria-haspopup="true"
+      aria-haspopup="dialog"
+      aria-controls={isOpen ? popoverId : undefined}
+      {...(triggerRole ? { role: triggerRole } : {})}
+      {...(triggerTabIndex !== undefined ? { tabIndex: triggerTabIndex } : {})}
+      {...(ariaLabel ? { 'aria-label': ariaLabel } : {})}
     >
       {children}
-      {/* <svg
-        xmlns='http://www.w3.org/2000/svg'
-        fill='none'
-        viewBox='0 0 24 24'
-        strokeWidth={1.5}
-        stroke='currentColor'
-        className='h-5 w-5'
-      >
-        <path
-          strokeLinecap='round'
-          strokeLinejoin='round'
-          d='M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418'
-        />
-      </svg>
-      <span className='mx-1 text-sm'>Tiếng Việt</span>
-      <svg
-        xmlns='http://www.w3.org/2000/svg'
-        fill='none'
-        viewBox='0 0 24 24'
-        strokeWidth={1.5}
-        stroke='currentColor'
-        className='h-5 w-5'
-      >
-        <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' />
-      </svg> */}
       <FloatingPortal id={id}>
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              ref={refs.setFloating}
+              ref={mergedFloatingRef}
+              id={popoverId}
+              role="dialog"
+              aria-label={popoverLabel}
+              onMouseEnter={showPopover}
+              onMouseLeave={hidePopover}
               style={{
                 position: strategy,
                 top: y ?? 0,
                 left: x ?? 0,
                 width: 'max-content',
-                transformOrigin: `${middlewareData.arrow?.x}px top`, // nơi đầu khi transform
+                transformOrigin: `${middlewareData.arrow?.x}px top`,
                 zIndex: 50,
               }}
-              initial={{ opacity: 0, transform: 'scale(0)' }}
-              animate={{ opacity: 1, transform: 'scale(1)' }}
-              exit={{ opacity: 0, transform: 'scale(0)' }}
-              transition={{ duration: 0.2 }}
+              initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
+              animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+              exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.15 }}
             >
+              {/* Invisible hover bridge — fills the gap between trigger and popup so mouse doesn't lose contact */}
+              <div
+                className="absolute left-0 right-0 h-3"
+                style={{ top: '-12px' }}
+                aria-hidden="true"
+              />
               {enableArrow && (
                 <span
                   ref={arrowRef}
-                  className="absolute z-1 translate-y-[-95%] border-11 border-x-transparent border-t-transparent border-b-white dark:border-b-slate-800"
+                  className="absolute -top-[10px] z-10"
                   style={{
                     left: middlewareData.arrow?.x,
-                    top: middlewareData.arrow?.y,
                   }}
-                ></span>
+                >
+                  {/* Outer triangle (border effect) */}
+                  <span
+                    className="absolute left-1/2 -translate-x-1/2 border-[11px] border-x-transparent border-t-transparent border-b-gray-200 dark:border-b-slate-600"
+                    style={{ top: '-11px' }}
+                    aria-hidden="true"
+                  />
+                  {/* Inner triangle (white fill) */}
+                  <span
+                    className="absolute left-1/2 -translate-x-1/2 border-[10px] border-x-transparent border-t-transparent border-b-white dark:border-b-slate-800"
+                    style={{ top: '-9px' }}
+                    aria-hidden="true"
+                  />
+                </span>
               )}
-              {/* Render popover */}
-              {/* <div className='relative rounded-xs border border-gray-200 bg-white shadow-md'>
-                <div className='flex flex-col py-2 px-3'>
-                  <button className='py-2 px-2 hover:text-orange'>Tiếng Việt</button>
-                  <button className='py-2 px-2 hover:text-orange'>English</button>
-                </div>
-              </div> */}
               {renderPopover}
             </motion.div>
           )}

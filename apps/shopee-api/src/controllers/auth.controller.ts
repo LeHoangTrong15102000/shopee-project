@@ -22,24 +22,17 @@ const getClientIP = (req: Request): string => {
   return req.ip || req.socket.remoteAddress || 'unknown'
 }
 
-const getExpire = (req: Request) => {
-  let expireAccessTokenConfig = Number(req.headers['expire-access-token'])
-  expireAccessTokenConfig = Number.isInteger(expireAccessTokenConfig)
-    ? expireAccessTokenConfig
-    : config.EXPIRE_ACCESS_TOKEN
-  let expireRefreshTokenConfig = Number(req.headers['expire-refresh-token'])
-  expireRefreshTokenConfig = Number.isInteger(expireRefreshTokenConfig)
-    ? expireRefreshTokenConfig
-    : config.EXPIRE_REFRESH_TOKEN
+const getExpire = () => {
+  // Server-controlled token expiry — no client override allowed
   return {
-    expireAccessTokenConfig,
-    expireRefreshTokenConfig,
+    expireAccessTokenConfig: config.EXPIRE_ACCESS_TOKEN,
+    expireRefreshTokenConfig: config.EXPIRE_REFRESH_TOKEN,
   }
 }
 
 const registerController = async (req: Request, res: Response) => {
   try {
-    const { expireAccessTokenConfig, expireRefreshTokenConfig } = getExpire(req)
+    const { expireAccessTokenConfig, expireRefreshTokenConfig } = getExpire()
     const { email, password } = req.body
 
     const result = await authService.register(
@@ -62,7 +55,7 @@ const registerController = async (req: Request, res: Response) => {
 
 const loginController = async (req: Request, res: Response) => {
   try {
-    const { expireAccessTokenConfig, expireRefreshTokenConfig } = getExpire(req)
+    const { expireAccessTokenConfig, expireRefreshTokenConfig } = getExpire()
     const { email, password } = req.body
     const clientIP = getClientIP(req)
 
@@ -100,7 +93,7 @@ const loginController = async (req: Request, res: Response) => {
 
 const refreshTokenController = async (req: Request, res: Response) => {
   try {
-    const { expireAccessTokenConfig } = getExpire(req)
+    const { expireAccessTokenConfig } = getExpire()
     const result = await authService.refreshToken(req.jwtDecoded.id, expireAccessTokenConfig)
 
     const response = {
@@ -117,8 +110,11 @@ const refreshTokenController = async (req: Request, res: Response) => {
 }
 
 const logoutController = async (req: Request, res: Response) => {
-  const access_token = req.headers.authorization?.replace('Bearer ', '') || ''
-  await authService.logout(access_token)
+  const { refresh_token } = req.body
+  if (refresh_token) {
+    await authService.logout(refresh_token)
+  }
+  // Graceful handling: if no RT provided, AT will expire naturally (15 min)
   return responseSuccess(res, { message: AUTH_MESSAGES.LOGOUT_SUCCESS })
 }
 

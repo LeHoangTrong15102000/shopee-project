@@ -1,10 +1,11 @@
 /**
  * Unit Tests for AuthService
  * Tests authentication operations: register, login, logout, token management
+ * Note: Access tokens are stateless JWTs — only refresh tokens are persisted
  */
 
 /// <reference types="jest" />
-import { AuthService, RegisterDTO, LoginDTO, TokenConfig } from '@services/auth.service'
+import { AuthService, TokenConfig } from '@services/auth.service'
 import { ValidationError, ConflictError, UnauthorizedError } from '@services/base.service'
 import { IAuthRepository } from '@repositories/interfaces/auth.repository.interface'
 import { IUserRepository } from '@repositories/interfaces/user.repository.interface'
@@ -23,7 +24,7 @@ jest.mock('@utils/jwt', () => ({
 jest.mock('@constants/config', () => ({
   config: {
     SECRET_KEY: 'test-secret-key',
-    EXPIRE_ACCESS_TOKEN: 604800,
+    EXPIRE_ACCESS_TOKEN: 900, // 15 minutes — stateless JWT
     EXPIRE_REFRESH_TOKEN: 8640000,
   },
 }))
@@ -45,21 +46,17 @@ describe('AuthService', () => {
   }
 
   const tokenConfig: TokenConfig = {
-    expireAccessToken: 604800,
+    expireAccessToken: 900,
     expireRefreshToken: 8640000,
   }
 
   beforeEach(() => {
     mockAuthRepository = {
-      createAccessToken: jest.fn(),
       createRefreshToken: jest.fn(),
-      deleteAccessToken: jest.fn(),
       deleteRefreshToken: jest.fn(),
       deleteAllUserTokens: jest.fn(),
-      isAccessTokenValid: jest.fn(),
       isRefreshTokenValid: jest.fn(),
       rotateRefreshToken: jest.fn(),
-      findAccessToken: jest.fn(),
       findRefreshToken: jest.fn(),
       deleteExpiredTokens: jest.fn(),
     } as unknown as jest.Mocked<IAuthRepository>
@@ -94,7 +91,6 @@ describe('AuthService', () => {
     it('should register new user successfully', async () => {
       mockUserRepository.emailExists.mockResolvedValue(false)
       mockUserRepository.create.mockResolvedValue(mockUser as any)
-      mockAuthRepository.createAccessToken.mockResolvedValue({} as any)
       mockAuthRepository.createRefreshToken.mockResolvedValue({} as any)
 
       const result = await authService.register(
@@ -104,6 +100,7 @@ describe('AuthService', () => {
 
       expect(mockUserRepository.emailExists).toHaveBeenCalledWith('test@example.com')
       expect(hashValue).toHaveBeenCalledWith('password123')
+      expect(mockAuthRepository.createRefreshToken).toHaveBeenCalled()
       expect(result.access_token).toContain('Bearer')
       expect(result.user.email).toBe('test@example.com')
     })
@@ -121,7 +118,6 @@ describe('AuthService', () => {
     it('should login successfully with correct credentials', async () => {
       mockUserRepository.findByEmailWithPassword.mockResolvedValue(mockUser as any)
       ;(compareValue as jest.Mock).mockReturnValue(true)
-      mockAuthRepository.createAccessToken.mockResolvedValue({} as any)
       mockAuthRepository.createRefreshToken.mockResolvedValue({} as any)
 
       const result = await authService.login(
@@ -129,6 +125,7 @@ describe('AuthService', () => {
         tokenConfig
       )
 
+      expect(mockAuthRepository.createRefreshToken).toHaveBeenCalled()
       expect(result.access_token).toContain('Bearer')
       expect(result.user.email).toBe('test@example.com')
     })
@@ -152,30 +149,58 @@ describe('AuthService', () => {
   })
 
   describe('logout', () => {
-    it('should logout successfully', async () => {
-      mockAuthRepository.deleteAccessToken.mockResolvedValue(true)
+    it('should logout successfully by deleting refresh token', async () => {
+      mockAuthRepository.deleteRefreshToken.mockResolvedValue(true)
 
-      await authService.logout('mock_access_token')
+      await authService.logout('mock_refresh_token')
 
-      expect(mockAuthRepository.deleteAccessToken).toHaveBeenCalledWith('mock_access_token')
+      expect(mockAuthRepository.deleteRefreshToken).toHaveBeenCalledWith('mock_refresh_token')
     })
   })
 
   describe('refreshToken', () => {
-    it('should refresh token successfully', async () => {
+    it('should refresh token successfully (stateless AT, no DB storage)', async () => {
       mockUserRepository.findById.mockResolvedValue(mockUser as any)
-      mockAuthRepository.createAccessToken.mockResolvedValue({} as any)
 
-      const result = await authService.refreshToken(validObjectId.toString(), 604800)
+      const result = await authService.refreshToken(validObjectId.toString(), 900)
 
       expect(result.access_token).toContain('Bearer')
+      // No createAccessToken call — AT is stateless
     })
 
     it('should throw UnauthorizedError if user not found', async () => {
       mockUserRepository.findById.mockResolvedValue(null)
 
-      await expect(authService.refreshToken(validObjectId.toString(), 604800)).rejects.toThrow(UnauthorizedError)
+      await expect(authService.refreshToken(validObjectId.toString(), 900)).rejects.toThrow(UnauthorizedError)
+    })
+  })
+
+  describe('logoutAll', () => {
+    it('should delete all refresh tokens for user', async () => {
+      mockAuthRepository.deleteAllUserTokens.mockResolvedValue()
+
+      await authService.logoutAll(validObjectId.toString())
+
+      expect(mockAuthRepository.deleteAllUserTokens).toHaveBeenCalledWith(validObjectId.toString())
+    })
+  })
+
+  describe('validateRefreshToken', () => {
+    it('should return true for valid refresh token', async () => {
+      mockAuthRepository.isRefreshTokenValid.mockResolvedValue(true)
+
+      const result = await authService.validateRefreshToken('valid_refresh_token')
+
+      expect(result).toBe(true)
+      expect(mockAuthRepository.isRefreshTokenValid).toHaveBeenCalledWith('valid_refresh_token')
+    })
+
+    it('should return false for invalid refresh token', async () => {
+      mockAuthRepository.isRefreshTokenValid.mockResolvedValue(false)
+
+      const result = await authService.validateRefreshToken('invalid_refresh_token')
+
+      expect(result).toBe(false)
     })
   })
 })
-

@@ -1,4 +1,3 @@
-import { Types } from 'mongoose'
 import { IUser, IPayloadToken } from '../@types/models.type'
 import { IAuthRepository } from '@repositories/interfaces/auth.repository.interface'
 import { IUserRepository } from '@repositories/interfaces/user.repository.interface'
@@ -73,10 +72,8 @@ export class AuthService extends BaseService {
 
     const { accessToken, refreshToken } = await this.generateTokens(payload, tokenConfig)
 
-    await Promise.all([
-      this.authRepository.createAccessToken(user._id!, accessToken),
-      this.authRepository.createRefreshToken(user._id!, refreshToken),
-    ])
+    // Only persist refresh token — access token is stateless JWT
+    await this.authRepository.createRefreshToken(user._id!, refreshToken)
 
     return {
       access_token: 'Bearer ' + accessToken,
@@ -107,10 +104,8 @@ export class AuthService extends BaseService {
 
     const { accessToken, refreshToken } = await this.generateTokens(payload, tokenConfig)
 
-    await Promise.all([
-      this.authRepository.createAccessToken(user._id!, accessToken),
-      this.authRepository.createRefreshToken(user._id!, refreshToken),
-    ])
+    // Only persist refresh token — access token is stateless JWT
+    await this.authRepository.createRefreshToken(user._id!, refreshToken)
 
     return {
       access_token: 'Bearer ' + accessToken,
@@ -134,26 +129,22 @@ export class AuthService extends BaseService {
       created_at: new Date().toISOString(),
     }
 
+    // Generate new stateless access token — no database storage
     const accessToken = await signToken(payload, config.SECRET_KEY, expireAccessToken) as string
-    await this.authRepository.createAccessToken(user._id!, accessToken)
 
     return { access_token: 'Bearer ' + accessToken }
   }
 
-  async logout(accessToken: string): Promise<void> {
-    await this.authRepository.deleteAccessToken(accessToken)
+  async logout(refreshToken: string): Promise<void> {
+    // Delete refresh token to prevent new access tokens from being issued
+    await this.authRepository.deleteRefreshToken(refreshToken)
   }
 
   async logoutAll(userId: string): Promise<void> {
     await this.authRepository.deleteAllUserTokens(userId)
   }
 
-  async validateAccessToken(token: string): Promise<boolean> {
-    return this.authRepository.isAccessTokenValid(token)
-  }
-
   async validateRefreshToken(token: string): Promise<boolean> {
     return this.authRepository.isRefreshTokenValid(token)
   }
 }
-

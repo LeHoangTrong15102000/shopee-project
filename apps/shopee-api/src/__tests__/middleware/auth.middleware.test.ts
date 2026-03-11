@@ -1,6 +1,6 @@
 /**
  * Unit Tests cho Auth Middleware
- * Test chức năng xác thực access token
+ * Test chức năng xác thực access token (pure JWT verification)
  */
 
 /// <reference types="jest" />
@@ -8,18 +8,10 @@ import { Request, Response, NextFunction } from 'express'
 import { STATUS } from '@constants/status'
 import authMiddleware from '@middleware/auth.middleware'
 import { verifyToken } from '@utils/jwt'
-import { AccessTokenModel } from '@database/models/access-token.model'
 
 // Mock verifyToken (setup.ts doesn't mock this)
 jest.mock('@utils/jwt', () => ({
   verifyToken: jest.fn(),
-}))
-
-// Mock AccessTokenModel
-jest.mock('@database/models/access-token.model', () => ({
-  AccessTokenModel: {
-    findOne: jest.fn(),
-  },
 }))
 
 // Interface cho mock request options
@@ -61,8 +53,8 @@ describe('Auth Middleware', () => {
   })
 
   describe('verifyAccessToken', () => {
-    // Test: Cho phép request với token hợp lệ
-    it('should pass with valid token', async () => {
+    // Test: Cho phép request với token hợp lệ (pure JWT verification)
+    it('should pass with valid JWT token', async () => {
       const validToken = 'valid_access_token'
       const decodedPayload = {
         id: 'user_id_123',
@@ -73,11 +65,6 @@ describe('Auth Middleware', () => {
 
       // Mock verifyToken trả về payload hợp lệ
       ;(verifyToken as jest.Mock).mockResolvedValue(decodedPayload)
-
-      // Mock AccessTokenModel.findOne trả về token tồn tại trong DB
-      ;(AccessTokenModel.findOne as jest.Mock).mockReturnValue({
-        exec: jest.fn().mockResolvedValue({ token: validToken }),
-      })
 
       const req = createMockRequest({
         headers: { authorization: `Bearer ${validToken}` },
@@ -95,6 +82,8 @@ describe('Auth Middleware', () => {
       expect(next).toHaveBeenCalled()
       // Verify jwtDecoded được set vào request
       expect(req.jwtDecoded).toEqual(decodedPayload)
+      // Verify verifyToken được gọi với token
+      expect(verifyToken).toHaveBeenCalledWith(validToken, expect.any(String))
     })
 
     // Test: Từ chối request với token không hợp lệ
@@ -106,6 +95,32 @@ describe('Auth Middleware', () => {
 
       const req = createMockRequest({
         headers: { authorization: `Bearer ${invalidToken}` },
+      })
+      const res = createMockResponse()
+      const next = createMockNext()
+
+      await authMiddleware.verifyAccessToken(
+        req as Request,
+        res as Response,
+        next
+      )
+
+      // Verify next() không được gọi
+      expect(next).not.toHaveBeenCalled()
+      // Verify response trả về lỗi
+      expect(res.status).toHaveBeenCalled()
+      expect(res.send).toHaveBeenCalled()
+    })
+
+    // Test: Từ chối token với chữ ký bị giả mạo
+    it('should reject tampered token with invalid signature', async () => {
+      const tamperedToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXJfMTIzIn0.TAMPERED_SIGNATURE'
+
+      // Mock verifyToken throw error (chữ ký không hợp lệ)
+      ;(verifyToken as jest.Mock).mockRejectedValue(new Error('invalid signature'))
+
+      const req = createMockRequest({
+        headers: { authorization: `Bearer ${tamperedToken}` },
       })
       const res = createMockResponse()
       const next = createMockNext()
@@ -148,26 +163,15 @@ describe('Auth Middleware', () => {
       )
     })
 
-    // Test: Từ chối khi token không tồn tại trong database
-    it('should fail when token not found in database', async () => {
-      const validToken = 'valid_but_not_in_db_token'
-      const decodedPayload = {
-        id: 'user_id_123',
-        email: 'test@example.com',
-        roles: ['User'],
-        created_at: new Date().toISOString(),
-      }
+    // Test: Từ chối khi token hết hạn
+    it('should fail when token is expired', async () => {
+      const expiredToken = 'expired_token'
 
-      // Mock verifyToken trả về payload hợp lệ
-      ;(verifyToken as jest.Mock).mockResolvedValue(decodedPayload)
-
-      // Mock AccessTokenModel.findOne trả về null (token không tồn tại trong DB)
-      ;(AccessTokenModel.findOne as jest.Mock).mockReturnValue({
-        exec: jest.fn().mockResolvedValue(null),
-      })
+      // Mock verifyToken throw error (token hết hạn)
+      ;(verifyToken as jest.Mock).mockRejectedValue(new Error('EXPIRED_TOKEN'))
 
       const req = createMockRequest({
-        headers: { authorization: `Bearer ${validToken}` },
+        headers: { authorization: `Bearer ${expiredToken}` },
       })
       const res = createMockResponse()
       const next = createMockNext()
@@ -181,13 +185,78 @@ describe('Auth Middleware', () => {
       // Verify next() không được gọi
       expect(next).not.toHaveBeenCalled()
       // Verify response trả về lỗi
-      expect(res.status).toHaveBeenCalledWith(STATUS.UNAUTHORIZED)
-      expect(res.send).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: 'Không tồn tại token',
-        })
+      expect(res.status).toHaveBeenCalled()
+      expect(res.send).toHaveBeenCalled()
+    })
+  })
+
+  describe('verifyAccessTokenOptional', () => {
+    // Test: Cho phép request với token hợp lệ
+    it('should pass and set jwtDecoded with valid token', async () => {
+      const validToken = 'valid_access_token'
+      const decodedPayload = {
+        id: 'user_id_123',
+        email: 'test@example.com',
+        roles: ['User'],
+        created_at: new Date().toISOString(),
+      }
+
+      ;(verifyToken as jest.Mock).mockResolvedValue(decodedPayload)
+
+      const req = createMockRequest({
+        headers: { authorization: `Bearer ${validToken}` },
+      })
+      const res = createMockResponse()
+      const next = createMockNext()
+
+      await authMiddleware.verifyAccessTokenOptional(
+        req as Request,
+        res as Response,
+        next
       )
+
+      expect(next).toHaveBeenCalled()
+      expect(req.jwtDecoded).toEqual(decodedPayload)
+    })
+
+    // Test: Cho phép request không có token (optional)
+    it('should pass without token and set jwtDecoded to undefined', async () => {
+      const req = createMockRequest({
+        headers: {},
+      })
+      const res = createMockResponse()
+      const next = createMockNext()
+
+      await authMiddleware.verifyAccessTokenOptional(
+        req as Request,
+        res as Response,
+        next
+      )
+
+      expect(next).toHaveBeenCalled()
+      expect(req.jwtDecoded).toBeUndefined()
+    })
+
+    // Test: Cho phép request với token không hợp lệ (graceful fallback)
+    it('should pass with invalid token and set jwtDecoded to undefined', async () => {
+      const invalidToken = 'invalid_token'
+
+      ;(verifyToken as jest.Mock).mockRejectedValue(new Error('Token không đúng'))
+
+      const req = createMockRequest({
+        headers: { authorization: `Bearer ${invalidToken}` },
+      })
+      const res = createMockResponse()
+      const next = createMockNext()
+
+      await authMiddleware.verifyAccessTokenOptional(
+        req as Request,
+        res as Response,
+        next
+      )
+
+      expect(next).toHaveBeenCalled()
+      expect(req.jwtDecoded).toBeUndefined()
     })
   })
 })
-

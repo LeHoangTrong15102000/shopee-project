@@ -4,7 +4,6 @@ import { NextFunction, Request, Response } from 'express'
 import { ROLE } from '@constants/role.enum'
 import { responseError, ErrorHandler } from '@utils/response'
 import { STATUS } from '@constants/status'
-import { AccessTokenModel } from '@database/models/access-token.model'
 import { RefreshTokenModel } from '@database/models/refresh-token.model'
 import { UserModel } from '@database/models/user.model'
 
@@ -29,18 +28,8 @@ const verifyAccessToken = async (
         config.SECRET_KEY
       )) as PayloadToken
       req.jwtDecoded = decoded
-      const accessTokenDB = await AccessTokenModel.findOne({
-        token: access_token,
-      }).exec()
-
-      if (accessTokenDB) {
-        return next()
-      }
-      responseError(
-        res,
-        new ErrorHandler(STATUS.UNAUTHORIZED, 'Không tồn tại token')
-      )
-      return
+      // Pure JWT verification — no database lookup needed
+      return next()
     } catch (error) {
       responseError(res, error as ErrorHandler | Error)
       return
@@ -101,15 +90,7 @@ const verifyAccessTokenOptional = async (
         config.SECRET_KEY
       )) as PayloadToken
       req.jwtDecoded = decoded
-      const accessTokenDB = await AccessTokenModel.findOne({
-        token: access_token,
-      }).exec()
-
-      if (accessTokenDB) {
-        return next()
-      }
-      // Nếu token invalid, vẫn tiếp tục nhưng không set jwtDecoded
-      req.jwtDecoded = undefined as unknown as PayloadToken
+      // Pure JWT verification — no database lookup needed
       return next()
     } catch {
       // Nếu có lỗi, vẫn tiếp tục nhưng không set jwtDecoded

@@ -19,7 +19,7 @@ jest.mock('@database/database', () => ({
 jest.mock('@constants/config', () => ({
   config: {
     SECRET_KEY: 'test-secret-key',
-    EXPIRE_ACCESS_TOKEN: 604800,
+    EXPIRE_ACCESS_TOKEN: 900, // 15 minutes — stateless JWT
     EXPIRE_REFRESH_TOKEN: 8640000,
   },
   FOLDER_UPLOAD: 'upload',

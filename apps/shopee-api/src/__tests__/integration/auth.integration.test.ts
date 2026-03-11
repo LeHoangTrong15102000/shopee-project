@@ -23,7 +23,7 @@ describe('Auth Integration', () => {
       expect(loginRes.status).toBe(200)
       expect(loginRes.body.data).toHaveProperty('access_token')
       expect(loginRes.body.data).toHaveProperty('refresh_token')
-      const { access_token } = loginRes.body.data
+      const { access_token, refresh_token } = loginRes.body.data
 
       const meRes = await supertest(app)
         .get('/me')
@@ -31,10 +31,50 @@ describe('Auth Integration', () => {
       expect(meRes.status).toBe(200)
       expect(meRes.body.data.email).toBe(email)
 
+      // Logout now requires refresh_token in body
       const logoutRes = await supertest(app)
         .post('/logout')
         .set('Authorization', access_token)
+        .send({ refresh_token })
       expect(logoutRes.status).toBeLessThan(400)
+
+      // Verify refresh token is deleted — subsequent refresh should fail
+      const refreshAfterLogout = await supertest(app)
+        .post('/refresh-access-token')
+        .send({ refresh_token })
+      expect(refreshAfterLogout.status).toBeGreaterThanOrEqual(400)
+    })
+
+    it('should allow access token to work after logout until natural expiry (stateless)', async () => {
+      const email = 'stateless@test.com'
+      const password = 'Test123456'
+
+      await supertest(app)
+        .post('/register')
+        .send({ email, password })
+
+      const loginRes = await supertest(app)
+        .post('/login')
+        .send({ email, password })
+      const { access_token, refresh_token } = loginRes.body.data
+
+      // Logout with refresh_token
+      await supertest(app)
+        .post('/logout')
+        .set('Authorization', access_token)
+        .send({ refresh_token })
+
+      // Access token should still work (stateless — no DB lookup)
+      const meAfterLogout = await supertest(app)
+        .get('/me')
+        .set('Authorization', access_token)
+      expect(meAfterLogout.status).toBe(200)
+
+      // But refresh should fail (RT deleted)
+      const refreshAfterLogout = await supertest(app)
+        .post('/refresh-access-token')
+        .send({ refresh_token })
+      expect(refreshAfterLogout.status).toBeGreaterThanOrEqual(400)
     })
 
     it('should return 422 when registering with duplicate email', async () => {

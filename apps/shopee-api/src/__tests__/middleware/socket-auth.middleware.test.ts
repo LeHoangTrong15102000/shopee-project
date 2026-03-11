@@ -8,12 +8,6 @@ jest.mock('../../utils/jwt', () => ({
   verifyToken: jest.fn(),
 }))
 
-jest.mock('../../database/models/access-token.model', () => ({
-  AccessTokenModel: {
-    findOne: jest.fn().mockReturnValue({ exec: jest.fn() }),
-  },
-}))
-
 jest.mock('../../constants/socket', () => ({
   SOCKET_ERRORS: {
     AUTH_ERROR: 'AUTH_ERROR',
@@ -30,7 +24,6 @@ jest.mock('../../utils/logger', () => ({
 }))
 
 import { verifyToken } from '../../utils/jwt'
-import { AccessTokenModel } from '../../database/models/access-token.model'
 import { socketAuthMiddleware } from '../../middleware/socket-auth.middleware'
 
 const createMockSocket = (token?: string): any => ({
@@ -52,17 +45,13 @@ describe('socketAuthMiddleware', () => {
     jest.clearAllMocks()
   })
 
-  it('should authenticate successfully with valid token', async () => {
+  it('should authenticate successfully with valid JWT token (pure stateless verification)', async () => {
     const mockSocket = createMockSocket('valid-token')
     ;(verifyToken as jest.Mock).mockResolvedValue(mockDecodedToken)
-    ;(AccessTokenModel.findOne as jest.Mock).mockReturnValue({
-      exec: jest.fn().mockResolvedValue({ token: 'valid-token' }),
-    })
 
     await socketAuthMiddleware(mockSocket, mockNext)
 
     expect(verifyToken).toHaveBeenCalledWith('valid-token', 'test-secret')
-    expect(AccessTokenModel.findOne).toHaveBeenCalledWith({ token: 'valid-token' })
     expect(mockSocket.user).toEqual({
       id: 'user-123',
       email: 'test@example.com',
@@ -90,21 +79,6 @@ describe('socketAuthMiddleware', () => {
     expect(mockNext).toHaveBeenCalledWith(new Error('AUTH_ERROR'))
   })
 
-  it('should reject connection when token is not found in database', async () => {
-    const mockSocket = createMockSocket('valid-token')
-    ;(verifyToken as jest.Mock).mockResolvedValue(mockDecodedToken)
-    ;(AccessTokenModel.findOne as jest.Mock).mockReturnValue({
-      exec: jest.fn().mockResolvedValue(null),
-    })
-
-    await socketAuthMiddleware(mockSocket, mockNext)
-
-    expect(verifyToken).toHaveBeenCalledWith('valid-token', 'test-secret')
-    expect(AccessTokenModel.findOne).toHaveBeenCalledWith({ token: 'valid-token' })
-    expect(mockSocket.user).toBeUndefined()
-    expect(mockNext).toHaveBeenCalledWith(new Error('AUTH_ERROR'))
-  })
-
   it('should reject connection with TOKEN_EXPIRED when token is expired', async () => {
     const mockSocket = createMockSocket('expired-token')
     const expiredError = { message: { name: 'EXPIRED_TOKEN' } }
@@ -115,5 +89,14 @@ describe('socketAuthMiddleware', () => {
     expect(verifyToken).toHaveBeenCalledWith('expired-token', 'test-secret')
     expect(mockNext).toHaveBeenCalledWith(new Error('TOKEN_EXPIRED'))
   })
-})
 
+  it('should reject connection with tampered token signature', async () => {
+    const mockSocket = createMockSocket('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXItMTIzIn0.TAMPERED_SIGNATURE')
+    ;(verifyToken as jest.Mock).mockRejectedValue(new Error('invalid signature'))
+
+    await socketAuthMiddleware(mockSocket, mockNext)
+
+    expect(verifyToken).toHaveBeenCalled()
+    expect(mockNext).toHaveBeenCalledWith(new Error('AUTH_ERROR'))
+  })
+})

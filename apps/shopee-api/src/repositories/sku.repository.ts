@@ -73,6 +73,14 @@ export class SKURepository implements ISKURepository {
     return SKUModel.findOne({ product: productId, value }).lean<ISKU | null>()
   }
 
+  async findByProductAndVariantValues(productId: string | Types.ObjectId, variantValues: Record<string, string>): Promise<ISKU | null> {
+    const filter: FilterQuery<ISKU> = { product: productId }
+    for (const [key, val] of Object.entries(variantValues)) {
+      filter[`variant_values.${key}`] = val
+    }
+    return SKUModel.findOne(filter).lean<ISKU | null>()
+  }
+
   async atomicDecrementStock(skuId: string | Types.ObjectId, quantity: number): Promise<ISKU | null> {
     return SKUModel.findOneAndUpdate(
       { _id: skuId, stock: { $gte: quantity } },
@@ -98,12 +106,23 @@ export class SKURepository implements ISKURepository {
       results.push({ skuId: item.skuId, success: sku !== null, sku })
       if (!sku) {
         // Rollback all previously successful decrements
+        const rollbackErrors: Array<{ skuId: string | Types.ObjectId; error: string }> = []
         for (const prev of results) {
           if (prev.success) {
-            await this.atomicIncrementStock(prev.skuId, items.find((i) => i.skuId === prev.skuId)!.quantity)
+            try {
+              const qty = items.find((i) => i.skuId === prev.skuId)!.quantity
+              await this.atomicIncrementStock(prev.skuId, qty)
+            } catch (rollbackErr) {
+              const errMsg = rollbackErr instanceof Error ? rollbackErr.message : 'Unknown rollback error'
+              rollbackErrors.push({ skuId: prev.skuId, error: errMsg })
+              console.error(`[SKU Rollback Failed] SKU ${prev.skuId}: ${errMsg}`)
+            }
           }
         }
-        throw new BusinessError(`SKU ${item.skuId} không đủ tồn kho`)
+        const errorDetail = rollbackErrors.length > 0
+          ? ` (rollback errors: ${rollbackErrors.map(e => `${e.skuId}: ${e.error}`).join(', ')})`
+          : ''
+        throw new BusinessError(`SKU ${item.skuId} không đủ tồn kho${errorDetail}`)
       }
     }
     return results

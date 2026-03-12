@@ -18,7 +18,13 @@ const ProductSchema = new Schema(
       {
         type: { type: String, maxlength: 50 },
         name: { type: String, maxlength: 100 },
-        options: [{ type: String, maxlength: 100 }],
+        options: [
+          {
+            name: { type: String, maxlength: 100 },
+            value: { type: String, maxlength: 100 },
+            image: { type: String, maxlength: 1000 },
+          },
+        ],
       },
     ],
   },

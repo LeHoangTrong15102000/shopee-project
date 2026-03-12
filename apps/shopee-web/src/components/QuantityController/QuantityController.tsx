@@ -116,7 +116,7 @@ const QuantityController = ({
           animated={false}
           aria-label="Decrease quantity"
           onClick={decrease}
-          className="flex h-10 w-10 items-center justify-center rounded-l-md border border-[rgba(0,0,0,.09)] bg-white text-gray-700 hover:bg-gray-50 sm:h-8 sm:w-8 dark:border-slate-600 dark:bg-slate-800 dark:text-gray-300 dark:hover:bg-slate-700"
+          className="flex h-11 w-11 items-center justify-center rounded-l-md border border-[rgba(0,0,0,.09)] bg-white text-gray-700 hover:bg-gray-50 dark:border-slate-600 dark:bg-slate-800 dark:text-gray-300 dark:hover:bg-slate-700"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -132,7 +132,7 @@ const QuantityController = ({
       </motion.div>
       <InputNumber
         classNameError="hidden"
-        classNameInput="h-10 w-14 sm:h-8 p-1 text-center border border-[rgba(0,0,0,.09)] dark:border-slate-600 bg-white dark:bg-slate-800 dark:text-gray-100"
+        classNameInput="h-11 w-14 p-1 text-center border border-[rgba(0,0,0,.09)] dark:border-slate-600 bg-white dark:bg-slate-800 dark:text-gray-100"
         className="shrink-0"
         type="text"
         role="spinbutton"
@@ -150,7 +150,7 @@ const QuantityController = ({
           animated={false}
           aria-label="Increase quantity"
           onClick={increase}
-          className="flex h-10 w-10 items-center justify-center rounded-r-md border border-[rgba(0,0,0,.09)] bg-white text-gray-700 hover:bg-gray-50 sm:h-8 sm:w-8 dark:border-slate-600 dark:bg-slate-800 dark:text-gray-300 dark:hover:bg-slate-700"
+          className="flex h-11 w-11 items-center justify-center rounded-r-md border border-[rgba(0,0,0,.09)] bg-white text-gray-700 hover:bg-gray-50 dark:border-slate-600 dark:bg-slate-800 dark:text-gray-300 dark:hover:bg-slate-700"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

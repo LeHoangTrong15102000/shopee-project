@@ -36,6 +36,7 @@ export interface CreateProductDTO {
   price_before_discount: number
   quantity: number
   location?: string
+  variants?: Array<{ type: string; name: string; options: Array<{ name: string; value: string; image?: string }> }>
 }
 
 /**
@@ -54,6 +55,7 @@ export interface UpdateProductDTO {
   sold?: number
   view?: number
   location?: string
+  variants?: Array<{ type: string; name: string; options: Array<{ name: string; value: string; image?: string }> }>
 }
 
 /**
@@ -123,5 +125,18 @@ export interface IProductRepository extends IBaseRepository<IProduct, CreateProd
    * Update product rating
    */
   updateRating(productId: string | Types.ObjectId, rating: number): Promise<void>
+
+  /**
+   * Find products with low stock (paginated)
+   */
+  findLowStockPaginated(
+    threshold: number,
+    pagination: PaginationOptions
+  ): Promise<PaginatedResult<IProduct>>
+
+  /**
+   * Find out of stock products
+   */
+  findOutOfStock(pagination: PaginationOptions): Promise<PaginatedResult<IProduct>>
 }
 

@@ -233,3 +233,201 @@ describe('ProductActions - Cart Validation (Task 1.9)', () => {
     expect(mockMutateAsync).toHaveBeenCalledWith({ product_id: 'product-1', buy_count: 1 });
   });
 });
+
+// Mock SKU data for variant tests
+const mockSKU = {
+  _id: 'sku-red-m',
+  value: 'RED-M',
+  price: 95000,
+  stock: 15,
+  variant_values: { color: 'red', size: 'M' },
+};
+
+const mockOutOfStockSKU = {
+  _id: 'sku-blue-l',
+  value: 'BLUE-L',
+  price: 100000,
+  stock: 0,
+  variant_values: { color: 'blue', size: 'L' },
+};
+
+describe('ProductActions - Variant Selection (Task 15.9)', () => {
+  const user = userEvent.setup();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    useCartStore.getState().setItems([]);
+  });
+
+  it('shows error when trying to add to cart without selecting variant', async () => {
+    const { toast } = await import('react-toastify');
+    const mockOnVariantError = vi.fn();
+    renderWithProviders(
+      <ProductActions
+        product={mockProduct as any}
+        isAuthenticated={true}
+        reducedMotion={true}
+        hasVariants={true}
+        selectedSKU={null}
+        onVariantValidationError={mockOnVariantError}
+      />,
+    );
+    const addBtn = screen.getByText('Thêm vào giỏ hàng');
+    await user.click(addBtn);
+    expect(mockMutate).not.toHaveBeenCalled();
+    expect(toast.error).toHaveBeenCalled();
+    expect(mockOnVariantError).toHaveBeenCalled();
+  });
+
+  it('allows add to cart when variant is selected', async () => {
+    renderWithProviders(
+      <ProductActions
+        product={mockProduct as any}
+        isAuthenticated={true}
+        reducedMotion={true}
+        hasVariants={true}
+        selectedSKU={mockSKU as any}
+      />,
+    );
+    const addBtn = screen.getByText('Thêm vào giỏ hàng');
+    await user.click(addBtn);
+    expect(mockMutate).toHaveBeenCalledWith({
+      product_id: 'product-1',
+      buy_count: 1,
+      sku_id: 'sku-red-m',
+    });
+  });
+
+  it('includes sku_id in add to cart request when variant selected', async () => {
+    renderWithProviders(
+      <ProductActions
+        product={mockProduct as any}
+        isAuthenticated={true}
+        reducedMotion={true}
+        hasVariants={true}
+        selectedSKU={mockSKU as any}
+      />,
+    );
+    const addBtn = screen.getByText('Thêm vào giỏ hàng');
+    await user.click(addBtn);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ sku_id: 'sku-red-m' }),
+    );
+  });
+
+  it('disables add to cart when selected SKU is out of stock', () => {
+    renderWithProviders(
+      <ProductActions
+        product={mockProduct as any}
+        isAuthenticated={true}
+        reducedMotion={true}
+        hasVariants={true}
+        selectedSKU={mockOutOfStockSKU as any}
+      />,
+    );
+    const addBtn = screen.getByRole('button', { name: /Thêm vào giỏ hàng/i });
+    expect(addBtn).toBeDisabled();
+  });
+
+  it('disables buy now when selected SKU is out of stock', () => {
+    renderWithProviders(
+      <ProductActions
+        product={mockProduct as any}
+        isAuthenticated={true}
+        reducedMotion={true}
+        hasVariants={true}
+        selectedSKU={mockOutOfStockSKU as any}
+      />,
+    );
+    const buyNowBtn = screen.getByRole('button', { name: /Mua ngay/i });
+    expect(buyNowBtn).toBeDisabled();
+  });
+
+  it('shows SKU stock in available quantity text', () => {
+    renderWithProviders(
+      <ProductActions
+        product={mockProduct as any}
+        isAuthenticated={true}
+        reducedMotion={true}
+        hasVariants={true}
+        selectedSKU={mockSKU as any}
+      />,
+    );
+    // Should show SKU stock (15) instead of product quantity (10)
+    expect(screen.getByText(/15\s+Sản phẩm có sẵn/)).toBeInTheDocument();
+  });
+
+  it('shows error when trying to buy now without selecting variant', async () => {
+    const { toast } = await import('react-toastify');
+    const mockOnVariantError = vi.fn();
+    renderWithProviders(
+      <ProductActions
+        product={mockProduct as any}
+        isAuthenticated={true}
+        reducedMotion={true}
+        hasVariants={true}
+        selectedSKU={null}
+        onVariantValidationError={mockOnVariantError}
+      />,
+    );
+    const buyNowBtn = screen.getByText('Mua ngay');
+    await user.click(buyNowBtn);
+    expect(mockMutateAsync).not.toHaveBeenCalled();
+    expect(toast.error).toHaveBeenCalled();
+    expect(mockOnVariantError).toHaveBeenCalled();
+  });
+
+  it('allows buy now when variant is selected', async () => {
+    renderWithProviders(
+      <ProductActions
+        product={mockProduct as any}
+        isAuthenticated={true}
+        reducedMotion={true}
+        hasVariants={true}
+        selectedSKU={mockSKU as any}
+      />,
+    );
+    const buyNowBtn = screen.getByText('Mua ngay');
+    await user.click(buyNowBtn);
+    expect(mockMutateAsync).toHaveBeenCalledWith({
+      product_id: 'product-1',
+      buy_count: 1,
+      sku_id: 'sku-red-m',
+    });
+  });
+
+  it('works normally for products without variants', async () => {
+    renderWithProviders(
+      <ProductActions
+        product={mockProduct as any}
+        isAuthenticated={true}
+        reducedMotion={true}
+        hasVariants={false}
+        selectedSKU={null}
+      />,
+    );
+    const addBtn = screen.getByText('Thêm vào giỏ hàng');
+    await user.click(addBtn);
+    // Should not include sku_id for non-variant products
+    expect(mockMutate).toHaveBeenCalledWith({ product_id: 'product-1', buy_count: 1 });
+  });
+
+  it('validates cart quantity against SKU stock when variant selected', async () => {
+    const { toast } = await import('react-toastify');
+    // SKU has stock of 15, add 15 items to cart
+    useCartStore.getState().setItems([createMockCartItem('product-1', 15)]);
+    renderWithProviders(
+      <ProductActions
+        product={mockProduct as any}
+        isAuthenticated={true}
+        reducedMotion={true}
+        hasVariants={true}
+        selectedSKU={mockSKU as any}
+      />,
+    );
+    const addBtn = screen.getByText('Thêm vào giỏ hàng');
+    await user.click(addBtn);
+    expect(mockMutate).not.toHaveBeenCalled();
+    expect(toast.error).toHaveBeenCalled();
+  });
+});

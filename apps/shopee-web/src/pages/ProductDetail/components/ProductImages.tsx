@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import ImageWithFallback from 'src/components/ImageWithFallback';
 import ShareButton from 'src/components/ShareButton';
 import WishlistButton from 'src/components/WishlistButton';
-import { Product as ProductType } from 'src/types/product.type';
+import { Product as ProductType, ProductSKU } from 'src/types/product.type';
 import {
   imageCrossfade,
   staggerContainer,
@@ -19,9 +19,10 @@ const FALLBACK_IMAGE =
 interface ProductImagesProps {
   product: ProductType;
   reducedMotion: boolean;
+  selectedSKU?: ProductSKU | null;
 }
 
-const ProductImages = ({ product, reducedMotion }: ProductImagesProps) => {
+const ProductImages = ({ product, reducedMotion, selectedSKU }: ProductImagesProps) => {
   const { t } = useTranslation('product');
   const imageRef = useRef<HTMLImageElement>(null);
   const [currentIndexImages, setCurrentIndexImages] = useState([0, 5]);
@@ -38,6 +39,15 @@ const ProductImages = ({ product, reducedMotion }: ProductImagesProps) => {
       setActiveImage(product.images[0]);
     }
   }, [product]);
+
+  // Switch to SKU image when a variant with image is selected, fallback to product image
+  useEffect(() => {
+    if (selectedSKU?.image) {
+      setActiveImage(selectedSKU.image);
+    } else if (product && product.images.length > 0) {
+      setActiveImage(product.images[0]);
+    }
+  }, [selectedSKU?.image, selectedSKU?._id]);
 
   useEffect(() => {
     setMainImageError(false);

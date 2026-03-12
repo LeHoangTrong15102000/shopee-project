@@ -1,3 +1,15 @@
+import { ProductVariant } from './variant.type';
+
+/** SKU with variant_values mapping from backend API */
+export interface ProductSKU {
+  _id: string;
+  value: string;
+  price: number;
+  stock: number;
+  image?: string;
+  variant_values: Record<string, string>;
+}
+
 // Các thuộc tính trong danh sách sản phẩm
 export interface Product {
   _id: string; // id của sản phẩm
@@ -18,6 +30,8 @@ export interface Product {
   location: string; // địa điểm bán sản phẩm
   createdAt: string;
   updatedAt: string;
+  variants?: ProductVariant[];
+  skus?: ProductSKU[];
 }
 // Còn cái _id bên ngoài product là _id của mỗi sản phẩm trong giỏ
 

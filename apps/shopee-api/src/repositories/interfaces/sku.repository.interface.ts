@@ -49,6 +49,11 @@ export interface ISKURepository extends IBaseRepository<ISKU, CreateSKUDTO, Upda
   findByProductAndValue(productId: string | Types.ObjectId, value: string): Promise<ISKU | null>
 
   /**
+   * Find a SKU by product and variant_values mapping
+   */
+  findByProductAndVariantValues(productId: string | Types.ObjectId, variantValues: Record<string, string>): Promise<ISKU | null>
+
+  /**
    * Atomically decrement stock. Returns null if insufficient stock.
    * Uses findOneAndUpdate with { stock: { $gte: quantity } } condition.
    */

@@ -13,15 +13,20 @@ import { BaseService, NotFoundError, ValidationError } from './base.service'
 import { HOST } from '@utils/helper'
 import { FOLDERS, FOLDER_UPLOAD, ROUTE_IMAGE } from '@constants/config'
 import { cacheService, CacheKeys, CacheTTL } from '@utils/cache.service'
+import {
+  generateSKUCombinations,
+  generateVariantValues,
+  VariantInput,
+} from '@utils/variant.helper'
 import fs from 'fs'
 
 export interface CreateProductWithSKUsInput extends CreateProductDTO {
-  variants?: Array<{ type: string; name: string; options: string[] }>
+  variants?: Array<{ type: string; name: string; options: Array<{ name: string; value: string; image?: string }> }>
   skus?: Array<{ value: string; price: number; stock: number; image?: string; variant_values?: Record<string, string> }>
 }
 
 export interface UpdateProductWithSKUsInput extends UpdateProductDTO {
-  variants?: Array<{ type: string; name: string; options: string[] }>
+  variants?: Array<{ type: string; name: string; options: Array<{ name: string; value: string; image?: string }> }>
   skus?: Array<{ value: string; price: number; stock: number; image?: string; variant_values?: Record<string, string> }>
 }
 
@@ -62,15 +67,47 @@ export class ProductService extends BaseService {
     }
   }
 
+  /**
+   * Auto-generate SKU data from variants when SKUs are not provided.
+   * Note: Variant validation is handled by Zod schema at the request boundary.
+   * TODO: Future enhancements:
+   * - Support variant-specific images (e.g., different image per color)
+   * - Support price modifiers per variant option (e.g., +50k for XL size)
+   * - Support variant option images for color swatches
+   */
+  private autoGenerateSKUs(
+    variants: VariantInput[],
+    defaultPrice: number
+  ): Array<{ value: string; price: number; stock: number; image?: string; variant_values: Record<string, string> }> {
+    const combinations = generateSKUCombinations(variants)
+    const variantValues = generateVariantValues(variants)
+    return combinations.map((value, i) => ({
+      value,
+      price: defaultPrice,
+      stock: 0,
+      image: undefined,
+      variant_values: variantValues[i],
+    }))
+  }
+
   async createProduct(data: CreateProductWithSKUsInput): Promise<IProduct & { skus?: ISKU[] }> {
     const { skus: skuData, ...productData } = data
+    // Note: Variant validation is handled by Zod schema at the request boundary
+
     const product = await this.productRepository.create(productData)
     cacheService.del(CacheKeys.productsPattern())
 
     let skus: ISKU[] | undefined
-    if (skuData && skuData.length > 0 && this.skuRepository) {
+    // Auto-generate SKUs if variants provided but no SKUs
+    const effectiveSkuData = (skuData && skuData.length > 0)
+      ? skuData
+      : (productData.variants && productData.variants.length > 0)
+        ? this.autoGenerateSKUs(productData.variants as VariantInput[], productData.price ?? 0)
+        : undefined
+
+    if (effectiveSkuData && effectiveSkuData.length > 0 && this.skuRepository) {
       skus = []
-      for (const sku of skuData) {
+      for (const sku of effectiveSkuData) {
         const created = await this.skuRepository.create({
           value: sku.value,
           price: sku.price,
@@ -157,14 +194,39 @@ export class ProductService extends BaseService {
     }
 
     const { skus: skuData, ...productData } = data
+    // Note: Variant validation is handled by Zod schema at the request boundary
+
     const product = await this.productRepository.updateById(productId, productData)
     if (!product) {
       throw new NotFoundError('Product', productId)
     }
 
     let skus: ISKU[] | undefined
-    // Handle SKU upsert if provided
-    if (skuData && this.skuRepository) {
+
+    // Handle variant removal: if variants is explicitly set to empty array, remove all SKUs
+    if (productData.variants && productData.variants.length === 0 && this.skuRepository) {
+      await this.skuRepository.deleteMany({ product: new Types.ObjectId(productId) })
+      skus = []
+    }
+    // Auto-generate SKUs if variants changed but no SKUs provided
+    else if (productData.variants && productData.variants.length > 0 && !skuData && this.skuRepository) {
+      const autoSkuData = this.autoGenerateSKUs(productData.variants as VariantInput[], product.price ?? 0)
+      // Delete old SKUs and create new ones
+      await this.skuRepository.deleteMany({ product: new Types.ObjectId(productId) })
+      skus = []
+      for (const sku of autoSkuData) {
+        const created = await this.skuRepository.create({
+          value: sku.value,
+          price: sku.price,
+          stock: sku.stock,
+          product: product._id!,
+          variant_values: sku.variant_values,
+        })
+        skus.push(created)
+      }
+    }
+    // Handle explicit SKU upsert if provided
+    else if (skuData && this.skuRepository) {
       const existingSkus = await this.skuRepository.findByProduct(productId)
       const existingByValue = new Map(existingSkus.map((s) => [s.value, s]))
       const incomingValues = new Set(skuData.map((s) => s.value))
@@ -173,7 +235,6 @@ export class ProductService extends BaseService {
       for (const sku of skuData) {
         const existing = existingByValue.get(sku.value)
         if (existing) {
-          // Update existing SKU
           const updated = await this.skuRepository.updateById(existing._id!.toString(), {
             price: sku.price,
             stock: sku.stock,
@@ -182,7 +243,6 @@ export class ProductService extends BaseService {
           })
           if (updated) skus.push(updated)
         } else {
-          // Create new SKU
           const created = await this.skuRepository.create({
             value: sku.value,
             price: sku.price,
@@ -264,11 +324,11 @@ export class ProductService extends BaseService {
   // ─── Admin Inventory Methods ────────────────────────────────────
 
   async getLowStockProducts(threshold: number, pagination: PaginationOptions) {
-    return (this.productRepository as any).findLowStockPaginated(threshold, this.normalizePagination(pagination))
+    return this.productRepository.findLowStockPaginated(threshold, this.normalizePagination(pagination))
   }
 
   async getOutOfStockProducts(pagination: PaginationOptions) {
-    return (this.productRepository as any).findOutOfStock(this.normalizePagination(pagination))
+    return this.productRepository.findOutOfStock(this.normalizePagination(pagination))
   }
 
   async updateStock(productId: string, quantity: number) {
@@ -296,9 +356,12 @@ export class ProductService extends BaseService {
         }
         await this.productRepository.updateById(item.product_id, { quantity: item.quantity })
         results.updated++
-      } catch {
+      } catch (error) {
         results.failed++
-        results.errors.push({ product_id: item.product_id, reason: 'Update failed' })
+        results.errors.push({
+          product_id: item.product_id,
+          reason: error instanceof Error ? error.message : 'Update failed',
+        })
       }
     }
 

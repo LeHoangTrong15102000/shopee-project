@@ -1,6 +1,13 @@
 import { z } from 'zod'
 import { mongoIdSchema } from './common.schema'
 import { SORT_BY, ORDER } from '@constants/product'
+import {
+  validateNoDuplicateVariantTypes,
+  validateNoDuplicateOptions,
+  validateVariantLimits,
+  generateSKUCombinations,
+  VariantInput,
+} from '@utils/variant.helper'
 
 /**
  * Sort by enum for products
@@ -11,6 +18,65 @@ const sortByEnum = z.enum(SORT_BY).catch('createdAt')
  * Order enum
  */
 const orderEnum = z.enum(ORDER).catch('desc')
+
+/**
+ * Variant option schema with name, value, and optional image.
+ */
+const variantOptionSchema = z.object({
+  name: z.string()
+    .min(1, 'Tên tùy chọn không được để trống')
+    .max(100, 'Tên tùy chọn phải ít hơn 100 ký tự')
+    .refine((val) => val.trim().length > 0, { message: 'Tên tùy chọn không được chỉ chứa khoảng trắng' }),
+  value: z.string()
+    .min(1, 'Giá trị tùy chọn không được để trống')
+    .max(100, 'Giá trị tùy chọn phải ít hơn 100 ký tự')
+    .refine((val) => val.trim().length > 0, { message: 'Giá trị tùy chọn không được chỉ chứa khoảng trắng' }),
+  image: z.string().max(1000, 'URL ảnh phải ít hơn 1000 ký tự').optional(),
+})
+
+/**
+ * Allowed variant types - must match frontend ProductVariant.type
+ */
+const VARIANT_TYPES = ['color', 'size', 'style', 'material'] as const
+
+/**
+ * Reusable variant validation schema with custom refinements.
+ * Validates individual variant structure (type, name, options).
+ */
+const variantItemSchema = z.object({
+  type: z.enum(VARIANT_TYPES, { errorMap: () => ({ message: 'Loại biến thể phải là: color, size, style, hoặc material' }) }),
+  name: z.string().min(1, 'Tên biến thể không được để trống').max(100, 'Tên biến thể phải ít hơn 100 ký tự'),
+  options: z.array(variantOptionSchema).min(1, 'Biến thể phải có ít nhất 1 tùy chọn'),
+})
+
+/**
+ * Variants array schema with cross-variant validation.
+ * Uses superRefine for multi-step validation:
+ * 1. Check for duplicate variant types (case-insensitive)
+ * 2. Check for duplicate options within each variant
+ * 3. Validate limits (max 5 variants, max 20 options, max 100 SKU combinations)
+ */
+const variantsArraySchema = z
+  .array(variantItemSchema)
+  .superRefine((variants, ctx) => {
+    // Step 1: Validate no duplicate variant types
+    const dupTypeErr = validateNoDuplicateVariantTypes(variants)
+    if (dupTypeErr) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: dupTypeErr })
+      return
+    }
+    // Step 2: Validate no duplicate options within each variant
+    const dupOptErr = validateNoDuplicateOptions(variants)
+    if (dupOptErr) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: dupOptErr })
+      return
+    }
+    // Step 3: Validate variant limits
+    const limitsErr = validateVariantLimits(variants)
+    if (limitsErr) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: limitsErr })
+    }
+  })
 
 /**
  * Add product schema
@@ -50,15 +116,7 @@ export const addProductSchema = z.object({
     view: z.coerce.number().optional(),
     sold: z.coerce.number().optional(),
     rating: z.coerce.number().optional(),
-    variants: z
-      .array(
-        z.object({
-          type: z.string().max(50, 'Loại biến thể phải ít hơn 50 ký tự'),
-          name: z.string().max(100, 'Tên biến thể phải ít hơn 100 ký tự'),
-          options: z.array(z.string().max(100, 'Tùy chọn phải ít hơn 100 ký tự')),
-        })
-      )
-      .optional(),
+    variants: variantsArraySchema.optional(),
     skus: z
       .array(
         z.object({
@@ -70,6 +128,29 @@ export const addProductSchema = z.object({
         })
       )
       .optional(),
+  }).superRefine((data, ctx) => {
+    // Cross-field validation: if variants provided, validate SKUs match
+    if (data.variants && data.variants.length > 0 && data.skus && data.skus.length > 0) {
+      const expectedCombinations = generateSKUCombinations(data.variants as VariantInput[])
+      if (data.skus.length !== expectedCombinations.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Số lượng SKU không khớp: cần ${expectedCombinations.length}, nhận được ${data.skus.length}`,
+          path: ['skus'],
+        })
+      } else {
+        for (let i = 0; i < expectedCombinations.length; i++) {
+          if (data.skus[i].value !== expectedCombinations[i]) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `SKU tại vị trí ${i} không khớp: cần "${expectedCombinations[i]}", nhận được "${data.skus[i].value}"`,
+              path: ['skus', i, 'value'],
+            })
+            break
+          }
+        }
+      }
+    }
   }),
 })
 
@@ -113,15 +194,41 @@ export const updateProductSchema = z.object({
     view: z.coerce.number().optional(),
     sold: z.coerce.number().optional(),
     rating: z.coerce.number().optional(),
-    variants: z
+    variants: variantsArraySchema.optional(),
+    skus: z
       .array(
         z.object({
-          type: z.string().max(50),
-          name: z.string().max(100),
-          options: z.array(z.string().max(100)),
+          value: z.string().min(1).max(500),
+          price: z.coerce.number().min(0),
+          stock: z.coerce.number().int().min(0),
+          image: z.string().max(1000).optional(),
+          variant_values: z.record(z.string(), z.string()).optional(),
         })
       )
       .optional(),
+  }).superRefine((data, ctx) => {
+    // Cross-field validation: if both variants and skus provided, validate SKUs match
+    if (data.variants && data.variants.length > 0 && data.skus && data.skus.length > 0) {
+      const expectedCombinations = generateSKUCombinations(data.variants as VariantInput[])
+      if (data.skus.length !== expectedCombinations.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Số lượng SKU không khớp: cần ${expectedCombinations.length}, nhận được ${data.skus.length}`,
+          path: ['skus'],
+        })
+      } else {
+        for (let i = 0; i < expectedCombinations.length; i++) {
+          if (data.skus[i].value !== expectedCombinations[i]) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `SKU tại vị trí ${i} không khớp: cần "${expectedCombinations[i]}", nhận được "${data.skus[i].value}"`,
+              path: ['skus', i, 'value'],
+            })
+            break
+          }
+        }
+      }
+    }
   }),
 })
 

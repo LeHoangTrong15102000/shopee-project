@@ -24,7 +24,7 @@ export interface ProductBody {
   quantity: number
   sold?: number
   view?: number
-  variants?: Array<{ type: string; name: string; options: string[] }>
+  variants?: Array<{ type: string; name: string; options: Array<{ name: string; value: string; image?: string }> }>
   skus?: Array<{ value: string; price: number; stock: number; image?: string; variant_values?: Record<string, string> }>
 }
 

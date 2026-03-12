@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import QuantityController from 'src/components/QuantityController';
 import Button from 'src/components/Button';
-import { Product as ProductType } from 'src/types/product.type';
+import { Product as ProductType, ProductSKU } from 'src/types/product.type';
 import { useOptimisticAddToCart } from 'src/hooks/optimistic';
 import path from 'src/constant/path';
 import { staggerItem } from 'src/styles/animations';
@@ -16,6 +16,9 @@ interface ProductActionsProps {
   product: ProductType;
   isAuthenticated: boolean;
   reducedMotion: boolean;
+  selectedSKU?: ProductSKU | null;
+  hasVariants?: boolean;
+  onVariantValidationError?: () => void;
 }
 
 const CartIcon = () => (
@@ -61,15 +64,25 @@ const CartIcon = () => (
   </svg>
 );
 
-const ProductActions = ({ product, isAuthenticated, reducedMotion }: ProductActionsProps) => {
+const ProductActions = ({
+  product,
+  isAuthenticated,
+  reducedMotion,
+  selectedSKU,
+  hasVariants,
+  onVariantValidationError,
+}: ProductActionsProps) => {
   const { t } = useTranslation('product');
   const navigate = useNavigate();
   const [buyCount, setBuyCount] = useState(1);
   const addToCartMutation = useOptimisticAddToCart();
   const cartItems = useCartItems();
 
+  const effectiveStock = selectedSKU?.stock ?? product.quantity;
   const existingQuantity = getProductQuantityInCart(product._id, cartItems);
-  const availableToAdd = Math.max(product.quantity - existingQuantity, 0);
+  const availableToAdd = Math.max(effectiveStock - existingQuantity, 0);
+  const isOutOfStock = hasVariants && selectedSKU != null && selectedSKU.stock === 0;
+  const needsVariantSelection = hasVariants && !selectedSKU;
 
   const handleBuyCount = (value: number) => {
     setBuyCount(value);
@@ -77,7 +90,7 @@ const ProductActions = ({ product, isAuthenticated, reducedMotion }: ProductActi
 
   const validateCartQuantity = (quantity: number): boolean => {
     const totalQuantity = existingQuantity + quantity;
-    if (totalQuantity > product.quantity) {
+    if (totalQuantity > effectiveStock) {
       if (availableToAdd <= 0) {
         toast.error(t('cart.validationErrorFull', { existing: existingQuantity }), {
           autoClose: 3000,
@@ -94,24 +107,47 @@ const ProductActions = ({ product, isAuthenticated, reducedMotion }: ProductActi
     return true;
   };
 
+  const validateVariantSelection = (): boolean => {
+    if (needsVariantSelection) {
+      toast.error(t('variant.selectAll'), {
+        autoClose: 3000,
+        position: 'top-center',
+      });
+      onVariantValidationError?.();
+      return false;
+    }
+    if (isOutOfStock) {
+      toast.error(t('variant.outOfStock'), {
+        autoClose: 3000,
+        position: 'top-center',
+      });
+      return false;
+    }
+    return true;
+  };
+
   const addToCart = () => {
     if (!product) return;
+    if (hasVariants && !validateVariantSelection()) return;
     if (!validateCartQuantity(buyCount)) return;
 
     addToCartMutation.mutate({
       product_id: product._id,
       buy_count: buyCount,
+      ...(selectedSKU?._id ? { sku_id: selectedSKU._id } : {}),
     });
   };
 
   const handleBuyNow = async () => {
     if (!product) return;
+    if (hasVariants && !validateVariantSelection()) return;
     if (!validateCartQuantity(buyCount)) return;
 
     try {
       const res = await addToCartMutation.mutateAsync({
         product_id: product._id,
         buy_count: buyCount,
+        ...(selectedSKU?._id ? { sku_id: selectedSKU._id } : {}),
       });
 
       const purchase = res.data.data;
@@ -138,6 +174,8 @@ const ProductActions = ({ product, isAuthenticated, reducedMotion }: ProductActi
     });
   };
 
+  const isButtonDisabled = addToCartMutation.isPending || isOutOfStock;
+
   return (
     <>
       {/* Quantity Selector */}
@@ -154,7 +192,7 @@ const ProductActions = ({ product, isAuthenticated, reducedMotion }: ProductActi
             onType={handleBuyCount}
           />
           <div className="ml-7 flex items-center text-gray-500/80 dark:text-gray-400">
-            {product?.quantity} {t('available')}
+            {effectiveStock} {t('available')}
           </div>
         </div>
       </motion.div>
@@ -171,7 +209,7 @@ const ProductActions = ({ product, isAuthenticated, reducedMotion }: ProductActi
               animated={false}
               onClick={isAuthenticated ? addToCart : handleLoginRedirect}
               isLoading={addToCartMutation.isPending}
-              disabled={addToCartMutation.isPending}
+              disabled={isButtonDisabled}
               className="flex h-12 items-center justify-center rounded-xs px-5 capitalize shadow-xs"
             >
               <CartIcon />
@@ -189,7 +227,7 @@ const ProductActions = ({ product, isAuthenticated, reducedMotion }: ProductActi
               animated={false}
               onClick={isAuthenticated ? handleBuyNow : handleLoginRedirect}
               isLoading={addToCartMutation.isPending}
-              disabled={addToCartMutation.isPending}
+              disabled={isButtonDisabled}
               className="flex h-12 min-w-20 items-center justify-center rounded-xs px-4 capitalize shadow-xs"
             >
               {t('actions.buyNow')}

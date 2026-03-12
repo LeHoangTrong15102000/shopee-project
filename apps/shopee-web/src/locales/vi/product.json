@@ -183,5 +183,13 @@
   "viewer.popular": "Nhiều người đang xem!",
   "viewer.watching": "{{count}} người đang xem",
   "price.decreased": "Giảm giá",
-  "price.increased": "Tăng giá"
+  "price.increased": "Tăng giá",
+  "variant.lowStock": "Chỉ còn {{count}} sản phẩm",
+  "variant.outOfStock": "Hết hàng",
+  "variant.selectAll": "Vui lòng chọn tất cả phân loại hàng",
+  "variant.priceRange": "₫{{min}} - ₫{{max}}",
+  "variant.stockAvailable": "{{count}} sản phẩm có sẵn",
+  "variant.selected": "đã chọn",
+  "variant.outOfStockOption": "hết hàng",
+  "variant.selectVariant": "Chọn phân loại sản phẩm"
 }

@@ -183,5 +183,13 @@
   "viewer.popular": "Many people are watching!",
   "viewer.watching": "{{count}} people watching",
   "price.decreased": "Price drop",
-  "price.increased": "Price up"
+  "price.increased": "Price up",
+  "variant.lowStock": "Only {{count}} left",
+  "variant.outOfStock": "Out of stock",
+  "variant.selectAll": "Please select all variant options",
+  "variant.priceRange": "₫{{min}} - ₫{{max}}",
+  "variant.stockAvailable": "{{count}} available",
+  "variant.selected": "selected",
+  "variant.outOfStockOption": "out of stock",
+  "variant.selectVariant": "Select product variant"
 }

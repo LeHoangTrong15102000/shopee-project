@@ -151,61 +151,52 @@ const updateProduct = async (req: Req, res: Response) => {
     variants,
     skus,
   } = form
-  const product = omitBy(
-    {
-      name,
-      description,
-      category,
-      image,
-      rating,
-      price,
-      images,
-      price_before_discount,
-      quantity,
-      sold,
-      view,
-      variants,
-    },
-    (value) => value === undefined || value === ''
-  )
 
   // Fetch old product for comparison (price changes, inventory alerts)
   const oldProduct = await ProductModel.findById(req.params.product_id).select({ price: 1, price_before_discount: 1, quantity: 1, name: 1 }).lean()
 
-  const productDB = await ProductModel.findByIdAndUpdate(
-    req.params.product_id,
-    product,
-    {
-      new: true,
-    }
-  )
-    .select({ __v: 0 })
-    .lean()
-  if (productDB) {
-    // Invalidate cache khi cập nhật sản phẩm
-    cacheService.del(CacheKeys.productDetail(req.params.product_id))
-    cacheService.del(CacheKeys.productsPattern())
+  try {
+    const updateData = omitBy(
+      {
+        name,
+        description,
+        category,
+        image,
+        rating,
+        price,
+        images,
+        price_before_discount,
+        quantity,
+        sold,
+        view,
+        variants,
+        skus,
+      },
+      (value) => value === undefined || value === ''
+    )
+
+    const result = await productService.updateProduct(req.params.product_id, updateData)
 
     // Emit real-time price update if price changed
-    if (oldProduct) {
-      const priceChanged = oldProduct.price !== productDB.price || oldProduct.price_before_discount !== productDB.price_before_discount
+    if (oldProduct && result) {
+      const priceChanged = oldProduct.price !== result.price || oldProduct.price_before_discount !== result.price_before_discount
       if (priceChanged) {
         emitPriceUpdate(
           req.params.product_id,
           oldProduct.price,
-          productDB.price,
+          result.price,
           oldProduct.price_before_discount,
-          productDB.price_before_discount
+          result.price_before_discount
         )
       }
 
       // Emit inventory alert if quantity is below threshold
       const threshold = SOCKET_CONFIG.INVENTORY.LOW_STOCK_THRESHOLD
-      if (productDB.quantity <= threshold) {
+      if (result.quantity <= threshold) {
         emitInventoryAlert(
           req.params.product_id,
-          productDB.name,
-          productDB.quantity,
+          result.name,
+          result.quantity,
           threshold
         )
       }
@@ -213,52 +204,14 @@ const updateProduct = async (req: Req, res: Response) => {
 
     const response = {
       message: 'Cập nhật sản phẩm thành công',
-      data: handleImageProduct(productDB),
+      data: result,
     }
-
-    // Handle SKU upsert if skus provided
-    if (skus && skus.length > 0 && skuRepository) {
-      const existingSkus = await skuRepository.findByProduct(req.params.product_id)
-      const existingByValue = new Map(existingSkus.map((s: any) => [s.value, s]))
-      const incomingValues = new Set(skus.map((s: any) => s.value))
-      const resultSkus: any[] = []
-
-      for (const sku of skus) {
-        const existing = existingByValue.get(sku.value)
-        if (existing) {
-          const updated = await skuRepository.updateById(existing._id!.toString(), {
-            price: sku.price,
-            stock: sku.stock,
-            image: sku.image,
-            variant_values: sku.variant_values,
-          })
-          if (updated) resultSkus.push(updated)
-        } else {
-          const created = await skuRepository.create({
-            value: sku.value,
-            price: sku.price,
-            stock: sku.stock,
-            image: sku.image,
-            product: req.params.product_id,
-            variant_values: sku.variant_values,
-          })
-          resultSkus.push(created)
-        }
-      }
-
-      // Soft-delete removed SKUs
-      for (const [value, existing] of existingByValue) {
-        if (!incomingValues.has(value)) {
-          await skuRepository.updateById((existing as any)._id!.toString(), { stock: 0 })
-        }
-      }
-
-      response.data = { ...response.data, skus: resultSkus } as any
-    }
-
     return responseSuccess(res, response)
-  } else {
-    throw new ErrorHandler(STATUS.NOT_FOUND, 'Không tìm thấy sản phẩm')
+  } catch (error) {
+    if (error instanceof NotFoundError || error instanceof ValidationError) {
+      throw new ErrorHandler(STATUS.NOT_FOUND, (error as Error).message || 'Không tìm thấy sản phẩm')
+    }
+    throw error
   }
 }
 

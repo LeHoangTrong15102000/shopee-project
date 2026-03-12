@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import DOMPurify from 'dompurify';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { RetryError } from 'src/types/utils.type';
@@ -9,6 +9,7 @@ import productApi from 'src/apis/product.api';
 
 import ProductReviews from 'src/components/ProductReviews';
 import ProductQA from 'src/components/ProductQA';
+import ProductVariantSelector from 'src/components/ProductVariantSelector';
 
 import path from 'src/constant/path';
 
@@ -43,6 +44,9 @@ import { motion } from 'framer-motion';
 import { useReducedMotion } from 'src/hooks/useReducedMotion';
 import { staggerContainer, sectionEntrance, STAGGER_DELAY } from 'src/styles/animations';
 import Button from 'src/components/Button';
+import { ProductVariant, ProductVariantCombination } from 'src/types/variant.type';
+import { ProductSKU } from 'src/types/product.type';
+import { getMockVariants, getMockSKUs } from 'src/utils/mockVariantData';
 
 /**
  * ProductDetail Component với Query Cancellation
@@ -54,6 +58,7 @@ const ProductDetail = () => {
   const reducedMotion = useReducedMotion();
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [needsCollapse, setNeedsCollapse] = useState(false);
+  const [showVariantError, setShowVariantError] = useState(false);
   const descriptionRef = useRef<HTMLDivElement>(null);
   const infoContainerVariants = staggerContainer(STAGGER_DELAY.normal);
 
@@ -122,6 +127,85 @@ const ProductDetail = () => {
 
   const product =
     productDetailData?.status === HTTP_STATUS_CODE.NotFound ? null : productDetailData?.data?.data;
+
+  // Variant selection state
+  const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
+  const [selectedSKU, setSelectedSKU] = useState<ProductSKU | null>(null);
+
+  // Convert backend variants to ProductVariant format, or use mock data
+  const variants: ProductVariant[] = useMemo(() => {
+    if (product?.variants && product.variants.length > 0) {
+      return product.variants;
+    }
+    return product ? getMockVariants(product._id) : [];
+  }, [product?._id, product?.variants]);
+
+  // Convert backend SKUs to ProductVariantCombination format, or use mock data
+  const skus: ProductSKU[] = useMemo(() => {
+    if (product?.skus && product.skus.length > 0) {
+      return product.skus;
+    }
+    return product ? getMockSKUs(product.price) : [];
+  }, [product?._id, product?.skus, product?.price]);
+
+  // Convert SKUs to combinations for the selector component
+  const combinations: ProductVariantCombination[] = useMemo(() => {
+    return skus.map((sku, i) => ({
+      _id: sku._id || `combo-${i}`,
+      variant_values: sku.variant_values,
+      price: sku.price,
+      price_before_discount: product?.price_before_discount ?? sku.price,
+      quantity: sku.stock,
+      sku: sku.value,
+      image: sku.image,
+    }));
+  }, [skus, product?.price_before_discount]);
+
+  const hasVariants = variants.length > 0;
+
+  // Handle variant selection
+  const handleVariantSelect = (type: string, value: string) => {
+    setShowVariantError(false);
+    setSelectedVariants((prev) => {
+      const next = { ...prev };
+      if (next[type] === value) {
+        delete next[type]; // Deselect
+      } else {
+        next[type] = value;
+      }
+      return next;
+    });
+  };
+
+  // Callback for ProductActions to trigger variant validation error highlight
+  const handleVariantValidationError = () => {
+    setShowVariantError(true);
+  };
+
+  // Find matching SKU when variant selection changes
+  useEffect(() => {
+    if (!hasVariants) {
+      setSelectedSKU(null);
+      return;
+    }
+    // Check if all variant types are selected
+    const allSelected = variants.every((v) => selectedVariants[v.type] !== undefined);
+    if (!allSelected) {
+      setSelectedSKU(null);
+      return;
+    }
+    // Find matching SKU
+    const match = skus.find((sku) =>
+      Object.entries(selectedVariants).every(([type, value]) => sku.variant_values[type] === value),
+    );
+    setSelectedSKU(match || null);
+  }, [selectedVariants, skus, variants, hasVariants]);
+
+  // Reset variant selection when product changes
+  useEffect(() => {
+    setSelectedVariants({});
+    setSelectedSKU(null);
+  }, [product?._id]);
 
   // WebSocket: Seller online presence (using shop/category ID as seller proxy)
   const { isOnline: isSellerOnline, lastSeen: sellerLastSeen } = usePresence(
@@ -297,7 +381,11 @@ const ProductDetail = () => {
         <div className="rounded-sm bg-white p-4 shadow-sm dark:bg-slate-800 dark:shadow-slate-900/50">
           <div className="grid grid-cols-12 gap-2 lg:gap-9">
             {/* Ảnh sản phẩm và slider */}
-            <ProductImages product={product} reducedMotion={reducedMotion} />
+            <ProductImages
+              product={product}
+              reducedMotion={reducedMotion}
+              selectedSKU={selectedSKU}
+            />
             {/* Thông tin sản phẩm */}
             <div className="col-span-12 md:col-span-7">
               <ProductInfo
@@ -310,11 +398,27 @@ const ProductDetail = () => {
                 priceHasChanged={priceHasChanged}
                 previousPrice={previousPrice}
                 infoContainerVariants={infoContainerVariants}
+                selectedSKU={selectedSKU}
               />
+              {/* Variant Selector */}
+              {hasVariants && (
+                <div className="mt-6 border-t border-gray-200 pt-4 dark:border-gray-700">
+                  <ProductVariantSelector
+                    variants={variants}
+                    combinations={combinations}
+                    selectedValues={selectedVariants}
+                    onSelect={handleVariantSelect}
+                    showValidationError={showVariantError}
+                  />
+                </div>
+              )}
               <ProductActions
                 product={product}
                 isAuthenticated={isAuthenticated}
                 reducedMotion={reducedMotion}
+                selectedSKU={selectedSKU}
+                hasVariants={hasVariants}
+                onVariantValidationError={handleVariantValidationError}
               />
             </div>
           </div>

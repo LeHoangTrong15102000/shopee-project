@@ -1,14 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import productApi from 'src/apis/product.api';
 import purchaseApi from 'src/apis/purchases.api';
 import wishlistApi from 'src/apis/wishlist.api';
 import { purchasesStatus } from 'src/constant/purchase';
 import { Product } from 'src/types/product.type';
-import { mockCategories } from './wishlist.constants';
 
 export function useWishlist(activeFilter: string, activeSort: string) {
+  const { t } = useTranslation('wishlist');
   const queryClient = useQueryClient();
 
   // Fetch real products from API
@@ -40,7 +41,6 @@ export function useWishlist(activeFilter: string, activeSort: string) {
         user: 'current-user',
         product,
         addedAt: new Date(Date.now() - index * 24 * 60 * 60 * 1000).toISOString(),
-        mockCategory: mockCategories[index % mockCategories.length],
       }));
     }
 
@@ -107,8 +107,7 @@ export function useWishlist(activeFilter: string, activeSort: string) {
     let totalDiscount = 0;
     let discountItems = 0;
     allWishlistItems.forEach((item) => {
-      const cat =
-        item.product.category?.name || (item as { mockCategory?: string }).mockCategory || 'Khác';
+      const cat = item.product.category?.name || 'Other';
       catCount[cat] = (catCount[cat] || 0) + 1;
       if (item.product.price_before_discount > item.product.price) {
         totalDiscount += Math.round(
@@ -142,8 +141,8 @@ export function useWishlist(activeFilter: string, activeSort: string) {
   };
   const isTrending = (product: Product) => product.sold >= 3000 && product.rating >= 4.5;
   const getStockStatus = (product: Product) => {
-    if (product.quantity <= 0) return { label: 'Hết hàng', color: 'bg-red-500' };
-    if (product.quantity <= 20) return { label: 'Sắp hết', color: 'bg-amber-500' };
+    if (product.quantity <= 0) return { label: t('stock.outOfStock'), color: 'bg-red-500' };
+    if (product.quantity <= 20) return { label: t('stock.runningLow'), color: 'bg-amber-500' };
     return null;
   };
   const getDiscountPercent = (product: Product) => {
@@ -158,7 +157,7 @@ export function useWishlist(activeFilter: string, activeSort: string) {
     mutationFn: (productId: string) => wishlistApi.removeFromWishlist(productId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wishlist'] });
-      toast.success('Đã xóa khỏi danh sách yêu thích');
+      toast.success(t('toast.removedFromWishlist'));
     },
   });
 
@@ -169,7 +168,7 @@ export function useWishlist(activeFilter: string, activeSort: string) {
       queryClient.invalidateQueries({
         queryKey: ['purchases', { status: purchasesStatus.inCart }],
       });
-      toast.success('Đã thêm vào giỏ hàng');
+      toast.success(t('toast.addedToCart'));
     },
   });
 

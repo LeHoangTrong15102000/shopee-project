@@ -57,5 +57,6 @@
   "search.suggestion.tryThis": "Bạn có thể thử:",
   "search.suggestion.checkSpelling": "Kiểm tra lỗi chính tả",
   "search.suggestion.shorterKeywords": "Sử dụng từ khóa ngắn hơn",
-  "search.suggestion.popularKeywords": "Sử dụng từ khóa phổ biến hơn"
+  "search.suggestion.popularKeywords": "Sử dụng từ khóa phổ biến hơn",
+  "filter.ariaLabel": "Bộ lọc sản phẩm"
 }

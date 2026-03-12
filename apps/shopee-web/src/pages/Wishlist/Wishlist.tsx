@@ -11,9 +11,8 @@ import { formatCurrency } from 'src/utils/utils';
 import { useWishlist } from './useWishlist';
 import { containerVariants, fadeInUp, itemVariants } from './wishlist.constants';
 import {
-  categoryIconComponents,
+  getCategoryIcon,
   IconBell,
-  IconCube,
   IconFire,
   IconFolder,
   IconHeart,
@@ -138,7 +137,7 @@ export default function Wishlist() {
                     {t('topCategory')}{' '}
                     <span className="inline-flex items-center gap-1 font-semibold text-purple-600 dark:text-purple-400">
                       {(() => {
-                        const CatIcon = categoryIconComponents[insights.topCategory] || IconCube;
+                        const CatIcon = getCategoryIcon(insights.topCategory);
                         return <CatIcon className="h-3.5 w-3.5" />;
                       })()}{' '}
                       {insights.topCategory}
@@ -300,17 +299,14 @@ export default function Wishlist() {
               <div className="scrollbar-hide flex gap-2 overflow-x-auto pb-2">
                 {Object.entries(
                   allWishlistItems.reduce<Record<string, number>>((acc, item) => {
-                    const cat =
-                      item.product.category?.name ||
-                      (item as { mockCategory?: string }).mockCategory ||
-                      t('categoryOther');
+                    const cat = item.product.category?.name || t('categoryOther');
                     acc[cat] = (acc[cat] || 0) + 1;
                     return acc;
                   }, {}),
                 )
                   .sort((a, b) => b[1] - a[1])
                   .map(([cat, count]) => {
-                    const CatIcon = categoryIconComponents[cat] || IconCube;
+                    const CatIcon = getCategoryIcon(cat);
                     return (
                       <div
                         key={cat}

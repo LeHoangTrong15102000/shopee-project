@@ -39,7 +39,7 @@ const ProductListItem = ({ product }: ProductListItemProps) => {
       tabIndex={0}
       role="link"
       aria-label={`${product.name} - ₫${formatCurrency(product.price)}`}
-      className="relative flex cursor-pointer overflow-hidden rounded-lg bg-white shadow-xs transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange dark:bg-slate-800 dark:shadow-slate-900/20"
+      className="relative flex cursor-pointer overflow-hidden rounded-lg bg-white shadow-xs transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none dark:bg-slate-800 dark:shadow-slate-900/20"
     >
       {/* Product Image - Left side */}
       <div className="relative h-32 w-32 shrink-0 sm:h-40 sm:w-40 md:h-48 md:w-48">

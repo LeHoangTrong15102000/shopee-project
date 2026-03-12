@@ -26,6 +26,7 @@
     "test:snapshots": "vitest run test/snapshots/",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
+    "i18n:check": "npx tsx scripts/check-i18n-hardcoded.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

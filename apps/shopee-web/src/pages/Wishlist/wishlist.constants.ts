@@ -10,35 +10,23 @@ import {
   IconTrophy,
 } from './components/WishlistIcons';
 
-// Mock categories for visual enhancement
-export const mockCategories = [
-  'Điện tử',
-  'Thời trang',
-  'Gia dụng',
-  'Làm đẹp',
-  'Thể thao',
-  'Sách',
-  'Đồ chơi',
-  'Phụ kiện',
-];
-
 // Sort options
 export const sortOptions = [
-  { id: 'newest', label: 'Mới nhất', Icon: IconClock },
-  { id: 'price-asc', label: 'Giá thấp → cao', Icon: IconTrendingUp },
-  { id: 'price-desc', label: 'Giá cao → thấp', Icon: IconTrendingDown },
-  { id: 'discount', label: 'Giảm giá nhiều', Icon: IconFire },
-  { id: 'bestseller', label: 'Bán chạy', Icon: IconStar },
+  { id: 'newest', labelKey: 'sort.newest', Icon: IconClock },
+  { id: 'price-asc', labelKey: 'sort.priceAsc', Icon: IconTrendingUp },
+  { id: 'price-desc', labelKey: 'sort.priceDesc', Icon: IconTrendingDown },
+  { id: 'discount', labelKey: 'sort.discount', Icon: IconFire },
+  { id: 'bestseller', labelKey: 'sort.bestseller', Icon: IconStar },
 ];
 
 // Filter pills data
 export const filterPills = [
-  { id: 'all', label: 'Tất cả', Icon: IconClipboard },
-  { id: 'sale', label: 'Giảm giá sốc', Icon: IconFire },
-  { id: 'bestseller', label: 'Bán chạy', Icon: IconStar },
-  { id: 'new', label: 'Mới thêm', Icon: IconSparkles },
-  { id: 'lowprice', label: 'Giá thấp', Icon: IconCurrencyDollar },
-  { id: 'highrating', label: 'Đánh giá cao', Icon: IconTrophy },
+  { id: 'all', labelKey: 'filter.all', Icon: IconClipboard },
+  { id: 'sale', labelKey: 'filter.sale', Icon: IconFire },
+  { id: 'bestseller', labelKey: 'filter.bestseller', Icon: IconStar },
+  { id: 'new', labelKey: 'filter.new', Icon: IconSparkles },
+  { id: 'lowprice', labelKey: 'filter.lowprice', Icon: IconCurrencyDollar },
+  { id: 'highrating', labelKey: 'filter.highrating', Icon: IconTrophy },
 ];
 
 // Animation variants

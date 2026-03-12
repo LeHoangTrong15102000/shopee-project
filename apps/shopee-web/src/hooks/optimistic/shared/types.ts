@@ -29,6 +29,7 @@ export interface OptimisticContext {
 export interface AddToCartPayload {
   product_id: string;
   buy_count: number;
+  sku_id?: string;
 }
 
 export interface UpdateQuantityPayload {

@@ -66,7 +66,7 @@ const AsideFilter = ({ categories }: Props) => {
     <div
       className="rounded-xs bg-white px-3 py-4 text-black/80 shadow-xs dark:bg-slate-800 dark:text-gray-200 dark:shadow-slate-900/20"
       role="navigation"
-      aria-label="Bộ lọc sản phẩm"
+      aria-label={t('filter.ariaLabel')}
     >
       {/* Tất cả danh mục */}
       <Link

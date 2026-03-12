@@ -57,5 +57,6 @@
   "search.suggestion.tryThis": "You can try:",
   "search.suggestion.checkSpelling": "Check for spelling errors",
   "search.suggestion.shorterKeywords": "Use shorter keywords",
-  "search.suggestion.popularKeywords": "Use more popular keywords"
+  "search.suggestion.popularKeywords": "Use more popular keywords",
+  "filter.ariaLabel": "Product filter"
 }

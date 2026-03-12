@@ -328,18 +328,39 @@ export const IconShoppingBag = ({ className = 'h-5 w-5' }: { className?: string 
 );
 
 // Category icon components mapping
-// Keyed by both Vietnamese (from API) and English category names for i18n compatibility
+// Keyed by category _id (primary), Vietnamese name (fallback), and English name (fallback)
 export const categoryIconComponents: Record<string, React.FC<{ className?: string }>> = {
-  'Thời trang nam': IconShoppingBag,
-  'Thời trang nữ': IconSparkles,
-  'Điện tử': IconLightning,
-  'Phụ kiện': IconCube,
-  'Gia dụng': IconFolder,
-  'Làm đẹp': IconStar,
-  'Thể thao': IconTrophy,
-  Sách: IconClipboard,
-  'Đồ chơi': IconHeart,
-  // English aliases
+  // By category _id (primary lookup — locale-agnostic)
+  'cat-1': IconShoppingBag, // Thời trang nam
+  'cat-2': IconCube, // Điện thoại & Phụ kiện
+  'cat-3': IconLightning, // Thiết bị điện tử
+  'cat-4': IconLightning, // Máy tính & Laptop
+  'cat-5': IconTarget, // Máy ảnh & Máy quay phim
+  'cat-6': IconClock, // Đồng hồ
+  'cat-7': IconShoppingBag, // Giày dép nam
+  'cat-8': IconFolder, // Thiết bị gia dụng
+  'cat-9': IconTrophy, // Thể thao & Du lịch
+  'cat-10': IconTrendingUp, // Ô tô & Xe máy & Xe đạp
+  // Vietnamese display names (fallback for API data) // i18n-ignore
+  'Thời trang nam': IconShoppingBag, // i18n-ignore
+  'Thời trang nữ': IconSparkles, // i18n-ignore
+  'Điện tử': IconLightning, // i18n-ignore
+  'Thiết bị điện tử': IconLightning, // i18n-ignore
+  'Điện thoại & Phụ kiện': IconCube, // i18n-ignore
+  'Máy tính & Laptop': IconLightning, // i18n-ignore
+  'Máy ảnh & Máy quay phim': IconTarget, // i18n-ignore
+  'Đồng hồ': IconClock, // i18n-ignore
+  'Giày dép nam': IconShoppingBag, // i18n-ignore
+  'Thiết bị gia dụng': IconFolder, // i18n-ignore
+  'Thể thao & Du lịch': IconTrophy, // i18n-ignore
+  'Ô tô & Xe máy & Xe đạp': IconTrendingUp, // i18n-ignore
+  'Phụ kiện': IconCube, // i18n-ignore
+  'Gia dụng': IconFolder, // i18n-ignore
+  'Làm đẹp': IconStar, // i18n-ignore
+  'Thể thao': IconTrophy, // i18n-ignore
+  Sách: IconClipboard, // i18n-ignore
+  'Đồ chơi': IconHeart, // i18n-ignore
+  // English display names (fallback)
   "Men's Fashion": IconShoppingBag,
   "Women's Fashion": IconSparkles,
   Electronics: IconLightning,
@@ -350,3 +371,19 @@ export const categoryIconComponents: Record<string, React.FC<{ className?: strin
   Books: IconClipboard,
   Toys: IconHeart,
 };
+
+/**
+ * Get the icon component for a category.
+ * Lookup strategy: _id first (locale-agnostic), then display name fallback.
+ * @param category - Either a category object { _id, name } or a category name string
+ * @returns The icon component, or IconCube as default
+ */
+export function getCategoryIcon(
+  category: { _id: string; name: string } | string,
+): React.FC<{ className?: string }> {
+  if (typeof category === 'string') {
+    return categoryIconComponents[category] || IconCube;
+  }
+  // Try _id first (locale-agnostic), then fall back to display name
+  return categoryIconComponents[category._id] || categoryIconComponents[category.name] || IconCube;
+}

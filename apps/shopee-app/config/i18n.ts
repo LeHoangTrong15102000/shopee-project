@@ -2,12 +2,19 @@ import i18n from 'i18next';
 import {initReactI18next} from 'react-i18next';
 import * as Localization from 'expo-localization';
 import en from './locales/en.json';
+import vi from './locales/vi.json';
 export const LANGUAGES = {
   en: {
     code: 'en',
     name: 'English',
     nativeName: 'English',
     schema: en,
+  },
+  vi: {
+    code: 'vi',
+    name: 'Vietnamese',
+    nativeName: 'Tiếng Việt',
+    schema: vi,
   },
 } as const;
 
@@ -29,6 +36,7 @@ const getDeviceLanguage = (): LanguageCode => {
 
 const resources = {
   en: {translation: en},
+  vi: {translation: vi},
 };
 
 i18n

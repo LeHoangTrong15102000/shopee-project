@@ -34,7 +34,7 @@ const categoryApi = {
       return {
         status: 200,
         data: {
-          message: 'Lấy danh sách danh mục thành công (mock)',
+          message: 'Get categories list successfully (mock)',
           data: mockCategories,
         },
       };

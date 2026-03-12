@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import Button from 'src/components/Button';
 import ImageWithFallback from 'src/components/ImageWithFallback';
 import ProductRating from 'src/components/ProductRating';
@@ -7,8 +8,7 @@ import path from 'src/constant/path';
 import { Product } from 'src/types/product.type';
 import { formatCurrency, formatNumberToSocialStyle, generateNameId } from 'src/utils/utils';
 import {
-  categoryIconComponents,
-  IconCube,
+  getCategoryIcon,
   IconFire,
   IconLightning,
   IconShoppingCart,
@@ -20,7 +20,6 @@ interface WishlistCardProps {
     _id: string;
     product: Product;
     addedAt: string;
-    mockCategory?: string;
   };
   hoveredCardId: string | null;
   onMouseEnter: () => void;
@@ -47,7 +46,8 @@ export default function WishlistCard({
   getDiscountPercent,
   itemVariants,
 }: WishlistCardProps) {
-  const categoryName = item.product.category?.name || item.mockCategory || 'Sản phẩm';
+  const { t } = useTranslation('wishlist');
+  const categoryName = item.product.category?.name || t('category.default');
   const discount = getDiscountPercent(item.product);
   const stock = getStockStatus(item.product);
   const recent = isRecentlyAdded(item.addedAt);
@@ -69,7 +69,7 @@ export default function WishlistCard({
       <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
         {recent && (
           <span className="inline-flex items-center gap-0.5 rounded-sm bg-linear-to-r from-blue-500 to-cyan-400 px-1.5 py-0.5 text-[9px] font-bold text-white shadow-xs">
-            <IconSparkles className="h-2.5 w-2.5" /> MỚI
+            <IconSparkles className="h-2.5 w-2.5" /> {t('card.new')}
           </span>
         )}
         {trending && (
@@ -108,7 +108,7 @@ export default function WishlistCard({
           animated={false}
           onClick={onRemove}
           className="absolute right-2 bottom-[calc(100%-2rem)] z-20 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-white/90 text-gray-400 shadow-md backdrop-blur-xs transition-all duration-150 hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:outline-hidden active:scale-90 dark:bg-slate-700/90 dark:shadow-slate-900/50"
-          aria-label="Xóa khỏi yêu thích"
+          aria-label={t('card.removeFromWishlist')}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -158,7 +158,9 @@ export default function WishlistCard({
         <div className="mt-1.5">
           <span className="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2 py-0.5 text-[10px] text-gray-500 dark:bg-slate-700/50 dark:text-gray-400">
             {(() => {
-              const CatIcon = categoryIconComponents[categoryName] || IconCube;
+              const CatIcon = getCategoryIcon(
+                item.product.category || categoryName,
+              );
               return <CatIcon className="h-3 w-3" />;
             })()}{' '}
             {categoryName}
@@ -180,7 +182,7 @@ export default function WishlistCard({
         {/* Rating & Sold */}
         <div className="mt-1.5 flex items-center justify-between text-[10px] text-gray-500 dark:text-gray-400">
           <ProductRating rating={item.product.rating} />
-          <span>Đã bán {formatNumberToSocialStyle(item.product.sold)}</span>
+          <span>{t('card.sold', { count: formatNumberToSocialStyle(item.product.sold) })}</span>
         </div>
 
         {/* Add to Cart Button */}
@@ -188,10 +190,10 @@ export default function WishlistCard({
           animated={false}
           onClick={onAddToCart}
           className="mt-2.5 flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-linear-to-r from-[#ee4d2d] to-[#ff6b4a] py-2 text-xs font-medium text-white shadow-xs transition-all duration-200 hover:from-[#d73211] hover:to-[#ee4d2d] hover:shadow-md hover:shadow-orange-500/20 focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 focus:outline-hidden active:scale-95 dark:from-orange-500 dark:to-orange-400 dark:shadow-slate-900/50 dark:hover:from-orange-600 dark:hover:to-orange-500 dark:focus:ring-orange-400"
-          aria-label="Thêm vào giỏ hàng"
+          aria-label={t('card.addToCartAriaLabel')}
         >
           <IconShoppingCart className="h-3.5 w-3.5" />
-          Thêm vào giỏ
+          {t('card.addToCart')}
         </Button>
       </div>
     </motion.div>

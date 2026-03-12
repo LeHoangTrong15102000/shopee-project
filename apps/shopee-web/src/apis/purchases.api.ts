@@ -549,7 +549,7 @@ const mockPurchases = cartPurchases;
 
 const purchaseApi = {
   // addToCart gửi lên từng sản phẩm - purchase
-  addToCart: async (body: { product_id: string; buy_count: number }) => {
+  addToCart: async (body: { product_id: string; buy_count: number; sku_id?: string }) => {
     try {
       return await http.post<SuccessResponseApi<Purchase>>('/purchases/add-to-cart', body);
     } catch (error) {

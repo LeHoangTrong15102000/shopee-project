@@ -59,7 +59,7 @@ const Product = ({ product }: Props) => {
           }}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          className={`h-full cursor-pointer transition-transform duration-200 ease-out hover:-translate-y-[5px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange ${isPrefetched ? 'ring-1 ring-orange-200' : ''}`}
+          className={`h-full cursor-pointer transition-transform duration-200 ease-out hover:-translate-y-[5px] focus-visible:outline-none ${isPrefetched ? 'ring-1 ring-orange-200' : ''}`}
         >
           <div className="h-full overflow-hidden rounded-lg bg-white shadow-xs transition-shadow hover:shadow-md dark:bg-slate-800 dark:shadow-slate-900/20">
             {/* Ảnh sản phẩm */}

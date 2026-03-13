@@ -25,6 +25,20 @@
         "command": "eslint --ext ts,tsx src/",
         "cwd": "apps/shopee-admin"
       }
+    },
+    "prettier": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prettier --check \"src/**/(*.tsx|*.ts|*.css|*.scss)\"",
+        "cwd": "apps/shopee-admin"
+      }
+    },
+    "prettier:fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prettier --write \"src/**/(*.tsx|*.ts|*.css|*.scss)\"",
+        "cwd": "apps/shopee-admin"
+      }
     }
   }
 }

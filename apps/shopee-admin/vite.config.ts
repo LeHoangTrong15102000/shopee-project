@@ -38,8 +38,8 @@ export default defineConfig({
           if (id.includes('node_modules/recharts') || id.includes('node_modules/d3-')) {
             return 'chart-vendor'
           }
-          if (id.includes('node_modules/@radix-ui/')) {
-            return 'radix-vendor'
+          if (id.includes('node_modules/@radix-ui/') || id.includes('node_modules/@base-ui/')) {
+            return 'ui-vendor'
           }
         },
       },

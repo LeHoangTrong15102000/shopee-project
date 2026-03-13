@@ -41,7 +41,7 @@ export default function WishlistFilters({
             }`}
           >
             <pill.Icon className="h-3.5 w-3.5" />
-            {t(pill.labelKey)}
+            {t(pill.labelKey as keyof typeof import('src/locales/en/wishlist.json'))}
           </Button>
         ))}
       </div>
@@ -53,7 +53,7 @@ export default function WishlistFilters({
           className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm text-gray-600 transition-colors hover:border-[#ee4d2d] focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-1 focus-visible:outline-hidden dark:border-slate-600 dark:bg-slate-800 dark:text-gray-300 dark:hover:border-orange-400 dark:focus-visible:ring-orange-400"
         >
           <span>
-            {t('filter.sortBy')} {t(sortOptions.find((s) => s.id === activeSort)?.labelKey ?? '')}
+            {t('filter.sortBy')} {t(sortOptions.find((s) => s.id === activeSort)?.labelKey as keyof typeof import('src/locales/en/wishlist.json') ?? '')}
           </span>
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -81,7 +81,7 @@ export default function WishlistFilters({
                       : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-slate-700'
                   }`}
                 >
-                  <opt.Icon className="h-4 w-4" /> {t(opt.labelKey)}
+                  <opt.Icon className="h-4 w-4" /> {t(opt.labelKey as keyof typeof import('src/locales/en/wishlist.json'))}
                 </Button>
               ))}
             </motion.div>

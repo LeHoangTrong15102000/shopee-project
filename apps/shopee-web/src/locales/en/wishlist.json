@@ -37,7 +37,7 @@
   "category.default": "Product",
   "card.new": "NEW",
   "card.removeFromWishlist": "Remove from wishlist",
-  "card.sold": "Sold {{count}}",
+  "card.sold": "Sold {{soldCount}}",
   "card.addToCartAriaLabel": "Add to cart",
   "card.addToCart": "Add to cart",
   "sort.newest": "Newest",

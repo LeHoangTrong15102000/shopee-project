@@ -180,7 +180,7 @@ export default function WishlistCard({
         {/* Rating & Sold */}
         <div className="mt-1.5 flex items-center justify-between text-[10px] text-gray-500 dark:text-gray-400">
           <ProductRating rating={item.product.rating} />
-          <span>{t('card.sold', { count: formatNumberToSocialStyle(item.product.sold) })}</span>
+          <span>{t('card.sold', { soldCount: formatNumberToSocialStyle(item.product.sold) })}</span>
         </div>
 
         {/* Add to Cart Button */}

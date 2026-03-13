@@ -37,7 +37,7 @@
   "category.default": "Sản phẩm",
   "card.new": "MỚI",
   "card.removeFromWishlist": "Xóa khỏi yêu thích",
-  "card.sold": "Đã bán {{count}}",
+  "card.sold": "Đã bán {{soldCount}}",
   "card.addToCartAriaLabel": "Thêm vào giỏ hàng",
   "card.addToCart": "Thêm vào giỏ",
   "sort.newest": "Mới nhất",

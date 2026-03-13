@@ -28,6 +28,6 @@
 
     // "types": ["node", "jest", "@testing-library/jest-dom/vitest"]
   },
-  "include": ["src", "vitest.setup.ts", "src/@types/vitest.d.ts"],
+  "include": ["src", "vitest.setup.js", "src/@types/vitest.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

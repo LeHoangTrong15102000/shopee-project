@@ -69,25 +69,6 @@ import wishlistRequests from './src/msw/wishlist.msw'
 import notificationRequests from './src/msw/notification.msw'
 import addressRequests from './src/msw/address.msw'
 
-// import { afterAll, afterEach, beforeAll, expect } from 'vitest'
-// import { setupServer } from 'msw/node'
-// import authRequests from './src/msw/auth.msw'
-// import productRequests from './src/msw/product.msw'
-// import userRequests from './src/msw/user.msw'
-// import matchers from '@testing-library/jest-dom/matchers'
-// expect.extend(matchers)
-
-// const server = setupServer(...authRequests, ...productRequests, ...userRequests)
-
-// // Start server before all tests
-// beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
-
-// //  Close server after all tests
-// afterAll(() => server.close())
-
-// // Reset handlers after each test `important for test isolation`
-// afterEach(() => server.resetHandlers())
-
 // Simple localStorage mock implementation
 const localStorageMock = (() => {
   let store = {}
@@ -111,9 +92,25 @@ Object.defineProperty(window, 'localStorage', {
   writable: true
 })
 
-// Setup sessionStorage mock
+// Setup sessionStorage mock — separate instance with its own store
+const sessionStorageMock = (() => {
+  let store = {}
+  return {
+    getItem: (key) => store[key] || null,
+    setItem: (key, value) => {
+      store[key] = value?.toString()
+    },
+    removeItem: (key) => {
+      delete store[key]
+    },
+    clear: () => {
+      store = {}
+    }
+  }
+})()
+
 Object.defineProperty(window, 'sessionStorage', {
-  value: localStorageMock,
+  value: sessionStorageMock,
   writable: true
 })
 
@@ -216,6 +213,7 @@ afterEach(() => {
   cleanup()
   // Clear localStorage after each test
   localStorage.clear()
+  sessionStorage.clear()
   vi.clearAllMocks()
 })
 

@@ -3,14 +3,18 @@ import { waitFor } from '@testing-library/react';
 import { renderWithRouter } from 'src/utils/testUtils';
 
 describe('ProductDetail', () => {
-  it('renders product detail page', async () => {
-    // Use a mock product URL slug
+  it('renders product detail page with product info', async () => {
+    // Use a mock product URL slug matching MSW productDetailRes
     renderWithRouter({ route: '/dien-thoai-iphone-12-i-60afb2426ef5b902180aacb9' });
 
+    // MSW returns product "Điện Thoại Vsmart Active 3 6GB/64GB" with price 2590000
     await waitFor(
       () => {
-        // Page should load (either product detail or redirect)
-        expect(document.body).toBeTruthy();
+        const bodyText = document.body.textContent || '';
+        expect(
+          bodyText.includes('Vsmart') ||
+            bodyText.includes('OPPO'),
+        ).toBeTruthy();
       },
       { timeout: 10000 },
     );

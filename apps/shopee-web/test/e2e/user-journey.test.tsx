@@ -3,39 +3,42 @@ import { screen, waitFor } from '@testing-library/react'
 import { renderWithRouter, waitForPageLoad, getFirstElementByText } from '../../src/utils/testUtils'
 
 describe('End-to-End User Journey Tests', () => {
-  test('Guest user journey: Browse homepage → View products', async () => {
-    const { user } = renderWithRouter()
+  test('Guest user journey: Browse homepage and see products', async () => {
+    renderWithRouter()
 
     await waitForPageLoad()
 
-    // Just verify page loads
+    // Verify real product content renders from MSW
     await waitFor(() => {
-      expect(document.body).toBeTruthy()
-    })
+      const bodyText = document.body.textContent || ''
+      expect(bodyText).toContain('Áo thun')
+    }, { timeout: 10000 })
   })
 
-  test('Authentication user journey: Register → Login → Access profile', async () => {
+  test('Authentication user journey: Register → Login navigation', async () => {
     const { user } = renderWithRouter({ route: '/register' })
 
     await waitForPageLoad('/register')
 
-    // Navigate to login from register page - use more specific selector
+    // Navigate to login from register page
     const loginLink = getFirstElementByText(/Đăng nhập/i)
     if (loginLink) {
       await user.click(loginLink)
 
       await waitFor(() => {
-        expect(window.location.pathname === '/login' || document.title.includes('Đăng nhập')).toBeTruthy()
+        expect(window.location.pathname).toBe('/login')
       })
+    } else {
+      // Verify we're at least on the register page
+      expect(window.location.pathname).toBe('/register')
     }
   })
 
-  test('Shopping journey: Search → View product → Add to cart', async () => {
+  test('Shopping journey: Search input exists and accepts typing', async () => {
     const { user } = renderWithRouter()
 
     await waitForPageLoad()
 
-    // Just verify search functionality exists
     const searchInput =
       screen.queryByPlaceholderText(/tìm kiếm/i) ||
       screen.queryByPlaceholderText(/search/i) ||
@@ -43,37 +46,39 @@ describe('End-to-End User Journey Tests', () => {
 
     if (searchInput) {
       await user.type(searchInput, 'iphone')
-      // Test basic typing works
-      expect(searchInput).toBeTruthy()
+      expect(searchInput).toHaveValue('iphone')
+    } else {
+      // Search may be in a different form — verify page loaded with content
+      const bodyText = document.body.textContent || ''
+      expect(bodyText.length).toBeGreaterThan(100)
     }
   })
 
-  test('Responsive journey: Mobile navigation', async () => {
-    // Simulate mobile viewport
+  test('Responsive journey: Mobile viewport renders', async () => {
     Object.defineProperty(window, 'innerWidth', {
       writable: true,
       configurable: true,
       value: 375
     })
 
-    const { user } = renderWithRouter()
+    renderWithRouter()
 
     await waitForPageLoad()
 
-    // Check basic mobile functionality
+    // Verify page renders content at mobile width
     await waitFor(() => {
-      expect(document.body).toBeTruthy()
+      const bodyText = document.body.textContent || ''
+      expect(bodyText.length).toBeGreaterThan(100)
     })
   })
 
-  test('Error handling journey: Network error recovery', async () => {
-    const { user } = renderWithRouter({ route: '/login' })
+  test('Error handling journey: Login page loads correctly', async () => {
+    renderWithRouter({ route: '/login' })
 
     await waitForPageLoad('/login')
 
-    // Just verify login page loads
     await waitFor(() => {
-      expect(window.location.pathname === '/login' || document.body).toBeTruthy()
+      expect(window.location.pathname).toBe('/login')
     })
   })
 })

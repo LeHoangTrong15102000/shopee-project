@@ -15,12 +15,11 @@ describe('Authentication Flow Integration Tests', () => {
   })
 
   test(
-    'Login flow: Enter credentials → API call → Redirect to home',
+    'Login flow: Enter credentials and submit',
     { timeout: 15000 },
     async () => {
       const { user } = renderWithRouter({ route: path.login })
 
-      // Wait for login form to render with short timeout
       await waitFor(
         () => {
           expect(document.body.innerHTML.length).toBeGreaterThan(0)
@@ -41,14 +40,14 @@ describe('Authentication Flow Integration Tests', () => {
 
           await waitFor(
             () => {
-              expect(window.location.pathname === '/' || window.location.pathname !== '/login').toBeTruthy()
+              expect(window.location.pathname).not.toBe('/login')
             },
             { timeout: 5000 }
           )
         }
       } else {
-        // If form elements not found, test still passes (graceful degradation)
-        expect(document.body).toBeTruthy()
+        // Form not found — verify we're at least on the login page
+        expect(window.location.pathname).toBe('/login')
       }
     }
   )
@@ -61,7 +60,7 @@ describe('Authentication Flow Integration Tests', () => {
 
       await waitFor(
         () => {
-          expect(window.location.pathname === '/login' || document.title.includes('Đăng nhập')).toBeTruthy()
+          expect(window.location.pathname).toBe('/login')
         },
         { timeout: 3000 }
       )
@@ -77,32 +76,33 @@ describe('Authentication Flow Integration Tests', () => {
 
       await waitFor(
         () => {
-          expect(document.body).toBeTruthy()
+          // Should stay on profile page, not redirect to login
+          expect(window.location.pathname).toBe(path.profile)
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       )
     }
   )
 
   test(
-    'Logout flow: User logged in → Check app state',
+    'Logout flow: User logged in → Verify authenticated state',
     { timeout: 10000 },
     async () => {
       setAccessTokenToLS(access_token)
       renderWithRouter()
 
       await waitFor(() => {
-        expect(document.body).toBeTruthy()
-        expect(window.location.pathname).toBeDefined()
+        // Should be on home page and authenticated
+        expect(window.location.pathname).toBe('/')
       })
     }
   )
 
   test(
-    'Registration flow: Fill form → Submit → Check response',
+    'Registration flow: Navigate to register page',
     { timeout: 15000 },
     async () => {
-      const { user } = renderWithRouter({ route: path.register })
+      renderWithRouter({ route: path.register })
 
       await waitFor(
         () => {
@@ -114,31 +114,10 @@ describe('Authentication Flow Integration Tests', () => {
       const emailInput = screen.queryByPlaceholderText(/email/i)
 
       if (emailInput) {
-        await user.type(emailInput, 'newuser@test.com')
-
-        const passwordInputs = document.querySelectorAll('input[type="password"]')
-
-        if (passwordInputs.length > 0) {
-          await user.type(passwordInputs[0] as HTMLInputElement, '123123123')
-
-          if (passwordInputs.length > 1) {
-            await user.type(passwordInputs[1] as HTMLInputElement, '123123123')
-          }
-
-          const submitButton = document.querySelector('form button[type="submit"]') as HTMLButtonElement
-          if (submitButton) {
-            await user.click(submitButton)
-
-            await waitFor(
-              () => {
-                expect(window.location.pathname).toBeDefined()
-              },
-              { timeout: 5000 }
-            )
-          }
-        }
+        expect(emailInput).toBeInTheDocument()
       } else {
-        expect(document.body).toBeTruthy()
+        // Verify we're at least on the register page
+        expect(window.location.pathname).toBe('/register')
       }
     }
   )

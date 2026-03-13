@@ -1,7 +1,8 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { waitFor, cleanup } from '@testing-library/react';
+import { screen, waitFor, cleanup } from '@testing-library/react';
 import { renderWithRouter } from 'src/utils/testUtils';
-import { clearLS } from 'src/utils/auth';
+import { setAccessTokenToLS, clearLS } from 'src/utils/auth';
+import { access_token } from 'src/msw/auth.msw';
 
 describe('HistoryPurchase', () => {
   afterEach(() => {
@@ -21,11 +22,20 @@ describe('HistoryPurchase', () => {
     );
   });
 
-  it('history purchases route requires authentication (protected route)', () => {
-    clearLS();
+  it('displays order history when authenticated', async () => {
+    setAccessTokenToLS(access_token);
     renderWithRouter({ route: '/user/purchase' });
-    // Protected route — without a valid (non-expired) token,
-    // the app redirects to /login. This verifies the route guard works.
-    expect(document.body).toBeInTheDocument();
+
+    // MSW returns orders with "Áo thun nam" product
+    await waitFor(
+      () => {
+        const bodyText = document.body.textContent || '';
+        // PurchaseTabBar renders "Tất cả" tab — specific to HistoryPurchase page
+        expect(
+          bodyText.includes('Tất cả') || bodyText.includes('Chờ xác nhận'),
+        ).toBeTruthy();
+      },
+      { timeout: 10000 },
+    );
   });
 });

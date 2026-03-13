@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, afterEach } from 'vitest'
-import { waitFor, cleanup } from '@testing-library/react'
+import { screen, waitFor, cleanup } from '@testing-library/react'
 import { renderWithRouter } from '../../src/utils/testUtils'
 import { setAccessTokenToLS, clearLS } from '../../src/utils/auth'
 import { access_token } from '../../src/msw/auth.msw'
@@ -24,15 +24,15 @@ describe('Checkout Flow Integration Tests', () => {
 
       await waitFor(
         () => {
-          expect(window.location.pathname === path.cart || document.body).toBeTruthy()
+          expect(window.location.pathname).toBe(path.cart)
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       )
     }
   )
 
   test(
-    'Cart page renders for authenticated user',
+    'Cart page renders content for authenticated user',
     { timeout: 10000 },
     async () => {
       setAccessTokenToLS(access_token)
@@ -40,8 +40,11 @@ describe('Checkout Flow Integration Tests', () => {
 
       await waitFor(
         () => {
-          expect(document.body).toBeTruthy()
-          expect(window.location.pathname === path.cart || document.body.innerHTML.length > 100).toBeTruthy()
+          const bodyText = document.body.textContent || ''
+          expect(
+            bodyText.includes('Giỏ hàng') ||
+              bodyText.includes('OPPO')
+          ).toBeTruthy()
         },
         { timeout: 5000 }
       )
@@ -56,13 +59,9 @@ describe('Checkout Flow Integration Tests', () => {
 
       await waitFor(
         () => {
-          expect(
-            window.location.pathname === path.login ||
-              window.location.pathname === path.checkout ||
-              document.title.includes('Đăng nhập')
-          ).toBeTruthy()
+          expect(window.location.pathname).toBe('/login')
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       )
     }
   )
@@ -76,34 +75,13 @@ describe('Checkout Flow Integration Tests', () => {
 
       await waitFor(
         () => {
-          expect(window.location.pathname === path.checkout || document.body).toBeTruthy()
+          const bodyText = document.body.textContent || ''
+          expect(
+            bodyText.includes('Thanh toán') ||
+              bodyText.includes('Đặt hàng')
+          ).toBeTruthy()
         },
-        { timeout: 3000 }
-      )
-    }
-  )
-
-  test(
-    'Navigation from cart to checkout works',
-    { timeout: 10000 },
-    async () => {
-      setAccessTokenToLS(access_token)
-      const { user } = renderWithRouter({ route: path.cart })
-
-      await waitFor(
-        () => {
-          expect(window.location.pathname === path.cart || document.body).toBeTruthy()
-        },
-        { timeout: 3000 }
-      )
-
-      renderWithRouter({ route: path.checkout })
-
-      await waitFor(
-        () => {
-          expect(window.location.pathname === path.checkout || document.body).toBeTruthy()
-        },
-        { timeout: 3000 }
+        { timeout: 5000 }
       )
     }
   )

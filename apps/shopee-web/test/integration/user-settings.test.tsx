@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, afterEach } from 'vitest'
-import { waitFor, cleanup } from '@testing-library/react'
+import { screen, waitFor, cleanup } from '@testing-library/react'
 import { renderWithRouter } from '../../src/utils/testUtils'
 import { setAccessTokenToLS, clearLS } from '../../src/utils/auth'
 import { access_token } from '../../src/msw/auth.msw'
@@ -24,24 +24,28 @@ describe('User Settings Integration Tests', () => {
 
       await waitFor(
         () => {
-          expect(window.location.pathname === path.profile || document.body).toBeTruthy()
+          expect(window.location.pathname).toBe(path.profile)
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       )
     }
   )
 
   test(
-    'Profile page renders user information section',
+    'Profile page renders user information',
     { timeout: 10000 },
     async () => {
       setAccessTokenToLS(access_token)
       renderWithRouter({ route: path.profile })
 
+      // MSW returns user "Lê Hoàng Trọng"
       await waitFor(
         () => {
-          expect(document.body).toBeTruthy()
-          expect(window.location.pathname === path.profile || document.body.innerHTML.length > 100).toBeTruthy()
+          const bodyText = document.body.textContent || ''
+          expect(
+            bodyText.includes('Lê Hoàng Trọng') ||
+              bodyText.includes('langtupro0456')
+          ).toBeTruthy()
         },
         { timeout: 5000 }
       )
@@ -57,43 +61,9 @@ describe('User Settings Integration Tests', () => {
 
       await waitFor(
         () => {
-          expect(window.location.pathname === path.changePassword || document.body).toBeTruthy()
+          expect(window.location.pathname).toBe(path.changePassword)
         },
-        { timeout: 3000 }
-      )
-    }
-  )
-
-  test(
-    'Navigation between user settings pages works',
-    { timeout: 10000 },
-    async () => {
-      setAccessTokenToLS(access_token)
-      renderWithRouter({ route: path.profile })
-
-      await waitFor(
-        () => {
-          expect(window.location.pathname === path.profile || document.body).toBeTruthy()
-        },
-        { timeout: 3000 }
-      )
-
-      renderWithRouter({ route: path.changePassword })
-
-      await waitFor(
-        () => {
-          expect(window.location.pathname === path.changePassword || document.body).toBeTruthy()
-        },
-        { timeout: 3000 }
-      )
-
-      renderWithRouter({ route: path.historyPurchases })
-
-      await waitFor(
-        () => {
-          expect(window.location.pathname === path.historyPurchases || document.body).toBeTruthy()
-        },
-        { timeout: 3000 }
+        { timeout: 5000 }
       )
     }
   )
@@ -106,15 +76,10 @@ describe('User Settings Integration Tests', () => {
 
       await waitFor(
         () => {
-          expect(
-            window.location.pathname === path.login ||
-              window.location.pathname === path.profile ||
-              document.title.includes('Đăng nhập')
-          ).toBeTruthy()
+          expect(window.location.pathname).toBe('/login')
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       )
     }
   )
 })
-

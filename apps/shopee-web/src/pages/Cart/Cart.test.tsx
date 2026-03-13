@@ -1,7 +1,8 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { waitFor, cleanup } from '@testing-library/react';
+import { screen, waitFor, cleanup } from '@testing-library/react';
 import { renderWithRouter } from 'src/utils/testUtils';
-import { clearLS } from 'src/utils/auth';
+import { setAccessTokenToLS, clearLS } from 'src/utils/auth';
+import { access_token } from 'src/msw/auth.msw';
 
 describe('Cart', () => {
   afterEach(() => {
@@ -21,11 +22,17 @@ describe('Cart', () => {
     );
   });
 
-  it('cart route requires authentication (protected route)', () => {
-    clearLS();
+  it('displays cart content when authenticated', async () => {
+    setAccessTokenToLS(access_token);
     renderWithRouter({ route: '/cart' });
-    // Cart is a protected route — without a valid (non-expired) token,
-    // the app redirects to /login. This verifies the route guard works.
-    expect(document.body).toBeInTheDocument();
+
+    // MSW returns cart with "Điện thoại OPPO A12" product
+    await waitFor(
+      () => {
+        const bodyText = document.body.textContent || '';
+        expect(bodyText).toContain('Giỏ hàng');
+      },
+      { timeout: 10000 },
+    );
   });
 });

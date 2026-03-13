@@ -1,8 +1,9 @@
-import { waitFor, cleanup } from '@testing-library/react';
+import { screen, waitFor, cleanup } from '@testing-library/react';
 import path from 'src/constant/path';
 import { renderWithRouter } from 'src/utils/testUtils';
 import { describe, expect, it, afterEach } from 'vitest';
-import { clearLS } from 'src/utils/auth';
+import { setAccessTokenToLS, clearLS } from 'src/utils/auth';
+import { access_token } from 'src/msw/auth.msw';
 
 describe('Profile', () => {
   afterEach(() => {
@@ -10,7 +11,7 @@ describe('Profile', () => {
     clearLS();
   });
 
-  it('Redirect to login when not authenticated', async () => {
+  it('redirects to login when not authenticated', async () => {
     clearLS();
     renderWithRouter({ route: path.profile });
 
@@ -22,11 +23,20 @@ describe('Profile', () => {
     );
   });
 
-  it('profile route requires authentication (protected route)', () => {
-    clearLS();
+  it('displays user profile form when authenticated', async () => {
+    setAccessTokenToLS(access_token);
     renderWithRouter({ route: path.profile });
-    // Protected route — without a valid (non-expired) token,
-    // the app redirects to /login. This verifies the route guard works.
-    expect(document.body).toBeInTheDocument();
+
+    // MSW returns user "Lê Hoàng Trọng" with email "langtupro0456@gmail.com"
+    await waitFor(
+      () => {
+        const bodyText = document.body.textContent || '';
+        expect(
+          bodyText.includes('Lê Hoàng Trọng') ||
+            bodyText.includes('langtupro0456'),
+        ).toBeTruthy();
+      },
+      { timeout: 10000 },
+    );
   });
 });

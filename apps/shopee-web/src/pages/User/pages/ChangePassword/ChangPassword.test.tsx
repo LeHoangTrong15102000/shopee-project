@@ -1,7 +1,8 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { waitFor, cleanup } from '@testing-library/react';
+import { screen, waitFor, cleanup } from '@testing-library/react';
 import { renderWithRouter } from 'src/utils/testUtils';
-import { clearLS } from 'src/utils/auth';
+import { setAccessTokenToLS, clearLS } from 'src/utils/auth';
+import { access_token } from 'src/msw/auth.msw';
 
 describe('ChangePassword', () => {
   afterEach(() => {
@@ -21,11 +22,17 @@ describe('ChangePassword', () => {
     );
   });
 
-  it('change password route requires authentication (protected route)', () => {
-    clearLS();
+  it('displays password form fields when authenticated', async () => {
+    setAccessTokenToLS(access_token);
     renderWithRouter({ route: '/user/password' });
-    // Protected route — without a valid (non-expired) token,
-    // the app redirects to /login. This verifies the route guard works.
-    expect(document.body).toBeInTheDocument();
+
+    // Should render password change form with old/new/confirm fields
+    await waitFor(
+      () => {
+        const passwordInputs = document.querySelectorAll('input[type="password"]');
+        expect(passwordInputs.length).toBeGreaterThanOrEqual(2);
+      },
+      { timeout: 10000 },
+    );
   });
 });

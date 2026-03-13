@@ -43,7 +43,8 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         src: path.resolve(__dirname, './src')
-      }
+      },
+      dedupe: ['react', 'react-dom']
     },
     // Cấu hình cache để tránh conflict trên Windows - sử dụng system temp
     cacheDir: customCacheDir,
@@ -138,8 +139,8 @@ export default defineConfig(({ mode }) => {
         environment: 'jsdom',
         setupFiles: ['./vitest.setup.js'],
         css: true,
-        testTimeout: process.env.CI ? 60000 : 60000,
-        hookTimeout: process.env.CI ? 60000 : 60000,
+        testTimeout: 60000,
+        hookTimeout: 60000,
         pool: 'forks',
         // Vitest v4: poolOptions removed — use top-level options instead
         maxWorkers: process.env.CI ? 1 : 2,
@@ -161,8 +162,26 @@ export default defineConfig(({ mode }) => {
         },
         coverage: {
           provider: 'v8',
+          reporter: ['text', 'html', 'lcov'],
+          reportsDirectory: './coverage',
           include: ['src/**/*.{ts,tsx}'],
-          exclude: ['src/**/*.test.{ts,tsx}', 'src/stories/**', 'src/msw/**', 'src/types/**', 'src/NotePage/**']
+          exclude: [
+            'src/**/*.test.{ts,tsx}',
+            'src/stories/**',
+            'src/msw/**',
+            'src/types/**',
+            'src/NotePage/**',
+            'src/@types/**',
+            'src/locales/**',
+            'src/data/**',
+            'src/vite-env.d.ts'
+          ],
+          thresholds: {
+            lines: 80,
+            functions: 80,
+            branches: 80,
+            statements: 80
+          }
         }
       }
     }

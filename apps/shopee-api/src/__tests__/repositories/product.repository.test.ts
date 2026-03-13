@@ -22,6 +22,7 @@ jest.mock('@database/models/product.model', () => {
   mockModel.findOne = jest.fn()
   mockModel.find = jest.fn()
   mockModel.findByIdAndUpdate = jest.fn()
+  mockModel.findOneAndUpdate = jest.fn()
   mockModel.findByIdAndDelete = jest.fn()
   mockModel.countDocuments = jest.fn()
   mockModel.deleteMany = jest.fn()
@@ -230,10 +231,21 @@ describe('ProductRepository', () => {
   })
 
   describe('decrementQuantity', () => {
-    it('should decrement quantity', async () => {
-      ;(ProductModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(mockProductData)
+    it('should decrement quantity with floor guard', async () => {
+      ;(ProductModel.findOneAndUpdate as jest.Mock).mockResolvedValue(mockProductData)
       await repository.decrementQuantity('507f1f77bcf86cd799439011', 3)
-      expect(ProductModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', { $inc: { quantity: -3 } })
+      expect(ProductModel.findOneAndUpdate).toHaveBeenCalledWith(
+        { _id: '507f1f77bcf86cd799439011', quantity: { $gte: 3 } },
+        { $inc: { quantity: -3 } }
+      )
+    })
+  })
+
+  describe('incrementQuantity', () => {
+    it('should increment quantity', async () => {
+      ;(ProductModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(mockProductData)
+      await repository.incrementQuantity('507f1f77bcf86cd799439011', 3)
+      expect(ProductModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', { $inc: { quantity: 3 } })
     })
   })
 

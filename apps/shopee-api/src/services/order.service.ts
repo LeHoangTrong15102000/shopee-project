@@ -72,19 +72,25 @@ export class OrderService extends BaseService {
     const snapshotData: CreateProductSkuSnapshotDTO[] = []
     let subtotal = 0
 
+    // Collect all SKU items for bulk atomic decrement
+    const skuItems: Array<{ skuId: string; quantity: number; productName: string; skuValue: string; skuStock: number }> = []
+
     for (const item of input.items) {
       const product = await this.productRepository.findById(item.product_id)
       if (!product) throw new NotFoundError('Product', item.product_id)
 
       if (item.sku_id && this.skuRepository) {
-        // SKU-based flow: atomic stock decrement
+        // SKU-based flow: collect for bulk operation
         const sku = await this.skuRepository.findById(item.sku_id)
         if (!sku) throw new NotFoundError('SKU', item.sku_id)
 
-        const decremented = await this.skuRepository.atomicDecrementStock(item.sku_id, item.buy_count)
-        if (!decremented) {
-          throw new BusinessError(`SKU "${sku.value}" không đủ tồn kho`)
-        }
+        skuItems.push({
+          skuId: item.sku_id,
+          quantity: item.buy_count,
+          productName: product.name,
+          skuValue: sku.value,
+          skuStock: sku.stock,
+        })
 
         subtotal += sku.price * item.buy_count
         orderItems.push({
@@ -123,6 +129,26 @@ export class OrderService extends BaseService {
           price: product.price,
           price_before_discount: product.price_before_discount,
         })
+      }
+    }
+
+    // Bulk atomic decrement SKU stock with rollback (also syncs Product.quantity)
+    if (skuItems.length > 0 && this.skuRepository) {
+      try {
+        await this.skuRepository.bulkAtomicDecrementStock(
+          skuItems.map((s) => ({ skuId: s.skuId, quantity: s.quantity }))
+        )
+      } catch (err) {
+        if (err instanceof BusinessError) {
+          // Find the failing SKU by matching its ID from the error message
+          const failingSku = skuItems.find((s) => err.message.includes(s.skuId))
+          if (failingSku) {
+            throw new BusinessError(
+              `Sản phẩm ${failingSku.productName} - ${failingSku.skuValue} không đủ số lượng (còn ${failingSku.skuStock}, cần ${failingSku.quantity})`
+            )
+          }
+        }
+        throw err
       }
     }
 
@@ -173,6 +199,22 @@ export class OrderService extends BaseService {
       await this.productRepository.bulkUpdateStock(stockUpdates)
     }
 
+    // Update Product.sold for SKU items (Product.quantity already synced by bulkAtomicDecrementStock)
+    if (skuItems.length > 0) {
+      const soldByProduct = new Map<string, number>()
+      for (const item of skuItems) {
+        const productId = input.items.find((i) => i.sku_id === item.skuId)!.product_id
+        soldByProduct.set(productId, (soldByProduct.get(productId) || 0) + item.quantity)
+      }
+      for (const [productId, soldCount] of soldByProduct) {
+        try {
+          await this.productRepository.incrementSold(productId, soldCount)
+        } catch (err) {
+          console.error(`[Product.sold Sync Failed] Product ${productId}: ${err instanceof Error ? err.message : 'Unknown error'}`)
+        }
+      }
+    }
+
     // Clear cart items
     for (const item of input.items) {
       await this.purchaseRepository.deleteByUserAndProduct(userId, item.product_id, STATUS_PURCHASE.IN_CART)
@@ -215,25 +257,7 @@ export class OrderService extends BaseService {
     }
 
     // Restore stock
-    for (const item of order.items) {
-      const rawProduct = item.product as any
-      const productId = rawProduct._id ? rawProduct._id.toString() : rawProduct.toString()
-
-      if (item.sku && this.skuRepository) {
-        // SKU-based: restore SKU stock atomically
-        const skuId = (item.sku as any)._id ? (item.sku as any)._id.toString() : item.sku.toString()
-        await this.skuRepository.atomicIncrementStock(skuId, item.buy_count)
-      } else {
-        // Legacy: restore product stock
-        const product = await this.productRepository.findById(productId)
-        if (product) {
-          await this.productRepository.updateById(productId, {
-            quantity: product.quantity + item.buy_count,
-            sold: Math.max(0, product.sold - item.buy_count),
-          })
-        }
-      }
-    }
+    await this.restoreOrderStock(order.items)
 
     const updatedOrder = await this.orderRepository.updateStatus(orderId, ORDER_STATUS.CANCELLED, {
       cancel_reason: reason,
@@ -283,24 +307,8 @@ export class OrderService extends BaseService {
       throw new BusinessError(deadlineCheck.message!)
     }
 
-    // Restore stock (matching cancelOrder pattern)
-    for (const item of order.items) {
-      const rawProduct = item.product as any
-      const productId = rawProduct._id ? rawProduct._id.toString() : rawProduct.toString()
-
-      if (item.sku && this.skuRepository) {
-        const skuId = (item.sku as any)._id ? (item.sku as any)._id.toString() : item.sku.toString()
-        await this.skuRepository.atomicIncrementStock(skuId, item.buy_count)
-      } else {
-        const product = await this.productRepository.findById(productId)
-        if (product) {
-          await this.productRepository.updateById(productId, {
-            quantity: product.quantity + item.buy_count,
-            sold: Math.max(0, product.sold - item.buy_count),
-          })
-        }
-      }
-    }
+    // Restore stock
+    await this.restoreOrderStock(order.items)
 
     const updatedOrder = await this.orderRepository.updateStatus(orderId, ORDER_STATUS.RETURNED, {
       returned_at: new Date(),
@@ -359,23 +367,7 @@ export class OrderService extends BaseService {
 
     // Restore stock on cancel or return
     if (targetStatus === ORDER_STATUS.CANCELLED || targetStatus === ORDER_STATUS.RETURNED) {
-      for (const item of order.items) {
-        const rawProduct = item.product as any
-        const productId = rawProduct._id ? rawProduct._id.toString() : rawProduct.toString()
-
-        if (item.sku && this.skuRepository) {
-          const skuId = (item.sku as any)._id ? (item.sku as any)._id.toString() : item.sku.toString()
-          await this.skuRepository.atomicIncrementStock(skuId, item.buy_count)
-        } else {
-          const product = await this.productRepository.findById(productId)
-          if (product) {
-            await this.productRepository.updateById(productId, {
-              quantity: product.quantity + item.buy_count,
-              sold: Math.max(0, product.sold - item.buy_count),
-            })
-          }
-        }
-      }
+      await this.restoreOrderStock(order.items)
     }
 
     const updatedOrder = await this.orderRepository.updateStatus(orderId, targetStatus, additionalData)
@@ -466,6 +458,49 @@ export class OrderService extends BaseService {
     }
 
     return statusMap
+  }
+
+  /**
+   * Restore stock for all items in an order (used by cancel/return flows).
+   * SKU items: uses atomicIncrementStock which also syncs Product.quantity, then decrements Product.sold.
+   * Legacy items: uses bulkUpdateStock with $inc for atomic updates.
+   */
+  private async restoreOrderStock(items: IOrderItem[]): Promise<void> {
+    const legacyUpdates: Array<{ product_id: string; quantity_change: number; sold_change: number }> = []
+    const skuSoldByProduct = new Map<string, number>()
+
+    for (const item of items) {
+      const rawProduct = item.product as any
+      const productId = rawProduct._id ? rawProduct._id.toString() : rawProduct.toString()
+
+      if (item.sku && this.skuRepository) {
+        // SKU-based: restore SKU stock atomically (also syncs Product.quantity)
+        const skuId = (item.sku as any)._id ? (item.sku as any)._id.toString() : item.sku.toString()
+        await this.skuRepository.atomicIncrementStock(skuId, item.buy_count)
+        // Track sold to decrement
+        skuSoldByProduct.set(productId, (skuSoldByProduct.get(productId) || 0) + item.buy_count)
+      } else {
+        // Legacy: collect for bulk atomic update
+        legacyUpdates.push({
+          product_id: productId,
+          quantity_change: item.buy_count,
+          sold_change: -item.buy_count,
+        })
+      }
+    }
+
+    if (legacyUpdates.length > 0) {
+      await this.productRepository.bulkUpdateStock(legacyUpdates)
+    }
+
+    // Decrement Product.sold for SKU items
+    for (const [productId, soldCount] of skuSoldByProduct) {
+      try {
+        await this.productRepository.incrementSold(productId, -soldCount)
+      } catch (err) {
+        console.error(`[Product.sold Sync Failed] Product ${productId}: ${err instanceof Error ? err.message : 'Unknown error'}`)
+      }
+    }
   }
 }
 

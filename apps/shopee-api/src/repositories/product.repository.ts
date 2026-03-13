@@ -150,7 +150,14 @@ export class ProductRepository implements IProductRepository {
   }
 
   async decrementQuantity(productId: string | Types.ObjectId, count: number): Promise<void> {
-    await ProductModel.findByIdAndUpdate(productId, { $inc: { quantity: -count } })
+    await ProductModel.findOneAndUpdate(
+      { _id: productId, quantity: { $gte: count } },
+      { $inc: { quantity: -count } }
+    )
+  }
+
+  async incrementQuantity(productId: string | Types.ObjectId, count: number): Promise<void> {
+    await ProductModel.findByIdAndUpdate(productId, { $inc: { quantity: count } })
   }
 
   async findLowStock(threshold: number): Promise<IProduct[]> {

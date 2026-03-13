@@ -5,6 +5,7 @@ import { IOrderRepository } from '@repositories/interfaces/order.repository.inte
 import { IProductRepository } from '@repositories/interfaces/product.repository.interface'
 import { IAddressRepository } from '@repositories/interfaces/address.repository.interface'
 import { IPurchaseRepository } from '@repositories/interfaces/purchase.repository.interface'
+import { ISKURepository } from '@repositories/interfaces/sku.repository.interface'
 import { NotFoundError, BusinessError } from '@services/base.service'
 import { ORDER_STATUS, PAYMENT_METHOD } from '@database/models/order.model'
 import { STATUS_PURCHASE } from '@constants/purchase'
@@ -29,6 +30,7 @@ const mockProductRepository = {
   create: jest.fn(),
   deleteById: jest.fn(),
   count: jest.fn(),
+  incrementSold: jest.fn(),
 } as unknown as jest.Mocked<IProductRepository>
 
 const mockAddressRepository = {
@@ -196,3 +198,219 @@ describe('OrderService', () => {
   })
 })
 
+describe('OrderService - SKU Stock Sync', () => {
+  let service: OrderService
+  const skuId = new Types.ObjectId()
+  const productId = new Types.ObjectId()
+
+  const mockSkuRepository = {
+    findById: jest.fn(),
+    bulkAtomicDecrementStock: jest.fn(),
+    atomicIncrementStock: jest.fn(),
+  } as unknown as jest.Mocked<ISKURepository>
+
+  const mockAddress = { full_name: 'Test', phone: '0123456789', province: 'HN', district: 'D1', ward: 'W1', street: '123 St' }
+  const mockProduct = { _id: productId, name: 'Áo Thun', price: 100000, price_before_discount: 120000, quantity: 10, sold: 5 }
+  const mockSku = { _id: skuId, value: 'Đỏ-M', price: 100000, stock: 5, product: productId, variant_values: { color: 'Đỏ', size: 'M' } }
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    service = new OrderService(mockOrderRepository, mockProductRepository, mockAddressRepository, mockPurchaseRepository, mockSkuRepository)
+  })
+
+  describe('createOrder with SKU', () => {
+    it('uses bulkAtomicDecrementStock for SKU items and increments sold', async () => {
+      const input: CreateOrderInput = {
+        items: [{ product_id: productId.toString(), buy_count: 2, sku_id: skuId.toString() }],
+        shipping_address_id: validObjectId.toString(),
+        shipping_method_id: 'standard',
+        payment_method: PAYMENT_METHOD.COD,
+      }
+
+      mockAddressRepository.findByIdAndUser.mockResolvedValue(mockAddress as any)
+      mockProductRepository.findById.mockResolvedValue(mockProduct as any)
+      mockSkuRepository.findById.mockResolvedValue(mockSku as any)
+      mockSkuRepository.bulkAtomicDecrementStock.mockResolvedValue([{ skuId: skuId.toString(), success: true, sku: mockSku as any }])
+      mockOrderRepository.create.mockResolvedValue({ _id: validObjectId, status: ORDER_STATUS.PENDING } as any)
+      mockPurchaseRepository.deleteByUserAndProduct.mockResolvedValue(1)
+      mockProductRepository.incrementSold.mockResolvedValue(undefined as any)
+
+      const result = await service.createOrder(validObjectId.toString(), input)
+
+      expect(result).toBeDefined()
+      expect(result.status).toBe(ORDER_STATUS.PENDING)
+      expect(mockSkuRepository.bulkAtomicDecrementStock).toHaveBeenCalledWith([{ skuId: skuId.toString(), quantity: 2 }])
+      expect(mockProductRepository.bulkUpdateStock).not.toHaveBeenCalled()
+      expect(mockProductRepository.incrementSold).toHaveBeenCalledWith(productId.toString(), 2)
+    })
+
+    it('throws descriptive error with product name and variant on insufficient stock', async () => {
+      const input: CreateOrderInput = {
+        items: [{ product_id: productId.toString(), buy_count: 10, sku_id: skuId.toString() }],
+        shipping_address_id: validObjectId.toString(),
+        shipping_method_id: 'standard',
+        payment_method: PAYMENT_METHOD.COD,
+      }
+
+      mockAddressRepository.findByIdAndUser.mockResolvedValue(mockAddress as any)
+      mockProductRepository.findById.mockResolvedValue(mockProduct as any)
+      mockSkuRepository.findById.mockResolvedValue(mockSku as any)
+      mockSkuRepository.bulkAtomicDecrementStock.mockRejectedValue(
+        new BusinessError(`SKU ${skuId.toString()} không đủ tồn kho`)
+      )
+
+      await expect(service.createOrder(validObjectId.toString(), input)).rejects.toThrow(
+        /Áo Thun - Đỏ-M không đủ số lượng/
+      )
+    })
+
+    it('error message identifies the specific failing SKU in multi-SKU order', async () => {
+      const skuId2 = new Types.ObjectId()
+      const mockSku2 = { _id: skuId2, value: 'Xanh-L', price: 110000, stock: 1, product: productId, variant_values: { color: 'Xanh', size: 'L' } }
+      const input: CreateOrderInput = {
+        items: [
+          { product_id: productId.toString(), buy_count: 2, sku_id: skuId.toString() },
+          { product_id: productId.toString(), buy_count: 5, sku_id: skuId2.toString() },
+        ],
+        shipping_address_id: validObjectId.toString(),
+        shipping_method_id: 'standard',
+        payment_method: PAYMENT_METHOD.COD,
+      }
+
+      mockAddressRepository.findByIdAndUser.mockResolvedValue(mockAddress as any)
+      mockProductRepository.findById.mockResolvedValue(mockProduct as any)
+      mockSkuRepository.findById
+        .mockResolvedValueOnce(mockSku as any)
+        .mockResolvedValueOnce(mockSku2 as any)
+      mockSkuRepository.bulkAtomicDecrementStock.mockRejectedValue(
+        new BusinessError(`SKU ${skuId2.toString()} không đủ tồn kho`)
+      )
+
+      await expect(service.createOrder(validObjectId.toString(), input)).rejects.toThrow(
+        /Áo Thun - Xanh-L không đủ số lượng/
+      )
+    })
+
+    it('aggregates Product.sold for multiple SKUs of same product', async () => {
+      const skuId2 = new Types.ObjectId()
+      const mockSku2 = { _id: skuId2, value: 'Xanh-L', price: 110000, stock: 10, product: productId, variant_values: { color: 'Xanh', size: 'L' } }
+      const input: CreateOrderInput = {
+        items: [
+          { product_id: productId.toString(), buy_count: 2, sku_id: skuId.toString() },
+          { product_id: productId.toString(), buy_count: 3, sku_id: skuId2.toString() },
+        ],
+        shipping_address_id: validObjectId.toString(),
+        shipping_method_id: 'standard',
+        payment_method: PAYMENT_METHOD.COD,
+      }
+
+      mockAddressRepository.findByIdAndUser.mockResolvedValue(mockAddress as any)
+      mockProductRepository.findById.mockResolvedValue(mockProduct as any)
+      mockSkuRepository.findById
+        .mockResolvedValueOnce(mockSku as any)
+        .mockResolvedValueOnce(mockSku2 as any)
+      mockSkuRepository.bulkAtomicDecrementStock.mockResolvedValue([
+        { skuId: skuId.toString(), success: true, sku: mockSku as any },
+        { skuId: skuId2.toString(), success: true, sku: mockSku2 as any },
+      ])
+      mockOrderRepository.create.mockResolvedValue({ _id: validObjectId, status: ORDER_STATUS.PENDING } as any)
+      mockPurchaseRepository.deleteByUserAndProduct.mockResolvedValue(1)
+      mockProductRepository.incrementSold.mockResolvedValue(undefined as any)
+
+      await service.createOrder(validObjectId.toString(), input)
+
+      // Should be called once with combined total (2+3=5), not twice
+      expect(mockProductRepository.incrementSold).toHaveBeenCalledWith(productId.toString(), 5)
+    })
+
+    it('propagates Product sync failure from bulkAtomicDecrementStock', async () => {
+      const input: CreateOrderInput = {
+        items: [{ product_id: productId.toString(), buy_count: 2, sku_id: skuId.toString() }],
+        shipping_address_id: validObjectId.toString(),
+        shipping_method_id: 'standard',
+        payment_method: PAYMENT_METHOD.COD,
+      }
+
+      mockAddressRepository.findByIdAndUser.mockResolvedValue(mockAddress as any)
+      mockProductRepository.findById.mockResolvedValue(mockProduct as any)
+      mockSkuRepository.findById.mockResolvedValue(mockSku as any)
+      mockSkuRepository.bulkAtomicDecrementStock.mockRejectedValue(
+        new BusinessError('Lỗi đồng bộ tồn kho sản phẩm')
+      )
+
+      await expect(service.createOrder(validObjectId.toString(), input)).rejects.toThrow(BusinessError)
+    })
+  })
+
+  describe('cancelOrder with SKU', () => {
+    it('restores SKU stock and decrements Product.sold on cancel', async () => {
+      const mockOrder = {
+        _id: validObjectId,
+        status: ORDER_STATUS.PENDING,
+        items: [{ product: productId, buy_count: 2, sku: skuId }],
+      }
+
+      mockOrderRepository.findByIdAndUser.mockResolvedValue(mockOrder as any)
+      mockSkuRepository.atomicIncrementStock.mockResolvedValue(mockSku as any)
+      mockOrderRepository.updateStatus.mockResolvedValue({ ...mockOrder, status: ORDER_STATUS.CANCELLED } as any)
+      mockProductRepository.incrementSold.mockResolvedValue(undefined as any)
+
+      const result = await service.cancelOrder(validObjectId.toString(), validObjectId.toString(), 'reason')
+
+      expect(result.status).toBe(ORDER_STATUS.CANCELLED)
+      expect(mockSkuRepository.atomicIncrementStock).toHaveBeenCalledWith(skuId.toString(), 2)
+      expect(mockProductRepository.incrementSold).toHaveBeenCalledWith(productId.toString(), -2)
+    })
+
+    it('restores stock for multiple SKUs across different products on cancel', async () => {
+      const productId2 = new Types.ObjectId()
+      const skuId2 = new Types.ObjectId()
+      const mockSku2 = { _id: skuId2, value: 'Xanh-L', price: 110000, stock: 10, product: productId2 }
+      const mockOrder = {
+        _id: validObjectId,
+        status: ORDER_STATUS.PENDING,
+        items: [
+          { product: productId, buy_count: 2, sku: skuId },
+          { product: productId2, buy_count: 1, sku: skuId2 },
+        ],
+      }
+
+      mockOrderRepository.findByIdAndUser.mockResolvedValue(mockOrder as any)
+      mockSkuRepository.atomicIncrementStock
+        .mockResolvedValueOnce(mockSku as any)
+        .mockResolvedValueOnce(mockSku2 as any)
+      mockOrderRepository.updateStatus.mockResolvedValue({ ...mockOrder, status: ORDER_STATUS.CANCELLED } as any)
+      mockProductRepository.incrementSold.mockResolvedValue(undefined as any)
+
+      const result = await service.cancelOrder(validObjectId.toString(), validObjectId.toString(), 'reason')
+
+      expect(result.status).toBe(ORDER_STATUS.CANCELLED)
+      expect(mockSkuRepository.atomicIncrementStock).toHaveBeenCalledWith(skuId.toString(), 2)
+      expect(mockSkuRepository.atomicIncrementStock).toHaveBeenCalledWith(skuId2.toString(), 1)
+      expect(mockProductRepository.incrementSold).toHaveBeenCalledWith(productId.toString(), -2)
+      expect(mockProductRepository.incrementSold).toHaveBeenCalledWith(productId2.toString(), -1)
+    })
+  })
+
+  describe('returnOrder with SKU', () => {
+    it('restores SKU stock and decrements Product.sold on return', async () => {
+      const mockOrder = {
+        _id: validObjectId,
+        status: ORDER_STATUS.DELIVERED,
+        delivered_at: new Date(),
+        items: [{ product: productId, buy_count: 2, sku: skuId }],
+      }
+
+      mockOrderRepository.findByIdAndUser.mockResolvedValue(mockOrder as any)
+      mockSkuRepository.atomicIncrementStock.mockResolvedValue(mockSku as any)
+      mockOrderRepository.updateStatus.mockResolvedValue({ ...mockOrder, status: ORDER_STATUS.RETURNED } as any)
+      mockProductRepository.incrementSold.mockResolvedValue(undefined as any)
+
+      const result = await service.returnOrder(validObjectId.toString(), validObjectId.toString(), 'defective')
+
+      expect(result.status).toBe(ORDER_STATUS.RETURNED)
+      expect(mockSkuRepository.atomicIncrementStock).toHaveBeenCalledWith(skuId.toString(), 2)
+      expect(mockProductRepository.incrementSold).toHaveBeenCalledWith(productId.toString(), -2)
+    })
+  })
+})

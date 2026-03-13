@@ -1,6 +1,7 @@
 import { Types, FilterQuery, QueryOptions, UpdateQuery } from 'mongoose'
 import { SKUModel } from '@database/models/sku.model'
 import { ISKU } from '../@types/models.type'
+import { IProductRepository } from './interfaces/product.repository.interface'
 import {
   ISKURepository,
   CreateSKUDTO,
@@ -11,6 +12,7 @@ import { PaginatedResult, PaginationOptions } from './interfaces/base.repository
 import { BusinessError } from '@services/base.service'
 
 export class SKURepository implements ISKURepository {
+  constructor(private readonly productRepository?: IProductRepository) {}
   async findById(id: string | Types.ObjectId): Promise<ISKU | null> {
     return SKUModel.findById(id).lean<ISKU | null>()
   }
@@ -82,47 +84,101 @@ export class SKURepository implements ISKURepository {
   }
 
   async atomicDecrementStock(skuId: string | Types.ObjectId, quantity: number): Promise<ISKU | null> {
-    return SKUModel.findOneAndUpdate(
+    const sku = await SKUModel.findOneAndUpdate(
       { _id: skuId, stock: { $gte: quantity } },
       { $inc: { stock: -quantity } },
       { new: true }
     ).lean<ISKU | null>()
+
+    if (sku && this.productRepository) {
+      // Sync parent Product.quantity
+      const productId = typeof sku.product === 'object' && '_id' in sku.product
+        ? (sku.product as any)._id
+        : sku.product
+      try {
+        await this.productRepository.decrementQuantity(productId, quantity)
+      } catch (err) {
+        // Compensate: restore SKU stock if Product update fails
+        await SKUModel.findByIdAndUpdate(skuId, { $inc: { stock: quantity } })
+        console.error(`[SKU-Product Sync Failed] Product ${productId}: ${err instanceof Error ? err.message : 'Unknown error'}`)
+        throw new BusinessError(`Lỗi đồng bộ tồn kho sản phẩm`)
+      }
+    }
+
+    return sku
   }
 
   async atomicIncrementStock(skuId: string | Types.ObjectId, quantity: number): Promise<ISKU | null> {
-    return SKUModel.findByIdAndUpdate(
+    const sku = await SKUModel.findByIdAndUpdate(
       skuId,
       { $inc: { stock: quantity } },
       { new: true }
     ).lean<ISKU | null>()
+
+    if (sku && this.productRepository) {
+      // Sync parent Product.quantity
+      const productId = typeof sku.product === 'object' && '_id' in sku.product
+        ? (sku.product as any)._id
+        : sku.product
+      try {
+        await this.productRepository.incrementQuantity(productId, quantity)
+      } catch (err) {
+        // Compensate: restore SKU stock if Product update fails
+        await SKUModel.findByIdAndUpdate(skuId, { $inc: { stock: -quantity } })
+        console.error(`[SKU-Product Sync Failed] Product ${productId}: ${err instanceof Error ? err.message : 'Unknown error'}`)
+        throw new BusinessError(`Lỗi đồng bộ tồn kho sản phẩm`)
+      }
+    }
+
+    return sku
   }
 
   async bulkAtomicDecrementStock(
     items: Array<{ skuId: string | Types.ObjectId; quantity: number }>
   ): Promise<BulkDecrementResult[]> {
     const results: BulkDecrementResult[] = []
-    for (const item of items) {
-      const sku = await this.atomicDecrementStock(item.skuId, item.quantity)
-      results.push({ skuId: item.skuId, success: sku !== null, sku })
-      if (!sku) {
-        // Rollback all previously successful decrements
-        const rollbackErrors: Array<{ skuId: string | Types.ObjectId; error: string }> = []
-        for (const prev of results) {
-          if (prev.success) {
-            try {
-              const qty = items.find((i) => i.skuId === prev.skuId)!.quantity
-              await this.atomicIncrementStock(prev.skuId, qty)
-            } catch (rollbackErr) {
-              const errMsg = rollbackErr instanceof Error ? rollbackErr.message : 'Unknown rollback error'
-              rollbackErrors.push({ skuId: prev.skuId, error: errMsg })
-              console.error(`[SKU Rollback Failed] SKU ${prev.skuId}: ${errMsg}`)
-            }
+
+    const rollbackSuccessful = async () => {
+      const rollbackErrors: Array<{ skuId: string | Types.ObjectId; error: string }> = []
+      for (const prev of results) {
+        if (prev.success) {
+          try {
+            const qty = items.find((i) => i.skuId === prev.skuId)!.quantity
+            await this.atomicIncrementStock(prev.skuId, qty)
+          } catch (rollbackErr) {
+            const errMsg = rollbackErr instanceof Error ? rollbackErr.message : 'Unknown rollback error'
+            rollbackErrors.push({ skuId: prev.skuId, error: errMsg })
+            console.error(`[SKU Rollback Failed] SKU ${prev.skuId}: ${errMsg}`)
           }
         }
-        const errorDetail = rollbackErrors.length > 0
-          ? ` (rollback errors: ${rollbackErrors.map(e => `${e.skuId}: ${e.error}`).join(', ')})`
-          : ''
-        throw new BusinessError(`SKU ${item.skuId} không đủ tồn kho${errorDetail}`)
+      }
+      return rollbackErrors
+    }
+
+    for (const item of items) {
+      try {
+        const sku = await this.atomicDecrementStock(item.skuId, item.quantity)
+        results.push({ skuId: item.skuId, success: sku !== null, sku })
+        if (!sku) {
+          // Insufficient stock — rollback all previously successful decrements
+          const rollbackErrors = await rollbackSuccessful()
+          const errorDetail = rollbackErrors.length > 0
+            ? ` (rollback errors: ${rollbackErrors.map(e => `${e.skuId}: ${e.error}`).join(', ')})`
+            : ''
+          throw new BusinessError(`SKU ${item.skuId} không đủ tồn kho${errorDetail}`)
+        }
+      } catch (err) {
+        if (err instanceof BusinessError) {
+          // Re-throw BusinessErrors (insufficient stock or Product sync failure)
+          // If it's from atomicDecrementStock's Product sync failure, SKU was already compensated
+          if (results.length > 0 && results[results.length - 1]?.success !== false) {
+            // Product sync failure — mark this item as failed, rollback previous successes
+            results.push({ skuId: item.skuId, success: false, sku: null })
+            await rollbackSuccessful()
+          }
+          throw err
+        }
+        throw err
       }
     }
     return results

@@ -56,17 +56,22 @@ export interface ISKURepository extends IBaseRepository<ISKU, CreateSKUDTO, Upda
   /**
    * Atomically decrement stock. Returns null if insufficient stock.
    * Uses findOneAndUpdate with { stock: { $gte: quantity } } condition.
+   * Also decrements the parent Product.quantity by the same amount.
+   * If Product update fails, SKU stock is rolled back and a BusinessError is thrown.
    */
   atomicDecrementStock(skuId: string | Types.ObjectId, quantity: number): Promise<ISKU | null>
 
   /**
-   * Atomically increment stock (e.g., on order cancellation)
+   * Atomically increment stock (e.g., on order cancellation/return).
+   * Also increments the parent Product.quantity by the same amount.
+   * If Product update fails, SKU stock is rolled back and a BusinessError is thrown.
    */
   atomicIncrementStock(skuId: string | Types.ObjectId, quantity: number): Promise<ISKU | null>
 
   /**
    * Bulk atomic decrement stock for multiple SKUs.
    * Throws BusinessError if any SKU fails (insufficient stock).
+   * On failure, rolls back all previously decremented SKUs and their parent Product.quantity.
    */
   bulkAtomicDecrementStock(
     items: Array<{ skuId: string | Types.ObjectId; quantity: number }>

@@ -103,6 +103,11 @@ export interface IProductRepository extends IBaseRepository<IProduct, CreateProd
   decrementQuantity(productId: string | Types.ObjectId, count: number): Promise<void>
 
   /**
+   * Update product quantity (increase on order cancellation/return)
+   */
+  incrementQuantity(productId: string | Types.ObjectId, count: number): Promise<void>
+
+  /**
    * Find products with low stock
    */
   findLowStock(threshold: number): Promise<IProduct[]>

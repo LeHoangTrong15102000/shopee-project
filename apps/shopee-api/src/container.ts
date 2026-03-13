@@ -55,7 +55,7 @@ const conversationRepository = new ConversationRepository()
 const reviewRepository = new ReviewRepository()
 const orderRepository = new OrderRepository()
 const voucherRepository = new VoucherRepository()
-const skuRepository = new SKURepository()
+const skuRepository = new SKURepository(productRepository)
 const productSkuSnapshotRepository = new ProductSkuSnapshotRepository()
 
 // Service instances (singletons with injected repositories)

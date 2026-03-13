@@ -48,8 +48,14 @@ function getLeafValues(obj: Record<string, unknown>, prefix = ''): Record<string
 
 describe('i18n Translation Parity Tests', () => {
   it(`should have matching namespace files in en/ and vi/ directories`, () => {
-    const enFiles = fs.readdirSync(EN_DIR).filter((f) => f.endsWith('.json')).sort();
-    const viFiles = fs.readdirSync(VI_DIR).filter((f) => f.endsWith('.json')).sort();
+    const enFiles = fs
+      .readdirSync(EN_DIR)
+      .filter((f) => f.endsWith('.json'))
+      .sort();
+    const viFiles = fs
+      .readdirSync(VI_DIR)
+      .filter((f) => f.endsWith('.json'))
+      .sort();
     expect(enFiles).toEqual(viFiles);
   });
 
@@ -65,12 +71,16 @@ describe('i18n Translation Parity Tests', () => {
 
     it('every EN key exists in VI', () => {
       const missingInVi = enKeys.filter((k) => !viKeys.includes(k));
-      expect(missingInVi, `Keys in en/${namespace}.json missing from vi/${namespace}.json`).toEqual([]);
+      expect(missingInVi, `Keys in en/${namespace}.json missing from vi/${namespace}.json`).toEqual(
+        [],
+      );
     });
 
     it('every VI key exists in EN', () => {
       const missingInEn = viKeys.filter((k) => !enKeys.includes(k));
-      expect(missingInEn, `Keys in vi/${namespace}.json missing from en/${namespace}.json`).toEqual([]);
+      expect(missingInEn, `Keys in vi/${namespace}.json missing from en/${namespace}.json`).toEqual(
+        [],
+      );
     });
 
     it('no key has an empty string value in EN', () => {
@@ -109,4 +119,3 @@ describe('i18n Translation Parity Tests', () => {
     });
   });
 });
-

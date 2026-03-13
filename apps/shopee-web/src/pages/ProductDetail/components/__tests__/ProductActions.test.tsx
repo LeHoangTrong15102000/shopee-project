@@ -310,9 +310,7 @@ describe('ProductActions - Variant Selection (Task 15.9)', () => {
     );
     const addBtn = screen.getByText('Thêm vào giỏ hàng');
     await user.click(addBtn);
-    expect(mockMutate).toHaveBeenCalledWith(
-      expect.objectContaining({ sku_id: 'sku-red-m' }),
-    );
+    expect(mockMutate).toHaveBeenCalledWith(expect.objectContaining({ sku_id: 'sku-red-m' }));
   });
 
   it('disables add to cart when selected SKU is out of stock', () => {

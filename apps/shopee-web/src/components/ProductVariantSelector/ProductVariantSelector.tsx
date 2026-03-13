@@ -143,11 +143,9 @@ export default function ProductVariantSelector({
                     />
                   ) : (
                     <div
-                      className={classNames(
-                        'h-full w-full',
-                        getColorClass(option.value),
-                        { 'opacity-40': !isAvailable },
-                      )}
+                      className={classNames('h-full w-full', getColorClass(option.value), {
+                        'opacity-40': !isAvailable,
+                      })}
                       aria-hidden="true"
                     />
                   )}

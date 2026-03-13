@@ -158,9 +158,7 @@ export default function WishlistCard({
         <div className="mt-1.5">
           <span className="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2 py-0.5 text-[10px] text-gray-500 dark:bg-slate-700/50 dark:text-gray-400">
             {(() => {
-              const CatIcon = getCategoryIcon(
-                item.product.category || categoryName,
-              );
+              const CatIcon = getCategoryIcon(item.product.category || categoryName);
               return <CatIcon className="h-3 w-3" />;
             })()}{' '}
             {categoryName}

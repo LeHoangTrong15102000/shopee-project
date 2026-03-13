@@ -1,19 +1,26 @@
-import { useNavigate, useLocation } from 'react-router-dom'
-import { Moon, Sun, LogOut } from 'lucide-react'
-import { Button } from 'src/components/ui/button'
-import { SidebarTrigger } from 'src/components/ui/sidebar'
-import { Separator } from 'src/components/ui/separator'
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Moon, Sun, LogOut } from 'lucide-react';
+import { Button } from 'src/components/ui/button';
+import { SidebarTrigger } from 'src/components/ui/sidebar';
+import { Separator } from 'src/components/ui/separator';
 import {
-  Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList,
-  BreadcrumbPage, BreadcrumbSeparator,
-} from 'src/components/ui/breadcrumb'
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from 'src/components/ui/breadcrumb';
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuSeparator, DropdownMenuTrigger,
-} from 'src/components/ui/dropdown-menu'
-import { Avatar, AvatarFallback } from 'src/components/ui/avatar'
-import { useAuthStore } from 'src/stores/auth.store'
-import { useThemeStore } from 'src/stores/theme.store'
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from 'src/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback } from 'src/components/ui/avatar';
+import { useAuthStore } from 'src/stores/auth.store';
+import { useThemeStore } from 'src/stores/theme.store';
 
 const routeLabels: Record<string, string> = {
   '': 'Dashboard',
@@ -29,22 +36,24 @@ const routeLabels: Record<string, string> = {
   notifications: 'Notifications',
   qa: 'Q&A',
   import: 'Import',
-}
+};
 
 export function AppHeader() {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const { user, logout } = useAuthStore()
-  const { theme, toggleTheme } = useThemeStore()
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user, logout } = useAuthStore();
+  const { theme, toggleTheme } = useThemeStore();
 
-  const segments = location.pathname.split('/').filter(Boolean)
+  const segments = location.pathname.split('/').filter(Boolean);
 
   const handleLogout = () => {
-    logout()
-    navigate('/login', { replace: true })
-  }
+    logout();
+    navigate('/login', { replace: true });
+  };
 
-  const initials = user?.name ? user.name.slice(0, 2).toUpperCase() : user?.email?.slice(0, 2).toUpperCase() ?? 'AD'
+  const initials = user?.name
+    ? user.name.slice(0, 2).toUpperCase()
+    : (user?.email?.slice(0, 2).toUpperCase() ?? 'AD');
 
   return (
     <header className="flex h-14 items-center gap-2 border-b px-4">
@@ -101,6 +110,5 @@ export function AppHeader() {
         </DropdownMenu>
       </div>
     </header>
-  )
+  );
 }
-

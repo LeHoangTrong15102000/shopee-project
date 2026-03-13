@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { screen, waitFor, cleanup } from '@testing-library/react';
+import { waitFor, cleanup } from '@testing-library/react';
 import { renderWithRouter } from 'src/utils/testUtils';
 import { setAccessTokenToLS, clearLS } from 'src/utils/auth';
 import { access_token } from 'src/msw/auth.msw';
@@ -31,9 +31,7 @@ describe('HistoryPurchase', () => {
       () => {
         const bodyText = document.body.textContent || '';
         // PurchaseTabBar renders "Tất cả" tab — specific to HistoryPurchase page
-        expect(
-          bodyText.includes('Tất cả') || bodyText.includes('Chờ xác nhận'),
-        ).toBeTruthy();
+        expect(bodyText.includes('Tất cả') || bodyText.includes('Chờ xác nhận')).toBeTruthy();
       },
       { timeout: 10000 },
     );

@@ -23,6 +23,7 @@ describe('useRecentlyViewed', () => {
     description: 'Test product',
     createdAt: '2024-01-01',
     updatedAt: '2024-01-01',
+    location: 'Hồ Chí Minh',
   };
 
   it('starts with empty list', () => {

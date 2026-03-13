@@ -1,13 +1,30 @@
-import { useLocation, Link } from 'react-router-dom'
+import { useLocation, Link } from 'react-router-dom';
 import {
-  LayoutDashboard, Users, Package, FolderTree, ShoppingCart,
-  Ticket, Star, Gift, Warehouse, BarChart3, Bell, HelpCircle, Upload,
-} from 'lucide-react'
+  LayoutDashboard,
+  Users,
+  Package,
+  FolderTree,
+  ShoppingCart,
+  Ticket,
+  Star,
+  Gift,
+  Warehouse,
+  BarChart3,
+  Bell,
+  HelpCircle,
+  Upload,
+} from 'lucide-react';
 import {
-  Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
-  SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton,
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
   SidebarMenuItem,
-} from 'src/components/ui/sidebar'
+} from 'src/components/ui/sidebar';
 
 const navSections = [
   {
@@ -41,10 +58,10 @@ const navSections = [
       { title: 'Import', href: '/import', icon: Upload },
     ],
   },
-]
+];
 
 export function AppSidebar() {
-  const location = useLocation()
+  const location = useLocation();
 
   return (
     <Sidebar collapsible="icon">
@@ -55,30 +72,34 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
       <SidebarContent>
-        {navSections.map((section) => (
-          <SidebarGroup key={section.label}>
-            <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {section.items.map((item) => {
-                  const isActive = item.href === '/' ? location.pathname === '/' : location.pathname.startsWith(item.href)
-                  return (
-                    <SidebarMenuItem key={item.href}>
-                      <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
-                        <Link to={item.href}>
-                          <item.icon className="size-4" />
-                          <span>{item.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  )
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+        <nav aria-label="Main navigation">
+          {navSections.map((section) => (
+            <SidebarGroup key={section.label}>
+              <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {section.items.map((item) => {
+                    const isActive =
+                      item.href === '/'
+                        ? location.pathname === '/'
+                        : location.pathname.startsWith(item.href);
+                    return (
+                      <SidebarMenuItem key={item.href}>
+                        <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
+                          <Link to={item.href}>
+                            <item.icon className="size-4" />
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          ))}
+        </nav>
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }
-

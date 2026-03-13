@@ -48,10 +48,7 @@ describe('PaymentForm', () => {
       await user.click(bankTab);
       await waitFor(() => {
         const bodyText = document.body.textContent || '';
-        expect(
-          bodyText.includes('ngân hàng') ||
-            bodyText.includes('Chuyển khoản'),
-        ).toBeTruthy();
+        expect(bodyText.includes('ngân hàng') || bodyText.includes('Chuyển khoản')).toBeTruthy();
       });
     }
   });

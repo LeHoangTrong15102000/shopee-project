@@ -1,4 +1,4 @@
-import { screen, waitFor, cleanup } from '@testing-library/react';
+import { waitFor, cleanup } from '@testing-library/react';
 import path from 'src/constant/path';
 import { renderWithRouter } from 'src/utils/testUtils';
 import { describe, expect, it, afterEach } from 'vitest';
@@ -32,8 +32,7 @@ describe('Profile', () => {
       () => {
         const bodyText = document.body.textContent || '';
         expect(
-          bodyText.includes('Lê Hoàng Trọng') ||
-            bodyText.includes('langtupro0456'),
+          bodyText.includes('Lê Hoàng Trọng') || bodyText.includes('langtupro0456'),
         ).toBeTruthy();
       },
       { timeout: 10000 },

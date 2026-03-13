@@ -1,15 +1,15 @@
-import http from 'src/utils/http'
-import type { SuccessResponse, Product } from 'src/types'
+import http from 'src/utils/http';
+import type { SuccessResponse, Product } from 'src/types';
 
 interface StockListParams {
-  page?: number
-  limit?: number
-  threshold?: number
+  page?: number;
+  limit?: number;
+  threshold?: number;
 }
 
 interface StockListResponse {
-  products: Product[]
-  pagination: { page: number; limit: number; total: number; totalPages: number }
+  products: Product[];
+  pagination: { page: number; limit: number; total: number; totalPages: number };
 }
 
 const inventoryApi = {
@@ -22,9 +22,8 @@ const inventoryApi = {
   updateStock: (productId: string, body: { quantity: number }) =>
     http.put<SuccessResponse<Product>>(`admin/inventory/${productId}/stock`, body),
 
-  bulkUpdateStock: (body: { updates: Array<{ product_id: string; quantity: number }> }) =>
+  bulkUpdateStock: (body: { items: Array<{ product_id: string; quantity: number }> }) =>
     http.put<SuccessResponse<{ modifiedCount: number }>>('admin/inventory/bulk-stock', body),
-}
+};
 
-export default inventoryApi
-
+export default inventoryApi;

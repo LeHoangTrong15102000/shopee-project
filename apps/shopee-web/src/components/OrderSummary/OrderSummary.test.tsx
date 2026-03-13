@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { screen } from '@testing-library/react';
+import '@testing-library/react';
 import { renderWithProviders } from 'src/utils/testUtils';
 import OrderSummary from './OrderSummary';
 import type { ExtendedPurchase } from 'src/types/purchases.type';
@@ -27,11 +27,13 @@ const mockItems: ExtendedPurchase[] = [
       description: 'Áo thun',
       createdAt: '2024-01-01',
       updatedAt: '2024-01-01',
+      location: 'Hồ Chí Minh',
     },
     createdAt: '2024-01-01',
     updatedAt: '2024-01-01',
     checked: true,
     disabled: false,
+    isChecked: true,
   } as ExtendedPurchase,
 ];
 

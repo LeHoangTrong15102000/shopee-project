@@ -1,26 +1,26 @@
-import http from 'src/utils/http'
-import type { SuccessResponse, Notification } from 'src/types'
+import http from 'src/utils/http';
+import type { SuccessResponse, Notification } from 'src/types';
 
 interface NotificationListParams {
-  page?: number
-  limit?: number
-  type?: 'targeted' | 'broadcast'
+  page?: number;
+  limit?: number;
+  type?: 'targeted' | 'broadcast';
 }
 
 interface NotificationListResponse {
-  notifications: Notification[]
-  pagination: { page: number; limit: number; total: number; totalPages: number }
+  notifications: Notification[];
+  pagination: { page: number; limit: number; total: number; totalPages: number };
 }
 
 interface CreateNotificationBody {
-  user_id: string
-  title: string
-  message: string
+  user_id: string;
+  title: string;
+  message: string;
 }
 
 interface BroadcastNotificationBody {
-  title: string
-  message: string
+  title: string;
+  message: string;
 }
 
 const notificationsApi = {
@@ -35,7 +35,6 @@ const notificationsApi = {
 
   deleteNotification: (id: string) =>
     http.delete<SuccessResponse<null>>(`admin/notifications/${id}`),
-}
+};
 
-export default notificationsApi
-
+export default notificationsApi;

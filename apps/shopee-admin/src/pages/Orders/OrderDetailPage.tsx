@@ -1,85 +1,143 @@
-import { useParams, useNavigate } from 'react-router-dom'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { format } from 'date-fns'
-import { toast } from 'sonner'
-import { ArrowLeft } from 'lucide-react'
-import { Button } from 'src/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'src/components/ui/table'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'src/components/ui/select'
-import { PageHeader } from 'src/components/shared/PageHeader'
-import { StatusBadge } from 'src/components/shared/StatusBadge'
-import { LoadingState } from 'src/components/shared/LoadingState'
-import { ErrorState } from 'src/components/shared/ErrorState'
-import ordersApi from 'src/apis/orders.api'
-import type { OrderStatus } from 'src/types'
+import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { toast } from 'sonner';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from 'src/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from 'src/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from 'src/components/ui/select';
+import { PageHeader } from 'src/components/shared/PageHeader';
+import { StatusBadge } from 'src/components/shared/StatusBadge';
+import { LoadingState } from 'src/components/shared/LoadingState';
+import { ErrorState } from 'src/components/shared/ErrorState';
+import ordersApi from 'src/apis/orders.api';
+import { formatCurrency } from 'src/utils/format';
+import type { OrderStatus } from 'src/types';
 
-const statusFlow: OrderStatus[] = ['pending', 'processing', 'shipped', 'delivered', 'cancelled']
+const statusFlow: OrderStatus[] = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
 
 export default function OrderDetailPage() {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const qc = useQueryClient()
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
 
-  const { data: order, isLoading, error } = useQuery({
+  const {
+    data: order,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['admin-order', id],
     queryFn: () => ordersApi.getOrder(id!).then((r) => r.data.data),
     enabled: !!id,
-  })
+  });
 
   const updateMut = useMutation({
     mutationFn: (status: OrderStatus) => ordersApi.updateOrderStatus(id!, { status }),
-    onSuccess: () => { toast.success('Status updated'); qc.invalidateQueries({ queryKey: ['admin-order', id] }) },
-  })
+    onSuccess: () => {
+      toast.success('Status updated');
+      qc.invalidateQueries({ queryKey: ['admin-order', id] });
+    },
+    onError: () => toast.error('Failed to update status'),
+  });
 
-  if (isLoading) return <LoadingState />
-  if (error || !order) return <ErrorState message="Order not found" />
+  if (isLoading) return <LoadingState />;
+  if (error || !order) return <ErrorState message="Order not found" />;
 
-  const customer = typeof order.user === 'object' ? order.user : null
+  const customer = typeof order.user === 'object' ? order.user : null;
 
   return (
     <div className="space-y-6">
       <PageHeader
         title={`Order #${order._id.slice(-8)}`}
-        actions={<Button variant="outline" size="sm" onClick={() => navigate('/orders')}><ArrowLeft className="mr-2 size-4" />Back</Button>}
+        actions={
+          <Button variant="outline" size="sm" onClick={() => navigate('/orders')}>
+            <ArrowLeft className="mr-2 size-4" />
+            Back
+          </Button>
+        }
       />
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader><CardTitle>Items</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle>Items</CardTitle>
+          </CardHeader>
           <CardContent>
             <Table>
-              <TableHeader><TableRow><TableHead>Product</TableHead><TableHead className="text-right">Price</TableHead><TableHead className="text-right">Qty</TableHead><TableHead className="text-right">Subtotal</TableHead></TableRow></TableHeader>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Product</TableHead>
+                  <TableHead className="text-right">Price</TableHead>
+                  <TableHead className="text-right">Qty</TableHead>
+                  <TableHead className="text-right">Subtotal</TableHead>
+                </TableRow>
+              </TableHeader>
               <TableBody>
                 {order.items.map((item, i) => {
-                  const name = typeof item.product === 'object' ? item.product.name : item.product
+                  const name = typeof item.product === 'object' ? item.product.name : item.product;
                   return (
                     <TableRow key={i}>
                       <TableCell className="font-medium">{name}</TableCell>
-                      <TableCell className="text-right">₫{item.price.toLocaleString()}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(item.price)}</TableCell>
                       <TableCell className="text-right">{item.buy_count}</TableCell>
-                      <TableCell className="text-right">₫{(item.price * item.buy_count).toLocaleString()}</TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(item.price * item.buy_count)}
+                      </TableCell>
                     </TableRow>
-                  )
+                  );
                 })}
               </TableBody>
             </Table>
-            <div className="mt-4 flex justify-end text-lg font-bold">Total: ₫{order.total_price.toLocaleString()}</div>
+            <div className="mt-4 flex justify-end text-lg font-bold">
+              Total: {formatCurrency(order.total_price)}
+            </div>
           </CardContent>
         </Card>
 
         <div className="space-y-4">
           <Card>
-            <CardHeader><CardTitle>Status</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>Status</CardTitle>
+            </CardHeader>
             <CardContent className="space-y-3">
               <StatusBadge status={order.status} />
-              <Select value={order.status} onValueChange={(v) => updateMut.mutate(v as OrderStatus)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>{statusFlow.map((s) => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}</SelectContent>
+              <Select
+                value={order.status}
+                onValueChange={(v) => updateMut.mutate(v as OrderStatus)}
+              >
+                <SelectTrigger aria-label="Update order status">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {statusFlow.map((s) => (
+                    <SelectItem key={s} value={s} className="capitalize">
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
               <div className="space-y-1 text-xs text-muted-foreground">
                 {statusFlow.map((s) => (
-                  <div key={s} className={`flex items-center gap-2 ${statusFlow.indexOf(s) <= statusFlow.indexOf(order.status) ? 'text-foreground' : ''}`}>
-                    <div className={`size-2 rounded-full ${statusFlow.indexOf(s) <= statusFlow.indexOf(order.status) ? 'bg-primary' : 'bg-muted'}`} />
+                  <div
+                    key={s}
+                    className={`flex items-center gap-2 ${statusFlow.indexOf(s) <= statusFlow.indexOf(order.status) ? 'text-foreground' : ''}`}
+                  >
+                    <div
+                      className={`size-2 rounded-full ${statusFlow.indexOf(s) <= statusFlow.indexOf(order.status) ? 'bg-primary' : 'bg-muted'}`}
+                    />
                     <span className="capitalize">{s}</span>
                   </div>
                 ))}
@@ -88,7 +146,9 @@ export default function OrderDetailPage() {
           </Card>
           {customer && (
             <Card>
-              <CardHeader><CardTitle>Customer</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle>Customer</CardTitle>
+              </CardHeader>
               <CardContent className="space-y-1 text-sm">
                 <p className="font-medium">{customer.name || 'N/A'}</p>
                 <p className="text-muted-foreground">{customer.email}</p>
@@ -96,16 +156,30 @@ export default function OrderDetailPage() {
             </Card>
           )}
           <Card>
-            <CardHeader><CardTitle>Info</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>Info</CardTitle>
+            </CardHeader>
             <CardContent className="space-y-1 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Date</span><span>{format(new Date(order.createdAt), 'MMM d, yyyy HH:mm')}</span></div>
-              {order.payment_method && <div className="flex justify-between"><span className="text-muted-foreground">Payment</span><span>{order.payment_method}</span></div>}
-              {order.shipping_address && <div className="flex justify-between"><span className="text-muted-foreground">Address</span><span className="text-right max-w-[150px]">{order.shipping_address}</span></div>}
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Date</span>
+                <span>{format(new Date(order.createdAt), 'MMM d, yyyy HH:mm')}</span>
+              </div>
+              {order.payment_method && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Payment</span>
+                  <span>{order.payment_method}</span>
+                </div>
+              )}
+              {order.shipping_address && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Address</span>
+                  <span className="text-right max-w-[150px]">{order.shipping_address}</span>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
-  )
+  );
 }
-

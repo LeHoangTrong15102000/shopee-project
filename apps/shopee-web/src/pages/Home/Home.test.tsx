@@ -27,9 +27,7 @@ describe('Home', () => {
     await waitFor(
       () => {
         const bodyText = document.body.textContent || '';
-        expect(
-          bodyText.includes('Điện thoại') || bodyText.includes('Laptop'),
-        ).toBeTruthy();
+        expect(bodyText.includes('Điện thoại') || bodyText.includes('Laptop')).toBeTruthy();
       },
       { timeout: 10000 },
     );

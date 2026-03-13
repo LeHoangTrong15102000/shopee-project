@@ -27,6 +27,18 @@ function clearLS() {
   localStorage.removeItem('profile');
 }
 
+// Callback for handling auth failure navigation (single consumer — router layer)
+let onAuthFailure: (() => void) | null = null;
+export function setOnAuthFailure(cb: () => void) {
+  onAuthFailure = cb;
+}
+
+// Callback for syncing token refresh with external state (single consumer — auth store)
+let onTokenRefreshed: ((accessToken: string) => void) | null = null;
+export function setOnTokenRefreshed(cb: (accessToken: string) => void) {
+  onTokenRefreshed = cb;
+}
+
 export class Http {
   readonly instance: AxiosInstance;
   private accessToken: string;
@@ -87,7 +99,11 @@ export class Http {
             clearLS();
             this.accessToken = '';
             this.refreshToken = '';
-            window.location.href = '/login';
+            if (onAuthFailure) {
+              onAuthFailure();
+            } else {
+              window.location.href = '/login';
+            }
             throw error;
           } finally {
             this.refreshTokenRequest = null;
@@ -107,6 +123,7 @@ export class Http {
         const { access_token } = res.data.data;
         setAccessTokenToLS(access_token);
         this.accessToken = access_token;
+        onTokenRefreshed?.(access_token);
         return access_token;
       })
       .catch((error) => {

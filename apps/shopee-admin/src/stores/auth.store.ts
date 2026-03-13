@@ -5,20 +5,10 @@ import {
   clearLS,
   setAccessTokenToLS,
   setRefreshTokenToLS,
+  setOnTokenRefreshed,
+  setOnAuthFailure,
 } from 'src/utils/http';
-
-export interface User {
-  _id: string;
-  roles: string[];
-  email: string;
-  name?: string;
-  date_of_birth?: string;
-  avatar?: string;
-  address?: string;
-  phone?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import type { User } from 'src/types';
 
 interface AuthState {
   accessToken: string;
@@ -73,3 +63,13 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user });
   },
 }));
+
+// Sync Http class token refresh with Zustand store
+setOnTokenRefreshed((accessToken) => {
+  useAuthStore.getState().setTokens(accessToken);
+});
+
+// Handle auth failure — clear store and redirect via router-compatible navigation
+setOnAuthFailure(() => {
+  useAuthStore.getState().logout();
+});

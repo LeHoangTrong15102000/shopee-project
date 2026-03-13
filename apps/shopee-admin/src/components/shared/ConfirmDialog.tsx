@@ -7,19 +7,19 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from 'src/components/ui/alert-dialog'
+} from 'src/components/ui/alert-dialog';
 
 interface ConfirmDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  title?: string
-  description?: string
-  onConfirm: () => void
-  onCancel?: () => void
-  confirmText?: string
-  cancelText?: string
-  variant?: 'default' | 'destructive'
-  isLoading?: boolean
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title?: string;
+  description?: string;
+  onConfirm: () => void;
+  onCancel?: () => void;
+  confirmText?: string;
+  cancelText?: string;
+  variant?: 'default' | 'destructive';
+  isLoading?: boolean;
 }
 
 export function ConfirmDialog({
@@ -46,13 +46,14 @@ export function ConfirmDialog({
           <AlertDialogAction
             onClick={onConfirm}
             disabled={isLoading}
-            className={variant === 'destructive' ? 'bg-destructive text-white hover:bg-destructive/90' : ''}
+            className={
+              variant === 'destructive' ? 'bg-destructive text-white hover:bg-destructive/90' : ''
+            }
           >
             {isLoading ? 'Loading...' : confirmText}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }
-

@@ -93,7 +93,11 @@ describe('useOrderFilter', () => {
 
     const mockPurchases = [
       { product: { name: 'iPhone 15', price: 25000000 }, buy_count: 1, createdAt: '2024-06-15' },
-      { product: { name: 'Samsung Galaxy', price: 20000000 }, buy_count: 1, createdAt: '2024-03-01' },
+      {
+        product: { name: 'Samsung Galaxy', price: 20000000 },
+        buy_count: 1,
+        createdAt: '2024-03-01',
+      },
       { product: { name: 'Xiaomi', price: 10000000 }, buy_count: 1, createdAt: '2024-08-20' },
     ] as Purchase[];
 
@@ -111,7 +115,11 @@ describe('useOrderFilter', () => {
 
     const mockPurchases = [
       { product: { name: 'iPhone 15', price: 25000000 }, buy_count: 1, createdAt: '2024-06-01' },
-      { product: { name: 'Samsung Galaxy', price: 20000000 }, buy_count: 1, createdAt: '2024-06-01' },
+      {
+        product: { name: 'Samsung Galaxy', price: 20000000 },
+        buy_count: 1,
+        createdAt: '2024-06-01',
+      },
       { product: { name: 'Xiaomi', price: 5000000 }, buy_count: 2, createdAt: '2024-06-01' },
     ] as Purchase[];
 
@@ -130,7 +138,11 @@ describe('useOrderFilter', () => {
     const mockPurchases = [
       { product: { name: 'iPhone 15', price: 25000000 }, buy_count: 1, createdAt: '2024-06-15' },
       { product: { name: 'iPhone 14', price: 20000000 }, buy_count: 1, createdAt: '2024-03-01' },
-      { product: { name: 'Samsung Galaxy', price: 20000000 }, buy_count: 1, createdAt: '2024-06-15' },
+      {
+        product: { name: 'Samsung Galaxy', price: 20000000 },
+        buy_count: 1,
+        createdAt: '2024-06-15',
+      },
     ] as Purchase[];
 
     act(() => {

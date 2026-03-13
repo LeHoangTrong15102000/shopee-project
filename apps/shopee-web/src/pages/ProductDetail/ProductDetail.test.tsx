@@ -11,10 +11,7 @@ describe('ProductDetail', () => {
     await waitFor(
       () => {
         const bodyText = document.body.textContent || '';
-        expect(
-          bodyText.includes('Vsmart') ||
-            bodyText.includes('OPPO'),
-        ).toBeTruthy();
+        expect(bodyText.includes('Vsmart') || bodyText.includes('OPPO')).toBeTruthy();
       },
       { timeout: 10000 },
     );

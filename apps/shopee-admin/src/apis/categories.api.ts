@@ -1,9 +1,9 @@
-import http from 'src/utils/http'
-import type { SuccessResponse, Category } from 'src/types'
+import http from 'src/utils/http';
+import type { SuccessResponse, Category } from 'src/types';
 
 interface CategoryListParams {
-  page?: number
-  limit?: number
+  page?: number;
+  limit?: number;
 }
 
 const categoriesApi = {
@@ -21,7 +21,6 @@ const categoriesApi = {
 
   deleteCategory: (categoryId: string) =>
     http.delete<SuccessResponse<null>>(`admin/categories/delete/${categoryId}`),
-}
+};
 
-export default categoriesApi
-
+export default categoriesApi;

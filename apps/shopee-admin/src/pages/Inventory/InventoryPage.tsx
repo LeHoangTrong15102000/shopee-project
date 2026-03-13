@@ -1,48 +1,157 @@
-import { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { type ColumnDef } from '@tanstack/react-table'
-import { toast } from 'sonner'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from 'src/components/ui/tabs'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from 'src/components/ui/dialog'
-import { Button } from 'src/components/ui/button'
-import { Input } from 'src/components/ui/input'
-import { Label } from 'src/components/ui/label'
-import { DataTable } from 'src/components/shared/DataTable'
-import { PageHeader } from 'src/components/shared/PageHeader'
-import inventoryApi from 'src/apis/inventory.api'
-import type { Product } from 'src/types'
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { type ColumnDef } from '@tanstack/react-table';
+import { toast } from 'sonner';
+import { Trash2 } from 'lucide-react';
+import { Checkbox } from 'src/components/ui/checkbox';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from 'src/components/ui/tabs';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from 'src/components/ui/dialog';
+import { Button } from 'src/components/ui/button';
+import { Input } from 'src/components/ui/input';
+import { Label } from 'src/components/ui/label';
+import { DataTable } from 'src/components/shared/DataTable';
+import { PageHeader } from 'src/components/shared/PageHeader';
+import { ErrorState } from 'src/components/shared/ErrorState';
+import inventoryApi from 'src/apis/inventory.api';
+import { formatCurrency } from 'src/utils/format';
+import type { Product } from 'src/types';
 
 export default function InventoryPage() {
-  const qc = useQueryClient()
-  const [updateProduct, setUpdateProduct] = useState<Product | null>(null)
-  const [quantity, setQuantity] = useState(0)
+  const qc = useQueryClient();
+  const [updateProduct, setUpdateProduct] = useState<Product | null>(null);
+  const [quantity, setQuantity] = useState(0);
+  const [selected, setSelected] = useState<Product[]>([]);
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [bulkQty, setBulkQty] = useState(0);
 
-  const { data: lowStock, isLoading: loadingLow } = useQuery({
+  const invalidateAll = () => {
+    qc.invalidateQueries({ queryKey: ['admin-inventory-low'] });
+    qc.invalidateQueries({ queryKey: ['admin-inventory-out'] });
+  };
+
+  const {
+    data: lowStock,
+    isLoading: loadingLow,
+    isError: lowError,
+    refetch: refetchLow,
+  } = useQuery({
     queryKey: ['admin-inventory-low'],
     queryFn: () => inventoryApi.getLowStock({ limit: 50 }).then((r) => r.data.data),
-  })
-  const { data: outOfStock, isLoading: loadingOut } = useQuery({
+  });
+  const {
+    data: outOfStock,
+    isLoading: loadingOut,
+    isError: outError,
+    refetch: refetchOut,
+  } = useQuery({
     queryKey: ['admin-inventory-out'],
     queryFn: () => inventoryApi.getOutOfStock({ limit: 50 }).then((r) => r.data.data),
-  })
+  });
 
   const updateMut = useMutation({
-    mutationFn: ({ id, qty }: { id: string; qty: number }) => inventoryApi.updateStock(id, { quantity: qty }),
-    onSuccess: () => { toast.success('Stock updated'); setUpdateProduct(null); qc.invalidateQueries({ queryKey: ['admin-inventory-low'] }); qc.invalidateQueries({ queryKey: ['admin-inventory-out'] }) },
-  })
+    mutationFn: ({ id, qty }: { id: string; qty: number }) =>
+      inventoryApi.updateStock(id, { quantity: qty }),
+    onSuccess: () => {
+      toast.success('Stock updated');
+      setUpdateProduct(null);
+      invalidateAll();
+    },
+    onError: () => toast.error('Failed to update stock'),
+  });
+  const bulkUpdateMut = useMutation({
+    mutationFn: (items: Array<{ product_id: string; quantity: number }>) =>
+      inventoryApi.bulkUpdateStock({ items }),
+    onSuccess: () => {
+      toast.success(`${selected.length} products updated`);
+      setBulkOpen(false);
+      setSelected([]);
+      invalidateAll();
+    },
+    onError: () => toast.error('Failed to bulk update stock'),
+  });
 
   const columns: ColumnDef<Product>[] = [
-    { accessorKey: 'image', header: '', cell: ({ row }) => <img src={row.original.image} alt="" className="size-10 rounded object-cover" />, enableSorting: false },
-    { accessorKey: 'name', header: 'Product', cell: ({ row }) => <span className="max-w-[200px] truncate font-medium">{row.original.name}</span> },
-    { accessorKey: 'quantity', header: 'Stock', cell: ({ row }) => <span className={row.original.quantity === 0 ? 'text-destructive font-medium' : 'text-yellow-600 font-medium'}>{row.original.quantity}</span> },
-    { accessorKey: 'sold', header: 'Sold' },
-    { accessorKey: 'price', header: 'Price', cell: ({ row }) => `₫${row.original.price.toLocaleString()}` },
     {
-      id: 'actions', header: '', cell: ({ row }) => (
-        <Button variant="outline" size="sm" onClick={() => { setUpdateProduct(row.original); setQuantity(row.original.quantity) }}>Update Stock</Button>
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected()}
+          onCheckedChange={(v) => table.toggleAllPageRowsSelected(!!v)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(v) => row.toggleSelected(!!v)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'image',
+      header: '',
+      cell: ({ row }) => (
+        <img
+          src={row.original.image}
+          alt={row.original.name}
+          className="size-10 rounded object-cover"
+        />
+      ),
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'name',
+      header: 'Product',
+      cell: ({ row }) => (
+        <span className="max-w-[200px] truncate font-medium">{row.original.name}</span>
       ),
     },
-  ]
+    {
+      accessorKey: 'quantity',
+      header: 'Stock',
+      cell: ({ row }) => (
+        <span
+          className={
+            row.original.quantity === 0
+              ? 'text-destructive font-medium'
+              : 'text-yellow-600 font-medium'
+          }
+        >
+          {row.original.quantity}
+        </span>
+      ),
+    },
+    { accessorKey: 'sold', header: 'Sold' },
+    {
+      accessorKey: 'price',
+      header: 'Price',
+      cell: ({ row }) => formatCurrency(row.original.price),
+    },
+    {
+      id: 'actions',
+      header: '',
+      cell: ({ row }) => (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            setUpdateProduct(row.original);
+            setQuantity(row.original.quantity);
+          }}
+        >
+          Update Stock
+        </Button>
+      ),
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -50,24 +159,125 @@ export default function InventoryPage() {
       <Tabs defaultValue="low-stock">
         <TabsList>
           <TabsTrigger value="low-stock">Low Stock ({lowStock?.products?.length ?? 0})</TabsTrigger>
-          <TabsTrigger value="out-of-stock">Out of Stock ({outOfStock?.products?.length ?? 0})</TabsTrigger>
+          <TabsTrigger value="out-of-stock">
+            Out of Stock ({outOfStock?.products?.length ?? 0})
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="low-stock">
-          <DataTable columns={columns} data={lowStock?.products ?? []} isLoading={loadingLow} searchKey="name" searchPlaceholder="Search products..." />
+          {lowError && <ErrorState message="Failed to load low stock items" onRetry={refetchLow} />}
+          <DataTable
+            columns={columns}
+            data={lowStock?.products ?? []}
+            isLoading={loadingLow}
+            searchKey="name"
+            searchPlaceholder="Search products..."
+            enableRowSelection
+            onRowSelectionChange={setSelected}
+            bulkActions={
+              selected.length > 0 ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setBulkOpen(true);
+                    setBulkQty(0);
+                  }}
+                >
+                  <Trash2 className="mr-2 size-4" />
+                  Bulk Update ({selected.length})
+                </Button>
+              ) : undefined
+            }
+          />
         </TabsContent>
         <TabsContent value="out-of-stock">
-          <DataTable columns={columns} data={outOfStock?.products ?? []} isLoading={loadingOut} searchKey="name" searchPlaceholder="Search products..." />
+          {outError && (
+            <ErrorState message="Failed to load out of stock items" onRetry={refetchOut} />
+          )}
+          <DataTable
+            columns={columns}
+            data={outOfStock?.products ?? []}
+            isLoading={loadingOut}
+            searchKey="name"
+            searchPlaceholder="Search products..."
+            enableRowSelection
+            onRowSelectionChange={setSelected}
+            bulkActions={
+              selected.length > 0 ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setBulkOpen(true);
+                    setBulkQty(0);
+                  }}
+                >
+                  <Trash2 className="mr-2 size-4" />
+                  Bulk Update ({selected.length})
+                </Button>
+              ) : undefined
+            }
+          />
         </TabsContent>
       </Tabs>
 
       <Dialog open={!!updateProduct} onOpenChange={(o) => !o && setUpdateProduct(null)}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Update Stock: {updateProduct?.name}</DialogTitle></DialogHeader>
-          <div><Label>New Quantity</Label><Input type="number" value={quantity} onChange={(e) => setQuantity(+e.target.value)} min={0} /></div>
-          <DialogFooter><Button onClick={() => updateProduct && updateMut.mutate({ id: updateProduct._id, qty: quantity })} disabled={updateMut.isPending}>Update</Button></DialogFooter>
+          <DialogHeader>
+            <DialogTitle>Update Stock: {updateProduct?.name}</DialogTitle>
+          </DialogHeader>
+          <div>
+            <Label htmlFor="inv-qty">New Quantity</Label>
+            <Input
+              id="inv-qty"
+              type="number"
+              value={quantity}
+              onChange={(e) => setQuantity(+e.target.value)}
+              min={0}
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              onClick={() =>
+                updateProduct && updateMut.mutate({ id: updateProduct._id, qty: quantity })
+              }
+              disabled={updateMut.isPending}
+            >
+              Update
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={bulkOpen} onOpenChange={setBulkOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Bulk Update Stock ({selected.length} products)</DialogTitle>
+          </DialogHeader>
+          <div>
+            <Label htmlFor="inv-bulk-qty">Set Quantity</Label>
+            <Input
+              id="inv-bulk-qty"
+              type="number"
+              value={bulkQty}
+              onChange={(e) => setBulkQty(+e.target.value)}
+              min={0}
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              onClick={() =>
+                bulkUpdateMut.mutate(
+                  selected.map((p) => ({ product_id: p._id, quantity: bulkQty })),
+                )
+              }
+              disabled={bulkUpdateMut.isPending}
+            >
+              Update All
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
-

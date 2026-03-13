@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { renderWithProviders } from 'src/utils/testUtils';
 import AddressSelector from './AddressSelector';
 
@@ -60,9 +60,7 @@ describe('AddressSelector', () => {
 
     await waitFor(() => {
       const bodyText = document.body.textContent || '';
-      expect(
-        bodyText.includes('Thêm') || bodyText.includes('thêm'),
-      ).toBeTruthy();
+      expect(bodyText.includes('Thêm') || bodyText.includes('thêm')).toBeTruthy();
     });
   });
 

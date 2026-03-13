@@ -91,7 +91,7 @@ export interface Voucher {
   discount_type: DiscountType;
   discount_value: number;
   min_order_value: number;
-  max_usage: number;
+  usage_limit: number;
   used_count: number;
   is_active: boolean;
   start_date: string;
@@ -171,8 +171,13 @@ export interface Notification {
 export interface QAQuestion {
   _id: string;
   user: { _id: string; name: string; email: string; avatar?: string };
-  title: string;
-  content: string;
+  user_id?: string;
+  user_name?: string;
+  user_avatar?: string;
+  title?: string;
+  question?: string;
+  content?: string;
+  answers: QAAnswer[];
   answers_count: number;
   likes_count: number;
   createdAt: string;
@@ -182,11 +187,15 @@ export interface QAQuestion {
 export interface QAAnswer {
   _id: string;
   user: { _id: string; name: string; email: string; avatar?: string };
-  question: string;
-  content: string;
+  user_name?: string;
+  user_avatar?: string;
+  question?: string;
+  content?: string;
+  answer?: string;
   likes_count: number;
   createdAt: string;
-  updatedAt: string;
+  created_at?: string;
+  updatedAt?: string;
 }
 
 // Dashboard

@@ -137,16 +137,16 @@ const ProductDetail = () => {
     if (product?.variants && product.variants.length > 0) {
       return product.variants;
     }
-    return product ? getMockVariants(product._id) : [];
-  }, [product?._id, product?.variants]);
+    return product ? getMockVariants(product.category?.name || '', product.name) : [];
+  }, [product?._id, product?.variants, product?.category?.name, product?.name]);
 
   // Convert backend SKUs to ProductVariantCombination format, or use mock data
   const skus: ProductSKU[] = useMemo(() => {
     if (product?.skus && product.skus.length > 0) {
       return product.skus;
     }
-    return product ? getMockSKUs(product.price) : [];
-  }, [product?._id, product?.skus, product?.price]);
+    return product ? getMockSKUs(product.price, product.category?.name || '', product.name) : [];
+  }, [product?._id, product?.skus, product?.price, product?.category?.name, product?.name]);
 
   // Convert SKUs to combinations for the selector component
   const combinations: ProductVariantCombination[] = useMemo(() => {

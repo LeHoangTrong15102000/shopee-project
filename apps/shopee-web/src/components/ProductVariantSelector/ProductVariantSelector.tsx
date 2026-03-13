@@ -4,34 +4,34 @@ import classNames from 'classnames';
 import { ProductVariant, ProductVariantCombination } from 'src/types/variant.type';
 import Button from 'src/components/Button';
 
-// Color mapping using Tailwind design tokens - extensible via config
-const COLOR_CLASS_MAP: Record<string, string> = {
-  red: 'bg-red-500',
-  đỏ: 'bg-red-500',
-  blue: 'bg-blue-500',
-  'xanh dương': 'bg-blue-500',
-  green: 'bg-green-500',
-  'xanh lá': 'bg-green-500',
-  yellow: 'bg-yellow-500',
-  vàng: 'bg-yellow-500',
-  black: 'bg-gray-900',
-  đen: 'bg-gray-900',
-  white: 'bg-white border border-gray-300',
-  trắng: 'bg-white border border-gray-300',
-  pink: 'bg-pink-500',
-  hồng: 'bg-pink-500',
-  purple: 'bg-purple-500',
-  tím: 'bg-purple-500',
-  orange: 'bg-orange-500',
-  cam: 'bg-orange-500',
-  gray: 'bg-gray-500',
-  grey: 'bg-gray-500',
-  xám: 'bg-gray-500',
+// Color mapping with gradient styles for a more vibrant look
+const COLOR_GRADIENT_MAP: Record<string, string> = {
+  red: 'bg-gradient-to-br from-red-400 to-red-600',
+  đỏ: 'bg-gradient-to-br from-red-400 to-red-600',
+  blue: 'bg-gradient-to-br from-blue-400 to-blue-600',
+  'xanh dương': 'bg-gradient-to-br from-blue-400 to-blue-600',
+  green: 'bg-gradient-to-br from-green-400 to-green-600',
+  'xanh lá': 'bg-gradient-to-br from-green-400 to-green-600',
+  yellow: 'bg-gradient-to-br from-yellow-300 to-yellow-500',
+  vàng: 'bg-gradient-to-br from-yellow-300 to-yellow-500',
+  black: 'bg-gradient-to-br from-gray-700 to-gray-900',
+  đen: 'bg-gradient-to-br from-gray-700 to-gray-900',
+  white: 'bg-gradient-to-br from-gray-50 to-gray-200',
+  trắng: 'bg-gradient-to-br from-gray-50 to-gray-200',
+  pink: 'bg-gradient-to-br from-pink-300 to-pink-500',
+  hồng: 'bg-gradient-to-br from-pink-300 to-pink-500',
+  purple: 'bg-gradient-to-br from-purple-400 to-purple-600',
+  tím: 'bg-gradient-to-br from-purple-400 to-purple-600',
+  orange: 'bg-gradient-to-br from-orange-400 to-orange-600',
+  cam: 'bg-gradient-to-br from-orange-400 to-orange-600',
+  gray: 'bg-gradient-to-br from-gray-400 to-gray-600',
+  grey: 'bg-gradient-to-br from-gray-400 to-gray-600',
+  xám: 'bg-gradient-to-br from-gray-400 to-gray-600',
 };
 
 const getColorClass = (colorValue: string): string => {
   const normalized = colorValue.toLowerCase().trim();
-  return COLOR_CLASS_MAP[normalized] || 'bg-gray-200 border border-gray-300';
+  return COLOR_GRADIENT_MAP[normalized] || 'bg-gradient-to-br from-gray-200 to-gray-400';
 };
 
 interface ProductVariantSelectorProps {
@@ -54,10 +54,9 @@ export default function ProductVariantSelector({
   const { t } = useTranslation('product');
   const baseId = useId();
 
-  const getAriaLabel = (optionName: string, isSelected: boolean, isAvailable: boolean): string => {
+  const getAriaLabel = (optionName: string, isSelected: boolean): string => {
     let label = optionName;
     if (isSelected) label += `, ${t('variant.selected')}`;
-    if (!isAvailable) label += `, ${t('variant.outOfStockOption')}`;
     return label;
   };
 
@@ -68,21 +67,25 @@ export default function ProductVariantSelector({
       available[variant.type] = new Set();
     });
 
-    combinations.forEach((combination) => {
-      if (combination.quantity <= 0) return;
+    // For each variant type, calculate available options based on OTHER type selections only
+    variants.forEach((variant) => {
+      const currentType = variant.type;
 
-      const isMatchingOtherSelections = Object.entries(selectedValues).every(([type, value]) => {
-        if (!combination.variant_values[type]) return true;
-        return combination.variant_values[type] === value;
-      });
+      combinations.forEach((combination) => {
+        if (combination.quantity <= 0) return;
 
-      if (isMatchingOtherSelections) {
-        Object.entries(combination.variant_values).forEach(([type, value]) => {
-          if (available[type]) {
-            available[type].add(value);
-          }
+        // Check if this combination matches selections of OTHER types (not current type)
+        const isMatchingOtherSelections = Object.entries(selectedValues).every(([type, value]) => {
+          // Skip checking the current type - we want to see all options for it
+          if (type === currentType) return true;
+          if (!combination.variant_values[type]) return true;
+          return combination.variant_values[type] === value;
         });
-      }
+
+        if (isMatchingOtherSelections && combination.variant_values[currentType]) {
+          available[currentType].add(combination.variant_values[currentType]);
+        }
+      });
     });
 
     return available;
@@ -111,7 +114,6 @@ export default function ProductVariantSelector({
         <div className="flex flex-wrap gap-2" role="radiogroup" aria-labelledby={labelId}>
           {variant.options.map((option) => {
             const isSelected = isOptionSelected(variant.type, option.value);
-            const isAvailable = isOptionAvailable(variant.type, option.value);
 
             return (
               <div key={option.value} className="group relative">
@@ -120,47 +122,47 @@ export default function ProductVariantSelector({
                   type="button"
                   role="radio"
                   onClick={() => handleOptionClick(variant.type, option.value)}
-                  disabled={!isAvailable}
                   className={classNames(
-                    'relative h-12 w-12 overflow-hidden rounded-sm border transition-all motion-reduce:transition-none',
+                    'relative h-8 w-10 overflow-hidden rounded-md transition-all duration-200 motion-reduce:transition-none',
                     {
-                      'border-orange ring-2 ring-orange ring-offset-1': isSelected,
-                      'border-gray-300 dark:border-gray-600': !isSelected && isAvailable,
-                      'cursor-not-allowed border-gray-200 dark:border-gray-700': !isAvailable,
+                      'scale-110 shadow-lg shadow-orange/30': isSelected,
+                      'hover:scale-105 hover:shadow-md': !isSelected,
                     },
                   )}
-                  aria-label={getAriaLabel(option.name, isSelected, isAvailable)}
+                  aria-label={getAriaLabel(option.name, isSelected)}
                   aria-checked={isSelected}
-                  aria-disabled={!isAvailable}
                 >
-                  {option.image ? (
-                    <img
-                      src={option.image}
-                      alt=""
-                      className={classNames('h-full w-full object-cover', {
-                        'opacity-40': !isAvailable,
-                      })}
-                    />
-                  ) : (
-                    <div
-                      className={classNames('h-full w-full', getColorClass(option.value), {
-                        'opacity-40': !isAvailable,
-                      })}
-                      aria-hidden="true"
-                    />
-                  )}
-                  {!isAvailable && (
-                    <div
-                      className="absolute inset-0 flex items-center justify-center"
-                      aria-hidden="true"
-                    >
-                      <div className="h-px w-full rotate-45 bg-gray-500" />
+                  {/* Outer border container */}
+                  <div
+                    className={classNames(
+                      'absolute inset-0 rounded-md transition-all duration-200',
+                      {
+                        'bg-gradient-to-r from-orange via-orange-400 to-orange p-[2px]': isSelected,
+                        'bg-gray-300 dark:bg-gray-600 p-[1px] group-hover:bg-orange/50': !isSelected,
+                      },
+                    )}
+                  >
+                    {/* Inner color content */}
+                    <div className="h-full w-full rounded-[5px] overflow-hidden">
+                      {option.image ? (
+                        <img src={option.image} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <div
+                          className={classNames('h-full w-full', getColorClass(option.value))}
+                          aria-hidden="true"
+                        />
+                      )}
                     </div>
-                  )}
+                  </div>
+                  {/* Selected checkmark indicator */}
                   {isSelected && (
-                    <div className="absolute right-0 bottom-0" aria-hidden="true">
-                      <svg className="h-4 w-4 text-orange" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M0 11l2-2 5 5L18 3l2 2L7 18z" />
+                    <div className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange text-white shadow-sm">
+                      <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                   )}
@@ -168,7 +170,7 @@ export default function ProductVariantSelector({
                 {/* Decorative hover hint - not a semantic tooltip */}
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute -top-8 left-1/2 z-10 -translate-x-1/2 rounded-sm bg-tooltip-bg px-2 py-1 text-xs whitespace-nowrap text-tooltip-text opacity-0 transition-opacity motion-reduce:transition-none group-hover:opacity-100"
+                  className="pointer-events-none absolute -top-8 left-1/2 z-10 -translate-x-1/2 rounded-md bg-gray-800 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 shadow-lg transition-opacity motion-reduce:transition-none group-hover:opacity-100"
                 >
                   {option.name}
                 </div>
@@ -210,7 +212,7 @@ export default function ProductVariantSelector({
                         !isAvailable,
                     },
                   )}
-                  aria-label={getAriaLabel(option.name, isSelected, isAvailable)}
+                  aria-label={getAriaLabel(option.name, isSelected)}
                   aria-checked={isSelected}
                   aria-disabled={!isAvailable}
                 >

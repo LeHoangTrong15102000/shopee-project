@@ -138,7 +138,8 @@ export default function ProductVariantSelector({
                       'absolute inset-0 rounded-md transition-all duration-200',
                       {
                         'bg-gradient-to-r from-orange via-orange-400 to-orange p-[2px]': isSelected,
-                        'bg-gray-300 dark:bg-gray-600 p-[1px] group-hover:bg-orange/50': !isSelected,
+                        'bg-gray-300 dark:bg-gray-600 p-[1px] group-hover:bg-orange/50':
+                          !isSelected,
                       },
                     )}
                   >

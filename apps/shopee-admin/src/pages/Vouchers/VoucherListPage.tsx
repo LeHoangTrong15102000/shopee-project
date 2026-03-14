@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
 import { Plus, Eye, Trash2, MoreHorizontal, Pencil, ToggleLeft } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import {
@@ -34,13 +32,19 @@ import { StatusBadge } from 'src/components/shared/StatusBadge';
 import { StatCard } from 'src/components/shared/StatCard';
 import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
 import { ErrorState } from 'src/components/shared/ErrorState';
-import vouchersApi from 'src/apis/vouchers.api';
+import {
+  useVouchers,
+  useVoucherStats,
+  useCreateVoucher,
+  useDeleteVoucher,
+  useUpdateVoucher,
+  useToggleVoucher,
+} from 'src/hooks/useVouchers';
 import { formatCurrency } from 'src/utils/format';
 import type { Voucher, DiscountType } from 'src/types';
 
 export default function VoucherListPage() {
   const navigate = useNavigate();
-  const qc = useQueryClient();
   const [page, setPage] = useState(0);
   const [createOpen, setCreateOpen] = useState(false);
   const [editVoucher, setEditVoucher] = useState<Voucher | null>(null);
@@ -55,53 +59,12 @@ export default function VoucherListPage() {
     end_date: '',
   });
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['admin-vouchers', page],
-    queryFn: () => vouchersApi.getVouchers({ page: page + 1, limit: 10 }).then((r) => r.data.data),
-  });
-  const { data: stats } = useQuery({
-    queryKey: ['admin-voucher-stats'],
-    queryFn: () => vouchersApi.getVoucherStats().then((r) => r.data.data),
-  });
-
-  const createMut = useMutation({
-    mutationFn: () => vouchersApi.createVoucher(form),
-    onSuccess: () => {
-      toast.success('Voucher created');
-      setCreateOpen(false);
-      qc.invalidateQueries({ queryKey: ['admin-vouchers'] });
-    },
-    onError: () => toast.error('Failed to create voucher'),
-  });
-  const deleteMut = useMutation({
-    mutationFn: (id: string) => vouchersApi.deleteVoucher(id),
-    onSuccess: () => {
-      toast.success('Voucher deleted');
-      setDeleteId(null);
-      qc.invalidateQueries({ queryKey: ['admin-vouchers'] });
-    },
-    onError: () => toast.error('Failed to delete voucher'),
-  });
-  const updateMut = useMutation({
-    mutationFn: ({ id, body }: { id: string; body: Partial<typeof form> }) =>
-      vouchersApi.updateVoucher(id, body),
-    onSuccess: () => {
-      toast.success('Voucher updated');
-      setEditVoucher(null);
-      qc.invalidateQueries({ queryKey: ['admin-vouchers'] });
-    },
-    onError: () => toast.error('Failed to update voucher'),
-  });
-  const toggleMut = useMutation({
-    mutationFn: ({ id, is_active }: { id: string; is_active: boolean }) =>
-      vouchersApi.updateVoucher(id, { is_active }),
-    onSuccess: () => {
-      toast.success('Status updated');
-      qc.invalidateQueries({ queryKey: ['admin-vouchers'] });
-      qc.invalidateQueries({ queryKey: ['admin-voucher-stats'] });
-    },
-    onError: () => toast.error('Failed to update status'),
-  });
+  const { data, isLoading, isError, refetch } = useVouchers(page);
+  const { data: stats } = useVoucherStats();
+  const createMut = useCreateVoucher(() => setCreateOpen(false));
+  const deleteMut = useDeleteVoucher(() => setDeleteId(null));
+  const updateMut = useUpdateVoucher(() => setEditVoucher(null));
+  const toggleMut = useToggleVoucher();
 
   const columns: ColumnDef<Voucher>[] = [
     {
@@ -198,7 +161,7 @@ export default function VoucherListPage() {
         }
       />
       {stats && (
-        <div className="grid gap-4 sm:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard label="Total" value={stats.total} />
           <StatCard label="Active" value={stats.active} />
           <StatCard label="Inactive" value={stats.inactive} />
@@ -294,7 +257,7 @@ export default function VoucherListPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={() => createMut.mutate()} disabled={createMut.isPending}>
+            <Button onClick={() => createMut.mutate(form)} disabled={createMut.isPending}>
               Create
             </Button>
           </DialogFooter>

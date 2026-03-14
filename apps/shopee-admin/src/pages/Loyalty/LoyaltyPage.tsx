@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
 import { Plus, Pencil, Trash2, Gift } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'src/components/ui/tabs';
@@ -22,11 +20,18 @@ import { StatCard } from 'src/components/shared/StatCard';
 import { StatusBadge } from 'src/components/shared/StatusBadge';
 import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
 import { ErrorState } from 'src/components/shared/ErrorState';
-import loyaltyApi from 'src/apis/loyalty.api';
+import {
+  useRewards,
+  useLoyaltyTransactions,
+  useLoyaltyStats,
+  useCreateReward,
+  useUpdateReward,
+  useDeleteReward,
+  useAdjustPoints,
+} from 'src/hooks/useLoyalty';
 import type { LoyaltyReward, LoyaltyTransaction } from 'src/types';
 
 export default function LoyaltyPage() {
-  const qc = useQueryClient();
   const [rewardDialog, setRewardDialog] = useState(false);
   const [editReward, setEditReward] = useState<LoyaltyReward | null>(null);
   const [deleteReward, setDeleteReward] = useState<LoyaltyReward | null>(null);
@@ -39,60 +44,19 @@ export default function LoyaltyPage() {
     isLoading: loadingRewards,
     isError: rewardsError,
     refetch: refetchRewards,
-  } = useQuery({
-    queryKey: ['admin-rewards'],
-    queryFn: () => loyaltyApi.getRewards().then((r) => r.data.data),
-  });
+  } = useRewards();
   const {
     data: transactions,
     isLoading: loadingTx,
     isError: txError,
     refetch: refetchTx,
-  } = useQuery({
-    queryKey: ['admin-loyalty-tx'],
-    queryFn: () => loyaltyApi.getTransactions().then((r) => r.data.data),
-  });
-  const { data: stats } = useQuery({
-    queryKey: ['admin-loyalty-stats'],
-    queryFn: () => loyaltyApi.getStats().then((r) => r.data.data),
-  });
+  } = useLoyaltyTransactions();
+  const { data: stats } = useLoyaltyStats();
 
-  const createRewardMut = useMutation({
-    mutationFn: () => loyaltyApi.createReward(rewardForm),
-    onSuccess: () => {
-      toast.success('Reward created');
-      setRewardDialog(false);
-      qc.invalidateQueries({ queryKey: ['admin-rewards'] });
-    },
-    onError: () => toast.error('Failed to create reward'),
-  });
-  const updateRewardMut = useMutation({
-    mutationFn: () => loyaltyApi.updateReward(editReward!._id, rewardForm),
-    onSuccess: () => {
-      toast.success('Reward updated');
-      setEditReward(null);
-      qc.invalidateQueries({ queryKey: ['admin-rewards'] });
-    },
-    onError: () => toast.error('Failed to update reward'),
-  });
-  const deleteRewardMut = useMutation({
-    mutationFn: (id: string) => loyaltyApi.deleteReward(id),
-    onSuccess: () => {
-      toast.success('Reward deleted');
-      setDeleteReward(null);
-      qc.invalidateQueries({ queryKey: ['admin-rewards'] });
-    },
-    onError: () => toast.error('Failed to delete reward'),
-  });
-  const adjustMut = useMutation({
-    mutationFn: () => loyaltyApi.adjustPoints(adjustForm),
-    onSuccess: () => {
-      toast.success('Points adjusted');
-      setAdjustDialog(false);
-      qc.invalidateQueries({ queryKey: ['admin-loyalty-tx'] });
-    },
-    onError: () => toast.error('Failed to adjust points'),
-  });
+  const createRewardMut = useCreateReward(() => setRewardDialog(false));
+  const updateRewardMut = useUpdateReward(() => setEditReward(null));
+  const deleteRewardMut = useDeleteReward(() => setDeleteReward(null));
+  const adjustMut = useAdjustPoints(() => setAdjustDialog(false));
 
   const rewardCols: ColumnDef<LoyaltyReward>[] = [
     { accessorKey: 'name', header: 'Name' },
@@ -182,7 +146,7 @@ export default function LoyaltyPage() {
     <div className="space-y-6">
       <PageHeader title="Loyalty Program" description="Manage rewards and points" />
       <Tabs defaultValue="rewards">
-        <TabsList>
+        <TabsList className="w-full justify-start overflow-x-auto flex-nowrap scroll-p-1">
           <TabsTrigger value="rewards">Rewards</TabsTrigger>
           <TabsTrigger value="transactions">Transactions</TabsTrigger>
           <TabsTrigger value="stats">Stats</TabsTrigger>
@@ -268,7 +232,7 @@ export default function LoyaltyPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={() => createRewardMut.mutate()} disabled={createRewardMut.isPending}>
+            <Button onClick={() => createRewardMut.mutate(rewardForm)} disabled={createRewardMut.isPending}>
               Create
             </Button>
           </DialogFooter>
@@ -308,7 +272,7 @@ export default function LoyaltyPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={() => updateRewardMut.mutate()} disabled={updateRewardMut.isPending}>
+            <Button onClick={() => editReward && updateRewardMut.mutate({ id: editReward._id, body: rewardForm })} disabled={updateRewardMut.isPending}>
               Save
             </Button>
           </DialogFooter>
@@ -348,7 +312,7 @@ export default function LoyaltyPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={() => adjustMut.mutate()} disabled={adjustMut.isPending}>
+            <Button onClick={() => adjustMut.mutate(adjustForm)} disabled={adjustMut.isPending}>
               Adjust
             </Button>
           </DialogFooter>

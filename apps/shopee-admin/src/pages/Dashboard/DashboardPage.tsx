@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { DollarSign, ShoppingCart, Users, Package } from 'lucide-react';
 import {
   Area,
@@ -32,8 +31,17 @@ import {
   TableHeader,
   TableRow,
 } from 'src/components/ui/table';
-import dashboardApi from 'src/apis/dashboard.api';
+import {
+  useDashboardOverview,
+  useDashboardRevenue,
+  useDashboardOrderTrend,
+  useDashboardUserGrowth,
+  useDashboardTopProducts,
+  useDashboardTopBuyers,
+  useDashboardRevenueByCategory,
+} from 'src/hooks/useDashboard';
 import { formatCurrency } from 'src/utils/format';
+import { useIsMobile } from 'src/hooks/use-mobile';
 
 const COLORS = [
   'hsl(var(--chart-1))',
@@ -45,46 +53,21 @@ const COLORS = [
 
 export default function DashboardPage() {
   const [period, setPeriod] = useState('30d');
+  const isMobile = useIsMobile();
 
   const {
     data: overview,
     isLoading: loadingOverview,
     isError: overviewError,
     refetch: refetchOverview,
-  } = useQuery({
-    queryKey: ['dashboard-overview'],
-    queryFn: () => dashboardApi.getOverview().then((r) => r.data.data),
-  });
+  } = useDashboardOverview();
 
-  const { data: revenue } = useQuery({
-    queryKey: ['dashboard-revenue', period],
-    queryFn: () => dashboardApi.getRevenue({ period }).then((r) => r.data.data),
-  });
-
-  const { data: orderTrend } = useQuery({
-    queryKey: ['dashboard-order-trend', period],
-    queryFn: () => dashboardApi.getOrderTrend({ period }).then((r) => r.data.data),
-  });
-
-  const { data: userGrowth } = useQuery({
-    queryKey: ['dashboard-user-growth', period],
-    queryFn: () => dashboardApi.getUserGrowth({ period }).then((r) => r.data.data),
-  });
-
-  const { data: topProducts } = useQuery({
-    queryKey: ['dashboard-top-products', period],
-    queryFn: () => dashboardApi.getRevenueByProduct({ period, limit: 5 }).then((r) => r.data.data),
-  });
-
-  const { data: topBuyers } = useQuery({
-    queryKey: ['dashboard-top-buyers', period],
-    queryFn: () => dashboardApi.getTopBuyers({ period, limit: 5 }).then((r) => r.data.data),
-  });
-
-  const { data: revenueByCategory } = useQuery({
-    queryKey: ['dashboard-revenue-category', period],
-    queryFn: () => dashboardApi.getRevenueByCategory({ period }).then((r) => r.data.data),
-  });
+  const { data: revenue } = useDashboardRevenue(period);
+  const { data: orderTrend } = useDashboardOrderTrend(period);
+  const { data: userGrowth } = useDashboardUserGrowth(period);
+  const { data: topProducts } = useDashboardTopProducts(period);
+  const { data: topBuyers } = useDashboardTopBuyers(period);
+  const { data: revenueByCategory } = useDashboardRevenueByCategory(period);
 
   if (loadingOverview) return <LoadingState />;
   if (overviewError)
@@ -135,7 +118,7 @@ export default function DashboardPage() {
           <CardContent aria-label="Revenue chart">
             <ChartContainer
               config={{ revenue: { label: 'Revenue', color: 'var(--chart-1)' } }}
-              className="h-[300px]"
+              className="h-[200px] md:h-[300px]"
             >
               <AreaChart data={revenue ?? []}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -162,7 +145,7 @@ export default function DashboardPage() {
           <CardContent aria-label="Order trend chart">
             <ChartContainer
               config={{ orders: { label: 'Orders', color: 'var(--chart-2)' } }}
-              className="h-[300px]"
+              className="h-[200px] md:h-[300px]"
             >
               <LineChart data={orderTrend ?? []}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -191,7 +174,7 @@ export default function DashboardPage() {
           <CardContent aria-label="User growth chart">
             <ChartContainer
               config={{ users: { label: 'Users', color: 'var(--chart-3)' } }}
-              className="h-[250px]"
+              className="h-[200px] md:h-[250px]"
             >
               <BarChart data={userGrowth ?? []}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -213,7 +196,7 @@ export default function DashboardPage() {
             className="flex items-center justify-center"
             aria-label="Revenue by category chart"
           >
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={isMobile ? 200 : 250}>
               <PieChart>
                 <Pie
                   data={revenueByCategory ?? []}
@@ -221,7 +204,7 @@ export default function DashboardPage() {
                   nameKey="category"
                   cx="50%"
                   cy="50%"
-                  outerRadius={90}
+                  outerRadius={isMobile ? 60 : 90}
                   label={({ category, percent }) => `${category} ${(percent * 100).toFixed(0)}%`}
                 >
                   {(revenueByCategory ?? []).map((_, i) => (
@@ -241,7 +224,7 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle>Top Products by Revenue</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -268,7 +251,7 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle>Top Buyers</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>

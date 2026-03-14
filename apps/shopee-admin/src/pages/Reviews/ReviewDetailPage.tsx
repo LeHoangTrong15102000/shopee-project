@@ -1,7 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
 import { ArrowLeft, Star, Trash2 } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
@@ -11,13 +9,12 @@ import { PageHeader } from 'src/components/shared/PageHeader';
 import { LoadingState } from 'src/components/shared/LoadingState';
 import { ErrorState } from 'src/components/shared/ErrorState';
 import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
-import reviewsApi from 'src/apis/reviews.api';
+import { useReviewDetail, useDeleteComment } from 'src/hooks/useReviewDetail';
 import { useState } from 'react';
 
 export default function ReviewDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const qc = useQueryClient();
   const [deleteCommentId, setDeleteCommentId] = useState<string | null>(null);
 
   const {
@@ -25,21 +22,9 @@ export default function ReviewDetailPage() {
     isLoading,
     isError,
     refetch,
-  } = useQuery({
-    queryKey: ['admin-review', id],
-    queryFn: () => reviewsApi.getReview(id!).then((r) => r.data.data),
-    enabled: !!id,
-  });
+  } = useReviewDetail(id);
 
-  const deleteCommentMut = useMutation({
-    mutationFn: (commentId: string) => reviewsApi.deleteComment(commentId),
-    onSuccess: () => {
-      toast.success('Comment deleted');
-      setDeleteCommentId(null);
-      qc.invalidateQueries({ queryKey: ['admin-review', id] });
-    },
-    onError: () => toast.error('Failed to delete comment'),
-  });
+  const deleteCommentMut = useDeleteComment(id, () => setDeleteCommentId(null));
 
   if (isLoading) return <LoadingState />;
   if (isError) return <ErrorState message="Failed to load review" onRetry={refetch} />;
@@ -73,7 +58,7 @@ export default function ReviewDetailPage() {
             </div>
             <p>{review.comment}</p>
             {review.images?.length > 0 && (
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {review.images.map((img, i) => (
                   <img
                     key={i}
@@ -95,7 +80,7 @@ export default function ReviewDetailPage() {
                       <span className="text-xs text-muted-foreground">
                         {format(new Date(c.createdAt), 'MMM d, yyyy')}
                       </span>
-                      <Button variant="ghost" size="sm" onClick={() => setDeleteCommentId(c._id)}>
+                      <Button variant="ghost" size="sm" aria-label="Delete comment" onClick={() => setDeleteCommentId(c._id)}>
                         <Trash2 className="size-3 text-destructive" />
                       </Button>
                     </div>

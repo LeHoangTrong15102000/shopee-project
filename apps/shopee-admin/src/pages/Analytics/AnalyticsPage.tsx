@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'src/components/ui/tabs';
 import { DataTable } from 'src/components/shared/DataTable';
@@ -7,7 +6,7 @@ import { PageHeader } from 'src/components/shared/PageHeader';
 import { PeriodSelect } from 'src/components/shared/PeriodSelect';
 import { StatCard } from 'src/components/shared/StatCard';
 import { ErrorState } from 'src/components/shared/ErrorState';
-import analyticsApi from 'src/apis/analytics.api';
+import { useTopSelling, useTopViewed, useTopRated, useStatsByCategory, useChatbotOverview } from 'src/hooks/useAnalytics';
 import { formatCurrency } from 'src/utils/format';
 import type { ProductAnalytics } from 'src/types';
 
@@ -19,28 +18,13 @@ export default function AnalyticsPage() {
     isLoading: loadingSelling,
     isError: sellingError,
     refetch: refetchSelling,
-  } = useQuery({
-    queryKey: ['analytics-top-selling', period],
-    queryFn: () => analyticsApi.getTopSelling({ period, limit: 20 }).then((r) => r.data.data),
-  });
+  } = useTopSelling(period);
   // Note: topViewed and topRated backend endpoints return all-time data (no period filter).
   // Period is excluded from their query keys to avoid unnecessary refetches.
-  const { data: topViewed, isLoading: loadingViewed } = useQuery({
-    queryKey: ['analytics-top-viewed'],
-    queryFn: () => analyticsApi.getTopViewed({ limit: 20 }).then((r) => r.data.data),
-  });
-  const { data: topRated, isLoading: loadingRated } = useQuery({
-    queryKey: ['analytics-top-rated'],
-    queryFn: () => analyticsApi.getTopRated({ limit: 20 }).then((r) => r.data.data),
-  });
-  const { data: byCategory, isLoading: loadingCategory } = useQuery({
-    queryKey: ['analytics-by-category'],
-    queryFn: () => analyticsApi.getStatsByCategory().then((r) => r.data.data),
-  });
-  const { data: chatbot } = useQuery({
-    queryKey: ['analytics-chatbot'],
-    queryFn: () => analyticsApi.getChatbotOverview().then((r) => r.data.data),
-  });
+  const { data: topViewed, isLoading: loadingViewed } = useTopViewed();
+  const { data: topRated, isLoading: loadingRated } = useTopRated();
+  const { data: byCategory, isLoading: loadingCategory } = useStatsByCategory();
+  const { data: chatbot } = useChatbotOverview();
 
   const productCols: ColumnDef<ProductAnalytics>[] = [
     {
@@ -95,7 +79,7 @@ export default function AnalyticsPage() {
         actions={<PeriodSelect value={period} onChange={setPeriod} />}
       />
       <Tabs defaultValue="top-selling">
-        <TabsList>
+        <TabsList className="w-full justify-start overflow-x-auto flex-nowrap scroll-p-1">
           <TabsTrigger value="top-selling">Top Selling</TabsTrigger>
           <TabsTrigger value="top-viewed">Top Viewed</TabsTrigger>
           <TabsTrigger value="top-rated">Top Rated</TabsTrigger>

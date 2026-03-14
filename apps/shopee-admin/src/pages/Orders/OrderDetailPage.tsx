@@ -1,7 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
@@ -24,7 +22,7 @@ import { PageHeader } from 'src/components/shared/PageHeader';
 import { StatusBadge } from 'src/components/shared/StatusBadge';
 import { LoadingState } from 'src/components/shared/LoadingState';
 import { ErrorState } from 'src/components/shared/ErrorState';
-import ordersApi from 'src/apis/orders.api';
+import { useOrderDetail, useUpdateOrderStatus } from 'src/hooks/useOrderDetail';
 import { formatCurrency } from 'src/utils/format';
 import type { OrderStatus } from 'src/types';
 
@@ -33,26 +31,14 @@ const statusFlow: OrderStatus[] = ['pending', 'processing', 'shipped', 'delivere
 export default function OrderDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const qc = useQueryClient();
 
   const {
     data: order,
     isLoading,
     error,
-  } = useQuery({
-    queryKey: ['admin-order', id],
-    queryFn: () => ordersApi.getOrder(id!).then((r) => r.data.data),
-    enabled: !!id,
-  });
+  } = useOrderDetail(id);
 
-  const updateMut = useMutation({
-    mutationFn: (status: OrderStatus) => ordersApi.updateOrderStatus(id!, { status }),
-    onSuccess: () => {
-      toast.success('Status updated');
-      qc.invalidateQueries({ queryKey: ['admin-order', id] });
-    },
-    onError: () => toast.error('Failed to update status'),
-  });
+  const updateMut = useUpdateOrderStatus(id);
 
   if (isLoading) return <LoadingState />;
   if (error || !order) return <ErrorState message="Order not found" />;
@@ -173,7 +159,7 @@ export default function OrderDetailPage() {
               {order.shipping_address && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Address</span>
-                  <span className="text-right max-w-[150px]">{order.shipping_address}</span>
+                  <span className="text-right break-all">{order.shipping_address}</span>
                 </div>
               )}
             </CardContent>

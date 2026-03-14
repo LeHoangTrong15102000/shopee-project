@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { type ColumnDef } from '@tanstack/react-table';
-import { toast } from 'sonner';
 import { Trash2 } from 'lucide-react';
 import { Checkbox } from 'src/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'src/components/ui/tabs';
@@ -18,62 +16,34 @@ import { Label } from 'src/components/ui/label';
 import { DataTable } from 'src/components/shared/DataTable';
 import { PageHeader } from 'src/components/shared/PageHeader';
 import { ErrorState } from 'src/components/shared/ErrorState';
-import inventoryApi from 'src/apis/inventory.api';
+import { useLowStock, useOutOfStock, useUpdateStock, useBulkUpdateStock } from 'src/hooks/useInventory';
 import { formatCurrency } from 'src/utils/format';
 import type { Product } from 'src/types';
 
 export default function InventoryPage() {
-  const qc = useQueryClient();
   const [updateProduct, setUpdateProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(0);
   const [selected, setSelected] = useState<Product[]>([]);
   const [bulkOpen, setBulkOpen] = useState(false);
   const [bulkQty, setBulkQty] = useState(0);
 
-  const invalidateAll = () => {
-    qc.invalidateQueries({ queryKey: ['admin-inventory-low'] });
-    qc.invalidateQueries({ queryKey: ['admin-inventory-out'] });
-  };
-
   const {
     data: lowStock,
     isLoading: loadingLow,
     isError: lowError,
     refetch: refetchLow,
-  } = useQuery({
-    queryKey: ['admin-inventory-low'],
-    queryFn: () => inventoryApi.getLowStock({ limit: 50 }).then((r) => r.data.data),
-  });
+  } = useLowStock();
   const {
     data: outOfStock,
     isLoading: loadingOut,
     isError: outError,
     refetch: refetchOut,
-  } = useQuery({
-    queryKey: ['admin-inventory-out'],
-    queryFn: () => inventoryApi.getOutOfStock({ limit: 50 }).then((r) => r.data.data),
-  });
+  } = useOutOfStock();
 
-  const updateMut = useMutation({
-    mutationFn: ({ id, qty }: { id: string; qty: number }) =>
-      inventoryApi.updateStock(id, { quantity: qty }),
-    onSuccess: () => {
-      toast.success('Stock updated');
-      setUpdateProduct(null);
-      invalidateAll();
-    },
-    onError: () => toast.error('Failed to update stock'),
-  });
-  const bulkUpdateMut = useMutation({
-    mutationFn: (items: Array<{ product_id: string; quantity: number }>) =>
-      inventoryApi.bulkUpdateStock({ items }),
-    onSuccess: () => {
-      toast.success(`${selected.length} products updated`);
-      setBulkOpen(false);
-      setSelected([]);
-      invalidateAll();
-    },
-    onError: () => toast.error('Failed to bulk update stock'),
+  const updateMut = useUpdateStock(() => setUpdateProduct(null));
+  const bulkUpdateMut = useBulkUpdateStock(() => {
+    setBulkOpen(false);
+    setSelected([]);
   });
 
   const columns: ColumnDef<Product>[] = [
@@ -157,7 +127,7 @@ export default function InventoryPage() {
     <div className="space-y-6">
       <PageHeader title="Inventory" description="Monitor and manage stock levels" />
       <Tabs defaultValue="low-stock">
-        <TabsList>
+        <TabsList className="w-full justify-start overflow-x-auto flex-nowrap scroll-p-1">
           <TabsTrigger value="low-stock">Low Stock ({lowStock?.products?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="out-of-stock">
             Out of Stock ({outOfStock?.products?.length ?? 0})

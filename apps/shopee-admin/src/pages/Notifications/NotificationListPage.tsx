@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
 import { Plus, Trash2, MoreHorizontal } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import {
@@ -15,7 +13,6 @@ import {
 import { Input } from 'src/components/ui/input';
 import { Label } from 'src/components/ui/label';
 import { Textarea } from 'src/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from 'src/components/ui/tabs';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,43 +24,18 @@ import { PageHeader } from 'src/components/shared/PageHeader';
 import { StatusBadge } from 'src/components/shared/StatusBadge';
 import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
 import { ErrorState } from 'src/components/shared/ErrorState';
-import notificationsApi from 'src/apis/notifications.api';
+import { useNotifications, useCreateNotification, useDeleteNotification } from 'src/hooks/useNotifications';
 import type { Notification } from 'src/types';
 
 export default function NotificationListPage() {
-  const qc = useQueryClient();
   const [page, setPage] = useState(0);
   const [createType, setCreateType] = useState<'targeted' | 'broadcast' | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [form, setForm] = useState({ user_id: '', title: '', message: '' });
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['admin-notifications', page],
-    queryFn: () =>
-      notificationsApi.getNotifications({ page: page + 1, limit: 10 }).then((r) => r.data.data),
-  });
-
-  const createMut = useMutation({
-    mutationFn: () =>
-      createType === 'broadcast'
-        ? notificationsApi.broadcastNotification({ title: form.title, message: form.message })
-        : notificationsApi.createNotification(form),
-    onSuccess: () => {
-      toast.success('Notification sent');
-      setCreateType(null);
-      qc.invalidateQueries({ queryKey: ['admin-notifications'] });
-    },
-    onError: () => toast.error('Failed to send notification'),
-  });
-  const deleteMut = useMutation({
-    mutationFn: (id: string) => notificationsApi.deleteNotification(id),
-    onSuccess: () => {
-      toast.success('Notification deleted');
-      setDeleteId(null);
-      qc.invalidateQueries({ queryKey: ['admin-notifications'] });
-    },
-    onError: () => toast.error('Failed to delete notification'),
-  });
+  const { data, isLoading, isError, refetch } = useNotifications(page);
+  const createMut = useCreateNotification(() => setCreateType(null));
+  const deleteMut = useDeleteNotification(() => setDeleteId(null));
 
   const columns: ColumnDef<Notification>[] = [
     { accessorKey: 'title', header: 'Title' },
@@ -112,7 +84,7 @@ export default function NotificationListPage() {
         title="Notifications"
         description="Send and manage notifications"
         actions={
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               size="sm"
               variant="outline"
@@ -186,7 +158,7 @@ export default function NotificationListPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={() => createMut.mutate()} disabled={createMut.isPending}>
+            <Button onClick={() => createMut.mutate({ type: createType!, form })} disabled={createMut.isPending}>
               Send
             </Button>
           </DialogFooter>

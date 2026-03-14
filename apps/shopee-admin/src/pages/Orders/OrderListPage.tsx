@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
 import { Eye, MoreHorizontal } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import { Checkbox } from 'src/components/ui/checkbox';
@@ -25,7 +23,7 @@ import { DataTable } from 'src/components/shared/DataTable';
 import { PageHeader } from 'src/components/shared/PageHeader';
 import { StatusBadge } from 'src/components/shared/StatusBadge';
 import { ErrorState } from 'src/components/shared/ErrorState';
-import ordersApi from 'src/apis/orders.api';
+import { useOrders, useBulkUpdateOrderStatus } from 'src/hooks/useOrders';
 import { formatCurrency } from 'src/utils/format';
 import type { Order, OrderStatus } from 'src/types';
 
@@ -40,30 +38,16 @@ const statuses: (OrderStatus | 'all')[] = [
 
 export default function OrderListPage() {
   const navigate = useNavigate();
-  const qc = useQueryClient();
   const [page, setPage] = useState(0);
   const [status, setStatus] = useState<OrderStatus | 'all'>('all');
   const [selected, setSelected] = useState<Order[]>([]);
   const [bulkStatus, setBulkStatus] = useState<OrderStatus | ''>('');
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['admin-orders', page, status],
-    queryFn: () =>
-      ordersApi
-        .getOrders({ page: page + 1, limit: 10, ...(status !== 'all' && { status }) })
-        .then((r) => r.data.data),
-  });
+  const { data, isLoading, isError, refetch } = useOrders(page, status);
 
-  const bulkMut = useMutation({
-    mutationFn: (body: { order_ids: string[]; status: OrderStatus }) =>
-      ordersApi.bulkUpdateStatus(body),
-    onSuccess: () => {
-      toast.success('Orders updated');
-      setSelected([]);
-      setBulkStatus('');
-      qc.invalidateQueries({ queryKey: ['admin-orders'] });
-    },
-    onError: () => toast.error('Failed to update orders'),
+  const bulkMut = useBulkUpdateOrderStatus(() => {
+    setSelected([]);
+    setBulkStatus('');
   });
 
   const columns: ColumnDef<Order>[] = [
@@ -73,10 +57,11 @@ export default function OrderListPage() {
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
           onCheckedChange={(v) => table.toggleAllPageRowsSelected(!!v)}
+          aria-label="Select all"
         />
       ),
       cell: ({ row }) => (
-        <Checkbox checked={row.getIsSelected()} onCheckedChange={(v) => row.toggleSelected(!!v)} />
+        <Checkbox checked={row.getIsSelected()} onCheckedChange={(v) => row.toggleSelected(!!v)} aria-label="Select row" />
       ),
       enableSorting: false,
     },
@@ -144,7 +129,7 @@ export default function OrderListPage() {
           setPage(0);
         }}
       >
-        <TabsList>
+        <TabsList className="w-full justify-start overflow-x-auto flex-nowrap scroll-p-1">
           {statuses.map((s) => (
             <TabsTrigger key={s} value={s} className="capitalize">
               {s}

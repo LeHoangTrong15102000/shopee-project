@@ -59,8 +59,8 @@ export function AppHeader() {
     <header className="flex h-14 items-center gap-2 border-b px-4">
       <SidebarTrigger />
       <Separator orientation="vertical" className="h-6" />
-      <Breadcrumb>
-        <BreadcrumbList>
+      <Breadcrumb className="min-w-0 flex-1">
+        <BreadcrumbList className="flex-nowrap overflow-x-auto no-scrollbar">
           <BreadcrumbItem>
             {segments.length === 0 ? (
               <BreadcrumbPage>Dashboard</BreadcrumbPage>
@@ -72,7 +72,7 @@ export function AppHeader() {
             <BreadcrumbItem key={seg}>
               <BreadcrumbSeparator />
               {i === segments.length - 1 ? (
-                <BreadcrumbPage>{routeLabels[seg] ?? seg}</BreadcrumbPage>
+                <BreadcrumbPage className="truncate">{routeLabels[seg] ?? seg}</BreadcrumbPage>
               ) : (
                 <BreadcrumbLink href={`/${segments.slice(0, i + 1).join('/')}`}>
                   {routeLabels[seg] ?? seg}

@@ -1,63 +1,41 @@
-// Common API response types
-export interface SuccessResponse<T> {
-  message: string;
-  data: T;
-}
+import type {
+  Product as SharedProduct,
+  ProductSKU,
+  ProductVariant,
+  ProductVariantOption,
+  ProductVariantCombination,
+  ProductWithVariants,
+  ProductList,
+  ProductListConfig,
+  Category,
+  User,
+  SuccessResponse,
+  ErrorResponse,
+  PaginatedData,
+  Review,
+  ReviewComment,
+} from '@shopee/shared-types';
 
-export interface ErrorResponse {
-  message: string;
-  data?: Record<string, string>;
-}
+// Re-export shared types
+export type {
+  Category,
+  User,
+  SuccessResponse,
+  ErrorResponse,
+  PaginatedData,
+  Review,
+  ReviewComment,
+  ProductSKU,
+  ProductVariant,
+  ProductVariantOption,
+  ProductVariantCombination,
+  ProductWithVariants,
+  ProductList,
+  ProductListConfig,
+};
 
-export interface PaginatedData<T> {
-  items: T[];
-  pagination: {
-    page: number;
-    limit: number;
-    page_size: number;
-    total?: number;
-    total_pages?: number;
-  };
-}
-
-// User
-export interface User {
-  _id: string;
-  roles: string[];
-  email: string;
-  name?: string;
-  date_of_birth?: string;
-  avatar?: string;
-  address?: string;
-  phone?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// Product
-export interface Product {
-  _id: string;
-  name: string;
-  image: string;
-  images: string[];
-  description?: string;
-  category: Category | string;
-  price: number;
-  rating: number;
-  price_before_discount: number;
-  quantity: number;
-  sold: number;
-  view: number;
-  location?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// Category
-export interface Category {
-  _id: string;
-  name: string;
-}
+// Extend shared Product with optional variants/skus for admin
+export type Product = SharedProduct;
 
 // Order
 export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
@@ -107,33 +85,6 @@ export interface VoucherUsage {
   order: string;
   discount_amount: number;
   createdAt: string;
-}
-
-// Review
-export interface Review {
-  _id: string;
-  user: { _id: string; name: string; email: string; avatar?: string };
-  product: { _id: string; name: string; image: string };
-  rating: number;
-  comment: string;
-  images: string[];
-  helpful_count: number;
-  comments_count?: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ReviewComment {
-  _id: string;
-  user: { _id: string; name: string; email: string; avatar?: string };
-  review: string;
-  content: string;
-  parent_comment?: string;
-  level: number;
-  replies_count: number;
-  createdAt: string;
-  updatedAt: string;
-  replies?: ReviewComment[];
 }
 
 // Loyalty

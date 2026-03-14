@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import Button from 'src/components/Button';
+import { formatVNDCurrency } from '@shopee/shared-utils';
 
 export type WalletType = 'momo' | 'zalopay' | 'vnpay';
 
@@ -48,9 +49,7 @@ export const WALLETS: WalletInfo[] = [
   },
 ];
 
-export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-};
+export const formatCurrency = formatVNDCurrency;
 
 export const WalletLogo = memo(function WalletLogo({ wallet }: { wallet: WalletType }) {
   const logoConfig: Record<WalletType, { gradient: string; text: string }> = {

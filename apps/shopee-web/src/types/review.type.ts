@@ -1,43 +1,16 @@
-export interface User {
-  _id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-}
+import type {
+  Review as SharedReview,
+  ReviewComment as SharedReviewComment,
+} from '@shopee/shared-types';
 
-export interface Product {
-  _id: string;
-  name: string;
-  image: string;
-}
-
-export interface Review {
-  _id: string;
-  user: User;
-  product: Product;
+// Extend shared Review with web-specific fields
+export type Review = SharedReview & {
   purchase: string;
-  rating: number;
-  comment: string;
-  images: string[];
-  helpful_count: number;
-  createdAt: string;
-  updatedAt: string;
   is_liked?: boolean;
-  comments_count?: number;
-}
+};
 
-export interface ReviewComment {
-  _id: string;
-  user: User;
-  review: string;
-  content: string;
-  parent_comment?: string;
-  level: number;
-  replies_count: number;
-  createdAt: string;
-  updatedAt: string;
-  replies?: ReviewComment[];
-}
+// Re-export shared ReviewComment as-is
+export type ReviewComment = SharedReviewComment;
 
 export interface ReviewStats {
   total_reviews: number;

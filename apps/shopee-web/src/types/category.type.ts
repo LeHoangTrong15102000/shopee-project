@@ -1,4 +1,3 @@
-export interface Category {
-  _id: string;
-  name: string;
-}
+import type { Category } from '@shopee/shared-types';
+
+export type { Category };

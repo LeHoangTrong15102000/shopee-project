@@ -52,6 +52,15 @@ importers:
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.71.2(react@19.2.4))
+      '@shopee/shared-constants':
+        specifier: workspace:*
+        version: link:../../libs/shared-constants
+      '@shopee/shared-types':
+        specifier: workspace:*
+        version: link:../../libs/shared-types
+      '@shopee/shared-utils':
+        specifier: workspace:*
+        version: link:../../libs/shared-utils
       '@tanstack/react-query':
         specifier: ^5.90.21
         version: 5.90.21(react@19.2.4)
@@ -406,6 +415,15 @@ importers:
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.71.2(react@19.2.4))
+      '@shopee/shared-constants':
+        specifier: workspace:*
+        version: link:../../libs/shared-constants
+      '@shopee/shared-types':
+        specifier: workspace:*
+        version: link:../../libs/shared-types
+      '@shopee/shared-utils':
+        specifier: workspace:*
+        version: link:../../libs/shared-utils
       '@tanstack/react-query':
         specifier: ^5.90.21
         version: 5.90.21(react@19.2.4)
@@ -616,7 +634,24 @@ importers:
 
   libs/shared-types: {}
 
-  libs/shared-utils: {}
+  libs/shared-utils:
+    dependencies:
+      '@shopee/shared-constants':
+        specifier: workspace:*
+        version: link:../shared-constants
+      '@shopee/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      axios:
+        specifier: '>=1'
+        version: 1.13.6
+      react:
+        specifier: '>=18'
+        version: 19.2.4
+    devDependencies:
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
 
 packages:
 

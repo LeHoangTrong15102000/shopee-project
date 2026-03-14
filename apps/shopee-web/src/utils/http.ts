@@ -12,7 +12,7 @@ import {
   setProfileToLS,
   setRefreshTokenToLS,
 } from './auth';
-import { isAxiosExpiredTokenError, isAxiosUnauthorizedError } from './utils';
+import { isAxiosExpiredTokenError, isAxiosUnauthorizedError } from '@shopee/shared-utils';
 
 import { URL_LOGIN, URL_LOGOUT, URL_REFRESH_TOKEN, URL_REGISTER } from 'src/apis/auth.api';
 import config from 'src/constant/config';

@@ -1,3 +1,3 @@
-export function formatCurrency(value: number | string): string {
-  return `₫${Number(value).toLocaleString('vi-VN')}`;
-}
+import { formatPrice } from '@shopee/shared-utils';
+
+export const formatCurrency = formatPrice;

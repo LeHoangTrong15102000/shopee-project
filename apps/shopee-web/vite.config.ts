@@ -42,7 +42,10 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        src: path.resolve(__dirname, './src')
+        src: path.resolve(__dirname, './src'),
+        '@shopee/shared-types': path.resolve(__dirname, '../../libs/shared-types/src'),
+        '@shopee/shared-utils': path.resolve(__dirname, '../../libs/shared-utils/src'),
+        '@shopee/shared-constants': path.resolve(__dirname, '../../libs/shared-constants/src'),
       },
       dedupe: ['react', 'react-dom']
     },

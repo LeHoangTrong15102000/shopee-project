@@ -1,16 +1,7 @@
-// truyền vào responseApi 1 generic type chung, được trả về từ Api sẽ có 2 thuộc tính là (message và data: Data)
-// Ở đây coi ResponseApi như hàm và <Data> là param truyền vào thì sẽ có dược type như kia {message: , data?:}
-export interface SuccessResponseApi<Data> {
-  message: string;
-  // data có kiểu trả về là Data
-  data: Data; // Quy định như này để dùng cho nhiều loại repsonse trả về
-}
+import type { SuccessResponse, ErrorResponse } from '@shopee/shared-types';
 
-// Api trả về cho Api bị gọi lỗi, có thể có data hoặc không
-export interface ErrorResponseApi<Data> {
-  message: string;
-  data?: Data;
-}
+export type SuccessResponseApi<Data> = SuccessResponse<Data>;
+export type ErrorResponseApi<Data = Record<string, string>> = ErrorResponse<Data>;
 
 /**
  * cú pháp `-?` loại bỏ các key optional (ví như name?: string) -> loại bỏ undefined của key optional

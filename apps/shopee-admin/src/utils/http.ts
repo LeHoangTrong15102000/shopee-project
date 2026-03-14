@@ -1,4 +1,5 @@
 import axios, { AxiosError, type AxiosInstance, type AxiosRequestConfig } from 'axios';
+import { createAuthStorage } from '@shopee/shared-utils';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/';
 
@@ -6,25 +7,29 @@ const URL_LOGIN = 'login';
 const URL_REFRESH_TOKEN = 'refresh-access-token';
 const URL_LOGOUT = 'logout';
 
+const authStorage = createAuthStorage({
+  accessTokenKey: 'accessToken',
+  refreshTokenKey: 'refreshToken',
+  profileKey: 'profile',
+});
+
 function getAccessTokenFromLS() {
-  return localStorage.getItem('accessToken') || '';
+  return authStorage.getAccessToken();
 }
 function getRefreshTokenFromLS() {
-  return localStorage.getItem('refreshToken') || '';
+  return authStorage.getRefreshToken();
 }
 function setAccessTokenToLS(token: string) {
-  localStorage.setItem('accessToken', token);
+  authStorage.setAccessToken(token);
 }
 function setRefreshTokenToLS(token: string) {
-  localStorage.setItem('refreshToken', token);
+  authStorage.setRefreshToken(token);
 }
 function setProfileToLS(profile: unknown) {
-  localStorage.setItem('profile', JSON.stringify(profile));
+  authStorage.setProfile(profile);
 }
 function clearLS() {
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
-  localStorage.removeItem('profile');
+  authStorage.clearAll();
 }
 
 // Callback for handling auth failure navigation (single consumer — router layer)

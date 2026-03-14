@@ -5,6 +5,7 @@ import { WALLETS, WalletType } from './components/WalletCard';
 import WalletSelectionView from './components/WalletSelectionView';
 import QRDisplayView from './components/QRDisplayView';
 import { WaitingView, SuccessView, FailedView, TimeoutView } from './components/EWalletFlowViews';
+import { useIsMobile } from 'src/hooks/useIsMobile';
 
 export type PaymentFlowState =
   | 'select'
@@ -21,23 +22,6 @@ export interface EWalletPaymentProps {
 }
 
 const QR_EXPIRATION_SECONDS = 300;
-
-const useIsMobile = (): boolean => {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      const userAgent = navigator.userAgent || navigator.vendor;
-      const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
-      setIsMobile(mobileRegex.test(userAgent) || window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  return isMobile;
-};
 
 const EWalletPayment = memo(function EWalletPayment({
   amount = 150000,

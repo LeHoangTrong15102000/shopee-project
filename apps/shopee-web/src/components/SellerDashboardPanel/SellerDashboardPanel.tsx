@@ -2,13 +2,11 @@ import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import useSellerDashboard from 'src/hooks/useSellerDashboard';
+import { formatVNDCurrency as formatCurrency } from '@shopee/shared-utils';
 
 interface SellerDashboardPanelProps {
   className?: string;
 }
-
-const formatCurrency = (value: number) =>
-  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 
 export default function SellerDashboardPanel({ className }: SellerDashboardPanelProps) {
   const { t } = useTranslation('user');

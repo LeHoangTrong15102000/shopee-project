@@ -13,6 +13,9 @@ export default defineConfig({
     alias: {
       src: path.resolve(__dirname, './src'),
       '@': path.resolve(__dirname, './src'),
+      '@shopee/shared-types': path.resolve(__dirname, '../../libs/shared-types/src'),
+      '@shopee/shared-utils': path.resolve(__dirname, '../../libs/shared-utils/src'),
+      '@shopee/shared-constants': path.resolve(__dirname, '../../libs/shared-constants/src'),
     },
   },
   build: {

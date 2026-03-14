@@ -1,6 +1,16 @@
 import { useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+} from 'recharts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'src/components/ui/tabs';
+import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
 import { DataTable } from 'src/components/shared/DataTable';
 import { PageHeader } from 'src/components/shared/PageHeader';
 import { PeriodSelect } from 'src/components/shared/PeriodSelect';
@@ -12,6 +22,7 @@ import {
   useTopRated,
   useStatsByCategory,
   useChatbotOverview,
+  useChatbotPerformance,
 } from 'src/hooks/useAnalytics';
 import { formatCurrency } from 'src/utils/format';
 import type { ProductAnalytics } from 'src/types';
@@ -31,6 +42,7 @@ export default function AnalyticsPage() {
   const { data: topRated, isLoading: loadingRated } = useTopRated();
   const { data: byCategory, isLoading: loadingCategory } = useStatsByCategory();
   const { data: chatbot } = useChatbotOverview();
+  const { data: chatbotPerf } = useChatbotPerformance(period);
 
   const productCols: ColumnDef<ProductAnalytics>[] = [
     {
@@ -129,17 +141,50 @@ export default function AnalyticsPage() {
         </TabsContent>
         <TabsContent value="chatbot">
           {chatbot && (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <StatCard label="Total Conversations" value={chatbot.total_conversations} />
-              <StatCard label="Total Messages" value={chatbot.total_messages} />
-              <StatCard
-                label="Avg Messages/Conv"
-                value={chatbot.avg_messages_per_conversation?.toFixed(1) ?? '0'}
-              />
-              <StatCard
-                label="Satisfaction Rate"
-                value={`${((chatbot.satisfaction_rate ?? 0) * 100).toFixed(0)}%`}
-              />
+            <div className="space-y-6">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <StatCard label="Total Conversations" value={chatbot.total_conversations} />
+                <StatCard label="Total Messages" value={chatbot.total_messages} />
+                <StatCard
+                  label="Avg Messages/Conv"
+                  value={chatbot.avg_messages_per_conversation?.toFixed(1) ?? '0'}
+                />
+                <StatCard
+                  label="Satisfaction Rate"
+                  value={`${((chatbot.satisfaction_rate ?? 0) * 100).toFixed(0)}%`}
+                />
+              </div>
+              {Array.isArray(chatbotPerf) && chatbotPerf.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Chatbot Performance Over Time</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={chatbotPerf}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                        <YAxis tick={{ fontSize: 12 }} />
+                        <Tooltip />
+                        <Line
+                          type="monotone"
+                          dataKey="conversations"
+                          stroke="hsl(var(--chart-1))"
+                          strokeWidth={2}
+                          dot={false}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="messages"
+                          stroke="hsl(var(--chart-2))"
+                          strokeWidth={2}
+                          dot={false}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           )}
         </TabsContent>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
-import { Plus, Trash2, MoreHorizontal } from 'lucide-react';
+import { Plus, Trash2, MoreHorizontal, CheckCircle } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import {
   Dialog,
@@ -19,6 +19,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from 'src/components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from 'src/components/ui/select';
 import { DataTable } from 'src/components/shared/DataTable';
 import { PageHeader } from 'src/components/shared/PageHeader';
 import { StatusBadge } from 'src/components/shared/StatusBadge';
@@ -28,18 +35,44 @@ import {
   useNotifications,
   useCreateNotification,
   useDeleteNotification,
+  useMarkNotificationAsRead,
 } from 'src/hooks/useNotifications';
 import type { Notification } from 'src/types';
+
+const notificationTemplates = [
+  { value: 'custom', label: 'Custom', title: '', message: '' },
+  {
+    value: 'maintenance',
+    label: 'System Maintenance',
+    title: 'Scheduled Maintenance',
+    message:
+      'We will be performing scheduled maintenance. The system may be temporarily unavailable.',
+  },
+  {
+    value: 'feature',
+    label: 'New Feature',
+    title: 'New Feature Available',
+    message: 'We have launched a new feature. Check it out now!',
+  },
+  {
+    value: 'promotion',
+    label: 'Promotion',
+    title: 'Special Promotion',
+    message: "Don't miss our limited-time promotion with exclusive discounts!",
+  },
+];
 
 export default function NotificationListPage() {
   const [page, setPage] = useState(0);
   const [createType, setCreateType] = useState<'targeted' | 'broadcast' | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [form, setForm] = useState({ user_id: '', title: '', message: '' });
+  const [selectedTemplate, setSelectedTemplate] = useState('custom');
 
   const { data, isLoading, isError, refetch } = useNotifications(page);
   const createMut = useCreateNotification(() => setCreateType(null));
   const deleteMut = useDeleteNotification(() => setDeleteId(null));
+  const markReadMut = useMarkNotificationAsRead();
 
   const columns: ColumnDef<Notification>[] = [
     { accessorKey: 'title', header: 'Title' },
@@ -69,6 +102,12 @@ export default function NotificationListPage() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            {!row.original.is_read && (
+              <DropdownMenuItem onClick={() => markReadMut.mutate(row.original._id)}>
+                <CheckCircle className="mr-2 size-4" />
+                Mark as Read
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem
               onClick={() => setDeleteId(row.original._id)}
               className="text-destructive"
@@ -95,6 +134,7 @@ export default function NotificationListPage() {
               onClick={() => {
                 setCreateType('targeted');
                 setForm({ user_id: '', title: '', message: '' });
+                setSelectedTemplate('custom');
               }}
             >
               <Plus className="mr-2 size-4" />
@@ -105,6 +145,7 @@ export default function NotificationListPage() {
               onClick={() => {
                 setCreateType('broadcast');
                 setForm({ user_id: '', title: '', message: '' });
+                setSelectedTemplate('custom');
               }}
             >
               <Plus className="mr-2 size-4" />
@@ -134,6 +175,30 @@ export default function NotificationListPage() {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
+            {createType === 'broadcast' && (
+              <div>
+                <Label htmlFor="notif-template">Template</Label>
+                <Select
+                  value={selectedTemplate}
+                  onValueChange={(v) => {
+                    setSelectedTemplate(v);
+                    const tpl = notificationTemplates.find((t) => t.value === v);
+                    if (tpl) setForm({ ...form, title: tpl.title, message: tpl.message });
+                  }}
+                >
+                  <SelectTrigger id="notif-template">
+                    <SelectValue placeholder="Select template" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {notificationTemplates.map((t) => (
+                      <SelectItem key={t.value} value={t.value}>
+                        {t.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             {createType === 'targeted' && (
               <div>
                 <Label htmlFor="notif-user-id">User ID</Label>

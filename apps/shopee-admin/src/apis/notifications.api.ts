@@ -35,6 +35,9 @@ const notificationsApi = {
 
   deleteNotification: (id: string) =>
     http.delete<SuccessResponse<null>>(`admin/notifications/${id}`),
+
+  markAsRead: (id: string) =>
+    http.put<SuccessResponse<Notification>>(`admin/notifications/${id}/read`),
 };
 
 export default notificationsApi;

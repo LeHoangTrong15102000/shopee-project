@@ -23,6 +23,10 @@ const AnalyticsPage = lazy(() => import('src/pages/Analytics/AnalyticsPage'));
 const NotificationListPage = lazy(() => import('src/pages/Notifications/NotificationListPage'));
 const QAPage = lazy(() => import('src/pages/QA/QAPage'));
 const ImportPage = lazy(() => import('src/pages/Import/ImportPage'));
+const SettingsPage = lazy(() => import('src/pages/Settings/SettingsPage'));
+const UserDetailPage = lazy(() => import('src/pages/Users/UserDetailPage'));
+const NotFoundPage = lazy(() => import('src/pages/NotFound/NotFoundPage'));
+const ActivityLogPage = lazy(() => import('src/pages/ActivityLog/ActivityLogPage'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -51,6 +55,14 @@ const protectedRoutes: RouteObject[] = [
     element: (
       <SuspenseWrapper>
         <UserListPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: 'users/:id',
+    element: (
+      <SuspenseWrapper>
+        <UserDetailPage />
       </SuspenseWrapper>
     ),
   },
@@ -190,6 +202,22 @@ const protectedRoutes: RouteObject[] = [
       </SuspenseWrapper>
     ),
   },
+  {
+    path: 'settings',
+    element: (
+      <SuspenseWrapper>
+        <SettingsPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: 'activity-log',
+    element: (
+      <SuspenseWrapper>
+        <ActivityLogPage />
+      </SuspenseWrapper>
+    ),
+  },
 ];
 
 export const router = createBrowserRouter([
@@ -212,5 +240,12 @@ export const router = createBrowserRouter([
     ),
     children: protectedRoutes,
   },
-  { path: '*', element: <Navigate to="/" replace /> },
+  {
+    path: '*',
+    element: (
+      <SuspenseWrapper>
+        <NotFoundPage />
+      </SuspenseWrapper>
+    ),
+  },
 ]);

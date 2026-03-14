@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Moon, Sun, LogOut } from 'lucide-react';
+import { Moon, Sun, LogOut, Settings } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import { SidebarTrigger } from 'src/components/ui/sidebar';
 import { Separator } from 'src/components/ui/separator';
@@ -36,6 +36,8 @@ const routeLabels: Record<string, string> = {
   notifications: 'Notifications',
   qa: 'Q&A',
   import: 'Import',
+  settings: 'Settings',
+  'activity-log': 'Activity Log',
 };
 
 export function AppHeader() {
@@ -103,6 +105,9 @@ export function AppHeader() {
               <p className="text-xs text-muted-foreground">{user?.email}</p>
             </div>
             <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate('/settings')}>
+              <Settings className="mr-2 size-4" /> Settings
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={handleLogout}>
               <LogOut className="mr-2 size-4" /> Logout
             </DropdownMenuItem>

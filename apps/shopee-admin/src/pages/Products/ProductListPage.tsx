@@ -1,10 +1,19 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { type ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal, Plus, Eye, Pencil, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Plus, Eye, Pencil, Trash2, Download, Filter, X } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import { Badge } from 'src/components/ui/badge';
 import { Checkbox } from 'src/components/ui/checkbox';
+import { Input } from 'src/components/ui/input';
+import { Label } from 'src/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from 'src/components/ui/select';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +25,9 @@ import { PageHeader } from 'src/components/shared/PageHeader';
 import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
 import { ErrorState } from 'src/components/shared/ErrorState';
 import { useProducts, useDeleteProduct, useDeleteManyProducts } from 'src/hooks/useProducts';
+import { useCategories } from 'src/hooks/useCategories';
 import { formatCurrency } from 'src/utils/format';
+import { exportToCSV } from 'src/utils/csv-export';
 import type { Product } from 'src/types';
 
 export default function ProductListPage() {
@@ -25,8 +36,20 @@ export default function ProductListPage() {
   const [selected, setSelected] = useState<Product[]>([]);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [stockFilter, setStockFilter] = useState('');
 
-  const { data, isLoading, isError, refetch } = useProducts(page);
+  const filters = {
+    ...(categoryFilter && { category: categoryFilter }),
+  };
+  const { data, isLoading, isError, refetch } = useProducts(
+    page,
+    Object.keys(filters).length ? filters : undefined,
+  );
+  const { data: categories } = useCategories();
   const deleteMut = useDeleteProduct(() => setDeleteId(null));
   const bulkDeleteMut = useDeleteManyProducts(() => {
     setBulkDeleteOpen(false);
@@ -40,10 +63,15 @@ export default function ProductListPage() {
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
           onCheckedChange={(v) => table.toggleAllPageRowsSelected(!!v)}
+          aria-label="Select all"
         />
       ),
       cell: ({ row }) => (
-        <Checkbox checked={row.getIsSelected()} onCheckedChange={(v) => row.toggleSelected(!!v)} />
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(v) => row.toggleSelected(!!v)}
+          aria-label="Select row"
+        />
       ),
       enableSorting: false,
     },
@@ -124,16 +152,134 @@ export default function ProductListPage() {
         title="Products"
         description="Manage your product catalog"
         actions={
-          <Button size="sm" onClick={() => navigate('/products/new')}>
-            <Plus className="mr-2 size-4" />
-            Add Product
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                exportToCSV(
+                  data?.products ?? [],
+                  [
+                    { key: 'name', header: 'Name' },
+                    { key: 'price', header: 'Price' },
+                    { key: 'quantity', header: 'Stock' },
+                    { key: 'sold', header: 'Sold' },
+                    { key: 'rating', header: 'Rating' },
+                    {
+                      key: 'category',
+                      header: 'Category',
+                      accessor: (r) =>
+                        typeof r.category === 'object'
+                          ? (r.category as any)?.name
+                          : String(r.category),
+                    },
+                  ],
+                  'products',
+                )
+              }
+            >
+              <Download className="mr-2 size-4" />
+              Export CSV
+            </Button>
+            <Button size="sm" onClick={() => navigate('/products/new')}>
+              <Plus className="mr-2 size-4" />
+              Add Product
+            </Button>
+          </div>
         }
       />
+      <div className="flex items-center gap-2">
+        <Button variant="outline" size="sm" onClick={() => setFiltersOpen(!filtersOpen)}>
+          <Filter className="mr-2 size-4" />
+          Filters
+        </Button>
+        {(categoryFilter || minPrice || maxPrice || stockFilter) && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setCategoryFilter('');
+              setMinPrice('');
+              setMaxPrice('');
+              setStockFilter('');
+              setPage(0);
+            }}
+          >
+            <X className="mr-1 size-4" /> Clear Filters
+          </Button>
+        )}
+      </div>
+      {filtersOpen && (
+        <div className="grid gap-4 sm:grid-cols-4 rounded-lg border p-4">
+          <div>
+            <Label htmlFor="filter-category">Category</Label>
+            <Select
+              value={categoryFilter}
+              onValueChange={(v) => {
+                if (v) {
+                  setCategoryFilter(v);
+                  setPage(0);
+                }
+              }}
+            >
+              <SelectTrigger id="filter-category">
+                <SelectValue placeholder="All categories" />
+              </SelectTrigger>
+              <SelectContent>
+                {(categories ?? []).map((c) => (
+                  <SelectItem key={c._id} value={c._id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="filter-min-price">Min Price</Label>
+            <Input
+              id="filter-min-price"
+              type="number"
+              placeholder="0"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="filter-max-price">Max Price</Label>
+            <Input
+              id="filter-max-price"
+              type="number"
+              placeholder="Any"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="filter-stock">Stock Status</Label>
+            <Select value={stockFilter} onValueChange={(v) => v && setStockFilter(v)}>
+              <SelectTrigger id="filter-stock">
+                <SelectValue placeholder="All" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="in_stock">In Stock</SelectItem>
+                <SelectItem value="low_stock">Low Stock (&lt;10)</SelectItem>
+                <SelectItem value="out_of_stock">Out of Stock</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      )}
       {isError && <ErrorState message="Failed to load products" onRetry={refetch} />}
       <DataTable
         columns={columns}
-        data={data?.products ?? []}
+        data={(data?.products ?? []).filter((p) => {
+          if (minPrice && p.price < Number(minPrice)) return false;
+          if (maxPrice && p.price > Number(maxPrice)) return false;
+          if (stockFilter === 'in_stock' && p.quantity <= 0) return false;
+          if (stockFilter === 'low_stock' && (p.quantity <= 0 || p.quantity >= 10)) return false;
+          if (stockFilter === 'out_of_stock' && p.quantity > 0) return false;
+          return true;
+        })}
         isLoading={isLoading}
         searchKey="name"
         searchPlaceholder="Search products..."

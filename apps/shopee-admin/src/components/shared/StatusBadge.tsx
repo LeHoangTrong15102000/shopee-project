@@ -40,6 +40,14 @@ const statusColorMap: Record<string, { className: string; variant: StatusVariant
     className: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
     variant: 'outline',
   },
+  approved: {
+    className: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+    variant: 'outline',
+  },
+  flagged: {
+    className: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+    variant: 'outline',
+  },
 };
 
 interface StatusBadgeProps {

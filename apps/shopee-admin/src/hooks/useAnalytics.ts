@@ -7,6 +7,7 @@ export const ANALYTICS_KEYS = {
   topRated: ['analytics-top-rated'] as const,
   byCategory: ['analytics-by-category'] as const,
   chatbot: ['analytics-chatbot'] as const,
+  chatbotPerformance: (period: string) => ['analytics-chatbot-performance', period] as const,
 };
 
 export function useTopSelling(period: string) {
@@ -41,5 +42,12 @@ export function useChatbotOverview() {
   return useQuery({
     queryKey: ANALYTICS_KEYS.chatbot,
     queryFn: () => analyticsApi.getChatbotOverview().then((r) => r.data.data),
+  });
+}
+
+export function useChatbotPerformance(period: string) {
+  return useQuery({
+    queryKey: ANALYTICS_KEYS.chatbotPerformance(period),
+    queryFn: () => analyticsApi.getChatbotPerformance({ period }).then((r) => r.data.data),
   });
 }

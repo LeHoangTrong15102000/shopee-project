@@ -1,21 +1,25 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import { ArrowLeft, Star, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { ArrowLeft, Star, Trash2, CheckCircle, Flag } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
 import { Badge } from 'src/components/ui/badge';
 import { Separator } from 'src/components/ui/separator';
 import { PageHeader } from 'src/components/shared/PageHeader';
+import { StatusBadge } from 'src/components/shared/StatusBadge';
 import { LoadingState } from 'src/components/shared/LoadingState';
 import { ErrorState } from 'src/components/shared/ErrorState';
 import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
 import { useReviewDetail, useDeleteComment } from 'src/hooks/useReviewDetail';
+import { useReviewModerationStore } from 'src/stores/review-moderation.store';
 import { useState } from 'react';
 
 export default function ReviewDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [deleteCommentId, setDeleteCommentId] = useState<string | null>(null);
+  const { getStatus, setStatus } = useReviewModerationStore();
 
   const { data: review, isLoading, isError, refetch } = useReviewDetail(id);
 
@@ -47,9 +51,34 @@ export default function ReviewDetailPage() {
                 <Star className="mr-1 size-3" />
                 {review.rating}/5
               </Badge>
+              <StatusBadge status={getStatus(review._id)} />
               <span className="text-sm text-muted-foreground">
                 {format(new Date(review.createdAt), 'MMM d, yyyy')}
               </span>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setStatus(review._id, 'approved');
+                  toast.success('Review approved');
+                }}
+              >
+                <CheckCircle className="mr-1 size-4" />
+                Approve
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setStatus(review._id, 'flagged');
+                  toast.success('Review flagged');
+                }}
+              >
+                <Flag className="mr-1 size-4" />
+                Flag
+              </Button>
             </div>
             <p>{review.comment}</p>
             {review.images?.length > 0 && (
@@ -66,7 +95,7 @@ export default function ReviewDetailPage() {
             )}
             <Separator />
             <div>
-              <h4 className="mb-3 font-medium">Comments ({review.comments?.length ?? 0})</h4>
+              <h2 className="mb-3 font-medium">Comments ({review.comments?.length ?? 0})</h2>
               {(review.comments ?? []).map((c) => (
                 <div key={c._id} className="mb-3 rounded-md border p-3">
                   <div className="flex items-center justify-between">

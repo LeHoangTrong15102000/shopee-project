@@ -53,6 +53,9 @@ const COLORS = [
 
 export default function DashboardPage() {
   const [period, setPeriod] = useState('30d');
+  const [customRange, setCustomRange] = useState<
+    { start_date: string; end_date: string } | undefined
+  >();
   const isMobile = useIsMobile();
 
   const {
@@ -62,7 +65,7 @@ export default function DashboardPage() {
     refetch: refetchOverview,
   } = useDashboardOverview();
 
-  const { data: revenue } = useDashboardRevenue(period);
+  const { data: revenue } = useDashboardRevenue(period, customRange);
   const { data: orderTrend } = useDashboardOrderTrend(period);
   const { data: userGrowth } = useDashboardUserGrowth(period);
   const { data: topProducts } = useDashboardTopProducts(period);
@@ -78,7 +81,13 @@ export default function DashboardPage() {
       <PageHeader
         title="Dashboard"
         description="Overview of your store performance"
-        actions={<PeriodSelect value={period} onChange={setPeriod} />}
+        actions={
+          <PeriodSelect
+            value={period}
+            onChange={setPeriod}
+            onCustomRange={(s, e) => setCustomRange({ start_date: s, end_date: e })}
+          />
+        }
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

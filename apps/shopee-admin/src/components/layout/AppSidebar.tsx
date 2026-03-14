@@ -13,6 +13,8 @@ import {
   Bell,
   HelpCircle,
   Upload,
+  Settings,
+  FileText,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -24,7 +26,10 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuBadge,
 } from 'src/components/ui/sidebar';
+import { useNotificationUnreadCount } from 'src/hooks/useNotifications';
+import { SHORTCUT_ROUTES } from 'src/hooks/use-keyboard-shortcuts';
 
 const navSections = [
   {
@@ -56,12 +61,15 @@ const navSections = [
       { title: 'Notifications', href: '/notifications', icon: Bell },
       { title: 'Q&A', href: '/qa', icon: HelpCircle },
       { title: 'Import', href: '/import', icon: Upload },
+      { title: 'Settings', href: '/settings', icon: Settings },
+      { title: 'Activity Log', href: '/activity-log', icon: FileText },
     ],
   },
 ];
 
 export function AppSidebar() {
   const location = useLocation();
+  const { data: unreadCount } = useNotificationUnreadCount();
 
   return (
     <Sidebar collapsible="icon">
@@ -83,14 +91,24 @@ export function AppSidebar() {
                       item.href === '/'
                         ? location.pathname === '/'
                         : location.pathname.startsWith(item.href);
+                    const idx = SHORTCUT_ROUTES.indexOf(item.href);
+                    const hint = idx !== -1 ? `⌥${idx + 1}` : null;
                     return (
                       <SidebarMenuItem key={item.href}>
                         <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
                           <Link to={item.href}>
                             <item.icon className="size-4" />
                             <span>{item.title}</span>
+                            {hint && (
+                              <kbd className="ml-auto text-[10px] text-muted-foreground opacity-60 group-data-[collapsible=icon]:hidden">
+                                {hint}
+                              </kbd>
+                            )}
                           </Link>
                         </SidebarMenuButton>
+                        {item.title === 'Notifications' && !!unreadCount && unreadCount > 0 && (
+                          <SidebarMenuBadge>{unreadCount}</SidebarMenuBadge>
+                        )}
                       </SidebarMenuItem>
                     );
                   })}

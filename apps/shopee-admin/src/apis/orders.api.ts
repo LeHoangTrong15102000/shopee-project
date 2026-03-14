@@ -8,6 +8,7 @@ interface OrderListParams {
   sort_by?: string;
   order?: string;
   search?: string;
+  user_id?: string;
 }
 
 interface OrderListResponse {

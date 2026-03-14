@@ -3,6 +3,8 @@ import { toast } from 'sonner';
 import productsApi from 'src/apis/products.api';
 import { PRODUCT_KEYS } from './useProducts';
 import { PRODUCT_DETAIL_KEYS } from './useProductDetail';
+import { useActivityLogStore } from 'src/stores/activity-log.store';
+import { useAuthStore } from 'src/stores/auth.store';
 
 interface ProductData {
   name: string;
@@ -27,10 +29,13 @@ export function useProductFormData(id?: string) {
 
 export function useCreateProduct(onSuccess?: () => void) {
   const qc = useQueryClient();
+  const addLog = useActivityLogStore((s) => s.addLog);
+  const email = useAuthStore((s) => s.user?.email ?? 'admin');
   return useMutation({
     mutationFn: (data: ProductData) => productsApi.createProduct(data),
-    onSuccess: () => {
+    onSuccess: (_, vars) => {
       toast.success('Product created');
+      addLog({ action: 'create', entityType: 'product', entityName: vars.name, adminEmail: email });
       qc.invalidateQueries({ queryKey: PRODUCT_KEYS.all });
       onSuccess?.();
     },
@@ -40,11 +45,14 @@ export function useCreateProduct(onSuccess?: () => void) {
 
 export function useUpdateProduct(onSuccess?: () => void) {
   const qc = useQueryClient();
+  const addLog = useActivityLogStore((s) => s.addLog);
+  const email = useAuthStore((s) => s.user?.email ?? 'admin');
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: ProductData }) =>
       productsApi.updateProduct(id, data),
-    onSuccess: () => {
+    onSuccess: (_, vars) => {
       toast.success('Product updated');
+      addLog({ action: 'update', entityType: 'product', entityName: vars.data.name, adminEmail: email });
       qc.invalidateQueries({ queryKey: PRODUCT_KEYS.all });
       onSuccess?.();
     },

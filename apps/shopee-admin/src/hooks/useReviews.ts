@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import reviewsApi from 'src/apis/reviews.api';
+import { useActivityLogStore } from 'src/stores/activity-log.store';
+import { useAuthStore } from 'src/stores/auth.store';
 
 export const REVIEW_KEYS = {
   list: (page: number) => ['admin-reviews', page] as const,
@@ -24,10 +26,13 @@ export function useReviewStats() {
 
 export function useDeleteReview(onSuccess?: () => void) {
   const qc = useQueryClient();
+  const addLog = useActivityLogStore((s) => s.addLog);
+  const email = useAuthStore((s) => s.user?.email ?? 'admin');
   return useMutation({
     mutationFn: (id: string) => reviewsApi.deleteReview(id),
-    onSuccess: () => {
+    onSuccess: (_, id) => {
       toast.success('Review deleted');
+      addLog({ action: 'delete', entityType: 'review', entityName: id, adminEmail: email });
       qc.invalidateQueries({ queryKey: REVIEW_KEYS.all });
       onSuccess?.();
     },

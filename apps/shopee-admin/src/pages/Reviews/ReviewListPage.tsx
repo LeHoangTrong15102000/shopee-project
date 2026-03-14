@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
-import { Eye, Trash2, MoreHorizontal, Star } from 'lucide-react';
+import { Eye, Trash2, MoreHorizontal, Star, CheckCircle, Flag } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import { Badge } from 'src/components/ui/badge';
 import {
@@ -14,15 +15,18 @@ import {
 import { DataTable } from 'src/components/shared/DataTable';
 import { PageHeader } from 'src/components/shared/PageHeader';
 import { StatCard } from 'src/components/shared/StatCard';
+import { StatusBadge } from 'src/components/shared/StatusBadge';
 import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
 import { ErrorState } from 'src/components/shared/ErrorState';
 import { useReviews, useReviewStats, useDeleteReview } from 'src/hooks/useReviews';
+import { useReviewModerationStore } from 'src/stores/review-moderation.store';
 import type { Review } from 'src/types';
 
 export default function ReviewListPage() {
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const { getStatus, setStatus } = useReviewModerationStore();
 
   const { data, isLoading, isError, refetch } = useReviews(page);
   const { data: stats } = useReviewStats();
@@ -58,6 +62,11 @@ export default function ReviewListPage() {
     },
     { accessorKey: 'helpful_count', header: 'Likes' },
     {
+      id: 'moderation',
+      header: 'Moderation',
+      cell: ({ row }) => <StatusBadge status={getStatus(row.original._id)} />,
+    },
+    {
       accessorKey: 'createdAt',
       header: 'Date',
       cell: ({ row }) => format(new Date(row.original.createdAt), 'MMM d, yyyy'),
@@ -76,6 +85,24 @@ export default function ReviewListPage() {
             <DropdownMenuItem onClick={() => navigate(`/reviews/${row.original._id}`)}>
               <Eye className="mr-2 size-4" />
               View
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setStatus(row.original._id, 'approved');
+                toast.success('Review approved');
+              }}
+            >
+              <CheckCircle className="mr-2 size-4" />
+              Approve
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setStatus(row.original._id, 'flagged');
+                toast.success('Review flagged');
+              }}
+            >
+              <Flag className="mr-2 size-4" />
+              Flag
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => setDeleteId(row.original._id)}

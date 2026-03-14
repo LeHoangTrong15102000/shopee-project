@@ -34,6 +34,9 @@ importers:
       nx:
         specifier: 21.4.0
         version: 21.4.0
+      prettier:
+        specifier: ^3.8.1
+        version: 3.8.1
       typescript:
         specifier: ~5.8.2
         version: 5.8.3

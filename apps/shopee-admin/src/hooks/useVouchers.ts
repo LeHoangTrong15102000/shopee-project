@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import vouchersApi from 'src/apis/vouchers.api';
+import { useActivityLogStore } from 'src/stores/activity-log.store';
+import { useAuthStore } from 'src/stores/auth.store';
 import type { DiscountType } from 'src/types';
 
 export const VOUCHER_KEYS = {
@@ -25,6 +27,8 @@ export function useVoucherStats() {
 
 export function useCreateVoucher(onSuccess?: () => void) {
   const qc = useQueryClient();
+  const addLog = useActivityLogStore((s) => s.addLog);
+  const email = useAuthStore((s) => s.user?.email ?? 'admin');
   return useMutation({
     mutationFn: (body: {
       code: string;
@@ -35,8 +39,9 @@ export function useCreateVoucher(onSuccess?: () => void) {
       start_date: string;
       end_date: string;
     }) => vouchersApi.createVoucher(body),
-    onSuccess: () => {
+    onSuccess: (_, vars) => {
       toast.success('Voucher created');
+      addLog({ action: 'create', entityType: 'voucher', entityName: vars.code, adminEmail: email });
       qc.invalidateQueries({ queryKey: VOUCHER_KEYS.all });
       onSuccess?.();
     },
@@ -46,10 +51,13 @@ export function useCreateVoucher(onSuccess?: () => void) {
 
 export function useDeleteVoucher(onSuccess?: () => void) {
   const qc = useQueryClient();
+  const addLog = useActivityLogStore((s) => s.addLog);
+  const email = useAuthStore((s) => s.user?.email ?? 'admin');
   return useMutation({
     mutationFn: (id: string) => vouchersApi.deleteVoucher(id),
-    onSuccess: () => {
+    onSuccess: (_, id) => {
       toast.success('Voucher deleted');
+      addLog({ action: 'delete', entityType: 'voucher', entityName: id, adminEmail: email });
       qc.invalidateQueries({ queryKey: VOUCHER_KEYS.all });
       onSuccess?.();
     },
@@ -59,6 +67,8 @@ export function useDeleteVoucher(onSuccess?: () => void) {
 
 export function useUpdateVoucher(onSuccess?: () => void) {
   const qc = useQueryClient();
+  const addLog = useActivityLogStore((s) => s.addLog);
+  const email = useAuthStore((s) => s.user?.email ?? 'admin');
   return useMutation({
     mutationFn: ({
       id,
@@ -75,8 +85,9 @@ export function useUpdateVoucher(onSuccess?: () => void) {
         end_date: string;
       }> & { is_active?: boolean };
     }) => vouchersApi.updateVoucher(id, body),
-    onSuccess: () => {
+    onSuccess: (_, vars) => {
       toast.success('Voucher updated');
+      addLog({ action: 'update', entityType: 'voucher', entityName: vars.id, adminEmail: email });
       qc.invalidateQueries({ queryKey: VOUCHER_KEYS.all });
       onSuccess?.();
     },
@@ -86,11 +97,19 @@ export function useUpdateVoucher(onSuccess?: () => void) {
 
 export function useToggleVoucher(onSuccess?: () => void) {
   const qc = useQueryClient();
+  const addLog = useActivityLogStore((s) => s.addLog);
+  const email = useAuthStore((s) => s.user?.email ?? 'admin');
   return useMutation({
     mutationFn: ({ id, is_active }: { id: string; is_active: boolean }) =>
       vouchersApi.updateVoucher(id, { is_active }),
-    onSuccess: () => {
+    onSuccess: (_, vars) => {
       toast.success('Status updated');
+      addLog({
+        action: 'update',
+        entityType: 'voucher',
+        entityName: `${vars.id} → ${vars.is_active ? 'active' : 'inactive'}`,
+        adminEmail: email,
+      });
       qc.invalidateQueries({ queryKey: VOUCHER_KEYS.all });
       qc.invalidateQueries({ queryKey: VOUCHER_KEYS.stats });
       onSuccess?.();

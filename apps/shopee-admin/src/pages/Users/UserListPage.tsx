@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
-import { MoreHorizontal, Plus, Pencil, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Plus, Pencil, Trash2, Eye, Download } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import { Avatar, AvatarFallback } from 'src/components/ui/avatar';
 import { Badge } from 'src/components/ui/badge';
@@ -25,9 +25,12 @@ import { PageHeader } from 'src/components/shared/PageHeader';
 import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
 import { ErrorState } from 'src/components/shared/ErrorState';
 import { useUsers, useCreateUser, useUpdateUser, useDeleteUser } from 'src/hooks/useUsers';
+import { useNavigate } from 'react-router-dom';
+import { exportToCSV } from 'src/utils/csv-export';
 import type { User } from 'src/types';
 
 export default function UserListPage() {
+  const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [createOpen, setCreateOpen] = useState(false);
   const [editUser, setEditUser] = useState<User | null>(null);
@@ -83,6 +86,10 @@ export default function UserListPage() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => navigate(`/users/${row.original._id}`)}>
+              <Eye className="mr-2 size-4" />
+              View
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
                 setEditUser(row.original);
@@ -116,16 +123,41 @@ export default function UserListPage() {
         title="Users"
         description="Manage admin and user accounts"
         actions={
-          <Button
-            size="sm"
-            onClick={() => {
-              setCreateOpen(true);
-              setForm({ name: '', email: '', password: '', roles: 'User' });
-            }}
-          >
-            <Plus className="mr-2 size-4" />
-            Add User
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                exportToCSV(
+                  data?.items ?? [],
+                  [
+                    { key: 'name', header: 'Name' },
+                    { key: 'email', header: 'Email' },
+                    {
+                      key: 'roles',
+                      header: 'Roles',
+                      accessor: (r) => (r.roles as string[]).join(', '),
+                    },
+                    { key: 'createdAt', header: 'Created' },
+                  ],
+                  'users',
+                )
+              }
+            >
+              <Download className="mr-2 size-4" />
+              Export CSV
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => {
+                setCreateOpen(true);
+                setForm({ name: '', email: '', password: '', roles: 'User' });
+              }}
+            >
+              <Plus className="mr-2 size-4" />
+              Add User
+            </Button>
+          </div>
         }
       />
       {isError && <ErrorState message="Failed to load users" onRetry={refetch} />}

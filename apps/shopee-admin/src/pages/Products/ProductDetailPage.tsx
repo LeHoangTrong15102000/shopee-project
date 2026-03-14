@@ -1,5 +1,4 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { ArrowLeft, Pencil } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
@@ -8,22 +7,14 @@ import { Badge } from 'src/components/ui/badge';
 import { PageHeader } from 'src/components/shared/PageHeader';
 import { LoadingState } from 'src/components/shared/LoadingState';
 import { ErrorState } from 'src/components/shared/ErrorState';
-import productsApi from 'src/apis/products.api';
+import { useProductDetail } from 'src/hooks/useProductDetail';
 import { formatCurrency } from 'src/utils/format';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const {
-    data: product,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['admin-product', id],
-    queryFn: () => productsApi.getProduct(id!).then((r) => r.data.data),
-    enabled: !!id,
-  });
+  const { data: product, isLoading, error } = useProductDetail(id);
 
   if (isLoading) return <LoadingState />;
   if (error || !product)

@@ -6,7 +6,13 @@ import { PageHeader } from 'src/components/shared/PageHeader';
 import { PeriodSelect } from 'src/components/shared/PeriodSelect';
 import { StatCard } from 'src/components/shared/StatCard';
 import { ErrorState } from 'src/components/shared/ErrorState';
-import { useTopSelling, useTopViewed, useTopRated, useStatsByCategory, useChatbotOverview } from 'src/hooks/useAnalytics';
+import {
+  useTopSelling,
+  useTopViewed,
+  useTopRated,
+  useStatsByCategory,
+  useChatbotOverview,
+} from 'src/hooks/useAnalytics';
 import { formatCurrency } from 'src/utils/format';
 import type { ProductAnalytics } from 'src/types';
 

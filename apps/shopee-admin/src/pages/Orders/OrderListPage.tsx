@@ -61,7 +61,11 @@ export default function OrderListPage() {
         />
       ),
       cell: ({ row }) => (
-        <Checkbox checked={row.getIsSelected()} onCheckedChange={(v) => row.toggleSelected(!!v)} aria-label="Select row" />
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(v) => row.toggleSelected(!!v)}
+          aria-label="Select row"
+        />
       ),
       enableSorting: false,
     },

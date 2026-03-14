@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { type ColumnDef } from '@tanstack/react-table';
-import { toast } from 'sonner';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import {
@@ -17,58 +15,31 @@ import { DataTable } from 'src/components/shared/DataTable';
 import { PageHeader } from 'src/components/shared/PageHeader';
 import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
 import { ErrorState } from 'src/components/shared/ErrorState';
-import categoriesApi from 'src/apis/categories.api';
+import {
+  useCategories,
+  useCreateCategory,
+  useUpdateCategory,
+  useDeleteCategory,
+} from 'src/hooks/useCategories';
 import type { Category } from 'src/types';
 
 export default function CategoryListPage() {
-  const qc = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editCat, setEditCat] = useState<Category | null>(null);
   const [deleteCat, setDeleteCat] = useState<Category | null>(null);
   const [name, setName] = useState('');
 
-  const {
-    data: categories,
-    isLoading,
-    isError,
-    refetch,
-  } = useQuery({
-    queryKey: ['admin-categories'],
-    queryFn: () => categoriesApi.getCategories().then((r) => r.data.data),
-  });
+  const { data: categories, isLoading, isError, refetch } = useCategories();
 
-  const createMut = useMutation({
-    mutationFn: (body: { name: string }) => categoriesApi.createCategory(body),
-    onSuccess: () => {
-      toast.success('Category created');
-      setDialogOpen(false);
-      setName('');
-      qc.invalidateQueries({ queryKey: ['admin-categories'] });
-    },
-    onError: () => toast.error('Failed to create category'),
+  const createMut = useCreateCategory(() => {
+    setDialogOpen(false);
+    setName('');
   });
-
-  const updateMut = useMutation({
-    mutationFn: ({ id, body }: { id: string; body: { name: string } }) =>
-      categoriesApi.updateCategory(id, body),
-    onSuccess: () => {
-      toast.success('Category updated');
-      setEditCat(null);
-      setName('');
-      qc.invalidateQueries({ queryKey: ['admin-categories'] });
-    },
-    onError: () => toast.error('Failed to update category'),
+  const updateMut = useUpdateCategory(() => {
+    setEditCat(null);
+    setName('');
   });
-
-  const deleteMut = useMutation({
-    mutationFn: (id: string) => categoriesApi.deleteCategory(id),
-    onSuccess: () => {
-      toast.success('Category deleted');
-      setDeleteCat(null);
-      qc.invalidateQueries({ queryKey: ['admin-categories'] });
-    },
-    onError: () => toast.error('Failed to delete. Category may have products.'),
-  });
+  const deleteMut = useDeleteCategory(() => setDeleteCat(null));
 
   const columns: ColumnDef<Category>[] = [
     { accessorKey: 'name', header: 'Name' },

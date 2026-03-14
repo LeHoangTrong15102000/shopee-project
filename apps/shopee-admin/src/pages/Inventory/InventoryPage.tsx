@@ -16,7 +16,12 @@ import { Label } from 'src/components/ui/label';
 import { DataTable } from 'src/components/shared/DataTable';
 import { PageHeader } from 'src/components/shared/PageHeader';
 import { ErrorState } from 'src/components/shared/ErrorState';
-import { useLowStock, useOutOfStock, useUpdateStock, useBulkUpdateStock } from 'src/hooks/useInventory';
+import {
+  useLowStock,
+  useOutOfStock,
+  useUpdateStock,
+  useBulkUpdateStock,
+} from 'src/hooks/useInventory';
 import { formatCurrency } from 'src/utils/format';
 import type { Product } from 'src/types';
 

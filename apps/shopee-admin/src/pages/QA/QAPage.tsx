@@ -1,7 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
 import { Trash2, ChevronDown, ChevronRight, MessageSquare } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
@@ -11,41 +9,17 @@ import { StatCard } from 'src/components/shared/StatCard';
 import { LoadingState } from 'src/components/shared/LoadingState';
 import { ErrorState } from 'src/components/shared/ErrorState';
 import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
-import qaApi from 'src/apis/qa.api';
+import { useQuestions, useQAStats, useDeleteQuestion, useDeleteAnswer } from 'src/hooks/useQA';
 
 export default function QAPage() {
-  const qc = useQueryClient();
   const [deleteQ, setDeleteQ] = useState<string | null>(null);
   const [deleteA, setDeleteA] = useState<{ qId: string; aId: string } | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['admin-qa'],
-    queryFn: () => qaApi.getQuestions({ limit: 50 }).then((r) => r.data.data),
-  });
-  const { data: stats } = useQuery({
-    queryKey: ['admin-qa-stats'],
-    queryFn: () => qaApi.getQAStats().then((r) => r.data.data),
-  });
-
-  const deleteQMut = useMutation({
-    mutationFn: (id: string) => qaApi.deleteQuestion(id),
-    onSuccess: () => {
-      toast.success('Question deleted');
-      setDeleteQ(null);
-      qc.invalidateQueries({ queryKey: ['admin-qa'] });
-    },
-    onError: () => toast.error('Failed to delete question'),
-  });
-  const deleteAMut = useMutation({
-    mutationFn: ({ qId, aId }: { qId: string; aId: string }) => qaApi.deleteAnswer(qId, aId),
-    onSuccess: () => {
-      toast.success('Answer deleted');
-      setDeleteA(null);
-      qc.invalidateQueries({ queryKey: ['admin-qa'] });
-    },
-    onError: () => toast.error('Failed to delete answer'),
-  });
+  const { data, isLoading, isError, refetch } = useQuestions();
+  const { data: stats } = useQAStats();
+  const deleteQMut = useDeleteQuestion(() => setDeleteQ(null));
+  const deleteAMut = useDeleteAnswer(() => setDeleteA(null));
 
   const toggle = (id: string) => {
     const next = new Set(expanded);

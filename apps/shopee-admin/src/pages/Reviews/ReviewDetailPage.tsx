@@ -17,12 +17,7 @@ export default function ReviewDetailPage() {
   const navigate = useNavigate();
   const [deleteCommentId, setDeleteCommentId] = useState<string | null>(null);
 
-  const {
-    data: review,
-    isLoading,
-    isError,
-    refetch,
-  } = useReviewDetail(id);
+  const { data: review, isLoading, isError, refetch } = useReviewDetail(id);
 
   const deleteCommentMut = useDeleteComment(id, () => setDeleteCommentId(null));
 
@@ -80,7 +75,12 @@ export default function ReviewDetailPage() {
                       <span className="text-xs text-muted-foreground">
                         {format(new Date(c.createdAt), 'MMM d, yyyy')}
                       </span>
-                      <Button variant="ghost" size="sm" aria-label="Delete comment" onClick={() => setDeleteCommentId(c._id)}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        aria-label="Delete comment"
+                        onClick={() => setDeleteCommentId(c._id)}
+                      >
                         <Trash2 className="size-3 text-destructive" />
                       </Button>
                     </div>

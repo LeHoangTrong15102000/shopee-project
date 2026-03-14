@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import { Input } from 'src/components/ui/input';
@@ -20,8 +18,8 @@ import {
 } from 'src/components/ui/select';
 import { PageHeader } from 'src/components/shared/PageHeader';
 import { LoadingState } from 'src/components/shared/LoadingState';
-import productsApi from 'src/apis/products.api';
-import categoriesApi from 'src/apis/categories.api';
+import { useProductFormData, useCreateProduct, useUpdateProduct } from 'src/hooks/useProductForm';
+import { useCategories } from 'src/hooks/useCategories';
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -40,18 +38,11 @@ export default function ProductFormPage() {
   const { id } = useParams();
   const isEdit = !!id;
   const navigate = useNavigate();
-  const qc = useQueryClient();
 
-  const { data: product, isLoading } = useQuery({
-    queryKey: ['admin-product', id],
-    queryFn: () => productsApi.getProduct(id!).then((r) => r.data.data),
-    enabled: isEdit,
-  });
-
-  const { data: categories } = useQuery({
-    queryKey: ['admin-categories'],
-    queryFn: () => categoriesApi.getCategories().then((r) => r.data.data),
-  });
+  const { data: product, isLoading } = useProductFormData(id);
+  const { data: categories } = useCategories();
+  const createMut = useCreateProduct(() => navigate('/products'));
+  const updateMut = useUpdateProduct(() => navigate('/products'));
 
   const {
     register,
@@ -76,27 +67,8 @@ export default function ProductFormPage() {
     }
   }, [product, setValue]);
 
-  const createMut = useMutation({
-    mutationFn: (data: FormData) => productsApi.createProduct(data),
-    onSuccess: () => {
-      toast.success('Product created');
-      qc.invalidateQueries({ queryKey: ['admin-products'] });
-      navigate('/products');
-    },
-    onError: () => toast.error('Failed to create product'),
-  });
-
-  const updateMut = useMutation({
-    mutationFn: (data: FormData) => productsApi.updateProduct(id!, data),
-    onSuccess: () => {
-      toast.success('Product updated');
-      qc.invalidateQueries({ queryKey: ['admin-products'] });
-      navigate('/products');
-    },
-    onError: () => toast.error('Failed to update product'),
-  });
-
-  const onSubmit = (data: FormData) => (isEdit ? updateMut.mutate(data) : createMut.mutate(data));
+  const onSubmit = (data: FormData) =>
+    isEdit ? updateMut.mutate({ id: id!, data }) : createMut.mutate(data);
   const isPending = createMut.isPending || updateMut.isPending;
 
   if (isEdit && isLoading) return <LoadingState />;

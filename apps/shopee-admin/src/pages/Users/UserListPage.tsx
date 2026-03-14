@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
 import { MoreHorizontal, Plus, Pencil, Trash2 } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import { Avatar, AvatarFallback } from 'src/components/ui/avatar';
@@ -26,58 +24,20 @@ import { DataTable } from 'src/components/shared/DataTable';
 import { PageHeader } from 'src/components/shared/PageHeader';
 import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
 import { ErrorState } from 'src/components/shared/ErrorState';
-import usersApi from 'src/apis/users.api';
+import { useUsers, useCreateUser, useUpdateUser, useDeleteUser } from 'src/hooks/useUsers';
 import type { User } from 'src/types';
 
 export default function UserListPage() {
-  const qc = useQueryClient();
   const [page, setPage] = useState(0);
   const [createOpen, setCreateOpen] = useState(false);
   const [editUser, setEditUser] = useState<User | null>(null);
   const [deleteUser, setDeleteUser] = useState<User | null>(null);
   const [form, setForm] = useState({ name: '', email: '', password: '', roles: 'User' });
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['admin-users', page],
-    queryFn: () => usersApi.getUsers({ page: page + 1, limit: 10 }).then((r) => r.data.data),
-  });
-
-  const createMut = useMutation({
-    mutationFn: (body: { email: string; password: string; name?: string; roles?: string[] }) =>
-      usersApi.createUser(body),
-    onSuccess: () => {
-      toast.success('User created');
-      setCreateOpen(false);
-      qc.invalidateQueries({ queryKey: ['admin-users'] });
-    },
-    onError: () => toast.error('Failed to create user'),
-  });
-
-  const updateMut = useMutation({
-    mutationFn: ({
-      id,
-      body,
-    }: {
-      id: string;
-      body: { name?: string; email?: string; roles?: string[] };
-    }) => usersApi.updateUser(id, body),
-    onSuccess: () => {
-      toast.success('User updated');
-      setEditUser(null);
-      qc.invalidateQueries({ queryKey: ['admin-users'] });
-    },
-    onError: () => toast.error('Failed to update user'),
-  });
-
-  const deleteMut = useMutation({
-    mutationFn: (id: string) => usersApi.deleteUser(id),
-    onSuccess: () => {
-      toast.success('User deleted');
-      setDeleteUser(null);
-      qc.invalidateQueries({ queryKey: ['admin-users'] });
-    },
-    onError: () => toast.error('Failed to delete user'),
-  });
+  const { data, isLoading, isError, refetch } = useUsers(page);
+  const createMut = useCreateUser(() => setCreateOpen(false));
+  const updateMut = useUpdateUser(() => setEditUser(null));
+  const deleteMut = useDeleteUser(() => setDeleteUser(null));
 
   const columns: ColumnDef<User>[] = [
     {

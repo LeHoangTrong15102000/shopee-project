@@ -1,31 +1,17 @@
 import { useState } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { Upload, Loader2 } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
 import { PageHeader } from 'src/components/shared/PageHeader';
 import { StatCard } from 'src/components/shared/StatCard';
 import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
-import importApi from 'src/apis/import.api';
+import { useImportStats, useImportProducts } from 'src/hooks/useImport';
 
 export default function ImportPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const { data: stats } = useQuery({
-    queryKey: ['admin-import-stats'],
-    queryFn: () => importApi.getImportStats().then((r) => r.data.data),
-  });
-
-  const importMut = useMutation({
-    mutationFn: () => importApi.importProducts(),
-    onSuccess: (res) => {
-      const d = res.data.data;
-      toast.success(`Imported ${d.imported} products (deleted ${d.deleted} old)`);
-      setConfirmOpen(false);
-    },
-    onError: () => toast.error('Import failed'),
-  });
+  const { data: stats } = useImportStats();
+  const importMut = useImportProducts(() => setConfirmOpen(false));
 
   return (
     <div className="space-y-6">

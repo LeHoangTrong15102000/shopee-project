@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { type ColumnDef } from '@tanstack/react-table';
-import { toast } from 'sonner';
 import { MoreHorizontal, Plus, Eye, Pencil, Trash2 } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import { Badge } from 'src/components/ui/badge';
@@ -17,42 +15,22 @@ import { DataTable } from 'src/components/shared/DataTable';
 import { PageHeader } from 'src/components/shared/PageHeader';
 import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
 import { ErrorState } from 'src/components/shared/ErrorState';
-import productsApi from 'src/apis/products.api';
+import { useProducts, useDeleteProduct, useDeleteManyProducts } from 'src/hooks/useProducts';
 import { formatCurrency } from 'src/utils/format';
 import type { Product } from 'src/types';
 
 export default function ProductListPage() {
   const navigate = useNavigate();
-  const qc = useQueryClient();
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<Product[]>([]);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['admin-products', page],
-    queryFn: () => productsApi.getProducts({ page: page + 1, limit: 10 }).then((r) => r.data.data),
-  });
-
-  const deleteMut = useMutation({
-    mutationFn: (id: string) => productsApi.deleteProduct(id),
-    onSuccess: () => {
-      toast.success('Product deleted');
-      setDeleteId(null);
-      qc.invalidateQueries({ queryKey: ['admin-products'] });
-    },
-    onError: () => toast.error('Failed to delete product'),
-  });
-
-  const bulkDeleteMut = useMutation({
-    mutationFn: (ids: string[]) => productsApi.deleteManyProducts(ids),
-    onSuccess: () => {
-      toast.success('Products deleted');
-      setBulkDeleteOpen(false);
-      setSelected([]);
-      qc.invalidateQueries({ queryKey: ['admin-products'] });
-    },
-    onError: () => toast.error('Failed to delete products'),
+  const { data, isLoading, isError, refetch } = useProducts(page);
+  const deleteMut = useDeleteProduct(() => setDeleteId(null));
+  const bulkDeleteMut = useDeleteManyProducts(() => {
+    setBulkDeleteOpen(false);
+    setSelected([]);
   });
 
   const columns: ColumnDef<Product>[] = [

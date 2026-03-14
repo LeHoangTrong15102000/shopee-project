@@ -32,11 +32,7 @@ export default function OrderDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const {
-    data: order,
-    isLoading,
-    error,
-  } = useOrderDetail(id);
+  const { data: order, isLoading, error } = useOrderDetail(id);
 
   const updateMut = useUpdateOrderStatus(id);
 

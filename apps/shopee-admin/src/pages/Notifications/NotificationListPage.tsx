@@ -24,7 +24,11 @@ import { PageHeader } from 'src/components/shared/PageHeader';
 import { StatusBadge } from 'src/components/shared/StatusBadge';
 import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
 import { ErrorState } from 'src/components/shared/ErrorState';
-import { useNotifications, useCreateNotification, useDeleteNotification } from 'src/hooks/useNotifications';
+import {
+  useNotifications,
+  useCreateNotification,
+  useDeleteNotification,
+} from 'src/hooks/useNotifications';
 import type { Notification } from 'src/types';
 
 export default function NotificationListPage() {
@@ -158,7 +162,10 @@ export default function NotificationListPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={() => createMut.mutate({ type: createType!, form })} disabled={createMut.isPending}>
+            <Button
+              onClick={() => createMut.mutate({ type: createType!, form })}
+              disabled={createMut.isPending}
+            >
               Send
             </Button>
           </DialogFooter>

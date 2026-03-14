@@ -11,13 +11,13 @@
     "docker:stop": "docker compose down"
   },
   "devDependencies": {
-    "nx": "21.4.0",
-    "@nx/vite": "21.4.0",
     "@nx/eslint": "21.4.0",
     "@nx/eslint-plugin": "21.4.0",
-    "@nx/js": "21.4.0",
-    "@nx/workspace": "21.4.0",
     "@nx/jest": "21.4.0",
+    "@nx/js": "21.4.0",
+    "@nx/vite": "21.4.0",
+    "@nx/workspace": "21.4.0",
+    "nx": "21.4.0",
     "typescript": "~5.8.2",
     "typescript-eslint": "^8.56.1"
   },
@@ -27,6 +27,15 @@
       "jiti": "^2.0.0",
       "@types/react": "^19.2.14",
       "@types/react-dom": "^19.2.3"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "@heroui/shared-utils",
+      "esbuild",
+      "mongodb-memory-server",
+      "msw",
+      "nx",
+      "react-native-nitro-modules",
+      "unrs-resolver"
+    ]
   }
 }

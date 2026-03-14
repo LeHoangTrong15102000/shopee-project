@@ -1,5 +1,4 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
@@ -16,29 +15,16 @@ import { PageHeader } from 'src/components/shared/PageHeader';
 import { StatusBadge } from 'src/components/shared/StatusBadge';
 import { LoadingState } from 'src/components/shared/LoadingState';
 import { ErrorState } from 'src/components/shared/ErrorState';
-import vouchersApi from 'src/apis/vouchers.api';
+import { useVoucherDetail, useVoucherUsage } from 'src/hooks/useVoucherDetail';
 import { formatCurrency } from 'src/utils/format';
 
 export default function VoucherDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const {
-    data: voucher,
-    isLoading,
-    isError,
-    refetch,
-  } = useQuery({
-    queryKey: ['admin-voucher', id],
-    queryFn: () => vouchersApi.getVoucher(id!).then((r) => r.data.data),
-    enabled: !!id,
-  });
+  const { data: voucher, isLoading, isError, refetch } = useVoucherDetail(id);
 
-  const { data: usageData } = useQuery({
-    queryKey: ['admin-voucher-usage', id],
-    queryFn: () => vouchersApi.getVoucherUsage(id!).then((r) => r.data.data),
-    enabled: !!id,
-  });
+  const { data: usageData } = useVoucherUsage(id);
 
   if (isLoading) return <LoadingState />;
   if (isError) return <ErrorState message="Failed to load voucher" onRetry={refetch} />;

@@ -232,7 +232,10 @@ export default function LoyaltyPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={() => createRewardMut.mutate(rewardForm)} disabled={createRewardMut.isPending}>
+            <Button
+              onClick={() => createRewardMut.mutate(rewardForm)}
+              disabled={createRewardMut.isPending}
+            >
               Create
             </Button>
           </DialogFooter>
@@ -272,7 +275,12 @@ export default function LoyaltyPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={() => editReward && updateRewardMut.mutate({ id: editReward._id, body: rewardForm })} disabled={updateRewardMut.isPending}>
+            <Button
+              onClick={() =>
+                editReward && updateRewardMut.mutate({ id: editReward._id, body: rewardForm })
+              }
+              disabled={updateRewardMut.isPending}
+            >
               Save
             </Button>
           </DialogFooter>

@@ -12,6 +12,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    "types": ["vitest/globals", "@testing-library/jest-dom"],
     "baseUrl": ".",
     "paths": {
       "src/*": ["./src/*"],
@@ -24,5 +25,5 @@
       "@shopee/shared-constants/*": ["../../libs/shared-constants/src/*"]
     }
   },
-  "include": ["src", "../../libs/shared-types/src", "../../libs/shared-constants/src", "../../libs/shared-utils/src"]
+  "include": ["src", "vitest.setup.ts", "../../libs/shared-types/src", "../../libs/shared-constants/src", "../../libs/shared-utils/src"]
 }

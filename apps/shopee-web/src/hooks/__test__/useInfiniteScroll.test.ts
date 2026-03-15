@@ -17,9 +17,9 @@ beforeEach(() => {
     this.observe = mockObserve;
     this.disconnect = mockDisconnect;
     this.unobserve = vi.fn();
-    this.root = null;
-    this.rootMargin = '';
-    this.thresholds = [];
+    Object.defineProperty(this, 'root', { value: null, writable: false });
+    Object.defineProperty(this, 'rootMargin', { value: '', writable: false });
+    Object.defineProperty(this, 'thresholds', { value: [], writable: false });
     this.takeRecords = () => [];
   }) as unknown as typeof IntersectionObserver;
 });

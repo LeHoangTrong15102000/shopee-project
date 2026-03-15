@@ -29,7 +29,7 @@ const NavHeaderCompact = ({
   unreadCount,
   handleTranslateLanguage,
 }: NavHeaderCompactProps) => {
-  const { t, i18n } = useTranslation('nav');
+  const { t } = useTranslation('nav');
   return (
     <div className="flex items-center gap-1 sm:gap-3">
       <ThemeToggle className="" />

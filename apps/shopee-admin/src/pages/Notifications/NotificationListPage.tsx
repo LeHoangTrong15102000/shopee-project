@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { Plus, Trash2, MoreHorizontal, CheckCircle } from 'lucide-react';
@@ -40,25 +41,24 @@ import {
 import type { Notification } from 'src/types';
 
 const notificationTemplates = [
-  { value: 'custom', label: 'Custom', title: '', message: '' },
+  { value: 'custom', labelKey: 'form.custom' as const, title: '', message: '' },
   {
     value: 'maintenance',
-    label: 'System Maintenance',
-    title: 'Scheduled Maintenance',
-    message:
-      'We will be performing scheduled maintenance. The system may be temporarily unavailable.',
+    labelKey: 'form.templates.maintenance' as const,
+    titleKey: 'form.templates.maintenanceTitle' as const,
+    messageKey: 'form.templates.maintenanceMessage' as const,
   },
   {
     value: 'feature',
-    label: 'New Feature',
-    title: 'New Feature Available',
-    message: 'We have launched a new feature. Check it out now!',
+    labelKey: 'form.templates.newFeature' as const,
+    titleKey: 'form.templates.newFeatureTitle' as const,
+    messageKey: 'form.templates.newFeatureMessage' as const,
   },
   {
     value: 'promotion',
-    label: 'Promotion',
-    title: 'Special Promotion',
-    message: "Don't miss our limited-time promotion with exclusive discounts!",
+    labelKey: 'form.templates.promotion' as const,
+    titleKey: 'form.templates.promotionTitle' as const,
+    messageKey: 'form.templates.promotionMessage' as const,
   },
 ];
 
@@ -68,6 +68,8 @@ export default function NotificationListPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [form, setForm] = useState({ user_id: '', title: '', message: '' });
   const [selectedTemplate, setSelectedTemplate] = useState('custom');
+  const { t } = useTranslation('notifications');
+  const { t: tc } = useTranslation('common');
 
   const { data, isLoading, isError, refetch } = useNotifications(page);
   const createMut = useCreateNotification(() => setCreateType(null));
@@ -75,20 +77,20 @@ export default function NotificationListPage() {
   const markReadMut = useMarkNotificationAsRead();
 
   const columns: ColumnDef<Notification>[] = [
-    { accessorKey: 'title', header: 'Title' },
+    { accessorKey: 'title', header: t('columns.title') },
     {
       accessorKey: 'message',
-      header: 'Message',
+      header: t('columns.message'),
       cell: ({ row }) => <span className="max-w-[200px] truncate">{row.original.message}</span>,
     },
     {
       accessorKey: 'type',
-      header: 'Type',
+      header: t('columns.type'),
       cell: ({ row }) => <StatusBadge status={row.original.type} />,
     },
     {
       accessorKey: 'createdAt',
-      header: 'Date',
+      header: t('columns.date'),
       cell: ({ row }) => format(new Date(row.original.createdAt), 'MMM d, yyyy'),
     },
     {
@@ -96,16 +98,16 @@ export default function NotificationListPage() {
       header: '',
       cell: ({ row }) => (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" aria-label="Notification actions">
-              <MoreHorizontal className="size-4" />
-            </Button>
+          <DropdownMenuTrigger
+            render={<Button variant="ghost" size="sm" aria-label={t('common:aria.actions')} />}
+          >
+            <MoreHorizontal className="size-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             {!row.original.is_read && (
               <DropdownMenuItem onClick={() => markReadMut.mutate(row.original._id)}>
                 <CheckCircle className="mr-2 size-4" />
-                Mark as Read
+                {t('actions.markAsRead')}
               </DropdownMenuItem>
             )}
             <DropdownMenuItem
@@ -113,7 +115,7 @@ export default function NotificationListPage() {
               className="text-destructive"
             >
               <Trash2 className="mr-2 size-4" />
-              Delete
+              {t('actions.delete')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -124,8 +126,8 @@ export default function NotificationListPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Notifications"
-        description="Send and manage notifications"
+        title={t('title')}
+        description={t('description')}
         actions={
           <div className="flex flex-wrap gap-2">
             <Button
@@ -138,7 +140,7 @@ export default function NotificationListPage() {
               }}
             >
               <Plus className="mr-2 size-4" />
-              Targeted
+              {t('tabs.targeted')}
             </Button>
             <Button
               size="sm"
@@ -149,12 +151,12 @@ export default function NotificationListPage() {
               }}
             >
               <Plus className="mr-2 size-4" />
-              Broadcast
+              {t('tabs.broadcast')}
             </Button>
           </div>
         }
       />
-      {isError && <ErrorState message="Failed to load notifications" onRetry={refetch} />}
+      {isError && <ErrorState message={t('error')} onRetry={refetch} />}
       <DataTable
         columns={columns}
         data={data?.notifications ?? []}
@@ -171,28 +173,40 @@ export default function NotificationListPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {createType === 'broadcast' ? 'Broadcast' : 'Targeted'} Notification
+              {createType === 'broadcast'
+                ? t('form.broadcastNotification')
+                : t('form.targetedNotification')}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             {createType === 'broadcast' && (
               <div>
-                <Label htmlFor="notif-template">Template</Label>
+                <Label htmlFor="notif-template">{t('form.template')}</Label>
                 <Select
                   value={selectedTemplate}
                   onValueChange={(v) => {
                     setSelectedTemplate(v);
-                    const tpl = notificationTemplates.find((t) => t.value === v);
-                    if (tpl) setForm({ ...form, title: tpl.title, message: tpl.message });
+                    const tpl = notificationTemplates.find((tp) => tp.value === v);
+                    if (tpl) {
+                      if (tpl.value === 'custom') {
+                        setForm({ ...form, title: '', message: '' });
+                      } else {
+                        setForm({
+                          ...form,
+                          title: t((tpl as any).titleKey),
+                          message: t((tpl as any).messageKey),
+                        });
+                      }
+                    }
                   }}
                 >
                   <SelectTrigger id="notif-template">
-                    <SelectValue placeholder="Select template" />
+                    <SelectValue placeholder={t('form.selectTemplate')} />
                   </SelectTrigger>
                   <SelectContent>
-                    {notificationTemplates.map((t) => (
-                      <SelectItem key={t.value} value={t.value}>
-                        {t.label}
+                    {notificationTemplates.map((tp) => (
+                      <SelectItem key={tp.value} value={tp.value}>
+                        {t(tp.labelKey)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -201,7 +215,7 @@ export default function NotificationListPage() {
             )}
             {createType === 'targeted' && (
               <div>
-                <Label htmlFor="notif-user-id">User ID</Label>
+                <Label htmlFor="notif-user-id">{t('form.userId')}</Label>
                 <Input
                   id="notif-user-id"
                   value={form.user_id}
@@ -210,7 +224,7 @@ export default function NotificationListPage() {
               </div>
             )}
             <div>
-              <Label htmlFor="notif-title">Title</Label>
+              <Label htmlFor="notif-title">{t('form.title')}</Label>
               <Input
                 id="notif-title"
                 value={form.title}
@@ -218,7 +232,7 @@ export default function NotificationListPage() {
               />
             </div>
             <div>
-              <Label htmlFor="notif-message">Message</Label>
+              <Label htmlFor="notif-message">{t('form.message')}</Label>
               <Textarea
                 id="notif-message"
                 value={form.message}
@@ -231,7 +245,7 @@ export default function NotificationListPage() {
               onClick={() => createMut.mutate({ type: createType!, form })}
               disabled={createMut.isPending}
             >
-              Send
+              {tc('buttons.send')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -239,8 +253,8 @@ export default function NotificationListPage() {
       <ConfirmDialog
         open={!!deleteId}
         onOpenChange={(o) => !o && setDeleteId(null)}
-        title="Delete Notification"
-        description="This will permanently delete this notification."
+        title={t('toast.deleteTitle')}
+        description={t('toast.deleteDescription')}
         onConfirm={() => deleteId && deleteMut.mutate(deleteId)}
         isLoading={deleteMut.isPending}
       />

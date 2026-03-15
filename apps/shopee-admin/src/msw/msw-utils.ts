@@ -12,4 +12,3 @@ export function paginate<T>(items: T[], page: number, limit: number) {
     },
   };
 }
-

@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from 'src/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from 'src/components/ui/card';
@@ -43,6 +44,7 @@ type PasswordForm = z.infer<typeof passwordSchema>;
 // --- Component ---
 
 export default function SettingsPage() {
+  const { t } = useTranslation('settings');
   const [activeTab, setActiveTab] = useState<string>('profile');
   const { user, setUser } = useAuthStore();
   const qc = useQueryClient();
@@ -82,40 +84,40 @@ export default function SettingsPage() {
         date_of_birth: data.date_of_birth || undefined,
       }),
     onSuccess: (res) => {
-      toast.success('Profile updated');
+      toast.success(t('toast.profileUpdated'));
       setUser(res.data.data);
       qc.invalidateQueries({ queryKey: ['profile'] });
     },
-    onError: () => toast.error('Failed to update profile'),
+    onError: () => toast.error(t('toast.profileError')),
   });
 
   const changePassword = useMutation({
     mutationFn: (data: PasswordForm) =>
       settingsApi.updateProfile({ password: data.password, new_password: data.new_password }),
     onSuccess: () => {
-      toast.success('Password changed');
+      toast.success(t('toast.passwordChanged'));
       passwordForm.reset();
     },
-    onError: () => toast.error('Failed to change password'),
+    onError: () => toast.error(t('toast.passwordError')),
   });
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Failed to load profile" onRetry={refetch} />;
+  if (isError) return <ErrorState message={t('error')} onRetry={refetch} />;
   return (
     <div className="space-y-6">
-      <PageHeader title="Settings" description="Manage your profile and preferences" />
+      <PageHeader title={t('title')} description={t('description')} />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="password">Change Password</TabsTrigger>
-          <TabsTrigger value="system">System Info</TabsTrigger>
+          <TabsTrigger value="profile">{t('tabs.profile')}</TabsTrigger>
+          <TabsTrigger value="password">{t('tabs.changePassword')}</TabsTrigger>
+          <TabsTrigger value="system">{t('tabs.systemInfo')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile">
           <Card>
             <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
-              <CardDescription>Update your personal details</CardDescription>
+              <CardTitle>{t('profile.title')}</CardTitle>
+              <CardDescription>{t('profile.description')}</CardDescription>
             </CardHeader>
             <CardContent>
               <form
@@ -123,7 +125,7 @@ export default function SettingsPage() {
                 className="space-y-4 max-w-lg"
               >
                 <div>
-                  <Label htmlFor="settings-name">Name</Label>
+                  <Label htmlFor="settings-name">{t('profile.name')}</Label>
                   <Input id="settings-name" {...profileForm.register('name')} />
                   {profileForm.formState.errors.name && (
                     <p className="text-sm text-destructive mt-1">
@@ -132,19 +134,19 @@ export default function SettingsPage() {
                   )}
                 </div>
                 <div>
-                  <Label htmlFor="settings-email">Email</Label>
+                  <Label htmlFor="settings-email">{t('profile.email')}</Label>
                   <Input id="settings-email" value={profile?.email ?? ''} disabled />
                 </div>
                 <div>
-                  <Label htmlFor="settings-phone">Phone</Label>
+                  <Label htmlFor="settings-phone">{t('profile.phone')}</Label>
                   <Input id="settings-phone" {...profileForm.register('phone')} />
                 </div>
                 <div>
-                  <Label htmlFor="settings-address">Address</Label>
+                  <Label htmlFor="settings-address">{t('profile.address')}</Label>
                   <Input id="settings-address" {...profileForm.register('address')} />
                 </div>
                 <div>
-                  <Label htmlFor="settings-avatar">Avatar URL</Label>
+                  <Label htmlFor="settings-avatar">{t('profile.avatarUrl')}</Label>
                   <Input
                     id="settings-avatar"
                     {...profileForm.register('avatar')}
@@ -157,11 +159,11 @@ export default function SettingsPage() {
                   )}
                 </div>
                 <div>
-                  <Label htmlFor="settings-dob">Date of Birth</Label>
+                  <Label htmlFor="settings-dob">{t('profile.dateOfBirth')}</Label>
                   <Input id="settings-dob" type="date" {...profileForm.register('date_of_birth')} />
                 </div>
                 <Button type="submit" disabled={updateProfile.isPending}>
-                  {updateProfile.isPending ? 'Saving...' : 'Save Changes'}
+                  {updateProfile.isPending ? t('profile.saving') : t('profile.save')}
                 </Button>
               </form>
             </CardContent>
@@ -170,8 +172,8 @@ export default function SettingsPage() {
         <TabsContent value="password">
           <Card>
             <CardHeader>
-              <CardTitle>Change Password</CardTitle>
-              <CardDescription>Update your account password</CardDescription>
+              <CardTitle>{t('password.title')}</CardTitle>
+              <CardDescription>{t('password.description')}</CardDescription>
             </CardHeader>
             <CardContent>
               <form
@@ -179,7 +181,7 @@ export default function SettingsPage() {
                 className="space-y-4 max-w-lg"
               >
                 <div>
-                  <Label htmlFor="settings-current-pw">Current Password</Label>
+                  <Label htmlFor="settings-current-pw">{t('password.currentPassword')}</Label>
                   <Input
                     id="settings-current-pw"
                     type="password"
@@ -192,7 +194,7 @@ export default function SettingsPage() {
                   )}
                 </div>
                 <div>
-                  <Label htmlFor="settings-new-pw">New Password</Label>
+                  <Label htmlFor="settings-new-pw">{t('password.newPassword')}</Label>
                   <Input
                     id="settings-new-pw"
                     type="password"
@@ -205,7 +207,7 @@ export default function SettingsPage() {
                   )}
                 </div>
                 <div>
-                  <Label htmlFor="settings-confirm-pw">Confirm Password</Label>
+                  <Label htmlFor="settings-confirm-pw">{t('password.confirmPassword')}</Label>
                   <Input
                     id="settings-confirm-pw"
                     type="password"
@@ -218,7 +220,7 @@ export default function SettingsPage() {
                   )}
                 </div>
                 <Button type="submit" disabled={changePassword.isPending}>
-                  {changePassword.isPending ? 'Changing...' : 'Change Password'}
+                  {changePassword.isPending ? t('password.changing') : t('password.change')}
                 </Button>
               </form>
             </CardContent>
@@ -228,14 +230,14 @@ export default function SettingsPage() {
         <TabsContent value="system">
           <Card>
             <CardHeader>
-              <CardTitle>System Information</CardTitle>
-              <CardDescription>Application details and environment</CardDescription>
+              <CardTitle>{t('system.title')}</CardTitle>
+              <CardDescription>{t('system.description')}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 sm:grid-cols-3">
                 <Card size="sm">
                   <CardHeader>
-                    <CardTitle>App Version</CardTitle>
+                    <CardTitle>{t('system.appVersion')}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-2xl font-bold">1.0.0</p>
@@ -243,7 +245,7 @@ export default function SettingsPage() {
                 </Card>
                 <Card size="sm">
                   <CardHeader>
-                    <CardTitle>API Base URL</CardTitle>
+                    <CardTitle>{t('system.apiBaseUrl')}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm font-mono break-all">
@@ -253,7 +255,7 @@ export default function SettingsPage() {
                 </Card>
                 <Card size="sm">
                   <CardHeader>
-                    <CardTitle>Environment</CardTitle>
+                    <CardTitle>{t('system.environment')}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-2xl font-bold capitalize">{import.meta.env.MODE}</p>

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import i18n from 'src/i18n/i18n';
 import vouchersApi from 'src/apis/vouchers.api';
 import { useActivityLogStore } from 'src/stores/activity-log.store';
 import { useAuthStore } from 'src/stores/auth.store';
@@ -40,12 +41,12 @@ export function useCreateVoucher(onSuccess?: () => void) {
       end_date: string;
     }) => vouchersApi.createVoucher(body),
     onSuccess: (_, vars) => {
-      toast.success('Voucher created');
+      toast.success(i18n.t('toast.voucherCreated', { ns: 'vouchers' }));
       addLog({ action: 'create', entityType: 'voucher', entityName: vars.code, adminEmail: email });
       qc.invalidateQueries({ queryKey: VOUCHER_KEYS.all });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to create voucher'),
+    onError: () => toast.error(i18n.t('toast.createFailed', { ns: 'vouchers' })),
   });
 }
 
@@ -56,12 +57,12 @@ export function useDeleteVoucher(onSuccess?: () => void) {
   return useMutation({
     mutationFn: (id: string) => vouchersApi.deleteVoucher(id),
     onSuccess: (_, id) => {
-      toast.success('Voucher deleted');
+      toast.success(i18n.t('toast.voucherDeleted', { ns: 'vouchers' }));
       addLog({ action: 'delete', entityType: 'voucher', entityName: id, adminEmail: email });
       qc.invalidateQueries({ queryKey: VOUCHER_KEYS.all });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to delete voucher'),
+    onError: () => toast.error(i18n.t('toast.deleteFailed', { ns: 'vouchers' })),
   });
 }
 
@@ -86,12 +87,12 @@ export function useUpdateVoucher(onSuccess?: () => void) {
       }> & { is_active?: boolean };
     }) => vouchersApi.updateVoucher(id, body),
     onSuccess: (_, vars) => {
-      toast.success('Voucher updated');
+      toast.success(i18n.t('toast.voucherUpdated', { ns: 'vouchers' }));
       addLog({ action: 'update', entityType: 'voucher', entityName: vars.id, adminEmail: email });
       qc.invalidateQueries({ queryKey: VOUCHER_KEYS.all });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to update voucher'),
+    onError: () => toast.error(i18n.t('toast.updateFailed', { ns: 'vouchers' })),
   });
 }
 
@@ -103,7 +104,7 @@ export function useToggleVoucher(onSuccess?: () => void) {
     mutationFn: ({ id, is_active }: { id: string; is_active: boolean }) =>
       vouchersApi.updateVoucher(id, { is_active }),
     onSuccess: (_, vars) => {
-      toast.success('Status updated');
+      toast.success(i18n.t('toast.statusUpdated', { ns: 'vouchers' }));
       addLog({
         action: 'update',
         entityType: 'voucher',
@@ -114,6 +115,6 @@ export function useToggleVoucher(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: VOUCHER_KEYS.stats });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to update status'),
+    onError: () => toast.error(i18n.t('toast.updateStatusFailed', { ns: 'vouchers' })),
   });
 }

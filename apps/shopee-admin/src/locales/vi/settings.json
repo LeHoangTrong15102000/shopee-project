@@ -1,0 +1,44 @@
+{
+  "title": "Cài đặt",
+  "description": "Quản lý hồ sơ và tùy chọn",
+  "tabs": {
+    "profile": "Hồ sơ",
+    "changePassword": "Đổi mật khẩu",
+    "systemInfo": "Thông tin hệ thống"
+  },
+  "profile": {
+    "title": "Thông tin hồ sơ",
+    "description": "Cập nhật thông tin cá nhân",
+    "name": "Tên",
+    "email": "Email",
+    "phone": "Điện thoại",
+    "address": "Địa chỉ",
+    "avatarUrl": "URL ảnh đại diện",
+    "dateOfBirth": "Ngày sinh",
+    "save": "Lưu thay đổi",
+    "saving": "Đang lưu..."
+  },
+  "password": {
+    "title": "Đổi mật khẩu",
+    "description": "Cập nhật mật khẩu tài khoản",
+    "currentPassword": "Mật khẩu hiện tại",
+    "newPassword": "Mật khẩu mới",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "change": "Đổi mật khẩu",
+    "changing": "Đang đổi..."
+  },
+  "system": {
+    "title": "Thông tin hệ thống",
+    "description": "Chi tiết ứng dụng và môi trường",
+    "appVersion": "Phiên bản ứng dụng",
+    "apiBaseUrl": "URL API",
+    "environment": "Môi trường"
+  },
+  "toast": {
+    "profileUpdated": "Đã cập nhật hồ sơ",
+    "profileError": "Không thể cập nhật hồ sơ",
+    "passwordChanged": "Đã đổi mật khẩu",
+    "passwordError": "Không thể đổi mật khẩu"
+  },
+  "error": "Không thể tải hồ sơ"
+}

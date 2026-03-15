@@ -8,6 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from 'src/components/ui/alert-dialog';
+import { useTranslation } from 'react-i18next';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -25,24 +26,30 @@ interface ConfirmDialogProps {
 export function ConfirmDialog({
   open,
   onOpenChange,
-  title = 'Are you sure?',
-  description = 'This action cannot be undone.',
+  title,
+  description,
   onConfirm,
   onCancel,
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
+  confirmText,
+  cancelText,
   variant = 'destructive',
   isLoading,
 }: ConfirmDialogProps) {
+  const { t } = useTranslation('common');
+  const resolvedTitle = title ?? t('dialog.areYouSure');
+  const resolvedDescription = description ?? t('dialog.cannotBeUndone');
+  const resolvedConfirmText = confirmText ?? t('buttons.confirm');
+  const resolvedCancelText = cancelText ?? t('buttons.cancel');
+
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
+          <AlertDialogTitle>{resolvedTitle}</AlertDialogTitle>
+          <AlertDialogDescription>{resolvedDescription}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onCancel}>{cancelText}</AlertDialogCancel>
+          <AlertDialogCancel onClick={onCancel}>{resolvedCancelText}</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
             disabled={isLoading}
@@ -50,7 +57,7 @@ export function ConfirmDialog({
               variant === 'destructive' ? 'bg-destructive text-white hover:bg-destructive/90' : ''
             }
           >
-            {isLoading ? 'Loading...' : confirmText}
+            {isLoading ? t('states.loading') : resolvedConfirmText}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

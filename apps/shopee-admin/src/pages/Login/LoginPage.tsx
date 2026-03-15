@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
@@ -13,6 +14,7 @@ import { useAuthStore } from 'src/stores/auth.store';
 import authApi from 'src/apis/auth.api';
 import { clearLS } from 'src/utils/http';
 import { AxiosError } from 'axios';
+import type { User } from 'src/types';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email format'),
@@ -21,13 +23,33 @@ const loginSchema = z.object({
 
 type LoginForm = z.infer<typeof loginSchema>;
 
+const DEV_ADMIN: User = {
+  _id: 'dev-admin-001',
+  email: 'admin@shopee.com',
+  name: 'Dev Admin',
+  roles: ['Admin'],
+  avatar: '',
+  phone: '',
+  address: '',
+  date_of_birth: '1990-01-01',
+  createdAt: '2024-01-01T00:00:00.000Z',
+  updatedAt: '2024-01-01T00:00:00.000Z',
+};
+
 export default function LoginPage() {
+  const { t } = useTranslation('login');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const login = useAuthStore((s) => s.login);
 
   const from = (location.state as { from?: string })?.from || '/';
+
+  const handleDevLogin = () => {
+    login('dev-access-token', 'dev-refresh-token', DEV_ADMIN);
+    toast.success(t('dev.loginSuccess'));
+    navigate(from, { replace: true });
+  };
 
   const {
     register,
@@ -44,19 +66,19 @@ export default function LoginPage() {
 
       if (!user.roles?.includes('Admin')) {
         clearLS();
-        toast.error('Access denied. Admin privileges required.');
+        toast.error(t('errors.accessDenied'));
         return;
       }
 
       login(access_token, refresh_token, user);
-      toast.success('Login successful');
+      toast.success(t('success'));
       navigate(from, { replace: true });
     } catch (err) {
       const error = err as AxiosError<{ message: string }>;
       if (error.response?.status === 401) {
-        setError('root', { message: 'Invalid email or password' });
+        setError('root', { message: t('errors.invalidCredentials') });
       } else {
-        setError('root', { message: 'Server error. Please try again later.' });
+        setError('root', { message: t('errors.serverError') });
       }
     } finally {
       setIsLoading(false);
@@ -67,8 +89,8 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Shopee Admin</CardTitle>
-          <CardDescription>Sign in to your admin account</CardDescription>
+          <CardTitle className="text-2xl">{t('title')}</CardTitle>
+          <CardDescription>{t('description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -81,11 +103,11 @@ export default function LoginPage() {
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('form.email')}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@shopee.com"
+                placeholder={t('form.emailPlaceholder')}
                 {...register('email')}
                 aria-invalid={!!errors.email}
                 aria-describedby={errors.email ? 'email-error' : undefined}
@@ -97,11 +119,11 @@ export default function LoginPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t('form.password')}</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="••••••"
+                placeholder={t('form.passwordPlaceholder')}
                 {...register('password')}
                 aria-invalid={!!errors.password}
                 aria-describedby={errors.password ? 'password-error' : undefined}
@@ -114,8 +136,18 @@ export default function LoginPage() {
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
-              Sign In
+              {t('form.signIn')}
             </Button>
+            {import.meta.env.DEV && (
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full border-dashed border-yellow-500 text-yellow-500 hover:bg-yellow-500/10 hover:text-yellow-400"
+                onClick={handleDevLogin}
+              >
+                {t('dev.loginButton')}
+              </Button>
+            )}
           </form>
         </CardContent>
       </Card>

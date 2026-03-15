@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from 'src/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
 import {
@@ -29,6 +30,8 @@ import type { OrderStatus } from 'src/types';
 const statusFlow: OrderStatus[] = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
 
 export default function OrderDetailPage() {
+  const { t } = useTranslation('orders');
+  const { t: tc } = useTranslation('common');
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -37,7 +40,7 @@ export default function OrderDetailPage() {
   const updateMut = useUpdateOrderStatus(id);
 
   if (isLoading) return <LoadingState />;
-  if (error || !order) return <ErrorState message="Order not found" />;
+  if (error || !order) return <ErrorState message={t('notFound')} />;
 
   const customer = typeof order.user === 'object' ? order.user : null;
 
@@ -48,23 +51,23 @@ export default function OrderDetailPage() {
         actions={
           <Button variant="outline" size="sm" onClick={() => navigate('/orders')}>
             <ArrowLeft className="mr-2 size-4" />
-            Back
+            {tc('buttons.back')}
           </Button>
         }
       />
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Items</CardTitle>
+            <CardTitle>{t('detail.items')}</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Product</TableHead>
-                  <TableHead className="text-right">Price</TableHead>
-                  <TableHead className="text-right">Qty</TableHead>
-                  <TableHead className="text-right">Subtotal</TableHead>
+                  <TableHead>{t('detail.product')}</TableHead>
+                  <TableHead className="text-right">{t('detail.price')}</TableHead>
+                  <TableHead className="text-right">{t('detail.qty')}</TableHead>
+                  <TableHead className="text-right">{t('detail.subtotal')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -84,7 +87,7 @@ export default function OrderDetailPage() {
               </TableBody>
             </Table>
             <div className="mt-4 flex justify-end text-lg font-bold">
-              Total: {formatCurrency(order.total_price)}
+              {t('detail.total')}: {formatCurrency(order.total_price)}
             </div>
           </CardContent>
         </Card>
@@ -92,7 +95,7 @@ export default function OrderDetailPage() {
         <div className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Status</CardTitle>
+              <CardTitle>{t('detail.status')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <StatusBadge status={order.status} />
@@ -100,13 +103,13 @@ export default function OrderDetailPage() {
                 value={order.status}
                 onValueChange={(v) => updateMut.mutate(v as OrderStatus)}
               >
-                <SelectTrigger aria-label="Update order status">
+                <SelectTrigger aria-label={t('detail.updateStatus')}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {statusFlow.map((s) => (
                     <SelectItem key={s} value={s} className="capitalize">
-                      {s}
+                      {t(`status.${s}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -120,7 +123,7 @@ export default function OrderDetailPage() {
                     <div
                       className={`size-2 rounded-full ${statusFlow.indexOf(s) <= statusFlow.indexOf(order.status) ? 'bg-primary' : 'bg-muted'}`}
                     />
-                    <span className="capitalize">{s}</span>
+                    <span className="capitalize">{t(`status.${s}`)}</span>
                   </div>
                 ))}
               </div>
@@ -129,32 +132,32 @@ export default function OrderDetailPage() {
           {customer && (
             <Card>
               <CardHeader>
-                <CardTitle>Customer</CardTitle>
+                <CardTitle>{t('detail.customer')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-1 text-sm">
-                <p className="font-medium">{customer.name || 'N/A'}</p>
+                <p className="font-medium">{customer.name || tc('states.notAvailable')}</p>
                 <p className="text-muted-foreground">{customer.email}</p>
               </CardContent>
             </Card>
           )}
           <Card>
             <CardHeader>
-              <CardTitle>Info</CardTitle>
+              <CardTitle>{t('detail.info')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-1 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Date</span>
+                <span className="text-muted-foreground">{t('detail.date')}</span>
                 <span>{format(new Date(order.createdAt), 'MMM d, yyyy HH:mm')}</span>
               </div>
               {order.payment_method && (
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Payment</span>
+                  <span className="text-muted-foreground">{t('detail.payment')}</span>
                   <span>{order.payment_method}</span>
                 </div>
               )}
               {order.shipping_address && (
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Address</span>
+                  <span className="text-muted-foreground">{t('detail.address')}</span>
                   <span className="text-right break-all">{order.shipping_address}</span>
                 </div>
               )}

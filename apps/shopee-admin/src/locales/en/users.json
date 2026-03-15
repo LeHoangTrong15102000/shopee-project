@@ -1,0 +1,65 @@
+{
+  "title": "Users",
+  "description": "Manage admin and user accounts",
+  "columns": {
+    "name": "Name",
+    "email": "Email",
+    "roles": "Roles",
+    "created": "Created"
+  },
+  "actions": {
+    "addUser": "Add User",
+    "createUser": "Create User",
+    "editUser": "Edit User",
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "form": {
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "role": "Role",
+    "rolePlaceholder": "User or Admin"
+  },
+  "detail": {
+    "title": "User Detail",
+    "backToUsers": "Back to Users",
+    "name": "Name",
+    "email": "Email",
+    "roles": "Roles",
+    "phone": "Phone",
+    "address": "Address",
+    "dateOfBirth": "Date of Birth",
+    "created": "Created",
+    "orders": "Orders",
+    "reviews": "Reviews",
+    "loyalty": "Loyalty",
+    "orderId": "Order ID",
+    "total": "Total",
+    "status": "Status",
+    "date": "Date",
+    "product": "Product",
+    "rating": "Rating",
+    "comment": "Comment",
+    "type": "Type",
+    "points": "Points",
+    "description": "Description",
+    "searchOrders": "Search orders...",
+    "searchReviews": "Search reviews...",
+    "searchTransactions": "Search transactions..."
+  },
+  "toast": {
+    "deleteTitle": "Delete User",
+    "deleteDescription": "Are you sure you want to delete {{name}}?",
+    "userCreated": "User created",
+    "userUpdated": "User updated",
+    "userDeleted": "User deleted",
+    "createFailed": "Failed to create user",
+    "updateFailed": "Failed to update user",
+    "deleteFailed": "Failed to delete user"
+  },
+  "search": "Search users...",
+  "error": "Failed to load users",
+  "notFound": "User not found"
+}

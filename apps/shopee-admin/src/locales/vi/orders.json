@@ -1,0 +1,58 @@
+{
+  "title": "Đơn hàng",
+  "description": "Quản lý đơn hàng khách hàng",
+  "columns": {
+    "orderId": "Mã đơn",
+    "customer": "Khách hàng",
+    "items": "Sản phẩm",
+    "total": "Tổng",
+    "status": "Trạng thái",
+    "date": "Ngày"
+  },
+  "actions": {
+    "viewDetails": "Xem chi tiết"
+  },
+  "filters": {
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc",
+    "paymentMethod": "Phương thức thanh toán",
+    "all": "Tất cả",
+    "creditCard": "Thẻ tín dụng",
+    "bankTransfer": "Chuyển khoản",
+    "cod": "Thanh toán khi nhận hàng",
+    "setStatus": "Đặt trạng thái"
+  },
+  "status": {
+    "all": "Tất cả",
+    "pending": "Chờ xử lý",
+    "processing": "Đang xử lý",
+    "shipped": "Đang giao",
+    "delivered": "Đã giao",
+    "cancelled": "Đã hủy"
+  },
+  "detail": {
+    "items": "Sản phẩm",
+    "product": "Sản phẩm",
+    "price": "Giá",
+    "qty": "SL",
+    "subtotal": "Thành tiền",
+    "total": "Tổng cộng",
+    "status": "Trạng thái",
+    "customer": "Khách hàng",
+    "info": "Thông tin",
+    "date": "Ngày",
+    "payment": "Thanh toán",
+    "address": "Địa chỉ",
+    "updateStatus": "Cập nhật trạng thái đơn hàng"
+  },
+  "itemCount": "{{count}} sản phẩm",
+  "search": "Tìm kiếm đơn hàng...",
+  "error": "Không thể tải đơn hàng",
+  "notFound": "Không tìm thấy đơn hàng",
+  "toast": {
+    "ordersUpdated": "Đã cập nhật đơn hàng",
+    "statusUpdated": "Đã cập nhật trạng thái",
+    "updateOrdersFailed": "Không thể cập nhật đơn hàng",
+    "updateStatusFailed": "Không thể cập nhật trạng thái"
+  }
+}

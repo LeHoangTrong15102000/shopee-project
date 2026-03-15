@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import { Input } from 'src/components/ui/input';
@@ -35,6 +36,8 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export default function ProductFormPage() {
+  const { t } = useTranslation('products');
+  const { t: tc } = useTranslation('common');
   const { id } = useParams();
   const isEdit = !!id;
   const navigate = useNavigate();
@@ -75,15 +78,15 @@ export default function ProductFormPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={isEdit ? 'Edit Product' : 'New Product'} />
+      <PageHeader title={isEdit ? t('form.editProduct') : t('form.newProduct')} />
       <Card>
         <CardHeader>
-          <CardTitle>Product Details</CardTitle>
+          <CardTitle>{t('form.productDetails')}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
-              <Label htmlFor="product-name">Name</Label>
+              <Label htmlFor="product-name">{t('form.name')}</Label>
               <Input
                 id="product-name"
                 {...register('name')}
@@ -97,11 +100,11 @@ export default function ProductFormPage() {
               )}
             </div>
             <div className="sm:col-span-2">
-              <Label htmlFor="product-description">Description</Label>
+              <Label htmlFor="product-description">{t('form.description')}</Label>
               <Textarea id="product-description" {...register('description')} rows={3} />
             </div>
             <div>
-              <Label htmlFor="product-price">Price</Label>
+              <Label htmlFor="product-price">{t('form.price')}</Label>
               <Input
                 id="product-price"
                 type="number"
@@ -116,7 +119,7 @@ export default function ProductFormPage() {
               )}
             </div>
             <div>
-              <Label htmlFor="product-price-before">Price Before Discount</Label>
+              <Label htmlFor="product-price-before">{t('form.priceBeforeDiscount')}</Label>
               <Input
                 id="product-price-before"
                 type="number"
@@ -124,11 +127,11 @@ export default function ProductFormPage() {
               />
             </div>
             <div>
-              <Label htmlFor="product-quantity">Quantity</Label>
+              <Label htmlFor="product-quantity">{t('form.quantity')}</Label>
               <Input id="product-quantity" type="number" {...register('quantity')} />
             </div>
             <div>
-              <Label htmlFor="product-category">Category</Label>
+              <Label htmlFor="product-category">{t('form.category')}</Label>
               <Select
                 onValueChange={(v) => setValue('category', v)}
                 defaultValue={
@@ -144,7 +147,7 @@ export default function ProductFormPage() {
                   aria-invalid={!!errors.category}
                   aria-describedby={errors.category ? 'product-category-error' : undefined}
                 >
-                  <SelectValue placeholder="Select category" />
+                  <SelectValue placeholder={t('form.selectCategory')} />
                 </SelectTrigger>
                 <SelectContent>
                   {(categories ?? []).map((c) => (
@@ -161,7 +164,7 @@ export default function ProductFormPage() {
               )}
             </div>
             <div>
-              <Label htmlFor="product-image">Image URL</Label>
+              <Label htmlFor="product-image">{t('form.imageUrl')}</Label>
               <Input
                 id="product-image"
                 {...register('image')}
@@ -175,16 +178,16 @@ export default function ProductFormPage() {
               )}
             </div>
             <div>
-              <Label htmlFor="product-location">Location</Label>
+              <Label htmlFor="product-location">{t('form.location')}</Label>
               <Input id="product-location" {...register('location')} />
             </div>
             <div className="sm:col-span-2 flex gap-2">
               <Button type="submit" disabled={isPending}>
                 {isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
-                {isEdit ? 'Update' : 'Create'}
+                {isEdit ? tc('buttons.update') : tc('buttons.create')}
               </Button>
               <Button type="button" variant="outline" onClick={() => navigate('/products')}>
-                Cancel
+                {tc('buttons.cancel')}
               </Button>
             </div>
           </form>

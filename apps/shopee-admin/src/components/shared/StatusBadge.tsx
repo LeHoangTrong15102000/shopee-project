@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Badge } from 'src/components/ui/badge';
 import { cn } from 'src/lib/utils';
 
@@ -56,17 +57,22 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
+  const { t } = useTranslation('common');
   const config = statusColorMap[status.toLowerCase()] ?? {
     className: '',
     variant: 'secondary' as StatusVariant,
   };
+
+  const key = `statuses.${status.toLowerCase()}`;
+  const translated = t(key);
+  const label = translated !== key ? translated : status;
 
   return (
     <Badge
       variant={config.variant}
       className={cn('border-transparent capitalize', config.className, className)}
     >
-      {status}
+      {label}
     </Badge>
   );
 }

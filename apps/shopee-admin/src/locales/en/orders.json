@@ -1,0 +1,58 @@
+{
+  "title": "Orders",
+  "description": "Manage customer orders",
+  "columns": {
+    "orderId": "Order ID",
+    "customer": "Customer",
+    "items": "Items",
+    "total": "Total",
+    "status": "Status",
+    "date": "Date"
+  },
+  "actions": {
+    "viewDetails": "View Details"
+  },
+  "filters": {
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "paymentMethod": "Payment Method",
+    "all": "All",
+    "creditCard": "Credit Card",
+    "bankTransfer": "Bank Transfer",
+    "cod": "Cash on Delivery",
+    "setStatus": "Set status"
+  },
+  "status": {
+    "all": "all",
+    "pending": "pending",
+    "processing": "processing",
+    "shipped": "shipped",
+    "delivered": "delivered",
+    "cancelled": "cancelled"
+  },
+  "detail": {
+    "items": "Items",
+    "product": "Product",
+    "price": "Price",
+    "qty": "Qty",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "status": "Status",
+    "customer": "Customer",
+    "info": "Info",
+    "date": "Date",
+    "payment": "Payment",
+    "address": "Address",
+    "updateStatus": "Update order status"
+  },
+  "itemCount": "{{count}} item(s)",
+  "search": "Search orders...",
+  "error": "Failed to load orders",
+  "notFound": "Order not found",
+  "toast": {
+    "ordersUpdated": "Orders updated",
+    "statusUpdated": "Status updated",
+    "updateOrdersFailed": "Failed to update orders",
+    "updateStatusFailed": "Failed to update status"
+  }
+}

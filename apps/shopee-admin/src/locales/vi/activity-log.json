@@ -1,0 +1,15 @@
+{
+  "title": "Nhật ký hoạt động",
+  "description": "Theo dõi hành động quản trị",
+  "actions": {
+    "clearLog": "Xóa nhật ký"
+  },
+  "empty": {
+    "title": "Không có hoạt động",
+    "description": "Các hành động quản trị sẽ xuất hiện ở đây."
+  },
+  "confirm": {
+    "title": "Xóa nhật ký hoạt động",
+    "description": "Thao tác này sẽ xóa vĩnh viễn tất cả bản ghi nhật ký."
+  }
+}

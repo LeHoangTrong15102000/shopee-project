@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { Plus, Pencil, Trash2, Gift } from 'lucide-react';
@@ -32,6 +33,8 @@ import {
 import type { LoyaltyReward, LoyaltyTransaction } from 'src/types';
 
 export default function LoyaltyPage() {
+  const { t } = useTranslation('loyalty');
+  const { t: tc } = useTranslation('common');
   const [rewardDialog, setRewardDialog] = useState(false);
   const [editReward, setEditReward] = useState<LoyaltyReward | null>(null);
   const [deleteReward, setDeleteReward] = useState<LoyaltyReward | null>(null);
@@ -59,16 +62,16 @@ export default function LoyaltyPage() {
   const adjustMut = useAdjustPoints(() => setAdjustDialog(false));
 
   const rewardCols: ColumnDef<LoyaltyReward>[] = [
-    { accessorKey: 'name', header: 'Name' },
+    { accessorKey: 'name', header: t('rewards.name') },
     {
       accessorKey: 'description',
-      header: 'Description',
+      header: t('rewards.description'),
       cell: ({ row }) => <span className="max-w-[200px] truncate">{row.original.description}</span>,
     },
-    { accessorKey: 'points_required', header: 'Points' },
+    { accessorKey: 'points_required', header: t('rewards.points') },
     {
       accessorKey: 'is_active',
-      header: 'Status',
+      header: t('rewards.status'),
       cell: ({ row }) => <StatusBadge status={row.original.is_active ? 'active' : 'inactive'} />,
     },
     {
@@ -79,7 +82,7 @@ export default function LoyaltyPage() {
           <Button
             variant="ghost"
             size="sm"
-            aria-label="Edit reward"
+            aria-label={t('common:aria.editItem', { item: t('loyalty:reward') })}
             onClick={() => {
               setEditReward(row.original);
               setRewardForm({
@@ -94,7 +97,7 @@ export default function LoyaltyPage() {
           <Button
             variant="ghost"
             size="sm"
-            aria-label="Delete reward"
+            aria-label={t('common:aria.deleteItem', { item: t('loyalty:reward') })}
             onClick={() => setDeleteReward(row.original)}
           >
             <Trash2 className="size-4 text-destructive" />
@@ -107,7 +110,7 @@ export default function LoyaltyPage() {
   const txCols: ColumnDef<LoyaltyTransaction>[] = [
     {
       accessorKey: 'user',
-      header: 'User',
+      header: t('transactions.user'),
       cell: ({ row }) => {
         const u = row.original.user;
         return typeof u === 'object' ? u.email : u;
@@ -115,12 +118,12 @@ export default function LoyaltyPage() {
     },
     {
       accessorKey: 'type',
-      header: 'Type',
+      header: t('transactions.type'),
       cell: ({ row }) => <StatusBadge status={row.original.type} />,
     },
     {
       accessorKey: 'points',
-      header: 'Points',
+      header: t('transactions.points'),
       cell: ({ row }) => (
         <span
           className={
@@ -134,25 +137,25 @@ export default function LoyaltyPage() {
         </span>
       ),
     },
-    { accessorKey: 'description', header: 'Description' },
+    { accessorKey: 'description', header: t('transactions.description') },
     {
       accessorKey: 'createdAt',
-      header: 'Date',
+      header: t('transactions.date'),
       cell: ({ row }) => format(new Date(row.original.createdAt), 'MMM d, yyyy'),
     },
   ];
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Loyalty Program" description="Manage rewards and points" />
+      <PageHeader title={t('title')} description={t('description')} />
       <Tabs defaultValue="rewards">
         <TabsList className="w-full justify-start overflow-x-auto flex-nowrap scroll-p-1">
-          <TabsTrigger value="rewards">Rewards</TabsTrigger>
-          <TabsTrigger value="transactions">Transactions</TabsTrigger>
-          <TabsTrigger value="stats">Stats</TabsTrigger>
+          <TabsTrigger value="rewards">{t('tabs.rewards')}</TabsTrigger>
+          <TabsTrigger value="transactions">{t('tabs.transactions')}</TabsTrigger>
+          <TabsTrigger value="stats">{t('tabs.stats')}</TabsTrigger>
         </TabsList>
         <TabsContent value="rewards" className="space-y-4">
-          {rewardsError && <ErrorState message="Failed to load rewards" onRetry={refetchRewards} />}
+          {rewardsError && <ErrorState message={t('error')} onRetry={refetchRewards} />}
           <div className="flex justify-end">
             <Button
               size="sm"
@@ -162,7 +165,7 @@ export default function LoyaltyPage() {
               }}
             >
               <Plus className="mr-2 size-4" />
-              Add Reward
+              {t('rewards.addReward')}
             </Button>
           </div>
           <DataTable
@@ -173,7 +176,7 @@ export default function LoyaltyPage() {
           />
         </TabsContent>
         <TabsContent value="transactions">
-          {txError && <ErrorState message="Failed to load transactions" onRetry={refetchTx} />}
+          {txError && <ErrorState message={t('transactionsError')} onRetry={refetchTx} />}
           <DataTable
             columns={txCols}
             data={transactions?.transactions ?? []}
@@ -184,17 +187,17 @@ export default function LoyaltyPage() {
         <TabsContent value="stats" className="space-y-4">
           {stats && (
             <div className="grid gap-4 sm:grid-cols-3">
-              <StatCard label="Total Users" value={stats.total_users} />
+              <StatCard label={t('stats.totalUsers')} value={stats.total_users} />
               <StatCard
-                label="Points Earned"
+                label={t('stats.pointsEarned')}
                 value={stats.total_points_earned}
                 icon={<Gift className="size-4" />}
               />
-              <StatCard label="Points Redeemed" value={stats.total_points_redeemed} />
+              <StatCard label={t('stats.pointsRedeemed')} value={stats.total_points_redeemed} />
             </div>
           )}
           <Button size="sm" onClick={() => setAdjustDialog(true)}>
-            Adjust Points
+            {t('actions.adjustPoints')}
           </Button>
         </TabsContent>
       </Tabs>
@@ -202,11 +205,11 @@ export default function LoyaltyPage() {
       <Dialog open={rewardDialog} onOpenChange={setRewardDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create Reward</DialogTitle>
+            <DialogTitle>{t('rewards.createReward')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <div>
-              <Label htmlFor="create-reward-name">Name</Label>
+              <Label htmlFor="create-reward-name">{t('rewards.name')}</Label>
               <Input
                 id="create-reward-name"
                 value={rewardForm.name}
@@ -214,7 +217,7 @@ export default function LoyaltyPage() {
               />
             </div>
             <div>
-              <Label htmlFor="create-reward-desc">Description</Label>
+              <Label htmlFor="create-reward-desc">{t('rewards.description')}</Label>
               <Textarea
                 id="create-reward-desc"
                 value={rewardForm.description}
@@ -222,7 +225,7 @@ export default function LoyaltyPage() {
               />
             </div>
             <div>
-              <Label htmlFor="create-reward-points">Points Required</Label>
+              <Label htmlFor="create-reward-points">{t('rewards.pointsRequired')}</Label>
               <Input
                 id="create-reward-points"
                 type="number"
@@ -236,7 +239,7 @@ export default function LoyaltyPage() {
               onClick={() => createRewardMut.mutate(rewardForm)}
               disabled={createRewardMut.isPending}
             >
-              Create
+              {tc('buttons.create')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -245,11 +248,11 @@ export default function LoyaltyPage() {
       <Dialog open={!!editReward} onOpenChange={(o) => !o && setEditReward(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Reward</DialogTitle>
+            <DialogTitle>{t('rewards.editReward')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <div>
-              <Label htmlFor="edit-reward-name">Name</Label>
+              <Label htmlFor="edit-reward-name">{t('rewards.name')}</Label>
               <Input
                 id="edit-reward-name"
                 value={rewardForm.name}
@@ -257,7 +260,7 @@ export default function LoyaltyPage() {
               />
             </div>
             <div>
-              <Label htmlFor="edit-reward-desc">Description</Label>
+              <Label htmlFor="edit-reward-desc">{t('rewards.description')}</Label>
               <Textarea
                 id="edit-reward-desc"
                 value={rewardForm.description}
@@ -265,7 +268,7 @@ export default function LoyaltyPage() {
               />
             </div>
             <div>
-              <Label htmlFor="edit-reward-points">Points Required</Label>
+              <Label htmlFor="edit-reward-points">{t('rewards.pointsRequired')}</Label>
               <Input
                 id="edit-reward-points"
                 type="number"
@@ -281,7 +284,7 @@ export default function LoyaltyPage() {
               }
               disabled={updateRewardMut.isPending}
             >
-              Save
+              {tc('buttons.save')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -290,11 +293,11 @@ export default function LoyaltyPage() {
       <Dialog open={adjustDialog} onOpenChange={setAdjustDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Adjust Points</DialogTitle>
+            <DialogTitle>{t('actions.adjustPoints')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <div>
-              <Label htmlFor="adjust-user-id">User ID</Label>
+              <Label htmlFor="adjust-user-id">{t('actions.userId')}</Label>
               <Input
                 id="adjust-user-id"
                 value={adjustForm.user_id}
@@ -302,7 +305,7 @@ export default function LoyaltyPage() {
               />
             </div>
             <div>
-              <Label htmlFor="adjust-points">Points (+/-)</Label>
+              <Label htmlFor="adjust-points">{t('actions.pointsAmount')}</Label>
               <Input
                 id="adjust-points"
                 type="number"
@@ -311,7 +314,7 @@ export default function LoyaltyPage() {
               />
             </div>
             <div>
-              <Label htmlFor="adjust-desc">Description</Label>
+              <Label htmlFor="adjust-desc">{t('rewards.description')}</Label>
               <Input
                 id="adjust-desc"
                 value={adjustForm.description}
@@ -321,7 +324,7 @@ export default function LoyaltyPage() {
           </div>
           <DialogFooter>
             <Button onClick={() => adjustMut.mutate(adjustForm)} disabled={adjustMut.isPending}>
-              Adjust
+              {tc('buttons.adjust')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -330,8 +333,8 @@ export default function LoyaltyPage() {
       <ConfirmDialog
         open={!!deleteReward}
         onOpenChange={(o) => !o && setDeleteReward(null)}
-        title="Delete Reward"
-        description={`Delete "${deleteReward?.name}"?`}
+        title={t('toast.deleteTitle')}
+        description={t('toast.deleteDescription', { name: deleteReward?.name })}
         onConfirm={() => deleteReward && deleteRewardMut.mutate(deleteReward._id)}
         isLoading={deleteRewardMut.isPending}
       />

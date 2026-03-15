@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { Plus, Eye, Trash2, MoreHorizontal, Pencil, ToggleLeft } from 'lucide-react';
@@ -44,6 +45,8 @@ import { formatCurrency } from 'src/utils/format';
 import type { Voucher, DiscountType } from 'src/types';
 
 export default function VoucherListPage() {
+  const { t } = useTranslation('vouchers');
+  const { t: tc } = useTranslation('common');
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [createOpen, setCreateOpen] = useState(false);
@@ -69,12 +72,12 @@ export default function VoucherListPage() {
   const columns: ColumnDef<Voucher>[] = [
     {
       accessorKey: 'code',
-      header: 'Code',
+      header: t('columns.code'),
       cell: ({ row }) => <span className="font-mono font-medium">{row.original.code}</span>,
     },
     {
       accessorKey: 'discount_type',
-      header: 'Type',
+      header: t('columns.type'),
       cell: ({ row }) =>
         row.original.discount_type === 'percentage'
           ? `${row.original.discount_value}%`
@@ -82,17 +85,17 @@ export default function VoucherListPage() {
     },
     {
       accessorKey: 'used_count',
-      header: 'Usage',
+      header: t('columns.usage'),
       cell: ({ row }) => `${row.original.used_count}/${row.original.usage_limit}`,
     },
     {
       accessorKey: 'is_active',
-      header: 'Status',
+      header: t('columns.status'),
       cell: ({ row }) => <StatusBadge status={row.original.is_active ? 'active' : 'inactive'} />,
     },
     {
       accessorKey: 'end_date',
-      header: 'Expires',
+      header: t('columns.expires'),
       cell: ({ row }) => format(new Date(row.original.end_date), 'MMM d, yyyy'),
     },
     {
@@ -100,15 +103,15 @@ export default function VoucherListPage() {
       header: '',
       cell: ({ row }) => (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" aria-label="Voucher actions">
-              <MoreHorizontal className="size-4" />
-            </Button>
+          <DropdownMenuTrigger
+            render={<Button variant="ghost" size="sm" aria-label={t('common:aria.actions')} />}
+          >
+            <MoreHorizontal className="size-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => navigate(`/vouchers/${row.original._id}`)}>
               <Eye className="mr-2 size-4" />
-              View
+              {t('actions.view')}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
@@ -125,7 +128,7 @@ export default function VoucherListPage() {
               }}
             >
               <Pencil className="mr-2 size-4" />
-              Edit
+              {t('actions.edit')}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() =>
@@ -133,14 +136,14 @@ export default function VoucherListPage() {
               }
             >
               <ToggleLeft className="mr-2 size-4" />
-              {row.original.is_active ? 'Deactivate' : 'Activate'}
+              {row.original.is_active ? t('actions.deactivate') : t('actions.activate')}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => setDeleteId(row.original._id)}
               className="text-destructive"
             >
               <Trash2 className="mr-2 size-4" />
-              Delete
+              {t('actions.delete')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -151,24 +154,24 @@ export default function VoucherListPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Vouchers"
-        description="Manage discount vouchers"
+        title={t('title')}
+        description={t('description')}
         actions={
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <Plus className="mr-2 size-4" />
-            Create Voucher
+            {t('actions.createVoucher')}
           </Button>
         }
       />
       {stats && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Total" value={stats.total} />
-          <StatCard label="Active" value={stats.active} />
-          <StatCard label="Inactive" value={stats.inactive} />
-          <StatCard label="Total Usage" value={stats.total_usage} />
+          <StatCard label={t('stats.total')} value={stats.total} />
+          <StatCard label={t('stats.active')} value={stats.active} />
+          <StatCard label={t('stats.inactive')} value={stats.inactive} />
+          <StatCard label={t('stats.totalUsage')} value={stats.total_usage} />
         </div>
       )}
-      {isError && <ErrorState message="Failed to load vouchers" onRetry={refetch} />}
+      {isError && <ErrorState message={t('error')} onRetry={refetch} />}
       <DataTable
         columns={columns}
         data={data?.vouchers ?? []}
@@ -184,11 +187,11 @@ export default function VoucherListPage() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create Voucher</DialogTitle>
+            <DialogTitle>{t('actions.createVoucher')}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <Label htmlFor="create-v-code">Code</Label>
+              <Label htmlFor="create-v-code">{t('form.code')}</Label>
               <Input
                 id="create-v-code"
                 value={form.code}
@@ -196,7 +199,7 @@ export default function VoucherListPage() {
               />
             </div>
             <div>
-              <Label htmlFor="create-v-type">Type</Label>
+              <Label htmlFor="create-v-type">{t('form.type')}</Label>
               <Select
                 value={form.discount_type}
                 onValueChange={(v) => setForm({ ...form, discount_type: v as DiscountType })}
@@ -205,13 +208,13 @@ export default function VoucherListPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="percentage">Percentage</SelectItem>
-                  <SelectItem value="fixed">Fixed</SelectItem>
+                  <SelectItem value="percentage">{t('form.percentage')}</SelectItem>
+                  <SelectItem value="fixed">{t('form.fixed')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <Label htmlFor="create-v-value">Value</Label>
+              <Label htmlFor="create-v-value">{t('form.value')}</Label>
               <Input
                 id="create-v-value"
                 type="number"
@@ -220,7 +223,7 @@ export default function VoucherListPage() {
               />
             </div>
             <div>
-              <Label htmlFor="create-v-min">Min Order</Label>
+              <Label htmlFor="create-v-min">{t('form.minOrder')}</Label>
               <Input
                 id="create-v-min"
                 type="number"
@@ -229,7 +232,7 @@ export default function VoucherListPage() {
               />
             </div>
             <div>
-              <Label htmlFor="create-v-max">Max Usage</Label>
+              <Label htmlFor="create-v-max">{t('form.maxUsage')}</Label>
               <Input
                 id="create-v-max"
                 type="number"
@@ -238,7 +241,7 @@ export default function VoucherListPage() {
               />
             </div>
             <div>
-              <Label htmlFor="create-v-start">Start Date</Label>
+              <Label htmlFor="create-v-start">{t('form.startDate')}</Label>
               <Input
                 id="create-v-start"
                 type="date"
@@ -247,7 +250,7 @@ export default function VoucherListPage() {
               />
             </div>
             <div>
-              <Label htmlFor="create-v-end">End Date</Label>
+              <Label htmlFor="create-v-end">{t('form.endDate')}</Label>
               <Input
                 id="create-v-end"
                 type="date"
@@ -258,7 +261,7 @@ export default function VoucherListPage() {
           </div>
           <DialogFooter>
             <Button onClick={() => createMut.mutate(form)} disabled={createMut.isPending}>
-              Create
+              {tc('buttons.create')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -267,11 +270,11 @@ export default function VoucherListPage() {
       <Dialog open={!!editVoucher} onOpenChange={(o) => !o && setEditVoucher(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Voucher</DialogTitle>
+            <DialogTitle>{t('actions.editVoucher')}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <Label htmlFor="edit-v-code">Code</Label>
+              <Label htmlFor="edit-v-code">{t('form.code')}</Label>
               <Input
                 id="edit-v-code"
                 value={form.code}
@@ -279,7 +282,7 @@ export default function VoucherListPage() {
               />
             </div>
             <div>
-              <Label htmlFor="edit-v-type">Type</Label>
+              <Label htmlFor="edit-v-type">{t('form.type')}</Label>
               <Select
                 value={form.discount_type}
                 onValueChange={(v) => setForm({ ...form, discount_type: v as DiscountType })}
@@ -288,13 +291,13 @@ export default function VoucherListPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="percentage">Percentage</SelectItem>
-                  <SelectItem value="fixed">Fixed</SelectItem>
+                  <SelectItem value="percentage">{t('form.percentage')}</SelectItem>
+                  <SelectItem value="fixed">{t('form.fixed')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <Label htmlFor="edit-v-value">Value</Label>
+              <Label htmlFor="edit-v-value">{t('form.value')}</Label>
               <Input
                 id="edit-v-value"
                 type="number"
@@ -303,7 +306,7 @@ export default function VoucherListPage() {
               />
             </div>
             <div>
-              <Label htmlFor="edit-v-min">Min Order</Label>
+              <Label htmlFor="edit-v-min">{t('form.minOrder')}</Label>
               <Input
                 id="edit-v-min"
                 type="number"
@@ -312,7 +315,7 @@ export default function VoucherListPage() {
               />
             </div>
             <div>
-              <Label htmlFor="edit-v-max">Max Usage</Label>
+              <Label htmlFor="edit-v-max">{t('form.maxUsage')}</Label>
               <Input
                 id="edit-v-max"
                 type="number"
@@ -321,7 +324,7 @@ export default function VoucherListPage() {
               />
             </div>
             <div>
-              <Label htmlFor="edit-v-start">Start Date</Label>
+              <Label htmlFor="edit-v-start">{t('form.startDate')}</Label>
               <Input
                 id="edit-v-start"
                 type="date"
@@ -330,7 +333,7 @@ export default function VoucherListPage() {
               />
             </div>
             <div>
-              <Label htmlFor="edit-v-end">End Date</Label>
+              <Label htmlFor="edit-v-end">{t('form.endDate')}</Label>
               <Input
                 id="edit-v-end"
                 type="date"
@@ -344,7 +347,7 @@ export default function VoucherListPage() {
               onClick={() => editVoucher && updateMut.mutate({ id: editVoucher._id, body: form })}
               disabled={updateMut.isPending}
             >
-              Save
+              {tc('buttons.save')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -352,8 +355,8 @@ export default function VoucherListPage() {
       <ConfirmDialog
         open={!!deleteId}
         onOpenChange={(o) => !o && setDeleteId(null)}
-        title="Delete Voucher"
-        description="This will permanently delete this voucher."
+        title={t('toast.deleteTitle')}
+        description={t('toast.deleteDescription')}
         onConfirm={() => deleteId && deleteMut.mutate(deleteId)}
         isLoading={deleteMut.isPending}
       />

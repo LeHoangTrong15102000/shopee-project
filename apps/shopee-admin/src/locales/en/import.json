@@ -1,0 +1,27 @@
+{
+  "title": "Import",
+  "description": "Import products from JSON data",
+  "stats": {
+    "totalProducts": "Total Products",
+    "withLocation": "With Location",
+    "locations": "Locations"
+  },
+  "actions": {
+    "importProducts": "Import Products"
+  },
+  "importDescription": "This will import products from the server-side JSON file. All existing products will be replaced.",
+  "result": {
+    "title": "Import Result:",
+    "imported": "Imported:",
+    "deleted": "Deleted:",
+    "locationStats": "Location Stats:"
+  },
+  "confirm": {
+    "title": "Confirm Import",
+    "description": "This will delete all existing products and import from the JSON file. This action cannot be undone."
+  },
+  "toast": {
+    "imported": "Imported {{imported}} products (deleted {{deleted}} old)",
+    "importFailed": "Import failed"
+  }
+}

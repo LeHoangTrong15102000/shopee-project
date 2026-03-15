@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import i18n from 'src/i18n/i18n';
 import ordersApi from 'src/apis/orders.api';
 import { useActivityLogStore } from 'src/stores/activity-log.store';
 import { useAuthStore } from 'src/stores/auth.store';
@@ -24,7 +25,7 @@ export function useUpdateOrderStatus(id: string | undefined, onSuccess?: () => v
   return useMutation({
     mutationFn: (status: OrderStatus) => ordersApi.updateOrderStatus(id!, { status }),
     onSuccess: (_, status) => {
-      toast.success('Status updated');
+      toast.success(i18n.t('toast.statusUpdated', { ns: 'orders' }));
       addLog({
         action: 'update',
         entityType: 'order',
@@ -36,6 +37,6 @@ export function useUpdateOrderStatus(id: string | undefined, onSuccess?: () => v
       qc.invalidateQueries({ queryKey: ['admin-orders-count-by-status'] });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to update status'),
+    onError: () => toast.error(i18n.t('toast.updateStatusFailed', { ns: 'orders' })),
   });
 }

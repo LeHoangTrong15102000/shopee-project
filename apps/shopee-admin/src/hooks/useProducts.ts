@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import i18n from 'src/i18n/i18n';
 import productsApi from 'src/apis/products.api';
 import { useActivityLogStore } from 'src/stores/activity-log.store';
 import { useAuthStore } from 'src/stores/auth.store';
@@ -25,12 +26,12 @@ export function useDeleteProduct(onSuccess?: () => void) {
   return useMutation({
     mutationFn: (id: string) => productsApi.deleteProduct(id),
     onSuccess: (_, id) => {
-      toast.success('Product deleted');
+      toast.success(i18n.t('toast.productDeleted', { ns: 'products' }));
       addLog({ action: 'delete', entityType: 'product', entityName: id, adminEmail: email });
       qc.invalidateQueries({ queryKey: PRODUCT_KEYS.all });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to delete product'),
+    onError: () => toast.error(i18n.t('toast.deleteFailed', { ns: 'products' })),
   });
 }
 
@@ -41,7 +42,7 @@ export function useDeleteManyProducts(onSuccess?: () => void) {
   return useMutation({
     mutationFn: (ids: string[]) => productsApi.deleteManyProducts(ids),
     onSuccess: (_, ids) => {
-      toast.success('Products deleted');
+      toast.success(i18n.t('toast.productsDeleted', { ns: 'products' }));
       addLog({
         action: 'delete',
         entityType: 'product',
@@ -51,6 +52,6 @@ export function useDeleteManyProducts(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: PRODUCT_KEYS.all });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to delete products'),
+    onError: () => toast.error(i18n.t('toast.deleteMultipleFailed', { ns: 'products' })),
   });
 }

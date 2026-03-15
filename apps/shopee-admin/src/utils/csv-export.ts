@@ -1,4 +1,6 @@
 import { toast } from 'sonner';
+import { format } from 'date-fns';
+import i18n from 'src/i18n/i18n';
 
 interface CsvColumn<T> {
   key: keyof T | string;
@@ -16,7 +18,7 @@ function escapeCSV(value: unknown): string {
 
 export function exportToCSV<T>(data: T[], columns: CsvColumn<T>[], filename: string) {
   if (!data.length) {
-    toast.error('No data to export');
+    toast.error(i18n.t('csv.noData', { ns: 'common' }));
     return;
   }
 
@@ -35,8 +37,8 @@ export function exportToCSV<T>(data: T[], columns: CsvColumn<T>[], filename: str
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `${filename}-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.download = `${filename}-${format(new Date(), 'yyyy-MM-dd')}.csv`;
   link.click();
   URL.revokeObjectURL(url);
-  toast.success(`Exported ${data.length} rows`);
+  toast.success(i18n.t('csv.exported', { ns: 'common', count: data.length }));
 }

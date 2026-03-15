@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -58,7 +59,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   searchKey,
-  searchPlaceholder = 'Search...',
+  searchPlaceholder,
   isLoading,
   pageCount: controlledPageCount,
   pageIndex: controlledPageIndex,
@@ -75,6 +76,7 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState('');
+  const { t } = useTranslation('common');
 
   const table = useReactTable({
     data,
@@ -123,7 +125,7 @@ export function DataTable<TData, TValue>({
         {searchKey && (
           <div className="relative max-w-sm flex-1">
             <Input
-              placeholder={searchPlaceholder}
+              placeholder={searchPlaceholder ?? t('search.placeholder')}
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
               className="pr-8"
@@ -131,7 +133,7 @@ export function DataTable<TData, TValue>({
             {globalFilter && (
               <button
                 onClick={() => setGlobalFilter('')}
-                aria-label="Clear search"
+                aria-label={t('search.clearSearch')}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 <X className="size-4" />
@@ -140,10 +142,8 @@ export function DataTable<TData, TValue>({
           </div>
         )}
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="ml-auto">
-              <SlidersHorizontal className="mr-2 size-4" /> Columns
-            </Button>
+          <DropdownMenuTrigger render={<Button variant="outline" size="sm" className="ml-auto" />}>
+            <SlidersHorizontal className="mr-2 size-4" /> {t('buttons.columns')}
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             {table
@@ -164,7 +164,9 @@ export function DataTable<TData, TValue>({
 
       {selectedCount > 0 && bulkActions && (
         <div className="flex items-center gap-2 rounded-md bg-muted p-2">
-          <span className="text-sm text-muted-foreground">{selectedCount} row(s) selected</span>
+          <span className="text-sm text-muted-foreground">
+            {selectedCount} {t('pagination.rowsSelected')}
+          </span>
           {bulkActions}
         </div>
       )}
@@ -211,7 +213,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center text-muted-foreground"
                 >
-                  No results.
+                  {t('states.noResults')}
                 </TableCell>
               </TableRow>
             )}
@@ -222,14 +224,14 @@ export function DataTable<TData, TValue>({
       <div className="flex flex-col items-center justify-between gap-2 sm:flex-row">
         <p className="text-sm text-muted-foreground">
           {totalRows !== undefined
-            ? `${totalRows} total rows`
-            : `${table.getFilteredRowModel().rows.length} row(s)`}
+            ? `${totalRows} ${t('pagination.totalRows')}`
+            : `${table.getFilteredRowModel().rows.length} ${t('pagination.rows')}`}
         </p>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="sm"
-            aria-label="First page"
+            aria-label={t('pagination.firstPage')}
             onClick={() =>
               manualPagination ? onPaginationChange?.(0, controlledPageSize) : table.setPageIndex(0)
             }
@@ -242,7 +244,7 @@ export function DataTable<TData, TValue>({
           <Button
             variant="outline"
             size="sm"
-            aria-label="Previous page"
+            aria-label={t('pagination.previousPage')}
             onClick={() =>
               manualPagination
                 ? onPaginationChange?.((controlledPageIndex ?? 0) - 1, controlledPageSize)
@@ -255,16 +257,17 @@ export function DataTable<TData, TValue>({
             <ChevronLeft className="size-4" />
           </Button>
           <span className="text-sm">
-            Page{' '}
+            {t('pagination.page')}{' '}
             {(manualPagination
               ? (controlledPageIndex ?? 0)
               : table.getState().pagination.pageIndex) + 1}{' '}
-            of {manualPagination ? (controlledPageCount ?? 1) : table.getPageCount()}
+            {t('pagination.of')}{' '}
+            {manualPagination ? (controlledPageCount ?? 1) : table.getPageCount()}
           </span>
           <Button
             variant="outline"
             size="sm"
-            aria-label="Next page"
+            aria-label={t('pagination.nextPage')}
             onClick={() =>
               manualPagination
                 ? onPaginationChange?.((controlledPageIndex ?? 0) + 1, controlledPageSize)
@@ -281,7 +284,7 @@ export function DataTable<TData, TValue>({
           <Button
             variant="outline"
             size="sm"
-            aria-label="Last page"
+            aria-label={t('pagination.lastPage')}
             onClick={() =>
               manualPagination
                 ? onPaginationChange?.((controlledPageCount ?? 1) - 1, controlledPageSize)

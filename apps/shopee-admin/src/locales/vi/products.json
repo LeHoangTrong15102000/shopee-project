@@ -1,0 +1,72 @@
+{
+  "title": "Sản phẩm",
+  "description": "Quản lý danh mục sản phẩm",
+  "columns": {
+    "name": "Tên",
+    "price": "Giá",
+    "stock": "Tồn kho",
+    "sold": "Đã bán",
+    "category": "Danh mục",
+    "rating": "Đánh giá"
+  },
+  "actions": {
+    "addProduct": "Thêm sản phẩm",
+    "view": "Xem",
+    "edit": "Sửa",
+    "delete": "Xóa"
+  },
+  "form": {
+    "newProduct": "Sản phẩm mới",
+    "editProduct": "Sửa sản phẩm",
+    "productDetails": "Chi tiết sản phẩm",
+    "name": "Tên",
+    "description": "Mô tả",
+    "price": "Giá",
+    "priceBeforeDiscount": "Giá trước giảm",
+    "quantity": "Số lượng",
+    "category": "Danh mục",
+    "selectCategory": "Chọn danh mục",
+    "imageUrl": "URL hình ảnh",
+    "location": "Vị trí"
+  },
+  "filters": {
+    "category": "Danh mục",
+    "allCategories": "Tất cả danh mục",
+    "minPrice": "Giá tối thiểu",
+    "maxPrice": "Giá tối đa",
+    "stockStatus": "Tình trạng kho",
+    "any": "Bất kỳ",
+    "all": "Tất cả",
+    "inStock": "Còn hàng",
+    "lowStock": "Sắp hết hàng (<10)",
+    "outOfStock": "Hết hàng"
+  },
+  "detail": {
+    "details": "Chi tiết",
+    "info": "Thông tin",
+    "price": "Giá",
+    "original": "Giá gốc",
+    "stock": "Tồn kho",
+    "sold": "Đã bán",
+    "rating": "Đánh giá",
+    "category": "Danh mục",
+    "created": "Ngày tạo"
+  },
+  "toast": {
+    "deleteTitle": "Xóa sản phẩm",
+    "deleteDescription": "Sản phẩm này sẽ bị xóa vĩnh viễn.",
+    "deleteMultipleTitle": "Xóa sản phẩm",
+    "deleteMultipleDescription": "Xóa {{count}} sản phẩm đã chọn?",
+    "productDeleted": "Đã xóa sản phẩm",
+    "productsDeleted": "Đã xóa các sản phẩm",
+    "productCreated": "Đã tạo sản phẩm",
+    "productUpdated": "Đã cập nhật sản phẩm",
+    "deleteFailed": "Không thể xóa sản phẩm",
+    "deleteMultipleFailed": "Không thể xóa các sản phẩm",
+    "createFailed": "Không thể tạo sản phẩm",
+    "updateFailed": "Không thể cập nhật sản phẩm"
+  },
+  "search": "Tìm kiếm sản phẩm...",
+  "error": "Không thể tải sản phẩm",
+  "notFound": "Không tìm thấy sản phẩm"
+}

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import i18n from 'src/i18n/i18n';
 import ordersApi from 'src/apis/orders.api';
 import { useActivityLogStore } from 'src/stores/activity-log.store';
 import { useAuthStore } from 'src/stores/auth.store';
@@ -35,7 +36,7 @@ export function useBulkUpdateOrderStatus(onSuccess?: () => void) {
     mutationFn: (body: { order_ids: string[]; status: OrderStatus }) =>
       ordersApi.bulkUpdateStatus(body),
     onSuccess: (_, vars) => {
-      toast.success('Orders updated');
+      toast.success(i18n.t('toast.ordersUpdated', { ns: 'orders' }));
       addLog({
         action: 'update',
         entityType: 'order',
@@ -46,6 +47,6 @@ export function useBulkUpdateOrderStatus(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: ['admin-orders-count-by-status'] });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to update orders'),
+    onError: () => toast.error(i18n.t('toast.updateOrdersFailed', { ns: 'orders' })),
   });
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Trash2 } from 'lucide-react';
 import { Checkbox } from 'src/components/ui/checkbox';
@@ -26,6 +27,8 @@ import { formatCurrency } from 'src/utils/format';
 import type { Product } from 'src/types';
 
 export default function InventoryPage() {
+  const { t } = useTranslation('inventory');
+  const { t: tc } = useTranslation('common');
   const [updateProduct, setUpdateProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(0);
   const [selected, setSelected] = useState<Product[]>([]);
@@ -58,14 +61,14 @@ export default function InventoryPage() {
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
           onCheckedChange={(v) => table.toggleAllPageRowsSelected(!!v)}
-          aria-label="Select all"
+          aria-label={t('common:aria.selectAll')}
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(v) => row.toggleSelected(!!v)}
-          aria-label="Select row"
+          aria-label={t('common:aria.selectRow')}
         />
       ),
       enableSorting: false,
@@ -84,14 +87,14 @@ export default function InventoryPage() {
     },
     {
       accessorKey: 'name',
-      header: 'Product',
+      header: t('columns.product'),
       cell: ({ row }) => (
         <span className="max-w-[200px] truncate font-medium">{row.original.name}</span>
       ),
     },
     {
       accessorKey: 'quantity',
-      header: 'Stock',
+      header: t('columns.stock'),
       cell: ({ row }) => (
         <span
           className={
@@ -104,10 +107,10 @@ export default function InventoryPage() {
         </span>
       ),
     },
-    { accessorKey: 'sold', header: 'Sold' },
+    { accessorKey: 'sold', header: t('columns.sold') },
     {
       accessorKey: 'price',
-      header: 'Price',
+      header: t('columns.price'),
       cell: ({ row }) => formatCurrency(row.original.price),
     },
     {
@@ -122,7 +125,7 @@ export default function InventoryPage() {
             setQuantity(row.original.quantity);
           }}
         >
-          Update Stock
+          {t('actions.updateStock')}
         </Button>
       ),
     },
@@ -130,22 +133,24 @@ export default function InventoryPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Inventory" description="Monitor and manage stock levels" />
+      <PageHeader title={t('title')} description={t('description')} />
       <Tabs defaultValue="low-stock">
         <TabsList className="w-full justify-start overflow-x-auto flex-nowrap scroll-p-1">
-          <TabsTrigger value="low-stock">Low Stock ({lowStock?.products?.length ?? 0})</TabsTrigger>
+          <TabsTrigger value="low-stock">
+            {t('lowStockCount', { count: lowStock?.products?.length ?? 0 })}
+          </TabsTrigger>
           <TabsTrigger value="out-of-stock">
-            Out of Stock ({outOfStock?.products?.length ?? 0})
+            {t('outOfStockCount', { count: outOfStock?.products?.length ?? 0 })}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="low-stock">
-          {lowError && <ErrorState message="Failed to load low stock items" onRetry={refetchLow} />}
+          {lowError && <ErrorState message={t('error')} onRetry={refetchLow} />}
           <DataTable
             columns={columns}
             data={lowStock?.products ?? []}
             isLoading={loadingLow}
             searchKey="name"
-            searchPlaceholder="Search products..."
+            searchPlaceholder={t('search')}
             enableRowSelection
             onRowSelectionChange={setSelected}
             bulkActions={
@@ -159,22 +164,20 @@ export default function InventoryPage() {
                   }}
                 >
                   <Trash2 className="mr-2 size-4" />
-                  Bulk Update ({selected.length})
+                  {t('actions.bulkUpdate')} ({selected.length})
                 </Button>
               ) : undefined
             }
           />
         </TabsContent>
         <TabsContent value="out-of-stock">
-          {outError && (
-            <ErrorState message="Failed to load out of stock items" onRetry={refetchOut} />
-          )}
+          {outError && <ErrorState message={t('outOfStockError')} onRetry={refetchOut} />}
           <DataTable
             columns={columns}
             data={outOfStock?.products ?? []}
             isLoading={loadingOut}
             searchKey="name"
-            searchPlaceholder="Search products..."
+            searchPlaceholder={t('search')}
             enableRowSelection
             onRowSelectionChange={setSelected}
             bulkActions={
@@ -188,7 +191,7 @@ export default function InventoryPage() {
                   }}
                 >
                   <Trash2 className="mr-2 size-4" />
-                  Bulk Update ({selected.length})
+                  {t('actions.bulkUpdate')} ({selected.length})
                 </Button>
               ) : undefined
             }
@@ -199,10 +202,12 @@ export default function InventoryPage() {
       <Dialog open={!!updateProduct} onOpenChange={(o) => !o && setUpdateProduct(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Update Stock: {updateProduct?.name}</DialogTitle>
+            <DialogTitle>
+              {t('actions.updateStock')}: {updateProduct?.name}
+            </DialogTitle>
           </DialogHeader>
           <div>
-            <Label htmlFor="inv-qty">New Quantity</Label>
+            <Label htmlFor="inv-qty">{t('actions.newQuantity')}</Label>
             <Input
               id="inv-qty"
               type="number"
@@ -218,7 +223,7 @@ export default function InventoryPage() {
               }
               disabled={updateMut.isPending}
             >
-              Update
+              {tc('buttons.update')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -227,10 +232,12 @@ export default function InventoryPage() {
       <Dialog open={bulkOpen} onOpenChange={setBulkOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Bulk Update Stock ({selected.length} products)</DialogTitle>
+            <DialogTitle>
+              {t('actions.bulkUpdate')} ({selected.length} products)
+            </DialogTitle>
           </DialogHeader>
           <div>
-            <Label htmlFor="inv-bulk-qty">Set Quantity</Label>
+            <Label htmlFor="inv-bulk-qty">{t('actions.setQuantity')}</Label>
             <Input
               id="inv-bulk-qty"
               type="number"
@@ -248,7 +255,7 @@ export default function InventoryPage() {
               }
               disabled={bulkUpdateMut.isPending}
             >
-              Update All
+              {t('actions.updateAll')}
             </Button>
           </DialogFooter>
         </DialogContent>

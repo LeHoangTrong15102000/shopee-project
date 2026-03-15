@@ -1,0 +1,88 @@
+{
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "retry": "Retry",
+    "exportCsv": "Export CSV",
+    "filters": "Filters",
+    "clearFilters": "Clear Filters",
+    "columns": "Columns",
+    "add": "Add",
+    "back": "Back",
+    "create": "Create",
+    "update": "Update",
+    "apply": "Apply",
+    "send": "Send",
+    "adjust": "Adjust"
+  },
+  "states": {
+    "loading": "Loading...",
+    "error": "Error",
+    "noData": "No data",
+    "noResults": "No results.",
+    "somethingWentWrong": "Something went wrong.",
+    "noDescription": "No description",
+    "unknown": "Unknown",
+    "notAvailable": "N/A"
+  },
+  "pagination": {
+    "page": "Page",
+    "of": "of",
+    "totalRows": "total rows",
+    "rowsSelected": "row(s) selected",
+    "rows": "row(s)",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
+  },
+  "dialog": {
+    "areYouSure": "Are you sure?",
+    "cannotBeUndone": "This action cannot be undone."
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you are looking for does not exist or has been moved.",
+    "goToDashboard": "Go to Dashboard"
+  },
+  "search": {
+    "placeholder": "Search pages or entities...",
+    "noResults": "No results found.",
+    "pages": "Pages",
+    "searchResults": "Search Results",
+    "clearSearch": "Clear search"
+  },
+  "csv": {
+    "noData": "No data to export",
+    "exported": "Exported {{count}} rows"
+  },
+  "statuses": {
+    "active": "Active",
+    "enabled": "Enabled",
+    "inactive": "Inactive",
+    "disabled": "Disabled",
+    "pending": "Pending",
+    "processing": "Processing",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled",
+    "approved": "Approved",
+    "flagged": "Flagged"
+  },
+  "aria": {
+    "selectAll": "Select all",
+    "selectRow": "Select row",
+    "editItem": "Edit {{item}}",
+    "deleteItem": "Delete {{item}}",
+    "actions": "Actions"
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "defaultMessage": "An unexpected error occurred.",
+    "reload": "Reload Page"
+  }
+}

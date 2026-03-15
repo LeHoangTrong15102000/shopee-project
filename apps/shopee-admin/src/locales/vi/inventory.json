@@ -1,0 +1,32 @@
+{
+  "title": "Kho hàng",
+  "description": "Theo dõi và quản lý tồn kho",
+  "tabs": {
+    "lowStock": "Sắp hết hàng",
+    "outOfStock": "Hết hàng"
+  },
+  "columns": {
+    "product": "Sản phẩm",
+    "stock": "Tồn kho",
+    "sold": "Đã bán",
+    "price": "Giá"
+  },
+  "actions": {
+    "updateStock": "Cập nhật tồn kho",
+    "bulkUpdate": "Cập nhật hàng loạt",
+    "newQuantity": "Số lượng mới",
+    "setQuantity": "Đặt số lượng",
+    "updateAll": "Cập nhật tất cả"
+  },
+  "lowStockCount": "Sắp hết hàng ({{count}})",
+  "outOfStockCount": "Hết hàng ({{count}})",
+  "search": "Tìm kiếm sản phẩm...",
+  "toast": {
+    "stockUpdated": "Đã cập nhật tồn kho",
+    "productsUpdated": "Đã cập nhật sản phẩm",
+    "updateStockFailed": "Không thể cập nhật tồn kho",
+    "bulkUpdateFailed": "Không thể cập nhật hàng loạt"
+  },
+  "error": "Không thể tải sản phẩm sắp hết hàng",
+  "outOfStockError": "Không thể tải sản phẩm hết hàng"
+}

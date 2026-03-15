@@ -1,0 +1,27 @@
+{
+  "title": "Nhập dữ liệu",
+  "description": "Nhập sản phẩm từ dữ liệu JSON",
+  "stats": {
+    "totalProducts": "Tổng sản phẩm",
+    "withLocation": "Có vị trí",
+    "locations": "Vị trí"
+  },
+  "actions": {
+    "importProducts": "Nhập sản phẩm"
+  },
+  "importDescription": "Thao tác này sẽ nhập sản phẩm từ file JSON phía máy chủ. Tất cả sản phẩm hiện tại sẽ bị thay thế.",
+  "result": {
+    "title": "Kết quả nhập:",
+    "imported": "Đã nhập:",
+    "deleted": "Đã xóa:",
+    "locationStats": "Thống kê vị trí:"
+  },
+  "confirm": {
+    "title": "Xác nhận nhập",
+    "description": "Thao tác này sẽ xóa tất cả sản phẩm hiện tại và nhập từ file JSON. Không thể hoàn tác."
+  },
+  "toast": {
+    "imported": "Đã nhập {{imported}} sản phẩm (xóa {{deleted}} cũ)",
+    "importFailed": "Nhập thất bại"
+  }
+}

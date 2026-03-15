@@ -1,0 +1,51 @@
+{
+  "brand": "Shopee Admin",
+  "sections": {
+    "dashboard": "Bảng điều khiển",
+    "management": "Quản lý",
+    "advanced": "Nâng cao",
+    "system": "Hệ thống"
+  },
+  "menu": {
+    "overview": "Tổng quan",
+    "users": "Người dùng",
+    "products": "Sản phẩm",
+    "categories": "Danh mục",
+    "orders": "Đơn hàng",
+    "vouchers": "Mã giảm giá",
+    "reviews": "Đánh giá",
+    "loyalty": "Tích điểm",
+    "inventory": "Kho hàng",
+    "analytics": "Phân tích",
+    "notifications": "Thông báo",
+    "qa": "Hỏi đáp",
+    "import": "Nhập dữ liệu",
+    "settings": "Cài đặt",
+    "activityLog": "Nhật ký hoạt động"
+  },
+  "header": {
+    "settings": "Cài đặt",
+    "logout": "Đăng xuất",
+    "toggleTheme": "Đổi giao diện",
+    "changeLanguage": "Đổi ngôn ngữ",
+    "admin": "Quản trị viên"
+  },
+  "breadcrumb": {
+    "dashboard": "Bảng điều khiển"
+  },
+  "period": {
+    "last7days": "7 ngày qua",
+    "last30days": "30 ngày qua",
+    "last90days": "90 ngày qua",
+    "lastYear": "Năm qua",
+    "customRange": "Tùy chỉnh",
+    "to": "đến",
+    "selectPeriod": "Chọn khoảng thời gian",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc"
+  },
+  "sidebar": {
+    "mainNavigation": "Điều hướng chính",
+    "toggleSidebar": "Bật/tắt thanh bên"
+  }
+}

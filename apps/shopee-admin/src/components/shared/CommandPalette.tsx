@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
   Users,
@@ -32,21 +33,21 @@ import productsApi from 'src/apis/products.api';
 import ordersApi from 'src/apis/orders.api';
 
 const pages = [
-  { title: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { title: 'Users', href: '/users', icon: Users },
-  { title: 'Products', href: '/products', icon: Package },
-  { title: 'Categories', href: '/categories', icon: FolderTree },
-  { title: 'Orders', href: '/orders', icon: ShoppingCart },
-  { title: 'Vouchers', href: '/vouchers', icon: Ticket },
-  { title: 'Reviews', href: '/reviews', icon: Star },
-  { title: 'Loyalty', href: '/loyalty', icon: Gift },
-  { title: 'Inventory', href: '/inventory', icon: Warehouse },
-  { title: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { title: 'Notifications', href: '/notifications', icon: Bell },
-  { title: 'Q&A', href: '/qa', icon: HelpCircle },
-  { title: 'Import', href: '/import', icon: Upload },
-  { title: 'Settings', href: '/settings', icon: Settings },
-  { title: 'Activity Log', href: '/activity-log', icon: FileText },
+  { titleKey: 'menu.overview', href: '/', icon: LayoutDashboard },
+  { titleKey: 'menu.users', href: '/users', icon: Users },
+  { titleKey: 'menu.products', href: '/products', icon: Package },
+  { titleKey: 'menu.categories', href: '/categories', icon: FolderTree },
+  { titleKey: 'menu.orders', href: '/orders', icon: ShoppingCart },
+  { titleKey: 'menu.vouchers', href: '/vouchers', icon: Ticket },
+  { titleKey: 'menu.reviews', href: '/reviews', icon: Star },
+  { titleKey: 'menu.loyalty', href: '/loyalty', icon: Gift },
+  { titleKey: 'menu.inventory', href: '/inventory', icon: Warehouse },
+  { titleKey: 'menu.analytics', href: '/analytics', icon: BarChart3 },
+  { titleKey: 'menu.notifications', href: '/notifications', icon: Bell },
+  { titleKey: 'menu.qa', href: '/qa', icon: HelpCircle },
+  { titleKey: 'menu.import', href: '/import', icon: Upload },
+  { titleKey: 'menu.settings', href: '/settings', icon: Settings },
+  { titleKey: 'menu.activityLog', href: '/activity-log', icon: FileText },
 ];
 interface SearchResult {
   id: string;
@@ -60,6 +61,8 @@ export function CommandPalette() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const navigate = useNavigate();
+  const { t } = useTranslation('layout');
+  const { t: tc } = useTranslation('common');
   const debouncedQuery = useDebounce(query, 300);
 
   useEffect(() => {
@@ -136,22 +139,22 @@ export function CommandPalette() {
     <CommandDialog open={open} onOpenChange={setOpen}>
       <Command shouldFilter={!debouncedQuery || debouncedQuery.length < 2}>
         <CommandInput
-          placeholder="Search pages or entities..."
+          placeholder={tc('search.placeholder')}
           value={query}
           onValueChange={setQuery}
         />
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Pages">
+          <CommandEmpty>{tc('search.noResults')}</CommandEmpty>
+          <CommandGroup heading={tc('search.pages')}>
             {pages.map((p) => (
               <CommandItem key={p.href} onSelect={() => select(p.href)}>
                 <p.icon className="mr-2 size-4" />
-                {p.title}
+                {t(p.titleKey)}
               </CommandItem>
             ))}
           </CommandGroup>
           {results.length > 0 && (
-            <CommandGroup heading="Search Results">
+            <CommandGroup heading={tc('search.searchResults')}>
               {results.map((r) => (
                 <CommandItem key={r.id} onSelect={() => select(r.href)}>
                   <span className="mr-2 text-xs text-muted-foreground capitalize">[{r.type}]</span>

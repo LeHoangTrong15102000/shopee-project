@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Select,
   SelectContent,
@@ -9,12 +10,12 @@ import {
 import { Input } from 'src/components/ui/input';
 import { Label } from 'src/components/ui/label';
 
-const periods = [
-  { value: '7d', label: 'Last 7 days' },
-  { value: '30d', label: 'Last 30 days' },
-  { value: '90d', label: 'Last 90 days' },
-  { value: '1y', label: 'Last year' },
-  { value: 'custom', label: 'Custom Range' },
+const periodKeys = [
+  { value: '7d', labelKey: 'period.last7days' },
+  { value: '30d', labelKey: 'period.last30days' },
+  { value: '90d', labelKey: 'period.last90days' },
+  { value: '1y', labelKey: 'period.lastYear' },
+  { value: 'custom', labelKey: 'period.customRange' },
 ];
 
 interface PeriodSelectProps {
@@ -32,6 +33,7 @@ export function PeriodSelect({
 }: PeriodSelectProps) {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const { t } = useTranslation('layout');
 
   const handleChange = (v: string) => {
     onChange(v);
@@ -52,13 +54,13 @@ export function PeriodSelect({
   return (
     <div className="flex items-center gap-2">
       <Select value={value} onValueChange={(v) => v && handleChange(v)}>
-        <SelectTrigger className={className} aria-label="Select time period">
+        <SelectTrigger className={className} aria-label={t('period.selectPeriod')}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          {periods.map((p) => (
+          {periodKeys.map((p) => (
             <SelectItem key={p.value} value={p.value}>
-              {p.label}
+              {t(p.labelKey)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -66,7 +68,7 @@ export function PeriodSelect({
       {value === 'custom' && (
         <div className="flex items-center gap-2">
           <div>
-            <Label className="sr-only">Start date</Label>
+            <Label className="sr-only">{t('period.startDate')}</Label>
             <Input
               type="date"
               value={startDate}
@@ -74,9 +76,9 @@ export function PeriodSelect({
               className="w-36"
             />
           </div>
-          <span className="text-muted-foreground">to</span>
+          <span className="text-muted-foreground">{t('period.to')}</span>
           <div>
-            <Label className="sr-only">End date</Label>
+            <Label className="sr-only">{t('period.endDate')}</Label>
             <Input
               type="date"
               value={endDate}

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { Eye, MoreHorizontal, Download, Filter, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from 'src/components/ui/button';
 import { Checkbox } from 'src/components/ui/checkbox';
 import { Input } from 'src/components/ui/input';
@@ -41,6 +42,8 @@ const statuses: (OrderStatus | 'all')[] = [
 ];
 
 export default function OrderListPage() {
+  const { t } = useTranslation('orders');
+  const { t: tc } = useTranslation('common');
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [status, setStatus] = useState<OrderStatus | 'all'>('all');
@@ -69,26 +72,26 @@ export default function OrderListPage() {
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
           onCheckedChange={(v) => table.toggleAllPageRowsSelected(!!v)}
-          aria-label="Select all"
+          aria-label={t('common:aria.selectAll')}
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(v) => row.toggleSelected(!!v)}
-          aria-label="Select row"
+          aria-label={t('common:aria.selectRow')}
         />
       ),
       enableSorting: false,
     },
     {
       accessorKey: '_id',
-      header: 'Order ID',
+      header: t('columns.orderId'),
       cell: ({ row }) => <span className="font-mono text-xs">{row.original._id.slice(-8)}</span>,
     },
     {
       accessorKey: 'user',
-      header: 'Customer',
+      header: t('columns.customer'),
       cell: ({ row }) => {
         const u = row.original.user;
         return typeof u === 'object' ? u.name || u.email : u;
@@ -96,22 +99,22 @@ export default function OrderListPage() {
     },
     {
       accessorKey: 'items',
-      header: 'Items',
-      cell: ({ row }) => `${row.original.items.length} item(s)`,
+      header: t('columns.items'),
+      cell: ({ row }) => t('itemCount', { count: row.original.items.length }),
     },
     {
       accessorKey: 'total_price',
-      header: 'Total',
+      header: t('columns.total'),
       cell: ({ row }) => formatCurrency(row.original.total_price),
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: t('columns.status'),
       cell: ({ row }) => <StatusBadge status={row.original.status} />,
     },
     {
       accessorKey: 'createdAt',
-      header: 'Date',
+      header: t('columns.date'),
       cell: ({ row }) => format(new Date(row.original.createdAt), 'MMM d, yyyy'),
     },
     {
@@ -119,15 +122,15 @@ export default function OrderListPage() {
       header: '',
       cell: ({ row }) => (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" aria-label="Order actions">
-              <MoreHorizontal className="size-4" />
-            </Button>
+          <DropdownMenuTrigger
+            render={<Button variant="ghost" size="sm" aria-label={t('common:aria.actions')} />}
+          >
+            <MoreHorizontal className="size-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => navigate(`/orders/${row.original._id}`)}>
               <Eye className="mr-2 size-4" />
-              View Details
+              {t('actions.viewDetails')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -138,8 +141,8 @@ export default function OrderListPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Orders"
-        description="Manage customer orders"
+        title={t('title')}
+        description={t('description')}
         actions={
           <Button
             variant="outline"
@@ -148,31 +151,31 @@ export default function OrderListPage() {
               exportToCSV(
                 data?.orders ?? [],
                 [
-                  { key: '_id', header: 'Order ID' },
+                  { key: '_id', header: t('columns.orderId') },
                   {
                     key: 'user',
-                    header: 'Customer',
+                    header: t('columns.customer'),
                     accessor: (r) => {
                       const u = r.user as any;
                       return typeof u === 'object' ? u?.name || u?.email : String(u);
                     },
                   },
-                  { key: 'total_price', header: 'Total' },
-                  { key: 'status', header: 'Status' },
-                  { key: 'createdAt', header: 'Date' },
+                  { key: 'total_price', header: t('columns.total') },
+                  { key: 'status', header: t('columns.status') },
+                  { key: 'createdAt', header: t('columns.date') },
                 ],
                 'orders',
               )
             }
           >
             <Download className="mr-2 size-4" />
-            Export CSV
+            {tc('buttons.exportCsv')}
           </Button>
         }
       />
       <div className="flex items-center gap-2">
         <Button variant="outline" size="sm" onClick={() => setFiltersOpen(!filtersOpen)}>
-          <Filter className="mr-2 size-4" /> Filters
+          <Filter className="mr-2 size-4" /> {tc('buttons.filters')}
         </Button>
         {(startDate || endDate || paymentMethod) && (
           <Button
@@ -184,14 +187,14 @@ export default function OrderListPage() {
               setPaymentMethod('');
             }}
           >
-            <X className="mr-1 size-4" /> Clear Filters
+            <X className="mr-1 size-4" /> {tc('buttons.clearFilters')}
           </Button>
         )}
       </div>
       {filtersOpen && (
         <div className="grid gap-4 sm:grid-cols-3 rounded-lg border p-4">
           <div>
-            <Label htmlFor="filter-start-date">Start Date</Label>
+            <Label htmlFor="filter-start-date">{t('filters.startDate')}</Label>
             <Input
               id="filter-start-date"
               type="date"
@@ -200,7 +203,7 @@ export default function OrderListPage() {
             />
           </div>
           <div>
-            <Label htmlFor="filter-end-date">End Date</Label>
+            <Label htmlFor="filter-end-date">{t('filters.endDate')}</Label>
             <Input
               id="filter-end-date"
               type="date"
@@ -209,15 +212,15 @@ export default function OrderListPage() {
             />
           </div>
           <div>
-            <Label htmlFor="filter-payment">Payment Method</Label>
+            <Label htmlFor="filter-payment">{t('filters.paymentMethod')}</Label>
             <Select value={paymentMethod} onValueChange={(v) => v && setPaymentMethod(v)}>
               <SelectTrigger id="filter-payment">
-                <SelectValue placeholder="All" />
+                <SelectValue placeholder={t('filters.all')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="credit_card">Credit Card</SelectItem>
-                <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
-                <SelectItem value="cod">Cash on Delivery</SelectItem>
+                <SelectItem value="credit_card">{t('filters.creditCard')}</SelectItem>
+                <SelectItem value="bank_transfer">{t('filters.bankTransfer')}</SelectItem>
+                <SelectItem value="cod">{t('filters.cod')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -235,7 +238,7 @@ export default function OrderListPage() {
             const count = s === 'all' ? totalCount : (countMap.get(s) ?? 0);
             return (
               <TabsTrigger key={s} value={s} className="capitalize gap-1.5">
-                {s}
+                {t(`status.${s}`)}
                 {count > 0 && (
                   <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-xs">
                     {count}
@@ -246,7 +249,7 @@ export default function OrderListPage() {
           })}
         </TabsList>
       </Tabs>
-      {isError && <ErrorState message="Failed to load orders" onRetry={refetch} />}
+      {isError && <ErrorState message={t('error')} onRetry={refetch} />}
       <DataTable
         columns={columns}
         data={(data?.orders ?? []).filter((o) => {
@@ -257,7 +260,7 @@ export default function OrderListPage() {
         })}
         isLoading={isLoading}
         searchKey="_id"
-        searchPlaceholder="Search orders..."
+        searchPlaceholder={t('search')}
         enableRowSelection
         onRowSelectionChange={setSelected}
         manualPagination
@@ -270,7 +273,7 @@ export default function OrderListPage() {
             <div className="flex items-center gap-2">
               <Select value={bulkStatus} onValueChange={(v) => setBulkStatus(v as OrderStatus)}>
                 <SelectTrigger className="w-36">
-                  <SelectValue placeholder="Set status" />
+                  <SelectValue placeholder={t('filters.setStatus')} />
                 </SelectTrigger>
                 <SelectContent>
                   {(['processing', 'shipped', 'delivered', 'cancelled'] as OrderStatus[]).map(
@@ -293,7 +296,7 @@ export default function OrderListPage() {
                   })
                 }
               >
-                Apply
+                {tc('buttons.apply')}
               </Button>
             </div>
           ) : undefined

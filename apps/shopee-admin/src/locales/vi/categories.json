@@ -1,0 +1,28 @@
+{
+  "title": "Danh mục",
+  "description": "Quản lý danh mục sản phẩm",
+  "columns": {
+    "name": "Tên",
+    "id": "ID"
+  },
+  "actions": {
+    "addCategory": "Thêm danh mục",
+    "createCategory": "Tạo danh mục",
+    "editCategory": "Sửa danh mục"
+  },
+  "form": {
+    "name": "Tên"
+  },
+  "toast": {
+    "deleteTitle": "Xóa danh mục",
+    "deleteDescription": "Bạn có chắc chắn muốn xóa \"{{name}}\"? Các sản phẩm thuộc danh mục này có thể bị ảnh hưởng.",
+    "categoryCreated": "Đã tạo danh mục",
+    "categoryUpdated": "Đã cập nhật danh mục",
+    "categoryDeleted": "Đã xóa danh mục",
+    "createFailed": "Không thể tạo danh mục",
+    "updateFailed": "Không thể cập nhật danh mục",
+    "deleteFailed": "Không thể xóa. Danh mục có thể có sản phẩm."
+  },
+  "search": "Tìm kiếm danh mục...",
+  "error": "Không thể tải danh mục"
+}

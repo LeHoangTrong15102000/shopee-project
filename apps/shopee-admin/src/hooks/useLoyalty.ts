@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import i18n from 'src/i18n/i18n';
 import loyaltyApi from 'src/apis/loyalty.api';
 import { useActivityLogStore } from 'src/stores/activity-log.store';
 import { useAuthStore } from 'src/stores/auth.store';
@@ -39,12 +40,12 @@ export function useCreateReward(onSuccess?: () => void) {
     mutationFn: (body: { name: string; description: string; points_required: number }) =>
       loyaltyApi.createReward(body),
     onSuccess: (_, vars) => {
-      toast.success('Reward created');
+      toast.success(i18n.t('toast.rewardCreated', { ns: 'loyalty' }));
       addLog({ action: 'create', entityType: 'reward', entityName: vars.name, adminEmail: email });
       qc.invalidateQueries({ queryKey: LOYALTY_KEYS.rewards });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to create reward'),
+    onError: () => toast.error(i18n.t('toast.createFailed', { ns: 'loyalty' })),
   });
 }
 
@@ -61,12 +62,17 @@ export function useUpdateReward(onSuccess?: () => void) {
       body: { name: string; description: string; points_required: number };
     }) => loyaltyApi.updateReward(id, body),
     onSuccess: (_, vars) => {
-      toast.success('Reward updated');
-      addLog({ action: 'update', entityType: 'reward', entityName: vars.body.name, adminEmail: email });
+      toast.success(i18n.t('toast.rewardUpdated', { ns: 'loyalty' }));
+      addLog({
+        action: 'update',
+        entityType: 'reward',
+        entityName: vars.body.name,
+        adminEmail: email,
+      });
       qc.invalidateQueries({ queryKey: LOYALTY_KEYS.rewards });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to update reward'),
+    onError: () => toast.error(i18n.t('toast.updateFailed', { ns: 'loyalty' })),
   });
 }
 
@@ -77,12 +83,12 @@ export function useDeleteReward(onSuccess?: () => void) {
   return useMutation({
     mutationFn: (id: string) => loyaltyApi.deleteReward(id),
     onSuccess: (_, id) => {
-      toast.success('Reward deleted');
+      toast.success(i18n.t('toast.rewardDeleted', { ns: 'loyalty' }));
       addLog({ action: 'delete', entityType: 'reward', entityName: id, adminEmail: email });
       qc.invalidateQueries({ queryKey: LOYALTY_KEYS.rewards });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to delete reward'),
+    onError: () => toast.error(i18n.t('toast.deleteFailed', { ns: 'loyalty' })),
   });
 }
 
@@ -94,7 +100,7 @@ export function useAdjustPoints(onSuccess?: () => void) {
     mutationFn: (body: { user_id: string; points: number; description: string }) =>
       loyaltyApi.adjustPoints(body),
     onSuccess: (_, vars) => {
-      toast.success('Points adjusted');
+      toast.success(i18n.t('toast.pointsAdjusted', { ns: 'loyalty' }));
       addLog({
         action: 'update',
         entityType: 'loyalty',
@@ -104,6 +110,6 @@ export function useAdjustPoints(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: LOYALTY_KEYS.transactions });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to adjust points'),
+    onError: () => toast.error(i18n.t('toast.adjustPointsFailed', { ns: 'loyalty' })),
   });
 }

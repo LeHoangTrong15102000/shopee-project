@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import i18n from 'src/i18n/i18n';
 import inventoryApi from 'src/apis/inventory.api';
 import { useActivityLogStore } from 'src/stores/activity-log.store';
 import { useAuthStore } from 'src/stores/auth.store';
@@ -31,13 +32,18 @@ export function useUpdateStock(onSuccess?: () => void) {
     mutationFn: ({ id, qty }: { id: string; qty: number }) =>
       inventoryApi.updateStock(id, { quantity: qty }),
     onSuccess: (_, vars) => {
-      toast.success('Stock updated');
-      addLog({ action: 'update', entityType: 'inventory', entityName: `${vars.id} → ${vars.qty}`, adminEmail: email });
+      toast.success(i18n.t('toast.stockUpdated', { ns: 'inventory' }));
+      addLog({
+        action: 'update',
+        entityType: 'inventory',
+        entityName: `${vars.id} → ${vars.qty}`,
+        adminEmail: email,
+      });
       qc.invalidateQueries({ queryKey: INVENTORY_KEYS.low });
       qc.invalidateQueries({ queryKey: INVENTORY_KEYS.out });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to update stock'),
+    onError: () => toast.error(i18n.t('toast.updateStockFailed', { ns: 'inventory' })),
   });
 }
 
@@ -49,12 +55,17 @@ export function useBulkUpdateStock(onSuccess?: () => void) {
     mutationFn: (items: Array<{ product_id: string; quantity: number }>) =>
       inventoryApi.bulkUpdateStock({ items }),
     onSuccess: (_, items) => {
-      toast.success('Products updated');
-      addLog({ action: 'update', entityType: 'inventory', entityName: `${items.length} products`, adminEmail: email });
+      toast.success(i18n.t('toast.productsUpdated', { ns: 'inventory' }));
+      addLog({
+        action: 'update',
+        entityType: 'inventory',
+        entityName: `${items.length} products`,
+        adminEmail: email,
+      });
       qc.invalidateQueries({ queryKey: INVENTORY_KEYS.low });
       qc.invalidateQueries({ queryKey: INVENTORY_KEYS.out });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to bulk update stock'),
+    onError: () => toast.error(i18n.t('toast.bulkUpdateFailed', { ns: 'inventory' })),
   });
 }

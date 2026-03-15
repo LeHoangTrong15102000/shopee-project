@@ -1,0 +1,65 @@
+{
+  "title": "Người dùng",
+  "description": "Quản lý tài khoản quản trị và người dùng",
+  "columns": {
+    "name": "Tên",
+    "email": "Email",
+    "roles": "Vai trò",
+    "created": "Ngày tạo"
+  },
+  "actions": {
+    "addUser": "Thêm người dùng",
+    "createUser": "Tạo người dùng",
+    "editUser": "Sửa người dùng",
+    "view": "Xem",
+    "edit": "Sửa",
+    "delete": "Xóa"
+  },
+  "form": {
+    "name": "Tên",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "role": "Vai trò",
+    "rolePlaceholder": "User hoặc Admin"
+  },
+  "detail": {
+    "title": "Chi tiết người dùng",
+    "backToUsers": "Quay lại danh sách",
+    "name": "Tên",
+    "email": "Email",
+    "roles": "Vai trò",
+    "phone": "Điện thoại",
+    "address": "Địa chỉ",
+    "dateOfBirth": "Ngày sinh",
+    "created": "Ngày tạo",
+    "orders": "Đơn hàng",
+    "reviews": "Đánh giá",
+    "loyalty": "Tích điểm",
+    "orderId": "Mã đơn",
+    "total": "Tổng",
+    "status": "Trạng thái",
+    "date": "Ngày",
+    "product": "Sản phẩm",
+    "rating": "Đánh giá",
+    "comment": "Bình luận",
+    "type": "Loại",
+    "points": "Điểm",
+    "description": "Mô tả",
+    "searchOrders": "Tìm kiếm đơn hàng...",
+    "searchReviews": "Tìm kiếm đánh giá...",
+    "searchTransactions": "Tìm kiếm giao dịch..."
+  },
+  "toast": {
+    "deleteTitle": "Xóa người dùng",
+    "deleteDescription": "Bạn có chắc chắn muốn xóa {{name}}?",
+    "userCreated": "Đã tạo người dùng",
+    "userUpdated": "Đã cập nhật người dùng",
+    "userDeleted": "Đã xóa người dùng",
+    "createFailed": "Không thể tạo người dùng",
+    "updateFailed": "Không thể cập nhật người dùng",
+    "deleteFailed": "Không thể xóa người dùng"
+  },
+  "search": "Tìm kiếm người dùng...",
+  "error": "Không thể tải người dùng",
+  "notFound": "Không tìm thấy người dùng"
+}

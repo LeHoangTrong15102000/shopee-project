@@ -1,0 +1,21 @@
+{
+  "title": "Shopee Admin",
+  "description": "Sign in to your admin account",
+  "form": {
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign In",
+    "emailPlaceholder": "admin@shopee.com",
+    "passwordPlaceholder": "••••••"
+  },
+  "errors": {
+    "accessDenied": "Access denied. Admin privileges required.",
+    "invalidCredentials": "Invalid email or password",
+    "serverError": "Server error. Please try again later."
+  },
+  "success": "Login successful",
+  "dev": {
+    "loginSuccess": "Dev login successful",
+    "loginButton": "Dev Login (bypass API)"
+  }
+}

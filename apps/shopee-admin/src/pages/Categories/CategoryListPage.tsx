@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from 'src/components/ui/button';
 import {
   Dialog,
@@ -24,6 +25,8 @@ import {
 import type { Category } from 'src/types';
 
 export default function CategoryListPage() {
+  const { t } = useTranslation('categories');
+  const { t: tc } = useTranslation('common');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editCat, setEditCat] = useState<Category | null>(null);
   const [deleteCat, setDeleteCat] = useState<Category | null>(null);
@@ -42,10 +45,10 @@ export default function CategoryListPage() {
   const deleteMut = useDeleteCategory(() => setDeleteCat(null));
 
   const columns: ColumnDef<Category>[] = [
-    { accessorKey: 'name', header: 'Name' },
+    { accessorKey: 'name', header: t('columns.name') },
     {
       accessorKey: '_id',
-      header: 'ID',
+      header: t('columns.id'),
       cell: ({ row }) => <span className="text-xs text-muted-foreground">{row.original._id}</span>,
     },
     {
@@ -56,7 +59,7 @@ export default function CategoryListPage() {
           <Button
             variant="ghost"
             size="sm"
-            aria-label="Edit category"
+            aria-label={t('common:aria.editItem', { item: t('categories:title') })}
             onClick={() => {
               setEditCat(row.original);
               setName(row.original.name);
@@ -67,7 +70,7 @@ export default function CategoryListPage() {
           <Button
             variant="ghost"
             size="sm"
-            aria-label="Delete category"
+            aria-label={t('common:aria.deleteItem', { item: t('categories:title') })}
             onClick={() => setDeleteCat(row.original)}
           >
             <Trash2 className="size-4 text-destructive" />
@@ -80,8 +83,8 @@ export default function CategoryListPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Categories"
-        description="Manage product categories"
+        title={t('title')}
+        description={t('description')}
         actions={
           <Button
             size="sm"
@@ -91,27 +94,27 @@ export default function CategoryListPage() {
             }}
           >
             <Plus className="mr-2 size-4" />
-            Add Category
+            {t('actions.addCategory')}
           </Button>
         }
       />
-      {isError && <ErrorState message="Failed to load categories" onRetry={refetch} />}
+      {isError && <ErrorState message={t('error')} onRetry={refetch} />}
       <DataTable
         columns={columns}
         data={categories ?? []}
         isLoading={isLoading}
         searchKey="name"
-        searchPlaceholder="Search categories..."
+        searchPlaceholder={t('search')}
       />
 
       {/* Create Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create Category</DialogTitle>
+            <DialogTitle>{t('actions.createCategory')}</DialogTitle>
           </DialogHeader>
           <div>
-            <Label htmlFor="create-cat-name">Name</Label>
+            <Label htmlFor="create-cat-name">{t('form.name')}</Label>
             <Input id="create-cat-name" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <DialogFooter>
@@ -119,7 +122,7 @@ export default function CategoryListPage() {
               onClick={() => createMut.mutate({ name })}
               disabled={!name || createMut.isPending}
             >
-              Create
+              {tc('buttons.create')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -129,10 +132,10 @@ export default function CategoryListPage() {
       <Dialog open={!!editCat} onOpenChange={(o) => !o && setEditCat(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Category</DialogTitle>
+            <DialogTitle>{t('actions.editCategory')}</DialogTitle>
           </DialogHeader>
           <div>
-            <Label htmlFor="edit-cat-name">Name</Label>
+            <Label htmlFor="edit-cat-name">{t('form.name')}</Label>
             <Input id="edit-cat-name" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <DialogFooter>
@@ -140,7 +143,7 @@ export default function CategoryListPage() {
               onClick={() => editCat && updateMut.mutate({ id: editCat._id, body: { name } })}
               disabled={!name || updateMut.isPending}
             >
-              Save
+              {tc('buttons.save')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -149,8 +152,8 @@ export default function CategoryListPage() {
       <ConfirmDialog
         open={!!deleteCat}
         onOpenChange={(o) => !o && setDeleteCat(null)}
-        title="Delete Category"
-        description={`Are you sure you want to delete "${deleteCat?.name}"? Any products assigned to this category may be affected.`}
+        title={t('toast.deleteTitle')}
+        description={t('toast.deleteDescription', { name: deleteCat?.name })}
         onConfirm={() => deleteCat && deleteMut.mutate(deleteCat._id)}
         isLoading={deleteMut.isPending}
       />

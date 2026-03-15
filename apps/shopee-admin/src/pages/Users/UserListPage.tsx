@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { MoreHorizontal, Plus, Pencil, Trash2, Eye, Download } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from 'src/components/ui/button';
 import { Avatar, AvatarFallback } from 'src/components/ui/avatar';
 import { Badge } from 'src/components/ui/badge';
@@ -30,6 +31,8 @@ import { exportToCSV } from 'src/utils/csv-export';
 import type { User } from 'src/types';
 
 export default function UserListPage() {
+  const { t } = useTranslation('users');
+  const { t: tc } = useTranslation('common');
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [createOpen, setCreateOpen] = useState(false);
@@ -55,11 +58,11 @@ export default function UserListPage() {
       ),
       enableSorting: false,
     },
-    { accessorKey: 'name', header: 'Name', cell: ({ row }) => row.original.name || '—' },
-    { accessorKey: 'email', header: 'Email' },
+    { accessorKey: 'name', header: t('columns.name'), cell: ({ row }) => row.original.name || '—' },
+    { accessorKey: 'email', header: t('columns.email') },
     {
       accessorKey: 'roles',
-      header: 'Roles',
+      header: t('columns.roles'),
       cell: ({ row }) => (
         <div className="flex gap-1">
           {row.original.roles.map((r) => (
@@ -72,7 +75,7 @@ export default function UserListPage() {
     },
     {
       accessorKey: 'createdAt',
-      header: 'Created',
+      header: t('columns.created'),
       cell: ({ row }) => format(new Date(row.original.createdAt), 'MMM d, yyyy'),
     },
     {
@@ -80,15 +83,15 @@ export default function UserListPage() {
       header: '',
       cell: ({ row }) => (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" aria-label="User actions">
-              <MoreHorizontal className="size-4" />
-            </Button>
+          <DropdownMenuTrigger
+            render={<Button variant="ghost" size="sm" aria-label={t('common:aria.actions')} />}
+          >
+            <MoreHorizontal className="size-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => navigate(`/users/${row.original._id}`)}>
               <Eye className="mr-2 size-4" />
-              View
+              {t('actions.view')}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
@@ -102,14 +105,14 @@ export default function UserListPage() {
               }}
             >
               <Pencil className="mr-2 size-4" />
-              Edit
+              {t('actions.edit')}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => setDeleteUser(row.original)}
               className="text-destructive"
             >
               <Trash2 className="mr-2 size-4" />
-              Delete
+              {t('actions.delete')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -120,8 +123,8 @@ export default function UserListPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Users"
-        description="Manage admin and user accounts"
+        title={t('title')}
+        description={t('description')}
         actions={
           <div className="flex items-center gap-2">
             <Button
@@ -131,21 +134,21 @@ export default function UserListPage() {
                 exportToCSV(
                   data?.items ?? [],
                   [
-                    { key: 'name', header: 'Name' },
-                    { key: 'email', header: 'Email' },
+                    { key: 'name', header: t('columns.name') },
+                    { key: 'email', header: t('columns.email') },
                     {
                       key: 'roles',
-                      header: 'Roles',
+                      header: t('columns.roles'),
                       accessor: (r) => (r.roles as string[]).join(', '),
                     },
-                    { key: 'createdAt', header: 'Created' },
+                    { key: 'createdAt', header: t('columns.created') },
                   ],
                   'users',
                 )
               }
             >
               <Download className="mr-2 size-4" />
-              Export CSV
+              {tc('buttons.exportCsv')}
             </Button>
             <Button
               size="sm"
@@ -155,18 +158,18 @@ export default function UserListPage() {
               }}
             >
               <Plus className="mr-2 size-4" />
-              Add User
+              {t('actions.addUser')}
             </Button>
           </div>
         }
       />
-      {isError && <ErrorState message="Failed to load users" onRetry={refetch} />}
+      {isError && <ErrorState message={t('error')} onRetry={refetch} />}
       <DataTable
         columns={columns}
         data={data?.items ?? []}
         isLoading={isLoading}
         searchKey="name"
-        searchPlaceholder="Search users..."
+        searchPlaceholder={t('search')}
         manualPagination
         pageIndex={page}
         pageCount={data?.pagination?.total_pages ?? 1}
@@ -178,11 +181,11 @@ export default function UserListPage() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create User</DialogTitle>
+            <DialogTitle>{t('actions.createUser')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="create-user-name">Name</Label>
+              <Label htmlFor="create-user-name">{t('form.name')}</Label>
               <Input
                 id="create-user-name"
                 value={form.name}
@@ -190,7 +193,7 @@ export default function UserListPage() {
               />
             </div>
             <div>
-              <Label htmlFor="create-user-email">Email</Label>
+              <Label htmlFor="create-user-email">{t('form.email')}</Label>
               <Input
                 id="create-user-email"
                 type="email"
@@ -199,7 +202,7 @@ export default function UserListPage() {
               />
             </div>
             <div>
-              <Label htmlFor="create-user-password">Password</Label>
+              <Label htmlFor="create-user-password">{t('form.password')}</Label>
               <Input
                 id="create-user-password"
                 type="password"
@@ -208,12 +211,12 @@ export default function UserListPage() {
               />
             </div>
             <div>
-              <Label htmlFor="create-user-role">Role</Label>
+              <Label htmlFor="create-user-role">{t('form.role')}</Label>
               <Input
                 id="create-user-role"
                 value={form.roles}
                 onChange={(e) => setForm({ ...form, roles: e.target.value })}
-                placeholder="User or Admin"
+                placeholder={t('form.rolePlaceholder')}
               />
             </div>
           </div>
@@ -229,7 +232,7 @@ export default function UserListPage() {
               }
               disabled={createMut.isPending}
             >
-              Create
+              {tc('buttons.create')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -239,11 +242,11 @@ export default function UserListPage() {
       <Dialog open={!!editUser} onOpenChange={(o) => !o && setEditUser(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit User</DialogTitle>
+            <DialogTitle>{t('actions.editUser')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="edit-user-name">Name</Label>
+              <Label htmlFor="edit-user-name">{t('form.name')}</Label>
               <Input
                 id="edit-user-name"
                 value={form.name}
@@ -251,7 +254,7 @@ export default function UserListPage() {
               />
             </div>
             <div>
-              <Label htmlFor="edit-user-email">Email</Label>
+              <Label htmlFor="edit-user-email">{t('form.email')}</Label>
               <Input
                 id="edit-user-email"
                 type="email"
@@ -260,7 +263,7 @@ export default function UserListPage() {
               />
             </div>
             <div>
-              <Label htmlFor="edit-user-role">Role</Label>
+              <Label htmlFor="edit-user-role">{t('form.role')}</Label>
               <Input
                 id="edit-user-role"
                 value={form.roles}
@@ -279,7 +282,7 @@ export default function UserListPage() {
               }
               disabled={updateMut.isPending}
             >
-              Save
+              {tc('buttons.save')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -288,8 +291,8 @@ export default function UserListPage() {
       <ConfirmDialog
         open={!!deleteUser}
         onOpenChange={(o) => !o && setDeleteUser(null)}
-        title="Delete User"
-        description={`Are you sure you want to delete ${deleteUser?.name || deleteUser?.email}?`}
+        title={t('toast.deleteTitle')}
+        description={t('toast.deleteDescription', { name: deleteUser?.name || deleteUser?.email })}
         onConfirm={() => deleteUser && deleteMut.mutate(deleteUser._id)}
         isLoading={deleteMut.isPending}
       />

@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { Plus, Pencil, Trash2, FileText } from 'lucide-react';
 import { PageHeader } from 'src/components/shared/PageHeader';
 import { EmptyState } from 'src/components/shared/EmptyState';
@@ -26,25 +27,26 @@ function groupByDate(entries: ActivityLogEntry[]) {
 export default function ActivityLogPage() {
   const { entries, clearLog } = useActivityLogStore();
   const [clearOpen, setClearOpen] = useState(false);
+  const { t } = useTranslation('activity-log');
   const grouped = groupByDate(entries);
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Activity Log"
-        description="Track admin actions"
+        title={t('title')}
+        description={t('description')}
         actions={
           entries.length > 0 ? (
             <Button variant="outline" size="sm" onClick={() => setClearOpen(true)}>
-              Clear Log
+              {t('actions.clearLog')}
             </Button>
           ) : undefined
         }
       />
       {entries.length === 0 ? (
         <EmptyState
-          title="No activity"
-          description="Admin actions will appear here."
+          title={t('empty.title')}
+          description={t('empty.description')}
           icon={<FileText className="size-12" />}
         />
       ) : (
@@ -89,8 +91,8 @@ export default function ActivityLogPage() {
       <ConfirmDialog
         open={clearOpen}
         onOpenChange={setClearOpen}
-        title="Clear Activity Log"
-        description="This will permanently delete all log entries."
+        title={t('confirm.title')}
+        description={t('confirm.description')}
         onConfirm={() => {
           clearLog();
           setClearOpen(false);

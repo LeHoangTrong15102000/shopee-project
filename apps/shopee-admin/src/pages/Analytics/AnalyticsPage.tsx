@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { type ColumnDef } from '@tanstack/react-table';
 import {
   LineChart,
@@ -28,6 +29,7 @@ import { formatCurrency } from 'src/utils/format';
 import type { ProductAnalytics } from 'src/types';
 
 export default function AnalyticsPage() {
+  const { t } = useTranslation('analytics');
   const [period, setPeriod] = useState('30d');
 
   const {
@@ -57,17 +59,17 @@ export default function AnalyticsPage() {
       ),
       enableSorting: false,
     },
-    { accessorKey: 'name', header: 'Product' },
-    { accessorKey: 'sold', header: 'Sold' },
-    { accessorKey: 'view', header: 'Views' },
+    { accessorKey: 'name', header: t('columns.product') },
+    { accessorKey: 'sold', header: t('columns.sold') },
+    { accessorKey: 'view', header: t('columns.views') },
     {
       accessorKey: 'rating',
-      header: 'Rating',
+      header: t('columns.rating'),
       cell: ({ row }) => row.original.rating?.toFixed(1) ?? '—',
     },
     {
       accessorKey: 'revenue',
-      header: 'Revenue',
+      header: t('columns.revenue'),
       cell: ({ row }) => (row.original.revenue ? formatCurrency(row.original.revenue) : '—'),
     },
   ];
@@ -79,12 +81,12 @@ export default function AnalyticsPage() {
     total_sold: number;
     average_price: number;
   }>[] = [
-    { accessorKey: 'category_name', header: 'Category' },
-    { accessorKey: 'product_count', header: 'Products' },
-    { accessorKey: 'total_sold', header: 'Total Sold' },
+    { accessorKey: 'category_name', header: t('columns.category') },
+    { accessorKey: 'product_count', header: t('columns.products') },
+    { accessorKey: 'total_sold', header: t('columns.totalSold') },
     {
       accessorKey: 'average_price',
-      header: 'Avg Price',
+      header: t('columns.avgPrice'),
       cell: ({ row }) => formatCurrency(Math.round(row.original.average_price)),
     },
   ];
@@ -92,22 +94,20 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Analytics"
-        description="Product and chatbot analytics"
+        title={t('title')}
+        description={t('description')}
         actions={<PeriodSelect value={period} onChange={setPeriod} />}
       />
       <Tabs defaultValue="top-selling">
         <TabsList className="w-full justify-start overflow-x-auto flex-nowrap scroll-p-1">
-          <TabsTrigger value="top-selling">Top Selling</TabsTrigger>
-          <TabsTrigger value="top-viewed">Top Viewed</TabsTrigger>
-          <TabsTrigger value="top-rated">Top Rated</TabsTrigger>
-          <TabsTrigger value="by-category">By Category</TabsTrigger>
-          <TabsTrigger value="chatbot">Chatbot</TabsTrigger>
+          <TabsTrigger value="top-selling">{t('tabs.topSelling')}</TabsTrigger>
+          <TabsTrigger value="top-viewed">{t('tabs.topViewed')}</TabsTrigger>
+          <TabsTrigger value="top-rated">{t('tabs.topRated')}</TabsTrigger>
+          <TabsTrigger value="by-category">{t('tabs.byCategory')}</TabsTrigger>
+          <TabsTrigger value="chatbot">{t('tabs.chatbot')}</TabsTrigger>
         </TabsList>
         <TabsContent value="top-selling">
-          {sellingError && (
-            <ErrorState message="Failed to load analytics" onRetry={refetchSelling} />
-          )}
+          {sellingError && <ErrorState message={t('error')} onRetry={refetchSelling} />}
           <DataTable
             columns={productCols}
             data={topSelling ?? []}
@@ -143,21 +143,24 @@ export default function AnalyticsPage() {
           {chatbot && (
             <div className="space-y-6">
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <StatCard label="Total Conversations" value={chatbot.total_conversations} />
-                <StatCard label="Total Messages" value={chatbot.total_messages} />
                 <StatCard
-                  label="Avg Messages/Conv"
+                  label={t('chatbot.totalConversations')}
+                  value={chatbot.total_conversations}
+                />
+                <StatCard label={t('chatbot.totalMessages')} value={chatbot.total_messages} />
+                <StatCard
+                  label={t('chatbot.avgMessagesPerConv')}
                   value={chatbot.avg_messages_per_conversation?.toFixed(1) ?? '0'}
                 />
                 <StatCard
-                  label="Satisfaction Rate"
+                  label={t('chatbot.satisfactionRate')}
                   value={`${((chatbot.satisfaction_rate ?? 0) * 100).toFixed(0)}%`}
                 />
               </div>
               {Array.isArray(chatbotPerf) && chatbotPerf.length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Chatbot Performance Over Time</CardTitle>
+                    <CardTitle>{t('chatbot.performanceOverTime')}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <ResponsiveContainer width="100%" height={300}>

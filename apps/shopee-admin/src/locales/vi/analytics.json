@@ -1,0 +1,30 @@
+{
+  "title": "Phân tích",
+  "description": "Phân tích sản phẩm và chatbot",
+  "tabs": {
+    "topSelling": "Bán chạy nhất",
+    "topViewed": "Xem nhiều nhất",
+    "topRated": "Đánh giá cao nhất",
+    "byCategory": "Theo danh mục",
+    "chatbot": "Chatbot"
+  },
+  "columns": {
+    "product": "Sản phẩm",
+    "sold": "Đã bán",
+    "views": "Lượt xem",
+    "rating": "Đánh giá",
+    "revenue": "Doanh thu",
+    "category": "Danh mục",
+    "products": "Sản phẩm",
+    "totalSold": "Tổng đã bán",
+    "avgPrice": "Giá trung bình"
+  },
+  "chatbot": {
+    "totalConversations": "Tổng cuộc hội thoại",
+    "totalMessages": "Tổng tin nhắn",
+    "avgMessagesPerConv": "TB tin nhắn/cuộc",
+    "satisfactionRate": "Tỷ lệ hài lòng",
+    "performanceOverTime": "Hiệu suất Chatbot theo thời gian"
+  },
+  "error": "Không thể tải phân tích"
+}

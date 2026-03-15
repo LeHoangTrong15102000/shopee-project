@@ -1,0 +1,28 @@
+{
+  "title": "Categories",
+  "description": "Manage product categories",
+  "columns": {
+    "name": "Name",
+    "id": "ID"
+  },
+  "actions": {
+    "addCategory": "Add Category",
+    "createCategory": "Create Category",
+    "editCategory": "Edit Category"
+  },
+  "form": {
+    "name": "Name"
+  },
+  "toast": {
+    "deleteTitle": "Delete Category",
+    "deleteDescription": "Are you sure you want to delete \"{{name}}\"? Any products assigned to this category may be affected.",
+    "categoryCreated": "Category created",
+    "categoryUpdated": "Category updated",
+    "categoryDeleted": "Category deleted",
+    "createFailed": "Failed to create category",
+    "updateFailed": "Failed to update category",
+    "deleteFailed": "Failed to delete. Category may have products."
+  },
+  "search": "Search categories...",
+  "error": "Failed to load categories"
+}

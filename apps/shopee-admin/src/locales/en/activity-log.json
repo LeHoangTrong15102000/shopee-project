@@ -1,0 +1,15 @@
+{
+  "title": "Activity Log",
+  "description": "Track admin actions",
+  "actions": {
+    "clearLog": "Clear Log"
+  },
+  "empty": {
+    "title": "No activity",
+    "description": "Admin actions will appear here."
+  },
+  "confirm": {
+    "title": "Clear Activity Log",
+    "description": "This will permanently delete all log entries."
+  }
+}

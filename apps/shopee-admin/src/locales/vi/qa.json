@@ -1,0 +1,25 @@
+{
+  "title": "Hỏi đáp",
+  "description": "Quản lý câu hỏi và câu trả lời",
+  "question": "câu hỏi",
+  "answer": "câu trả lời",
+  "stats": {
+    "totalQuestions": "Tổng câu hỏi",
+    "totalAnswers": "Tổng câu trả lời",
+    "unanswered": "Chưa trả lời"
+  },
+  "by": "bởi",
+  "answers": "câu trả lời",
+  "noAnswers": "Chưa có câu trả lời.",
+  "toast": {
+    "deleteQuestionTitle": "Xóa câu hỏi",
+    "deleteQuestionDescription": "Câu hỏi và tất cả câu trả lời sẽ bị xóa.",
+    "deleteAnswerTitle": "Xóa câu trả lời",
+    "deleteAnswerDescription": "Câu trả lời này sẽ bị xóa vĩnh viễn.",
+    "questionDeleted": "Đã xóa câu hỏi",
+    "answerDeleted": "Đã xóa câu trả lời",
+    "deleteQuestionFailed": "Không thể xóa câu hỏi",
+    "deleteAnswerFailed": "Không thể xóa câu trả lời"
+  },
+  "error": "Không thể tải hỏi đáp"
+}

@@ -1,0 +1,51 @@
+{
+  "brand": "Shopee Admin",
+  "sections": {
+    "dashboard": "Dashboard",
+    "management": "Management",
+    "advanced": "Advanced",
+    "system": "System"
+  },
+  "menu": {
+    "overview": "Overview",
+    "users": "Users",
+    "products": "Products",
+    "categories": "Categories",
+    "orders": "Orders",
+    "vouchers": "Vouchers",
+    "reviews": "Reviews",
+    "loyalty": "Loyalty",
+    "inventory": "Inventory",
+    "analytics": "Analytics",
+    "notifications": "Notifications",
+    "qa": "Q&A",
+    "import": "Import",
+    "settings": "Settings",
+    "activityLog": "Activity Log"
+  },
+  "header": {
+    "settings": "Settings",
+    "logout": "Logout",
+    "toggleTheme": "Toggle theme",
+    "changeLanguage": "Change language",
+    "admin": "Admin"
+  },
+  "breadcrumb": {
+    "dashboard": "Dashboard"
+  },
+  "period": {
+    "last7days": "Last 7 days",
+    "last30days": "Last 30 days",
+    "last90days": "Last 90 days",
+    "lastYear": "Last year",
+    "customRange": "Custom Range",
+    "to": "to",
+    "selectPeriod": "Select time period",
+    "startDate": "Start date",
+    "endDate": "End date"
+  },
+  "sidebar": {
+    "mainNavigation": "Main navigation",
+    "toggleSidebar": "Toggle Sidebar"
+  }
+}

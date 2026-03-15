@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import i18n from 'src/i18n/i18n';
 import reviewsApi from 'src/apis/reviews.api';
 import { useActivityLogStore } from 'src/stores/activity-log.store';
 import { useAuthStore } from 'src/stores/auth.store';
@@ -23,11 +24,11 @@ export function useDeleteComment(id: string | undefined, onSuccess?: () => void)
   return useMutation({
     mutationFn: (commentId: string) => reviewsApi.deleteComment(commentId),
     onSuccess: (_, commentId) => {
-      toast.success('Comment deleted');
+      toast.success(i18n.t('toast.commentDeleted', { ns: 'reviews' }));
       addLog({ action: 'delete', entityType: 'comment', entityName: commentId, adminEmail: email });
       qc.invalidateQueries({ queryKey: REVIEW_DETAIL_KEYS.detail(id!) });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to delete comment'),
+    onError: () => toast.error(i18n.t('toast.deleteCommentFailed', { ns: 'reviews' })),
   });
 }

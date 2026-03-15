@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import i18n from 'src/i18n/i18n';
 import qaApi from 'src/apis/qa.api';
 import { useActivityLogStore } from 'src/stores/activity-log.store';
 import { useAuthStore } from 'src/stores/auth.store';
@@ -30,12 +31,12 @@ export function useDeleteQuestion(onSuccess?: () => void) {
   return useMutation({
     mutationFn: (id: string) => qaApi.deleteQuestion(id),
     onSuccess: (_, id) => {
-      toast.success('Question deleted');
+      toast.success(i18n.t('toast.questionDeleted', { ns: 'qa' }));
       addLog({ action: 'delete', entityType: 'question', entityName: id, adminEmail: email });
       qc.invalidateQueries({ queryKey: QA_KEYS.all });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to delete question'),
+    onError: () => toast.error(i18n.t('toast.deleteQuestionFailed', { ns: 'qa' })),
   });
 }
 
@@ -46,11 +47,11 @@ export function useDeleteAnswer(onSuccess?: () => void) {
   return useMutation({
     mutationFn: ({ qId, aId }: { qId: string; aId: string }) => qaApi.deleteAnswer(qId, aId),
     onSuccess: (_, vars) => {
-      toast.success('Answer deleted');
+      toast.success(i18n.t('toast.answerDeleted', { ns: 'qa' }));
       addLog({ action: 'delete', entityType: 'answer', entityName: vars.aId, adminEmail: email });
       qc.invalidateQueries({ queryKey: QA_KEYS.all });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to delete answer'),
+    onError: () => toast.error(i18n.t('toast.deleteAnswerFailed', { ns: 'qa' })),
   });
 }

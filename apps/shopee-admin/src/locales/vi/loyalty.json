@@ -1,0 +1,51 @@
+{
+  "title": "Chương trình tích điểm",
+  "description": "Quản lý phần thưởng và điểm",
+  "reward": "phần thưởng",
+  "tabs": {
+    "rewards": "Phần thưởng",
+    "transactions": "Giao dịch",
+    "stats": "Thống kê"
+  },
+  "rewards": {
+    "addReward": "Thêm phần thưởng",
+    "createReward": "Tạo phần thưởng",
+    "editReward": "Sửa phần thưởng",
+    "name": "Tên",
+    "description": "Mô tả",
+    "pointsRequired": "Điểm yêu cầu",
+    "points": "Điểm",
+    "status": "Trạng thái"
+  },
+  "transactions": {
+    "user": "Người dùng",
+    "type": "Loại",
+    "points": "Điểm",
+    "description": "Mô tả",
+    "date": "Ngày"
+  },
+  "stats": {
+    "totalUsers": "Tổng người dùng",
+    "pointsEarned": "Điểm đã tích",
+    "pointsRedeemed": "Điểm đã đổi"
+  },
+  "actions": {
+    "adjustPoints": "Điều chỉnh điểm",
+    "userId": "ID người dùng",
+    "pointsAmount": "Điểm (+/-)"
+  },
+  "toast": {
+    "deleteTitle": "Xóa phần thưởng",
+    "deleteDescription": "Xóa \"{{name}}\"?",
+    "rewardCreated": "Đã tạo phần thưởng",
+    "rewardUpdated": "Đã cập nhật phần thưởng",
+    "rewardDeleted": "Đã xóa phần thưởng",
+    "pointsAdjusted": "Đã điều chỉnh điểm",
+    "createFailed": "Không thể tạo phần thưởng",
+    "updateFailed": "Không thể cập nhật phần thưởng",
+    "deleteFailed": "Không thể xóa phần thưởng",
+    "adjustPointsFailed": "Không thể điều chỉnh điểm"
+  },
+  "error": "Không thể tải phần thưởng",
+  "transactionsError": "Không thể tải giao dịch"
+}

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { Trash2, ChevronDown, ChevronRight, MessageSquare } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
@@ -15,6 +16,7 @@ export default function QAPage() {
   const [deleteQ, setDeleteQ] = useState<string | null>(null);
   const [deleteA, setDeleteA] = useState<{ qId: string; aId: string } | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const { t } = useTranslation('qa');
 
   const { data, isLoading, isError, refetch } = useQuestions();
   const { data: stats } = useQAStats();
@@ -28,20 +30,20 @@ export default function QAPage() {
   };
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Failed to load Q&A" onRetry={refetch} />;
+  if (isError) return <ErrorState message={t('error')} onRetry={refetch} />;
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Q&A" description="Manage questions and answers" />
+      <PageHeader title={t('title')} description={t('description')} />
       {stats && (
         <div className="grid gap-4 sm:grid-cols-3">
           <StatCard
-            label="Total Questions"
+            label={t('stats.totalQuestions')}
             value={stats.total_questions}
             icon={<MessageSquare className="size-4" />}
           />
-          <StatCard label="Total Answers" value={stats.total_answers} />
-          <StatCard label="Unanswered" value={stats.unanswered_questions} />
+          <StatCard label={t('stats.totalAnswers')} value={stats.total_answers} />
+          <StatCard label={t('stats.unanswered')} value={stats.unanswered_questions} />
         </div>
       )}
       <div className="space-y-3">
@@ -59,14 +61,15 @@ export default function QAPage() {
                     <p className="font-medium">{q.title}</p>
                     <p className="text-xs text-muted-foreground">
                       by {q.user.name || q.user.email} ·{' '}
-                      {format(new Date(q.createdAt), 'MMM d, yyyy')} · {q.answers_count} answers
+                      {format(new Date(q.createdAt), 'MMM d, yyyy')} · {q.answers_count}{' '}
+                      {t('answers')}
                     </p>
                   </div>
                 </CollapsibleTrigger>
                 <Button
                   variant="ghost"
                   size="sm"
-                  aria-label="Delete question"
+                  aria-label={t('common:aria.deleteItem', { item: t('qa:question') })}
                   onClick={() => setDeleteQ(q._id)}
                 >
                   <Trash2 className="size-4 text-destructive" />
@@ -85,14 +88,18 @@ export default function QAPage() {
                           <div className="flex-1">
                             <p className="text-sm">{a.content || a.answer}</p>
                             <p className="mt-1 text-xs text-muted-foreground">
-                              by {a.user?.name || a.user?.email || a.user_name || 'Unknown'} ·{' '}
-                              {format(new Date(a.createdAt || a.created_at), 'MMM d, yyyy')}
+                              by{' '}
+                              {a.user?.name ||
+                                a.user?.email ||
+                                a.user_name ||
+                                t('common:states.unknown')}{' '}
+                              · {format(new Date(a.createdAt || a.created_at), 'MMM d, yyyy')}
                             </p>
                           </div>
                           <Button
                             variant="ghost"
                             size="sm"
-                            aria-label="Delete answer"
+                            aria-label={t('common:aria.deleteItem', { item: t('qa:answer') })}
                             onClick={() => setDeleteA({ qId: q._id, aId: a._id })}
                           >
                             <Trash2 className="size-3 text-destructive" />
@@ -101,7 +108,7 @@ export default function QAPage() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-xs text-muted-foreground">No answers yet.</p>
+                    <p className="text-xs text-muted-foreground">{t('noAnswers')}</p>
                   )}
                 </CardContent>
               </CollapsibleContent>
@@ -112,16 +119,16 @@ export default function QAPage() {
       <ConfirmDialog
         open={!!deleteQ}
         onOpenChange={(o) => !o && setDeleteQ(null)}
-        title="Delete Question"
-        description="This will delete the question and all its answers."
+        title={t('toast.deleteQuestionTitle')}
+        description={t('toast.deleteQuestionDescription')}
         onConfirm={() => deleteQ && deleteQMut.mutate(deleteQ)}
         isLoading={deleteQMut.isPending}
       />
       <ConfirmDialog
         open={!!deleteA}
         onOpenChange={(o) => !o && setDeleteA(null)}
-        title="Delete Answer"
-        description="This will permanently delete this answer."
+        title={t('toast.deleteAnswerTitle')}
+        description={t('toast.deleteAnswerDescription')}
         onConfirm={() => deleteA && deleteAMut.mutate(deleteA)}
         isLoading={deleteAMut.isPending}
       />

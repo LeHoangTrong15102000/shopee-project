@@ -1,0 +1,25 @@
+{
+  "title": "Q&A",
+  "description": "Manage questions and answers",
+  "question": "question",
+  "answer": "answer",
+  "stats": {
+    "totalQuestions": "Total Questions",
+    "totalAnswers": "Total Answers",
+    "unanswered": "Unanswered"
+  },
+  "by": "by",
+  "answers": "answers",
+  "noAnswers": "No answers yet.",
+  "toast": {
+    "deleteQuestionTitle": "Delete Question",
+    "deleteQuestionDescription": "This will delete the question and all its answers.",
+    "deleteAnswerTitle": "Delete Answer",
+    "deleteAnswerDescription": "This will permanently delete this answer.",
+    "questionDeleted": "Question deleted",
+    "answerDeleted": "Answer deleted",
+    "deleteQuestionFailed": "Failed to delete question",
+    "deleteAnswerFailed": "Failed to delete answer"
+  },
+  "error": "Failed to load Q&A"
+}

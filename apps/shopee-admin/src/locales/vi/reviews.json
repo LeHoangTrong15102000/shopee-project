@@ -1,0 +1,48 @@
+{
+  "title": "Đánh giá",
+  "description": "Quản lý đánh giá sản phẩm",
+  "comment": "bình luận",
+  "stats": {
+    "totalReviews": "Tổng đánh giá",
+    "averageRating": "Đánh giá trung bình",
+    "fiveStarReviews": "Đánh giá 5 sao"
+  },
+  "columns": {
+    "product": "Sản phẩm",
+    "user": "Người dùng",
+    "rating": "Đánh giá",
+    "comment": "Bình luận",
+    "likes": "Lượt thích",
+    "moderation": "Kiểm duyệt",
+    "date": "Ngày"
+  },
+  "actions": {
+    "view": "Xem",
+    "approve": "Duyệt",
+    "flag": "Đánh dấu",
+    "delete": "Xóa"
+  },
+  "detail": {
+    "title": "Chi tiết đánh giá",
+    "review": "Đánh giá",
+    "comments": "Bình luận",
+    "commentsCount": "Bình luận ({{count}})",
+    "product": "Sản phẩm",
+    "user": "Người dùng"
+  },
+  "toast": {
+    "approved": "Đã duyệt đánh giá",
+    "flagged": "Đã đánh dấu đánh giá",
+    "deleteTitle": "Xóa đánh giá",
+    "deleteDescription": "Đánh giá này sẽ bị xóa vĩnh viễn.",
+    "deleteCommentTitle": "Xóa bình luận",
+    "deleteCommentDescription": "Bình luận này sẽ bị xóa vĩnh viễn.",
+    "reviewDeleted": "Đã xóa đánh giá",
+    "commentDeleted": "Đã xóa bình luận",
+    "deleteReviewFailed": "Không thể xóa đánh giá",
+    "deleteCommentFailed": "Không thể xóa bình luận"
+  },
+  "search": "Tìm kiếm đánh giá...",
+  "error": "Không thể tải đánh giá",
+  "notFound": "Không tìm thấy đánh giá"
+}

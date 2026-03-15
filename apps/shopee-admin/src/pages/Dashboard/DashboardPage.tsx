@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DollarSign, ShoppingCart, Users, Package } from 'lucide-react';
 import {
   Area,
@@ -52,6 +53,7 @@ const COLORS = [
 ];
 
 export default function DashboardPage() {
+  const { t } = useTranslation('dashboard');
   const [period, setPeriod] = useState('30d');
   const [customRange, setCustomRange] = useState<
     { start_date: string; end_date: string } | undefined
@@ -73,14 +75,13 @@ export default function DashboardPage() {
   const { data: revenueByCategory } = useDashboardRevenueByCategory(period);
 
   if (loadingOverview) return <LoadingState />;
-  if (overviewError)
-    return <ErrorState message="Failed to load dashboard" onRetry={refetchOverview} />;
+  if (overviewError) return <ErrorState message={t('error')} onRetry={refetchOverview} />;
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Dashboard"
-        description="Overview of your store performance"
+        title={t('title')}
+        description={t('description')}
         actions={
           <PeriodSelect
             value={period}
@@ -92,26 +93,26 @@ export default function DashboardPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          label="Total Revenue"
+          label={t('stats.totalRevenue')}
           value={overview?.total_revenue ?? 0}
           trend={overview?.revenue_change}
           formatter={formatCurrency}
           icon={<DollarSign className="size-4" />}
         />
         <StatCard
-          label="Total Orders"
+          label={t('stats.totalOrders')}
           value={overview?.total_orders ?? 0}
           trend={overview?.orders_change}
           icon={<ShoppingCart className="size-4" />}
         />
         <StatCard
-          label="Total Users"
+          label={t('stats.totalUsers')}
           value={overview?.total_users ?? 0}
           trend={overview?.users_change}
           icon={<Users className="size-4" />}
         />
         <StatCard
-          label="Total Products"
+          label={t('stats.totalProducts')}
           value={overview?.total_products ?? 0}
           trend={overview?.products_change}
           icon={<Package className="size-4" />}
@@ -122,11 +123,11 @@ export default function DashboardPage() {
         {/* Revenue Area Chart */}
         <Card>
           <CardHeader>
-            <CardTitle>Revenue</CardTitle>
+            <CardTitle>{t('charts.revenue')}</CardTitle>
           </CardHeader>
-          <CardContent aria-label="Revenue chart">
+          <CardContent aria-label={t('charts.revenue')}>
             <ChartContainer
-              config={{ revenue: { label: 'Revenue', color: 'var(--chart-1)' } }}
+              config={{ revenue: { label: t('charts.revenue'), color: 'var(--chart-1)' } }}
               className="h-[200px] md:h-[300px]"
             >
               <AreaChart data={revenue ?? []}>
@@ -149,11 +150,11 @@ export default function DashboardPage() {
         {/* Order Trend Line Chart */}
         <Card>
           <CardHeader>
-            <CardTitle>Order Trend</CardTitle>
+            <CardTitle>{t('charts.orderTrend')}</CardTitle>
           </CardHeader>
-          <CardContent aria-label="Order trend chart">
+          <CardContent aria-label={t('charts.orderTrend')}>
             <ChartContainer
-              config={{ orders: { label: 'Orders', color: 'var(--chart-2)' } }}
+              config={{ orders: { label: t('charts.orderTrend'), color: 'var(--chart-2)' } }}
               className="h-[200px] md:h-[300px]"
             >
               <LineChart data={orderTrend ?? []}>
@@ -178,11 +179,11 @@ export default function DashboardPage() {
         {/* User Growth */}
         <Card>
           <CardHeader>
-            <CardTitle>User Growth</CardTitle>
+            <CardTitle>{t('charts.userGrowth')}</CardTitle>
           </CardHeader>
-          <CardContent aria-label="User growth chart">
+          <CardContent aria-label={t('charts.userGrowth')}>
             <ChartContainer
-              config={{ users: { label: 'Users', color: 'var(--chart-3)' } }}
+              config={{ users: { label: t('charts.userGrowth'), color: 'var(--chart-3)' } }}
               className="h-[200px] md:h-[250px]"
             >
               <BarChart data={userGrowth ?? []}>
@@ -199,11 +200,11 @@ export default function DashboardPage() {
         {/* Revenue by Category Pie Chart */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Revenue by Category</CardTitle>
+            <CardTitle>{t('charts.revenueByCategory')}</CardTitle>
           </CardHeader>
           <CardContent
             className="flex items-center justify-center"
-            aria-label="Revenue by category chart"
+            aria-label={t('charts.revenueByCategory')}
           >
             <ResponsiveContainer width="100%" height={isMobile ? 200 : 250}>
               <PieChart>
@@ -231,15 +232,15 @@ export default function DashboardPage() {
         {/* Top Products */}
         <Card>
           <CardHeader>
-            <CardTitle>Top Products by Revenue</CardTitle>
+            <CardTitle>{t('tables.topProductsByRevenue')}</CardTitle>
           </CardHeader>
           <CardContent className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Product</TableHead>
-                  <TableHead className="text-right">Revenue</TableHead>
-                  <TableHead className="text-right">Sold</TableHead>
+                  <TableHead>{t('tables.product')}</TableHead>
+                  <TableHead className="text-right">{t('tables.revenue')}</TableHead>
+                  <TableHead className="text-right">{t('tables.sold')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -258,15 +259,15 @@ export default function DashboardPage() {
         {/* Top Buyers */}
         <Card>
           <CardHeader>
-            <CardTitle>Top Buyers</CardTitle>
+            <CardTitle>{t('tables.topBuyers')}</CardTitle>
           </CardHeader>
           <CardContent className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Customer</TableHead>
-                  <TableHead className="text-right">Orders</TableHead>
-                  <TableHead className="text-right">Total Spent</TableHead>
+                  <TableHead>{t('tables.customer')}</TableHead>
+                  <TableHead className="text-right">{t('tables.orders')}</TableHead>
+                  <TableHead className="text-right">{t('tables.totalSpent')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

@@ -19,14 +19,17 @@ describe('exportToCSV', () => {
   beforeEach(() => {
     capturedCsvContent = '';
     // Replace Blob with a wrapper that captures content
-    vi.stubGlobal('Blob', class extends OriginalBlob {
-      constructor(parts?: BlobPart[], options?: BlobPropertyBag) {
-        super(parts, options);
-        if (parts && parts.length > 0) {
-          capturedCsvContent = String(parts[0]);
+    vi.stubGlobal(
+      'Blob',
+      class extends OriginalBlob {
+        constructor(parts?: BlobPart[], options?: BlobPropertyBag) {
+          super(parts, options);
+          if (parts && parts.length > 0) {
+            capturedCsvContent = String(parts[0]);
+          }
         }
-      }
-    });
+      },
+    );
     createObjectURLSpy = vi.fn().mockReturnValue('blob:mock-url');
     revokeObjectURLSpy = vi.fn();
     Object.defineProperty(URL, 'createObjectURL', { value: createObjectURLSpy, writable: true });
@@ -67,7 +70,13 @@ describe('exportToCSV', () => {
 
   it('uses column accessor when provided', () => {
     mockLink();
-    const columns = [{ key: 'price' as const, header: 'Price', accessor: (row: { price: number }) => `$${row.price}` }];
+    const columns = [
+      {
+        key: 'price' as const,
+        header: 'Price',
+        accessor: (row: { price: number }) => `$${row.price}`,
+      },
+    ];
     exportToCSV([{ price: 1000 }], columns, 'test');
     expect(capturedCsvContent).toContain('$1000');
   });

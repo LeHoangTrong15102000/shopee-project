@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import i18n from 'src/i18n/i18n';
 import usersApi from 'src/apis/users.api';
 import { useActivityLogStore } from 'src/stores/activity-log.store';
 import { useAuthStore } from 'src/stores/auth.store';
@@ -24,12 +25,12 @@ export function useCreateUser(onSuccess?: () => void) {
     mutationFn: (body: { email: string; password: string; name?: string; roles?: string[] }) =>
       usersApi.createUser(body),
     onSuccess: (_, vars) => {
-      toast.success('User created');
+      toast.success(i18n.t('toast.userCreated', { ns: 'users' }));
       addLog({ action: 'create', entityType: 'user', entityName: vars.email, adminEmail: email });
       qc.invalidateQueries({ queryKey: USER_KEYS.all });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to create user'),
+    onError: () => toast.error(i18n.t('toast.createFailed', { ns: 'users' })),
   });
 }
 
@@ -46,7 +47,7 @@ export function useUpdateUser(onSuccess?: () => void) {
       body: { name?: string; email?: string; roles?: string[] };
     }) => usersApi.updateUser(id, body),
     onSuccess: (_, vars) => {
-      toast.success('User updated');
+      toast.success(i18n.t('toast.userUpdated', { ns: 'users' }));
       addLog({
         action: 'update',
         entityType: 'user',
@@ -56,7 +57,7 @@ export function useUpdateUser(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: USER_KEYS.all });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to update user'),
+    onError: () => toast.error(i18n.t('toast.updateFailed', { ns: 'users' })),
   });
 }
 
@@ -67,11 +68,11 @@ export function useDeleteUser(onSuccess?: () => void) {
   return useMutation({
     mutationFn: (id: string) => usersApi.deleteUser(id),
     onSuccess: (_, id) => {
-      toast.success('User deleted');
+      toast.success(i18n.t('toast.userDeleted', { ns: 'users' }));
       addLog({ action: 'delete', entityType: 'user', entityName: id, adminEmail: email });
       qc.invalidateQueries({ queryKey: USER_KEYS.all });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to delete user'),
+    onError: () => toast.error(i18n.t('toast.deleteFailed', { ns: 'users' })),
   });
 }

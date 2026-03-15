@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { type ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal, Plus, Eye, Pencil, Trash2, Download, Filter, X } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
@@ -31,6 +32,8 @@ import { exportToCSV } from 'src/utils/csv-export';
 import type { Product } from 'src/types';
 
 export default function ProductListPage() {
+  const { t } = useTranslation('products');
+  const { t: tc } = useTranslation('common');
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<Product[]>([]);
@@ -63,14 +66,14 @@ export default function ProductListPage() {
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
           onCheckedChange={(v) => table.toggleAllPageRowsSelected(!!v)}
-          aria-label="Select all"
+          aria-label={t('common:aria.selectAll')}
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(v) => row.toggleSelected(!!v)}
-          aria-label="Select row"
+          aria-label={t('common:aria.selectRow')}
         />
       ),
       enableSorting: false,
@@ -89,21 +92,21 @@ export default function ProductListPage() {
     },
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: t('columns.name'),
       cell: ({ row }) => (
         <span className="max-w-[200px] truncate font-medium">{row.original.name}</span>
       ),
     },
     {
       accessorKey: 'price',
-      header: 'Price',
+      header: t('columns.price'),
       cell: ({ row }) => formatCurrency(row.original.price),
     },
-    { accessorKey: 'quantity', header: 'Stock' },
-    { accessorKey: 'sold', header: 'Sold' },
+    { accessorKey: 'quantity', header: t('columns.stock') },
+    { accessorKey: 'sold', header: t('columns.sold') },
     {
       accessorKey: 'category',
-      header: 'Category',
+      header: t('columns.category'),
       cell: ({ row }) => {
         const c = row.original.category;
         return typeof c === 'object' ? c.name : c;
@@ -111,7 +114,7 @@ export default function ProductListPage() {
     },
     {
       accessorKey: 'rating',
-      header: 'Rating',
+      header: t('columns.rating'),
       cell: ({ row }) => <Badge variant="secondary">{row.original.rating.toFixed(1)} ★</Badge>,
     },
     {
@@ -119,26 +122,26 @@ export default function ProductListPage() {
       header: '',
       cell: ({ row }) => (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" aria-label="Product actions">
-              <MoreHorizontal className="size-4" />
-            </Button>
+          <DropdownMenuTrigger
+            render={<Button variant="ghost" size="sm" aria-label={t('common:aria.actions')} />}
+          >
+            <MoreHorizontal className="size-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => navigate(`/products/${row.original._id}`)}>
               <Eye className="mr-2 size-4" />
-              View
+              {t('actions.view')}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate(`/products/${row.original._id}/edit`)}>
               <Pencil className="mr-2 size-4" />
-              Edit
+              {t('actions.edit')}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => setDeleteId(row.original._id)}
               className="text-destructive"
             >
               <Trash2 className="mr-2 size-4" />
-              Delete
+              {t('actions.delete')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -149,8 +152,8 @@ export default function ProductListPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Products"
-        description="Manage your product catalog"
+        title={t('title')}
+        description={t('description')}
         actions={
           <div className="flex items-center gap-2">
             <Button
@@ -160,14 +163,14 @@ export default function ProductListPage() {
                 exportToCSV(
                   data?.products ?? [],
                   [
-                    { key: 'name', header: 'Name' },
-                    { key: 'price', header: 'Price' },
-                    { key: 'quantity', header: 'Stock' },
-                    { key: 'sold', header: 'Sold' },
-                    { key: 'rating', header: 'Rating' },
+                    { key: 'name', header: t('columns.name') },
+                    { key: 'price', header: t('columns.price') },
+                    { key: 'quantity', header: t('columns.stock') },
+                    { key: 'sold', header: t('columns.sold') },
+                    { key: 'rating', header: t('columns.rating') },
                     {
                       key: 'category',
-                      header: 'Category',
+                      header: t('columns.category'),
                       accessor: (r) =>
                         typeof r.category === 'object'
                           ? (r.category as any)?.name
@@ -179,11 +182,11 @@ export default function ProductListPage() {
               }
             >
               <Download className="mr-2 size-4" />
-              Export CSV
+              {tc('buttons.exportCsv')}
             </Button>
             <Button size="sm" onClick={() => navigate('/products/new')}>
               <Plus className="mr-2 size-4" />
-              Add Product
+              {t('actions.addProduct')}
             </Button>
           </div>
         }
@@ -191,7 +194,7 @@ export default function ProductListPage() {
       <div className="flex items-center gap-2">
         <Button variant="outline" size="sm" onClick={() => setFiltersOpen(!filtersOpen)}>
           <Filter className="mr-2 size-4" />
-          Filters
+          {tc('buttons.filters')}
         </Button>
         {(categoryFilter || minPrice || maxPrice || stockFilter) && (
           <Button
@@ -205,14 +208,14 @@ export default function ProductListPage() {
               setPage(0);
             }}
           >
-            <X className="mr-1 size-4" /> Clear Filters
+            <X className="mr-1 size-4" /> {tc('buttons.clearFilters')}
           </Button>
         )}
       </div>
       {filtersOpen && (
         <div className="grid gap-4 sm:grid-cols-4 rounded-lg border p-4">
           <div>
-            <Label htmlFor="filter-category">Category</Label>
+            <Label htmlFor="filter-category">{t('filters.category')}</Label>
             <Select
               value={categoryFilter}
               onValueChange={(v) => {
@@ -223,7 +226,7 @@ export default function ProductListPage() {
               }}
             >
               <SelectTrigger id="filter-category">
-                <SelectValue placeholder="All categories" />
+                <SelectValue placeholder={t('filters.allCategories')} />
               </SelectTrigger>
               <SelectContent>
                 {(categories ?? []).map((c) => (
@@ -235,7 +238,7 @@ export default function ProductListPage() {
             </Select>
           </div>
           <div>
-            <Label htmlFor="filter-min-price">Min Price</Label>
+            <Label htmlFor="filter-min-price">{t('filters.minPrice')}</Label>
             <Input
               id="filter-min-price"
               type="number"
@@ -245,31 +248,31 @@ export default function ProductListPage() {
             />
           </div>
           <div>
-            <Label htmlFor="filter-max-price">Max Price</Label>
+            <Label htmlFor="filter-max-price">{t('filters.maxPrice')}</Label>
             <Input
               id="filter-max-price"
               type="number"
-              placeholder="Any"
+              placeholder={t('filters.any')}
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
             />
           </div>
           <div>
-            <Label htmlFor="filter-stock">Stock Status</Label>
+            <Label htmlFor="filter-stock">{t('filters.stockStatus')}</Label>
             <Select value={stockFilter} onValueChange={(v) => v && setStockFilter(v)}>
               <SelectTrigger id="filter-stock">
-                <SelectValue placeholder="All" />
+                <SelectValue placeholder={t('filters.all')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="in_stock">In Stock</SelectItem>
-                <SelectItem value="low_stock">Low Stock (&lt;10)</SelectItem>
-                <SelectItem value="out_of_stock">Out of Stock</SelectItem>
+                <SelectItem value="in_stock">{t('filters.inStock')}</SelectItem>
+                <SelectItem value="low_stock">{t('filters.lowStock')}</SelectItem>
+                <SelectItem value="out_of_stock">{t('filters.outOfStock')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
       )}
-      {isError && <ErrorState message="Failed to load products" onRetry={refetch} />}
+      {isError && <ErrorState message={t('error')} onRetry={refetch} />}
       <DataTable
         columns={columns}
         data={(data?.products ?? []).filter((p) => {
@@ -282,7 +285,7 @@ export default function ProductListPage() {
         })}
         isLoading={isLoading}
         searchKey="name"
-        searchPlaceholder="Search products..."
+        searchPlaceholder={t('search')}
         enableRowSelection
         onRowSelectionChange={setSelected}
         manualPagination
@@ -294,7 +297,7 @@ export default function ProductListPage() {
           selected.length > 0 ? (
             <Button variant="destructive" size="sm" onClick={() => setBulkDeleteOpen(true)}>
               <Trash2 className="mr-2 size-4" />
-              Delete ({selected.length})
+              {t('actions.delete')} ({selected.length})
             </Button>
           ) : undefined
         }
@@ -302,16 +305,16 @@ export default function ProductListPage() {
       <ConfirmDialog
         open={!!deleteId}
         onOpenChange={(o) => !o && setDeleteId(null)}
-        title="Delete Product"
-        description="This will permanently delete this product."
+        title={t('toast.deleteTitle')}
+        description={t('toast.deleteDescription')}
         onConfirm={() => deleteId && deleteMut.mutate(deleteId)}
         isLoading={deleteMut.isPending}
       />
       <ConfirmDialog
         open={bulkDeleteOpen}
         onOpenChange={setBulkDeleteOpen}
-        title="Delete Products"
-        description={`Delete ${selected.length} selected products?`}
+        title={t('toast.deleteMultipleTitle')}
+        description={t('toast.deleteMultipleDescription', { count: selected.length })}
         onConfirm={() => bulkDeleteMut.mutate(selected.map((p) => p._id))}
         isLoading={bulkDeleteMut.isPending}
       />

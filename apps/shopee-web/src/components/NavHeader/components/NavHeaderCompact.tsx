@@ -1,5 +1,6 @@
 import InventoryAlertBadge from 'src/components/InventoryAlertBadge';
 import ThemeToggle from 'src/components/ThemeToggle';
+import { useTranslation } from 'react-i18next';
 import Popover from '../../Popover';
 import Button from 'src/components/Button';
 import NotificationPopover from './NotificationPopover';
@@ -28,6 +29,7 @@ const NavHeaderCompact = ({
   unreadCount,
   handleTranslateLanguage,
 }: NavHeaderCompactProps) => {
+  const { t, i18n } = useTranslation('nav');
   return (
     <div className="flex items-center gap-1 sm:gap-3">
       <ThemeToggle className="" />
@@ -42,6 +44,7 @@ const NavHeaderCompact = ({
       {/* Notification bell */}
       <Popover
         as="span"
+        ariaLabel={t('header.notification')}
         className="relative flex cursor-pointer items-center py-1 hover:text-white/70"
         renderPopover={<NotificationPopover isAuthenticated={isAuthenticated} variant="compact" />}
       >
@@ -74,23 +77,24 @@ const NavHeaderCompact = ({
       {/* Language switcher - icon only */}
       <Popover
         as="span"
+        ariaLabel={t('header.language')}
         className="flex cursor-pointer items-center py-1 hover:text-white/70"
         renderPopover={
-          <div className="relative rounded-lg border border-gray-200 bg-white shadow-md transition-all dark:border-slate-700 dark:bg-slate-800">
+          <div className="relative min-w-[180px] rounded-lg border border-gray-200 bg-white shadow-md transition-all dark:border-slate-700 dark:bg-slate-800">
             <div className='flex flex-col py-1 before:absolute before:top-0 before:left-0 before:h-[13px] before:w-full before:-translate-y-full before:bg-transparent before:content-[""]'>
               <Button
                 animated={false}
                 onClick={() => handleTranslateLanguage('vi')}
-                className="block w-full px-6 py-3 text-left text-xs text-gray-900 hover:bg-slate-100 hover:text-cyan-500 dark:text-gray-100 dark:hover:bg-slate-700 dark:hover:text-cyan-400"
+                className={`block w-full px-6 py-3 text-left text-xs text-gray-900 hover:bg-slate-100 hover:text-cyan-500 dark:text-gray-100 dark:hover:bg-slate-700 dark:hover:text-cyan-400${i18n.language === 'vi' ? ' font-semibold text-cyan-500 dark:text-cyan-400' : ''}`}
               >
-                Tiếng Việt
+                {i18n.language === 'vi' && '✓ '}Tiếng Việt
               </Button>
               <Button
                 animated={false}
                 onClick={() => handleTranslateLanguage('en')}
-                className="block w-full px-6 py-3 text-left text-xs text-gray-900 hover:bg-slate-100 hover:text-cyan-500 dark:text-gray-100 dark:hover:bg-slate-700 dark:hover:text-cyan-400"
+                className={`block w-full px-6 py-3 text-left text-xs text-gray-900 hover:bg-slate-100 hover:text-cyan-500 dark:text-gray-100 dark:hover:bg-slate-700 dark:hover:text-cyan-400${i18n.language === 'en' ? ' font-semibold text-cyan-500 dark:text-cyan-400' : ''}`}
               >
-                English
+                {i18n.language === 'en' && '✓ '}English
               </Button>
             </div>
           </div>

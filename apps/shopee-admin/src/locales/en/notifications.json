@@ -1,0 +1,50 @@
+{
+  "title": "Notifications",
+  "description": "Send and manage notifications",
+  "tabs": {
+    "targeted": "Targeted",
+    "broadcast": "Broadcast"
+  },
+  "columns": {
+    "title": "Title",
+    "message": "Message",
+    "type": "Type",
+    "date": "Date"
+  },
+  "actions": {
+    "markAsRead": "Mark as Read",
+    "delete": "Delete"
+  },
+  "form": {
+    "broadcastNotification": "Broadcast Notification",
+    "targetedNotification": "Targeted Notification",
+    "template": "Template",
+    "selectTemplate": "Select template",
+    "custom": "Custom",
+    "title": "Title",
+    "message": "Message",
+    "userId": "User ID",
+    "templates": {
+      "maintenance": "System Maintenance",
+      "maintenanceTitle": "Scheduled Maintenance",
+      "maintenanceMessage": "We will be performing scheduled maintenance. The system may be temporarily unavailable.",
+      "newFeature": "New Feature",
+      "newFeatureTitle": "New Feature Available",
+      "newFeatureMessage": "We have launched a new feature. Check it out now!",
+      "promotion": "Promotion",
+      "promotionTitle": "Special Promotion",
+      "promotionMessage": "Don't miss our limited-time promotion with exclusive discounts!"
+    }
+  },
+  "toast": {
+    "deleteTitle": "Delete Notification",
+    "deleteDescription": "This will permanently delete this notification.",
+    "notificationSent": "Notification sent",
+    "notificationDeleted": "Notification deleted",
+    "markedAsRead": "Marked as read",
+    "sendFailed": "Failed to send notification",
+    "deleteFailed": "Failed to delete notification",
+    "markReadFailed": "Failed to mark as read"
+  },
+  "error": "Failed to load notifications"
+}

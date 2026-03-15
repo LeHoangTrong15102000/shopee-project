@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from 'src/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
 import { Avatar, AvatarFallback } from 'src/components/ui/avatar';
@@ -21,6 +22,7 @@ import loyaltyApi from 'src/apis/loyalty.api';
 import type { Order, Review, LoyaltyTransaction } from 'src/types';
 
 export default function UserDetailPage() {
+  const { t } = useTranslation('users');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>('orders');
@@ -54,20 +56,24 @@ export default function UserDetailPage() {
     enabled: !!id && activeTab === 'loyalty',
   });
   const orderColumns: ColumnDef<Order>[] = [
-    { accessorKey: '_id', header: 'Order ID', cell: ({ row }) => row.original._id.slice(-8) },
+    {
+      accessorKey: '_id',
+      header: t('detail.orderId'),
+      cell: ({ row }) => row.original._id.slice(-8),
+    },
     {
       accessorKey: 'total_price',
-      header: 'Total',
+      header: t('detail.total'),
       cell: ({ row }) => `$${row.original.total_price.toLocaleString()}`,
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: t('detail.status'),
       cell: ({ row }) => <StatusBadge status={row.original.status} />,
     },
     {
       accessorKey: 'createdAt',
-      header: 'Date',
+      header: t('detail.date'),
       cell: ({ row }) => format(new Date(row.original.createdAt), 'MMM d, yyyy'),
     },
   ];
@@ -75,19 +81,23 @@ export default function UserDetailPage() {
   const reviewColumns: ColumnDef<Review>[] = [
     {
       accessorKey: 'product',
-      header: 'Product',
+      header: t('detail.product'),
       cell: ({ row }) =>
         typeof row.original.product === 'object' ? row.original.product.name : row.original.product,
     },
-    { accessorKey: 'rating', header: 'Rating', cell: ({ row }) => `${row.original.rating}/5` },
+    {
+      accessorKey: 'rating',
+      header: t('detail.rating'),
+      cell: ({ row }) => `${row.original.rating}/5`,
+    },
     {
       accessorKey: 'comment',
-      header: 'Comment',
+      header: t('detail.comment'),
       cell: ({ row }) => <span className="line-clamp-2 max-w-xs">{row.original.comment}</span>,
     },
     {
       accessorKey: 'createdAt',
-      header: 'Date',
+      header: t('detail.date'),
       cell: ({ row }) => format(new Date(row.original.createdAt), 'MMM d, yyyy'),
     },
   ];
@@ -95,7 +105,7 @@ export default function UserDetailPage() {
   const loyaltyColumns: ColumnDef<LoyaltyTransaction>[] = [
     {
       accessorKey: 'type',
-      header: 'Type',
+      header: t('detail.type'),
       cell: ({ row }) => (
         <Badge variant="secondary" className="capitalize">
           {row.original.type}
@@ -104,7 +114,7 @@ export default function UserDetailPage() {
     },
     {
       accessorKey: 'points',
-      header: 'Points',
+      header: t('detail.points'),
       cell: ({ row }) => (
         <span
           className={
@@ -118,25 +128,25 @@ export default function UserDetailPage() {
         </span>
       ),
     },
-    { accessorKey: 'description', header: 'Description' },
+    { accessorKey: 'description', header: t('detail.description') },
     {
       accessorKey: 'createdAt',
-      header: 'Date',
+      header: t('detail.date'),
       cell: ({ row }) => format(new Date(row.original.createdAt), 'MMM d, yyyy'),
     },
   ];
 
   if (isLoading) return <LoadingState />;
-  if (isError || !user) return <ErrorState message="User not found" onRetry={refetch} />;
+  if (isError || !user) return <ErrorState message={t('notFound')} onRetry={refetch} />;
 
   const initials = (user.name || user.email).slice(0, 2).toUpperCase();
   return (
     <div className="space-y-6">
       <PageHeader
-        title="User Detail"
+        title={t('detail.title')}
         actions={
           <Button variant="outline" size="sm" onClick={() => navigate('/users')}>
-            <ArrowLeft className="mr-2 size-4" /> Back to Users
+            <ArrowLeft className="mr-2 size-4" /> {t('detail.backToUsers')}
           </Button>
         }
       />
@@ -148,15 +158,15 @@ export default function UserDetailPage() {
           </Avatar>
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 flex-1">
             <div>
-              <p className="text-sm text-muted-foreground">Name</p>
+              <p className="text-sm text-muted-foreground">{t('detail.name')}</p>
               <p className="font-medium">{user.name || '—'}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Email</p>
+              <p className="text-sm text-muted-foreground">{t('detail.email')}</p>
               <p className="font-medium">{user.email}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Roles</p>
+              <p className="text-sm text-muted-foreground">{t('detail.roles')}</p>
               <div className="flex gap-1">
                 {user.roles.map((r) => (
                   <Badge key={r} variant="secondary">
@@ -166,21 +176,21 @@ export default function UserDetailPage() {
               </div>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Phone</p>
+              <p className="text-sm text-muted-foreground">{t('detail.phone')}</p>
               <p className="font-medium">{user.phone || '—'}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Address</p>
+              <p className="text-sm text-muted-foreground">{t('detail.address')}</p>
               <p className="font-medium">{user.address || '—'}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Date of Birth</p>
+              <p className="text-sm text-muted-foreground">{t('detail.dateOfBirth')}</p>
               <p className="font-medium">
                 {user.date_of_birth ? format(new Date(user.date_of_birth), 'MMM d, yyyy') : '—'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Created</p>
+              <p className="text-sm text-muted-foreground">{t('detail.created')}</p>
               <p className="font-medium">{format(new Date(user.createdAt), 'MMM d, yyyy')}</p>
             </div>
           </div>
@@ -189,16 +199,16 @@ export default function UserDetailPage() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="orders">Orders</TabsTrigger>
-          <TabsTrigger value="reviews">Reviews</TabsTrigger>
-          <TabsTrigger value="loyalty">Loyalty</TabsTrigger>
+          <TabsTrigger value="orders">{t('detail.orders')}</TabsTrigger>
+          <TabsTrigger value="reviews">{t('detail.reviews')}</TabsTrigger>
+          <TabsTrigger value="loyalty">{t('detail.loyalty')}</TabsTrigger>
         </TabsList>
         <TabsContent value="orders">
           <DataTable
             columns={orderColumns}
             data={ordersData?.orders ?? []}
             searchKey="_id"
-            searchPlaceholder="Search orders..."
+            searchPlaceholder={t('detail.searchOrders')}
           />
         </TabsContent>
         <TabsContent value="reviews">
@@ -206,7 +216,7 @@ export default function UserDetailPage() {
             columns={reviewColumns}
             data={reviewsData?.reviews ?? []}
             searchKey="comment"
-            searchPlaceholder="Search reviews..."
+            searchPlaceholder={t('detail.searchReviews')}
           />
         </TabsContent>
         <TabsContent value="loyalty">
@@ -214,7 +224,7 @@ export default function UserDetailPage() {
             columns={loyaltyColumns}
             data={loyaltyData?.transactions ?? []}
             searchKey="description"
-            searchPlaceholder="Search transactions..."
+            searchPlaceholder={t('detail.searchTransactions')}
           />
         </TabsContent>
       </Tabs>

@@ -1,0 +1,27 @@
+{
+  "title": "Bảng điều khiển",
+  "description": "Tổng quan hiệu suất cửa hàng",
+  "stats": {
+    "totalRevenue": "Tổng doanh thu",
+    "totalOrders": "Tổng đơn hàng",
+    "totalUsers": "Tổng người dùng",
+    "totalProducts": "Tổng sản phẩm"
+  },
+  "charts": {
+    "revenue": "Doanh thu",
+    "orderTrend": "Xu hướng đơn hàng",
+    "userGrowth": "Tăng trưởng người dùng",
+    "revenueByCategory": "Doanh thu theo danh mục"
+  },
+  "tables": {
+    "topProductsByRevenue": "Sản phẩm doanh thu cao nhất",
+    "topBuyers": "Khách hàng mua nhiều nhất",
+    "product": "Sản phẩm",
+    "revenue": "Doanh thu",
+    "sold": "Đã bán",
+    "customer": "Khách hàng",
+    "orders": "Đơn hàng",
+    "totalSpent": "Tổng chi tiêu"
+  },
+  "error": "Không thể tải bảng điều khiển"
+}

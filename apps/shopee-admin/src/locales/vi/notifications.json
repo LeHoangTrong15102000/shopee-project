@@ -1,0 +1,50 @@
+{
+  "title": "Thông báo",
+  "description": "Gửi và quản lý thông báo",
+  "tabs": {
+    "targeted": "Cá nhân",
+    "broadcast": "Toàn hệ thống"
+  },
+  "columns": {
+    "title": "Tiêu đề",
+    "message": "Nội dung",
+    "type": "Loại",
+    "date": "Ngày"
+  },
+  "actions": {
+    "markAsRead": "Đánh dấu đã đọc",
+    "delete": "Xóa"
+  },
+  "form": {
+    "broadcastNotification": "Thông báo toàn hệ thống",
+    "targetedNotification": "Thông báo cá nhân",
+    "template": "Mẫu",
+    "selectTemplate": "Chọn mẫu",
+    "custom": "Tùy chỉnh",
+    "title": "Tiêu đề",
+    "message": "Nội dung",
+    "userId": "ID người dùng",
+    "templates": {
+      "maintenance": "Bảo trì hệ thống",
+      "maintenanceTitle": "Bảo trì định kỳ",
+      "maintenanceMessage": "Chúng tôi sẽ tiến hành bảo trì định kỳ. Hệ thống có thể tạm thời không khả dụng.",
+      "newFeature": "Tính năng mới",
+      "newFeatureTitle": "Tính năng mới",
+      "newFeatureMessage": "Chúng tôi đã ra mắt tính năng mới. Hãy trải nghiệm ngay!",
+      "promotion": "Khuyến mãi",
+      "promotionTitle": "Khuyến mãi đặc biệt",
+      "promotionMessage": "Đừng bỏ lỡ chương trình khuyến mãi với ưu đãi độc quyền!"
+    }
+  },
+  "toast": {
+    "deleteTitle": "Xóa thông báo",
+    "deleteDescription": "Thông báo này sẽ bị xóa vĩnh viễn.",
+    "notificationSent": "Đã gửi thông báo",
+    "notificationDeleted": "Đã xóa thông báo",
+    "markedAsRead": "Đã đánh dấu đã đọc",
+    "sendFailed": "Không thể gửi thông báo",
+    "deleteFailed": "Không thể xóa thông báo",
+    "markReadFailed": "Không thể đánh dấu đã đọc"
+  },
+  "error": "Không thể tải thông báo"
+}

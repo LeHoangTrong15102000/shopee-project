@@ -1,0 +1,72 @@
+{
+  "title": "Products",
+  "description": "Manage your product catalog",
+  "columns": {
+    "name": "Name",
+    "price": "Price",
+    "stock": "Stock",
+    "sold": "Sold",
+    "category": "Category",
+    "rating": "Rating"
+  },
+  "actions": {
+    "addProduct": "Add Product",
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "form": {
+    "newProduct": "New Product",
+    "editProduct": "Edit Product",
+    "productDetails": "Product Details",
+    "name": "Name",
+    "description": "Description",
+    "price": "Price",
+    "priceBeforeDiscount": "Price Before Discount",
+    "quantity": "Quantity",
+    "category": "Category",
+    "selectCategory": "Select category",
+    "imageUrl": "Image URL",
+    "location": "Location"
+  },
+  "filters": {
+    "category": "Category",
+    "allCategories": "All categories",
+    "minPrice": "Min Price",
+    "maxPrice": "Max Price",
+    "stockStatus": "Stock Status",
+    "any": "Any",
+    "all": "All",
+    "inStock": "In Stock",
+    "lowStock": "Low Stock (<10)",
+    "outOfStock": "Out of Stock"
+  },
+  "detail": {
+    "details": "Details",
+    "info": "Info",
+    "price": "Price",
+    "original": "Original",
+    "stock": "Stock",
+    "sold": "Sold",
+    "rating": "Rating",
+    "category": "Category",
+    "created": "Created"
+  },
+  "toast": {
+    "deleteTitle": "Delete Product",
+    "deleteDescription": "This will permanently delete this product.",
+    "deleteMultipleTitle": "Delete Products",
+    "deleteMultipleDescription": "Delete {{count}} selected products?",
+    "productDeleted": "Product deleted",
+    "productsDeleted": "Products deleted",
+    "productCreated": "Product created",
+    "productUpdated": "Product updated",
+    "deleteFailed": "Failed to delete product",
+    "deleteMultipleFailed": "Failed to delete products",
+    "createFailed": "Failed to create product",
+    "updateFailed": "Failed to update product"
+  },
+  "search": "Search products...",
+  "error": "Failed to load products",
+  "notFound": "Product not found"
+}

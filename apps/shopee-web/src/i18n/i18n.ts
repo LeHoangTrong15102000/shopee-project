@@ -79,17 +79,113 @@ const isTestEnvironment =
   import.meta.env.MODE === 'test' ||
   (typeof window !== 'undefined' && window.location.href.includes('vitest'));
 
+/**
+ * Read persisted language from localStorage, validate against known locales.
+ * Falls back to 'vi' if missing, invalid, or localStorage is unavailable.
+ */
+function getStoredLanguage(): string {
+  try {
+    const stored = localStorage.getItem('lng');
+    if (stored && stored in locales) {
+      return stored;
+    }
+  } catch {
+    // localStorage unavailable (incognito / security policy)
+  }
+  return 'vi';
+}
+
 if (!isTestEnvironment) {
+  const storedLng = getStoredLanguage();
+
+  // Always init synchronously with VI resources so React can render immediately.
+  // If stored language is non-default, EN bundles load in background then switch.
   i18n.use(initReactI18next).init({
     resources,
     lng: 'vi',
     ns: [...allNamespaces],
     fallbackLng: 'vi',
     defaultNS,
-    interpolation: {
-      escapeValue: false, // react already does escaping
-    },
+    interpolation: { escapeValue: false },
   });
+  document.documentElement.lang = storedLng;
+
+  if (storedLng !== 'vi') {
+    // Load EN bundles in background, then switch language
+    Promise.all([
+      import('src/locales/en/common.json'),
+      import('src/locales/en/home.json'),
+      import('src/locales/en/product.json'),
+      import('src/locales/en/nav.json'),
+      import('src/locales/en/auth.json'),
+      import('src/locales/en/cart.json'),
+      import('src/locales/en/user.json'),
+      import('src/locales/en/payment.json'),
+      import('src/locales/en/notification.json'),
+      import('src/locales/en/chat.json'),
+      import('src/locales/en/order.json'),
+      import('src/locales/en/checkout.json'),
+      import('src/locales/en/address.json'),
+      import('src/locales/en/qa.json'),
+      import('src/locales/en/shipping.json'),
+      import('src/locales/en/checkin.json'),
+      import('src/locales/en/wishlist.json'),
+      import('src/locales/en/compare.json'),
+      import('src/locales/en/validation.json'),
+    ])
+      .then(
+        ([
+          commonModule,
+          homeModule,
+          productModule,
+          navModule,
+          authModule,
+          cartModule,
+          userModule,
+          paymentModule,
+          notificationModule,
+          chatModule,
+          orderModule,
+          checkoutModule,
+          addressModule,
+          qaModule,
+          shippingModule,
+          checkinModule,
+          wishlistModule,
+          compareModule,
+          validationModule,
+        ]) => {
+          const enResources = {
+            common: commonModule.default,
+            home: homeModule.default,
+            product: productModule.default,
+            nav: navModule.default,
+            auth: authModule.default,
+            cart: cartModule.default,
+            user: userModule.default,
+            payment: paymentModule.default,
+            notification: notificationModule.default,
+            chat: chatModule.default,
+            order: orderModule.default,
+            checkout: checkoutModule.default,
+            address: addressModule.default,
+            qa: qaModule.default,
+            shipping: shippingModule.default,
+            checkin: checkinModule.default,
+            wishlist: wishlistModule.default,
+            compare: compareModule.default,
+            validation: validationModule.default,
+          };
+          Object.entries(enResources).forEach(([ns, bundle]) => {
+            i18n.addResourceBundle('en', ns, bundle, true, true);
+          });
+          i18n.changeLanguage(storedLng);
+        },
+      )
+      .catch((err) => {
+        console.error('Failed to load EN translations:', err);
+      });
+  }
 }
 
 /**
@@ -102,6 +198,11 @@ export async function loadLanguage(lng: string): Promise<void> {
     // Vietnamese is already loaded statically
     await i18n.changeLanguage('vi');
     document.documentElement.lang = lng;
+    try {
+      localStorage.setItem('lng', lng);
+    } catch {
+      /* incognito */
+    }
     return;
   }
 
@@ -110,6 +211,11 @@ export async function loadLanguage(lng: string): Promise<void> {
   if (allLoaded) {
     await i18n.changeLanguage(lng);
     document.documentElement.lang = lng;
+    try {
+      localStorage.setItem('lng', lng);
+    } catch {
+      /* incognito */
+    }
     return;
   }
 
@@ -177,6 +283,11 @@ export async function loadLanguage(lng: string): Promise<void> {
   i18n.addResourceBundle(lng, 'validation', validationModule.default, true, true);
   await i18n.changeLanguage(lng);
   document.documentElement.lang = lng;
+  try {
+    localStorage.setItem('lng', lng);
+  } catch {
+    /* incognito */
+  }
 }
 
 export default i18n;

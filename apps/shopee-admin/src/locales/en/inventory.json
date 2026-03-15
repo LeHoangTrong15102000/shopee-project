@@ -1,0 +1,32 @@
+{
+  "title": "Inventory",
+  "description": "Monitor and manage stock levels",
+  "tabs": {
+    "lowStock": "Low Stock",
+    "outOfStock": "Out of Stock"
+  },
+  "columns": {
+    "product": "Product",
+    "stock": "Stock",
+    "sold": "Sold",
+    "price": "Price"
+  },
+  "actions": {
+    "updateStock": "Update Stock",
+    "bulkUpdate": "Bulk Update",
+    "newQuantity": "New Quantity",
+    "setQuantity": "Set Quantity",
+    "updateAll": "Update All"
+  },
+  "lowStockCount": "Low Stock ({{count}})",
+  "outOfStockCount": "Out of Stock ({{count}})",
+  "search": "Search products...",
+  "toast": {
+    "stockUpdated": "Stock updated",
+    "productsUpdated": "Products updated",
+    "updateStockFailed": "Failed to update stock",
+    "bulkUpdateFailed": "Failed to bulk update stock"
+  },
+  "error": "Failed to load low stock items",
+  "outOfStockError": "Failed to load out of stock items"
+}

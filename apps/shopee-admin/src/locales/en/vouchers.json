@@ -1,0 +1,68 @@
+{
+  "title": "Vouchers",
+  "description": "Manage discount vouchers",
+  "stats": {
+    "total": "Total",
+    "active": "Active",
+    "inactive": "Inactive",
+    "totalUsage": "Total Usage"
+  },
+  "columns": {
+    "code": "Code",
+    "type": "Type",
+    "value": "Value",
+    "minOrder": "Min Order",
+    "usage": "Usage",
+    "status": "Status",
+    "expires": "Expires"
+  },
+  "actions": {
+    "createVoucher": "Create Voucher",
+    "editVoucher": "Edit Voucher",
+    "view": "View",
+    "edit": "Edit",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "delete": "Delete"
+  },
+  "form": {
+    "code": "Code",
+    "type": "Type",
+    "percentage": "Percentage",
+    "fixed": "Fixed",
+    "value": "Value",
+    "minOrder": "Min Order",
+    "maxUsage": "Max Usage",
+    "startDate": "Start Date",
+    "endDate": "End Date"
+  },
+  "detail": {
+    "usageHistory": "Usage History",
+    "user": "User",
+    "order": "Order",
+    "discount": "Discount",
+    "date": "Date",
+    "noUsage": "No usage yet",
+    "details": "Details",
+    "status": "Status",
+    "type": "Type",
+    "value": "Value",
+    "minOrder": "Min Order",
+    "usage": "Usage",
+    "start": "Start",
+    "end": "End"
+  },
+  "toast": {
+    "deleteTitle": "Delete Voucher",
+    "deleteDescription": "This will permanently delete this voucher.",
+    "voucherCreated": "Voucher created",
+    "voucherUpdated": "Voucher updated",
+    "voucherDeleted": "Voucher deleted",
+    "statusUpdated": "Status updated",
+    "createFailed": "Failed to create voucher",
+    "updateFailed": "Failed to update voucher",
+    "deleteFailed": "Failed to delete voucher",
+    "updateStatusFailed": "Failed to update status"
+  },
+  "error": "Failed to load vouchers"
+}

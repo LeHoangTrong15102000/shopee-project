@@ -1,0 +1,44 @@
+{
+  "title": "Settings",
+  "description": "Manage your profile and preferences",
+  "tabs": {
+    "profile": "Profile",
+    "changePassword": "Change Password",
+    "systemInfo": "System Info"
+  },
+  "profile": {
+    "title": "Profile Information",
+    "description": "Update your personal details",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "avatarUrl": "Avatar URL",
+    "dateOfBirth": "Date of Birth",
+    "save": "Save Changes",
+    "saving": "Saving..."
+  },
+  "password": {
+    "title": "Change Password",
+    "description": "Update your account password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "change": "Change Password",
+    "changing": "Changing..."
+  },
+  "system": {
+    "title": "System Information",
+    "description": "Application details and environment",
+    "appVersion": "App Version",
+    "apiBaseUrl": "API Base URL",
+    "environment": "Environment"
+  },
+  "toast": {
+    "profileUpdated": "Profile updated",
+    "profileError": "Failed to update profile",
+    "passwordChanged": "Password changed",
+    "passwordError": "Failed to change password"
+  },
+  "error": "Failed to load profile"
+}

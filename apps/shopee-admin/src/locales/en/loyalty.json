@@ -1,0 +1,51 @@
+{
+  "title": "Loyalty Program",
+  "description": "Manage rewards and points",
+  "reward": "reward",
+  "tabs": {
+    "rewards": "Rewards",
+    "transactions": "Transactions",
+    "stats": "Stats"
+  },
+  "rewards": {
+    "addReward": "Add Reward",
+    "createReward": "Create Reward",
+    "editReward": "Edit Reward",
+    "name": "Name",
+    "description": "Description",
+    "pointsRequired": "Points Required",
+    "points": "Points",
+    "status": "Status"
+  },
+  "transactions": {
+    "user": "User",
+    "type": "Type",
+    "points": "Points",
+    "description": "Description",
+    "date": "Date"
+  },
+  "stats": {
+    "totalUsers": "Total Users",
+    "pointsEarned": "Points Earned",
+    "pointsRedeemed": "Points Redeemed"
+  },
+  "actions": {
+    "adjustPoints": "Adjust Points",
+    "userId": "User ID",
+    "pointsAmount": "Points (+/-)"
+  },
+  "toast": {
+    "deleteTitle": "Delete Reward",
+    "deleteDescription": "Delete \"{{name}}\"?",
+    "rewardCreated": "Reward created",
+    "rewardUpdated": "Reward updated",
+    "rewardDeleted": "Reward deleted",
+    "pointsAdjusted": "Points adjusted",
+    "createFailed": "Failed to create reward",
+    "updateFailed": "Failed to update reward",
+    "deleteFailed": "Failed to delete reward",
+    "adjustPointsFailed": "Failed to adjust points"
+  },
+  "error": "Failed to load rewards",
+  "transactionsError": "Failed to load transactions"
+}

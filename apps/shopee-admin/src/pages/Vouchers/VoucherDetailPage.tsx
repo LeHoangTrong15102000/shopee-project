@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
@@ -19,6 +20,8 @@ import { useVoucherDetail, useVoucherUsage } from 'src/hooks/useVoucherDetail';
 import { formatCurrency } from 'src/utils/format';
 
 export default function VoucherDetailPage() {
+  const { t } = useTranslation('vouchers');
+  const { t: tc } = useTranslation('common');
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -27,7 +30,7 @@ export default function VoucherDetailPage() {
   const { data: usageData } = useVoucherUsage(id);
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Failed to load voucher" onRetry={refetch} />;
+  if (isError) return <ErrorState message={t('error')} onRetry={refetch} />;
   if (!voucher) return null;
 
   return (
@@ -37,23 +40,23 @@ export default function VoucherDetailPage() {
         actions={
           <Button variant="outline" size="sm" onClick={() => navigate('/vouchers')}>
             <ArrowLeft className="mr-2 size-4" />
-            Back
+            {tc('buttons.back')}
           </Button>
         }
       />
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Usage History</CardTitle>
+            <CardTitle>{t('detail.usageHistory')}</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Order</TableHead>
-                  <TableHead className="text-right">Discount</TableHead>
-                  <TableHead>Date</TableHead>
+                  <TableHead>{t('detail.user')}</TableHead>
+                  <TableHead>{t('detail.order')}</TableHead>
+                  <TableHead className="text-right">{t('detail.discount')}</TableHead>
+                  <TableHead>{t('detail.date')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -70,7 +73,7 @@ export default function VoucherDetailPage() {
                 {(!usageData?.usage || usageData.usage.length === 0) && (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center text-muted-foreground">
-                      No usage yet
+                      {t('detail.noUsage')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -80,19 +83,19 @@ export default function VoucherDetailPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Details</CardTitle>
+            <CardTitle>{t('detail.details')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Status</span>
+              <span className="text-muted-foreground">{t('detail.status')}</span>
               <StatusBadge status={voucher.is_active ? 'active' : 'inactive'} />
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Type</span>
+              <span className="text-muted-foreground">{t('detail.type')}</span>
               <span className="capitalize">{voucher.discount_type}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Value</span>
+              <span className="text-muted-foreground">{t('detail.value')}</span>
               <span>
                 {voucher.discount_type === 'percentage'
                   ? `${voucher.discount_value}%`
@@ -100,21 +103,21 @@ export default function VoucherDetailPage() {
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Min Order</span>
+              <span className="text-muted-foreground">{t('detail.minOrder')}</span>
               <span>{formatCurrency(voucher.min_order_value)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Usage</span>
+              <span className="text-muted-foreground">{t('detail.usage')}</span>
               <span>
                 {voucher.used_count}/{voucher.usage_limit}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Start</span>
+              <span className="text-muted-foreground">{t('detail.start')}</span>
               <span>{format(new Date(voucher.start_date), 'MMM d, yyyy')}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">End</span>
+              <span className="text-muted-foreground">{t('detail.end')}</span>
               <span>{format(new Date(voucher.end_date), 'MMM d, yyyy')}</span>
             </div>
           </CardContent>

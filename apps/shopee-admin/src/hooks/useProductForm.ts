@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import i18n from 'src/i18n/i18n';
 import productsApi from 'src/apis/products.api';
 import { PRODUCT_KEYS } from './useProducts';
 import { PRODUCT_DETAIL_KEYS } from './useProductDetail';
@@ -34,12 +35,12 @@ export function useCreateProduct(onSuccess?: () => void) {
   return useMutation({
     mutationFn: (data: ProductData) => productsApi.createProduct(data),
     onSuccess: (_, vars) => {
-      toast.success('Product created');
+      toast.success(i18n.t('toast.productCreated', { ns: 'products' }));
       addLog({ action: 'create', entityType: 'product', entityName: vars.name, adminEmail: email });
       qc.invalidateQueries({ queryKey: PRODUCT_KEYS.all });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to create product'),
+    onError: () => toast.error(i18n.t('toast.createFailed', { ns: 'products' })),
   });
 }
 
@@ -51,11 +52,16 @@ export function useUpdateProduct(onSuccess?: () => void) {
     mutationFn: ({ id, data }: { id: string; data: ProductData }) =>
       productsApi.updateProduct(id, data),
     onSuccess: (_, vars) => {
-      toast.success('Product updated');
-      addLog({ action: 'update', entityType: 'product', entityName: vars.data.name, adminEmail: email });
+      toast.success(i18n.t('toast.productUpdated', { ns: 'products' }));
+      addLog({
+        action: 'update',
+        entityType: 'product',
+        entityName: vars.data.name,
+        adminEmail: email,
+      });
       qc.invalidateQueries({ queryKey: PRODUCT_KEYS.all });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to update product'),
+    onError: () => toast.error(i18n.t('toast.updateFailed', { ns: 'products' })),
   });
 }

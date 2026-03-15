@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { ArrowLeft, Star, Trash2, CheckCircle, Flag } from 'lucide-react';
@@ -16,6 +17,8 @@ import { useReviewModerationStore } from 'src/stores/review-moderation.store';
 import { useState } from 'react';
 
 export default function ReviewDetailPage() {
+  const { t } = useTranslation('reviews');
+  const { t: tc } = useTranslation('common');
   const { id } = useParams();
   const navigate = useNavigate();
   const [deleteCommentId, setDeleteCommentId] = useState<string | null>(null);
@@ -26,24 +29,24 @@ export default function ReviewDetailPage() {
   const deleteCommentMut = useDeleteComment(id, () => setDeleteCommentId(null));
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Failed to load review" onRetry={refetch} />;
+  if (isError) return <ErrorState message={t('error')} onRetry={refetch} />;
   if (!review) return null;
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Review Detail"
+        title={t('detail.title')}
         actions={
           <Button variant="outline" size="sm" onClick={() => navigate('/reviews')}>
             <ArrowLeft className="mr-2 size-4" />
-            Back
+            {tc('buttons.back')}
           </Button>
         }
       />
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Review</CardTitle>
+            <CardTitle>{t('detail.review')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-2">
@@ -62,22 +65,22 @@ export default function ReviewDetailPage() {
                 size="sm"
                 onClick={() => {
                   setStatus(review._id, 'approved');
-                  toast.success('Review approved');
+                  toast.success(t('toast.approved'));
                 }}
               >
                 <CheckCircle className="mr-1 size-4" />
-                Approve
+                {t('actions.approve')}
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => {
                   setStatus(review._id, 'flagged');
-                  toast.success('Review flagged');
+                  toast.success(t('toast.flagged'));
                 }}
               >
                 <Flag className="mr-1 size-4" />
-                Flag
+                {t('actions.flag')}
               </Button>
             </div>
             <p>{review.comment}</p>
@@ -95,7 +98,9 @@ export default function ReviewDetailPage() {
             )}
             <Separator />
             <div>
-              <h2 className="mb-3 font-medium">Comments ({review.comments?.length ?? 0})</h2>
+              <h2 className="mb-3 font-medium">
+                {t('detail.commentsCount', { count: review.comments?.length ?? 0 })}
+              </h2>
               {(review.comments ?? []).map((c) => (
                 <div key={c._id} className="mb-3 rounded-md border p-3">
                   <div className="flex items-center justify-between">
@@ -107,7 +112,7 @@ export default function ReviewDetailPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        aria-label="Delete comment"
+                        aria-label={t('common:aria.deleteItem', { item: t('reviews:comment') })}
                         onClick={() => setDeleteCommentId(c._id)}
                       >
                         <Trash2 className="size-3 text-destructive" />
@@ -123,7 +128,7 @@ export default function ReviewDetailPage() {
         <div className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Product</CardTitle>
+              <CardTitle>{t('detail.product')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
               {review.product.image && (
@@ -138,10 +143,10 @@ export default function ReviewDetailPage() {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>User</CardTitle>
+              <CardTitle>{t('detail.user')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-1 text-sm">
-              <p className="font-medium">{review.user.name || 'N/A'}</p>
+              <p className="font-medium">{review.user.name || tc('states.notAvailable')}</p>
               <p className="text-muted-foreground">{review.user.email}</p>
             </CardContent>
           </Card>
@@ -150,8 +155,8 @@ export default function ReviewDetailPage() {
       <ConfirmDialog
         open={!!deleteCommentId}
         onOpenChange={(o) => !o && setDeleteCommentId(null)}
-        title="Delete Comment"
-        description="This will permanently delete this comment."
+        title={t('toast.deleteCommentTitle')}
+        description={t('toast.deleteCommentDescription')}
         onConfirm={() => deleteCommentId && deleteCommentMut.mutate(deleteCommentId)}
         isLoading={deleteCommentMut.isPending}
       />

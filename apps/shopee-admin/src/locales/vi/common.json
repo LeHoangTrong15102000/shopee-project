@@ -1,0 +1,88 @@
+{
+  "buttons": {
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "delete": "Xóa",
+    "edit": "Sửa",
+    "view": "Xem",
+    "retry": "Thử lại",
+    "exportCsv": "Xuất CSV",
+    "filters": "Bộ lọc",
+    "clearFilters": "Xóa bộ lọc",
+    "columns": "Cột",
+    "add": "Thêm",
+    "back": "Quay lại",
+    "create": "Tạo",
+    "update": "Cập nhật",
+    "apply": "Áp dụng",
+    "send": "Gửi",
+    "adjust": "Điều chỉnh"
+  },
+  "states": {
+    "loading": "Đang tải...",
+    "error": "Lỗi",
+    "noData": "Không có dữ liệu",
+    "noResults": "Không có kết quả.",
+    "somethingWentWrong": "Đã xảy ra lỗi.",
+    "noDescription": "Không có mô tả",
+    "unknown": "Không rõ",
+    "notAvailable": "N/A"
+  },
+  "pagination": {
+    "page": "Trang",
+    "of": "trên",
+    "totalRows": "tổng số hàng",
+    "rowsSelected": "hàng đã chọn",
+    "rows": "hàng",
+    "firstPage": "Trang đầu",
+    "previousPage": "Trang trước",
+    "nextPage": "Trang sau",
+    "lastPage": "Trang cuối"
+  },
+  "dialog": {
+    "areYouSure": "Bạn có chắc chắn?",
+    "cannotBeUndone": "Hành động này không thể hoàn tác."
+  },
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "description": "Trang bạn đang tìm không tồn tại hoặc đã được di chuyển.",
+    "goToDashboard": "Về trang chủ"
+  },
+  "search": {
+    "placeholder": "Tìm kiếm trang hoặc dữ liệu...",
+    "noResults": "Không tìm thấy kết quả.",
+    "pages": "Trang",
+    "searchResults": "Kết quả tìm kiếm",
+    "clearSearch": "Xóa tìm kiếm"
+  },
+  "csv": {
+    "noData": "Không có dữ liệu để xuất",
+    "exported": "Đã xuất {{count}} hàng"
+  },
+  "statuses": {
+    "active": "Hoạt động",
+    "enabled": "Đã bật",
+    "inactive": "Không hoạt động",
+    "disabled": "Đã tắt",
+    "pending": "Chờ xử lý",
+    "processing": "Đang xử lý",
+    "shipped": "Đang giao",
+    "delivered": "Đã giao",
+    "cancelled": "Đã hủy",
+    "approved": "Đã duyệt",
+    "flagged": "Đã gắn cờ"
+  },
+  "aria": {
+    "selectAll": "Chọn tất cả",
+    "selectRow": "Chọn hàng",
+    "editItem": "Sửa {{item}}",
+    "deleteItem": "Xóa {{item}}",
+    "actions": "Hành động"
+  },
+  "errorBoundary": {
+    "title": "Đã xảy ra lỗi",
+    "defaultMessage": "Đã xảy ra lỗi không mong muốn.",
+    "reload": "Tải lại trang"
+  }
+}

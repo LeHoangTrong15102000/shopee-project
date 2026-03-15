@@ -1,0 +1,21 @@
+{
+  "title": "Shopee Admin",
+  "description": "Đăng nhập vào tài khoản quản trị",
+  "form": {
+    "email": "Email",
+    "password": "Mật khẩu",
+    "signIn": "Đăng nhập",
+    "emailPlaceholder": "admin@shopee.com",
+    "passwordPlaceholder": "••••••"
+  },
+  "errors": {
+    "accessDenied": "Truy cập bị từ chối. Yêu cầu quyền quản trị.",
+    "invalidCredentials": "Email hoặc mật khẩu không đúng",
+    "serverError": "Lỗi máy chủ. Vui lòng thử lại sau."
+  },
+  "success": "Đăng nhập thành công",
+  "dev": {
+    "loginSuccess": "Đăng nhập dev thành công",
+    "loginButton": "Đăng nhập Dev (bỏ qua API)"
+  }
+}

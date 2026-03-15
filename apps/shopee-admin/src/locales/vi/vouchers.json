@@ -1,0 +1,68 @@
+{
+  "title": "Mã giảm giá",
+  "description": "Quản lý mã giảm giá",
+  "stats": {
+    "total": "Tổng",
+    "active": "Đang hoạt động",
+    "inactive": "Không hoạt động",
+    "totalUsage": "Tổng lượt dùng"
+  },
+  "columns": {
+    "code": "Mã",
+    "type": "Loại",
+    "value": "Giá trị",
+    "minOrder": "Đơn tối thiểu",
+    "usage": "Lượt dùng",
+    "status": "Trạng thái",
+    "expires": "Hết hạn"
+  },
+  "actions": {
+    "createVoucher": "Tạo mã giảm giá",
+    "editVoucher": "Sửa mã giảm giá",
+    "view": "Xem",
+    "edit": "Sửa",
+    "activate": "Kích hoạt",
+    "deactivate": "Vô hiệu hóa",
+    "delete": "Xóa"
+  },
+  "form": {
+    "code": "Mã",
+    "type": "Loại",
+    "percentage": "Phần trăm",
+    "fixed": "Cố định",
+    "value": "Giá trị",
+    "minOrder": "Đơn tối thiểu",
+    "maxUsage": "Lượt dùng tối đa",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc"
+  },
+  "detail": {
+    "usageHistory": "Lịch sử sử dụng",
+    "user": "Người dùng",
+    "order": "Đơn hàng",
+    "discount": "Giảm giá",
+    "date": "Ngày",
+    "noUsage": "Chưa có lượt sử dụng",
+    "details": "Chi tiết",
+    "status": "Trạng thái",
+    "type": "Loại",
+    "value": "Giá trị",
+    "minOrder": "Đơn tối thiểu",
+    "usage": "Lượt dùng",
+    "start": "Bắt đầu",
+    "end": "Kết thúc"
+  },
+  "toast": {
+    "deleteTitle": "Xóa mã giảm giá",
+    "deleteDescription": "Mã giảm giá này sẽ bị xóa vĩnh viễn.",
+    "voucherCreated": "Đã tạo mã giảm giá",
+    "voucherUpdated": "Đã cập nhật mã giảm giá",
+    "voucherDeleted": "Đã xóa mã giảm giá",
+    "statusUpdated": "Đã cập nhật trạng thái",
+    "createFailed": "Không thể tạo mã giảm giá",
+    "updateFailed": "Không thể cập nhật mã giảm giá",
+    "deleteFailed": "Không thể xóa mã giảm giá",
+    "updateStatusFailed": "Không thể cập nhật trạng thái"
+  },
+  "error": "Không thể tải mã giảm giá"
+}

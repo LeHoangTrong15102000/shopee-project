@@ -126,6 +126,24 @@
   html {
     @apply font-sans;
   }
+  button,
+  [role='button'],
+  a,
+  select,
+  [type='checkbox'],
+  [type='radio'],
+  label[for],
+  summary {
+    cursor: pointer;
+  }
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

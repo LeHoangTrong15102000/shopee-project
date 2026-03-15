@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import i18n from 'src/i18n/i18n';
 import reviewsApi from 'src/apis/reviews.api';
 import { useActivityLogStore } from 'src/stores/activity-log.store';
 import { useAuthStore } from 'src/stores/auth.store';
@@ -31,11 +32,11 @@ export function useDeleteReview(onSuccess?: () => void) {
   return useMutation({
     mutationFn: (id: string) => reviewsApi.deleteReview(id),
     onSuccess: (_, id) => {
-      toast.success('Review deleted');
+      toast.success(i18n.t('toast.reviewDeleted', { ns: 'reviews' }));
       addLog({ action: 'delete', entityType: 'review', entityName: id, adminEmail: email });
       qc.invalidateQueries({ queryKey: REVIEW_KEYS.all });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to delete review'),
+    onError: () => toast.error(i18n.t('toast.deleteReviewFailed', { ns: 'reviews' })),
   });
 }

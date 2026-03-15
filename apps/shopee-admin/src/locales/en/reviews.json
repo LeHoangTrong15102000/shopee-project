@@ -1,0 +1,48 @@
+{
+  "title": "Reviews",
+  "description": "Manage product reviews",
+  "comment": "comment",
+  "stats": {
+    "totalReviews": "Total Reviews",
+    "averageRating": "Average Rating",
+    "fiveStarReviews": "5-Star Reviews"
+  },
+  "columns": {
+    "product": "Product",
+    "user": "User",
+    "rating": "Rating",
+    "comment": "Comment",
+    "likes": "Likes",
+    "moderation": "Moderation",
+    "date": "Date"
+  },
+  "actions": {
+    "view": "View",
+    "approve": "Approve",
+    "flag": "Flag",
+    "delete": "Delete"
+  },
+  "detail": {
+    "title": "Review Detail",
+    "review": "Review",
+    "comments": "Comments",
+    "commentsCount": "Comments ({{count}})",
+    "product": "Product",
+    "user": "User"
+  },
+  "toast": {
+    "approved": "Review approved",
+    "flagged": "Review flagged",
+    "deleteTitle": "Delete Review",
+    "deleteDescription": "This will permanently delete this review.",
+    "deleteCommentTitle": "Delete Comment",
+    "deleteCommentDescription": "This will permanently delete this comment.",
+    "reviewDeleted": "Review deleted",
+    "commentDeleted": "Comment deleted",
+    "deleteReviewFailed": "Failed to delete review",
+    "deleteCommentFailed": "Failed to delete comment"
+  },
+  "search": "Search reviews...",
+  "error": "Failed to load reviews",
+  "notFound": "Review not found"
+}

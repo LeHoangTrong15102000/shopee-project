@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import i18n from 'src/i18n/i18n';
 import notificationsApi from 'src/apis/notifications.api';
 import { useActivityLogStore } from 'src/stores/activity-log.store';
 import { useAuthStore } from 'src/stores/auth.store';
@@ -45,7 +46,7 @@ export function useCreateNotification(onSuccess?: () => void) {
           })
         : notificationsApi.createNotification(params.form),
     onSuccess: (_, vars) => {
-      toast.success('Notification sent');
+      toast.success(i18n.t('toast.notificationSent', { ns: 'notifications' }));
       addLog({
         action: 'create',
         entityType: 'notification',
@@ -55,7 +56,7 @@ export function useCreateNotification(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: NOTIFICATION_KEYS.all });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to send notification'),
+    onError: () => toast.error(i18n.t('toast.sendFailed', { ns: 'notifications' })),
   });
 }
 
@@ -64,12 +65,12 @@ export function useDeleteNotification(onSuccess?: () => void) {
   return useMutation({
     mutationFn: (id: string) => notificationsApi.deleteNotification(id),
     onSuccess: () => {
-      toast.success('Notification deleted');
+      toast.success(i18n.t('toast.notificationDeleted', { ns: 'notifications' }));
       qc.invalidateQueries({ queryKey: NOTIFICATION_KEYS.all });
       qc.invalidateQueries({ queryKey: NOTIFICATION_KEYS.unreadCount });
       onSuccess?.();
     },
-    onError: () => toast.error('Failed to delete notification'),
+    onError: () => toast.error(i18n.t('toast.deleteFailed', { ns: 'notifications' })),
   });
 }
 
@@ -78,10 +79,10 @@ export function useMarkNotificationAsRead() {
   return useMutation({
     mutationFn: (id: string) => notificationsApi.markAsRead(id),
     onSuccess: () => {
-      toast.success('Marked as read');
+      toast.success(i18n.t('toast.markedAsRead', { ns: 'notifications' }));
       qc.invalidateQueries({ queryKey: NOTIFICATION_KEYS.all });
       qc.invalidateQueries({ queryKey: NOTIFICATION_KEYS.unreadCount });
     },
-    onError: () => toast.error('Failed to mark as read'),
+    onError: () => toast.error(i18n.t('toast.markReadFailed', { ns: 'notifications' })),
   });
 }

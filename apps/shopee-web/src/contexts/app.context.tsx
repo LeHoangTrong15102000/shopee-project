@@ -29,14 +29,17 @@ export const AppContext = createContext<AppContextInterface>(initialAppContext);
 // Khi mà không truyền vào provider cái value thì giá trị khởi tạo sẽ được dùng
 export const AppProvider = ({
   children,
+  defaultValue,
 }: {
   children: React.ReactNode;
   defaultValue?: AppContextInterface;
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
-    initialAppContext.isAuthenticated,
+    defaultValue?.isAuthenticated ?? initialAppContext.isAuthenticated,
   );
-  const [profile, setProfile] = useState<AppContextInterface['profile']>(initialAppContext.profile);
+  const [profile, setProfile] = useState<AppContextInterface['profile']>(
+    defaultValue?.profile ?? initialAppContext.profile,
+  );
 
   // Mỗi khi mà clearLS thì hàm reset này nó sẽ gọi lại
   const reset = useCallback(() => {

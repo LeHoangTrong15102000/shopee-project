@@ -1,5 +1,5 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -153,10 +153,11 @@ describe('NavHeader Component Unit Tests', () => {
         </TestWrapper>,
       );
 
-      // Click on notification bell - find by cursor-pointer span
-      const notificationElement = screen.getByText('header.notification').closest('span');
-      if (notificationElement) {
-        await user.click(notificationElement);
+      // Hover on the Popover trigger to open the notification popover
+      const notificationText = screen.getByText('header.notification');
+      const popoverTrigger = notificationText.closest('[aria-haspopup]');
+      if (popoverTrigger) {
+        await user.hover(popoverTrigger);
 
         await waitFor(() => {
           expect(screen.getByText('Đăng nhập để xem Thông báo')).toBeInTheDocument();
@@ -213,12 +214,12 @@ describe('NavHeader Component Unit Tests', () => {
         </TestWrapper>,
       );
 
-      // Click on user avatar/profile area by finding the avatar image
+      // Hover on user avatar/profile area to open the popover
       const avatarImage = screen.getByAltText('avatar');
-      const profileElement = avatarImage.closest('span');
+      const popoverTrigger = avatarImage.closest('[aria-haspopup]');
 
-      if (profileElement) {
-        await user.click(profileElement);
+      if (popoverTrigger) {
+        await user.hover(popoverTrigger);
 
         await waitFor(() => {
           expect(screen.getByText('header.myAccount')).toBeInTheDocument();
@@ -242,48 +243,27 @@ describe('NavHeader Component Unit Tests', () => {
     });
 
     test('should show language options in dropdown', async () => {
-      const user = userEvent.setup();
-
       render(
         <TestWrapper>
           <NavHeader />
         </TestWrapper>,
       );
 
-      // Find and click language dropdown by finding the main language span (not in dropdown)
-      const languageSpans = screen.getAllByText('Tiếng Việt');
-      const mainLanguageSpan = languageSpans.find(
-        (span) => span.classList.contains('hidden') && span.classList.contains('md:inline'),
-      );
+      // Find language Popover trigger by its aria-label and trigger mouseenter
+      const popoverTrigger = screen.getByLabelText('header.language');
+      fireEvent.mouseEnter(popoverTrigger);
 
-      if (mainLanguageSpan) {
-        const languageElement = mainLanguageSpan.closest('span');
-        if (languageElement) {
-          await user.click(languageElement);
-
-          await waitFor(() => {
-            // Check that dropdown is now visible with both options
-            const allLanguageTexts = screen.getAllByText('Tiếng Việt');
-            expect(allLanguageTexts.length).toBeGreaterThan(1); // Main + dropdown
-            expect(screen.getByText('English')).toBeInTheDocument();
-          });
-        }
-      }
+      await waitFor(() => {
+        // Dropdown should show both language options
+        expect(screen.getByText('English')).toBeInTheDocument();
+        // Active language shows with checkmark prefix "✓ Tiếng Việt"
+        expect(screen.getByRole('button', { name: /Tiếng Việt/ })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'English' })).toBeInTheDocument();
+      });
     });
 
     test('should handle language change', async () => {
       const user = userEvent.setup();
-      const mockChangeLanguage = vi.fn();
-
-      // Re-mock with our spy
-      vi.doMock('react-i18next', () => ({
-        useTranslation: () => ({
-          i18n: {
-            changeLanguage: mockChangeLanguage,
-            language: 'vi',
-          },
-        }),
-      }));
 
       render(
         <TestWrapper>
@@ -291,16 +271,16 @@ describe('NavHeader Component Unit Tests', () => {
         </TestWrapper>,
       );
 
-      // Find main language element and click
+      // Find main language element and hover to open popover
       const languageSpans = screen.getAllByText('Tiếng Việt');
       const mainLanguageSpan = languageSpans.find(
         (span) => span.classList.contains('hidden') && span.classList.contains('md:inline'),
       );
 
       if (mainLanguageSpan) {
-        const languageElement = mainLanguageSpan.closest('span');
-        if (languageElement) {
-          await user.click(languageElement);
+        const popoverTrigger = mainLanguageSpan.closest('[aria-haspopup]');
+        if (popoverTrigger) {
+          await user.hover(popoverTrigger);
 
           await waitFor(async () => {
             const englishButton = screen.getByRole('button', { name: 'English' });

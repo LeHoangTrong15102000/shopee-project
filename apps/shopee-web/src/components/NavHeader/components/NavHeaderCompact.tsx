@@ -85,16 +85,16 @@ const NavHeaderCompact = ({
               <Button
                 animated={false}
                 onClick={() => handleTranslateLanguage('vi')}
-                className={`block w-full px-6 py-3 text-left text-xs text-gray-900 hover:bg-slate-100 hover:text-cyan-500 dark:text-gray-100 dark:hover:bg-slate-700 dark:hover:text-cyan-400${i18n.language === 'vi' ? ' font-semibold text-cyan-500 dark:text-cyan-400' : ''}`}
+                className="block w-full px-6 py-3 text-left text-xs text-gray-900 hover:bg-slate-100 hover:text-cyan-500 dark:text-gray-100 dark:hover:bg-slate-700 dark:hover:text-cyan-400"
               >
-                {i18n.language === 'vi' && '✓ '}Tiếng Việt
+                Tiếng Việt
               </Button>
               <Button
                 animated={false}
                 onClick={() => handleTranslateLanguage('en')}
-                className={`block w-full px-6 py-3 text-left text-xs text-gray-900 hover:bg-slate-100 hover:text-cyan-500 dark:text-gray-100 dark:hover:bg-slate-700 dark:hover:text-cyan-400${i18n.language === 'en' ? ' font-semibold text-cyan-500 dark:text-cyan-400' : ''}`}
+                className="block w-full px-6 py-3 text-left text-xs text-gray-900 hover:bg-slate-100 hover:text-cyan-500 dark:text-gray-100 dark:hover:bg-slate-700 dark:hover:text-cyan-400"
               >
-                {i18n.language === 'en' && '✓ '}English
+                English
               </Button>
             </div>
           </div>

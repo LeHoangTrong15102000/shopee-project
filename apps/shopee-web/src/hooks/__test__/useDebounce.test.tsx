@@ -64,7 +64,7 @@ describe('useDebounce', () => {
     act(() => {
       vi.advanceTimersByTime(500);
     });
-    expect(result.current).toBeUndefined();
+    expect(result.current).toBe(null);
 
     rerender({ value: 'not null', delay: 500 });
     act(() => {

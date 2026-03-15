@@ -9,17 +9,18 @@ const mockDisconnect = vi.fn();
 
 beforeEach(() => {
   vi.clearAllMocks();
-  global.IntersectionObserver = vi.fn((callback) => {
+  global.IntersectionObserver = vi.fn(function (
+    this: IntersectionObserver,
+    callback: IntersectionObserverCallback,
+  ) {
     intersectionCallback = callback;
-    return {
-      observe: mockObserve,
-      disconnect: mockDisconnect,
-      unobserve: vi.fn(),
-      root: null,
-      rootMargin: '',
-      thresholds: [],
-      takeRecords: () => [],
-    };
+    this.observe = mockObserve;
+    this.disconnect = mockDisconnect;
+    this.unobserve = vi.fn();
+    this.root = null;
+    this.rootMargin = '';
+    this.thresholds = [];
+    this.takeRecords = () => [];
   }) as unknown as typeof IntersectionObserver;
 });
 
@@ -113,7 +114,16 @@ describe('useInfiniteScroll', () => {
 
   it('uses default threshold of 200px', () => {
     const onLoadMore = vi.fn();
-    renderHook(() => useInfiniteScroll({ onLoadMore }));
+    const div = document.createElement('div');
+
+    renderHook(() => {
+      const hook = useInfiniteScroll({ onLoadMore });
+      Object.defineProperty(hook.sentinelRef, 'current', {
+        value: div,
+        writable: true,
+      });
+      return hook;
+    });
 
     // Verify IntersectionObserver was created with default rootMargin of 200px
     expect(global.IntersectionObserver).toHaveBeenCalledWith(
@@ -124,7 +134,16 @@ describe('useInfiniteScroll', () => {
 
   it('accepts custom threshold', () => {
     const onLoadMore = vi.fn();
-    renderHook(() => useInfiniteScroll({ onLoadMore, threshold: 500 }));
+    const div = document.createElement('div');
+
+    renderHook(() => {
+      const hook = useInfiniteScroll({ onLoadMore, threshold: 500 });
+      Object.defineProperty(hook.sentinelRef, 'current', {
+        value: div,
+        writable: true,
+      });
+      return hook;
+    });
 
     // Verify IntersectionObserver was created with custom rootMargin
     expect(global.IntersectionObserver).toHaveBeenCalledWith(

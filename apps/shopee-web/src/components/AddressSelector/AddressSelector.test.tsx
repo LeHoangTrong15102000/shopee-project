@@ -8,30 +8,32 @@ vi.mock('src/apis/address.api', () => ({
   default: {
     getAddresses: vi.fn().mockResolvedValue({
       data: {
-        data: [
-          {
-            _id: 'addr-1',
-            fullName: 'Nguyễn Văn A',
-            phone: '0901234567',
-            province: 'Hồ Chí Minh',
-            district: 'Quận 1',
-            ward: 'Phường Bến Nghé',
-            street: '123 Lê Lợi',
-            isDefault: true,
-            addressType: 'home',
-          },
-          {
-            _id: 'addr-2',
-            fullName: 'Nguyễn Văn A',
-            phone: '0901234567',
-            province: 'Hà Nội',
-            district: 'Quận Hoàn Kiếm',
-            ward: 'Phường Hàng Bài',
-            street: '456 Tràng Tiền',
-            isDefault: false,
-            addressType: 'office',
-          },
-        ],
+        data: {
+          addresses: [
+            {
+              _id: 'addr-1',
+              fullName: 'Nguyễn Văn A',
+              phone: '0901234567',
+              province: 'Hồ Chí Minh',
+              district: 'Quận 1',
+              ward: 'Phường Bến Nghé',
+              street: '123 Lê Lợi',
+              isDefault: true,
+              addressType: 'home',
+            },
+            {
+              _id: 'addr-2',
+              fullName: 'Nguyễn Văn A',
+              phone: '0901234567',
+              province: 'Hà Nội',
+              district: 'Quận Hoàn Kiếm',
+              ward: 'Phường Hàng Bài',
+              street: '456 Tràng Tiền',
+              isDefault: false,
+              addressType: 'office',
+            },
+          ],
+        },
       },
     }),
     setDefaultAddress: vi.fn().mockResolvedValue({ data: { message: 'OK' } }),

@@ -235,6 +235,12 @@ Object.defineProperty(window, 'HTMLElement', {
   value: HTMLElement
 })
 
+// Mock @heroui/tooltip to avoid @react-aria/interactions crash in jsdom
+// (@react-aria tries to set HTMLElement.focus which is read-only in jsdom)
+vi.mock('@heroui/tooltip', () => ({
+  Tooltip: ({ children }) => children
+}))
+
 // Mock heavy lazy-loaded components to prevent OOM in integration tests
 // These are only used in App.tsx via React.lazy() - component tests import directly and override
 vi.mock('src/components/ChatbotWidget', () => ({

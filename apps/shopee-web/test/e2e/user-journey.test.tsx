@@ -39,10 +39,9 @@ describe('End-to-End User Journey Tests', () => {
 
     await waitForPageLoad()
 
-    const searchInput =
-      screen.queryByPlaceholderText(/tìm kiếm/i) ||
-      screen.queryByPlaceholderText(/search/i) ||
-      screen.queryByRole('searchbox')
+    // Use getAllByPlaceholderText since multiple search inputs may exist (header + cart header)
+    const searchInputs = screen.queryAllByPlaceholderText(/tìm kiếm/i)
+    const searchInput = searchInputs[0] || screen.queryByRole('searchbox')
 
     if (searchInput) {
       await user.type(searchInput, 'iphone')

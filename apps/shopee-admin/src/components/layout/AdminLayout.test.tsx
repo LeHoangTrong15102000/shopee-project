@@ -1,0 +1,31 @@
+import { screen } from '@testing-library/react';
+import { renderWithProviders } from 'src/test-utils';
+import AdminLayout from './AdminLayout';
+
+vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    Outlet: () => <div data-testid="outlet">Outlet Content</div>,
+  };
+});
+
+vi.mock('src/hooks/useNotifications', () => ({
+  useNotificationUnreadCount: () => ({ data: 0 }),
+}));
+
+describe('AdminLayout', () => {
+  it('renders without crashing', () => {
+    renderWithProviders(<AdminLayout />);
+    expect(screen.getByTestId('outlet')).toBeInTheDocument();
+  });
+
+  it('renders sidebar navigation', () => {
+    renderWithProviders(<AdminLayout />);
+    // Verify sidebar nav items are rendered
+    expect(screen.getByText('menu.overview')).toBeInTheDocument();
+  });
+});
+

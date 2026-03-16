@@ -35,6 +35,18 @@ const vouchersHandlers = [
     });
   }),
 
+  http.get(`${API_URL}/admin/vouchers/:id/usage`, ({ params }) => {
+    return HttpResponse.json({
+      message: 'Thành công',
+      data: {
+        usage: [
+          { _id: 'usage-1', user: 'user-1', voucher: params.id, order: 'order-1', discount_amount: 50000, createdAt: '2024-01-01T00:00:00.000Z' },
+        ],
+        pagination: { page: 1, limit: 10, total: 1 },
+      },
+    });
+  }),
+
   http.get(`${API_URL}/admin/vouchers/:id`, ({ params }) => {
     const voucher = mockVouchers.find((v) => v._id === params.id);
     if (!voucher) {

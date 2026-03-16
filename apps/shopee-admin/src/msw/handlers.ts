@@ -7,6 +7,12 @@ import dashboardHandlers from './dashboard.msw';
 import notificationsHandlers from './notifications.msw';
 import reviewsHandlers from './reviews.msw';
 import vouchersHandlers from './vouchers.msw';
+import analyticsHandlers from './analytics.msw';
+import inventoryHandlers from './inventory.msw';
+import loyaltyHandlers from './loyalty.msw';
+import qaHandlers from './qa.msw';
+import importHandlers from './import.msw';
+import settingsHandlers from './settings.msw';
 
 export const handlers = [
   ...authHandlers,
@@ -18,4 +24,10 @@ export const handlers = [
   ...notificationsHandlers,
   ...reviewsHandlers,
   ...vouchersHandlers,
+  ...analyticsHandlers,
+  ...inventoryHandlers,
+  ...loyaltyHandlers,
+  ...qaHandlers,
+  ...importHandlers,
+  ...settingsHandlers,
 ];

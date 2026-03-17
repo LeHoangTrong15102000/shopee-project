@@ -11,4 +11,17 @@ describe('LoadingState', () => {
     render(<LoadingState variant="skeleton" rows={3} />);
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
+
+  it('renders full page spinner', () => {
+    render(<LoadingState fullPage />);
+    expect(screen.getByRole('status')).toBeInTheDocument();
+  });
+
+  it('renders custom number of skeleton rows', () => {
+    const { container } = render(<LoadingState variant="skeleton" rows={7} />);
+    // Skeleton component renders divs inside the status container
+    const statusEl = container.querySelector('[role="status"]');
+    expect(statusEl).toBeInTheDocument();
+    expect(statusEl!.children.length).toBe(7);
+  });
 });

@@ -55,5 +55,11 @@ describe('AppHeader', () => {
     await user.click(screen.getByRole('button', { name: 'header.toggleTheme' }));
     expect(mockToggleTheme).toHaveBeenCalled();
   });
+
+  it('renders breadcrumb with nested route', () => {
+    renderHeader(['/products/prod-1']);
+    expect(screen.getByText('breadcrumb.dashboard')).toBeInTheDocument();
+    expect(screen.getByText('menu.products')).toBeInTheDocument();
+  });
 });
 

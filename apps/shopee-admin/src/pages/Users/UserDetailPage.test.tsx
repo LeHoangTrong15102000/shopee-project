@@ -50,5 +50,13 @@ describe('UserDetailPage', () => {
       expect(screen.queryByRole('status')).not.toBeInTheDocument();
     });
   });
+
+  it('renders role section', async () => {
+    renderWithProviders(<UserDetailPage />);
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    });
+    expect(screen.getByText('detail.roles')).toBeInTheDocument();
+  });
 });
 

@@ -65,4 +65,164 @@ describe('DataTable', () => {
     render(<DataTable columns={columns} data={data} />);
     expect(screen.getByText(/3.*pagination.rows/)).toBeInTheDocument();
   });
+
+  it('shows total rows when totalRows provided', () => {
+    render(<DataTable columns={columns} data={data} totalRows={100} />);
+    expect(screen.getByText(/100.*pagination.totalRows/)).toBeInTheDocument();
+  });
+
+  it('renders pagination buttons', () => {
+    render(<DataTable columns={columns} data={data} />);
+    expect(screen.getByRole('button', { name: /pagination.firstPage/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /pagination.previousPage/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /pagination.nextPage/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /pagination.lastPage/i })).toBeInTheDocument();
+  });
+
+  it('shows clear search button when search has value', async () => {
+    const user = userEvent.setup();
+    render(
+      <DataTable columns={columns} data={data} searchKey="name" searchPlaceholder="Search..." />,
+    );
+    await user.type(screen.getByPlaceholderText('Search...'), 'test');
+    expect(screen.getByRole('button', { name: /search.clearSearch/i })).toBeInTheDocument();
+  });
+
+  it('clears search when clear button clicked', async () => {
+    const user = userEvent.setup();
+    render(
+      <DataTable columns={columns} data={data} searchKey="name" searchPlaceholder="Search..." />,
+    );
+    const input = screen.getByPlaceholderText('Search...');
+    await user.type(input, 'Item 1');
+    expect(screen.queryByText('Item 2')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /search.clearSearch/i }));
+    expect(screen.getByText('Item 2')).toBeInTheDocument();
+  });
+
+  it('renders manual pagination with page info', () => {
+    const onPaginationChange = vi.fn();
+    render(
+      <DataTable
+        columns={columns}
+        data={data}
+        manualPagination
+        pageIndex={0}
+        pageCount={5}
+        onPaginationChange={onPaginationChange}
+        totalRows={50}
+      />,
+    );
+    expect(screen.getByText(/pagination.page/)).toBeInTheDocument();
+    expect(screen.getByText(/pagination.of/)).toBeInTheDocument();
+  });
+
+  it('renders with row selection enabled', () => {
+    render(<DataTable columns={columns} data={data} enableRowSelection />);
+    expect(screen.getByRole('table')).toBeInTheDocument();
+  });
+
+  it('calls onPaginationChange when next page clicked in manual mode', async () => {
+    const user = userEvent.setup();
+    const onPaginationChange = vi.fn();
+    render(
+      <DataTable
+        columns={columns}
+        data={data}
+        manualPagination
+        pageIndex={0}
+        pageCount={5}
+        onPaginationChange={onPaginationChange}
+        totalRows={50}
+      />,
+    );
+    await user.click(screen.getByRole('button', { name: /pagination.nextPage/i }));
+    expect(onPaginationChange).toHaveBeenCalledWith(1, 10);
+  });
+
+  it('calls onPaginationChange when last page clicked in manual mode', async () => {
+    const user = userEvent.setup();
+    const onPaginationChange = vi.fn();
+    render(
+      <DataTable
+        columns={columns}
+        data={data}
+        manualPagination
+        pageIndex={0}
+        pageCount={5}
+        onPaginationChange={onPaginationChange}
+        totalRows={50}
+      />,
+    );
+    await user.click(screen.getByRole('button', { name: /pagination.lastPage/i }));
+    expect(onPaginationChange).toHaveBeenCalledWith(4, 10);
+  });
+
+  it('disables previous/first buttons on first page in manual mode', () => {
+    render(
+      <DataTable
+        columns={columns}
+        data={data}
+        manualPagination
+        pageIndex={0}
+        pageCount={5}
+        onPaginationChange={vi.fn()}
+        totalRows={50}
+      />,
+    );
+    expect(screen.getByRole('button', { name: /pagination.firstPage/i })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /pagination.previousPage/i })).toBeDisabled();
+  });
+
+  it('disables next/last buttons on last page in manual mode', () => {
+    render(
+      <DataTable
+        columns={columns}
+        data={data}
+        manualPagination
+        pageIndex={4}
+        pageCount={5}
+        onPaginationChange={vi.fn()}
+        totalRows={50}
+      />,
+    );
+    expect(screen.getByRole('button', { name: /pagination.nextPage/i })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /pagination.lastPage/i })).toBeDisabled();
+  });
+
+  it('calls onPaginationChange when previous page clicked', async () => {
+    const user = userEvent.setup();
+    const onPaginationChange = vi.fn();
+    render(
+      <DataTable
+        columns={columns}
+        data={data}
+        manualPagination
+        pageIndex={2}
+        pageCount={5}
+        onPaginationChange={onPaginationChange}
+        totalRows={50}
+      />,
+    );
+    await user.click(screen.getByRole('button', { name: /pagination.previousPage/i }));
+    expect(onPaginationChange).toHaveBeenCalledWith(1, 10);
+  });
+
+  it('calls onPaginationChange when first page clicked', async () => {
+    const user = userEvent.setup();
+    const onPaginationChange = vi.fn();
+    render(
+      <DataTable
+        columns={columns}
+        data={data}
+        manualPagination
+        pageIndex={3}
+        pageCount={5}
+        onPaginationChange={onPaginationChange}
+        totalRows={50}
+      />,
+    );
+    await user.click(screen.getByRole('button', { name: /pagination.firstPage/i }));
+    expect(onPaginationChange).toHaveBeenCalledWith(0, 10);
+  });
 });

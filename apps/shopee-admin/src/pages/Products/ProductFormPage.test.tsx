@@ -44,5 +44,30 @@ describe('ProductFormPage', () => {
       expect(screen.getByText('form.editProduct')).toBeInTheDocument();
     });
   });
+
+  it('renders category select', async () => {
+    renderWithProviders(<ProductFormPage />);
+    await waitFor(() => {
+      expect(screen.getByLabelText('form.name')).toBeInTheDocument();
+    });
+    expect(screen.getByLabelText('form.category')).toBeInTheDocument();
+  });
+
+  it('renders price and quantity fields', async () => {
+    renderWithProviders(<ProductFormPage />);
+    await waitFor(() => {
+      expect(screen.getByLabelText('form.name')).toBeInTheDocument();
+    });
+    expect(screen.getByLabelText('form.price')).toBeInTheDocument();
+    expect(screen.getByLabelText('form.quantity')).toBeInTheDocument();
+  });
+
+  it('renders submit button', async () => {
+    renderWithProviders(<ProductFormPage />);
+    await waitFor(() => {
+      expect(screen.getByLabelText('form.name')).toBeInTheDocument();
+    });
+    expect(screen.getByRole('button', { name: /buttons.create/i })).toBeInTheDocument();
+  });
 });
 

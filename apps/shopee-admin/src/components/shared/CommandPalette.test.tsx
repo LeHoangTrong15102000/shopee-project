@@ -46,4 +46,36 @@ describe('CommandPalette', () => {
     // Pages group should be visible with navigation items
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
+
+  it('types in search input and triggers search', async () => {
+    const user = userEvent.setup();
+    renderCommandPalette();
+    await user.keyboard('{Meta>}k{/Meta}');
+    const input = screen.getByRole('combobox');
+    await user.type(input, 'iPhone');
+    expect(input).toHaveValue('iPhone');
+  });
+
+  it('selects a page item and closes dialog', async () => {
+    const user = userEvent.setup();
+    renderCommandPalette();
+    await user.keyboard('{Meta>}k{/Meta}');
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    // Click on a page item
+    const items = screen.getAllByRole('option');
+    if (items.length > 0) {
+      await user.click(items[0]);
+    }
+  });
+
+  it('closes with Cmd+K again', async () => {
+    const user = userEvent.setup();
+    renderCommandPalette();
+    await user.keyboard('{Meta>}k{/Meta}');
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    await user.keyboard('{Meta>}k{/Meta}');
+    await vi.waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+  });
 });

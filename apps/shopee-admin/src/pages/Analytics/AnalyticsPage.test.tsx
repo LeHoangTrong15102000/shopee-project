@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from 'src/test-utils';
 import AnalyticsPage from './AnalyticsPage';
 
@@ -41,6 +42,34 @@ describe('AnalyticsPage', () => {
       expect(screen.getByText('tabs.topSelling')).toBeInTheDocument();
       expect(screen.getByText('tabs.topViewed')).toBeInTheDocument();
     });
+  });
+
+  it('renders page description', async () => {
+    renderWithProviders(<AnalyticsPage />);
+    await waitFor(() => {
+      expect(screen.getByText('description')).toBeInTheDocument();
+    });
+  });
+
+  it('renders table after loading', async () => {
+    renderWithProviders(<AnalyticsPage />);
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument();
+    });
+  });
+
+  it('renders analytics stat cards', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<AnalyticsPage />);
+    await waitFor(() => {
+      expect(screen.getByRole('tablist')).toBeInTheDocument();
+    });
+    const chatbotTab = screen.getByRole('tab', { name: /tabs.chatbot/i });
+    await user.click(chatbotTab);
+    await waitFor(() => {
+      expect(screen.getByText('chatbot.totalConversations')).toBeInTheDocument();
+    });
+    expect(screen.getByText('chatbot.totalMessages')).toBeInTheDocument();
   });
 });
 

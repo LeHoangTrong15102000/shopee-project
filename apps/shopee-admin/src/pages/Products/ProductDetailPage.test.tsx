@@ -50,5 +50,14 @@ describe('ProductDetailPage', () => {
       expect(screen.queryByRole('status')).not.toBeInTheDocument();
     });
   });
+
+  it('renders product image', async () => {
+    renderWithProviders(<ProductDetailPage />);
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    });
+    const images = screen.getAllByRole('img');
+    expect(images.length).toBeGreaterThan(0);
+  });
 });
 

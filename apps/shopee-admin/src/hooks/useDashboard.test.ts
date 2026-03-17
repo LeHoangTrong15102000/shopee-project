@@ -6,6 +6,8 @@ import {
   useDashboardOrderTrend,
   useDashboardUserGrowth,
   useDashboardTopProducts,
+  useDashboardTopBuyers,
+  useDashboardRevenueByCategory,
 } from './useDashboard';
 
 describe('useDashboardOverview', () => {
@@ -18,12 +20,34 @@ describe('useDashboardOverview', () => {
 });
 
 describe('useDashboardRevenue', () => {
-  it('fetches revenue data', async () => {
+  it('fetches revenue data with period', async () => {
     const { result } = renderHook(() => useDashboardRevenue('7d'), {
       wrapper: createQueryWrapper(),
     });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(Array.isArray(result.current.data)).toBe(true);
+  });
+
+  it('fetches revenue data with 30d period', async () => {
+    const { result } = renderHook(() => useDashboardRevenue('30d'), {
+      wrapper: createQueryWrapper(),
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+  });
+
+  it('handles custom period with date range', async () => {
+    const { result } = renderHook(
+      () => useDashboardRevenue('custom', { start_date: '2024-01-01', end_date: '2024-01-31' }),
+      { wrapper: createQueryWrapper() },
+    );
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+  });
+
+  it('is disabled for custom period without date range', () => {
+    const { result } = renderHook(() => useDashboardRevenue('custom'), {
+      wrapper: createQueryWrapper(),
+    });
+    expect(result.current.fetchStatus).toBe('idle');
   });
 });
 
@@ -34,6 +58,13 @@ describe('useDashboardOrderTrend', () => {
     });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(Array.isArray(result.current.data)).toBe(true);
+  });
+
+  it('is disabled for custom period', () => {
+    const { result } = renderHook(() => useDashboardOrderTrend('custom'), {
+      wrapper: createQueryWrapper(),
+    });
+    expect(result.current.fetchStatus).toBe('idle');
   });
 });
 
@@ -50,6 +81,26 @@ describe('useDashboardUserGrowth', () => {
 describe('useDashboardTopProducts', () => {
   it('fetches top products', async () => {
     const { result } = renderHook(() => useDashboardTopProducts('7d'), {
+      wrapper: createQueryWrapper(),
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(Array.isArray(result.current.data)).toBe(true);
+  });
+});
+
+describe('useDashboardTopBuyers', () => {
+  it('fetches top buyers', async () => {
+    const { result } = renderHook(() => useDashboardTopBuyers('7d'), {
+      wrapper: createQueryWrapper(),
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(Array.isArray(result.current.data)).toBe(true);
+  });
+});
+
+describe('useDashboardRevenueByCategory', () => {
+  it('fetches revenue by category', async () => {
+    const { result } = renderHook(() => useDashboardRevenueByCategory('7d'), {
       wrapper: createQueryWrapper(),
     });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));

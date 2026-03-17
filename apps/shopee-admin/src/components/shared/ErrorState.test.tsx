@@ -22,4 +22,9 @@ describe('ErrorState', () => {
     await user.click(retryBtn);
     expect(onRetry).toHaveBeenCalled();
   });
+
+  it('does not render retry button when onRetry not provided', () => {
+    render(<ErrorState />);
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
 });

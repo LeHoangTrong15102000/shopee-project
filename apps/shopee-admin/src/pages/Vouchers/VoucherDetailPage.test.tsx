@@ -49,5 +49,13 @@ describe('VoucherDetailPage', () => {
       expect(screen.queryByRole('status')).not.toBeInTheDocument();
     });
   });
+
+  it('renders voucher status info', async () => {
+    renderWithProviders(<VoucherDetailPage />);
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    });
+    expect(screen.getByText('detail.status')).toBeInTheDocument();
+  });
 });
 

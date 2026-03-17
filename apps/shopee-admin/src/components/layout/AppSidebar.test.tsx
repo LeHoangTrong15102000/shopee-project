@@ -35,5 +35,16 @@ describe('AppSidebar', () => {
     renderSidebar();
     expect(screen.getByText('5')).toBeInTheDocument();
   });
+
+  it('renders all main navigation sections', () => {
+    renderSidebar();
+    expect(screen.getByText('menu.orders')).toBeInTheDocument();
+    expect(screen.getByText('menu.categories')).toBeInTheDocument();
+  });
+
+  it('renders with different route', () => {
+    renderSidebar(['/products']);
+    expect(screen.getByText('menu.products')).toBeInTheDocument();
+  });
 });
 

@@ -49,5 +49,13 @@ describe('OrderDetailPage', () => {
       expect(screen.queryByRole('status')).not.toBeInTheDocument();
     });
   });
+
+  it('renders customer info section', async () => {
+    renderWithProviders(<OrderDetailPage />);
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    });
+    expect(screen.getByText('detail.customer')).toBeInTheDocument();
+  });
 });
 

@@ -24,8 +24,12 @@ describe('AdminLayout', () => {
 
   it('renders sidebar navigation', () => {
     renderWithProviders(<AdminLayout />);
-    // Verify sidebar nav items are rendered
     expect(screen.getByText('menu.overview')).toBeInTheDocument();
+  });
+
+  it('renders outlet content area', () => {
+    renderWithProviders(<AdminLayout />);
+    expect(screen.getByText('Outlet Content')).toBeInTheDocument();
   });
 });
 

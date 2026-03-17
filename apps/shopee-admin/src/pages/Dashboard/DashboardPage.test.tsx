@@ -48,4 +48,29 @@ describe('DashboardPage', () => {
       expect(screen.getByRole('combobox')).toBeInTheDocument();
     });
   });
+
+  it('renders description', async () => {
+    renderWithProviders(<DashboardPage />);
+    await waitFor(() => {
+      expect(screen.getByText('description')).toBeInTheDocument();
+    });
+  });
+
+  it('renders chart sections after loading', async () => {
+    renderWithProviders(<DashboardPage />);
+    await waitFor(() => {
+      expect(screen.getByText('stats.totalRevenue')).toBeInTheDocument();
+    });
+    expect(screen.getByText('charts.revenue')).toBeInTheDocument();
+  });
+
+  it('renders all stat card labels', async () => {
+    renderWithProviders(<DashboardPage />);
+    await waitFor(() => {
+      expect(screen.getByText('stats.totalRevenue')).toBeInTheDocument();
+    });
+    expect(screen.getByText('stats.totalOrders')).toBeInTheDocument();
+    expect(screen.getByText('stats.totalUsers')).toBeInTheDocument();
+    expect(screen.getByText('stats.totalProducts')).toBeInTheDocument();
+  });
 });

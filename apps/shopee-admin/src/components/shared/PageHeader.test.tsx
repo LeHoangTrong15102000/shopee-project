@@ -16,4 +16,14 @@ describe('PageHeader', () => {
     render(<PageHeader title="Products" actions={<button>Add</button>} />);
     expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument();
   });
+
+  it('does not render description when not provided', () => {
+    const { container } = render(<PageHeader title="Products" />);
+    expect(container.querySelector('p')).not.toBeInTheDocument();
+  });
+
+  it('does not render actions when not provided', () => {
+    render(<PageHeader title="Products" />);
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
 });

@@ -29,11 +29,23 @@ describe('useNotificationUnreadCount', () => {
 });
 
 describe('useCreateNotification', () => {
-  it('creates a notification', async () => {
+  it('creates a targeted notification', async () => {
     const { result } = renderHook(() => useCreateNotification(), { wrapper: createQueryWrapper() });
     result.current.mutate({
       type: 'targeted',
       form: { user_id: 'user-1', title: 'Test', message: 'Test message' },
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+  });
+
+  it('creates a broadcast notification', async () => {
+    const onSuccess = vi.fn();
+    const { result } = renderHook(() => useCreateNotification(onSuccess), {
+      wrapper: createQueryWrapper(),
+    });
+    result.current.mutate({
+      type: 'broadcast',
+      form: { user_id: '', title: 'Broadcast', message: 'Hello all' },
     });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
   });

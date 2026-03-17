@@ -22,4 +22,14 @@ describe('EmptyState', () => {
     await user.click(btn);
     expect(onClick).toHaveBeenCalled();
   });
+
+  it('renders custom icon', () => {
+    render(<EmptyState icon={<span data-testid="custom-icon">🎯</span>} />);
+    expect(screen.getByTestId('custom-icon')).toBeInTheDocument();
+  });
+
+  it('does not render action button when not provided', () => {
+    render(<EmptyState />);
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
 });

@@ -4,6 +4,7 @@ import {
   useVouchers,
   useVoucherStats,
   useCreateVoucher,
+  useUpdateVoucher,
   useDeleteVoucher,
   useToggleVoucher,
 } from './useVouchers';
@@ -29,7 +30,10 @@ describe('useVoucherStats', () => {
 
 describe('useCreateVoucher', () => {
   it('creates a voucher', async () => {
-    const { result } = renderHook(() => useCreateVoucher(), { wrapper: createQueryWrapper() });
+    const onSuccess = vi.fn();
+    const { result } = renderHook(() => useCreateVoucher(onSuccess), {
+      wrapper: createQueryWrapper(),
+    });
     result.current.mutate({
       code: 'NEWCODE',
       discount_type: 'percentage',
@@ -41,9 +45,23 @@ describe('useCreateVoucher', () => {
   });
 });
 
+describe('useUpdateVoucher', () => {
+  it('updates a voucher', async () => {
+    const onSuccess = vi.fn();
+    const { result } = renderHook(() => useUpdateVoucher(onSuccess), {
+      wrapper: createQueryWrapper(),
+    });
+    result.current.mutate({ id: 'voucher-1', body: { is_active: false } });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+  });
+});
+
 describe('useDeleteVoucher', () => {
   it('deletes a voucher', async () => {
-    const { result } = renderHook(() => useDeleteVoucher(), { wrapper: createQueryWrapper() });
+    const onSuccess = vi.fn();
+    const { result } = renderHook(() => useDeleteVoucher(onSuccess), {
+      wrapper: createQueryWrapper(),
+    });
     result.current.mutate('voucher-1');
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
   });
@@ -51,7 +69,10 @@ describe('useDeleteVoucher', () => {
 
 describe('useToggleVoucher', () => {
   it('toggles voucher active status', async () => {
-    const { result } = renderHook(() => useToggleVoucher(), { wrapper: createQueryWrapper() });
+    const onSuccess = vi.fn();
+    const { result } = renderHook(() => useToggleVoucher(onSuccess), {
+      wrapper: createQueryWrapper(),
+    });
     result.current.mutate({ id: 'voucher-1', is_active: false });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
   });

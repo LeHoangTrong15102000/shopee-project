@@ -19,5 +19,16 @@ describe('NotFoundPage', () => {
     renderWithProviders(<NotFoundPage />);
     expect(screen.getByRole('button', { name: 'notFound.goToDashboard' })).toBeInTheDocument();
   });
+
+  it('renders description text', () => {
+    renderWithProviders(<NotFoundPage />);
+    expect(screen.getByText('notFound.description')).toBeInTheDocument();
+  });
+
+  it('navigates to dashboard when button clicked', async () => {
+    const { user } = renderWithProviders(<NotFoundPage />);
+    await user.click(screen.getByRole('button', { name: 'notFound.goToDashboard' }));
+    expect(mockNavigate).toHaveBeenCalledWith('/');
+  });
 });
 

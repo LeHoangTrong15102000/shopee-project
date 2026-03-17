@@ -84,4 +84,10 @@ describe('activity-log.store', () => {
     expect(entries[0].entityName).toBe('Second');
     expect(entries[1].entityName).toBe('First');
   });
+
+  it('handles malformed JSON in localStorage gracefully', () => {
+    localStorage.setItem('shopee-admin-activity-log', '{invalid-json}');
+    // loadEntries catch branch returns [] for invalid JSON
+    expect(() => useActivityLogStore.getState()).not.toThrow();
+  });
 });

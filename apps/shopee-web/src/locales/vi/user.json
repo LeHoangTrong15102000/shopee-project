@@ -106,5 +106,21 @@
   "avatar.preview": "Xem trước:",
   "avatar.maxSize": "Dung lượng file tối đa 1 MB",
   "avatar.invalidFormat": "Định dạng file không hợp lệ. Chỉ chấp nhận JPEG, PNG, WebP",
-  "avatar.processingError": "Có lỗi xảy ra khi xử lý ảnh"
+  "avatar.processingError": "Có lỗi xảy ra khi xử lý ảnh",
+  "vouchers.title": "Voucher của tôi",
+  "vouchers.subtitle": "Quản lý voucher của bạn",
+  "vouchers.seo.title": "Voucher của tôi",
+  "vouchers.statusAll": "Tất cả",
+  "vouchers.statusAvailable": "Có thể sử dụng",
+  "vouchers.statusUsed": "Đã sử dụng",
+  "vouchers.statusExpired": "Hết hạn",
+  "vouchers.categoryAll": "Tất cả",
+  "vouchers.categoryShop": "Voucher Shop",
+  "vouchers.categoryFreeShipping": "Miễn phí vận chuyển",
+  "vouchers.categoryShopee": "Shopee",
+  "vouchers.empty": "Chưa có voucher nào",
+  "vouchers.collectNow": "Thu thập voucher ngay",
+  "vouchers.copied": "Đã sao chép mã voucher!",
+  "vouchers.copiedCode": "Đã sao chép mã: {{code}}",
+  "history.seo.title": "Đơn mua"
 }

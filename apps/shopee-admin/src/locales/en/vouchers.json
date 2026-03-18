@@ -37,6 +37,7 @@
     "endDate": "End Date"
   },
   "detail": {
+    "voucherTitle": "Voucher: {{code}}",
     "usageHistory": "Usage History",
     "user": "User",
     "order": "Order",

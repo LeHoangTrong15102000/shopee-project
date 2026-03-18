@@ -78,9 +78,11 @@ const PaymentMethodSelector = memo(function PaymentMethodSelector({
                 <PaymentIcon type={method.type} className="h-6 w-6" />
                 <div>
                   <span className="font-medium text-gray-900 dark:text-gray-100">
-                    {method.name}
+                    {t(`method.${method.type}`, { defaultValue: method.name })}
                   </span>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{method.description}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {t(`method.${method.type}Desc`, { defaultValue: method.description })}
+                  </p>
                 </div>
               </div>
 

@@ -63,6 +63,18 @@
   "form.street.max": "Địa chỉ tối đa 200 ký tự",
   "form.label": "Nhãn",
   "form.label.max": "Nhãn tối đa 50 ký tự",
-  "form.isDefault": "Đặt làm địa chỉ mặc định"
+  "form.isDefault": "Đặt làm địa chỉ mặc định",
+  "book.noResults": "Không tìm thấy địa chỉ",
+  "book.noMatchSearch": "Không có địa chỉ nào khớp \"{{query}}\"",
+  "book.noMatchType": "Không có địa chỉ nào thuộc loại \"{{type}}\"",
+  "book.typeHome": "Nhà riêng",
+  "book.typeOffice": "Văn phòng",
+  "book.typeOther": "Khác",
+  "book.clearFilter": "Xóa bộ lọc",
+  "book.all": "Tất cả",
+  "book.searchPlaceholder": "Tìm theo tên, SĐT, địa chỉ...",
+  "book.selectAll": "Chọn tất cả",
+  "book.selectedCount": "Đã chọn {{count}} địa chỉ",
+  "book.deleteSelected": "Xóa đã chọn"
 }
 

@@ -37,6 +37,7 @@
     "endDate": "Ngày kết thúc"
   },
   "detail": {
+    "voucherTitle": "Voucher: {{code}}",
     "usageHistory": "Lịch sử sử dụng",
     "user": "Người dùng",
     "order": "Đơn hàng",

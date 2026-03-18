@@ -56,5 +56,6 @@
   "sync.syncing": "Đang đồng bộ...",
   "sync.synced": "Đã đồng bộ",
   "toast.alreadyInCart": "Sản phẩm đã có trong giỏ hàng",
-  "sync.updatedFromOtherDevice": "🔄 Giỏ hàng đã được cập nhật từ thiết bị khác"
+  "sync.updatedFromOtherDevice": "🔄 Giỏ hàng đã được cập nhật từ thiết bị khác",
+  "seo.title": "Giỏ hàng"
 }

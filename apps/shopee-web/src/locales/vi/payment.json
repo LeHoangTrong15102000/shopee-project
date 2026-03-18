@@ -61,5 +61,13 @@
   "buttons.cancel": "Hủy",
   "buttons.pay": "Thanh toán",
   "bankTransfer.expired": "Đã hết hạn chuyển khoản",
-  "creditCard.cvvTooltip": "Mã 3 chữ số ở mặt sau thẻ"
+  "creditCard.cvvTooltip": "Mã 3 chữ số ở mặt sau thẻ",
+  "method.cod": "Thanh toán khi nhận hàng (COD)",
+  "method.codDesc": "Thanh toán bằng tiền mặt khi nhận hàng",
+  "method.bankTransfer": "Chuyển khoản ngân hàng",
+  "method.bankTransferDesc": "Chuyển khoản qua tài khoản ngân hàng",
+  "method.eWallet": "Ví điện tử",
+  "method.eWalletDesc": "Thanh toán qua MoMo, ZaloPay, VNPay",
+  "method.creditCard": "Thẻ tín dụng/Ghi nợ",
+  "method.creditCardDesc": "Visa, Mastercard, JCB"
 }

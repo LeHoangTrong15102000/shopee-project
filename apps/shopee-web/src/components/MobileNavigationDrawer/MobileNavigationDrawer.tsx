@@ -313,14 +313,14 @@ const MobileNavigationDrawer = ({ isOpen, onClose }: MobileNavigationDrawerProps
                     <Button
                       animated={false}
                       onClick={() => handleTranslateLanguage('vi')}
-                      className={`min-w-[44px] rounded-sm px-3 py-1.5 text-xs font-medium transition-colors ${currentLanguage === 'Tiếng Việt' ? 'bg-orange text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600'}`}
+                      className={`min-w-[44px] rounded-sm px-3 py-1.5 text-xs font-medium transition-colors ${i18n.language === 'vi' ? 'bg-orange text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600'}`}
                     >
                       VI
                     </Button>
                     <Button
                       animated={false}
                       onClick={() => handleTranslateLanguage('en')}
-                      className={`min-w-[44px] rounded-sm px-3 py-1.5 text-xs font-medium transition-colors ${currentLanguage === 'English' ? 'bg-orange text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600'}`}
+                      className={`min-w-[44px] rounded-sm px-3 py-1.5 text-xs font-medium transition-colors ${i18n.language === 'en' ? 'bg-orange text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600'}`}
                     >
                       EN
                     </Button>

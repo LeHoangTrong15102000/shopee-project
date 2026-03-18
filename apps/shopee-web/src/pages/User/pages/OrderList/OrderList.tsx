@@ -120,7 +120,7 @@ export default function OrderList() {
 
   return (
     <div className="space-y-4">
-      <SEO title="Đơn hàng" noindex />
+      <SEO title={t('seo.title')} noindex />
       {/* Tabs */}
       <div className="sticky top-0 z-20 scrollbar-hide flex items-center overflow-x-auto rounded-t-sm bg-white shadow-xs dark:bg-slate-800">
         {orderTabStatuses.map((status, index) => (

@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Button from 'src/components/Button';
 import ShopeeCheckbox from 'src/components/ShopeeCheckbox';
 import { AddressType } from 'src/types/checkout.type';
+import { useTranslation } from 'react-i18next';
 
 type FilterType = 'all' | AddressType;
 
@@ -32,6 +33,7 @@ const AddressBookToolbar = ({
   onBulkDelete,
   ADDRESS_TYPE_CONFIG,
 }: AddressBookToolbarProps) => {
+  const { t } = useTranslation('address');
   return (
     <div className="mt-6 space-y-4">
       {/* Search Box */}
@@ -51,7 +53,7 @@ const AddressBookToolbar = ({
         </svg>
         <input
           type="text"
-          placeholder="Tìm kiếm theo tên, số điện thoại, địa chỉ..."
+          placeholder={t('book.searchPlaceholder')}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           className="w-full rounded-lg border border-gray-300 py-2.5 pr-4 pl-10 text-sm transition-colors focus:border-orange focus:ring-1 focus:ring-orange/30 focus:outline-hidden dark:border-slate-600 dark:bg-slate-900 dark:text-gray-100 dark:focus:border-orange-400 dark:focus:ring-orange-400/30"
@@ -93,7 +95,7 @@ const AddressBookToolbar = ({
               }`}
             >
               {config && <span className={isActive ? 'text-white' : ''}>{config.icon}</span>}
-              {type === 'all' ? 'Tất cả' : config?.label}
+              {type === 'all' ? t('book.all') : config?.label}
               <span
                 className={`rounded-full px-2 py-0.5 text-xs ${isActive ? 'bg-white/20' : 'bg-gray-200 dark:bg-slate-600'}`}
               >
@@ -125,18 +127,18 @@ const AddressBookToolbar = ({
                   className="cursor-pointer hover:text-orange dark:hover:text-orange-400"
                   onClick={onSelectAll}
                 >
-                  Chọn tất cả
+                  {t('book.selectAll')}
                 </span>
               </div>
               <span className="text-xs text-gray-500 sm:text-sm dark:text-gray-400">
-                Đã chọn {selectedCount} địa chỉ
+                {t('book.selectedCount', { count: selectedCount })}
               </span>
             </div>
             <Button
               onClick={onBulkDelete}
               className="flex w-full items-center justify-center rounded-lg bg-red-500 px-4 py-2 text-sm text-white hover:bg-red-600 sm:w-auto"
             >
-              Xóa đã chọn
+              {t('book.deleteSelected')}
             </Button>
           </motion.div>
         )}

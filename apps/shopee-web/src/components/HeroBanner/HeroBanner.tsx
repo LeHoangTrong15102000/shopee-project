@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import Button from 'src/components/Button';
 import BannerSlide from './BannerSlide';
 import BannerIndicators from './BannerIndicators';
@@ -26,7 +27,7 @@ const bannerSlides: BannerSlideType[] = [
     id: 3,
     image: 'https://cf.shopee.vn/file/sg-11134004-7rd4c-ltqjlvx9grib0c_xxhdpi',
     title: 'Freeship Xtra',
-    subtitle: 'Miễn phí vận chuyển toàn quốc',
+    subtitle: 'banner.freeShipping',
     link: '/shipping-promotion',
     backgroundColor: '#ff6b35',
   },
@@ -34,23 +35,33 @@ const bannerSlides: BannerSlideType[] = [
     id: 4,
     image: 'https://cf.shopee.vn/file/sg-11134004-7rd4c-ltqjlvx9ht5s0s_xxhdpi',
     title: 'Shopee Mall',
-    subtitle: 'Thương hiệu chính hãng giá tốt',
+    subtitle: 'banner.authenticBrands',
     link: '/shopee-mall',
     backgroundColor: '#d73527',
   },
 ];
 
 const HeroBanner = () => {
+  const { t } = useTranslation('home');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
+
+  const translatedSlides = useMemo(
+    () =>
+      bannerSlides.map((slide) => ({
+        ...slide,
+        subtitle: t(slide.subtitle, { defaultValue: slide.subtitle }),
+      })),
+    [t],
+  );
 
   // Auto play banner
   useEffect(() => {
     if (!isAutoPlay) return;
 
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % bannerSlides.length);
-    }, 5000); // Chuyển slide sau 5 giây
+      setCurrentSlide((prev) => (prev + 1) % translatedSlides.length);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [isAutoPlay]);
@@ -60,11 +71,11 @@ const HeroBanner = () => {
   };
 
   const goToPrevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + bannerSlides.length) % bannerSlides.length);
+    setCurrentSlide((prev) => (prev - 1 + translatedSlides.length) % translatedSlides.length);
   };
 
   const goToNextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % bannerSlides.length);
+    setCurrentSlide((prev) => (prev + 1) % translatedSlides.length);
   };
 
   const handleMouseEnter = () => {
@@ -86,7 +97,7 @@ const HeroBanner = () => {
         className="flex h-full transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
-        {bannerSlides.map((slide, index) => (
+        {translatedSlides.map((slide, index) => (
           <BannerSlide key={slide.id} slide={slide} isActive={index === currentSlide} />
         ))}
       </div>
@@ -126,7 +137,7 @@ const HeroBanner = () => {
 
       {/* Slide Indicators */}
       <BannerIndicators
-        slides={bannerSlides}
+        slides={translatedSlides}
         currentSlide={currentSlide}
         onSlideChange={goToSlide}
       />

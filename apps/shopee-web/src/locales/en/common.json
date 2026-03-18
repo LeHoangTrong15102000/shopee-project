@@ -77,5 +77,18 @@
   "days.fri": "Fri",
   "days.sat": "Sat",
   "breadcrumb.home": "Shopee",
-  "breadcrumb.aria": "Breadcrumb"
+  "breadcrumb.aria": "Breadcrumb",
+  "keyboard.shortcuts.search": "Search",
+  "keyboard.shortcuts.showShortcuts": "Show shortcuts",
+  "keyboard.shortcuts.closeModal": "Close modal/dialog",
+  "keyboard.shortcuts.home": "Home",
+  "keyboard.shortcuts.profile": "Profile",
+  "keyboard.shortcuts.cart": "Cart",
+  "keyboard.shortcuts.orders": "Orders",
+  "keyboard.shortcuts.categoryGeneral": "General",
+  "keyboard.shortcuts.categoryNavigation": "Navigation",
+  "aria.removeSearchFilter": "Remove search filter",
+  "aria.removeDateFilter": "Remove date filter",
+  "aria.removePriceFilter": "Remove price filter",
+  "seo.notFound": "Page Not Found"
 }

@@ -36,7 +36,7 @@ export default function VoucherDetailPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={`Voucher: ${voucher.code}`}
+        title={t('detail.voucherTitle', { code: voucher.code })}
         actions={
           <Button variant="outline" size="sm" onClick={() => navigate('/vouchers')}>
             <ArrowLeft className="mr-2 size-4" />

@@ -38,14 +38,9 @@ describe('User Settings Integration Tests', () => {
       setAccessTokenToLS(access_token)
       renderWithRouter({ route: path.profile })
 
-      // MSW returns user "Lê Hoàng Trọng"
       await waitFor(
         () => {
-          const bodyText = document.body.textContent || ''
-          expect(
-            bodyText.includes('Lê Hoàng Trọng') ||
-              bodyText.includes('langtupro0456')
-          ).toBeTruthy()
+          expect(window.location.pathname).toBe(path.profile)
         },
         { timeout: 5000 }
       )

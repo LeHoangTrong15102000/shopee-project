@@ -325,7 +325,7 @@ const Cart = () => {
   }, [checkedPurchases.length, navigate]);
   return (
     <div className="border-b-4 border-b-[#ee4d2d] bg-neutral-100 py-6 md:py-8 dark:bg-slate-900">
-      <SEO title="Giỏ hàng" noindex />
+      <SEO title={t('seo.title')} noindex />
       <div className="container">
         {extendedPurchases.length > 0 ? (
           <Fragment>

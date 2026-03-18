@@ -77,5 +77,18 @@
   "days.fri": "Thứ 6",
   "days.sat": "Thứ 7",
   "breadcrumb.home": "Shopee",
-  "breadcrumb.aria": "Đường dẫn"
+  "breadcrumb.aria": "Đường dẫn",
+  "keyboard.shortcuts.search": "Tìm kiếm",
+  "keyboard.shortcuts.showShortcuts": "Hiện phím tắt",
+  "keyboard.shortcuts.closeModal": "Đóng modal/dialog",
+  "keyboard.shortcuts.home": "Trang chủ",
+  "keyboard.shortcuts.profile": "Trang cá nhân",
+  "keyboard.shortcuts.cart": "Giỏ hàng",
+  "keyboard.shortcuts.orders": "Đơn hàng",
+  "keyboard.shortcuts.categoryGeneral": "Chung",
+  "keyboard.shortcuts.categoryNavigation": "Điều hướng",
+  "aria.removeSearchFilter": "Xóa bộ lọc tìm kiếm",
+  "aria.removeDateFilter": "Xóa bộ lọc ngày",
+  "aria.removePriceFilter": "Xóa bộ lọc giá",
+  "seo.notFound": "Không tìm thấy trang"
 }

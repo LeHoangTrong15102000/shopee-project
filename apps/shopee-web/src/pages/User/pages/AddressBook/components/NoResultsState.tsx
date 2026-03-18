@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import Button from 'src/components/Button';
+import { useTranslation } from 'react-i18next';
 
 type FilterType = 'all' | 'home' | 'office' | 'other';
 
@@ -10,6 +11,7 @@ interface NoResultsStateProps {
 }
 
 const NoResultsState = ({ searchQuery, filterType, onClear }: NoResultsStateProps) => {
+  const { t } = useTranslation('address');
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -32,18 +34,20 @@ const NoResultsState = ({ searchQuery, filterType, onClear }: NoResultsStateProp
         </svg>
       </div>
       <h3 className="mt-4 text-lg font-medium text-gray-700 dark:text-gray-200">
-        Không tìm thấy địa chỉ
+        {t('book.noResults')}
       </h3>
       <p className="mt-2 max-w-sm text-center text-sm text-gray-500 dark:text-gray-400">
         {searchQuery
-          ? `Không có địa chỉ nào phù hợp với "${searchQuery}"`
-          : `Không có địa chỉ nào thuộc loại "${filterType === 'home' ? 'Nhà riêng' : filterType === 'office' ? 'Văn phòng' : 'Khác'}"`}
+          ? t('book.noMatchSearch', { query: searchQuery })
+          : t('book.noMatchType', {
+              type: t(`book.type${filterType.charAt(0).toUpperCase() + filterType.slice(1)}`),
+            })}
       </p>
       <Button
         onClick={onClear}
         className="mt-4 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 dark:border-slate-600 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600"
       >
-        Xóa bộ lọc
+        {t('book.clearFilter')}
       </Button>
     </motion.div>
   );

@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 import path from 'src/constant/path';
 import { useReducedMotion } from 'src/hooks/useReducedMotion';
@@ -24,7 +25,7 @@ const ChevronDownIcon = ({ className }: { className?: string }) => (
 const mobileNavItems = [
   {
     to: path.profile,
-    label: 'Tài khoản',
+    label: 'mobile.account' as const,
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -44,7 +45,7 @@ const mobileNavItems = [
   },
   {
     to: path.changePassword,
-    label: 'Mật khẩu',
+    label: 'mobile.password' as const,
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -64,7 +65,7 @@ const mobileNavItems = [
   },
   {
     to: path.historyPurchases,
-    label: 'Đơn mua',
+    label: 'mobile.purchases' as const,
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -84,7 +85,7 @@ const mobileNavItems = [
   },
   {
     to: path.orderList,
-    label: 'Đơn hàng',
+    label: 'mobile.orders' as const,
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -104,7 +105,7 @@ const mobileNavItems = [
   },
   {
     to: path.dailyCheckIn,
-    label: 'Điểm danh',
+    label: 'mobile.checkin' as const,
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -124,7 +125,7 @@ const mobileNavItems = [
   },
   {
     to: path.addressBook,
-    label: 'Địa chỉ',
+    label: 'mobile.address' as const,
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -145,7 +146,7 @@ const mobileNavItems = [
   },
   {
     to: path.notifications,
-    label: 'Thông báo',
+    label: 'mobile.notifications' as const,
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -170,6 +171,7 @@ interface MobileAccountNavProps {
 }
 
 const MobileAccountNav = ({ className }: MobileAccountNavProps) => {
+  const { t } = useTranslation('nav');
   const reducedMotion = useReducedMotion();
   const navigate = useNavigate();
   const location = useLocation();
@@ -230,13 +232,13 @@ const MobileAccountNav = ({ className }: MobileAccountNavProps) => {
         onClick={toggleDropdown}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        ariaLabel="Menu tài khoản"
+        ariaLabel={t('mobile.accountMenu')}
         className="flex w-full items-center justify-between px-3 py-2.5 text-left"
       >
         <div className="flex items-center gap-2">
           <span className="text-[#ee4d2d] dark:text-orange-400">{activeItem.icon}</span>
           <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            {activeItem.label}
+            {t(activeItem.label)}
           </span>
         </div>
         <ChevronDownIcon
@@ -289,7 +291,7 @@ const MobileAccountNav = ({ className }: MobileAccountNavProps) => {
                   >
                     {item.icon}
                   </span>
-                  <span className="font-medium">{item.label}</span>
+                  <span className="font-medium">{t(item.label)}</span>
                 </Button>
               );
             })}

@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { chipVariants } from '../orderSearchFilter.constants';
 import { formatCurrency } from 'src/utils/utils';
 import Button from 'src/components/Button';
@@ -34,6 +35,7 @@ export default function ActiveFilterChips({
   onClearPriceRange,
   onClearAllFilters,
 }: ActiveFilterChipsProps) {
+  const { t } = useTranslation('common');
   return (
     <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
       <div className="flex flex-wrap items-center gap-2">
@@ -60,7 +62,7 @@ export default function ActiveFilterChips({
                 type="button"
                 onClick={onClearSearch}
                 className="rounded-full p-0.5 transition-colors hover:bg-[#ee4d2d]/20"
-                aria-label="Xóa bộ lọc tìm kiếm"
+                aria-label={t('aria.removeSearchFilter')}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -110,7 +112,7 @@ export default function ActiveFilterChips({
                 type="button"
                 onClick={onClearDateRange}
                 className="rounded-full p-0.5 transition-colors hover:bg-[#ee4d2d]/20"
-                aria-label="Xóa bộ lọc ngày"
+                aria-label={t('aria.removeDateFilter')}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -160,7 +162,7 @@ export default function ActiveFilterChips({
                 type="button"
                 onClick={onClearPriceRange}
                 className="rounded-full p-0.5 transition-colors hover:bg-[#ee4d2d]/20"
-                aria-label="Xóa bộ lọc giá"
+                aria-label={t('aria.removePriceFilter')}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import ImageWithFallback from 'src/components/ImageWithFallback';
 import { ANIMATION_DURATION } from 'src/styles/animations/motion.config';
@@ -17,6 +18,7 @@ interface OrderDetailItemsProps {
 }
 
 export default function OrderDetailItems({ order, shouldReduceMotion }: OrderDetailItemsProps) {
+  const { t } = useTranslation('order');
   const containerVariants = shouldReduceMotion ? reducedMotionVariants : itemsContainerVariants;
   const itemVariants = shouldReduceMotion ? reducedMotionVariants : orderItemVariants;
 
@@ -44,9 +46,9 @@ export default function OrderDetailItems({ order, shouldReduceMotion }: OrderDet
             />
           </svg>
         </span>
-        Sản phẩm
+        {t('detail.products')}
         <span className="ml-auto text-xs font-normal text-gray-400 dark:text-gray-500">
-          {order.items.length} sản phẩm
+          {t('detail.productCount', { count: order.items.length })}
         </span>
       </h2>
       <motion.div
@@ -78,7 +80,7 @@ export default function OrderDetailItems({ order, shouldReduceMotion }: OrderDet
                   to={`/${item.product?.name?.replace(/\s+/g, '-')}-i-${item.product?._id}`}
                   className="line-clamp-2 text-sm leading-snug font-medium text-gray-900 transition-colors duration-200 hover:text-orange sm:text-base dark:text-gray-100 dark:hover:text-orange-400"
                 >
-                  {item.product?.name || 'Sản phẩm'}
+                  {item.product?.name || t('detail.productFallback')}
                 </Link>
                 <p className="mt-1 flex items-center gap-1 text-xs text-gray-500 sm:text-sm dark:text-gray-400">
                   <svg
@@ -109,7 +111,7 @@ export default function OrderDetailItems({ order, shouldReduceMotion }: OrderDet
                   </span>
                 </div>
                 <div className="flex items-baseline gap-1.5 sm:ml-auto">
-                  <span className="text-xs text-gray-400 dark:text-gray-500">Thành tiền:</span>
+                  <span className="text-xs text-gray-400 dark:text-gray-500">{t('detail.itemTotal')}</span>
                   <span className="text-sm font-bold text-orange sm:text-base dark:text-orange-400">
                     ₫{formatCurrency(item.price * item.buyCount)}
                   </span>

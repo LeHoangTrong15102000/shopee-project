@@ -4,6 +4,23 @@ import userEvent from '@testing-library/user-event';
 import ShippingMethodSelector from '../ShippingMethodSelector';
 import { renderWithProviders } from 'src/utils/testUtils';
 
+// Override global i18n mock to handle namespace-prefixed keys and defaultValue
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, options?: any) => {
+      const translations: Record<string, string> = {
+        'shipping.selectMethod': 'Chọn phương thức vận chuyển',
+        'shipping.express': 'Giao nhanh',
+        'shipping.free': 'Miễn phí',
+        'shipping.estimatedTime': 'Thời gian giao hàng dự kiến',
+        'shipping.estimatedDeliveryLabel': 'Ngày giao hàng dự kiến',
+      };
+      return translations[key] || options?.defaultValue || key;
+    },
+    i18n: { changeLanguage: vi.fn(), language: 'vi' },
+  }),
+}));
+
 vi.mock('src/apis/checkout.api', () => ({
   default: {
     getShippingMethods: vi.fn().mockResolvedValue({

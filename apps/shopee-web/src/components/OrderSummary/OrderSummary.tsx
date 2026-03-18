@@ -1,4 +1,5 @@
 import { memo, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { formatCurrency } from 'src/utils/utils';
 import { getEstimatedDeliveryDate } from 'src/utils/date';
@@ -30,6 +31,7 @@ const OrderSummary = memo(function OrderSummary({
   coinsUsed = 0,
   coinsValue = 1,
 }: OrderSummaryProps) {
+  const { t } = useTranslation('checkout');
   const [isExpanded, setIsExpanded] = useState(false);
 
   const subtotal = useMemo(() => {
@@ -63,7 +65,7 @@ const OrderSummary = memo(function OrderSummary({
       <div className="border-b border-gray-100 bg-linear-to-r from-orange/5 to-transparent px-6 py-4 dark:border-slate-700">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Đơn hàng của bạn
+            {t('orderSummary.title')}
           </h3>
           <span className="inline-flex items-center gap-1 rounded-full bg-orange/10 px-3 py-1 text-sm font-medium text-orange">
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -74,7 +76,7 @@ const OrderSummary = memo(function OrderSummary({
                 d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
               />
             </svg>
-            {uniqueProductCount} sản phẩm
+            {t('orderSummary.products', { count: uniqueProductCount })}
           </span>
         </div>
       </div>
@@ -100,7 +102,7 @@ const OrderSummary = memo(function OrderSummary({
                   {item.product.name}
                 </p>
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  SL: {item.buy_count}
+                  {t('orderSummary.quantity', { count: item.buy_count })}
                 </p>
               </div>
               <div className="text-right">
@@ -146,7 +148,7 @@ const OrderSummary = memo(function OrderSummary({
                         {item.product.name}
                       </p>
                       <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        SL: {item.buy_count}
+                        {t('orderSummary.quantity', { count: item.buy_count })}
                       </p>
                     </div>
                     <div className="text-right">
@@ -188,7 +190,7 @@ const OrderSummary = memo(function OrderSummary({
                       d="M5 15l7-7 7 7"
                     />
                   </svg>
-                  Thu gọn
+                  {t('orderSummary.collapse')}
                 </>
               ) : (
                 <>
@@ -205,7 +207,7 @@ const OrderSummary = memo(function OrderSummary({
                       d="M19 9l-7 7-7-7"
                     />
                   </svg>
-                  Xem thêm {hiddenItemsCount} sản phẩm
+                  {t('orderSummary.viewMore', { count: hiddenItemsCount })}
                 </>
               )}
             </Button>
@@ -232,9 +234,11 @@ const OrderSummary = memo(function OrderSummary({
               </span>
               <div>
                 <p className="text-sm font-medium text-green-800">
-                  Mã "{voucherCode}" đã được áp dụng
+                  {t('orderSummary.voucherApplied', { code: voucherCode })}
                 </p>
-                <p className="text-xs text-green-600">Giảm ₫{formatCurrency(voucherDiscount)}</p>
+                <p className="text-xs text-green-600">
+                  {t('orderSummary.voucherDiscount', { amount: formatCurrency(voucherDiscount) })}
+                </p>
               </div>
             </div>
             {onRemoveVoucher && (
@@ -244,7 +248,7 @@ const OrderSummary = memo(function OrderSummary({
                 type="button"
                 onClick={onRemoveVoucher}
                 className="rounded-sm p-1 text-green-600 transition-colors hover:bg-green-100 hover:text-red-500"
-                aria-label="Xóa mã giảm giá"
+                aria-label={t('orderSummary.removeVoucher')}
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
@@ -262,7 +266,7 @@ const OrderSummary = memo(function OrderSummary({
         {/* Price Breakdown Section */}
         <div className="mt-6 space-y-3 rounded-lg bg-gray-50 p-4 dark:bg-slate-900">
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600 dark:text-gray-300">Tạm tính</span>
+            <span className="text-gray-600 dark:text-gray-300">{t('orderSummary.subtotal')}</span>
             <span className="font-medium text-gray-900 dark:text-gray-100">
               ₫{formatCurrency(subtotal)}
             </span>
@@ -270,7 +274,7 @@ const OrderSummary = memo(function OrderSummary({
 
           {productDiscount > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-green-600">Giảm giá sản phẩm</span>
+              <span className="text-green-600">{t('orderSummary.productDiscount')}</span>
               <span className="font-medium text-green-600">
                 -₫{formatCurrency(productDiscount)}
               </span>
@@ -278,19 +282,23 @@ const OrderSummary = memo(function OrderSummary({
           )}
 
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600 dark:text-gray-300">Phí vận chuyển</span>
+            <span className="text-gray-600 dark:text-gray-300">
+              {t('orderSummary.shippingFee')}
+            </span>
             <span className="font-medium text-gray-900 dark:text-gray-100">
               {shippingMethod ? (
                 `₫${formatCurrency(shippingFee)}`
               ) : (
-                <span className="text-gray-400 dark:text-gray-500">Chưa chọn</span>
+                <span className="text-gray-400 dark:text-gray-500">
+                  {t('orderSummary.notSelected')}
+                </span>
               )}
             </span>
           </div>
 
           {voucherDiscount > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-green-600">Voucher giảm giá</span>
+              <span className="text-green-600">{t('orderSummary.voucherDiscountLabel')}</span>
               <span className="font-medium text-green-600">
                 -₫{formatCurrency(voucherDiscount)}
               </span>
@@ -299,7 +307,9 @@ const OrderSummary = memo(function OrderSummary({
 
           {coinsDiscount > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-yellow-600">Shopee Xu ({coinsUsed} xu)</span>
+              <span className="text-yellow-600">
+                {t('orderSummary.shopeeCoins', { count: coinsUsed })}
+              </span>
               <span className="font-medium text-yellow-600">-₫{formatCurrency(coinsDiscount)}</span>
             </div>
           )}
@@ -315,7 +325,7 @@ const OrderSummary = memo(function OrderSummary({
         <div className="mt-4 rounded-lg border-2 border-orange/20 bg-linear-to-r from-orange/5 to-orange/10 p-4 dark:from-orange/10 dark:to-orange/20">
           <div className="flex items-center justify-between">
             <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
-              Tổng thanh toán
+              {t('orderSummary.totalPayment')}
             </span>
             <div className="text-right">
               <motion.span
@@ -341,7 +351,7 @@ const OrderSummary = memo(function OrderSummary({
                       d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
                     />
                   </svg>
-                  Tiết kiệm ₫{formatCurrency(totalDiscount)}
+                  {t('orderSummary.savings', { amount: formatCurrency(totalDiscount) })}
                 </p>
               )}
             </div>
@@ -375,7 +385,8 @@ const OrderSummary = memo(function OrderSummary({
                       d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"
                     />
                   </svg>
-                  Dự kiến giao: <span className="font-semibold">{estimatedDeliveryDate}</span>
+                  {t('orderSummary.estimatedDelivery')}
+                  <span className="font-semibold">{estimatedDeliveryDate}</span>
                 </p>
               </div>
             </div>
@@ -405,8 +416,10 @@ const OrderSummary = memo(function OrderSummary({
             </svg>
           </div>
           <div className="flex-1">
-            <p className="text-sm font-semibold text-emerald-800">Đảm bảo hoàn tiền</p>
-            <p className="text-xs text-emerald-600">Hoàn tiền 100% nếu hàng không như mô tả</p>
+            <p className="text-sm font-semibold text-emerald-800">
+              {t('orderSummary.moneyBackGuarantee')}
+            </p>
+            <p className="text-xs text-emerald-600">{t('orderSummary.moneyBackDescription')}</p>
           </div>
         </motion.div>
       </div>

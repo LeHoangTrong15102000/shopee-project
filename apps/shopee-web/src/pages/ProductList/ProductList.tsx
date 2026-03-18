@@ -181,11 +181,11 @@ const ProductList = () => {
           {
             '@type': 'BreadcrumbList',
             itemListElement: [
-              { '@type': 'ListItem', position: 1, name: 'Trang chủ', item: SITE_URL },
+              { '@type': 'ListItem', position: 1, name: t('breadcrumb.home'), item: SITE_URL },
               {
                 '@type': 'ListItem',
                 position: 2,
-                name: currentCategory?.name ?? 'Tất cả sản phẩm',
+                name: currentCategory?.name ?? t('breadcrumb.allProducts'),
                 ...(currentCategory
                   ? { item: `${SITE_URL}/products?category=${currentCategory._id}` }
                   : {}),

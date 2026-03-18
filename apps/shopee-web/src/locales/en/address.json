@@ -63,6 +63,18 @@
   "form.street.max": "Street address must be at most 200 characters",
   "form.label": "Label",
   "form.label.max": "Label must be at most 50 characters",
-  "form.isDefault": "Set as default address"
+  "form.isDefault": "Set as default address",
+  "book.noResults": "No addresses found",
+  "book.noMatchSearch": "No addresses match \"{{query}}\"",
+  "book.noMatchType": "No addresses match type \"{{type}}\"",
+  "book.typeHome": "Home",
+  "book.typeOffice": "Office",
+  "book.typeOther": "Other",
+  "book.clearFilter": "Clear filter",
+  "book.all": "All",
+  "book.searchPlaceholder": "Search by name, phone, address...",
+  "book.selectAll": "Select all",
+  "book.selectedCount": "Selected {{count}} addresses",
+  "book.deleteSelected": "Delete selected"
 }
 

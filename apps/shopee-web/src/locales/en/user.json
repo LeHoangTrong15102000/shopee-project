@@ -106,5 +106,21 @@
   "avatar.preview": "Preview:",
   "avatar.maxSize": "Max file size 1 MB",
   "avatar.invalidFormat": "Invalid file format. Only JPEG, PNG, WebP accepted",
-  "avatar.processingError": "An error occurred while processing image"
+  "avatar.processingError": "An error occurred while processing image",
+  "vouchers.title": "My Vouchers",
+  "vouchers.subtitle": "Manage your vouchers",
+  "vouchers.seo.title": "My Vouchers",
+  "vouchers.statusAll": "All",
+  "vouchers.statusAvailable": "Available",
+  "vouchers.statusUsed": "Used",
+  "vouchers.statusExpired": "Expired",
+  "vouchers.categoryAll": "All",
+  "vouchers.categoryShop": "Shop Voucher",
+  "vouchers.categoryFreeShipping": "Free Shipping",
+  "vouchers.categoryShopee": "Shopee",
+  "vouchers.empty": "No vouchers yet",
+  "vouchers.collectNow": "Collect vouchers now",
+  "vouchers.copied": "Voucher code copied!",
+  "vouchers.copiedCode": "Copied code: {{code}}",
+  "history.seo.title": "My Purchases"
 }

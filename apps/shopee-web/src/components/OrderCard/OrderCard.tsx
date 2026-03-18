@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Order } from 'src/types/checkout.type';
 import { ORDER_STATUS_CONFIG, OrderStatus, getStatusLabel } from 'src/config/orderStatus';
@@ -49,6 +50,7 @@ const OrderCard = memo(function OrderCard({
   onToggleTracking,
   trackingContent,
 }: OrderCardProps) {
+  const { t, i18n } = useTranslation(['order', 'common']);
   const status = getStatusDisplay(order.status as OrderStatus);
   const canCancel = ['pending', 'confirmed'].includes(order.status);
   const canReorder = ['delivered', 'cancelled'].includes(order.status);
@@ -66,7 +68,7 @@ const OrderCard = memo(function OrderCard({
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('vi-VN', {
+    return new Date(dateString).toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -132,7 +134,7 @@ const OrderCard = memo(function OrderCard({
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {item.product?.name || 'Sản phẩm'}
+                  {item.product?.name || t('common:label.product')}
                 </p>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">x{item.buyCount}</p>
               </div>
@@ -146,7 +148,7 @@ const OrderCard = memo(function OrderCard({
 
           {order.items.length > 2 && (
             <p className="py-1 text-center text-xs text-gray-400 dark:text-gray-500">
-              và {order.items.length - 2} sản phẩm khác
+              {t('card.moreProducts', { count: order.items.length - 2 })}
             </p>
           )}
         </div>
@@ -169,10 +171,10 @@ const OrderCard = memo(function OrderCard({
                 d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
               />
             </svg>
-            <span>{order.items.length} sản phẩm</span>
+            <span>{t('card.productCount', { count: order.items.length })}</span>
           </div>
           <div className="text-right">
-            <span className="text-xs text-gray-400 dark:text-gray-500">Tổng: </span>
+            <span className="text-xs text-gray-400 dark:text-gray-500">{t('card.total')}</span>
             <span className="text-lg font-bold text-orange">₫{formatCurrency(order.total)}</span>
           </div>
         </div>
@@ -197,7 +199,7 @@ const OrderCard = memo(function OrderCard({
                   <path d="M8.25 19.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0zM15.75 6.75a.75.75 0 00-.75.75v7.5h7.5v-1.5a3 3 0 00-3-3h-.375V7.5a.75.75 0 00-.75-.75h-2.625z" />
                   <path d="M21.75 18h.75a.75.75 0 00.75-.75v-1.5a.75.75 0 00-.75-.75h-.75v3zM19.5 19.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0z" />
                 </svg>
-                <span>Theo dõi</span>
+                <span>{t('card.track')}</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -220,14 +222,14 @@ const OrderCard = memo(function OrderCard({
               to={`/user/order/${order._id}?status=${orderStatusToNumber(order.status)}`}
               className="text-xs font-medium text-blue-500 transition-colors hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
             >
-              Chi tiết →
+              {t('card.details')}
             </Link>
             {canCancel && (
               <Button
                 onClick={handleCancel}
                 className="rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-medium text-red-500 transition-colors hover:bg-red-50 dark:border-red-800/50 dark:bg-slate-700 dark:text-red-400 dark:hover:bg-red-900/20"
               >
-                Hủy đơn
+                {t('card.cancel')}
               </Button>
             )}
             {canReorder && (
@@ -235,7 +237,7 @@ const OrderCard = memo(function OrderCard({
                 onClick={handleReorder}
                 className="rounded-lg bg-linear-to-r from-orange to-orange-500 px-3 py-1.5 text-xs font-medium text-white shadow-xs transition-all hover:shadow-md"
               >
-                Mua lại
+                {t('card.reorder')}
               </Button>
             )}
           </div>

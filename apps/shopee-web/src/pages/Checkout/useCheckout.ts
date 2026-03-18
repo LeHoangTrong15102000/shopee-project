@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import { useCartStore, useCartItems, useCheckedItems } from 'src/stores/cart.store';
 import {
   Address,
@@ -19,6 +20,7 @@ const CHECKOUT_SESSION_KEY = 'checkout_items';
 export const useCheckout = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { t } = useTranslation('checkout');
   const extendedPurchases = useCartItems();
   const setExtendedPurchases = useCartStore((s) => s.setItems);
   const clearCheckedItems = useCartStore((s) => s.clearCheckedItems);
@@ -51,7 +53,7 @@ export const useCheckout = () => {
       savedItems && JSON.parse(savedItems).some((item: { isChecked: boolean }) => item.isChecked);
 
     if (checkedItems.length === 0 && !hasSavedItems) {
-      toast.warning('Vui lòng chọn sản phẩm để thanh toán');
+      toast.warning(t('toast.selectProducts'));
       navigate(path.cart);
     }
   }, [checkedItems.length, navigate]);
@@ -70,14 +72,14 @@ export const useCheckout = () => {
   const createOrderMutation = useMutation({
     mutationFn: (body: CreateOrderBody) => checkoutApi.createOrder(body),
     onSuccess: () => {
-      toast.success('Đặt hàng thành công!');
+      toast.success(t('toast.orderSuccess'));
       sessionStorage.removeItem(CHECKOUT_SESSION_KEY);
       clearCheckedItems();
       queryClient.invalidateQueries({ queryKey: ['purchases'] });
       navigate(`/user/purchase?status=1`);
     },
     onError: () => {
-      toast.error('Đặt hàng thất bại. Vui lòng thử lại!');
+      toast.error(t('toast.orderFailed'));
     },
   });
 
@@ -98,21 +100,21 @@ export const useCheckout = () => {
       const code = voucherCode.toUpperCase();
       if (code === 'GIAM10') {
         setVoucherDiscount(10000);
-        toast.success('Áp dụng voucher thành công! Giảm 10.000đ');
+        toast.success(t('toast.voucherApplied', { amount: '10.000đ' }));
       } else if (code === 'GIAM50K') {
         setVoucherDiscount(50000);
-        toast.success('Áp dụng voucher thành công! Giảm 50.000đ');
+        toast.success(t('toast.voucherApplied', { amount: '50.000đ' }));
       } else if (code === 'DISCOUNT50') {
         setVoucherDiscount(50000);
-        toast.success('Áp dụng voucher thành công! Giảm 50.000đ');
+        toast.success(t('toast.voucherApplied', { amount: '50.000đ' }));
       } else if (code === 'FREESHIP') {
         setVoucherDiscount(30000);
-        toast.success('Áp dụng voucher thành công! Miễn phí vận chuyển');
+        toast.success(t('toast.voucherFreeShip'));
       } else if (code === 'NEWUSER') {
         setVoucherDiscount(100000);
-        toast.success('Áp dụng voucher thành công! Giảm 100.000đ cho khách hàng mới');
+        toast.success(t('toast.voucherNewUser', { amount: '100.000đ' }));
       } else {
-        toast.error('Mã voucher không hợp lệ. Thử: GIAM10, GIAM50K, DISCOUNT50, FREESHIP, NEWUSER');
+        toast.error(t('toast.voucherInvalid'));
       }
     }
   };
@@ -120,7 +122,7 @@ export const useCheckout = () => {
   const handleRemoveVoucher = () => {
     setVoucherCode('');
     setVoucherDiscount(0);
-    toast.info('Đã xóa mã giảm giá');
+    toast.info(t('toast.voucherRemoved'));
   };
 
   const handleBackToStep3 = () => {
@@ -130,15 +132,15 @@ export const useCheckout = () => {
 
   const handleGoToReview = () => {
     if (!selectedAddress) {
-      toast.error('Vui lòng chọn địa chỉ giao hàng');
+      toast.error(t('toast.selectAddress'));
       return;
     }
     if (!selectedShippingMethod) {
-      toast.error('Vui lòng chọn phương thức vận chuyển');
+      toast.error(t('toast.selectShipping'));
       return;
     }
     if (!selectedPaymentMethod) {
-      toast.error('Vui lòng chọn phương thức thanh toán');
+      toast.error(t('toast.selectPayment'));
       return;
     }
     setShowReview(true);
@@ -147,15 +149,15 @@ export const useCheckout = () => {
 
   const handlePlaceOrder = () => {
     if (!selectedAddress) {
-      toast.error('Vui lòng chọn địa chỉ giao hàng');
+      toast.error(t('toast.selectAddress'));
       return;
     }
     if (!selectedShippingMethod) {
-      toast.error('Vui lòng chọn phương thức vận chuyển');
+      toast.error(t('toast.selectShipping'));
       return;
     }
     if (!selectedPaymentMethod) {
-      toast.error('Vui lòng chọn phương thức thanh toán');
+      toast.error(t('toast.selectPayment'));
       return;
     }
 

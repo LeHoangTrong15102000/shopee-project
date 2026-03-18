@@ -56,5 +56,6 @@
   "sync.syncing": "Syncing...",
   "sync.synced": "Synced",
   "toast.alreadyInCart": "Product is already in cart",
-  "sync.updatedFromOtherDevice": "🔄 Cart updated from another device"
+  "sync.updatedFromOtherDevice": "🔄 Cart updated from another device",
+  "seo.title": "Shopping Cart"
 }

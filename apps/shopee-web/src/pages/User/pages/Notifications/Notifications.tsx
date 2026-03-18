@@ -8,17 +8,12 @@ import { Notification, NotificationType } from 'src/types/notification.type';
 import useNotifications from 'src/hooks/useNotifications';
 import useNotificationSound from 'src/hooks/useNotificationSound';
 import SEO from 'src/components/SEO';
+import { useTranslation } from 'react-i18next';
 import Button from 'src/components/Button';
 
 type FilterTab = 'all' | 'order' | 'promotion' | 'system' | 'other';
 
-const FILTER_TABS: { key: FilterTab; label: string }[] = [
-  { key: 'all', label: 'Tất cả' },
-  { key: 'order', label: 'Đơn hàng' },
-  { key: 'promotion', label: 'Khuyến mãi' },
-  { key: 'system', label: 'Hệ thống' },
-  { key: 'other', label: 'Khác' },
-];
+const FILTER_TAB_KEYS: FilterTab[] = ['all', 'order', 'promotion', 'system', 'other'];
 
 // Group notification types for filtering
 const TYPE_GROUPS: Record<FilterTab, NotificationType[]> = {
@@ -30,6 +25,7 @@ const TYPE_GROUPS: Record<FilterTab, NotificationType[]> = {
 };
 
 const Notifications = () => {
+  const { t } = useTranslation('notification');
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
   const { markAsReadMutation, markAllAsReadMutation } = useOptimisticNotification();
   const reducedMotion = useReducedMotion();
@@ -241,7 +237,7 @@ const Notifications = () => {
       animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
     >
-      <SEO title="Thông báo" noindex />
+      <SEO title={t('seo.title')} noindex />
       {/* Header */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
@@ -252,7 +248,7 @@ const Notifications = () => {
           >
             <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
           </svg>
-          <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Thông báo</h1>
+          <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">{t('title')}</h1>
           {unreadCount > 0 && (
             <span className="rounded-full bg-[#ee4d2d] px-2 py-0.5 text-xs text-white">
               {unreadCount}
@@ -267,7 +263,7 @@ const Notifications = () => {
               aria-hidden="true"
             />
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              {isConnected ? 'Cập nhật thời gian thực' : 'Đang kết nối...'}
+              {isConnected ? t('realtime.connected') : t('realtime.connecting')}
             </span>
           </div>
 
@@ -278,8 +274,8 @@ const Notifications = () => {
             type="button"
             onClick={toggleMute}
             className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-slate-700"
-            aria-label={isMuted ? 'Bật âm thanh thông báo' : 'Tắt âm thanh thông báo'}
-            title={isMuted ? 'Bật âm thanh' : 'Tắt âm thanh'}
+            aria-label={isMuted ? t('sound.enable') : t('sound.disable')}
+            title={isMuted ? t('sound.enable') : t('sound.disable')}
           >
             {isMuted ? (
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -318,7 +314,7 @@ const Notifications = () => {
               disabled={markAllAsReadMutation.isPending}
               className="text-sm text-[#ee4d2d] hover:text-[#ee4d2d]/80 disabled:opacity-50 dark:text-orange-400 dark:hover:text-orange-400/80"
             >
-              {markAllAsReadMutation.isPending ? 'Đang xử lý...' : 'Đánh dấu tất cả đã đọc'}
+              {markAllAsReadMutation.isPending ? t('processing') : t('markAllRead')}
             </Button>
           )}
         </div>
@@ -326,20 +322,20 @@ const Notifications = () => {
 
       {/* Filter Tabs */}
       <div className="mb-6 scrollbar-hide flex gap-1 overflow-x-auto border-b border-gray-200 pb-px md:gap-2 dark:border-slate-600">
-        {FILTER_TABS.map((tab) => (
+        {FILTER_TAB_KEYS.map((tabKey) => (
           <Button
-            key={tab.key}
+            key={tabKey}
             variant="text"
             animated={false}
             type="button"
-            onClick={() => setActiveTab(tab.key)}
+            onClick={() => setActiveTab(tabKey)}
             className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
-              activeTab === tab.key
+              activeTab === tabKey
                 ? 'border-b-2 border-[#ee4d2d] text-[#ee4d2d] dark:border-orange-400 dark:text-orange-400'
                 : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
             }`}
           >
-            {tab.label}
+            {t(`tabs.${tabKey}`)}
           </Button>
         ))}
       </div>
@@ -354,7 +350,7 @@ const Notifications = () => {
           >
             <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
           </svg>
-          <p className="mt-4 text-gray-500 dark:text-gray-400">Chưa có thông báo nào</p>
+          <p className="mt-4 text-gray-500 dark:text-gray-400">{t('noNotifications')}</p>
         </div>
       ) : (
         <div className="relative">
@@ -381,7 +377,7 @@ const Notifications = () => {
                         clipRule="evenodd"
                       />
                     </svg>
-                    Thông báo mới ({newBannerCount})
+                    {t('newBanner', { count: newBannerCount })}
                   </span>
                 </Button>
               </motion.div>

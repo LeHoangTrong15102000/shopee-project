@@ -25,6 +25,16 @@
   "receiveIn": "Nhận trong",
   "hours": "Giờ",
   "free": "Miễn phí",
-  "pickupPoint": "Điểm nhận hàng"
+  "pickupPoint": "Điểm nhận hàng",
+  "method.instant": "Hỏa Tốc",
+  "method.instantDesc": "Giao hàng siêu nhanh trong vòng 4 giờ",
+  "method.bulky": "Hàng Cồng Kềnh",
+  "method.bulkyDesc": "Giao hàng chuyên dụng cho hàng lớn",
+  "method.express": "Nhanh",
+  "method.expressDesc": "Giao hàng nhanh trong 1-2 ngày",
+  "method.economy": "Tiết Kiệm",
+  "method.economyDesc": "Giao hàng tiết kiệm trong 3-5 ngày",
+  "method.pickup": "Tủ Nhận Hàng",
+  "method.pickupDesc": "Nhận hàng tại điểm nhận hàng"
 }
 

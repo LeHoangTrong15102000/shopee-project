@@ -79,7 +79,7 @@ const HistoryPurchases = () => {
 
   return (
     <Fragment>
-      <SEO title="Đơn mua" noindex />
+      <SEO title={t('history.seo.title')} noindex />
       {/* Tabs Link */}
       <PurchaseTabBar status={status} onStatusChange={setStatus} />
 

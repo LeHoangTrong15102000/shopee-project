@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import path from 'src/constant/path';
 import SEO from 'src/components/SEO';
@@ -12,6 +13,7 @@ import {
 } from 'src/styles/animations';
 
 const NotFound = () => {
+  const { t } = useTranslation('common');
   const reducedMotion = useReducedMotion();
   const isMobile = useIsMobile();
   const disableAnimation = reducedMotion || isMobile;
@@ -34,7 +36,7 @@ const NotFound = () => {
       initial={disableAnimation ? undefined : 'hidden'}
       animate={disableAnimation ? undefined : 'visible'}
     >
-      <SEO title="Không tìm thấy trang" noindex />
+      <SEO title={t('seo.notFound')} noindex />
       <motion.h1
         className="text-6xl font-extrabold tracking-widest text-black/90 sm:text-7xl md:text-9xl dark:text-gray-100"
         variants={disableAnimation ? undefined : floatingVariants}

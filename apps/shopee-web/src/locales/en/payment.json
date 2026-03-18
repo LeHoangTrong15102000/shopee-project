@@ -61,5 +61,13 @@
   "buttons.cancel": "Cancel",
   "buttons.pay": "Pay",
   "bankTransfer.expired": "Transfer expired",
-  "creditCard.cvvTooltip": "3-digit code on the back of your card"
+  "creditCard.cvvTooltip": "3-digit code on the back of your card",
+  "method.cod": "Cash on Delivery (COD)",
+  "method.codDesc": "Pay with cash upon delivery",
+  "method.bankTransfer": "Bank Transfer",
+  "method.bankTransferDesc": "Transfer via bank account",
+  "method.eWallet": "E-Wallet",
+  "method.eWalletDesc": "Pay via MoMo, ZaloPay, VNPay",
+  "method.creditCard": "Credit/Debit Card",
+  "method.creditCardDesc": "Visa, Mastercard, JCB"
 }

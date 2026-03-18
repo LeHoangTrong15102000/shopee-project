@@ -19,5 +19,16 @@
   "listLabel": "Danh sách thông báo",
   "markAllReadLabel": "Đánh dấu {{count}} thông báo đã đọc",
   "allRead": "Đã đọc tất cả",
-  "viewAll": "Xem tất cả"
+  "viewAll": "Xem tất cả",
+  "tabs.all": "Tất cả",
+  "tabs.order": "Đơn hàng",
+  "tabs.promotion": "Khuyến mãi",
+  "tabs.system": "Hệ thống",
+  "tabs.other": "Khác",
+  "seo.title": "Thông báo",
+  "newBanner": "Thông báo mới ({{count}})",
+  "realtime.connected": "Cập nhật thời gian thực",
+  "realtime.connecting": "Đang kết nối...",
+  "sound.enable": "Bật âm thanh thông báo",
+  "sound.disable": "Tắt âm thanh thông báo"
 }

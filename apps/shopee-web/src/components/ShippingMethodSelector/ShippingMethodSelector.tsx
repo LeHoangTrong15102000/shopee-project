@@ -25,7 +25,7 @@ const ShippingMethodSelector = memo(function ShippingMethodSelector({
   onSelect,
   viewOnly = false,
 }: ShippingMethodSelectorProps) {
-  const { t } = useTranslation('product');
+  const { t } = useTranslation(['product', 'shipping']);
   const reducedMotion = useReducedMotion();
   const { data: methodsData, isLoading } = useQuery({
     queryKey: ['shipping-methods'],
@@ -99,7 +99,7 @@ const ShippingMethodSelector = memo(function ShippingMethodSelector({
               <div className="flex items-center gap-1.5 text-orange sm:gap-2">
                 <ShippingIcon type={method.icon} className="h-5 w-5 shrink-0 sm:h-6 sm:w-6" />
                 <span className="text-sm font-medium text-gray-900 sm:text-base dark:text-gray-100">
-                  {method.name}
+                  {t(`shipping:method.${method._id}`, { defaultValue: method.name })}
                 </span>
                 {isExpressShipping(method.estimatedDays) && (
                   <span className="rounded-sm bg-orange/10 px-1.5 py-0.5 text-xs font-medium text-orange dark:bg-orange-400/10 dark:text-orange-400">
@@ -108,7 +108,7 @@ const ShippingMethodSelector = memo(function ShippingMethodSelector({
                 )}
               </div>
               <p className="mt-0.5 line-clamp-2 text-xs text-gray-500 sm:mt-1 sm:text-sm dark:text-gray-400">
-                {method.description}
+                {t(`shipping:method.${method._id}Desc`, { defaultValue: method.description })}
               </p>
               <p className="mt-0.5 text-xs text-gray-600 sm:mt-1 sm:text-sm dark:text-gray-400">
                 {t('shipping.estimatedTime')}:{' '}

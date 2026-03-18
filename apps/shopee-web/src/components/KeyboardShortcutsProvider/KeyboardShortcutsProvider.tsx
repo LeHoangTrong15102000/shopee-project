@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import useKeyboardShortcuts, { Shortcut, SequenceShortcut } from 'src/hooks/useKeyboardShortcuts';
 import KeyboardShortcutsModal from 'src/components/KeyboardShortcutsModal';
@@ -43,6 +44,7 @@ interface KeyboardShortcutsProviderProps {
 const SEARCH_INPUT_ID = 'main-search-input';
 
 export const KeyboardShortcutsProvider = ({ children }: KeyboardShortcutsProviderProps) => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [customShortcuts, setCustomShortcuts] = useState<Shortcut[]>([]);
@@ -98,17 +100,33 @@ export const KeyboardShortcutsProvider = ({ children }: KeyboardShortcutsProvide
   // Single-key shortcuts
   const defaultShortcuts: Shortcut[] = useMemo(
     () => [
-      { key: '/', description: 'Tìm kiếm', action: focusSearch, category: 'Chung' },
-      { key: 'k', ctrlKey: true, description: 'Tìm kiếm', action: focusSearch, category: 'Chung' },
-      { key: '?', description: 'Hiện phím tắt', action: toggleHelpModal, category: 'Chung' },
+      {
+        key: '/',
+        description: t('keyboard.shortcuts.search'),
+        action: focusSearch,
+        category: t('keyboard.shortcuts.categoryGeneral'),
+      },
+      {
+        key: 'k',
+        ctrlKey: true,
+        description: t('keyboard.shortcuts.search'),
+        action: focusSearch,
+        category: t('keyboard.shortcuts.categoryGeneral'),
+      },
+      {
+        key: '?',
+        description: t('keyboard.shortcuts.showShortcuts'),
+        action: toggleHelpModal,
+        category: t('keyboard.shortcuts.categoryGeneral'),
+      },
       {
         key: 'Escape',
-        description: 'Đóng modal/dialog',
+        description: t('keyboard.shortcuts.closeModal'),
         action: closeActiveModal,
-        category: 'Chung',
+        category: t('keyboard.shortcuts.categoryGeneral'),
       },
     ],
-    [focusSearch, toggleHelpModal, closeActiveModal],
+    [focusSearch, toggleHelpModal, closeActiveModal, t],
   );
 
   // Sequence shortcuts (g then X)
@@ -116,30 +134,30 @@ export const KeyboardShortcutsProvider = ({ children }: KeyboardShortcutsProvide
     () => [
       {
         sequence: ['g', 'h'],
-        description: 'Trang chủ',
+        description: t('keyboard.shortcuts.home'),
         action: navigateHome,
-        category: 'Điều hướng',
+        category: t('keyboard.shortcuts.categoryNavigation'),
       },
       {
         sequence: ['g', 'p'],
-        description: 'Trang cá nhân',
+        description: t('keyboard.shortcuts.profile'),
         action: navigateProfile,
-        category: 'Điều hướng',
+        category: t('keyboard.shortcuts.categoryNavigation'),
       },
       {
         sequence: ['g', 'c'],
-        description: 'Giỏ hàng',
+        description: t('keyboard.shortcuts.cart'),
         action: navigateCart,
-        category: 'Điều hướng',
+        category: t('keyboard.shortcuts.categoryNavigation'),
       },
       {
         sequence: ['g', 'o'],
-        description: 'Đơn hàng',
+        description: t('keyboard.shortcuts.orders'),
         action: navigateOrders,
-        category: 'Điều hướng',
+        category: t('keyboard.shortcuts.categoryNavigation'),
       },
     ],
-    [navigateHome, navigateProfile, navigateCart, navigateOrders],
+    [navigateHome, navigateProfile, navigateCart, navigateOrders, t],
   );
 
   const allShortcuts = useMemo(

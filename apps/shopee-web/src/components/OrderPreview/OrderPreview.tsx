@@ -1,5 +1,6 @@
 import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { formatCurrency } from 'src/utils/utils';
 import { getEstimatedDeliveryDate } from 'src/utils/date';
 import { ExtendedPurchase } from 'src/types/purchases.type';
@@ -67,6 +68,7 @@ const OrderPreview = memo(function OrderPreview({
   isPlacingOrder,
 }: OrderPreviewProps) {
   const reducedMotion = useReducedMotion();
+  const { t } = useTranslation(['order', 'payment']);
   const containerVariants = staggerContainer(STAGGER_DELAY.normal);
 
   const subtotal = useMemo(() => {
@@ -96,7 +98,7 @@ const OrderPreview = memo(function OrderPreview({
     >
       {/* Section 1: Địa chỉ giao hàng */}
       <SectionWrapper
-        title="Địa chỉ giao hàng"
+        title={t('order:preview.deliveryAddress')}
         reducedMotion={reducedMotion}
         gradient="bg-linear-to-br from-white via-orange-50/20 to-amber-50/10 dark:from-slate-800 dark:via-orange-900/10 dark:to-amber-900/5"
       >
@@ -132,7 +134,7 @@ const OrderPreview = memo(function OrderPreview({
                 <span className="text-gray-600 dark:text-gray-300">{selectedAddress.phone}</span>
                 {selectedAddress.isDefault && (
                   <span className="rounded-full bg-linear-to-r from-orange to-amber-500 px-2.5 py-0.5 text-xs font-medium text-white shadow-xs">
-                    Mặc định
+                    {t('order:preview.defaultAddress')}
                   </span>
                 )}
               </div>
@@ -143,13 +145,13 @@ const OrderPreview = memo(function OrderPreview({
             </div>
           </div>
         ) : (
-          <p className="text-gray-500 dark:text-gray-400">Chưa chọn địa chỉ giao hàng</p>
+          <p className="text-gray-500 dark:text-gray-400">{t('order:preview.noAddress')}</p>
         )}
       </SectionWrapper>
 
       {/* Section 2: Sản phẩm */}
       <SectionWrapper
-        title={`Sản phẩm (${totalItemCount})`}
+        title={t('order:preview.products', { count: totalItemCount })}
         reducedMotion={reducedMotion}
         gradient="bg-linear-to-br from-white to-gray-50/50 dark:from-slate-800 dark:to-slate-900/50"
       >
@@ -174,7 +176,7 @@ const OrderPreview = memo(function OrderPreview({
                   {item.product.name}
                 </p>
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  Số lượng: {item.buy_count}
+                  {t('order:preview.quantity', { count: item.buy_count })}
                 </p>
               </div>
               <div className="text-right">
@@ -194,7 +196,7 @@ const OrderPreview = memo(function OrderPreview({
 
       {/* Section 3: Phương thức vận chuyển */}
       <SectionWrapper
-        title="Phương thức vận chuyển"
+        title={t('order:preview.shippingMethod')}
         reducedMotion={reducedMotion}
         gradient="bg-linear-to-br from-white via-green-50/20 to-emerald-50/10 dark:from-slate-800 dark:via-green-900/10 dark:to-emerald-900/5"
       >
@@ -226,7 +228,8 @@ const OrderPreview = memo(function OrderPreview({
                     />
                   </svg>
                   <span className="truncate">
-                    Dự kiến giao: <span className="font-semibold">{estimatedDeliveryDate}</span>
+                    {t('order:preview.estimatedDelivery')}
+                    <span className="font-semibold">{estimatedDeliveryDate}</span>
                   </span>
                 </p>
               )}
@@ -236,13 +239,13 @@ const OrderPreview = memo(function OrderPreview({
             </div>
           </div>
         ) : (
-          <p className="text-gray-500 dark:text-gray-400">Chưa chọn phương thức vận chuyển</p>
+          <p className="text-gray-500 dark:text-gray-400">{t('order:preview.noShipping')}</p>
         )}
       </SectionWrapper>
 
       {/* Section 4: Phương thức thanh toán */}
       <SectionWrapper
-        title="Phương thức thanh toán"
+        title={t('order:preview.paymentMethod')}
         reducedMotion={reducedMotion}
         gradient="bg-linear-to-br from-white via-blue-50/20 to-indigo-50/10 dark:from-slate-800 dark:via-blue-900/10 dark:to-indigo-900/5"
       >
@@ -253,19 +256,19 @@ const OrderPreview = memo(function OrderPreview({
             </div>
             <div className="flex-1">
               <p className="font-semibold text-gray-900 dark:text-gray-100">
-                {PAYMENT_METHOD_LABELS[selectedPaymentMethod]}
+                {t(`payment:method.${PAYMENT_METHOD_LABELS[selectedPaymentMethod]}`)}
               </p>
             </div>
           </div>
         ) : (
-          <p className="text-gray-500 dark:text-gray-400">Chưa chọn phương thức thanh toán</p>
+          <p className="text-gray-500 dark:text-gray-400">{t('order:preview.noPayment')}</p>
         )}
       </SectionWrapper>
 
       {/* Section 5: Ghi chú */}
       {note && (
         <SectionWrapper
-          title="Ghi chú đơn hàng"
+          title={t('order:preview.orderNote')}
           reducedMotion={reducedMotion}
           gradient="bg-linear-to-br from-white via-yellow-50/20 to-amber-50/10 dark:from-slate-800 dark:via-yellow-900/10 dark:to-amber-900/5"
         >
@@ -292,21 +295,23 @@ const OrderPreview = memo(function OrderPreview({
 
       {/* Section 6: Tổng kết đơn hàng */}
       <SectionWrapper
-        title="Tổng kết đơn hàng"
+        title={t('order:preview.orderSummary')}
         reducedMotion={reducedMotion}
         gradient="bg-linear-to-br from-white via-orange-50/30 to-amber-50/20 dark:from-slate-800 dark:via-orange-900/20 dark:to-amber-900/10"
       >
         <div className="space-y-3">
           <div className="flex justify-between text-sm">
             <span className="text-gray-600 dark:text-gray-300">
-              Tạm tính ({totalItemCount} sản phẩm)
+              {t('order:preview.subtotal', { count: totalItemCount })}
             </span>
             <span className="font-medium text-gray-900 dark:text-gray-100">
               ₫{formatCurrency(subtotal)}
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600 dark:text-gray-300">Phí vận chuyển</span>
+            <span className="text-gray-600 dark:text-gray-300">
+              {t('order:preview.shippingFee')}
+            </span>
             <span className="font-medium text-gray-900 dark:text-gray-100">
               ₫{formatCurrency(shippingFee)}
             </span>
@@ -314,7 +319,7 @@ const OrderPreview = memo(function OrderPreview({
           {voucherDiscount > 0 && (
             <div className="flex justify-between text-sm">
               <span className="text-green-600">
-                Voucher giảm giá {voucherCode && `(${voucherCode})`}
+                {t('order:preview.voucherDiscount')} {voucherCode && `(${voucherCode})`}
               </span>
               <span className="font-medium text-green-600">
                 -₫{formatCurrency(voucherDiscount)}
@@ -323,14 +328,16 @@ const OrderPreview = memo(function OrderPreview({
           )}
           {coinsDiscount > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-yellow-600">Shopee Xu ({coinsUsed} xu)</span>
+              <span className="text-yellow-600">
+                {t('order:preview.shopeeCoins')} ({coinsUsed} xu)
+              </span>
               <span className="font-medium text-yellow-600">-₫{formatCurrency(coinsDiscount)}</span>
             </div>
           )}
           <div className="border-t-2 border-orange/20 pt-3">
             <div className="flex items-center justify-between">
               <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                Tổng thanh toán
+                {t('order:preview.totalPayment')}
               </span>
               <span className="bg-linear-to-r from-orange to-red-500 bg-clip-text text-2xl font-bold text-transparent">
                 ₫{formatCurrency(Math.max(0, total))}
@@ -351,7 +358,7 @@ const OrderPreview = memo(function OrderPreview({
                     d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
                   />
                 </svg>
-                Tiết kiệm ₫{formatCurrency(totalDiscount)}
+                {t('order:preview.savings', { amount: formatCurrency(totalDiscount) })}
               </p>
             )}
           </div>
@@ -376,7 +383,7 @@ const OrderPreview = memo(function OrderPreview({
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-            Quay lại
+            {t('order:preview.backButton')}
           </span>
         </Button>
         <Button
@@ -385,7 +392,7 @@ const OrderPreview = memo(function OrderPreview({
           isLoading={isPlacingOrder}
           className="flex-1 rounded-xl bg-linear-to-r from-orange via-orange to-amber-500 py-3 font-semibold text-white shadow-lg shadow-orange/30 transition-all hover:from-orange-600 hover:via-orange-500 hover:to-amber-400 hover:shadow-xl hover:shadow-orange/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none md:flex-2"
         >
-          {isPlacingOrder ? 'Đang xử lý...' : 'Đặt hàng'}
+          {isPlacingOrder ? t('order:preview.processing') : t('order:preview.placeOrder')}
         </Button>
       </motion.div>
 
@@ -394,9 +401,9 @@ const OrderPreview = memo(function OrderPreview({
         variants={reducedMotion ? undefined : staggerItem}
         className="text-center text-xs text-gray-500 dark:text-gray-400"
       >
-        Nhấn "Đặt hàng" đồng nghĩa với việc bạn đồng ý tuân theo{' '}
+        {t('order:preview.termsNotice')}
         <a href="#" className="text-orange hover:underline">
-          Điều khoản Shopee
+          {t('order:preview.termsLink')}
         </a>
       </motion.p>
     </motion.div>

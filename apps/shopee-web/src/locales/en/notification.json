@@ -19,5 +19,16 @@
   "listLabel": "Notification list",
   "markAllReadLabel": "Mark {{count}} notifications as read",
   "allRead": "All read",
-  "viewAll": "View all"
+  "viewAll": "View all",
+  "tabs.all": "All",
+  "tabs.order": "Orders",
+  "tabs.promotion": "Promotions",
+  "tabs.system": "System",
+  "tabs.other": "Other",
+  "seo.title": "Notifications",
+  "newBanner": "New notifications ({{count}})",
+  "realtime.connected": "Real-time updates",
+  "realtime.connecting": "Connecting...",
+  "sound.enable": "Enable notification sound",
+  "sound.disable": "Disable notification sound"
 }

@@ -47,7 +47,7 @@ export default function OrderDetailPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={`Order #${order._id.slice(-8)}`}
+        title={t('detail.orderTitle', { id: order._id.slice(-8) })}
         actions={
           <Button variant="outline" size="sm" onClick={() => navigate('/orders')}>
             <ArrowLeft className="mr-2 size-4" />

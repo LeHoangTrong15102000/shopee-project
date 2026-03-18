@@ -170,18 +170,38 @@ vi.mock('react-i18next', async () => {
     ...actual,
     useTranslation: (ns = 'home') => ({
       t: (key, options) => {
-        const namespace = typeof ns === 'string' ? ns : (Array.isArray(ns) ? ns[0] : 'home')
-        const translations = allTranslations[namespace]
-        let value = translations?.[key] || key
-        // Handle interpolation: replace {{variable}} with actual values
-        if (options && typeof value === 'string') {
-          Object.keys(options).forEach(optKey => {
-            if (optKey !== 'defaultValue') {
-              value = value.replace(new RegExp(`\\{\\{${optKey}\\}\\}`, 'g'), String(options[optKey]))
-            }
-          })
+        const namespaces = typeof ns === 'string' ? [ns] : (Array.isArray(ns) ? ns : ['home'])
+
+        // Handle namespace-prefixed keys (e.g., 'order:preview.backButton')
+        let searchKey = key
+        let searchNamespaces = namespaces
+        if (typeof key === 'string' && key.includes(':')) {
+          const colonIdx = key.indexOf(':')
+          const nsPrefix = key.slice(0, colonIdx)
+          searchKey = key.slice(colonIdx + 1)
+          searchNamespaces = [nsPrefix]
         }
-        return value
+
+        // Search through namespaces for the key
+        for (const namespace of searchNamespaces) {
+          const translations = allTranslations[namespace]
+          if (translations?.[searchKey]) {
+            let value = translations[searchKey]
+            // Handle interpolation: replace {{variable}} with actual values
+            if (options && typeof value === 'string') {
+              Object.keys(options).forEach(optKey => {
+                if (optKey !== 'defaultValue') {
+                  value = value.replace(new RegExp(`\\{\\{${optKey}\\}\\}`, 'g'), String(options[optKey]))
+                }
+              })
+            }
+            return value
+          }
+        }
+
+        // Fall back to defaultValue, then key
+        if (options?.defaultValue) return options.defaultValue
+        return key
       },
       i18n: {
         changeLanguage: vi.fn(),

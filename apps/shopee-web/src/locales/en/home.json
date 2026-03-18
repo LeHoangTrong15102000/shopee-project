@@ -58,5 +58,13 @@
   "search.suggestion.checkSpelling": "Check for spelling errors",
   "search.suggestion.shorterKeywords": "Use shorter keywords",
   "search.suggestion.popularKeywords": "Use more popular keywords",
-  "filter.ariaLabel": "Product filter"
+  "filter.ariaLabel": "Product filter",
+  "banner.freeShipping": "Free nationwide shipping",
+  "banner.authenticBrands": "Authentic brands at great prices",
+  "breadcrumb.home": "Home",
+  "breadcrumb.allProducts": "All Products",
+  "allProductsTitle": "All Products",
+  "loading": "Loading...",
+  "loadingMore": "Loading more products...",
+  "allProductsShown": "Showing all {{count}} products"
 }

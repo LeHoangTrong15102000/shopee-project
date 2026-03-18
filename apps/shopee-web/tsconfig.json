@@ -35,5 +35,6 @@
     // "types": ["node", "jest", "@testing-library/jest-dom/vitest"]
   },
   "include": ["src", "vitest.setup.js", "src/@types/vitest.d.ts", "../../libs/shared-types/src", "../../libs/shared-constants/src", "../../libs/shared-utils/src"],
+  "exclude": ["../../libs/shared-utils/src/**/*.test.ts", "../../libs/shared-utils/src/**/*.spec.ts", "../../libs/shared-utils/src/**/__test__/**"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

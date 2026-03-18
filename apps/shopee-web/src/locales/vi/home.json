@@ -58,5 +58,13 @@
   "search.suggestion.checkSpelling": "Kiểm tra lỗi chính tả",
   "search.suggestion.shorterKeywords": "Sử dụng từ khóa ngắn hơn",
   "search.suggestion.popularKeywords": "Sử dụng từ khóa phổ biến hơn",
-  "filter.ariaLabel": "Bộ lọc sản phẩm"
+  "filter.ariaLabel": "Bộ lọc sản phẩm",
+  "banner.freeShipping": "Miễn phí vận chuyển toàn quốc",
+  "banner.authenticBrands": "Thương hiệu chính hãng giá tốt",
+  "breadcrumb.home": "Trang chủ",
+  "breadcrumb.allProducts": "Tất cả sản phẩm",
+  "allProductsTitle": "Tất cả sản phẩm",
+  "loading": "Đang tải...",
+  "loadingMore": "Đang tải thêm sản phẩm...",
+  "allProductsShown": "Đã hiển thị tất cả {{count}} sản phẩm"
 }

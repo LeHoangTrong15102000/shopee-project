@@ -16,19 +16,19 @@ const STATUS_TAB_KEYS: TabStatus[] = ['all', 'available', 'used', 'expired'];
 
 const CATEGORY_TAB_KEYS: VoucherCategory[] = ['all', 'shop', 'shipping', 'shopee'];
 
-const STATUS_KEY_MAP: Record<TabStatus, string> = {
-  all: 'statusAll',
-  available: 'statusAvailable',
-  used: 'statusUsed',
-  expired: 'statusExpired',
-};
+const STATUS_KEY_MAP = {
+  all: 'vouchers.statusAll',
+  available: 'vouchers.statusAvailable',
+  used: 'vouchers.statusUsed',
+  expired: 'vouchers.statusExpired',
+} as const;
 
-const CATEGORY_KEY_MAP: Record<VoucherCategory, string> = {
-  all: 'categoryAll',
-  shop: 'categoryShop',
-  shipping: 'categoryFreeShipping',
-  shopee: 'categoryShopee',
-};
+const CATEGORY_KEY_MAP = {
+  all: 'vouchers.categoryAll',
+  shop: 'vouchers.categoryShop',
+  shipping: 'vouchers.categoryFreeShipping',
+  shopee: 'vouchers.categoryShopee',
+} as const;
 
 export default function MyVouchers() {
   const { t } = useTranslation('user');
@@ -92,7 +92,7 @@ export default function MyVouchers() {
                 },
               )}
             >
-              {t(`vouchers.${CATEGORY_KEY_MAP[category]}`)}
+              {t(CATEGORY_KEY_MAP[category])}
             </Button>
           ))}
         </div>
@@ -110,7 +110,7 @@ export default function MyVouchers() {
                   : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300',
               )}
             >
-              {t(`vouchers.${STATUS_KEY_MAP[status]}`)}
+              {t(STATUS_KEY_MAP[status])}
               {activeStatus === status && (
                 <motion.div
                   layoutId="activeVoucherTab"

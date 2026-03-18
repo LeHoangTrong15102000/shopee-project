@@ -25,12 +25,12 @@ interface OrderPreviewProps {
   isPlacingOrder: boolean;
 }
 
-const PAYMENT_METHOD_LABELS: Record<PaymentMethodType, string> = {
-  cod: 'Thanh toán khi nhận hàng (COD)',
-  bank_transfer: 'Chuyển khoản ngân hàng',
-  e_wallet: 'Ví điện tử (MoMo, ZaloPay, VNPay)',
-  credit_card: 'Thẻ tín dụng/Ghi nợ',
-};
+const PAYMENT_METHOD_I18N_KEYS = {
+  cod: 'method.cod',
+  bank_transfer: 'method.bankTransfer',
+  e_wallet: 'method.eWallet',
+  credit_card: 'method.creditCard',
+} as const;
 
 const SectionWrapper = memo(function SectionWrapper({
   title,
@@ -256,7 +256,7 @@ const OrderPreview = memo(function OrderPreview({
             </div>
             <div className="flex-1">
               <p className="font-semibold text-gray-900 dark:text-gray-100">
-                {t(`payment:method.${PAYMENT_METHOD_LABELS[selectedPaymentMethod]}`)}
+                {t(`payment:${PAYMENT_METHOD_I18N_KEYS[selectedPaymentMethod]}`)}
               </p>
             </div>
           </div>

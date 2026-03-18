@@ -4,6 +4,13 @@ import { useTranslation } from 'react-i18next';
 
 type FilterType = 'all' | 'home' | 'office' | 'other';
 
+const FILTER_TYPE_I18N_KEYS = {
+  all: 'book.all',
+  home: 'book.typeHome',
+  office: 'book.typeOffice',
+  other: 'book.typeOther',
+} as const;
+
 interface NoResultsStateProps {
   searchQuery: string;
   filterType: FilterType;
@@ -40,7 +47,7 @@ const NoResultsState = ({ searchQuery, filterType, onClear }: NoResultsStateProp
         {searchQuery
           ? t('book.noMatchSearch', { query: searchQuery })
           : t('book.noMatchType', {
-              type: t(`book.type${filterType.charAt(0).toUpperCase() + filterType.slice(1)}`),
+              type: t(FILTER_TYPE_I18N_KEYS[filterType]),
             })}
       </p>
       <Button

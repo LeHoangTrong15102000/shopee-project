@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { waitFor, cleanup, screen } from '@testing-library/react';
+import { waitFor, cleanup } from '@testing-library/react';
 import { renderWithRouter } from 'src/utils/testUtils';
 import { setAccessTokenToLS, clearLS } from 'src/utils/auth';
 import { access_token } from 'src/msw/auth.msw';

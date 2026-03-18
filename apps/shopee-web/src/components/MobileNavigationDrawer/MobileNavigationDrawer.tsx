@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { AppContext } from 'src/contexts/app.context';
 import { useFocusTrap } from 'src/hooks/useFocusTrap';
 import useInventoryAlerts from 'src/hooks/useInventoryAlerts';
-import { loadLanguage, locales } from 'src/i18n/i18n';
+import { loadLanguage } from 'src/i18n/i18n';
 import authApi from 'src/apis/auth.api';
 import notificationApi from 'src/apis/notification.api';
 import { purchasesStatus } from 'src/constant/purchase';
@@ -30,7 +30,6 @@ const SECTION_TITLE = 'px-3 pb-1 text-xs font-semibold uppercase text-gray-400 d
 
 const MobileNavigationDrawer = ({ isOpen, onClose }: MobileNavigationDrawerProps) => {
   const { t, i18n } = useTranslation('nav');
-  const currentLanguage = locales[i18n.language as keyof typeof locales];
   const { setIsAuthenticated, isAuthenticated, profile, setProfile } = useContext(AppContext);
   const queryClient = useQueryClient();
   const navigate = useNavigate();

@@ -152,6 +152,7 @@ export default function AppButton(props: AppButtonProps) {
         className
       )}
       disabled={isDisabled}
+      accessibilityState={{ disabled: isDisabled || false }}
       onPress={handlePress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
@@ -160,7 +161,7 @@ export default function AppButton(props: AppButtonProps) {
       {loading && (
         <ActivityIndicator
           size="small"
-          color={variant === 'ghost' || variant === 'outline' || variant === 'link' ? '#e85a5a' : '#ffffff'}
+          color={variant === 'ghost' || variant === 'outline' || variant === 'link' ? colors.error : colors.primaryForeground}
         />
       )}
       {!loading && props.icon && React.cloneElement(props.icon as any, {

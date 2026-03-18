@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Pressable, TouchableOpacity, View} from 'react-native';
+import {AccessibilityInfo, Pressable, TouchableOpacity, View} from 'react-native';
 import Animated, {runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming,} from 'react-native-reanimated';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {AppText, Icon} from '@/components/ui';
@@ -50,6 +50,11 @@ const Toast: React.FC<ToastProps> = ({
   // Local state for text content to enable smooth updates
   const [currentTitle, setCurrentTitle] = useState(title);
   const [currentMessage, setCurrentMessage] = useState(message);
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
+  }, []);
 
   const getIconName = () => {
     switch (type) {
@@ -95,6 +100,10 @@ const Toast: React.FC<ToastProps> = ({
   });
 
   const handleDismiss = () => {
+    if (reduceMotion) {
+      onDismiss(id);
+      return;
+    }
     translateY.value = withTiming(position === 'top' ? -100 : 100, {duration: 300});
     opacity.value = withTiming(0, {duration: 300}, () => {
       runOnJS(onDismiss)(id);
@@ -103,11 +112,16 @@ const Toast: React.FC<ToastProps> = ({
 
   useEffect(() => {
     // Enter animation
-    translateY.value = withSpring(0, {
-      damping: 15,
-      stiffness: 150,
-    });
-    opacity.value = withTiming(1, {duration: 300});
+    if (reduceMotion) {
+      translateY.value = 0;
+      opacity.value = 1;
+    } else {
+      translateY.value = withSpring(0, {
+        damping: 15,
+        stiffness: 150,
+      });
+      opacity.value = withTiming(1, {duration: 300});
+    }
 
     // Auto dismiss - only if duration is greater than 0
     if (duration && duration > 0) {
@@ -127,10 +141,14 @@ const Toast: React.FC<ToastProps> = ({
       ? insets.top + baseOffset + stackOffset
       : insets.bottom + baseOffset + stackOffset;
 
-    positionY.value = withSpring(newPosition, {
-      damping: 15,
-      stiffness: 150,
-    });
+    if (reduceMotion) {
+      positionY.value = newPosition;
+    } else {
+      positionY.value = withSpring(newPosition, {
+        damping: 15,
+        stiffness: 150,
+      });
+    }
   }, [index, position, insets]);
 
   // Update text content when props change
@@ -146,6 +164,8 @@ const Toast: React.FC<ToastProps> = ({
 
   return (
     <Animated.View
+      accessibilityRole="alert"
+      accessibilityLiveRegion="assertive"
       style={[
         animatedStyle,
         {
@@ -199,8 +219,10 @@ const Toast: React.FC<ToastProps> = ({
         {closable && (
           <TouchableOpacity
             onPress={handleDismiss}
-            className="ml-2 p-1"
+            className="ml-2 p-2"
             hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}
+            accessibilityRole="button"
+            accessibilityLabel="Dismiss notification"
           >
             <Icon
               name="X"

@@ -1,19 +1,9 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { MMKV } from 'react-native-mmkv';
 import { colorScheme } from 'nativewind';
 import { LanguageCode } from '@/config/i18n';
 import * as Localization from 'expo-localization';
-
-// MMKV instance (shared, can be imported elsewhere if needed)
-export const storage = new MMKV();
-
-// Zustand-compatible MMKV storage adapter
-const mmkvStorage = {
-  getItem: (name: string) => storage.getString(name) ?? null,
-  setItem: (name: string, value: string) => storage.set(name, value),
-  removeItem: (name: string) => storage.delete(name),
-};
+import { mmkvStorage } from './mmkvStorage';
 
 // Types
 export type Theme = 'light' | 'dark';

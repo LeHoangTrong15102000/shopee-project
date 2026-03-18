@@ -19,6 +19,9 @@ export const AppColors = {
   neutrals800: '#1d1d1d',
   neutrals900: '#1c1c1c',
   neutrals1000: '#111111',
+  gradientStart: '#1a1a2e',
+  gradientMiddle: '#16213e',
+  gradientEnd: '#0f3460',
 };
 
 export const AppColorsLight: typeof AppColors = {
@@ -42,5 +45,14 @@ export const AppColorsLight: typeof AppColors = {
   neutrals900: '#f2f2f2',
   neutrals1000: '#f5f5f5',
   error: '#e4626f',
+  gradientStart: '#283593',
+  gradientMiddle: '#1a237e',
+  gradientEnd: '#0d1b5e',
 };
 
+
+// Spacing tokens (aligned with Tailwind scale)
+export const AppSpacing = {
+  screenPaddingHorizontal: 24, // p-6
+  screenPaddingVertical: 20,   // p-5
+} as const;

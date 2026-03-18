@@ -104,7 +104,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
         return null;
       } catch (error) {
         if (error instanceof z.ZodError) {
-          const fieldError = error.errors.find((err) => err.path[0] === name);
+          const fieldError = error.issues.find((err) => err.path[0] === name);
           if (fieldError) {
             return {
               type: fieldError.code,
@@ -128,7 +128,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
       } catch (error) {
         if (error instanceof z.ZodError) {
           const errors: FieldErrors<TFieldValues> = {};
-          error.errors.forEach((err) => {
+          error.issues.forEach((err) => {
             const fieldName = err.path[0] as keyof TFieldValues;
             if (fieldName) {
               errors[fieldName] = {

@@ -1,4 +1,4 @@
-import React, {forwardRef, useState} from 'react';
+import React, {forwardRef, useId, useState} from 'react';
 import {Text, TextInput, TextInputProps, View} from 'react-native';
 import {cn} from '@/utils';
 import {cva} from 'class-variance-authority';
@@ -122,6 +122,8 @@ const AppInput = forwardRef<TextInput, AppInputProps>(
     const hasError = !!errorText;
     const state = hasError ? 'error' : focused ? 'focused' : 'default';
     const colors = useColors();
+    const reactId = useId();
+    const inputNativeId = `input-${reactId}`;
 
     // Animation values
     const scale = useSharedValue(1);
@@ -157,6 +159,7 @@ const AppInput = forwardRef<TextInput, AppInputProps>(
       <View className={cn('w-full', containerClassName)}>
         {label && (
           <Text
+            nativeID={`${inputNativeId}-label`}
             className={cn(
               labelVariants({size, required}),
               labelClassName
@@ -182,6 +185,9 @@ const AppInput = forwardRef<TextInput, AppInputProps>(
           <TextInput
             ref={ref}
             {...props}
+            nativeID={inputNativeId}
+            accessibilityLabelledBy={label ? `${inputNativeId}-label` : undefined}
+            accessibilityLabel={!label ? props.placeholder : undefined}
             multiline={variant === 'textarea'}
             textAlignVertical={variant === 'textarea' ? 'top' : 'center'}
             onFocus={handleFocus}
@@ -215,6 +221,10 @@ const AppInput = forwardRef<TextInput, AppInputProps>(
               }),
               hasError ? errorClassName : helperClassName
             )}
+            {...(hasError && {
+              accessibilityRole: 'alert' as const,
+              accessibilityLiveRegion: 'polite' as const,
+            })}
           >
             {errorText || helperText}
           </Text>

@@ -213,6 +213,8 @@ export const FormMessage = React.forwardRef<Text, FormMessageProps>(
       <Text
         ref={ref}
         nativeID={formMessageId}
+        accessibilityRole="alert"
+        accessibilityLiveRegion="polite"
         className={cn('text-sm font-sans-medium text-error mt-1.5', className)}
       >
         {body}

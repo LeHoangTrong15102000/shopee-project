@@ -7,5 +7,5 @@ export {
 } from './http-helpers';
 export { createAuthStorage } from './localStorage';
 export type { AuthStorageConfig } from './localStorage';
-export { useIsMobile, useReducedMotion, useDebounce, useInfiniteScroll } from './hooks';
+export { useIsMobile, useReducedMotion, useDebounce, useInfiniteScroll, useWebVitals } from './hooks';
 

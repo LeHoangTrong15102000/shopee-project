@@ -15,6 +15,7 @@ import { ErrorResponseApi } from 'src/types/utils.type';
 import { UserSchema, baseUserSchema } from 'src/utils/rules';
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils';
 import { z } from 'zod';
+import i18n from 'src/i18n/i18n';
 
 type FormData = Pick<UserSchema, 'password' | 'new_password' | 'confirm_password'>;
 
@@ -24,13 +25,14 @@ const changePasswordSchema = baseUserSchema
     if (data.new_password && data.confirm_password !== data.new_password) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Nhập lại password không khớp!!',
+        message: i18n.t('common:validation.passwordMismatch'),
         path: ['confirm_password'],
       });
     }
   });
 
 const ChangePassword = () => {
+  'use no memo';
   const { t } = useTranslation('user');
   // Khai báo useForm
   const {

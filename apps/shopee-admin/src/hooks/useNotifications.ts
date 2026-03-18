@@ -19,6 +19,7 @@ export function useNotificationUnreadCount() {
         .getNotifications({ page: 1, limit: 100 })
         .then((r) => r.data.data.notifications.filter((n) => !n.is_read).length),
     refetchInterval: 60000,
+    refetchIntervalInBackground: false,
   });
 }
 

@@ -16,12 +16,16 @@ function escapeCSV(value: unknown): string {
   return str;
 }
 
-export function exportToCSV<T>(data: T[], columns: CsvColumn<T>[], filename: string) {
-  if (!data.length) {
-    toast.error(i18n.t('csv.noData', { ns: 'common' }));
-    return;
-  }
+function downloadBlob(url: string, filename: string, count: number) {
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${filename}-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+  toast.success(i18n.t('csv.exported', { ns: 'common', count }));
+}
 
+function exportSync<T>(data: T[], columns: CsvColumn<T>[], filename: string) {
   const header = columns.map((c) => escapeCSV(c.header)).join(',');
   const rows = data.map((row) =>
     columns
@@ -35,10 +39,43 @@ export function exportToCSV<T>(data: T[], columns: CsvColumn<T>[], filename: str
   const csv = [header, ...rows].join('\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `${filename}-${format(new Date(), 'yyyy-MM-dd')}.csv`;
-  link.click();
-  URL.revokeObjectURL(url);
-  toast.success(i18n.t('csv.exported', { ns: 'common', count: data.length }));
+  downloadBlob(url, filename, data.length);
+}
+
+const WORKER_THRESHOLD = 100;
+
+export function exportToCSV<T>(data: T[], columns: CsvColumn<T>[], filename: string) {
+  if (!data.length) {
+    toast.error(i18n.t('csv.noData', { ns: 'common' }));
+    return;
+  }
+
+  if (data.length <= WORKER_THRESHOLD || typeof Worker === 'undefined') {
+    exportSync(data, columns, filename);
+    return;
+  }
+
+  const worker = new Worker(new URL('./csv-export.worker.ts', import.meta.url), { type: 'module' });
+
+  const accessorResults = data.map((row) =>
+    columns.map((col) => String(col.accessor ? col.accessor(row) : '')),
+  );
+
+  const workerColumns = columns.map((col) => ({
+    key: String(col.key),
+    header: col.header,
+    hasAccessor: !!col.accessor,
+  }));
+
+  worker.onmessage = (e: MessageEvent<{ url: string }>) => {
+    downloadBlob(e.data.url, filename, data.length);
+    worker.terminate();
+  };
+
+  worker.onerror = () => {
+    worker.terminate();
+    exportSync(data, columns, filename);
+  };
+
+  worker.postMessage({ data, columns: workerColumns, accessorResults });
 }

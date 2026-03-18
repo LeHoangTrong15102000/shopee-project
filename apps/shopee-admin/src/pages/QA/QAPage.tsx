@@ -24,9 +24,11 @@ export default function QAPage() {
   const deleteAMut = useDeleteAnswer(() => setDeleteA(null));
 
   const toggle = (id: string) => {
-    const next = new Set(expanded);
-    next.has(id) ? next.delete(id) : next.add(id);
-    setExpanded(next);
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
   };
 
   if (isLoading) return <LoadingState />;

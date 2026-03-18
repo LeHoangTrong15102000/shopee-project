@@ -51,6 +51,7 @@ export default function LocationStep({
   onDistrictChange,
   onWardChange,
 }: LocationStepProps) {
+  'use no memo';
   const { t } = useTranslation('address');
   const {
     register,

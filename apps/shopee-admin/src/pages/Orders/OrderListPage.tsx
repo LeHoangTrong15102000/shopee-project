@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
@@ -57,15 +57,22 @@ export default function OrderListPage() {
   const { data, isLoading, isError, refetch } = useOrders(page, status);
   const { data: countData } = useOrderCountByStatus();
 
-  const countMap = new Map(countData?.map((c) => [c._id, c.count]) ?? []);
-  const totalCount = countData?.reduce((sum, c) => sum + c.count, 0) ?? 0;
+  const countMap = useMemo(
+    () => new Map(countData?.map((c) => [c._id, c.count]) ?? []),
+    [countData],
+  );
+  const totalCount = useMemo(
+    () => countData?.reduce((sum, c) => sum + c.count, 0) ?? 0,
+    [countData],
+  );
 
   const bulkMut = useBulkUpdateOrderStatus(() => {
     setSelected([]);
     setBulkStatus('');
   });
 
-  const columns: ColumnDef<Order>[] = [
+  const columns: ColumnDef<Order>[] = useMemo(
+    () => [
     {
       id: 'select',
       header: ({ table }) => (
@@ -136,7 +143,57 @@ export default function OrderListPage() {
         </DropdownMenu>
       ),
     },
-  ];
+  ],
+  [t, navigate],
+);
+
+  const handleExportCSV = useCallback(
+    () =>
+      exportToCSV(
+        data?.orders ?? [],
+        [
+          { key: '_id', header: t('columns.orderId') },
+          {
+            key: 'user',
+            header: t('columns.customer'),
+            accessor: (r) => {
+              const u = r.user as any;
+              return typeof u === 'object' ? u?.name || u?.email : String(u);
+            },
+          },
+          { key: 'total_price', header: t('columns.total') },
+          { key: 'status', header: t('columns.status') },
+          { key: 'createdAt', header: t('columns.date') },
+        ],
+        'orders',
+      ),
+    [data?.orders, t],
+  );
+
+  const filteredOrders = useMemo(
+    () =>
+      (data?.orders ?? []).filter((o) => {
+        if (startDate && new Date(o.createdAt) < new Date(startDate)) return false;
+        if (endDate && new Date(o.createdAt) > new Date(endDate + 'T23:59:59')) return false;
+        if (paymentMethod && o.payment_method !== paymentMethod) return false;
+        return true;
+      }),
+    [data?.orders, startDate, endDate, paymentMethod],
+  );
+
+  const handleClearFilters = useCallback(() => {
+    setStartDate('');
+    setEndDate('');
+    setPaymentMethod('');
+  }, []);
+
+  const handleStatusChange = useCallback(
+    (v: string) => {
+      setStatus(v as OrderStatus | 'all');
+      setPage(0);
+    },
+    [],
+  );
 
   return (
     <div className="space-y-6">
@@ -147,26 +204,7 @@ export default function OrderListPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() =>
-              exportToCSV(
-                data?.orders ?? [],
-                [
-                  { key: '_id', header: t('columns.orderId') },
-                  {
-                    key: 'user',
-                    header: t('columns.customer'),
-                    accessor: (r) => {
-                      const u = r.user as any;
-                      return typeof u === 'object' ? u?.name || u?.email : String(u);
-                    },
-                  },
-                  { key: 'total_price', header: t('columns.total') },
-                  { key: 'status', header: t('columns.status') },
-                  { key: 'createdAt', header: t('columns.date') },
-                ],
-                'orders',
-              )
-            }
+            onClick={handleExportCSV}
           >
             <Download className="mr-2 size-4" />
             {tc('buttons.exportCsv')}
@@ -181,11 +219,7 @@ export default function OrderListPage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => {
-              setStartDate('');
-              setEndDate('');
-              setPaymentMethod('');
-            }}
+            onClick={handleClearFilters}
           >
             <X className="mr-1 size-4" /> {tc('buttons.clearFilters')}
           </Button>
@@ -228,10 +262,7 @@ export default function OrderListPage() {
       )}
       <Tabs
         value={status}
-        onValueChange={(v) => {
-          setStatus(v as OrderStatus | 'all');
-          setPage(0);
-        }}
+        onValueChange={handleStatusChange}
       >
         <TabsList className="w-full justify-start overflow-x-auto flex-nowrap scroll-p-1">
           {statuses.map((s) => {
@@ -252,12 +283,7 @@ export default function OrderListPage() {
       {isError && <ErrorState message={t('error')} onRetry={refetch} />}
       <DataTable
         columns={columns}
-        data={(data?.orders ?? []).filter((o) => {
-          if (startDate && new Date(o.createdAt) < new Date(startDate)) return false;
-          if (endDate && new Date(o.createdAt) > new Date(endDate + 'T23:59:59')) return false;
-          if (paymentMethod && o.payment_method !== paymentMethod) return false;
-          return true;
-        })}
+        data={filteredOrders}
         isLoading={isLoading}
         searchKey="_id"
         searchPlaceholder={t('search')}

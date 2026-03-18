@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -126,14 +126,11 @@ export function CommandPalette() {
     };
   }, [debouncedQuery]);
 
-  const select = useCallback(
-    (href: string) => {
-      setOpen(false);
-      setQuery('');
-      navigate(href);
-    },
-    [navigate],
-  );
+  const select = (href: string) => {
+    setOpen(false);
+    setQuery('');
+    navigate(href);
+  };
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>

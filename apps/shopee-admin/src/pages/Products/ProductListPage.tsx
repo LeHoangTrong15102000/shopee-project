@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { type ColumnDef } from '@tanstack/react-table';
@@ -45,9 +45,12 @@ export default function ProductListPage() {
   const [maxPrice, setMaxPrice] = useState('');
   const [stockFilter, setStockFilter] = useState('');
 
-  const filters = {
-    ...(categoryFilter && { category: categoryFilter }),
-  };
+  const filters = useMemo(
+    () => ({
+      ...(categoryFilter && { category: categoryFilter }),
+    }),
+    [categoryFilter],
+  );
   const { data, isLoading, isError, refetch } = useProducts(
     page,
     Object.keys(filters).length ? filters : undefined,
@@ -59,7 +62,8 @@ export default function ProductListPage() {
     setSelected([]);
   });
 
-  const columns: ColumnDef<Product>[] = [
+  const columns: ColumnDef<Product>[] = useMemo(
+    () => [
     {
       id: 'select',
       header: ({ table }) => (
@@ -147,7 +151,54 @@ export default function ProductListPage() {
         </DropdownMenu>
       ),
     },
-  ];
+  ],
+  [t, navigate, setDeleteId],
+);
+
+  const handleExportCSV = useCallback(
+    () =>
+      exportToCSV(
+        data?.products ?? [],
+        [
+          { key: 'name', header: t('columns.name') },
+          { key: 'price', header: t('columns.price') },
+          { key: 'quantity', header: t('columns.stock') },
+          { key: 'sold', header: t('columns.sold') },
+          { key: 'rating', header: t('columns.rating') },
+          {
+            key: 'category',
+            header: t('columns.category'),
+            accessor: (r) =>
+              typeof r.category === 'object'
+                ? (r.category as any)?.name
+                : String(r.category),
+          },
+        ],
+        'products',
+      ),
+    [data?.products, t],
+  );
+
+  const filteredProducts = useMemo(
+    () =>
+      (data?.products ?? []).filter((p) => {
+        if (minPrice && p.price < Number(minPrice)) return false;
+        if (maxPrice && p.price > Number(maxPrice)) return false;
+        if (stockFilter === 'in_stock' && p.quantity <= 0) return false;
+        if (stockFilter === 'low_stock' && (p.quantity <= 0 || p.quantity >= 10)) return false;
+        if (stockFilter === 'out_of_stock' && p.quantity > 0) return false;
+        return true;
+      }),
+    [data?.products, minPrice, maxPrice, stockFilter],
+  );
+
+  const handleClearFilters = useCallback(() => {
+    setCategoryFilter('');
+    setMinPrice('');
+    setMaxPrice('');
+    setStockFilter('');
+    setPage(0);
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -159,27 +210,7 @@ export default function ProductListPage() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() =>
-                exportToCSV(
-                  data?.products ?? [],
-                  [
-                    { key: 'name', header: t('columns.name') },
-                    { key: 'price', header: t('columns.price') },
-                    { key: 'quantity', header: t('columns.stock') },
-                    { key: 'sold', header: t('columns.sold') },
-                    { key: 'rating', header: t('columns.rating') },
-                    {
-                      key: 'category',
-                      header: t('columns.category'),
-                      accessor: (r) =>
-                        typeof r.category === 'object'
-                          ? (r.category as any)?.name
-                          : String(r.category),
-                    },
-                  ],
-                  'products',
-                )
-              }
+              onClick={handleExportCSV}
             >
               <Download className="mr-2 size-4" />
               {tc('buttons.exportCsv')}
@@ -200,13 +231,7 @@ export default function ProductListPage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => {
-              setCategoryFilter('');
-              setMinPrice('');
-              setMaxPrice('');
-              setStockFilter('');
-              setPage(0);
-            }}
+            onClick={handleClearFilters}
           >
             <X className="mr-1 size-4" /> {tc('buttons.clearFilters')}
           </Button>
@@ -275,14 +300,7 @@ export default function ProductListPage() {
       {isError && <ErrorState message={t('error')} onRetry={refetch} />}
       <DataTable
         columns={columns}
-        data={(data?.products ?? []).filter((p) => {
-          if (minPrice && p.price < Number(minPrice)) return false;
-          if (maxPrice && p.price > Number(maxPrice)) return false;
-          if (stockFilter === 'in_stock' && p.quantity <= 0) return false;
-          if (stockFilter === 'low_stock' && (p.quantity <= 0 || p.quantity >= 10)) return false;
-          if (stockFilter === 'out_of_stock' && p.quantity > 0) return false;
-          return true;
-        })}
+        data={filteredProducts}
         isLoading={isLoading}
         searchKey="name"
         searchPlaceholder={t('search')}

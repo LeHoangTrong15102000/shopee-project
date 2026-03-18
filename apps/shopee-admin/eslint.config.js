@@ -8,7 +8,7 @@ import tsparser from '@typescript-eslint/parser'
 
 export default [
   {
-    ignores: ['dist', 'node_modules', 'coverage', 'storybook-static', '*.cjs']
+    ignores: ['dist', 'node_modules', 'coverage', '*.cjs']
   },
   {
     files: ['**/*.{ts,tsx}'],
@@ -59,8 +59,11 @@ export default [
         describe: 'readonly',
         it: 'readonly',
         beforeEach: 'readonly',
-        afterEach: 'readonly'
+        afterEach: 'readonly',
+        vi: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly'
       }
     }
   }
-] 
+]

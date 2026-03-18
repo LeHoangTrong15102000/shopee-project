@@ -5,14 +5,15 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "dependencies": {
+    "@shopee/shared-constants": "workspace:*",
     "@shopee/shared-types": "workspace:*",
-    "@shopee/shared-constants": "workspace:*"
+    "web-vitals": "^5.1.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.14"
   },
   "peerDependencies": {
-    "react": ">=18",
-    "axios": ">=1"
+    "axios": ">=1",
+    "react": ">=18"
   }
 }

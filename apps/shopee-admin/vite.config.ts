@@ -2,13 +2,27 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import compression from 'vite-plugin-compression'
 import path from 'path'
 
 export default defineConfig(({ mode }) => {
   const isTest = mode === 'test'
 
   const baseConfig = {
-    plugins: [tailwindcss(), react()],
+    plugins: [
+      tailwindcss(),
+      react({
+        babel: {
+          plugins: [['babel-plugin-react-compiler', {}]],
+        },
+      }),
+      ...(!isTest
+        ? [
+            compression({ algorithm: 'gzip', threshold: 1024, deleteOriginalAssets: false }),
+            compression({ algorithm: 'brotliCompress', threshold: 1024, deleteOriginalAssets: false, ext: '.br' }),
+          ]
+        : []),
+    ],
     server: {
       port: 4001,
       host: true,

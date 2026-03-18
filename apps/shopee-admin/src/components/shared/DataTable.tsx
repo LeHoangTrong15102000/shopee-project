@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   type ColumnDef,
@@ -12,6 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import {
   Table,
   TableBody,
@@ -71,6 +72,8 @@ export function DataTable<TData, TValue>({
   manualPagination = false,
   totalRows,
 }: DataTableProps<TData, TValue>) {
+  'use no memo';
+
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -119,6 +122,16 @@ export function DataTable<TData, TValue>({
     (k) => rowSelection[k as keyof typeof rowSelection],
   ).length;
 
+  const rows = table.getRowModel().rows;
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+
+  const rowVirtualizer = useVirtualizer({
+    count: isLoading ? controlledPageSize : rows.length,
+    getScrollElement: () => tableContainerRef.current,
+    estimateSize: () => 48,
+    overscan: 5,
+  });
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -134,7 +147,7 @@ export function DataTable<TData, TValue>({
               <button
                 onClick={() => setGlobalFilter('')}
                 aria-label={t('search.clearSearch')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-3 text-muted-foreground hover:text-foreground"
               >
                 <X className="size-4" />
               </button>
@@ -171,7 +184,7 @@ export function DataTable<TData, TValue>({
         </div>
       )}
 
-      <div className="overflow-x-auto rounded-md border">
+      <div ref={tableContainerRef} tabIndex={0} role="region" aria-label={t('table.region', { defaultValue: 'Data table' })} aria-busy={isLoading} className="overflow-auto rounded-md border" style={{ maxHeight: 'min(600px, 70vh)' }}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (
@@ -197,16 +210,32 @@ export function DataTable<TData, TValue>({
                   ))}
                 </TableRow>
               ))
-            ) : table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+            ) : rows.length ? (
+              <>
+                <tr style={{ height: `${rowVirtualizer.getVirtualItems()[0]?.start ?? 0}px` }} />
+                {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                  const row = rows[virtualRow.index];
+                  return (
+                    <TableRow
+                      key={row.id}
+                      data-index={virtualRow.index}
+                      data-state={row.getIsSelected() && 'selected'}
+                      ref={(node) => rowVirtualizer.measureElement(node)}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  );
+                })}
+                <tr
+                  style={{
+                    height: `${rowVirtualizer.getTotalSize() - (rowVirtualizer.getVirtualItems()[rowVirtualizer.getVirtualItems().length - 1]?.end ?? 0)}px`,
+                  }}
+                />
+              </>
             ) : (
               <TableRow>
                 <TableCell

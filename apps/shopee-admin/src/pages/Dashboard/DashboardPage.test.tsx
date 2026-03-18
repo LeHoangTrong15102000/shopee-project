@@ -58,10 +58,12 @@ describe('DashboardPage', () => {
 
   it('renders chart sections after loading', async () => {
     renderWithProviders(<DashboardPage />);
-    await waitFor(() => {
-      expect(screen.getByText('stats.totalRevenue')).toBeInTheDocument();
-    });
-    expect(screen.getByText('charts.revenue')).toBeInTheDocument();
+    await waitFor(
+      () => {
+        expect(screen.getByText('charts.revenue')).toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
   });
 
   it('renders all stat card labels', async () => {
@@ -72,5 +74,20 @@ describe('DashboardPage', () => {
     expect(screen.getByText('stats.totalOrders')).toBeInTheDocument();
     expect(screen.getByText('stats.totalUsers')).toBeInTheDocument();
     expect(screen.getByText('stats.totalProducts')).toBeInTheDocument();
+  });
+
+  it('renders Suspense fallback skeletons while charts load', async () => {
+    renderWithProviders(<DashboardPage />);
+    await waitFor(() => {
+      expect(screen.getByText('stats.totalRevenue')).toBeInTheDocument();
+    });
+    // Lazy-loaded chart components use Suspense with ChartSkeleton fallback
+    // After data loads, charts should eventually appear
+    await waitFor(
+      () => {
+        expect(screen.getByText('charts.revenue')).toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
   });
 });

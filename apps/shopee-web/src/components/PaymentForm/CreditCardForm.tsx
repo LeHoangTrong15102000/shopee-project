@@ -28,6 +28,7 @@ const CreditCardForm = memo(function CreditCardForm({
   errors,
   watch,
 }: CreditCardFormProps) {
+  'use no memo';
   const { t } = useTranslation('payment');
   const cardNumber = watch('cardNumber') || '';
   const cardHolder = watch('cardHolder') || '';

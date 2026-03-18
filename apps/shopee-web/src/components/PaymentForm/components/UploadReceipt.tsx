@@ -1,4 +1,4 @@
-import { memo, useState, useCallback, useRef } from 'react';
+import { memo, useState, useCallback, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Button from 'src/components/Button';
 
@@ -11,6 +11,15 @@ const UploadReceipt = memo(function UploadReceipt({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Cleanup blob URL when previewUrl changes or component unmounts
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0] || null;
@@ -18,6 +27,7 @@ const UploadReceipt = memo(function UploadReceipt({
       onFileSelect(file);
 
       if (file) {
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
         const url = URL.createObjectURL(file);
         setPreviewUrl(url);
       } else {
@@ -28,13 +38,14 @@ const UploadReceipt = memo(function UploadReceipt({
   );
 
   const handleRemoveFile = useCallback(() => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
     setSelectedFile(null);
     setPreviewUrl(null);
     onFileSelect(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-  }, [onFileSelect]);
+  }, [onFileSelect, previewUrl]);
 
   return (
     <div className="space-y-3">
@@ -98,6 +109,7 @@ const UploadReceipt = memo(function UploadReceipt({
               onClick={handleRemoveFile}
               variant="ghost"
               animated={false}
+              aria-label="Xóa biên lai"
               className="rounded-full p-1 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

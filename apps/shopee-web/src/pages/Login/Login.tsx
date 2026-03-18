@@ -23,6 +23,7 @@ import { generateNameId, isAxiosUnprocessableEntityError } from 'src/utils/utils
 type FormData = LoginSchema;
 
 const Login = () => {
+  'use no memo';
   const { t } = useTranslation('auth');
   const { setIsAuthenticated, setProfile } = useContext(AppContext);
   const navigate = useNavigate();

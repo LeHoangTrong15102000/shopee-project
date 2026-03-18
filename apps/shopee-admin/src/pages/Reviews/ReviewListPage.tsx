@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -34,7 +34,8 @@ export default function ReviewListPage() {
   const { data: stats } = useReviewStats();
   const deleteMut = useDeleteReview(() => setDeleteId(null));
 
-  const columns: ColumnDef<Review>[] = [
+  const columns: ColumnDef<Review>[] = useMemo(
+    () => [
     {
       accessorKey: 'product',
       header: t('columns.product'),
@@ -117,7 +118,9 @@ export default function ReviewListPage() {
         </DropdownMenu>
       ),
     },
-  ];
+  ],
+  [t, navigate, getStatus, setStatus, setDeleteId],
+);
 
   return (
     <div className="space-y-6">

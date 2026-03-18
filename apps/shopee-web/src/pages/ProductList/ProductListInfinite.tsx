@@ -1,6 +1,7 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { ProductListConfig } from 'src/types/product.type';
 import { RetryError } from 'src/types/utils.type';
 
@@ -20,37 +21,16 @@ import Button from 'src/components/Button';
 import path from 'src/constant/path';
 import { normalizeProductQueryKey, useProductQueryStates } from 'src/hooks/nuqs';
 import useInfiniteScroll from 'src/hooks/useInfiniteScroll';
-import { useIsMobile } from 'src/hooks/useIsMobile';
 import { useViewMode } from 'src/hooks/useViewMode';
-
-const containerVariantsBase = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.015 },
-  },
-};
-
-const itemVariantsBase = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.3 },
-  },
-};
+import { useTranslation } from 'react-i18next';
 
 /**
  * ProductListInfinite - Infinite Scroll version của ProductList
  * Sử dụng useInfiniteQuery từ TanStack Query
  */
 const ProductListInfinite = () => {
+  const { t } = useTranslation('home');
   const [filters, setFilters] = useProductQueryStates();
-  const isMobile = useIsMobile();
-
-  const containerVariants = isMobile ? undefined : containerVariantsBase;
-
-  const itemVariants = isMobile ? undefined : itemVariantsBase;
 
   // View Mode - Grid/List toggle with localStorage persistence
   const { viewMode, changeViewMode } = useViewMode();
@@ -140,6 +120,32 @@ const ProductListInfinite = () => {
 
   const categories = categoriesData?.data.data || [];
 
+  // Grid columns count for virtualization
+  const gridColumns = 5; // matches xl:grid-cols-5
+  const gridRows = useMemo(() => {
+    const rows: (typeof allProducts)[] = [];
+    for (let i = 0; i < allProducts.length; i += gridColumns) {
+      rows.push(allProducts.slice(i, i + gridColumns));
+    }
+    return rows;
+  }, [allProducts]);
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const gridVirtualizer = useVirtualizer({
+    count: gridRows.length,
+    getScrollElement: () => scrollContainerRef.current,
+    estimateSize: () => 320,
+    overscan: 3,
+  });
+
+  const listVirtualizer = useVirtualizer({
+    count: allProducts.length,
+    getScrollElement: () => scrollContainerRef.current,
+    estimateSize: () => 120,
+    overscan: 5,
+  });
+
   // Get current category name for breadcrumb
   const currentCategory = filters.category
     ? categories.find((cat) => cat._id === filters.category)
@@ -147,15 +153,15 @@ const ProductListInfinite = () => {
 
   // Build breadcrumb items
   const breadcrumbItems = [
-    { label: 'Trang chủ', to: path.home },
-    ...(currentCategory ? [{ label: currentCategory.name }] : [{ label: 'Tất cả sản phẩm' }]),
+    { label: t('breadcrumb.home'), to: path.home },
+    ...(currentCategory ? [{ label: currentCategory.name }] : [{ label: t('breadcrumb.allProducts') }]),
   ];
 
   // Initial loading state with skeletons
   if (isLoading) {
     return (
       <div className="bg-[#f5f5f5] py-6 dark:bg-slate-900">
-        <SEO title="Đang tải..." />
+        <SEO title={t('loading')} />
         <div className="container">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
             <div className="hidden md:col-span-3 md:block">
@@ -198,15 +204,15 @@ const ProductListInfinite = () => {
         <div className="container">
           <div className="py-12 text-center">
             <h2 className="mb-2 text-xl font-semibold text-gray-700 dark:text-gray-200">
-              Có lỗi xảy ra khi tải danh sách sản phẩm
+              {t('error.loadProducts')}
             </h2>
-            <p className="mb-4 text-gray-500 dark:text-gray-400">Vui lòng thử lại sau</p>
+            <p className="mb-4 text-gray-500 dark:text-gray-400">{t('error.tryAgainLater')}</p>
             <Button
               variant="primary"
               onClick={() => window.location.reload()}
               className="rounded-xs px-6 py-2"
             >
-              Thử lại
+              {t('error.retry')}
             </Button>
           </div>
         </div>
@@ -217,8 +223,8 @@ const ProductListInfinite = () => {
   return (
     <div className="bg-[#f5f5f5] py-6 dark:bg-slate-900">
       <SEO
-        title={currentCategory ? currentCategory.name : 'Tất cả sản phẩm'}
-        description="Mua sắm online hàng triệu sản phẩm ở tất cả ngành hàng"
+        title={currentCategory ? currentCategory.name : t('allProductsTitle')}
+        description={t('allProductsMeta')}
       />
 
       <div className="container">
@@ -232,11 +238,13 @@ const ProductListInfinite = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
+              role="status"
+              aria-live="polite"
               className="fixed top-20 right-4 z-50 rounded-lg border border-gray-200 bg-white p-3 shadow-lg dark:border-slate-700 dark:bg-slate-800"
             >
               <div className="flex items-center space-x-2">
                 <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-orange"></div>
-                <span className="text-sm text-gray-600 dark:text-gray-300">Đang cập nhật...</span>
+                <span className="text-sm text-gray-600 dark:text-gray-300">{t('updating')}</span>
               </div>
             </motion.div>
           )}
@@ -255,74 +263,111 @@ const ProductListInfinite = () => {
               />
 
               {/* Products Grid/List View */}
-              <AnimatePresence mode="wait">
+              <div
+                ref={scrollContainerRef}
+                tabIndex={0}
+                role="region"
+                aria-label={viewMode === 'grid' ? 'Product grid' : 'Product list'}
+                className="mt-6 overflow-auto"
+                style={{ maxHeight: 'calc(100vh - 200px)' }}
+              >
                 {viewMode === 'grid' ? (
-                  <motion.div
-                    key="grid-view"
-                    className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
-                    aria-live="polite"
-                    aria-busy={isFetchingNextPage}
-                    variants={containerVariants}
-                    initial={isMobile ? false : 'hidden'}
-                    animate={isMobile ? undefined : 'visible'}
-                    exit={{ opacity: 0 }}
+                  <div
+                    style={{
+                      height: `${gridVirtualizer.getTotalSize()}px`,
+                      width: '100%',
+                      position: 'relative',
+                    }}
                   >
-                    {allProducts.map((product) => (
-                      <motion.div className="col-span-1" key={product._id} variants={itemVariants}>
-                        <Product product={product} />
-                      </motion.div>
-                    ))}
-
-                    {/* Loading more skeletons */}
-                    {isFetchingNextPage &&
-                      Array(10)
-                        .fill(0)
-                        .map((_, index) => (
-                          <motion.div
-                            className="col-span-1"
-                            key={`skeleton-${index}`}
-                            variants={itemVariants}
-                          >
-                            <ProductSkeleton />
-                          </motion.div>
-                        ))}
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="list-view"
-                    className="mt-6 space-y-3"
-                    aria-live="polite"
-                    aria-busy={isFetchingNextPage}
-                    variants={containerVariants}
-                    initial={isMobile ? false : 'hidden'}
-                    animate={isMobile ? undefined : 'visible'}
-                    exit={{ opacity: 0 }}
-                  >
-                    {allProducts.map((product) => (
-                      <motion.div key={product._id} variants={itemVariants}>
-                        <ProductListItem product={product} />
-                      </motion.div>
-                    ))}
-
-                    {/* Loading more skeletons for list view */}
-                    {isFetchingNextPage &&
-                      Array(5)
-                        .fill(0)
-                        .map((_, index) => (
-                          <motion.div key={`skeleton-${index}`} variants={itemVariants}>
-                            <div className="flex animate-pulse overflow-hidden rounded-lg bg-white shadow-xs dark:bg-slate-800 dark:shadow-slate-900/20">
-                              <div className="h-32 w-32 shrink-0 bg-gray-200 sm:h-40 sm:w-40 md:h-48 md:w-48 dark:bg-slate-700" />
-                              <div className="flex-1 space-y-3 p-4">
-                                <div className="h-4 w-3/4 rounded-sm bg-gray-200 dark:bg-slate-700" />
-                                <div className="h-4 w-1/2 rounded-sm bg-gray-200 dark:bg-slate-700" />
-                                <div className="h-3 w-1/4 rounded-sm bg-gray-200 dark:bg-slate-700" />
-                              </div>
+                    {gridVirtualizer.getVirtualItems().map((virtualRow) => {
+                      const rowProducts = gridRows[virtualRow.index];
+                      return (
+                        <div
+                          key={virtualRow.index}
+                          ref={(el) => gridVirtualizer.measureElement(el)}
+                          data-index={virtualRow.index}
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            transform: `translateY(${virtualRow.start}px)`,
+                          }}
+                          className="grid grid-cols-2 gap-3 pb-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+                        >
+                          {rowProducts.map((product) => (
+                            <div className="col-span-1" key={product._id}>
+                              <Product product={product} />
                             </div>
-                          </motion.div>
-                        ))}
-                  </motion.div>
+                          ))}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      height: `${listVirtualizer.getTotalSize()}px`,
+                      width: '100%',
+                      position: 'relative',
+                    }}
+                  >
+                    {listVirtualizer.getVirtualItems().map((virtualRow) => {
+                      const product = allProducts[virtualRow.index];
+                      return (
+                        <div
+                          key={product._id}
+                          ref={(el) => listVirtualizer.measureElement(el)}
+                          data-index={virtualRow.index}
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            transform: `translateY(${virtualRow.start}px)`,
+                          }}
+                          className="pb-3"
+                        >
+                          <ProductListItem product={product} />
+                        </div>
+                      );
+                    })}
+                  </div>
                 )}
-              </AnimatePresence>
+
+                {/* Loading more skeletons */}
+                {isFetchingNextPage && viewMode === 'grid' && (
+                  <div
+                    aria-hidden="true"
+                    className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+                  >
+                    {Array(10)
+                      .fill(0)
+                      .map((_, index) => (
+                        <ProductSkeleton key={`skeleton-${index}`} />
+                      ))}
+                  </div>
+                )}
+                {isFetchingNextPage && viewMode === 'list' && (
+                  <div aria-hidden="true" className="space-y-3">
+                    {Array(5)
+                      .fill(0)
+                      .map((_, index) => (
+                        <div
+                          key={`skeleton-${index}`}
+                          className="flex animate-pulse overflow-hidden rounded-lg bg-white shadow-xs dark:bg-slate-800 dark:shadow-slate-900/20"
+                        >
+                          <div className="h-32 w-32 shrink-0 bg-gray-200 sm:h-40 sm:w-40 md:h-48 md:w-48 dark:bg-slate-700" />
+                          <div className="flex-1 space-y-3 p-4">
+                            <div className="h-4 w-3/4 rounded-sm bg-gray-200 dark:bg-slate-700" />
+                            <div className="h-4 w-1/2 rounded-sm bg-gray-200 dark:bg-slate-700" />
+                            <div className="h-3 w-1/4 rounded-sm bg-gray-200 dark:bg-slate-700" />
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
 
               {/* Sentinel element for infinite scroll */}
               <div ref={sentinelRef} className="h-4" />
@@ -330,14 +375,14 @@ const ProductListInfinite = () => {
               {/* Load more status */}
               <div className="mt-6 text-center">
                 {isFetchingNextPage && (
-                  <div className="flex items-center justify-center space-x-2 text-gray-600 dark:text-gray-300">
+                  <div role="status" aria-live="polite" className="flex items-center justify-center space-x-2 text-gray-600 dark:text-gray-300">
                     <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-orange"></div>
-                    <span>Đang tải thêm sản phẩm...</span>
+                    <span>{t('loadingMore')}</span>
                   </div>
                 )}
                 {!hasNextPage && allProducts.length > 0 && (
                   <p className="py-4 text-gray-500 dark:text-gray-400">
-                    Đã hiển thị tất cả {allProducts.length} sản phẩm
+                    {t('allProductsShown', { count: allProducts.length })}
                   </p>
                 )}
               </div>
@@ -359,6 +404,7 @@ const ProductListInfinite = () => {
             <div className="py-16 text-center">
               <div className="mx-auto mb-4 h-24 w-24">
                 <svg
+                  aria-hidden="true"
                   className="h-full w-full text-gray-300"
                   fill="none"
                   stroke="currentColor"
@@ -373,10 +419,10 @@ const ProductListInfinite = () => {
                 </svg>
               </div>
               <h3 className="mb-2 text-xl font-semibold text-gray-600 dark:text-gray-300">
-                Không tìm thấy sản phẩm nào
+                {t('empty.noProducts')}
               </h3>
               <p className="text-gray-500 dark:text-gray-400">
-                Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm của bạn
+                {t('empty.adjustFilters')}
               </p>
             </div>
           ))}

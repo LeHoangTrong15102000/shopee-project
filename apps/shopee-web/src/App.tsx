@@ -8,6 +8,7 @@ import SEO, { SITE_URL } from './components/SEO';
 import { KeyboardShortcutsProvider } from './components/KeyboardShortcutsProvider';
 import ScrollToTopOnNavigate from './components/ScrollToTopOnNavigate';
 import useDocumentLang from './hooks/useDocumentLang';
+import { useWebVitals } from '@shopee/shared-utils';
 
 // Lazy load heavy components - giảm main chunk size
 const ChatbotWidget = lazy(() => import('./components/ChatbotWidget'));
@@ -32,6 +33,9 @@ function App() {
 
   // Set html lang attribute based on i18n language
   useDocumentLang();
+
+  // Track Core Web Vitals (LCP, CLS, INP, FCP, TTFB)
+  useWebVitals();
 
   useEffect(() => {
     // lắng nghe sự kiện

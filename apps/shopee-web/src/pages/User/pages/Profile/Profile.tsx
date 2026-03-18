@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Fragment, useContext, useEffect, useMemo, useState } from 'react';
+import { Fragment, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useForm, FormProvider, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -23,6 +23,7 @@ import AvatarCropModal from 'src/components/AvatarCropModal';
 
 // Khai báo 1 cái component Info
 function Info() {
+  'use no memo';
   const { t } = useTranslation('user');
   const {
     register,
@@ -105,6 +106,20 @@ const Profile = () => {
     // Nếu mà có cái file thì gọi đến
     return file ? URL.createObjectURL(file) : '';
   }, [file]);
+
+  // Cleanup blob URL when file changes or component unmounts
+  const prevBlobUrl = useRef<string>('');
+  useEffect(() => {
+    if (prevBlobUrl.current) {
+      URL.revokeObjectURL(prevBlobUrl.current);
+    }
+    prevBlobUrl.current = previewImage;
+    return () => {
+      if (prevBlobUrl.current) {
+        URL.revokeObjectURL(prevBlobUrl.current);
+      }
+    };
+  }, [previewImage]);
 
   // Khai báo useForm
   const methods = useForm<FormData>({

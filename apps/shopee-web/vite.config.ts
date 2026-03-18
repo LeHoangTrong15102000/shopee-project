@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 import { visualizer } from 'rollup-plugin-visualizer'
+import compression from 'vite-plugin-compression'
 import os from 'os'
 
 // Workaround cho Windows path length issues
@@ -15,7 +16,21 @@ export default defineConfig(({ mode }) => {
   const isTest = mode === 'test'
 
   const baseConfig = {
-    plugins: [tailwindcss(), react(), visualizer()] as PluginOption[],
+    plugins: [
+      tailwindcss(),
+      react({
+        babel: {
+          plugins: [['babel-plugin-react-compiler', {}]],
+        },
+      }),
+      visualizer(),
+      ...(!isTest
+        ? [
+            compression({ algorithm: 'gzip', threshold: 1024, deleteOriginalAssets: false }),
+            compression({ algorithm: 'brotliCompress', threshold: 1024, deleteOriginalAssets: false, ext: '.br' }),
+          ]
+        : []),
+    ] as PluginOption[],
     // Base URL cho production deployment
     base: '/',
     server: {
@@ -165,7 +180,7 @@ export default defineConfig(({ mode }) => {
         },
         coverage: {
           provider: 'v8',
-          reporter: ['text', 'html', 'lcov'],
+          reporter: ['json', 'text-summary'],
           reportsDirectory: './coverage',
           include: ['src/**/*.{ts,tsx}'],
           exclude: [

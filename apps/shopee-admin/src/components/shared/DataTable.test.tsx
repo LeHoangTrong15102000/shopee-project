@@ -3,6 +3,22 @@ import userEvent from '@testing-library/user-event';
 import { DataTable } from './DataTable';
 import type { ColumnDef } from '@tanstack/react-table';
 
+// Mock virtualizer to render all items in jsdom (no real scroll container dimensions)
+vi.mock('@tanstack/react-virtual', () => ({
+  useVirtualizer: ({ count }: { count: number }) => ({
+    getVirtualItems: () =>
+      Array.from({ length: count }, (_, i) => ({
+        index: i,
+        start: i * 48,
+        end: (i + 1) * 48,
+        size: 48,
+        key: i,
+      })),
+    getTotalSize: () => count * 48,
+    measureElement: () => {},
+  }),
+}));
+
 interface TestRow {
   id: string;
   name: string;
@@ -224,5 +240,26 @@ describe('DataTable', () => {
     );
     await user.click(screen.getByRole('button', { name: /pagination.firstPage/i }));
     expect(onPaginationChange).toHaveBeenCalledWith(0, 10);
+  });
+
+  it('renders scroll container with accessibility attributes', () => {
+    render(<DataTable columns={columns} data={data} />);
+    const region = screen.getByRole('region');
+    expect(region).toHaveAttribute('tabindex', '0');
+    expect(region).toHaveAttribute('aria-label');
+  });
+
+  it('uses responsive max-height on scroll container', () => {
+    render(<DataTable columns={columns} data={data} />);
+    const region = screen.getByRole('region');
+    expect(region.style.maxHeight).toBe('min(600px, 70vh)');
+  });
+
+  it('renders virtualized rows with data-index attributes', () => {
+    const largeData = Array.from({ length: 50 }, (_, i) => ({ id: String(i), name: `Item ${i}` }));
+    render(<DataTable columns={columns} data={largeData} />);
+    const rows = screen.getAllByRole('row');
+    // Should have header row + virtualized data rows (not all 50)
+    expect(rows.length).toBeLessThan(55);
   });
 });

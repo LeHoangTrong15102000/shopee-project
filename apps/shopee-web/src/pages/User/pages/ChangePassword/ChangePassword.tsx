@@ -32,7 +32,6 @@ const changePasswordSchema = baseUserSchema
   });
 
 const ChangePassword = () => {
-  'use no memo';
   const { t } = useTranslation('user');
   // Khai báo useForm
   const {

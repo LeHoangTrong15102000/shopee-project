@@ -15,7 +15,6 @@ import { Address, AddressFormData, AddressType } from 'src/types/checkout.type';
 import { addressSchema, AddressSchemaFormData } from './addressForm.constants';
 
 export function useAddressForm(address: Address | null, onSuccess: () => void) {
-  'use no memo';
   const isEditing = !!address;
   const [currentStep, setCurrentStep] = useState(1);
   const [districts, setDistricts] = useState<District[]>([]);

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -30,11 +30,16 @@ const DeleteModal = ({ open = false, handleIsAgree, handleIsCancel, product }: P
     handleIsCancel();
   };
 
-  if (open) {
-    document.body.style.overflow = 'hidden';
-  } else {
-    document.body.style.removeProperty('overflow');
-  }
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.removeProperty('overflow');
+    }
+    return () => {
+      document.body.style.removeProperty('overflow');
+    };
+  }, [open]);
 
   if (typeof document === 'undefined') return <div className="modal"></div>;
   return ReactDOM.createPortal(

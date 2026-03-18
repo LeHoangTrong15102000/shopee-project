@@ -9,7 +9,7 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import addressApi from 'src/apis/address.api';
 import { Address, AddressType } from 'src/types/checkout.type';
@@ -49,7 +49,7 @@ export const useAddressBook = () => {
 
   const [orderedAddresses, setOrderedAddresses] = useState<Address[]>([]);
 
-  useMemo(() => {
+  useEffect(() => {
     if (rawAddresses.length > 0 && orderedAddresses.length === 0) {
       setOrderedAddresses(rawAddresses);
     } else if (rawAddresses.length !== orderedAddresses.length) {
@@ -59,7 +59,7 @@ export const useAddressBook = () => {
       const remainingAddresses = orderedAddresses.filter((a) => newIds.has(a._id));
       setOrderedAddresses([...addedAddresses, ...remainingAddresses]);
     }
-  }, [rawAddresses]);
+  }, [rawAddresses, orderedAddresses]);
 
   const filteredAddresses = useMemo(() => {
     let result = orderedAddresses.length > 0 ? orderedAddresses : rawAddresses;

@@ -23,7 +23,6 @@ const forgotPasswordSchema = z.object({
 type FormData = z.infer<typeof forgotPasswordSchema>;
 
 const ForgotPassword = () => {
-  'use no memo';
   const { t } = useTranslation('auth');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const reducedMotion = useReducedMotion();

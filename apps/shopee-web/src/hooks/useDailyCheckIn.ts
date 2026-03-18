@@ -45,6 +45,12 @@ export const useDailyCheckIn = () => {
     canCheckInToday: true,
   });
 
+  // Save to localStorage
+  const saveToStorage = useCallback((data: StoredCheckInData) => {
+    localStorage.setItem(CHECKIN_STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem(COINS_STORAGE_KEY, data.totalCoins.toString());
+  }, []);
+
   // Load from API on mount, fall back to localStorage
   useEffect(() => {
     const loadFromLocalStorage = () => {
@@ -107,14 +113,7 @@ export const useDailyCheckIn = () => {
     };
 
     loadFromApi();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Save to localStorage
-  const saveToStorage = useCallback((data: StoredCheckInData) => {
-    localStorage.setItem(CHECKIN_STORAGE_KEY, JSON.stringify(data));
-    localStorage.setItem(COINS_STORAGE_KEY, data.totalCoins.toString());
-  }, []);
+  }, [saveToStorage]);
 
   // Perform check-in via API with localStorage fallback
   const checkIn = useCallback(async (): Promise<CheckInReward | null> => {

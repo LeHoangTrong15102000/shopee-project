@@ -68,5 +68,17 @@
   "AUTH_VALIDATION_EMAIL_REQUIRED": "Email is required",
   "AUTH_VALIDATION_EMAIL_INVALID": "Invalid email",
   "AUTH_VALIDATION_PASSWORD_LENGTH": "Length must be 6 - 160 characters",
-  "AUTH_VALIDATION_PASSWORD_MISMATCH": "Confirm password does not match"
+  "AUTH_VALIDATION_PASSWORD_MISMATCH": "Confirm password does not match",
+  "TAB_HOME": "Home",
+  "TAB_MALL": "Mall",
+  "TAB_LIVE": "Live",
+  "TAB_NOTIFICATIONS": "Notifications",
+  "TAB_ACCOUNT": "Account",
+  "SEARCH_PLACEHOLDER": "Search products...",
+  "CATEGORY_ALL": "All",
+  "ERROR_LOAD_PRODUCTS": "Failed to load products",
+  "ERROR_LOAD_CATEGORIES": "Failed to load categories",
+  "RETRY": "Retry",
+  "EMPTY_PRODUCTS": "No products found",
+  "EMPTY_PRODUCTS_CTA": "Browse all"
 }

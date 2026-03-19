@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useColors } from '@/hooks/useColors.ts';
-import { Home, Menu } from 'lucide-react-native';
+import { Home, Store, Radio, Bell, User } from 'lucide-react-native';
 import { AppText } from '@/components/ui';
 import { useTranslation } from 'react-i18next';
 
@@ -15,11 +15,17 @@ interface TabIconProps {
 const TabIcon: React.FC<TabIconProps> = ({ name, color, size }) => {
   switch (name) {
     case 'home':
-      return <Home size={size} color={color} fill={color} />;
-    case 'more':
-      return <Menu size={size} color={color} fill={color} />;
+      return <Home size={size} color={color} />;
+    case 'mall':
+      return <Store size={size} color={color} />;
+    case 'live':
+      return <Radio size={size} color={color} />;
+    case 'notifications':
+      return <Bell size={size} color={color} />;
+    case 'account':
+      return <User size={size} color={color} />;
     default:
-      return <Home size={size} color={color} fill={color} />;
+      return <Home size={size} color={color} />;
   }
 };
 
@@ -28,7 +34,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
   const { t } = useTranslation();
 
   return (
-    <View className={'pb-safe-offset-0 flex-row border-t border-neutrals900 bg-background py-2'}>
+    <View className="pb-safe-offset-0 flex-row border-t border-neutrals900 bg-background py-2">
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label =
@@ -60,7 +66,6 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
         };
 
         const iconColor = isFocused ? colors.primary : colors.neutrals400;
-
         const labelColor = isFocused ? colors.primary : colors.neutrals400;
 
         return (
@@ -81,16 +86,12 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
               borderRadius: 12,
               marginHorizontal: 4,
             }}>
-            <View
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: 4,
-              }}>
+            <View style={{ alignItems: 'center', justifyContent: 'center', marginBottom: 4 }}>
               <TabIcon name={route.name} color={iconColor} size={24} />
             </View>
 
             <AppText
+              raw
               style={{
                 color: labelColor,
                 fontSize: 12,

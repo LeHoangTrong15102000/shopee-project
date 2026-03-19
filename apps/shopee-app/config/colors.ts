@@ -1,7 +1,7 @@
 export const AppColors = {
-  primary: '#C9FF3D',
+  primary: '#EE4D2D',
   secondary: '#007BFF',
-  primaryForeground: '#0E0E0E',
+  primaryForeground: '#FFFFFF',
   secondaryForeground: '#FFFFFF',
   foreground: '#fafafa',
   background: '#0a0b0a',
@@ -25,9 +25,9 @@ export const AppColors = {
 };
 
 export const AppColorsLight: typeof AppColors = {
-  primary: '#C9FF3D',
+  primary: '#EE4D2D',
   secondary: '#2D9CDB',
-  primaryForeground: '#111111',
+  primaryForeground: '#FFFFFF',
   secondaryForeground: '#FFFFFF',
   foreground: '#1a1a1a',
   background: '#ffffff',
@@ -50,9 +50,8 @@ export const AppColorsLight: typeof AppColors = {
   gradientEnd: '#0d1b5e',
 };
 
-
 // Spacing tokens (aligned with Tailwind scale)
 export const AppSpacing = {
   screenPaddingHorizontal: 24, // p-6
-  screenPaddingVertical: 20,   // p-5
+  screenPaddingVertical: 20, // p-5
 } as const;

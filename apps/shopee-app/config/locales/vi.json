@@ -68,6 +68,17 @@
   "AUTH_VALIDATION_EMAIL_REQUIRED": "Email là bắt buộc",
   "AUTH_VALIDATION_EMAIL_INVALID": "Email không hợp lệ",
   "AUTH_VALIDATION_PASSWORD_LENGTH": "Độ dài từ 6 - 160 ký tự",
-  "AUTH_VALIDATION_PASSWORD_MISMATCH": "Nhập lại password không khớp"
+  "AUTH_VALIDATION_PASSWORD_MISMATCH": "Nhập lại password không khớp",
+  "TAB_HOME": "Trang chủ",
+  "TAB_MALL": "Mall",
+  "TAB_LIVE": "Live",
+  "TAB_NOTIFICATIONS": "Thông báo",
+  "TAB_ACCOUNT": "Tài khoản",
+  "SEARCH_PLACEHOLDER": "Tìm kiếm sản phẩm...",
+  "CATEGORY_ALL": "Tất cả",
+  "ERROR_LOAD_PRODUCTS": "Không thể tải sản phẩm",
+  "ERROR_LOAD_CATEGORIES": "Không thể tải danh mục",
+  "RETRY": "Thử lại",
+  "EMPTY_PRODUCTS": "Không tìm thấy sản phẩm",
+  "EMPTY_PRODUCTS_CTA": "Xem tất cả"
 }
-

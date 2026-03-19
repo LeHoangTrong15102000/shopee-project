@@ -1,0 +1,132 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Snapshot tests EmptyState matches snapshot 1`] = `
+<View
+  className="items-center justify-center gap-3 py-12"
+>
+  <View
+    color="#6e6e6e"
+    size={48}
+    testID="icon-ShoppingBag"
+  />
+  <Text
+    className="text-sm leading-normal font-sans-regular text-neutrals400 text-center"
+    raw={true}
+  >
+    Nothing here
+  </Text>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": false,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    className="flex-row items-center justify-center gap-2 rounded-xl bg-primary text-primary-foreground font-semibold h-10 px-3 text-xs"
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={{}}
+  >
+    <Text
+      className="font-sans-medium text-primary-foreground text-sm"
+    >
+      Go back
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`Snapshot tests InlineError matches snapshot 1`] = `
+<View
+  className="items-center justify-center gap-3 py-8"
+>
+  <View
+    color="#e4626f"
+    size={32}
+    testID="icon-AlertCircle"
+  />
+  <Text
+    className="text-sm leading-normal font-sans-regular text-neutrals400 text-center"
+    raw={true}
+  >
+    Error occurred
+  </Text>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": false,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    className="flex-row items-center justify-center gap-2 rounded-xl bg-transparent text-foreground font-semibold border border-neutrals700 hover:bg-neutrals900 h-10 px-3 text-xs"
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={{}}
+  >
+    <Text
+      className="font-sans-medium text-foreground text-sm"
+    >
+      RETRY
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`Snapshot tests SkeletonLoader matches snapshot 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#414240",
+        "borderRadius": 8,
+        "height": 100,
+        "width": 100,
+      },
+      {},
+      undefined,
+    ]
+  }
+/>
+`;

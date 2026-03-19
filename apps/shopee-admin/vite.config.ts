@@ -1,12 +1,12 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import compression from 'vite-plugin-compression'
-import path from 'path'
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+import compression from 'vite-plugin-compression';
+import path from 'path';
 
 export default defineConfig(({ mode }) => {
-  const isTest = mode === 'test'
+  const isTest = mode === 'test';
 
   const baseConfig = {
     plugins: [
@@ -19,7 +19,12 @@ export default defineConfig(({ mode }) => {
       ...(!isTest
         ? [
             compression({ algorithm: 'gzip', threshold: 1024, deleteOriginalAssets: false }),
-            compression({ algorithm: 'brotliCompress', threshold: 1024, deleteOriginalAssets: false, ext: '.br' }),
+            compression({
+              algorithm: 'brotliCompress',
+              threshold: 1024,
+              deleteOriginalAssets: false,
+              ext: '.br',
+            }),
           ]
         : []),
     ],
@@ -35,6 +40,7 @@ export default defineConfig(({ mode }) => {
         '@shopee/shared-utils': path.resolve(__dirname, '../../libs/shared-utils/src'),
         '@shopee/shared-constants': path.resolve(__dirname, '../../libs/shared-constants/src'),
       },
+      dedupe: ['react', 'react-dom'],
     },
     build: {
       outDir: 'dist',
@@ -45,28 +51,37 @@ export default defineConfig(({ mode }) => {
         output: {
           manualChunks(id: string) {
             if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
-              return 'react-vendor'
+              return 'react-vendor';
             }
             if (id.includes('node_modules/react-router')) {
-              return 'router-vendor'
+              return 'router-vendor';
             }
             if (id.includes('node_modules/@tanstack/react-query')) {
-              return 'query-vendor'
+              return 'query-vendor';
             }
             if (id.includes('node_modules/@tanstack/react-table')) {
-              return 'table-vendor'
+              return 'table-vendor';
             }
             if (id.includes('node_modules/recharts') || id.includes('node_modules/d3-')) {
-              return 'chart-vendor'
+              return 'chart-vendor';
             }
             if (id.includes('node_modules/@radix-ui/') || id.includes('node_modules/@base-ui/')) {
-              return 'ui-vendor'
+              return 'ui-vendor';
+            }
+            if (id.includes('node_modules/i18next') || id.includes('node_modules/react-i18next')) {
+              return 'i18n-vendor';
+            }
+            if (id.includes('node_modules/date-fns')) {
+              return 'date-vendor';
+            }
+            if (id.includes('node_modules/sonner')) {
+              return 'toast-vendor';
             }
           },
         },
       },
     },
-  }
+  };
 
   if (isTest) {
     return {
@@ -79,10 +94,7 @@ export default defineConfig(({ mode }) => {
         testTimeout: 30000,
         pool: 'forks',
         maxForks: 2,
-        include: [
-          'src/**/*.test.{ts,tsx}',
-          'test/**/*.test.{ts,tsx}',
-        ],
+        include: ['src/**/*.test.{ts,tsx}', 'test/**/*.test.{ts,tsx}'],
         coverage: {
           provider: 'v8' as const,
           reporter: ['text', 'html', 'lcov'],
@@ -110,9 +122,8 @@ export default defineConfig(({ mode }) => {
           },
         },
       },
-    }
+    };
   }
 
-  return baseConfig
-})
-
+  return baseConfig;
+});

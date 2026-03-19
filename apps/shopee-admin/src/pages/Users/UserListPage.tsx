@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { MoreHorizontal, Plus, Pencil, Trash2, Eye, Download } from 'lucide-react';
@@ -45,8 +45,7 @@ export default function UserListPage() {
   const updateMut = useUpdateUser(() => setEditUser(null));
   const deleteMut = useDeleteUser(() => setDeleteUser(null));
 
-  const columns: ColumnDef<User>[] = useMemo(
-    () => [
+  const columns: ColumnDef<User>[] = [
     {
       accessorKey: 'avatar',
       header: '',
@@ -119,28 +118,23 @@ export default function UserListPage() {
         </DropdownMenu>
       ),
     },
-  ],
-  [t, navigate, setEditUser, setForm, setDeleteUser],
-);
+  ];
 
-  const handleExportCSV = useCallback(
-    () =>
-      exportToCSV(
-        data?.items ?? [],
-        [
-          { key: 'name', header: t('columns.name') },
-          { key: 'email', header: t('columns.email') },
-          {
-            key: 'roles',
-            header: t('columns.roles'),
-            accessor: (r) => (r.roles as string[]).join(', '),
-          },
-          { key: 'createdAt', header: t('columns.created') },
-        ],
-        'users',
-      ),
-    [data?.items, t],
-  );
+  const handleExportCSV = () =>
+    exportToCSV(
+      data?.items ?? [],
+      [
+        { key: 'name', header: t('columns.name') },
+        { key: 'email', header: t('columns.email') },
+        {
+          key: 'roles',
+          header: t('columns.roles'),
+          accessor: (r) => (r.roles as string[]).join(', '),
+        },
+        { key: 'createdAt', header: t('columns.created') },
+      ],
+      'users',
+    );
 
   return (
     <div className="space-y-6">
@@ -149,11 +143,7 @@ export default function UserListPage() {
         description={t('description')}
         actions={
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleExportCSV}
-            >
+            <Button variant="outline" size="sm" onClick={handleExportCSV}>
               <Download className="mr-2 size-4" />
               {tc('buttons.exportCsv')}
             </Button>

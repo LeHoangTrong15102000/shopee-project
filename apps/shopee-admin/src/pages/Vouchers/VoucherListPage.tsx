@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { type ColumnDef } from '@tanstack/react-table';
@@ -69,8 +69,7 @@ export default function VoucherListPage() {
   const updateMut = useUpdateVoucher(() => setEditVoucher(null));
   const toggleMut = useToggleVoucher();
 
-  const columns: ColumnDef<Voucher>[] = useMemo(
-    () => [
+  const columns: ColumnDef<Voucher>[] = [
     {
       accessorKey: 'code',
       header: t('columns.code'),
@@ -150,9 +149,7 @@ export default function VoucherListPage() {
         </DropdownMenu>
       ),
     },
-  ],
-  [t, navigate, setEditVoucher, setForm, toggleMut, setDeleteId],
-);
+  ];
 
   return (
     <div className="space-y-6">

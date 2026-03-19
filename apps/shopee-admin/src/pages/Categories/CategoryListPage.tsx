@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -44,8 +44,7 @@ export default function CategoryListPage() {
   });
   const deleteMut = useDeleteCategory(() => setDeleteCat(null));
 
-  const columns: ColumnDef<Category>[] = useMemo(
-    () => [
+  const columns: ColumnDef<Category>[] = [
     { accessorKey: 'name', header: t('columns.name') },
     {
       accessorKey: '_id',
@@ -79,9 +78,7 @@ export default function CategoryListPage() {
         </div>
       ),
     },
-  ],
-  [t, setEditCat, setName, setDeleteCat],
-);
+  ];
 
   return (
     <div className="space-y-6">

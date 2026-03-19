@@ -1,5 +1,6 @@
 import { useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useRef } from 'react';
 import {
   LayoutDashboard,
   Users,
@@ -68,10 +69,48 @@ const navSections = [
   },
 ];
 
+const routePrefetchMap: Record<string, () => Promise<unknown>> = {
+  '/': () => import('src/pages/Dashboard/DashboardPage'),
+  '/users': () => import('src/pages/Users/UserListPage'),
+  '/products': () => import('src/pages/Products/ProductListPage'),
+  '/categories': () => import('src/pages/Categories/CategoryListPage'),
+  '/orders': () => import('src/pages/Orders/OrderListPage'),
+  '/vouchers': () => import('src/pages/Vouchers/VoucherListPage'),
+  '/reviews': () => import('src/pages/Reviews/ReviewListPage'),
+  '/loyalty': () => import('src/pages/Loyalty/LoyaltyPage'),
+  '/inventory': () => import('src/pages/Inventory/InventoryPage'),
+  '/analytics': () => import('src/pages/Analytics/AnalyticsPage'),
+  '/notifications': () => import('src/pages/Notifications/NotificationListPage'),
+  '/qa': () => import('src/pages/QA/QAPage'),
+  '/import': () => import('src/pages/Import/ImportPage'),
+  '/settings': () => import('src/pages/Settings/SettingsPage'),
+  '/activity-log': () => import('src/pages/ActivityLog/ActivityLogPage'),
+};
+
+const prefetchedRoutes = new Set<string>();
+
 export function AppSidebar() {
   const location = useLocation();
   const { t } = useTranslation('layout');
   const { data: unreadCount } = useNotificationUnreadCount();
+  const prefetchTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  const handlePrefetch = (href: string) => {
+    if (prefetchedRoutes.has(href) || !routePrefetchMap[href]) return;
+    prefetchTimerRef.current = setTimeout(() => {
+      prefetchedRoutes.add(href);
+      routePrefetchMap[href]().catch(() => {
+        prefetchedRoutes.delete(href);
+      });
+    }, 200);
+  };
+
+  const cancelPrefetch = () => {
+    if (prefetchTimerRef.current) {
+      clearTimeout(prefetchTimerRef.current);
+      prefetchTimerRef.current = null;
+    }
+  };
 
   return (
     <Sidebar collapsible="icon">
@@ -97,7 +136,11 @@ export function AppSidebar() {
                     const idx = SHORTCUT_ROUTES.indexOf(item.href);
                     const hint = idx !== -1 ? `⌥${idx + 1}` : null;
                     return (
-                      <SidebarMenuItem key={item.href}>
+                      <SidebarMenuItem
+                        key={item.href}
+                        onMouseEnter={() => handlePrefetch(item.href)}
+                        onMouseLeave={cancelPrefetch}
+                      >
                         <SidebarMenuButton
                           render={<Link to={item.href} />}
                           isActive={isActive}

@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { type ColumnDef } from '@tanstack/react-table';
@@ -45,12 +45,9 @@ export default function ProductListPage() {
   const [maxPrice, setMaxPrice] = useState('');
   const [stockFilter, setStockFilter] = useState('');
 
-  const filters = useMemo(
-    () => ({
-      ...(categoryFilter && { category: categoryFilter }),
-    }),
-    [categoryFilter],
-  );
+  const filters = {
+    ...(categoryFilter && { category: categoryFilter }),
+  };
   const { data, isLoading, isError, refetch } = useProducts(
     page,
     Object.keys(filters).length ? filters : undefined,
@@ -62,8 +59,7 @@ export default function ProductListPage() {
     setSelected([]);
   });
 
-  const columns: ColumnDef<Product>[] = useMemo(
-    () => [
+  const columns: ColumnDef<Product>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -151,54 +147,43 @@ export default function ProductListPage() {
         </DropdownMenu>
       ),
     },
-  ],
-  [t, navigate, setDeleteId],
-);
+  ];
 
-  const handleExportCSV = useCallback(
-    () =>
-      exportToCSV(
-        data?.products ?? [],
-        [
-          { key: 'name', header: t('columns.name') },
-          { key: 'price', header: t('columns.price') },
-          { key: 'quantity', header: t('columns.stock') },
-          { key: 'sold', header: t('columns.sold') },
-          { key: 'rating', header: t('columns.rating') },
-          {
-            key: 'category',
-            header: t('columns.category'),
-            accessor: (r) =>
-              typeof r.category === 'object'
-                ? (r.category as any)?.name
-                : String(r.category),
-          },
-        ],
-        'products',
-      ),
-    [data?.products, t],
-  );
+  const handleExportCSV = () =>
+    exportToCSV(
+      data?.products ?? [],
+      [
+        { key: 'name', header: t('columns.name') },
+        { key: 'price', header: t('columns.price') },
+        { key: 'quantity', header: t('columns.stock') },
+        { key: 'sold', header: t('columns.sold') },
+        { key: 'rating', header: t('columns.rating') },
+        {
+          key: 'category',
+          header: t('columns.category'),
+          accessor: (r) =>
+            typeof r.category === 'object' ? (r.category as any)?.name : String(r.category),
+        },
+      ],
+      'products',
+    );
 
-  const filteredProducts = useMemo(
-    () =>
-      (data?.products ?? []).filter((p) => {
-        if (minPrice && p.price < Number(minPrice)) return false;
-        if (maxPrice && p.price > Number(maxPrice)) return false;
-        if (stockFilter === 'in_stock' && p.quantity <= 0) return false;
-        if (stockFilter === 'low_stock' && (p.quantity <= 0 || p.quantity >= 10)) return false;
-        if (stockFilter === 'out_of_stock' && p.quantity > 0) return false;
-        return true;
-      }),
-    [data?.products, minPrice, maxPrice, stockFilter],
-  );
+  const filteredProducts = (data?.products ?? []).filter((p) => {
+    if (minPrice && p.price < Number(minPrice)) return false;
+    if (maxPrice && p.price > Number(maxPrice)) return false;
+    if (stockFilter === 'in_stock' && p.quantity <= 0) return false;
+    if (stockFilter === 'low_stock' && (p.quantity <= 0 || p.quantity >= 10)) return false;
+    if (stockFilter === 'out_of_stock' && p.quantity > 0) return false;
+    return true;
+  });
 
-  const handleClearFilters = useCallback(() => {
+  const handleClearFilters = () => {
     setCategoryFilter('');
     setMinPrice('');
     setMaxPrice('');
     setStockFilter('');
     setPage(0);
-  }, []);
+  };
 
   return (
     <div className="space-y-6">
@@ -207,11 +192,7 @@ export default function ProductListPage() {
         description={t('description')}
         actions={
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleExportCSV}
-            >
+            <Button variant="outline" size="sm" onClick={handleExportCSV}>
               <Download className="mr-2 size-4" />
               {tc('buttons.exportCsv')}
             </Button>
@@ -228,11 +209,7 @@ export default function ProductListPage() {
           {tc('buttons.filters')}
         </Button>
         {(categoryFilter || minPrice || maxPrice || stockFilter) && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleClearFilters}
-          >
+          <Button variant="ghost" size="sm" onClick={handleClearFilters}>
             <X className="mr-1 size-4" /> {tc('buttons.clearFilters')}
           </Button>
         )}

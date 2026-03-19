@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { useContext, useEffect, useMemo } from 'react';
+import { useContext, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router';
@@ -31,14 +31,9 @@ const Login = () => {
   const containerVariants = staggerContainer(STAGGER_DELAY.normal);
   // console.log(location)
 
-  const purchaseIdFromLocation = useMemo(
-    () => (location.state as { purchaseId: string } | null)?.purchaseId,
-    [location],
-  );
-  const purchaseNameFromLocation = useMemo(
-    () => (location.state as { purchaseName: string } | null)?.purchaseName,
-    [location],
-  );
+  const purchaseIdFromLocation = (location.state as { purchaseId: string } | null)?.purchaseId;
+  const purchaseNameFromLocation = (location.state as { purchaseName: string } | null)
+    ?.purchaseName;
   // console.log('CHOOSENPURCHASEHREF FROM LOCATION', choosenPurchaseHrefFromLocation)
   const {
     register,

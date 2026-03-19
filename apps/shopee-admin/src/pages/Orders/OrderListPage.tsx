@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
@@ -57,22 +57,15 @@ export default function OrderListPage() {
   const { data, isLoading, isError, refetch } = useOrders(page, status);
   const { data: countData } = useOrderCountByStatus();
 
-  const countMap = useMemo(
-    () => new Map(countData?.map((c) => [c._id, c.count]) ?? []),
-    [countData],
-  );
-  const totalCount = useMemo(
-    () => countData?.reduce((sum, c) => sum + c.count, 0) ?? 0,
-    [countData],
-  );
+  const countMap = new Map(countData?.map((c) => [c._id, c.count]) ?? []);
+  const totalCount = countData?.reduce((sum, c) => sum + c.count, 0) ?? 0;
 
   const bulkMut = useBulkUpdateOrderStatus(() => {
     setSelected([]);
     setBulkStatus('');
   });
 
-  const columns: ColumnDef<Order>[] = useMemo(
-    () => [
+  const columns: ColumnDef<Order>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -143,57 +136,45 @@ export default function OrderListPage() {
         </DropdownMenu>
       ),
     },
-  ],
-  [t, navigate],
-);
+  ];
 
-  const handleExportCSV = useCallback(
-    () =>
-      exportToCSV(
-        data?.orders ?? [],
-        [
-          { key: '_id', header: t('columns.orderId') },
-          {
-            key: 'user',
-            header: t('columns.customer'),
-            accessor: (r) => {
-              const u = r.user as any;
-              return typeof u === 'object' ? u?.name || u?.email : String(u);
-            },
+  const handleExportCSV = () =>
+    exportToCSV(
+      data?.orders ?? [],
+      [
+        { key: '_id', header: t('columns.orderId') },
+        {
+          key: 'user',
+          header: t('columns.customer'),
+          accessor: (r) => {
+            const u = r.user as any;
+            return typeof u === 'object' ? u?.name || u?.email : String(u);
           },
-          { key: 'total_price', header: t('columns.total') },
-          { key: 'status', header: t('columns.status') },
-          { key: 'createdAt', header: t('columns.date') },
-        ],
-        'orders',
-      ),
-    [data?.orders, t],
-  );
+        },
+        { key: 'total_price', header: t('columns.total') },
+        { key: 'status', header: t('columns.status') },
+        { key: 'createdAt', header: t('columns.date') },
+      ],
+      'orders',
+    );
 
-  const filteredOrders = useMemo(
-    () =>
-      (data?.orders ?? []).filter((o) => {
-        if (startDate && new Date(o.createdAt) < new Date(startDate)) return false;
-        if (endDate && new Date(o.createdAt) > new Date(endDate + 'T23:59:59')) return false;
-        if (paymentMethod && o.payment_method !== paymentMethod) return false;
-        return true;
-      }),
-    [data?.orders, startDate, endDate, paymentMethod],
-  );
+  const filteredOrders = (data?.orders ?? []).filter((o) => {
+    if (startDate && new Date(o.createdAt) < new Date(startDate)) return false;
+    if (endDate && new Date(o.createdAt) > new Date(endDate + 'T23:59:59')) return false;
+    if (paymentMethod && o.payment_method !== paymentMethod) return false;
+    return true;
+  });
 
-  const handleClearFilters = useCallback(() => {
+  const handleClearFilters = () => {
     setStartDate('');
     setEndDate('');
     setPaymentMethod('');
-  }, []);
+  };
 
-  const handleStatusChange = useCallback(
-    (v: string) => {
-      setStatus(v as OrderStatus | 'all');
-      setPage(0);
-    },
-    [],
-  );
+  const handleStatusChange = (v: string) => {
+    setStatus(v as OrderStatus | 'all');
+    setPage(0);
+  };
 
   return (
     <div className="space-y-6">
@@ -201,11 +182,7 @@ export default function OrderListPage() {
         title={t('title')}
         description={t('description')}
         actions={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleExportCSV}
-          >
+          <Button variant="outline" size="sm" onClick={handleExportCSV}>
             <Download className="mr-2 size-4" />
             {tc('buttons.exportCsv')}
           </Button>
@@ -216,11 +193,7 @@ export default function OrderListPage() {
           <Filter className="mr-2 size-4" /> {tc('buttons.filters')}
         </Button>
         {(startDate || endDate || paymentMethod) && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleClearFilters}
-          >
+          <Button variant="ghost" size="sm" onClick={handleClearFilters}>
             <X className="mr-1 size-4" /> {tc('buttons.clearFilters')}
           </Button>
         )}
@@ -260,10 +233,7 @@ export default function OrderListPage() {
           </div>
         </div>
       )}
-      <Tabs
-        value={status}
-        onValueChange={handleStatusChange}
-      >
+      <Tabs value={status} onValueChange={handleStatusChange}>
         <TabsList className="w-full justify-start overflow-x-auto flex-nowrap scroll-p-1">
           {statuses.map((s) => {
             const count = s === 'all' ? totalCount : (countMap.get(s) ?? 0);

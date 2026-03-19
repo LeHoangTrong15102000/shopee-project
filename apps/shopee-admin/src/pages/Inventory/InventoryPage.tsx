@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Trash2 } from 'lucide-react';
@@ -54,8 +54,7 @@ export default function InventoryPage() {
     setSelected([]);
   });
 
-  const columns: ColumnDef<Product>[] = useMemo(
-    () => [
+  const columns: ColumnDef<Product>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -130,9 +129,7 @@ export default function InventoryPage() {
         </Button>
       ),
     },
-  ],
-  [t, setUpdateProduct, setQuantity],
-);
+  ];
 
   return (
     <div className="space-y-6">

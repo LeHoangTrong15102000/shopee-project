@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
@@ -76,8 +76,7 @@ export default function NotificationListPage() {
   const deleteMut = useDeleteNotification(() => setDeleteId(null));
   const markReadMut = useMarkNotificationAsRead();
 
-  const columns: ColumnDef<Notification>[] = useMemo(
-    () => [
+  const columns: ColumnDef<Notification>[] = [
     { accessorKey: 'title', header: t('columns.title') },
     {
       accessorKey: 'message',
@@ -122,9 +121,7 @@ export default function NotificationListPage() {
         </DropdownMenu>
       ),
     },
-  ],
-  [t, markReadMut, setDeleteId],
-);
+  ];
 
   return (
     <div className="space-y-6">

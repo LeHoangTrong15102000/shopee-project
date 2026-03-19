@@ -153,7 +153,7 @@ describe('QueryPredicates', () => {
       const predicate = QueryPredicates.productsByCategory('cat-1');
       const query = {
         queryKey: ['products', 'list', { category: 'cat-1', page: 1 }],
-      } as Query;
+      } as unknown as Query;
 
       expect(predicate(query)).toBe(true);
     });
@@ -162,7 +162,7 @@ describe('QueryPredicates', () => {
       const predicate = QueryPredicates.productsByCategory('cat-1');
       const query = {
         queryKey: ['products', 'list', { category: 'cat-2' }],
-      } as Query;
+      } as unknown as Query;
 
       expect(predicate(query)).toBe(false);
     });
@@ -171,7 +171,7 @@ describe('QueryPredicates', () => {
       const predicate = QueryPredicates.productsByCategory('cat-1');
       const query = {
         queryKey: ['purchases', 'list', { category: 'cat-1' }],
-      } as Query;
+      } as unknown as Query;
 
       expect(predicate(query)).toBe(false);
     });
@@ -182,7 +182,7 @@ describe('QueryPredicates', () => {
       const predicate = QueryPredicates.productsByPriceRange(100, 500);
       const query = {
         queryKey: ['products', 'list', { price_min: 150, price_max: 400 }],
-      } as Query;
+      } as unknown as Query;
 
       expect(predicate(query)).toBe(true);
     });
@@ -191,7 +191,7 @@ describe('QueryPredicates', () => {
       const predicate = QueryPredicates.productsByPriceRange(100, 500);
       const query = {
         queryKey: ['products', 'list', { price_min: 50, price_max: 600 }],
-      } as Query;
+      } as unknown as Query;
 
       expect(predicate(query)).toBe(false);
     });
@@ -200,7 +200,7 @@ describe('QueryPredicates', () => {
       const predicate = QueryPredicates.productsByPriceRange(100, 500);
       const query = {
         queryKey: ['products', 'list', {}],
-      } as Query;
+      } as unknown as Query;
 
       expect(predicate(query)).toBe(false);
     });
@@ -209,42 +209,42 @@ describe('QueryPredicates', () => {
   describe('userSpecificData', () => {
     it('should match user queries', () => {
       const predicate = QueryPredicates.userSpecificData();
-      const query = { queryKey: ['user', 'profile'] } as Query;
+      const query = { queryKey: ['user', 'profile'] } as unknown as Query;
 
       expect(predicate(query)).toBe(true);
     });
 
     it('should match purchases queries', () => {
       const predicate = QueryPredicates.userSpecificData();
-      const query = { queryKey: ['purchases', 'history'] } as Query;
+      const query = { queryKey: ['purchases', 'history'] } as unknown as Query;
 
       expect(predicate(query)).toBe(true);
     });
 
     it('should match notifications queries', () => {
       const predicate = QueryPredicates.userSpecificData();
-      const query = { queryKey: ['notifications', 'unread'] } as Query;
+      const query = { queryKey: ['notifications', 'unread'] } as unknown as Query;
 
       expect(predicate(query)).toBe(true);
     });
 
     it('should match product recommendations', () => {
       const predicate = QueryPredicates.userSpecificData();
-      const query = { queryKey: ['products', 'recommendations'] } as Query;
+      const query = { queryKey: ['products', 'recommendations'] } as unknown as Query;
 
       expect(predicate(query)).toBe(true);
     });
 
     it('should match user reviews', () => {
       const predicate = QueryPredicates.userSpecificData();
-      const query = { queryKey: ['reviews', 'user'] } as Query;
+      const query = { queryKey: ['reviews', 'user'] } as unknown as Query;
 
       expect(predicate(query)).toBe(true);
     });
 
     it('should not match general product queries', () => {
       const predicate = QueryPredicates.userSpecificData();
-      const query = { queryKey: ['products', 'list'] } as Query;
+      const query = { queryKey: ['products', 'list'] } as unknown as Query;
 
       expect(predicate(query)).toBe(false);
     });
@@ -253,49 +253,49 @@ describe('QueryPredicates', () => {
   describe('affectedByProductUpdate', () => {
     it('should match specific product detail', () => {
       const predicate = QueryPredicates.affectedByProductUpdate('prod-123');
-      const query = { queryKey: ['products', 'detail', 'prod-123'] } as Query;
+      const query = { queryKey: ['products', 'detail', 'prod-123'] } as unknown as Query;
 
       expect(predicate(query)).toBe(true);
     });
 
     it('should not match different product detail', () => {
       const predicate = QueryPredicates.affectedByProductUpdate('prod-123');
-      const query = { queryKey: ['products', 'detail', 'prod-456'] } as Query;
+      const query = { queryKey: ['products', 'detail', 'prod-456'] } as unknown as Query;
 
       expect(predicate(query)).toBe(false);
     });
 
     it('should match product lists', () => {
       const predicate = QueryPredicates.affectedByProductUpdate('prod-123');
-      const query = { queryKey: ['products', 'list', {}] } as Query;
+      const query = { queryKey: ['products', 'list', {}] } as unknown as Query;
 
       expect(predicate(query)).toBe(true);
     });
 
     it('should match product search', () => {
       const predicate = QueryPredicates.affectedByProductUpdate('prod-123');
-      const query = { queryKey: ['products', 'search', 'phone'] } as Query;
+      const query = { queryKey: ['products', 'search', 'phone'] } as unknown as Query;
 
       expect(predicate(query)).toBe(true);
     });
 
     it('should match trending products', () => {
       const predicate = QueryPredicates.affectedByProductUpdate('prod-123');
-      const query = { queryKey: ['products', 'trending'] } as Query;
+      const query = { queryKey: ['products', 'trending'] } as unknown as Query;
 
       expect(predicate(query)).toBe(true);
     });
 
     it('should match recommendations', () => {
       const predicate = QueryPredicates.affectedByProductUpdate('prod-123');
-      const query = { queryKey: ['products', 'recommendations'] } as Query;
+      const query = { queryKey: ['products', 'recommendations'] } as unknown as Query;
 
       expect(predicate(query)).toBe(true);
     });
 
     it('should not match non-product queries', () => {
       const predicate = QueryPredicates.affectedByProductUpdate('prod-123');
-      const query = { queryKey: ['user', 'profile'] } as Query;
+      const query = { queryKey: ['user', 'profile'] } as unknown as Query;
 
       expect(predicate(query)).toBe(false);
     });

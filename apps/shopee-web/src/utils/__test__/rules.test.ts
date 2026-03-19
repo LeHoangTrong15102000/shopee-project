@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
+import type { UseFormGetValues, FieldValues } from 'react-hook-form';
 import {
   loginSchema,
   registerSchema,
@@ -148,16 +149,16 @@ describe('getRules', () => {
     expect(rules.email).toBeDefined();
     expect(rules.email?.required).toBeDefined();
     expect(rules.email?.pattern).toBeDefined();
-    expect(rules.email?.maxLength?.value).toBe(160);
-    expect(rules.email?.minLength?.value).toBe(5);
+    expect((rules.email?.maxLength as { value: number })?.value).toBe(160);
+    expect((rules.email?.minLength as { value: number })?.value).toBe(5);
   });
 
   it('returns password validation rules', () => {
     const rules = getRules();
     expect(rules.password).toBeDefined();
     expect(rules.password?.required).toBeDefined();
-    expect(rules.password?.maxLength?.value).toBe(160);
-    expect(rules.password?.minLength?.value).toBe(6);
+    expect((rules.password?.maxLength as { value: number })?.value).toBe(160);
+    expect((rules.password?.minLength as { value: number })?.value).toBe(6);
   });
 
   it('returns confirm_password validation rules without getValues', () => {
@@ -172,7 +173,7 @@ describe('getRules', () => {
       if (field === 'password') return '123456';
       return '';
     });
-    const rules = getRules(mockGetValues);
+    const rules = getRules(mockGetValues as unknown as UseFormGetValues<FieldValues>);
     expect(rules.confirm_password?.validate).toBeDefined();
   });
 
@@ -181,7 +182,7 @@ describe('getRules', () => {
       if (field === 'password') return '123456';
       return '';
     });
-    const rules = getRules(mockGetValues);
+    const rules = getRules(mockGetValues as unknown as UseFormGetValues<FieldValues>);
     const validateFn = rules.confirm_password?.validate as (value: string) => boolean | string;
     expect(validateFn('123456')).toBe(true);
     expect(validateFn('654321')).not.toBe(true);

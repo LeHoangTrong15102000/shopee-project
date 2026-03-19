@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -20,7 +19,7 @@ const isExpressShipping = (estimatedDays: string): boolean => {
   return match ? parseInt(match[1], 10) <= 1 : false;
 };
 
-const ShippingMethodSelector = memo(function ShippingMethodSelector({
+function ShippingMethodSelector({
   selectedMethodId,
   onSelect,
   viewOnly = false,
@@ -151,6 +150,6 @@ const ShippingMethodSelector = memo(function ShippingMethodSelector({
       ))}
     </div>
   );
-});
+}
 
 export default ShippingMethodSelector;

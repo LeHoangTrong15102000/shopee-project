@@ -1,4 +1,4 @@
-import { useState, useContext, useCallback, memo } from 'react';
+import { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
@@ -16,7 +16,7 @@ interface ProductQAProps {
 
 const ITEMS_PER_PAGE = 5;
 
-const ProductQA = memo(function ProductQA({ productId, className = '' }: ProductQAProps) {
+const ProductQA = function ProductQA({ productId, className = '' }: ProductQAProps) {
   const { t } = useTranslation('qa');
   const { isAuthenticated } = useContext(AppContext);
   const [sortBy, setSortBy] = useState<'newest' | 'most_liked' | 'most_answered'>('newest');
@@ -98,46 +98,37 @@ const ProductQA = memo(function ProductQA({ productId, className = '' }: Product
   const questions = questionsData?.pages.flatMap((page) => page.data.data.questions) || [];
   const totalQuestions = questionsData?.pages[0]?.data.data.pagination.total || 0;
 
-  const handleAskQuestion = useCallback(() => {
+  const handleAskQuestion = () => {
     if (!questionText.trim()) return;
     askQuestionMutation.mutate({ product_id: productId, question: questionText.trim() });
-  }, [questionText, productId, askQuestionMutation]);
+  };
 
-  const handleAnswerQuestion = useCallback(
-    (questionId: string) => {
-      if (!answerText.trim()) return;
-      answerQuestionMutation.mutate({ questionId, answer: answerText.trim() });
-    },
-    [answerText, answerQuestionMutation],
-  );
+  const handleAnswerQuestion = (questionId: string) => {
+    if (!answerText.trim()) return;
+    answerQuestionMutation.mutate({ questionId, answer: answerText.trim() });
+  };
 
-  const handleLikeQuestion = useCallback(
-    (questionId: string) => {
-      if (!isAuthenticated) {
-        toast.warning(t('toast.loginToLikeQuestion'));
-        return;
-      }
-      likeQuestionMutation.mutate(questionId);
-    },
-    [isAuthenticated, likeQuestionMutation, t],
-  );
+  const handleLikeQuestion = (questionId: string) => {
+    if (!isAuthenticated) {
+      toast.warning(t('toast.loginToLikeQuestion'));
+      return;
+    }
+    likeQuestionMutation.mutate(questionId);
+  };
 
-  const handleLikeAnswer = useCallback(
-    (questionId: string, answerId: string) => {
-      if (!isAuthenticated) {
-        toast.warning(t('toast.loginToLikeAnswer'));
-        return;
-      }
-      likeAnswerMutation.mutate({ questionId, answerId });
-    },
-    [isAuthenticated, likeAnswerMutation, t],
-  );
+  const handleLikeAnswer = (questionId: string, answerId: string) => {
+    if (!isAuthenticated) {
+      toast.warning(t('toast.loginToLikeAnswer'));
+      return;
+    }
+    likeAnswerMutation.mutate({ questionId, answerId });
+  };
 
-  const handleLoadMore = useCallback(() => {
+  const handleLoadMore = () => {
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  };
 
   if (isLoading) {
     return <QALoadingSkeleton className={className} />;
@@ -260,7 +251,7 @@ const ProductQA = memo(function ProductQA({ productId, className = '' }: Product
       )}
     </div>
   );
-});
+};
 
 interface QuestionItemProps {
   question: ProductQuestion;
@@ -275,7 +266,7 @@ interface QuestionItemProps {
   isAuthenticated: boolean;
 }
 
-const QuestionItem = memo(function QuestionItem({
+const QuestionItem = function QuestionItem({
   question,
   onLikeQuestion,
   onLikeAnswer,
@@ -418,7 +409,7 @@ const QuestionItem = memo(function QuestionItem({
       )}
     </div>
   );
-});
+};
 
 interface AnswerItemProps {
   answer: ProductAnswer;
@@ -426,7 +417,7 @@ interface AnswerItemProps {
   onLikeAnswer: (questionId: string, answerId: string) => void;
 }
 
-const AnswerItem = memo(function AnswerItem({ answer, questionId, onLikeAnswer }: AnswerItemProps) {
+const AnswerItem = function AnswerItem({ answer, questionId, onLikeAnswer }: AnswerItemProps) {
   const { t } = useTranslation('qa');
   return (
     <div className="flex items-start space-x-3" role="listitem">
@@ -473,13 +464,9 @@ const AnswerItem = memo(function AnswerItem({ answer, questionId, onLikeAnswer }
       </div>
     </div>
   );
-});
+};
 
-const QALoadingSkeleton = memo(function QALoadingSkeleton({
-  className = '',
-}: {
-  className?: string;
-}) {
+const QALoadingSkeleton = function QALoadingSkeleton({ className = '' }: { className?: string }) {
   const { t } = useTranslation('qa');
   return (
     <div
@@ -507,9 +494,9 @@ const QALoadingSkeleton = memo(function QALoadingSkeleton({
       </div>
     </div>
   );
-});
+};
 
-const QAEmptyState = memo(function QAEmptyState() {
+const QAEmptyState = function QAEmptyState() {
   const { t } = useTranslation('qa');
   return (
     <div className="py-8 text-center" role="status">
@@ -531,6 +518,6 @@ const QAEmptyState = memo(function QAEmptyState() {
       <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">{t('empty.subtitle')}</p>
     </div>
   );
-});
+};
 
 export default ProductQA;

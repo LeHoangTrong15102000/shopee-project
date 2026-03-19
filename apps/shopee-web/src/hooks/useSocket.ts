@@ -1,35 +1,25 @@
-import { useCallback } from 'react';
 import { useSocketContext } from 'src/contexts/socket.context';
 
 const useSocket = () => {
   const { socket, isConnected, connectionStatus, connect, disconnect } = useSocketContext();
 
-  const emit = useCallback(
-    (event: string, data?: unknown) => {
-      if (socket && isConnected) {
-        socket.emit(event, data);
-      }
-    },
-    [socket, isConnected],
-  );
+  const emit = (event: string, data?: unknown) => {
+    if (socket && isConnected) {
+      socket.emit(event, data);
+    }
+  };
 
-  const on = useCallback(
-    (event: string, handler: (...args: unknown[]) => void) => {
-      if (socket) {
-        socket.on(event, handler);
-      }
-    },
-    [socket],
-  );
+  const on = (event: string, handler: (...args: unknown[]) => void) => {
+    if (socket) {
+      socket.on(event, handler);
+    }
+  };
 
-  const off = useCallback(
-    (event: string, handler?: (...args: unknown[]) => void) => {
-      if (socket) {
-        socket.off(event, handler);
-      }
-    },
-    [socket],
-  );
+  const off = (event: string, handler?: (...args: unknown[]) => void) => {
+    if (socket) {
+      socket.off(event, handler);
+    }
+  };
 
   return { socket, isConnected, connectionStatus, connect, disconnect, emit, on, off };
 };

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { toast } from 'react-toastify';
 import orderApi from 'src/apis/order.api';
@@ -73,7 +73,7 @@ export function useOrderDetail() {
   const tracking = trackingData?.data.data;
 
   // Build stepTimestamps from tracking timeline + websocket statusHistory
-  const stepTimestamps = useMemo(() => {
+  const stepTimestamps = (() => {
     const timestamps: Record<string, string> = {};
     if (tracking?.timeline) {
       for (const event of tracking.timeline) {
@@ -88,7 +88,7 @@ export function useOrderDetail() {
       timestamps['delivered'] = order.updatedAt;
     }
     return timestamps;
-  }, [tracking?.timeline, statusHistory, currentStatus, order?.status, order?.updatedAt]);
+  })();
 
   const handleCancelOrder = () => {
     if (orderId) {

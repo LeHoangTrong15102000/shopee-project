@@ -1,5 +1,3 @@
-import { memo } from 'react';
-
 export type BankId = 'vcb' | 'tcb' | 'bidv' | 'vtb' | 'mb' | 'acb' | 'stb' | 'tpb';
 
 export interface BankInfo {
@@ -24,13 +22,7 @@ const gradientMap: Record<BankId, string> = {
   tpb: 'from-purple-400 to-purple-600',
 };
 
-const BankLogo = memo(function BankLogo({
-  bank,
-  size = 'md',
-}: {
-  bank: BankInfo;
-  size?: 'sm' | 'md' | 'lg';
-}) {
+function BankLogo({ bank, size = 'md' }: { bank: BankInfo; size?: 'sm' | 'md' | 'lg' }) {
   const sizeClasses = {
     sm: 'h-8 w-8 text-xs',
     md: 'h-12 w-12 text-sm',
@@ -44,6 +36,6 @@ const BankLogo = memo(function BankLogo({
       {bank.shortName}
     </div>
   );
-});
+}
 
 export default BankLogo;

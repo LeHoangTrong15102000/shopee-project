@@ -1,9 +1,8 @@
-import { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from 'src/components/Button';
 import { CardTypeIcon, CardType } from './CardTypeIcons';
 
-const CardFront = memo(function CardFront({
+function CardFront({
   cardNumber,
   cardHolder,
   expiryDate,
@@ -44,9 +43,9 @@ const CardFront = memo(function CardFront({
       </div>
     </div>
   );
-});
+}
 
-const CardBack = memo(function CardBack({
+function CardBack({
   cvv,
   gradient,
   cardType,
@@ -82,9 +81,9 @@ const CardBack = memo(function CardBack({
       </div>
     </div>
   );
-});
+}
 
-export const VisualCardPreview = memo(function VisualCardPreview({
+export function VisualCardPreview({
   cardNumber,
   cardHolder,
   expiryDate,
@@ -128,9 +127,9 @@ export const VisualCardPreview = memo(function VisualCardPreview({
       </motion.div>
     </div>
   );
-});
+}
 
-export const CVVTooltip = memo(function CVVTooltip({
+export function CVVTooltip({
   isVisible,
   onClose,
   cardType,
@@ -193,4 +192,4 @@ export const CVVTooltip = memo(function CVVTooltip({
       )}
     </AnimatePresence>
   );
-});
+}

@@ -25,6 +25,7 @@ import {
 export const useOptimisticAddToCart = () => {
   const queryClient = useQueryClient();
   const addOptimisticItem = useCartStore((s) => s.addOptimisticItem);
+  const updateQuantity = useCartStore((s) => s.updateQuantity);
   const replaceTempItems = useCartStore((s) => s.replaceTempItems);
   const removeTempItems = useCartStore((s) => s.removeTempItems);
   const { invalidateCart, invalidateProductDetail } = useQueryInvalidation();
@@ -44,29 +45,54 @@ export const useOptimisticAddToCart = () => {
       const productData = findProductInCache(queryClient, newItem.product_id);
 
       if (productData) {
-        // Tạo optimistic purchase object
-        const optimisticPurchase = createOptimisticPurchase(
-          productData,
-          newItem.buy_count,
-          purchasesStatus.inCart,
+        // Kiểm tra sản phẩm đã tồn tại trong cart chưa (match backend logic)
+        const existingInCache = (
+          previousPurchases as PurchasesQueryData | undefined
+        )?.data?.data?.find(
+          (item: Purchase) =>
+            item.product?._id === newItem.product_id && item.status === purchasesStatus.inCart,
         );
 
-        // Cập nhật cache optimistically
-        updatePurchasesCache(queryClient, QUERY_KEYS.PURCHASES_IN_CART, (old) => ({
-          ...old,
-          data: {
-            ...old.data,
-            data: [...(old.data?.data || []), optimisticPurchase],
-          },
-        }));
+        if (existingInCache) {
+          // Sản phẩm đã có trong cart → cộng dồn quantity (giống backend)
+          const newQuantity = existingInCache.buy_count + newItem.buy_count;
 
-        // Cập nhật context state optimistically
-        addOptimisticItem(
-          createExtendedPurchase(optimisticPurchase, {
-            disabled: false,
-            isChecked: true,
-          }),
-        );
+          updatePurchasesCache(queryClient, QUERY_KEYS.PURCHASES_IN_CART, (old) => ({
+            ...old,
+            data: {
+              ...old.data,
+              data:
+                old.data?.data?.map((item: Purchase) =>
+                  item._id === existingInCache._id ? { ...item, buy_count: newQuantity } : item,
+                ) || [],
+            },
+          }));
+
+          // Cập nhật store quantity
+          updateQuantity(newItem.product_id, newQuantity);
+        } else {
+          // Sản phẩm chưa có → tạo optimistic item mới
+          const optimisticPurchase = createOptimisticPurchase(
+            productData,
+            newItem.buy_count,
+            purchasesStatus.inCart,
+          );
+
+          updatePurchasesCache(queryClient, QUERY_KEYS.PURCHASES_IN_CART, (old) => ({
+            ...old,
+            data: {
+              ...old.data,
+              data: [...(old.data?.data || []), optimisticPurchase],
+            },
+          }));
+
+          addOptimisticItem(
+            createExtendedPurchase(optimisticPurchase, {
+              disabled: false,
+              isChecked: true,
+            }),
+          );
+        }
 
         // Hiển thị feedback ngay lập tức
         showSuccessToast(TOAST_MESSAGES.ADD_TO_CART_SUCCESS);
@@ -96,22 +122,35 @@ export const useOptimisticAddToCart = () => {
       logOptimisticError('Add to cart', err, context);
     },
 
-    onSuccess: (data, _variables, _context) => {
-      // Thay thế item tạm thời bằng data thật từ server
+    onSuccess: (data, variables, _context) => {
+      // Thay thế item tạm thời hoặc cập nhật item đã tồn tại bằng data thật từ server
       const realPurchase = data.data.data;
 
       updatePurchasesCache(queryClient, QUERY_KEYS.PURCHASES_IN_CART, (old) => ({
         ...old,
         data: {
           ...old.data,
-          data: old.data?.data?.map((item: Purchase) =>
-            item._id.startsWith('temp-') ? realPurchase : item,
-          ) || [realPurchase],
+          data: old.data?.data?.map((item: Purchase) => {
+            // Replace temp items (sản phẩm mới)
+            if (item._id.startsWith('temp-')) return realPurchase;
+            // Update existing items (sản phẩm đã có trong cart, server trả về cùng _id)
+            if (item._id === realPurchase._id) return realPurchase;
+            // Cũng match theo product_id cho trường hợp optimistic update đã cập nhật quantity
+            if (
+              item.product?._id === variables.product_id &&
+              item.status === purchasesStatus.inCart
+            ) {
+              return realPurchase;
+            }
+            return item;
+          }) || [realPurchase],
         },
       }));
 
       // Cập nhật context với data thật
       replaceTempItems(realPurchase);
+      // Sync quantity cho existing items
+      updateQuantity(variables.product_id, realPurchase.buy_count);
     },
 
     onSettled: (_data, _error, variables) => {

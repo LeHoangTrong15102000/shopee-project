@@ -1,5 +1,4 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import Button from 'src/components/Button';
@@ -427,4 +426,4 @@ const CartItemList = ({
   );
 };
 
-export default memo(CartItemList);
+export default CartItemList;

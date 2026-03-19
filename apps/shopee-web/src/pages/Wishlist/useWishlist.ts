@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import productApi from 'src/apis/product.api';
@@ -25,7 +24,7 @@ export function useWishlist(activeFilter: string, activeSort: string) {
   });
 
   // Merge: create wishlist items from real products or API wishlist
-  const allWishlistItems = useMemo(() => {
+  const allWishlistItems = (() => {
     const apiWishlistItems = wishlistData?.data.data.wishlist ?? [];
     const realProducts = productsData?.data.data.products ?? [];
 
@@ -45,10 +44,10 @@ export function useWishlist(activeFilter: string, activeSort: string) {
     }
 
     return apiWishlistItems;
-  }, [wishlistData, productsData]);
+  })();
 
   // Filter & Sort logic
-  const wishlistItems = useMemo(() => {
+  const wishlistItems = (() => {
     let items = [...allWishlistItems];
 
     // Apply filter
@@ -78,30 +77,20 @@ export function useWishlist(activeFilter: string, activeSort: string) {
     else items.sort((a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime());
 
     return items;
-  }, [allWishlistItems, activeFilter, activeSort]);
+  })();
 
   // Extract product IDs for real-time price monitoring
-  const productIds = useMemo(
-    () => allWishlistItems.map((item) => item.product._id),
-    [allWishlistItems],
-  );
+  const productIds = allWishlistItems.map((item) => item.product._id);
 
   // Stats
-  const totalValue = useMemo(
-    () => allWishlistItems.reduce((sum, item) => sum + item.product.price, 0),
-    [allWishlistItems],
-  );
-  const totalSavings = useMemo(
-    () =>
-      allWishlistItems.reduce(
-        (sum, item) => sum + (item.product.price_before_discount - item.product.price),
-        0,
-      ),
-    [allWishlistItems],
+  const totalValue = allWishlistItems.reduce((sum, item) => sum + item.product.price, 0);
+  const totalSavings = allWishlistItems.reduce(
+    (sum, item) => sum + (item.product.price_before_discount - item.product.price),
+    0,
   );
 
   // Insights
-  const insights = useMemo(() => {
+  const insights = (() => {
     if (allWishlistItems.length === 0) return null;
     const catCount: Record<string, number> = {};
     let totalDiscount = 0;
@@ -133,7 +122,7 @@ export function useWishlist(activeFilter: string, activeSort: string) {
           ) >= 30,
       ).length,
     };
-  }, [allWishlistItems]);
+  })();
 
   // Badge helpers
   const isRecentlyAdded = (addedAt: string) => {

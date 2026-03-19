@@ -1,4 +1,4 @@
-import { memo, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { formatCurrency } from 'src/utils/utils';
@@ -22,7 +22,7 @@ interface OrderSummaryProps {
 const VISIBLE_ITEMS_COUNT = 2;
 const VAT_RATE = 0.1;
 
-const OrderSummary = memo(function OrderSummary({
+function OrderSummary({
   items,
   shippingMethod,
   voucherDiscount = 0,
@@ -34,13 +34,12 @@ const OrderSummary = memo(function OrderSummary({
   const { t } = useTranslation('checkout');
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const subtotal = useMemo(() => {
-    return items.reduce((total, item) => total + item.price * item.buy_count, 0);
-  }, [items]);
+  const subtotal = items.reduce((total, item) => total + item.price * item.buy_count, 0);
 
-  const originalTotal = useMemo(() => {
-    return items.reduce((total, item) => total + item.price_before_discount * item.buy_count, 0);
-  }, [items]);
+  const originalTotal = items.reduce(
+    (total, item) => total + item.price_before_discount * item.buy_count,
+    0,
+  );
 
   // Số sản phẩm unique (không tính số lượng mua)
   const uniqueProductCount = items.length;
@@ -52,10 +51,10 @@ const OrderSummary = memo(function OrderSummary({
   const totalDiscount = productDiscount + voucherDiscount + coinsDiscount;
   const total = subtotal + shippingFee + vatAmount - voucherDiscount - coinsDiscount;
 
-  const estimatedDeliveryDate = useMemo(() => {
+  const estimatedDeliveryDate = (() => {
     if (!shippingMethod) return null;
     return getEstimatedDeliveryDate(shippingMethod.estimatedDays);
-  }, [shippingMethod]);
+  })();
 
   const hiddenItemsCount = items.length - VISIBLE_ITEMS_COUNT;
 
@@ -425,6 +424,6 @@ const OrderSummary = memo(function OrderSummary({
       </div>
     </div>
   );
-});
+}
 
 export default OrderSummary;

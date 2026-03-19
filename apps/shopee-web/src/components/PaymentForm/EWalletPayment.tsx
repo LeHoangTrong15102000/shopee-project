@@ -1,4 +1,4 @@
-import { memo, useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { WALLETS, WalletType } from './components/WalletCard';
@@ -23,7 +23,7 @@ export interface EWalletPaymentProps {
 
 const QR_EXPIRATION_SECONDS = 300;
 
-const EWalletPayment = memo(function EWalletPayment({
+function EWalletPayment({
   amount = 150000,
   onPaymentComplete,
   onPaymentFailed,
@@ -35,10 +35,7 @@ const EWalletPayment = memo(function EWalletPayment({
   const [errorMessage, setErrorMessage] = useState('');
   const isMobile = useIsMobile();
 
-  const selectedWalletInfo = useMemo(
-    () => WALLETS.find((w) => w.id === selectedWallet) || null,
-    [selectedWallet],
-  );
+  const selectedWalletInfo = WALLETS.find((w) => w.id === selectedWallet) || null;
 
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
@@ -58,21 +55,21 @@ const EWalletPayment = memo(function EWalletPayment({
     };
   }, [flowState, timeRemaining]);
 
-  const handleSelectWallet = useCallback((wallet: WalletType) => {
+  const handleSelectWallet = (wallet: WalletType) => {
     setSelectedWallet(wallet);
-  }, []);
+  };
 
-  const handleLinkNewWallet = useCallback(() => {
+  const handleLinkNewWallet = () => {
     alert(t('eWallet.linkNewWalletMessage'));
-  }, [t]);
+  };
 
-  const handleProceedToQR = useCallback(() => {
+  const handleProceedToQR = () => {
     if (!selectedWallet) return;
     setTimeRemaining(QR_EXPIRATION_SECONDS);
     setFlowState('qr_display');
-  }, [selectedWallet]);
+  };
 
-  const handleOpenApp = useCallback(() => {
+  const handleOpenApp = () => {
     if (!selectedWalletInfo) return;
     window.location.href = selectedWalletInfo.deepLink;
     setTimeout(() => {
@@ -89,25 +86,25 @@ const EWalletPayment = memo(function EWalletPayment({
         }
       }, 3000);
     }, 1000);
-  }, [selectedWalletInfo, onPaymentComplete, onPaymentFailed, t]);
+  };
 
-  const handleCancel = useCallback(() => {
+  const handleCancel = () => {
     setFlowState('select');
     setSelectedWallet(null);
     setTimeRemaining(QR_EXPIRATION_SECONDS);
     setErrorMessage('');
-  }, []);
+  };
 
-  const handleRetry = useCallback(() => {
+  const handleRetry = () => {
     setErrorMessage('');
     setTimeRemaining(QR_EXPIRATION_SECONDS);
     setFlowState('qr_display');
-  }, []);
+  };
 
-  const handleRegenerateQR = useCallback(() => {
+  const handleRegenerateQR = () => {
     setTimeRemaining(QR_EXPIRATION_SECONDS);
     setFlowState('qr_display');
-  }, []);
+  };
 
   return (
     <motion.div
@@ -155,7 +152,7 @@ const EWalletPayment = memo(function EWalletPayment({
       </AnimatePresence>
     </motion.div>
   );
-});
+}
 
 export default EWalletPayment;
 export type { WalletType };

@@ -1,4 +1,4 @@
-import { memo, useState, useCallback } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
@@ -15,20 +15,17 @@ function CompareFloatingBar({ className, comparePath = '/compare' }: CompareFloa
   const { compareList, removeFromCompare, clearCompare } = useProductComparison();
   const [isExpanded, setIsExpanded] = useState(true);
 
-  const handleToggleExpand = useCallback(() => {
+  const handleToggleExpand = () => {
     setIsExpanded((prev) => !prev);
-  }, []);
+  };
 
-  const handleRemoveFromCompare = useCallback(
-    (productId: string) => {
-      removeFromCompare(productId);
-    },
-    [removeFromCompare],
-  );
+  const handleRemoveFromCompare = (productId: string) => {
+    removeFromCompare(productId);
+  };
 
-  const handleClearCompare = useCallback(() => {
+  const handleClearCompare = () => {
     clearCompare();
-  }, [clearCompare]);
+  };
 
   if (compareList.length === 0) {
     return null;
@@ -165,4 +162,4 @@ function CompareFloatingBar({ className, comparePath = '/compare' }: CompareFloa
   );
 }
 
-export default memo(CompareFloatingBar);
+export default CompareFloatingBar;

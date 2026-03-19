@@ -1,4 +1,4 @@
-import { memo, useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
@@ -11,7 +11,7 @@ interface DailyCheckInProps {
   className?: string;
 }
 
-const DailyCheckIn = memo(function DailyCheckIn({ className }: DailyCheckInProps) {
+function DailyCheckIn({ className }: DailyCheckInProps) {
   const { t } = useTranslation('checkin');
   const {
     streak,
@@ -30,7 +30,7 @@ const DailyCheckIn = memo(function DailyCheckIn({ className }: DailyCheckInProps
   });
   const [isChecking, setIsChecking] = useState(false);
 
-  const handleCheckIn = useCallback(async () => {
+  const handleCheckIn = async () => {
     if (!canCheckInToday || isChecking) return;
 
     setIsChecking(true);
@@ -43,7 +43,7 @@ const DailyCheckIn = memo(function DailyCheckIn({ className }: DailyCheckInProps
       });
     }
     setIsChecking(false);
-  }, [canCheckInToday, isChecking, checkIn, t]);
+  };
 
   const calendar = getMonthCalendar(currentMonth.year, currentMonth.month);
   const monthNames = t('months', { returnObjects: true }) as string[];
@@ -407,6 +407,6 @@ const DailyCheckIn = memo(function DailyCheckIn({ className }: DailyCheckInProps
       </AnimatePresence>
     </div>
   );
-});
+}
 
 export default DailyCheckIn;

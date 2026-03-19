@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { formatCurrency } from 'src/utils/utils';
 
@@ -136,10 +135,10 @@ export default function OrderStatusTracker({
   const isReturned = currentStatus === 'returned';
   const isSpecialStatus = isCancelled || isReturned;
 
-  const currentStepIndex = useMemo(() => {
+  const currentStepIndex = (() => {
     if (!currentStatus || isSpecialStatus) return -1;
     return ORDER_STEPS.findIndex((step) => step.key === currentStatus);
-  }, [currentStatus, isSpecialStatus]);
+  })();
 
   return (
     <div

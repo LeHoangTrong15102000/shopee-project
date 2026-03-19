@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import DOMPurify from 'dompurify';
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { RetryError } from 'src/types/utils.type';
@@ -133,33 +133,31 @@ const ProductDetail = () => {
   const [selectedSKU, setSelectedSKU] = useState<ProductSKU | null>(null);
 
   // Convert backend variants to ProductVariant format, or use mock data
-  const variants: ProductVariant[] = useMemo(() => {
+  const variants: ProductVariant[] = (() => {
     if (product?.variants && product.variants.length > 0) {
       return product.variants;
     }
     return product ? getMockVariants(product.category?.name || '', product.name) : [];
-  }, [product?._id, product?.variants, product?.category?.name, product?.name]);
+  })();
 
   // Convert backend SKUs to ProductVariantCombination format, or use mock data
-  const skus: ProductSKU[] = useMemo(() => {
+  const skus: ProductSKU[] = (() => {
     if (product?.skus && product.skus.length > 0) {
       return product.skus;
     }
     return product ? getMockSKUs(product.price, product.category?.name || '', product.name) : [];
-  }, [product?._id, product?.skus, product?.price, product?.category?.name, product?.name]);
+  })();
 
   // Convert SKUs to combinations for the selector component
-  const combinations: ProductVariantCombination[] = useMemo(() => {
-    return skus.map((sku, i) => ({
-      _id: sku._id || `combo-${i}`,
-      variant_values: sku.variant_values,
-      price: sku.price,
-      price_before_discount: product?.price_before_discount ?? sku.price,
-      quantity: sku.stock,
-      sku: sku.value,
-      image: sku.image,
-    }));
-  }, [skus, product?.price_before_discount]);
+  const combinations: ProductVariantCombination[] = skus.map((sku, i) => ({
+    _id: sku._id || `combo-${i}`,
+    variant_values: sku.variant_values,
+    price: sku.price,
+    price_before_discount: product?.price_before_discount ?? sku.price,
+    quantity: sku.stock,
+    sku: sku.value,
+    image: sku.image,
+  }));
 
   const hasVariants = variants.length > 0;
 

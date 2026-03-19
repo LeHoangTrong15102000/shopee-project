@@ -1,4 +1,4 @@
-import { memo, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import InputNumber, { InputNumberProps } from 'src/components/InputNumber';
 import Button from 'src/components/Button';
@@ -33,7 +33,7 @@ const QuantityController = ({
 }: Props) => {
   // State cho hiển thị modal -> Chỉ cần tạo cái idDelete rồi cái showConfirm sẽ phụ thuộc vòa
   const [idDelete, setIdDelete] = useState<null | number>(null);
-  const openConfirm = useMemo(() => idDelete !== null, [idDelete]);
+  const openConfirm = idDelete !== null;
 
   const [localValue, setLocalValue] = useState<number>(Number(value || 0));
   const [isShaking, setIsShaking] = useState(false);
@@ -177,4 +177,4 @@ const QuantityController = ({
   );
 };
 
-export default memo(QuantityController);
+export default QuantityController;

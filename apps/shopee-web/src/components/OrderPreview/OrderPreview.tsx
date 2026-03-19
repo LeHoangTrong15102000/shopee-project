@@ -1,4 +1,3 @@
-import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from 'src/utils/utils';
@@ -32,7 +31,7 @@ const PAYMENT_METHOD_I18N_KEYS = {
   credit_card: 'method.creditCard',
 } as const;
 
-const SectionWrapper = memo(function SectionWrapper({
+function SectionWrapper({
   title,
   children,
   reducedMotion,
@@ -52,9 +51,9 @@ const SectionWrapper = memo(function SectionWrapper({
       {children}
     </motion.div>
   );
-});
+}
 
-const OrderPreview = memo(function OrderPreview({
+function OrderPreview({
   items,
   selectedAddress,
   selectedShippingMethod,
@@ -71,23 +70,19 @@ const OrderPreview = memo(function OrderPreview({
   const { t } = useTranslation(['order', 'payment']);
   const containerVariants = staggerContainer(STAGGER_DELAY.normal);
 
-  const subtotal = useMemo(() => {
-    return items.reduce((total, item) => total + item.price * item.buy_count, 0);
-  }, [items]);
+  const subtotal = items.reduce((total, item) => total + item.price * item.buy_count, 0);
 
   const shippingFee = selectedShippingMethod?.price || 0;
   const coinsDiscount = coinsUsed;
   const totalDiscount = voucherDiscount + coinsDiscount;
   const total = subtotal + shippingFee - totalDiscount;
 
-  const estimatedDeliveryDate = useMemo(() => {
+  const estimatedDeliveryDate = (() => {
     if (!selectedShippingMethod) return null;
     return getEstimatedDeliveryDate(selectedShippingMethod.estimatedDays);
-  }, [selectedShippingMethod]);
+  })();
 
-  const totalItemCount = useMemo(() => {
-    return items.reduce((count, item) => count + item.buy_count, 0);
-  }, [items]);
+  const totalItemCount = items.reduce((count, item) => count + item.buy_count, 0);
 
   return (
     <motion.div
@@ -408,6 +403,6 @@ const OrderPreview = memo(function OrderPreview({
       </motion.p>
     </motion.div>
   );
-});
+}
 
 export default OrderPreview;

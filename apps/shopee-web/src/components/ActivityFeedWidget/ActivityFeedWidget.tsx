@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface ActivityItem {
@@ -25,7 +25,7 @@ export default function ActivityFeedWidget({ latestActivity, className }: Activi
   const isShowingRef = useRef(false);
   const lastActivityRef = useRef<ActivityItem | null>(null);
 
-  const showNext = useCallback(() => {
+  const showNext = () => {
     if (queueRef.current.length === 0) {
       setVisible(false);
       setCurrentActivity(null);
@@ -41,7 +41,7 @@ export default function ActivityFeedWidget({ latestActivity, className }: Activi
     timerRef.current = setTimeout(() => {
       showNext();
     }, DISPLAY_DURATION);
-  }, []);
+  };
 
   // Queue new activities when they arrive
   useEffect(() => {

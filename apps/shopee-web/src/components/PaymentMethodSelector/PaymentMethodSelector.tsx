@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -12,10 +11,7 @@ interface PaymentMethodSelectorProps {
   onSelect: (method: PaymentMethod) => void;
 }
 
-const PaymentMethodSelector = memo(function PaymentMethodSelector({
-  selectedMethodType,
-  onSelect,
-}: PaymentMethodSelectorProps) {
+function PaymentMethodSelector({ selectedMethodType, onSelect }: PaymentMethodSelectorProps) {
   const { t } = useTranslation('payment');
   const { data: methodsData, isLoading } = useQuery({
     queryKey: ['payment-methods'],
@@ -155,6 +151,6 @@ const PaymentMethodSelector = memo(function PaymentMethodSelector({
       )}
     </div>
   );
-});
+}
 
 export default PaymentMethodSelector;

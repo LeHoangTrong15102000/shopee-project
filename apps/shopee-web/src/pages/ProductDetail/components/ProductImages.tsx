@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import ImageWithFallback from 'src/components/ImageWithFallback';
@@ -29,10 +29,7 @@ const ProductImages = ({ product, reducedMotion, selectedSKU }: ProductImagesPro
   const [activeImage, setActiveImage] = useState('');
   const [mainImageError, setMainImageError] = useState(false);
 
-  const currentImages = useMemo(
-    () => (product ? product.images.slice(...currentIndexImages) : []),
-    [product, currentIndexImages],
-  );
+  const currentImages = product ? product.images.slice(...currentIndexImages) : [];
 
   useEffect(() => {
     if (product && product.images.length > 0) {

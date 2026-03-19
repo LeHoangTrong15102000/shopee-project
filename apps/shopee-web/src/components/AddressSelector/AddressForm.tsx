@@ -1,5 +1,4 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { memo } from 'react';
 import { Address } from 'src/types/checkout.type';
 import AddressDetailsStep from './components/AddressDetailsStep';
 import AddressFormFooter from './components/AddressFormFooter';
@@ -15,7 +14,7 @@ interface AddressFormProps {
   onSuccess: () => void;
 }
 
-const AddressForm = memo(function AddressForm({ address, onClose, onSuccess }: AddressFormProps) {
+function AddressForm({ address, onClose, onSuccess }: AddressFormProps) {
   const {
     form,
     isEditing,
@@ -117,6 +116,6 @@ const AddressForm = memo(function AddressForm({ address, onClose, onSuccess }: A
       </motion.div>
     </motion.div>
   );
-});
+}
 
 export default AddressForm;

@@ -1,4 +1,4 @@
-import { memo, useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import Button from 'src/components/Button';
@@ -26,7 +26,7 @@ const generateTransferContent = (orderId: string): string => {
   return `SHOPEE ${orderId.toUpperCase()}`;
 };
 
-const BankTransferPayment = memo(function BankTransferPayment({
+function BankTransferPayment({
   amount = 500000,
   orderId = 'ORD' + Date.now().toString().slice(-8),
   onPaymentConfirmed,
@@ -39,7 +39,7 @@ const BankTransferPayment = memo(function BankTransferPayment({
   const [timeRemaining, setTimeRemaining] = useState(PAYMENT_DEADLINE_SECONDS);
   const [_receiptFile, setReceiptFile] = useState<File | null>(null);
 
-  const transferContent = useMemo(() => generateTransferContent(orderId), [orderId]);
+  const transferContent = generateTransferContent(orderId);
 
   // Load last selected bank from localStorage
   useEffect(() => {
@@ -72,31 +72,31 @@ const BankTransferPayment = memo(function BankTransferPayment({
     return () => clearInterval(timer);
   }, [paymentState]);
 
-  const handleSelectBank = useCallback((bank: BankInfo) => {
+  const handleSelectBank = (bank: BankInfo) => {
     setSelectedBank(bank);
-  }, []);
+  };
 
-  const handleToggleDropdown = useCallback(() => {
+  const handleToggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
-  }, []);
+  };
 
-  const handleProceedToPayment = useCallback(() => {
+  const handleProceedToPayment = () => {
     if (selectedBank) setPaymentState('payment_info');
-  }, [selectedBank]);
+  };
 
-  const handleConfirmTransfer = useCallback(() => {
+  const handleConfirmTransfer = () => {
     setPaymentState('verification_pending');
     onPaymentConfirmed?.();
-  }, [onPaymentConfirmed]);
+  };
 
-  const handleExpired = useCallback(() => {
+  const handleExpired = () => {
     setPaymentState('expired');
     onPaymentExpired?.();
-  }, [onPaymentExpired]);
+  };
 
-  const handleFileSelect = useCallback((file: File | null) => {
+  const handleFileSelect = (file: File | null) => {
     setReceiptFile(file);
-  }, []);
+  };
 
   // Bank Selection View
   if (paymentState === 'select_bank') {
@@ -234,6 +234,6 @@ const BankTransferPayment = memo(function BankTransferPayment({
       )}
     </motion.div>
   );
-});
+}
 
 export default BankTransferPayment;

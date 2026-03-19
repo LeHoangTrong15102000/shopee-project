@@ -1,9 +1,8 @@
-import { memo } from 'react';
 import { motion } from 'framer-motion';
 import BankLogo, { BankInfo } from './BankLogo';
 import { formatCurrency } from './WalletCard';
 
-const VietQRCode = memo(function VietQRCode({
+function VietQRCode({
   bank,
   amount,
   transferContent: _transferContent,
@@ -68,6 +67,6 @@ const VietQRCode = memo(function VietQRCode({
       </p>
     </motion.div>
   );
-});
+}
 
 export default VietQRCode;

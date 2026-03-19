@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import SearchSuggestions from '../SearchSuggestions';
 import SearchHistory from 'src/components/SearchHistory';
 import { useProductQueryStates } from 'src/hooks/nuqs';
@@ -50,7 +50,7 @@ const SearchBar = ({ filters, setFilters }: SearchBarProps) => {
     };
   }, [showSuggestions, showSearchHistory]);
 
-  const handleChangeInput = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setSearchValue(value);
     if (value.trim()) {
@@ -60,9 +60,9 @@ const SearchBar = ({ filters, setFilters }: SearchBarProps) => {
       setShowSuggestions(false);
       setShowSearchHistory(true);
     }
-  }, []);
+  };
 
-  const handleFocusInput = useCallback(() => {
+  const handleFocusInput = () => {
     if (!searchValue.trim()) {
       setShowSearchHistory(true);
       setShowSuggestions(false);
@@ -70,18 +70,18 @@ const SearchBar = ({ filters, setFilters }: SearchBarProps) => {
       setShowSuggestions(true);
       setShowSearchHistory(false);
     }
-  }, [searchValue]);
+  };
 
-  const handleBlurInput = useCallback(() => {
+  const handleBlurInput = () => {
     setTimeout(() => {
       if (!searchContainerRef.current?.contains(document.activeElement)) {
         setShowSuggestions(false);
         setShowSearchHistory(false);
       }
     }, 150);
-  }, []);
+  };
 
-  const searchParamsName = useMemo(() => filters.name ?? '', [filters.name]);
+  const searchParamsName = filters.name ?? '';
 
   useEffect(() => {
     if (searchParamsName) {
@@ -89,56 +89,44 @@ const SearchBar = ({ filters, setFilters }: SearchBarProps) => {
     }
   }, [searchParamsName]);
 
-  const handleHideSuggestions = useCallback(() => {
+  const handleHideSuggestions = () => {
     setShowSuggestions(false);
     setShowSearchHistory(false);
-  }, []);
+  };
 
-  const handleSearchSubmit = useCallback(
-    (searchTerm?: string) => {
-      const finalSearchValue = searchTerm || searchValue.trim();
+  const handleSearchSubmit = (searchTerm?: string) => {
+    const finalSearchValue = searchTerm || searchValue.trim();
 
-      if (!finalSearchValue) return;
+    if (!finalSearchValue) return;
 
-      addToHistory(finalSearchValue);
+    addToHistory(finalSearchValue);
 
-      if (filters.order) {
-        setFilters({ name: finalSearchValue, order: null, sort_by: 'createdAt' as const });
-      } else {
-        setFilters({ name: finalSearchValue });
-      }
+    if (filters.order) {
+      setFilters({ name: finalSearchValue, order: null, sort_by: 'createdAt' as const });
+    } else {
+      setFilters({ name: finalSearchValue });
+    }
 
-      setShowSuggestions(false);
-      setShowSearchHistory(false);
-      inputRef.current?.blur();
-    },
-    [searchValue, addToHistory, filters.order, setFilters],
-  );
+    setShowSuggestions(false);
+    setShowSearchHistory(false);
+    inputRef.current?.blur();
+  };
 
-  const handleSelectSuggestion = useCallback(
-    (suggestion: string) => {
-      setSearchValue(suggestion);
-      handleSearchSubmit(suggestion);
-    },
-    [handleSearchSubmit],
-  );
+  const handleSelectSuggestion = (suggestion: string) => {
+    setSearchValue(suggestion);
+    handleSearchSubmit(suggestion);
+  };
 
-  const handleSelectHistoryItem = useCallback(
-    (query: string) => {
-      setSearchValue(query);
-      setShowSearchHistory(false);
-      handleSearchSubmit(query);
-    },
-    [handleSearchSubmit],
-  );
+  const handleSelectHistoryItem = (query: string) => {
+    setSearchValue(query);
+    setShowSearchHistory(false);
+    handleSearchSubmit(query);
+  };
 
-  const handleFormSubmit = useCallback(
-    (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      handleSearchSubmit();
-    },
-    [handleSearchSubmit],
-  );
+  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    handleSearchSubmit();
+  };
 
   return (
     <div className="relative min-w-0 flex-1" ref={searchContainerRef}>

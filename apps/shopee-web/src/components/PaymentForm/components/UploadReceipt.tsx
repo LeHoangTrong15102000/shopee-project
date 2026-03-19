@@ -1,12 +1,8 @@
-import { memo, useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Button from 'src/components/Button';
 
-const UploadReceipt = memo(function UploadReceipt({
-  onFileSelect,
-}: {
-  onFileSelect: (file: File | null) => void;
-}) {
+function UploadReceipt({ onFileSelect }: { onFileSelect: (file: File | null) => void }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -20,24 +16,21 @@ const UploadReceipt = memo(function UploadReceipt({
     };
   }, [previewUrl]);
 
-  const handleFileChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0] || null;
-      setSelectedFile(file);
-      onFileSelect(file);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setSelectedFile(file);
+    onFileSelect(file);
 
-      if (file) {
-        if (previewUrl) URL.revokeObjectURL(previewUrl);
-        const url = URL.createObjectURL(file);
-        setPreviewUrl(url);
-      } else {
-        setPreviewUrl(null);
-      }
-    },
-    [onFileSelect],
-  );
+    if (file) {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    } else {
+      setPreviewUrl(null);
+    }
+  };
 
-  const handleRemoveFile = useCallback(() => {
+  const handleRemoveFile = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setSelectedFile(null);
     setPreviewUrl(null);
@@ -45,7 +38,7 @@ const UploadReceipt = memo(function UploadReceipt({
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-  }, [onFileSelect, previewUrl]);
+  };
 
   return (
     <div className="space-y-3">
@@ -126,6 +119,6 @@ const UploadReceipt = memo(function UploadReceipt({
       )}
     </div>
   );
-});
+}
 
 export default UploadReceipt;

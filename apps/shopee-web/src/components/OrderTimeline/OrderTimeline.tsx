@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import { motion } from 'framer-motion';
-import { useMemo } from 'react';
 import { purchasesStatus } from 'src/constant/purchase';
 import { ANIMATION_DURATION } from 'src/styles/animations';
 
@@ -116,10 +115,10 @@ export default function OrderTimeline({
 }: OrderTimelineProps) {
   const isCancelled = currentStatus === purchasesStatus.cancelled;
 
-  const currentStepIndex = useMemo(() => {
+  const currentStepIndex = (() => {
     if (isCancelled) return -1;
     return ORDER_STEPS.findIndex((step) => step.status === currentStatus);
-  }, [currentStatus, isCancelled]);
+  })();
 
   // Cancelled state
   if (isCancelled) {

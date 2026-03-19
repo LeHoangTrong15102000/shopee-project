@@ -1,12 +1,4 @@
-import {
-  createContext,
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  useContext,
-  ReactNode,
-} from 'react';
+import { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { Theme, ResolvedTheme, ThemeContextValue } from 'src/types/theme.type';
 
 const STORAGE_KEY = 'shopee_theme';
@@ -102,7 +94,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 
   // Set theme and persist — apply DOM changes FIRST before React state updates
   // to prevent the React re-render from causing a visible intermediate state
-  const setTheme = useCallback((newTheme: Theme) => {
+  const setTheme = (newTheme: Theme) => {
     const resolved = resolveTheme(newTheme);
 
     // 1. Apply to DOM immediately (disables transitions, swaps class, forces reflow)
@@ -118,12 +110,12 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     // 3. Update React state (triggers re-render AFTER DOM is already correct)
     setThemeState(newTheme);
     setResolvedTheme(resolved);
-  }, []);
+  };
 
   // Toggle between light/dark
-  const toggleTheme = useCallback(() => {
+  const toggleTheme = () => {
     setTheme(resolvedTheme === 'light' ? 'dark' : 'light');
-  }, [resolvedTheme, setTheme]);
+  };
 
   // Listen for system preference changes
   useEffect(() => {
@@ -151,16 +143,13 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  // Memoize context value
-  const value = useMemo(
-    () => ({
-      theme,
-      resolvedTheme,
-      setTheme,
-      toggleTheme,
-    }),
-    [theme, resolvedTheme, setTheme, toggleTheme],
-  );
+  // Context value
+  const value = {
+    theme,
+    resolvedTheme,
+    setTheme,
+    toggleTheme,
+  };
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 };

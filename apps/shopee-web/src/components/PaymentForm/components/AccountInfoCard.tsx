@@ -1,10 +1,9 @@
-import { memo } from 'react';
 import { motion } from 'framer-motion';
 import BankLogo, { BankInfo } from './BankLogo';
 import CopyButton from '../shared/CopyButton';
 import { formatCurrency } from './WalletCard';
 
-const AccountInfoCard = memo(function AccountInfoCard({
+function AccountInfoCard({
   bank,
   amount,
   transferContent,
@@ -63,6 +62,6 @@ const AccountInfoCard = memo(function AccountInfoCard({
       </p>
     </motion.div>
   );
-});
+}
 
 export default AccountInfoCard;

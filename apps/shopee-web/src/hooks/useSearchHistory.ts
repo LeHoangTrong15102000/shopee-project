@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
 const SEARCH_HISTORY_KEY = 'shopee_search_history';
 const MAX_HISTORY_ITEMS = 10;
@@ -25,50 +25,38 @@ export const useSearchHistory = () => {
     }
   }, []);
 
-  // Save to localStorage whenever history changes
-  const saveToStorage = useCallback((history: SearchHistoryItem[]) => {
+  const saveToStorage = (history: SearchHistoryItem[]) => {
     localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
-  }, []);
+  };
 
-  // Add a search query to history
-  const addToHistory = useCallback(
-    (query: string) => {
-      if (!query.trim()) return;
+  const addToHistory = (query: string) => {
+    if (!query.trim()) return;
 
-      setSearchHistory((prev) => {
-        // Remove duplicate if exists
-        const filtered = prev.filter((item) => item.query.toLowerCase() !== query.toLowerCase());
+    setSearchHistory((prev) => {
+      const filtered = prev.filter((item) => item.query.toLowerCase() !== query.toLowerCase());
 
-        // Add new item at the beginning
-        const newHistory = [{ query: query.trim(), timestamp: Date.now() }, ...filtered].slice(
-          0,
-          MAX_HISTORY_ITEMS,
-        );
+      const newHistory = [{ query: query.trim(), timestamp: Date.now() }, ...filtered].slice(
+        0,
+        MAX_HISTORY_ITEMS,
+      );
 
-        saveToStorage(newHistory);
-        return newHistory;
-      });
-    },
-    [saveToStorage],
-  );
+      saveToStorage(newHistory);
+      return newHistory;
+    });
+  };
 
-  // Remove a single item from history
-  const removeFromHistory = useCallback(
-    (query: string) => {
-      setSearchHistory((prev) => {
-        const newHistory = prev.filter((item) => item.query !== query);
-        saveToStorage(newHistory);
-        return newHistory;
-      });
-    },
-    [saveToStorage],
-  );
+  const removeFromHistory = (query: string) => {
+    setSearchHistory((prev) => {
+      const newHistory = prev.filter((item) => item.query !== query);
+      saveToStorage(newHistory);
+      return newHistory;
+    });
+  };
 
-  // Clear all history
-  const clearHistory = useCallback(() => {
+  const clearHistory = () => {
     setSearchHistory([]);
     localStorage.removeItem(SEARCH_HISTORY_KEY);
-  }, []);
+  };
 
   return {
     searchHistory,

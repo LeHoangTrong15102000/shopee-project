@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 import path from 'src/constant/path';
@@ -208,17 +208,14 @@ const MobileAccountNav = ({ className }: MobileAccountNavProps) => {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen]);
 
-  const handleSelect = useCallback(
-    (to: string) => {
-      setIsOpen(false);
-      navigate(to);
-    },
-    [navigate],
-  );
+  const handleSelect = (to: string) => {
+    setIsOpen(false);
+    navigate(to);
+  };
 
-  const toggleDropdown = useCallback(() => {
+  const toggleDropdown = () => {
     setIsOpen((prev) => !prev);
-  }, []);
+  };
 
   return (
     <div

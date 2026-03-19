@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useReducedMotion } from 'src/hooks/useReducedMotion';
 import { ANIMATION_DURATION, ANIMATION_EASING } from 'src/styles/animations';
@@ -39,7 +39,7 @@ const backToTopReducedVariants = {
   exit: { opacity: 0, transition: { duration: 0.1 } },
 };
 
-const BackToTopInner = () => {
+const BackToTop = () => {
   const { t } = useTranslation('common');
   const [isVisible, setIsVisible] = useState(false);
   const prefersReducedMotion = useReducedMotion();
@@ -64,12 +64,12 @@ const BackToTopInner = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToTop = useCallback(() => {
+  const scrollToTop = () => {
     window.scrollTo({
       top: 0,
       behavior: prefersReducedMotion ? 'auto' : 'smooth',
     });
-  }, [prefersReducedMotion]);
+  };
 
   const variants = prefersReducedMotion ? backToTopReducedVariants : backToTopVariants;
 
@@ -108,7 +108,5 @@ const BackToTopInner = () => {
     </AnimatePresence>
   );
 };
-
-const BackToTop = memo(BackToTopInner);
 
 export default BackToTop;

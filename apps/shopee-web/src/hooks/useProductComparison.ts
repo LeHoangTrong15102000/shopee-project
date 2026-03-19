@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Product } from 'src/types/product.type';
 
 const STORAGE_KEY = 'comparison_products';
@@ -18,7 +18,7 @@ export function useProductComparison() {
     }
   }, []);
 
-  const addToCompare = useCallback((product: Product) => {
+  const addToCompare = (product: Product) => {
     setCompareList((prev) => {
       if (prev.length >= MAX_COMPARE_ITEMS) return prev;
       if (prev.some((p) => p._id === product._id)) return prev;
@@ -26,27 +26,24 @@ export function useProductComparison() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       return updated;
     });
-  }, []);
+  };
 
-  const removeFromCompare = useCallback((productId: string) => {
+  const removeFromCompare = (productId: string) => {
     setCompareList((prev) => {
       const updated = prev.filter((p) => p._id !== productId);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       return updated;
     });
-  }, []);
+  };
 
-  const clearCompare = useCallback(() => {
+  const clearCompare = () => {
     localStorage.removeItem(STORAGE_KEY);
     setCompareList([]);
-  }, []);
+  };
 
-  const isInCompare = useCallback(
-    (productId: string) => {
-      return compareList.some((p) => p._id === productId);
-    },
-    [compareList],
-  );
+  const isInCompare = (productId: string) => {
+    return compareList.some((p) => p._id === productId);
+  };
 
   return {
     compareList,

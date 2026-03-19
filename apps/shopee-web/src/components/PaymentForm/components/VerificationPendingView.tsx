@@ -1,7 +1,6 @@
-import { memo } from 'react';
 import { motion } from 'framer-motion';
 
-const VerificationPendingView = memo(function VerificationPendingView() {
+function VerificationPendingView() {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -45,6 +44,6 @@ const VerificationPendingView = memo(function VerificationPendingView() {
       </motion.div>
     </motion.div>
   );
-});
+}
 
 export default VerificationPendingView;

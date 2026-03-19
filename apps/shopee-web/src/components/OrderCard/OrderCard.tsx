@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -41,7 +40,7 @@ function getStatusDisplay(status: OrderStatus) {
   };
 }
 
-const OrderCard = memo(function OrderCard({
+const OrderCard = function OrderCard({
   order,
   onCancel,
   onReorder,
@@ -262,6 +261,6 @@ const OrderCard = memo(function OrderCard({
       </div>
     </motion.div>
   );
-});
+};
 
 export default OrderCard;

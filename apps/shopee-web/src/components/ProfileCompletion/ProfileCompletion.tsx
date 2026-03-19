@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useReducedMotion } from 'src/hooks/useReducedMotion';
 import { User } from 'src/types/user.type';
@@ -20,7 +19,7 @@ const ProfileCompletion = ({ user, className = '', compact = false }: ProfileCom
   const { t } = useTranslation('user');
   const reducedMotion = useReducedMotion();
 
-  const { percentage, completedFields, incompleteFields } = useMemo(() => {
+  const { percentage, completedFields, incompleteFields } = (() => {
     let totalWeight = 0;
     const completed: (typeof PROFILE_FIELDS)[number][] = [];
     const incomplete: (typeof PROFILE_FIELDS)[number][] = [];
@@ -39,7 +38,7 @@ const ProfileCompletion = ({ user, className = '', compact = false }: ProfileCom
       completedFields: completed,
       incompleteFields: incomplete,
     };
-  }, [user]);
+  })();
 
   // SVG circle properties
   const radius = 50;

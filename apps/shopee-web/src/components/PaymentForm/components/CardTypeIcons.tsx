@@ -1,8 +1,6 @@
-import { memo } from 'react';
-
 export type CardType = 'visa' | 'mastercard' | 'jcb' | 'amex' | 'unknown';
 
-const VisaSvgIcon = memo(function VisaSvgIcon() {
+function VisaSvgIcon() {
   return (
     <svg viewBox="0 0 48 32" className="h-6 w-9">
       <rect width="48" height="32" rx="4" fill="#1A1F71" />
@@ -12,9 +10,9 @@ const VisaSvgIcon = memo(function VisaSvgIcon() {
       />
     </svg>
   );
-});
+}
 
-const MastercardSvgIcon = memo(function MastercardSvgIcon() {
+function MastercardSvgIcon() {
   return (
     <svg viewBox="0 0 48 32" className="h-6 w-9">
       <rect width="48" height="32" rx="4" fill="#000" />
@@ -23,9 +21,9 @@ const MastercardSvgIcon = memo(function MastercardSvgIcon() {
       <path d="M24 8.5a10 10 0 0 0 0 15 10 10 0 0 0 0-15z" fill="#FF5F00" />
     </svg>
   );
-});
+}
 
-const AmexSvgIcon = memo(function AmexSvgIcon() {
+function AmexSvgIcon() {
   return (
     <svg viewBox="0 0 48 32" className="h-6 w-9">
       <rect width="48" height="32" rx="4" fill="#006FCF" />
@@ -35,9 +33,9 @@ const AmexSvgIcon = memo(function AmexSvgIcon() {
       />
     </svg>
   );
-});
+}
 
-const JcbSvgIcon = memo(function JcbSvgIcon() {
+function JcbSvgIcon() {
   return (
     <svg viewBox="0 0 48 32" className="h-6 w-9">
       <rect width="48" height="32" rx="4" fill="#fff" />
@@ -55,9 +53,9 @@ const JcbSvgIcon = memo(function JcbSvgIcon() {
       </text>
     </svg>
   );
-});
+}
 
-const UnknownCardSvgIcon = memo(function UnknownCardSvgIcon() {
+function UnknownCardSvgIcon() {
   return (
     <svg viewBox="0 0 48 32" className="h-6 w-9">
       <rect width="48" height="32" rx="4" fill="#E5E7EB" />
@@ -66,9 +64,9 @@ const UnknownCardSvgIcon = memo(function UnknownCardSvgIcon() {
       <rect x="22" y="18" width="14" height="2" rx="1" fill="#9CA3AF" />
     </svg>
   );
-});
+}
 
-export const CardTypeIcon = memo(function CardTypeIcon({ type }: { type: CardType }) {
+export function CardTypeIcon({ type }: { type: CardType }) {
   switch (type) {
     case 'visa':
       return <VisaSvgIcon />;
@@ -81,9 +79,9 @@ export const CardTypeIcon = memo(function CardTypeIcon({ type }: { type: CardTyp
     default:
       return <UnknownCardSvgIcon />;
   }
-});
+}
 
-export const CheckmarkIcon = memo(function CheckmarkIcon() {
+export function CheckmarkIcon() {
   return (
     <svg className="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
       <path
@@ -93,9 +91,9 @@ export const CheckmarkIcon = memo(function CheckmarkIcon() {
       />
     </svg>
   );
-});
+}
 
-export const InfoIcon = memo(function InfoIcon() {
+export function InfoIcon() {
   return (
     <svg
       className="h-4 w-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400"
@@ -109,4 +107,4 @@ export const InfoIcon = memo(function InfoIcon() {
       />
     </svg>
   );
-});
+}

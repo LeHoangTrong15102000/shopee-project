@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useReducedMotion } from 'src/hooks/useReducedMotion';
 
@@ -66,7 +65,7 @@ const PasswordStrengthMeter = ({ password, className = '' }: PasswordStrengthMet
   const { t } = useTranslation('auth');
   const reducedMotion = useReducedMotion();
 
-  const strength = useMemo(() => calculateStrength(password), [password]);
+  const strength = calculateStrength(password);
 
   // Don't show if no password
   if (!password || password.length === 0) {

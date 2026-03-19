@@ -9,7 +9,7 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import addressApi from 'src/apis/address.api';
 import { Address, AddressType } from 'src/types/checkout.type';
@@ -61,7 +61,7 @@ export const useAddressBook = () => {
     }
   }, [rawAddresses, orderedAddresses]);
 
-  const filteredAddresses = useMemo(() => {
+  const filteredAddresses = (() => {
     let result = orderedAddresses.length > 0 ? orderedAddresses : rawAddresses;
 
     if (searchQuery.trim()) {
@@ -81,21 +81,18 @@ export const useAddressBook = () => {
     }
 
     return result;
-  }, [orderedAddresses, rawAddresses, searchQuery, filterType]);
+  })();
 
   const defaultAddress = filteredAddresses.find((addr) => addr.isDefault);
   const otherAddresses = filteredAddresses.filter((addr) => !addr.isDefault);
 
   // Custom collision detection: only allow drops on existing address items
-  const swapOnlyCollision: CollisionDetection = useCallback(
-    (args) => {
-      const collisions = closestCenter(args);
-      // Filter: only keep collisions with actual address item IDs
-      const validIds = new Set(otherAddresses.map((addr) => addr._id));
-      return collisions.filter((collision) => validIds.has(collision.id as string));
-    },
-    [otherAddresses],
-  );
+  const swapOnlyCollision: CollisionDetection = (args) => {
+    const collisions = closestCenter(args);
+    // Filter: only keep collisions with actual address item IDs
+    const validIds = new Set(otherAddresses.map((addr) => addr._id));
+    return collisions.filter((collision) => validIds.has(collision.id as string));
+  };
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => addressApi.deleteAddress(id),
@@ -114,22 +111,22 @@ export const useAddressBook = () => {
     },
   });
 
-  const handleAddNew = useCallback(() => {
+  const handleAddNew = () => {
     setEditingAddress(null);
     setShowForm(true);
-  }, []);
+  };
 
-  const handleEdit = useCallback((address: Address) => {
+  const handleEdit = (address: Address) => {
     setEditingAddress(address);
     setShowForm(true);
-  }, []);
+  };
 
-  const handleFormClose = useCallback(() => {
+  const handleFormClose = () => {
     setShowForm(false);
     setEditingAddress(null);
-  }, []);
+  };
 
-  const handleFormSuccess = useCallback(() => {
+  const handleFormSuccess = () => {
     queryClient.invalidateQueries({ queryKey: ['addresses'] });
     setShowForm(false);
     setEditingAddress(null);
@@ -137,26 +134,23 @@ export const useAddressBook = () => {
       autoClose: 1000,
       position: 'top-center',
     });
-  }, [queryClient, editingAddress]);
+  };
 
-  const handleDelete = useCallback((id: string) => {
+  const handleDelete = (id: string) => {
     setDeletingAddressId(id);
-  }, []);
+  };
 
-  const confirmDelete = useCallback(() => {
+  const confirmDelete = () => {
     if (deletingAddressId) {
       deleteMutation.mutate(deletingAddressId);
     }
-  }, [deletingAddressId, deleteMutation]);
+  };
 
-  const handleSetDefault = useCallback(
-    (id: string) => {
-      setDefaultMutation.mutate(id);
-    },
-    [setDefaultMutation],
-  );
+  const handleSetDefault = (id: string) => {
+    setDefaultMutation.mutate(id);
+  };
 
-  const handleToggleSelect = useCallback((id: string) => {
+  const handleToggleSelect = (id: string) => {
     setSelectedIds((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(id)) {
@@ -166,22 +160,22 @@ export const useAddressBook = () => {
       }
       return newSet;
     });
-  }, []);
+  };
 
-  const handleSelectAll = useCallback(() => {
+  const handleSelectAll = () => {
     const nonDefaultIds = filteredAddresses.filter((a) => !a.isDefault).map((a) => a._id);
     if (selectedIds.size === nonDefaultIds.length) {
       setSelectedIds(new Set());
     } else {
       setSelectedIds(new Set(nonDefaultIds));
     }
-  }, [filteredAddresses, selectedIds.size]);
+  };
 
-  const handleBulkDelete = useCallback(() => {
+  const handleBulkDelete = () => {
     setShowBulkDeleteConfirm(true);
-  }, []);
+  };
 
-  const confirmBulkDelete = useCallback(async () => {
+  const confirmBulkDelete = async () => {
     const idsToDelete = Array.from(selectedIds);
     for (const id of idsToDelete) {
       await deleteMutation.mutateAsync(id);
@@ -193,47 +187,44 @@ export const useAddressBook = () => {
       autoClose: 1000,
       position: 'top-center',
     });
-  }, [selectedIds, deleteMutation]);
+  };
 
-  const handleReorder = useCallback((newOrder: Address[]) => {
+  const handleReorder = (newOrder: Address[]) => {
     setOrderedAddresses(newOrder);
-  }, []);
+  };
 
-  const handleDragStart = useCallback((event: DragStartEvent) => {
+  const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
-  }, []);
+  };
 
-  const handleDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      const { active, over } = event;
-      setActiveId(null);
-
-      if (over && active.id !== over.id) {
-        // Swap: exchange positions of the two items directly
-        const activeIndex = otherAddresses.findIndex((addr) => addr._id === active.id);
-        const overIndex = otherAddresses.findIndex((addr) => addr._id === over.id);
-
-        if (activeIndex !== -1 && overIndex !== -1) {
-          const newOrder = [...otherAddresses];
-          // Direct swap instead of arrayMove (insertion)
-          const temp = newOrder[activeIndex];
-          newOrder[activeIndex] = newOrder[overIndex];
-          newOrder[overIndex] = temp;
-          const newFullOrder = defaultAddress ? [defaultAddress, ...newOrder] : newOrder;
-          handleReorder(newFullOrder);
-        }
-      }
-    },
-    [otherAddresses, defaultAddress, handleReorder],
-  );
-
-  const handleDragCancel = useCallback(() => {
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
     setActiveId(null);
-  }, []);
+
+    if (over && active.id !== over.id) {
+      // Swap: exchange positions of the two items directly
+      const activeIndex = otherAddresses.findIndex((addr) => addr._id === active.id);
+      const overIndex = otherAddresses.findIndex((addr) => addr._id === over.id);
+
+      if (activeIndex !== -1 && overIndex !== -1) {
+        const newOrder = [...otherAddresses];
+        // Direct swap instead of arrayMove (insertion)
+        const temp = newOrder[activeIndex];
+        newOrder[activeIndex] = newOrder[overIndex];
+        newOrder[overIndex] = temp;
+        const newFullOrder = defaultAddress ? [defaultAddress, ...newOrder] : newOrder;
+        handleReorder(newFullOrder);
+      }
+    }
+  };
+
+  const handleDragCancel = () => {
+    setActiveId(null);
+  };
 
   const activeAddress = activeId ? otherAddresses.find((addr) => addr._id === activeId) : null;
 
-  const addressCounts = useMemo(() => {
+  const addressCounts = (() => {
     const counts: Record<FilterType, number> = {
       all: rawAddresses.length,
       home: 0,
@@ -245,12 +236,12 @@ export const useAddressBook = () => {
       counts[type]++;
     });
     return counts;
-  }, [rawAddresses]);
+  })();
 
-  const toggleSelectionMode = useCallback(() => {
+  const toggleSelectionMode = () => {
     setIsSelectionMode(!isSelectionMode);
     setSelectedIds(new Set());
-  }, [isSelectionMode]);
+  };
 
   return {
     // State

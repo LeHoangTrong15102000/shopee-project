@@ -1,10 +1,9 @@
-import { memo } from 'react';
 import { motion } from 'framer-motion';
 import Button from 'src/components/Button';
 import { WalletInfo, WalletLogo, formatCurrency } from './WalletCard';
 import { EWalletCountdownTimer } from '../shared/CountdownTimer';
 
-const QRCodePlaceholder = memo(function QRCodePlaceholder({ walletName }: { walletName: string }) {
+function QRCodePlaceholder({ walletName }: { walletName: string }) {
   return (
     <div className="relative">
       <svg viewBox="0 0 200 200" className="h-48 w-48">
@@ -36,9 +35,9 @@ const QRCodePlaceholder = memo(function QRCodePlaceholder({ walletName }: { wall
       </div>
     </div>
   );
-});
+}
 
-const QRDisplayView = memo(function QRDisplayView({
+function QRDisplayView({
   wallet,
   amount,
   timeRemaining,
@@ -124,6 +123,6 @@ const QRDisplayView = memo(function QRDisplayView({
       </p>
     </motion.div>
   );
-});
+}
 
 export default QRDisplayView;

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import classNames from 'classnames';
 import { useReducedMotion } from 'src/hooks/useReducedMotion';
@@ -24,14 +24,11 @@ export default function FlashSaleUrgency({
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
 
   // Calculate stock metrics
-  const remainingStock = useMemo(
-    () => Math.max(0, totalStock - soldCount),
-    [totalStock, soldCount],
-  );
-  const soldPercentage = useMemo(() => {
+  const remainingStock = Math.max(0, totalStock - soldCount);
+  const soldPercentage = (() => {
     if (totalStock <= 0) return 100;
     return Math.min(100, Math.round((soldCount / totalStock) * 100));
-  }, [totalStock, soldCount]);
+  })();
 
   // Calculate time remaining
   useEffect(() => {
@@ -48,17 +45,17 @@ export default function FlashSaleUrgency({
   }, [endTime]);
 
   // Determine urgency level
-  const urgencyLevel = useMemo((): UrgencyLevel => {
+  const urgencyLevel = ((): UrgencyLevel => {
     if (timeRemaining <= 0) return 'ended';
     if (remainingStock === 0) return 'out_of_stock';
     if (remainingStock < 5) return 'critical';
     if (remainingStock < 10) return 'low';
     if (timeRemaining < 30 * 60) return 'ending_soon'; // < 30 minutes
     return 'normal';
-  }, [remainingStock, timeRemaining]);
+  })();
 
   // Get urgency message
-  const urgencyMessage = useMemo(() => {
+  const urgencyMessage = (() => {
     switch (urgencyLevel) {
       case 'ended':
         return { text: 'Đã kết thúc!', emoji: '⏰' };
@@ -73,7 +70,7 @@ export default function FlashSaleUrgency({
       default:
         return null;
     }
-  }, [urgencyLevel, remainingStock]);
+  })();
 
   const shouldPulse =
     ['critical', 'low', 'ending_soon'].includes(urgencyLevel) && !prefersReducedMotion;
@@ -83,7 +80,7 @@ export default function FlashSaleUrgency({
     ? 'bg-gray-400 dark:bg-gray-600'
     : 'bg-linear-to-r from-[#ee4d2d] to-[#ff6633]';
 
-  const urgencyTextColor = useMemo(() => {
+  const urgencyTextColor = (() => {
     switch (urgencyLevel) {
       case 'critical':
         return 'text-red-600 dark:text-red-400';
@@ -97,7 +94,7 @@ export default function FlashSaleUrgency({
       default:
         return 'text-gray-600 dark:text-gray-400';
     }
-  }, [urgencyLevel]);
+  })();
 
   return (
     <div className={classNames('w-full', className)} data-product-id={productId}>

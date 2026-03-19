@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { QueryFilters } from '../queryFilters';
+import { QueryFilters, QueryPredicates } from '../queryFilters';
+import { Query } from '@tanstack/react-query';
 
 describe('QueryFilters.products', () => {
   it('all() returns products queryKey', () => {
@@ -95,5 +96,208 @@ describe('QueryFilters.notifications', () => {
 
   it('count() returns correct queryKey', () => {
     expect(QueryFilters.notifications.count()).toEqual({ queryKey: ['notifications', 'count'] });
+  });
+});
+
+describe('QueryFilters.categories', () => {
+  it('tree() returns correct queryKey', () => {
+    expect(QueryFilters.categories.tree()).toEqual({ queryKey: ['categories', 'tree'] });
+  });
+
+  it('featured() returns correct queryKey', () => {
+    expect(QueryFilters.categories.featured()).toEqual({ queryKey: ['categories', 'featured'] });
+  });
+});
+
+describe('QueryFilters.search', () => {
+  it('all() returns search queryKey', () => {
+    expect(QueryFilters.search.all()).toEqual({ queryKey: ['search'] });
+  });
+
+  it('suggestions(term) includes term', () => {
+    expect(QueryFilters.search.suggestions('phone')).toEqual({
+      queryKey: ['searchSuggestions', 'phone'],
+    });
+  });
+
+  it('history() returns correct queryKey', () => {
+    expect(QueryFilters.search.history()).toEqual({ queryKey: ['search', 'history'] });
+  });
+});
+
+describe('QueryFilters.reviews', () => {
+  it('all() returns reviews queryKey', () => {
+    expect(QueryFilters.reviews.all()).toEqual({ queryKey: ['reviews'] });
+  });
+
+  it('byProduct(productId) includes productId', () => {
+    expect(QueryFilters.reviews.byProduct('prod-123')).toEqual({
+      queryKey: ['reviews', 'product', 'prod-123'],
+    });
+  });
+
+  it('byUser() returns correct queryKey', () => {
+    expect(QueryFilters.reviews.byUser()).toEqual({ queryKey: ['reviews', 'user'] });
+  });
+});
+
+describe('QueryFilters.products - additional methods', () => {
+  it('details() returns products detail queryKey', () => {
+    expect(QueryFilters.products.details()).toEqual({ queryKey: ['products', 'detail'] });
+  });
+});
+
+describe('QueryPredicates', () => {
+  describe('productsByCategory', () => {
+    it('should match products with specific category', () => {
+      const predicate = QueryPredicates.productsByCategory('cat-1');
+      const query = {
+        queryKey: ['products', 'list', { category: 'cat-1', page: 1 }],
+      } as Query;
+
+      expect(predicate(query)).toBe(true);
+    });
+
+    it('should not match products with different category', () => {
+      const predicate = QueryPredicates.productsByCategory('cat-1');
+      const query = {
+        queryKey: ['products', 'list', { category: 'cat-2' }],
+      } as Query;
+
+      expect(predicate(query)).toBe(false);
+    });
+
+    it('should not match non-product queries', () => {
+      const predicate = QueryPredicates.productsByCategory('cat-1');
+      const query = {
+        queryKey: ['purchases', 'list', { category: 'cat-1' }],
+      } as Query;
+
+      expect(predicate(query)).toBe(false);
+    });
+  });
+
+  describe('productsByPriceRange', () => {
+    it('should match products within price range', () => {
+      const predicate = QueryPredicates.productsByPriceRange(100, 500);
+      const query = {
+        queryKey: ['products', 'list', { price_min: 150, price_max: 400 }],
+      } as Query;
+
+      expect(predicate(query)).toBe(true);
+    });
+
+    it('should not match products outside price range', () => {
+      const predicate = QueryPredicates.productsByPriceRange(100, 500);
+      const query = {
+        queryKey: ['products', 'list', { price_min: 50, price_max: 600 }],
+      } as Query;
+
+      expect(predicate(query)).toBe(false);
+    });
+
+    it('should handle missing price filters', () => {
+      const predicate = QueryPredicates.productsByPriceRange(100, 500);
+      const query = {
+        queryKey: ['products', 'list', {}],
+      } as Query;
+
+      expect(predicate(query)).toBe(false);
+    });
+  });
+
+  describe('userSpecificData', () => {
+    it('should match user queries', () => {
+      const predicate = QueryPredicates.userSpecificData();
+      const query = { queryKey: ['user', 'profile'] } as Query;
+
+      expect(predicate(query)).toBe(true);
+    });
+
+    it('should match purchases queries', () => {
+      const predicate = QueryPredicates.userSpecificData();
+      const query = { queryKey: ['purchases', 'history'] } as Query;
+
+      expect(predicate(query)).toBe(true);
+    });
+
+    it('should match notifications queries', () => {
+      const predicate = QueryPredicates.userSpecificData();
+      const query = { queryKey: ['notifications', 'unread'] } as Query;
+
+      expect(predicate(query)).toBe(true);
+    });
+
+    it('should match product recommendations', () => {
+      const predicate = QueryPredicates.userSpecificData();
+      const query = { queryKey: ['products', 'recommendations'] } as Query;
+
+      expect(predicate(query)).toBe(true);
+    });
+
+    it('should match user reviews', () => {
+      const predicate = QueryPredicates.userSpecificData();
+      const query = { queryKey: ['reviews', 'user'] } as Query;
+
+      expect(predicate(query)).toBe(true);
+    });
+
+    it('should not match general product queries', () => {
+      const predicate = QueryPredicates.userSpecificData();
+      const query = { queryKey: ['products', 'list'] } as Query;
+
+      expect(predicate(query)).toBe(false);
+    });
+  });
+
+  describe('affectedByProductUpdate', () => {
+    it('should match specific product detail', () => {
+      const predicate = QueryPredicates.affectedByProductUpdate('prod-123');
+      const query = { queryKey: ['products', 'detail', 'prod-123'] } as Query;
+
+      expect(predicate(query)).toBe(true);
+    });
+
+    it('should not match different product detail', () => {
+      const predicate = QueryPredicates.affectedByProductUpdate('prod-123');
+      const query = { queryKey: ['products', 'detail', 'prod-456'] } as Query;
+
+      expect(predicate(query)).toBe(false);
+    });
+
+    it('should match product lists', () => {
+      const predicate = QueryPredicates.affectedByProductUpdate('prod-123');
+      const query = { queryKey: ['products', 'list', {}] } as Query;
+
+      expect(predicate(query)).toBe(true);
+    });
+
+    it('should match product search', () => {
+      const predicate = QueryPredicates.affectedByProductUpdate('prod-123');
+      const query = { queryKey: ['products', 'search', 'phone'] } as Query;
+
+      expect(predicate(query)).toBe(true);
+    });
+
+    it('should match trending products', () => {
+      const predicate = QueryPredicates.affectedByProductUpdate('prod-123');
+      const query = { queryKey: ['products', 'trending'] } as Query;
+
+      expect(predicate(query)).toBe(true);
+    });
+
+    it('should match recommendations', () => {
+      const predicate = QueryPredicates.affectedByProductUpdate('prod-123');
+      const query = { queryKey: ['products', 'recommendations'] } as Query;
+
+      expect(predicate(query)).toBe(true);
+    });
+
+    it('should not match non-product queries', () => {
+      const predicate = QueryPredicates.affectedByProductUpdate('prod-123');
+      const query = { queryKey: ['user', 'profile'] } as Query;
+
+      expect(predicate(query)).toBe(false);
+    });
   });
 });

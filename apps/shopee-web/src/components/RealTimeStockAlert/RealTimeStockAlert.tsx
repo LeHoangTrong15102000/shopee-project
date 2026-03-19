@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
 import useSocket from 'src/hooks/useSocket';
@@ -50,53 +50,50 @@ export default function RealTimeStockAlert({ productIds, onStockChange }: RealTi
   }, [alerts]);
 
   // Handle inventory alert from socket
-  const handleInventoryAlert = useCallback(
-    (data: InventoryAlertPayload) => {
-      // Only process alerts for products in the cart
-      if (!productIdsRef.current.has(data.product_id)) return;
+  const handleInventoryAlert = (data: InventoryAlertPayload) => {
+    // Only process alerts for products in the cart
+    if (!productIdsRef.current.has(data.product_id)) return;
 
-      const newAlert: StockChangeAlert = {
-        id: `${data.product_id}-${Date.now()}`,
-        productId: data.product_id,
-        productName: data.product_name,
-        newStock: data.current_quantity,
-        severity: data.severity,
-        timestamp: Date.now(),
-      };
+    const newAlert: StockChangeAlert = {
+      id: `${data.product_id}-${Date.now()}`,
+      productId: data.product_id,
+      productName: data.product_name,
+      newStock: data.current_quantity,
+      severity: data.severity,
+      timestamp: Date.now(),
+    };
 
-      // Add to local alerts for inline display
-      setAlerts((prev) => {
-        // Remove existing alert for same product to avoid duplicates
-        const filtered = prev.filter((a) => a.productId !== data.product_id);
-        return [newAlert, ...filtered];
+    // Add to local alerts for inline display
+    setAlerts((prev) => {
+      // Remove existing alert for same product to avoid duplicates
+      const filtered = prev.filter((a) => a.productId !== data.product_id);
+      return [newAlert, ...filtered];
+    });
+
+    // Show toast notification
+    if (data.severity === 'critical' || data.current_quantity === 0) {
+      toast.error(`🚫 ${data.product_name} đã hết hàng!`, {
+        autoClose: AUTO_DISMISS_DELAY,
+        position: 'top-right',
       });
-
-      // Show toast notification
-      if (data.severity === 'critical' || data.current_quantity === 0) {
-        toast.error(`🚫 ${data.product_name} đã hết hàng!`, {
+    } else if (data.current_quantity <= 5) {
+      toast.warning(`⚠️ ${data.product_name} chỉ còn ${data.current_quantity} sản phẩm!`, {
+        autoClose: AUTO_DISMISS_DELAY,
+        position: 'top-right',
+      });
+    } else {
+      toast.info(
+        `📦 Số lượng ${data.product_name} đã thay đổi: còn ${data.current_quantity} sản phẩm`,
+        {
           autoClose: AUTO_DISMISS_DELAY,
           position: 'top-right',
-        });
-      } else if (data.current_quantity <= 5) {
-        toast.warning(`⚠️ ${data.product_name} chỉ còn ${data.current_quantity} sản phẩm!`, {
-          autoClose: AUTO_DISMISS_DELAY,
-          position: 'top-right',
-        });
-      } else {
-        toast.info(
-          `📦 Số lượng ${data.product_name} đã thay đổi: còn ${data.current_quantity} sản phẩm`,
-          {
-            autoClose: AUTO_DISMISS_DELAY,
-            position: 'top-right',
-          },
-        );
-      }
+        },
+      );
+    }
 
-      // Callback to parent for query invalidation
-      onStockChange?.(data.product_id, data.current_quantity);
-    },
-    [onStockChange],
-  );
+    // Callback to parent for query invalidation
+    onStockChange?.(data.product_id, data.current_quantity);
+  };
 
   // Subscribe to inventory alerts
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 
 const STORAGE_KEY = 'shopee_view_mode';
 
@@ -11,10 +11,10 @@ export const useViewMode = () => {
     return (saved === 'list' ? 'list' : 'grid') as ViewMode;
   });
 
-  const changeViewMode = useCallback((mode: ViewMode) => {
+  const changeViewMode = (mode: ViewMode) => {
     setViewMode(mode);
     localStorage.setItem(STORAGE_KEY, mode);
-  }, []);
+  };
 
   return { viewMode, changeViewMode };
 };

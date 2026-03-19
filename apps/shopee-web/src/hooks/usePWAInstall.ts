@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -61,7 +61,7 @@ export function usePWAInstall(): UsePWAInstallReturn {
     };
   }, []);
 
-  const promptInstall = useCallback(async () => {
+  const promptInstall = async () => {
     if (!deferredPrompt) return;
 
     await deferredPrompt.prompt();
@@ -72,12 +72,12 @@ export function usePWAInstall(): UsePWAInstallReturn {
     }
 
     setDeferredPrompt(null);
-  }, [deferredPrompt]);
+  };
 
-  const dismissPrompt = useCallback(() => {
+  const dismissPrompt = () => {
     localStorage.setItem(DISMISS_KEY, Date.now().toString());
     setIsDismissedState(true);
-  }, []);
+  };
 
   const isInstallable = deferredPrompt !== null && !isInstalled && !isDismissedState;
 

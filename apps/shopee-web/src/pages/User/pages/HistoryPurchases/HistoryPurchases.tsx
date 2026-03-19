@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Fragment, useState, useMemo } from 'react';
+import { Fragment, useState } from 'react';
 import purchaseApi from 'src/apis/purchases.api';
 import { OrderSearchFilter } from 'src/components/OrderSearchFilter';
 import ProductReviewModal from 'src/components/ProductReviewModal';
@@ -44,10 +44,10 @@ const HistoryPurchases = () => {
   const purchasesInCart = purchasesInCartData?.data.data; // PurchasesInCart là một cái Purchase[]
 
   // Filter purchases based on all filters (search, date range, price range)
-  const filteredPurchases = useMemo(() => {
+  const filteredPurchases = (() => {
     if (!purchasesInCart) return [];
     return filterPurchases(purchasesInCart);
-  }, [purchasesInCart, filterPurchases]);
+  })();
 
   // Check if filters are active (for showing different empty state)
   const hasActiveFilters = activeFilterCount > 0;

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import useSocket from './useSocket';
 import { SocketEvent, InventoryAlertPayload } from 'src/types/socket.types';
 import { toast } from 'react-toastify';
@@ -41,10 +41,10 @@ const useInventoryAlerts = (): UseInventoryAlertsReturn => {
     };
   }, [socket, isConnected, isAdmin]);
 
-  const clearAlerts = useCallback(() => {
+  const clearAlerts = () => {
     setAlerts([]);
     setUnreadCount(0);
-  }, []);
+  };
 
   return {
     alerts,

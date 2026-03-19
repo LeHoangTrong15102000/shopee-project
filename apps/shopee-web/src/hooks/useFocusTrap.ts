@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 
 const FOCUSABLE_SELECTOR = [
   'a[href]',
@@ -19,12 +19,12 @@ interface UseFocusTrapOptions {
 export function useFocusTrap({ isOpen, containerRef, onClose }: UseFocusTrapOptions) {
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
-  const getFocusableElements = useCallback(() => {
+  const getFocusableElements = () => {
     if (!containerRef.current) return [];
     return Array.from(
       containerRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
     ).filter((el) => !el.hasAttribute('disabled') && el.offsetParent !== null);
-  }, [containerRef]);
+  };
 
   useEffect(() => {
     if (!isOpen) return;

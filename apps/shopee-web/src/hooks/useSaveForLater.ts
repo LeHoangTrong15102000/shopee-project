@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Product } from 'src/types/product.type';
 
 const STORAGE_KEY = 'shopee_saved_for_later';
@@ -39,7 +39,7 @@ export const useSaveForLater = () => {
    * @param buyCount - The original quantity in cart
    * @returns true if saved successfully, false if already exists
    */
-  const saveForLater = useCallback((product: Product, buyCount: number): boolean => {
+  const saveForLater = (product: Product, buyCount: number): boolean => {
     let wasAdded = false;
     setSavedItems((prev) => {
       // Don't add duplicates
@@ -57,45 +57,24 @@ export const useSaveForLater = () => {
       ];
     });
     return wasAdded;
-  }, []);
+  };
 
-  /**
-   * Remove a product from saved items
-   * @param productId - The product ID to remove
-   */
-  const removeFromSaved = useCallback((productId: string) => {
+  const removeFromSaved = (productId: string) => {
     setSavedItems((prev) => prev.filter((item) => item.product._id !== productId));
-  }, []);
+  };
 
-  /**
-   * Clear all saved items
-   */
-  const clearSaved = useCallback(() => {
+  const clearSaved = () => {
     setSavedItems([]);
     localStorage.removeItem(STORAGE_KEY);
-  }, []);
+  };
 
-  /**
-   * Check if a product is already saved
-   * @param productId - The product ID to check
-   */
-  const isSaved = useCallback(
-    (productId: string): boolean => {
-      return savedItems.some((item) => item.product._id === productId);
-    },
-    [savedItems],
-  );
+  const isSaved = (productId: string): boolean => {
+    return savedItems.some((item) => item.product._id === productId);
+  };
 
-  /**
-   * Get a saved item by product ID
-   * @param productId - The product ID to find
-   */
-  const getSavedItem = useCallback(
-    (productId: string): SavedItem | undefined => {
-      return savedItems.find((item) => item.product._id === productId);
-    },
-    [savedItems],
-  );
+  const getSavedItem = (productId: string): SavedItem | undefined => {
+    return savedItems.find((item) => item.product._id === productId);
+  };
 
   return {
     savedItems,

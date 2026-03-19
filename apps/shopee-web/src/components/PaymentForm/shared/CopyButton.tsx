@@ -1,17 +1,16 @@
-import { memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import Button from 'src/components/Button';
 
-const CopyButton = memo(function CopyButton({ text, label }: { text: string; label: string }) {
-  const handleCopy = useCallback(async () => {
+function CopyButton({ text, label }: { text: string; label: string }) {
+  const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(text);
       toast.success(`Đã sao chép ${label}`, { autoClose: 1500, position: 'top-center' });
     } catch {
       toast.error('Không thể sao chép', { autoClose: 1500, position: 'top-center' });
     }
-  }, [text, label]);
+  };
 
   return (
     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -33,6 +32,6 @@ const CopyButton = memo(function CopyButton({ text, label }: { text: string; lab
       </Button>
     </motion.div>
   );
-});
+}
 
 export default CopyButton;

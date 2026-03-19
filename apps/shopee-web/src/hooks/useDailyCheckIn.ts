@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import checkinApi from 'src/apis/checkin.api';
 import {
   CheckInDay,
@@ -46,10 +46,10 @@ export const useDailyCheckIn = () => {
   });
 
   // Save to localStorage
-  const saveToStorage = useCallback((data: StoredCheckInData) => {
+  const saveToStorage = (data: StoredCheckInData) => {
     localStorage.setItem(CHECKIN_STORAGE_KEY, JSON.stringify(data));
     localStorage.setItem(COINS_STORAGE_KEY, data.totalCoins.toString());
-  }, []);
+  };
 
   // Load from API on mount, fall back to localStorage
   useEffect(() => {
@@ -116,7 +116,7 @@ export const useDailyCheckIn = () => {
   }, [saveToStorage]);
 
   // Perform check-in via API with localStorage fallback
-  const checkIn = useCallback(async (): Promise<CheckInReward | null> => {
+  const checkIn = async (): Promise<CheckInReward | null> => {
     if (!state.canCheckInToday) return null;
 
     try {
@@ -182,40 +182,32 @@ export const useDailyCheckIn = () => {
 
       return reward;
     }
-  }, [state, saveToStorage]);
+  };
 
   // Get check-in status for a specific date
-  const getCheckInStatus = useCallback(
-    (date: string): CheckInDay | undefined => {
-      return state.history.find((day) => day.date === date);
-    },
-    [state.history],
-  );
+  const getCheckInStatus = (date: string): CheckInDay | undefined => {
+    return state.history.find((day) => day.date === date);
+  };
 
   // Get calendar data for current month
-  const getMonthCalendar = useCallback(
-    (year: number, month: number): CheckInDay[] => {
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-      const calendar: CheckInDay[] = [];
+  const getMonthCalendar = (year: number, month: number): CheckInDay[] => {
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const calendar: CheckInDay[] = [];
 
-      for (let day = 1; day <= daysInMonth; day++) {
-        const date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const existingDay = state.history.find((d) => d.date === date);
-        calendar.push(existingDay || { date, checked: false });
-      }
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const existingDay = state.history.find((d) => d.date === date);
+      calendar.push(existingDay || { date, checked: false });
+    }
 
-      return calendar;
-    },
-    [state.history],
-  );
+    return calendar;
+  };
 
   // Calculate next reward
-  const nextReward = useMemo(() => {
-    return getRewardForDay(state.streak.current + 1);
-  }, [state.streak.current]);
+  const nextReward = getRewardForDay(state.streak.current + 1);
 
   // Get streak milestone progress
-  const streakProgress = useMemo(() => {
+  const streakProgress = (() => {
     const milestones = Object.keys(DEFAULT_CHECKIN_CONFIG.streakBonuses)
       .map(Number)
       .sort((a, b) => a - b);
@@ -229,7 +221,7 @@ export const useDailyCheckIn = () => {
       prevMilestone,
       progress: ((state.streak.current - prevMilestone) / (nextMilestone - prevMilestone)) * 100,
     };
-  }, [state.streak.current]);
+  })();
 
   return {
     ...state,

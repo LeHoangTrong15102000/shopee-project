@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from 'src/components/Button';
 import { useOptimisticNotification } from 'src/hooks/optimistic';
@@ -15,26 +14,24 @@ const NotificationList = ({ className }: NotificationListProps) => {
   const { markAsReadMutation, markAllAsReadMutation } = useOptimisticNotification();
   const { notifications, unreadCount, isLoading } = useNotifications();
 
-  const handleMarkAsRead = useCallback(
-    (notificationId: string) => {
-      markAsReadMutation.mutate(notificationId);
-    },
-    [markAsReadMutation],
-  );
+  const handleMarkAsRead = (notificationId: string) => {
+    markAsReadMutation.mutate(notificationId);
+  };
 
-  const handleMarkAllAsRead = useCallback(() => {
+  const handleMarkAllAsRead = () => {
     markAllAsReadMutation.mutate();
-  }, [markAllAsReadMutation]);
+  };
 
-  const handleNotificationKeyDown = useCallback(
-    (e: React.KeyboardEvent, notificationId: string, isRead: boolean) => {
-      if ((e.key === 'Enter' || e.key === ' ') && !isRead && !markAsReadMutation.isPending) {
-        e.preventDefault();
-        handleMarkAsRead(notificationId);
-      }
-    },
-    [handleMarkAsRead, markAsReadMutation.isPending],
-  );
+  const handleNotificationKeyDown = (
+    e: React.KeyboardEvent,
+    notificationId: string,
+    isRead: boolean,
+  ) => {
+    if ((e.key === 'Enter' || e.key === ' ') && !isRead && !markAsReadMutation.isPending) {
+      e.preventDefault();
+      handleMarkAsRead(notificationId);
+    }
+  };
 
   const { handleKeyDown: handleMarkAllKeyDown } = useKeyboardNavigation({
     onEnter: handleMarkAllAsRead,

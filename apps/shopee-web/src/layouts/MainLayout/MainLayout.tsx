@@ -1,4 +1,4 @@
-import { memo, useEffect, Suspense, lazy } from 'react';
+import { useEffect, Suspense, lazy } from 'react';
 import { Outlet } from 'react-router';
 import Footer from 'src/components/Footer';
 import Header from 'src/components/Header';
@@ -13,7 +13,7 @@ interface Props {
   children?: React.ReactNode;
 }
 
-const MainLayoutInner = ({ children }: Props) => {
+const MainLayout = ({ children }: Props) => {
   // useEffect khi mà load đến trang nào đó thì nó sẽ scroll lên đầu trang đó cho mình
   // console.log('MainLayout')
   useEffect(() => {
@@ -44,7 +44,5 @@ const MainLayoutInner = ({ children }: Props) => {
     </div>
   );
 };
-
-const MainLayout = memo(MainLayoutInner);
 
 export default MainLayout;

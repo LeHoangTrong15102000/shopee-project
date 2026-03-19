@@ -1,4 +1,3 @@
-import { memo, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import ProductRating from 'src/components/ProductRating';
@@ -17,13 +16,13 @@ const ProductListItem = ({ product }: ProductListItemProps) => {
   const { t } = useTranslation('product');
   const navigate = useNavigate();
 
-  const handleProductClick = useCallback(() => {
+  const handleProductClick = () => {
     // Lưu vị trí scroll hiện tại trước khi navigate
     scrollManager.savePosition(window.location.pathname, window.location.search, window.scrollY);
 
     // Navigate đến product detail
     navigate(`${path.home}${generateNameId({ name: product.name, id: product._id })}`);
-  }, [navigate, product.name, product._id]);
+  };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' || event.key === ' ') {
@@ -134,4 +133,4 @@ const ProductListItem = ({ product }: ProductListItemProps) => {
   );
 };
 
-export default memo(ProductListItem);
+export default ProductListItem;

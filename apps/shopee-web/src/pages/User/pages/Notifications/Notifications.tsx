@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useOptimisticNotification } from 'src/hooks/optimistic';
 import { formatTimeAgo } from 'src/utils/utils';
@@ -103,30 +103,27 @@ const Notifications = () => {
   }, []);
 
   // Handle banner click - scroll to top
-  const handleBannerClick = useCallback(() => {
+  const handleBannerClick = () => {
     if (listRef.current) {
       listRef.current.scrollTo({ top: 0, behavior: 'smooth' });
     }
     setShowNewBanner(false);
     setNewBannerCount(0);
-  }, []);
+  };
 
   // Filter notifications based on active tab
-  const filteredNotifications = useMemo(() => {
-    if (activeTab === 'all') return allNotifications;
-    return allNotifications.filter((n) => TYPE_GROUPS[activeTab].includes(n.type));
-  }, [allNotifications, activeTab]);
+  const filteredNotifications =
+    activeTab === 'all'
+      ? allNotifications
+      : allNotifications.filter((n) => TYPE_GROUPS[activeTab].includes(n.type));
 
-  const handleMarkAsRead = useCallback(
-    (notificationId: string) => {
-      markAsReadMutation.mutate(notificationId);
-    },
-    [markAsReadMutation],
-  );
+  const handleMarkAsRead = (notificationId: string) => {
+    markAsReadMutation.mutate(notificationId);
+  };
 
-  const handleMarkAllAsRead = useCallback(() => {
+  const handleMarkAllAsRead = () => {
     markAllAsReadMutation.mutate();
-  }, [markAllAsReadMutation]);
+  };
 
   const getNotificationIcon = (type: Notification['type']) => {
     const iconClasses = 'h-5 w-5';

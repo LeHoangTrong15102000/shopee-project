@@ -1,4 +1,3 @@
-import { memo, useCallback } from 'react';
 import { Link } from 'react-router';
 import { RecentlyViewedProduct } from 'src/hooks/useRecentlyViewed';
 import { formatCurrency, generateNameId } from 'src/utils/utils';
@@ -86,15 +85,12 @@ interface ProductCardProps {
   onRemove?: (productId: string) => void;
 }
 
-const ProductCard = memo(function ProductCard({ product, onRemove }: ProductCardProps) {
-  const handleRemove = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      onRemove?.(product._id);
-    },
-    [onRemove, product._id],
-  );
+const ProductCard = function ProductCard({ product, onRemove }: ProductCardProps) {
+  const handleRemove = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onRemove?.(product._id);
+  };
 
   return (
     <article className="group relative overflow-hidden rounded-xs border border-gray-100 bg-white transition-shadow hover:shadow-md dark:border-slate-600 dark:bg-slate-800">
@@ -160,6 +156,6 @@ const ProductCard = memo(function ProductCard({ product, onRemove }: ProductCard
       </Link>
     </article>
   );
-});
+};
 
-export default memo(RecentlyViewed);
+export default RecentlyViewed;

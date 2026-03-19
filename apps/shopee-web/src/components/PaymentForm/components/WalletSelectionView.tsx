@@ -1,13 +1,8 @@
-import { memo } from 'react';
 import { motion } from 'framer-motion';
 import Button from 'src/components/Button';
 import WalletCard, { WALLETS, WalletType } from './WalletCard';
 
-const LinkNewWalletButton = memo(function LinkNewWalletButton({
-  onClick,
-}: {
-  onClick: () => void;
-}) {
+function LinkNewWalletButton({ onClick }: { onClick: () => void }) {
   return (
     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
       <Button
@@ -23,9 +18,9 @@ const LinkNewWalletButton = memo(function LinkNewWalletButton({
       </Button>
     </motion.div>
   );
-});
+}
 
-const WalletSelectionView = memo(function WalletSelectionView({
+function WalletSelectionView({
   selectedWallet,
   onSelectWallet,
   onLinkNewWallet,
@@ -73,6 +68,6 @@ const WalletSelectionView = memo(function WalletSelectionView({
       )}
     </motion.div>
   );
-});
+}
 
 export default WalletSelectionView;

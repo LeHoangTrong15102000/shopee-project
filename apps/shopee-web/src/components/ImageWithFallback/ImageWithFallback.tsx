@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, ImgHTMLAttributes } from 'react';
+import { useState, useEffect, ImgHTMLAttributes } from 'react';
 import classNames from 'classnames';
 
 const DEFAULT_FALLBACK =
@@ -28,13 +28,13 @@ export default function ImageWithFallback({
     setHasError(false);
   }, [src]);
 
-  const handleError = useCallback(() => {
+  const handleError = () => {
     if (!hasError && currentSrc !== fallbackSrc) {
       setCurrentSrc(fallbackSrc);
       setHasError(true);
       onLoadError?.(new Error(`Failed to load image: ${src}`));
     }
-  }, [hasError, currentSrc, fallbackSrc, src, onLoadError]);
+  };
 
   return (
     <img

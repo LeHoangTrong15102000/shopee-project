@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import purchaseApi from 'src/apis/purchases.api';
 import path from 'src/constant/path';
@@ -92,10 +92,8 @@ const Cart = () => {
   const navigate = useNavigate();
 
   // Khi mà ta xóa cái state trên URL thì thằng useEffect sẽ chạy lại
-  const choosenPurchaseIdFromLocation = useMemo(
-    () => (location.state as { purchaseId: string } | null)?.purchaseId,
-    [location],
-  );
+  const choosenPurchaseIdFromLocation = (location.state as { purchaseId: string } | null)
+    ?.purchaseId;
 
   // Lấy ra cái pathname khi mà chuyển trang, dùng cái pathname này để xử lý state được lưu trên URL
   const pathname = location.pathname;
@@ -107,25 +105,16 @@ const Cart = () => {
   const checkedPurchaseCount = checkedPurchases.length;
 
   // Lấy ra các purchase được checked để tính tổng tiền
-  const totalCheckedPurchasePrice = useMemo(
-    () =>
-      checkedPurchases.reduce(
-        (result, currentPurchase) => result + currentPurchase.price * currentPurchase.buy_count,
-        0,
-      ),
-    [checkedPurchases],
+  const totalCheckedPurchasePrice = checkedPurchases.reduce(
+    (result, currentPurchase) => result + currentPurchase.price * currentPurchase.buy_count,
+    0,
   );
   // Tạo biến tính giá tiền tiết kiệm được
-  const totalCheckedPurchaseSavingPrice = useMemo(
-    () =>
-      checkedPurchases.reduce(
-        (result, currentPurchase) =>
-          result +
-          (currentPurchase.price_before_discount - currentPurchase.price) *
-            currentPurchase.buy_count,
-        0,
-      ),
-    [checkedPurchases],
+  const totalCheckedPurchaseSavingPrice = checkedPurchases.reduce(
+    (result, currentPurchase) =>
+      result +
+      (currentPurchase.price_before_discount - currentPurchase.price) * currentPurchase.buy_count,
+    0,
   );
 
   // Animated number counting for total price and savings
@@ -133,46 +122,40 @@ const Cart = () => {
   const animatedSavingsPrice = useAnimatedNumber(totalCheckedPurchaseSavingPrice);
 
   // Extract product IDs from cart items for real-time stock monitoring
-  const cartProductIds = useMemo(
-    () => extendedPurchases.map((purchase) => purchase.product._id),
-    [extendedPurchases],
-  );
+  const cartProductIds = extendedPurchases.map((purchase) => purchase.product._id);
 
   // Handler for real-time stock changes - invalidate queries and show inline alerts
-  const handleStockChange = useCallback(
-    (productId: string, newStock: number) => {
-      // Find the product in cart to get its name
-      const purchase = extendedPurchases.find((p) => p.product._id === productId);
-      if (!purchase) return;
+  const handleStockChange = (productId: string, newStock: number) => {
+    // Find the product in cart to get its name
+    const purchase = extendedPurchases.find((p) => p.product._id === productId);
+    if (!purchase) return;
 
-      // Add inline alert for this product
-      setInlineAlerts((prev) => {
-        const newMap = new Map(prev);
-        newMap.set(productId, {
-          productId,
-          productName: purchase.product.name,
-          newStock,
-          severity: newStock === 0 ? 'critical' : newStock <= 5 ? 'critical' : 'warning',
-        });
-        return newMap;
+    // Add inline alert for this product
+    setInlineAlerts((prev) => {
+      const newMap = new Map(prev);
+      newMap.set(productId, {
+        productId,
+        productName: purchase.product.name,
+        newStock,
+        severity: newStock === 0 ? 'critical' : newStock <= 5 ? 'critical' : 'warning',
       });
+      return newMap;
+    });
 
-      // Invalidate purchases query to refresh stock data
-      queryClient.invalidateQueries({
-        queryKey: ['purchases', { status: purchasesStatus.inCart }],
-      });
-    },
-    [extendedPurchases, queryClient],
-  );
+    // Invalidate purchases query to refresh stock data
+    queryClient.invalidateQueries({
+      queryKey: ['purchases', { status: purchasesStatus.inCart }],
+    });
+  };
 
   // Handler to dismiss inline alert for a specific product
-  const handleDismissInlineAlert = useCallback((productId: string) => {
+  const handleDismissInlineAlert = (productId: string) => {
     setInlineAlerts((prev) => {
       const newMap = new Map(prev);
       newMap.delete(productId);
       return newMap;
     });
-  }, []);
+  };
 
   // Khi mà khởi tạo component thì sẽ thực hiện gán giá trị vào extendedPurchase
   useEffect(() => {
@@ -214,115 +197,97 @@ const Cart = () => {
   }, []);
 
   // func xử lý checked cho 1 sản phẩm
-  const handleChecked = useCallback(
-    (purchaseIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      toggleCheck(purchaseIndex, event.target.checked);
-    },
-    [toggleCheck],
-  );
+  const handleChecked = (purchaseIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    toggleCheck(purchaseIndex, event.target.checked);
+  };
 
   // func xử lý checkedAll khi nhấn vào nhiều sản phẩm
-  const handleCheckedAll = useCallback(() => {
+  const handleCheckedAll = () => {
     selectAll(!isAllChecked);
-  }, [isAllChecked, selectAll]);
+  };
 
   // Func xử lý onchange input
-  const handleTypeQuantity = useCallback(
-    (purchaseIndex: number) => (value: number) => {
-      const purchase = extendedPurchases[purchaseIndex];
-      if (purchase) {
-        updateQuantity(purchase.product._id, value);
-      }
-    },
-    [extendedPurchases, updateQuantity],
-  );
+  const handleTypeQuantity = (purchaseIndex: number) => (value: number) => {
+    const purchase = extendedPurchases[purchaseIndex];
+    if (purchase) {
+      updateQuantity(purchase.product._id, value);
+    }
+  };
 
   // func xử lý sự kiện onIncrease và onDecrease của cái QuantityController trong Cart với Optimistic Updates
-  const handleQuantity = useCallback(
-    (purchaseIndex: number, value: number, enabled: boolean) => {
-      if (enabled) {
-        const purchase = extendedPurchases[purchaseIndex];
+  const handleQuantity = (purchaseIndex: number, value: number, enabled: boolean) => {
+    if (enabled) {
+      const purchase = extendedPurchases[purchaseIndex];
 
-        updatePurchaseMutation.mutate({
-          product_id: purchase.product._id,
-          buy_count: value,
-        });
-      }
-    },
-    [extendedPurchases, updatePurchaseMutation],
-  );
+      updatePurchaseMutation.mutate({
+        product_id: purchase.product._id,
+        buy_count: value,
+      });
+    }
+  };
 
   // func xử lý xóa 1 sản phẩm với Optimistic Updates
-  const handleDelete = useCallback(
-    (purchaseIndex: number) => () => {
-      const purchaseId = extendedPurchases[purchaseIndex]._id;
-      deletePurchasesMutation.mutate([purchaseId]);
-    },
-    [extendedPurchases, deletePurchasesMutation],
-  );
+  const handleDelete = (purchaseIndex: number) => () => {
+    const purchaseId = extendedPurchases[purchaseIndex]._id;
+    deletePurchasesMutation.mutate([purchaseId]);
+  };
 
   // func xử lý xóa nhiều sản phẩm với Optimistic Updates
-  const handleDeleteManyPurchases = useCallback(() => {
+  const handleDeleteManyPurchases = () => {
     const purchaseIds = checkedPurchases.map((purchase) => purchase._id);
     deletePurchasesMutation.mutate(purchaseIds);
-  }, [checkedPurchases, deletePurchasesMutation]);
+  };
 
   // func xử lý lưu sản phẩm để mua sau
-  const handleSaveForLater = useCallback(
-    (purchaseIndex: number) => () => {
-      const purchase = extendedPurchases[purchaseIndex];
-      const wasAdded = saveForLater(purchase.product, purchase.buy_count);
+  const handleSaveForLater = (purchaseIndex: number) => () => {
+    const purchase = extendedPurchases[purchaseIndex];
+    const wasAdded = saveForLater(purchase.product, purchase.buy_count);
 
-      if (wasAdded) {
-        deletePurchasesMutation.mutate([purchase._id]);
-        toast.success(TOAST_MESSAGES.SAVE_FOR_LATER_SUCCESS, {
-          position: 'top-center',
-          autoClose: 1500,
-        });
-      } else {
-        toast.info(TOAST_MESSAGES.SAVE_FOR_LATER_ALREADY_SAVED, {
-          position: 'top-center',
-          autoClose: 1500,
-        });
-      }
-    },
-    [extendedPurchases, saveForLater, deletePurchasesMutation],
-  );
+    if (wasAdded) {
+      deletePurchasesMutation.mutate([purchase._id]);
+      toast.success(TOAST_MESSAGES.SAVE_FOR_LATER_SUCCESS, {
+        position: 'top-center',
+        autoClose: 1500,
+      });
+    } else {
+      toast.info(TOAST_MESSAGES.SAVE_FOR_LATER_ALREADY_SAVED, {
+        position: 'top-center',
+        autoClose: 1500,
+      });
+    }
+  };
 
   // func xử lý chuyển sản phẩm đã lưu vào giỏ hàng
-  const handleMoveToCart = useCallback(
-    (item: SavedItem) => {
-      const existingInCart = extendedPurchases.find((p) => p.product._id === item.product._id);
+  const handleMoveToCart = (item: SavedItem) => {
+    const existingInCart = extendedPurchases.find((p) => p.product._id === item.product._id);
 
-      if (existingInCart) {
-        removeFromSaved(item.product._id);
-        toast.info(t('toast.alreadyInCart'), { position: 'top-center', autoClose: 1500 });
-      } else {
-        addToCartMutation.mutate(
-          { product_id: item.product._id, buy_count: item.originalBuyCount },
-          {
-            onSuccess: () => {
-              removeFromSaved(item.product._id);
-            },
+    if (existingInCart) {
+      removeFromSaved(item.product._id);
+      toast.info(t('toast.alreadyInCart'), { position: 'top-center', autoClose: 1500 });
+    } else {
+      addToCartMutation.mutate(
+        { product_id: item.product._id, buy_count: item.originalBuyCount },
+        {
+          onSuccess: () => {
+            removeFromSaved(item.product._id);
           },
-        );
-      }
-    },
-    [extendedPurchases, removeFromSaved, addToCartMutation],
-  );
+        },
+      );
+    }
+  };
 
   // func xử lý xóa tất cả sản phẩm đã lưu
-  const handleClearSaved = useCallback(() => {
+  const handleClearSaved = () => {
     clearSaved();
     toast.success(TOAST_MESSAGES.CLEAR_SAVED_SUCCESS, { position: 'top-center', autoClose: 1500 });
-  }, [clearSaved]);
+  };
 
   // func xử lý buy product - chuyển đến trang checkout
-  const handleBuyPurchases = useCallback(() => {
+  const handleBuyPurchases = () => {
     if (checkedPurchases.length > 0) {
       navigate(path.checkout);
     }
-  }, [checkedPurchases.length, navigate]);
+  };
   return (
     <div className="border-b-4 border-b-[#ee4d2d] bg-neutral-100 py-6 md:py-8 dark:bg-slate-900">
       <SEO title={t('seo.title')} noindex />

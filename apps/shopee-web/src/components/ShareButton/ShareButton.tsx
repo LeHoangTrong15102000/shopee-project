@@ -1,4 +1,4 @@
-import { memo, useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
 import classNames from 'classnames';
@@ -21,7 +21,7 @@ interface ShareOption {
   icon: React.ReactNode;
 }
 
-const ShareButton = memo(function ShareButton({
+function ShareButton({
   url,
   title,
   description: _description = '',
@@ -113,30 +113,27 @@ const ShareButton = memo(function ShareButton({
     },
   ];
 
-  const handleShare = useCallback(
-    async (platform: SharePlatform) => {
-      const shareUrls: Record<SharePlatform, string | (() => Promise<void>)> = {
-        facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-        twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
-        whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
-        telegram: `https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`,
-        zalo: `https://sp.zalo.me/share_inline?d=${encodedUrl}`,
-        copy: async () => {
-          await navigator.clipboard.writeText(url);
-          toast.success('Đã copy link sản phẩm!', { autoClose: 2000, position: 'top-center' });
-        },
-      };
+  const handleShare = async (platform: SharePlatform) => {
+    const shareUrls: Record<SharePlatform, string | (() => Promise<void>)> = {
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+      twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
+      whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
+      telegram: `https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`,
+      zalo: `https://sp.zalo.me/share_inline?d=${encodedUrl}`,
+      copy: async () => {
+        await navigator.clipboard.writeText(url);
+        toast.success('Đã copy link sản phẩm!', { autoClose: 2000, position: 'top-center' });
+      },
+    };
 
-      const action = shareUrls[platform];
-      if (typeof action === 'function') {
-        await action();
-      } else {
-        window.open(action, '_blank', 'width=600,height=400,scrollbars=yes');
-      }
-      setIsOpen(false);
-    },
-    [encodedUrl, encodedTitle, url],
-  );
+    const action = shareUrls[platform];
+    if (typeof action === 'function') {
+      await action();
+    } else {
+      window.open(action, '_blank', 'width=600,height=400,scrollbars=yes');
+    }
+    setIsOpen(false);
+  };
 
   return (
     <div ref={dropdownRef} className={classNames('relative inline-block', className)}>
@@ -190,6 +187,6 @@ const ShareButton = memo(function ShareButton({
       </AnimatePresence>
     </div>
   );
-});
+}
 
 export default ShareButton;

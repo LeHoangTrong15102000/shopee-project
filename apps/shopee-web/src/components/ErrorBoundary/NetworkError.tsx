@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useReducedMotion } from 'src/hooks/useReducedMotion';
 import Button from 'src/components/Button';
@@ -22,7 +22,7 @@ export default function NetworkError({
   const [autoRetryCount, setAutoRetryCount] = useState(0);
   const [countdown, setCountdown] = useState(0);
 
-  const handleRetry = useCallback(async () => {
+  const handleRetry = async () => {
     if (!onRetry) return;
 
     setIsRetrying(true);
@@ -31,7 +31,7 @@ export default function NetworkError({
     } finally {
       setTimeout(() => setIsRetrying(false), 500);
     }
-  }, [onRetry]);
+  };
 
   const reducedMotion = useReducedMotion();
 

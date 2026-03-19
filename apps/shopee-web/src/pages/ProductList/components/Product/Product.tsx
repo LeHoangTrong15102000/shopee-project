@@ -1,4 +1,4 @@
-import { Fragment, memo, useCallback } from 'react';
+import { Fragment } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import ProductRating from 'src/components/ProductRating';
@@ -30,7 +30,7 @@ const Product = ({ product }: Props) => {
     enabled: true,
   });
 
-  const handleProductClick = useCallback(() => {
+  const handleProductClick = () => {
     // Trigger prefetch nếu chưa prefetch
     handlePrefetchClick();
 
@@ -39,7 +39,7 @@ const Product = ({ product }: Props) => {
 
     // Navigate đến product detail
     navigate(`${path.home}${generateNameId({ name: product.name, id: product._id })}`);
-  }, [navigate, product.name, product._id, handlePrefetchClick]);
+  };
 
   return (
     // Khi nhấn vào thì truyền lên cái _id của sản phẩm
@@ -132,4 +132,4 @@ const Product = ({ product }: Props) => {
   );
 };
 
-export default memo(Product);
+export default Product;

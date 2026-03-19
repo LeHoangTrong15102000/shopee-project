@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -38,35 +38,32 @@ const useVoucherSave = ({ enabled = true }: UseVoucherSaveOptions = {}) => {
     }
   }, [vouchersData]);
 
-  const handleSave = useCallback(
-    async (voucherId: string) => {
-      setSavingIds((prev) => new Set(prev).add(voucherId));
-      // Optimistic update
-      setSavedIds((prev) => new Set(prev).add(voucherId));
+  const handleSave = async (voucherId: string) => {
+    setSavingIds((prev) => new Set(prev).add(voucherId));
+    // Optimistic update
+    setSavedIds((prev) => new Set(prev).add(voucherId));
 
-      try {
-        await voucherApi.saveVoucher(voucherId);
-        toast.success(t('voucher.saveSuccess'), { autoClose: 2000, position: 'top-center' });
-        queryClient.invalidateQueries({ queryKey: ['available-vouchers'] });
-        queryClient.invalidateQueries({ queryKey: ['my-vouchers'] });
-      } catch {
-        // Rollback optimistic update
-        setSavedIds((prev) => {
-          const next = new Set(prev);
-          next.delete(voucherId);
-          return next;
-        });
-        toast.error(t('voucher.saveError'), { autoClose: 3000, position: 'top-center' });
-      } finally {
-        setSavingIds((prev) => {
-          const next = new Set(prev);
-          next.delete(voucherId);
-          return next;
-        });
-      }
-    },
-    [queryClient, t],
-  );
+    try {
+      await voucherApi.saveVoucher(voucherId);
+      toast.success(t('voucher.saveSuccess'), { autoClose: 2000, position: 'top-center' });
+      queryClient.invalidateQueries({ queryKey: ['available-vouchers'] });
+      queryClient.invalidateQueries({ queryKey: ['my-vouchers'] });
+    } catch {
+      // Rollback optimistic update
+      setSavedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(voucherId);
+        return next;
+      });
+      toast.error(t('voucher.saveError'), { autoClose: 3000, position: 'top-center' });
+    } finally {
+      setSavingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(voucherId);
+        return next;
+      });
+    }
+  };
 
   return { vouchers, isLoading, isError, refetch, savedIds, savingIds, handleSave };
 };

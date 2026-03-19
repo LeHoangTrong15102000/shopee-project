@@ -1,4 +1,4 @@
-import { memo, useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from 'src/components/Button';
 import BankLogo, { BankInfo } from './BankLogo';
@@ -88,7 +88,7 @@ const BANKS: BankInfo[] = [
 
 export { BANKS };
 
-const BankDropdown = memo(function BankDropdown({
+function BankDropdown({
   selectedBank,
   onSelectBank,
   isOpen,
@@ -102,14 +102,14 @@ const BankDropdown = memo(function BankDropdown({
   const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const filteredBanks = useMemo(() => {
+  const filteredBanks = (() => {
     if (!searchQuery.trim()) return BANKS;
     const query = searchQuery.toLowerCase();
     return BANKS.filter(
       (bank) =>
         bank.name.toLowerCase().includes(query) || bank.shortName.toLowerCase().includes(query),
     );
-  }, [searchQuery]);
+  })();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -121,14 +121,11 @@ const BankDropdown = memo(function BankDropdown({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen, onToggle]);
 
-  const handleSelectBank = useCallback(
-    (bank: BankInfo) => {
-      onSelectBank(bank);
-      setSearchQuery('');
-      onToggle();
-    },
-    [onSelectBank, onToggle],
-  );
+  const handleSelectBank = (bank: BankInfo) => {
+    onSelectBank(bank);
+    setSearchQuery('');
+    onToggle();
+  };
 
   return (
     <div ref={dropdownRef} className="relative">
@@ -238,6 +235,6 @@ const BankDropdown = memo(function BankDropdown({
       </AnimatePresence>
     </div>
   );
-});
+}
 
 export default BankDropdown;

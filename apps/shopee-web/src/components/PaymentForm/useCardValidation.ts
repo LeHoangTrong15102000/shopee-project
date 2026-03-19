@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useState } from 'react';
 import { CardType } from './components/CardTypeIcons';
 
 const detectCardType = (cardNumber: string): CardType => {
@@ -92,16 +92,13 @@ export function useCardValidation(cardNumber: string, expiryDate: string, cvv: s
     cvv: false,
   });
 
-  const cardType = useMemo(() => detectCardType(cardNumber), [cardNumber]);
-  const formattedCardNumber = useMemo(
-    () => formatCardNumber(cardNumber, cardType),
-    [cardNumber, cardType],
-  );
-  const formattedExpiry = useMemo(() => formatExpiryDate(expiryDate), [expiryDate]);
+  const cardType = detectCardType(cardNumber);
+  const formattedCardNumber = formatCardNumber(cardNumber, cardType);
+  const formattedExpiry = formatExpiryDate(expiryDate);
 
-  const handleCvvFocus = useCallback(() => setIsCardFlipped(true), []);
+  const handleCvvFocus = () => setIsCardFlipped(true);
 
-  const handleCvvBlur = useCallback(() => {
+  const handleCvvBlur = () => {
     setIsCardFlipped(false);
     const cvvLength = cardType === 'amex' ? 4 : 3;
     const isValid = cvv.length === cvvLength;
@@ -110,9 +107,9 @@ export function useCardValidation(cardNumber: string, expiryDate: string, cvv: s
       setShakeFields((prev) => ({ ...prev, cvv: true }));
       setTimeout(() => setShakeFields((prev) => ({ ...prev, cvv: false })), 400);
     }
-  }, [cardType, cvv]);
+  };
 
-  const handleCardNumberBlur = useCallback(() => {
+  const handleCardNumberBlur = () => {
     const cleanNumber = cardNumber.replace(/\s/g, '');
     const minLength = cardType === 'amex' ? 15 : 16;
     const isValid = cleanNumber.length >= minLength && luhnValidate(cleanNumber);
@@ -121,19 +118,19 @@ export function useCardValidation(cardNumber: string, expiryDate: string, cvv: s
       setShakeFields((prev) => ({ ...prev, cardNumber: true }));
       setTimeout(() => setShakeFields((prev) => ({ ...prev, cardNumber: false })), 400);
     }
-  }, [cardNumber, cardType]);
+  };
 
-  const handleExpiryBlur = useCallback(() => {
+  const handleExpiryBlur = () => {
     const isValid = isExpiryValid(expiryDate);
     setValidationState((prev) => ({ ...prev, expiryDate: { touched: true, isValid } }));
     if (!isValid && expiryDate.length > 0) {
       setShakeFields((prev) => ({ ...prev, expiryDate: true }));
       setTimeout(() => setShakeFields((prev) => ({ ...prev, expiryDate: false })), 400);
     }
-  }, [expiryDate]);
+  };
 
-  const toggleCvvTooltip = useCallback(() => setShowCvvTooltip((prev) => !prev), []);
-  const closeCvvTooltip = useCallback(() => setShowCvvTooltip(false), []);
+  const toggleCvvTooltip = () => setShowCvvTooltip((prev) => !prev);
+  const closeCvvTooltip = () => setShowCvvTooltip(false);
 
   return {
     cardType,

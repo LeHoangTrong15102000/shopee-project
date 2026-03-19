@@ -1,4 +1,4 @@
-import { useCallback, useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { usePrefetch } from './usePrefetch';
 
 interface UseHoverPrefetchOptions {
@@ -30,7 +30,7 @@ export const useHoverPrefetch = (productId: string, options: UseHoverPrefetchOpt
   /**
    * Handle mouse enter với different strategies
    */
-  const handleMouseEnter = useCallback(() => {
+  const handleMouseEnter = () => {
     if (!enabled || prefetchState === 'prefetched') return;
 
     const now = Date.now();
@@ -80,38 +80,27 @@ export const useHoverPrefetch = (productId: string, options: UseHoverPrefetchOpt
         }, delay);
       }
     }
-  }, [
-    enabled,
-    prefetchState,
-    strategy,
-    hoverCount,
-    lastHoverTime,
-    delay,
-    productId,
-    prefetchProduct,
-    smartPrefetch,
-    isCached,
-  ]);
+  };
 
   /**
    * Handle mouse leave - cancel queued prefetch
    */
-  const handleMouseLeave = useCallback(() => {
+  const handleMouseLeave = () => {
     if (prefetchState === 'queued' && timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       setPrefetchState('idle');
     }
-  }, [prefetchState]);
+  };
 
   /**
    * Handle click - immediate prefetch if not done
    */
-  const handleClick = useCallback(() => {
+  const handleClick = () => {
     if (prefetchState === 'idle') {
       prefetchProduct(productId);
       setPrefetchState('prefetched');
     }
-  }, [prefetchState, prefetchProduct, productId]);
+  };
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -141,38 +130,35 @@ export const useProgressivePrefetch = () => {
   const prefetchQueue = useRef<Set<string>>(new Set());
   const processingRef = useRef(false);
 
-  const queuePrefetch = useCallback(
-    (productId: string) => {
-      prefetchQueue.current.add(productId);
+  const queuePrefetch = (productId: string) => {
+    prefetchQueue.current.add(productId);
 
-      if (!processingRef.current) {
-        processingRef.current = true;
+    if (!processingRef.current) {
+      processingRef.current = true;
 
-        // Process queue after a short delay
-        setTimeout(() => {
-          const items = Array.from(prefetchQueue.current);
+      // Process queue after a short delay
+      setTimeout(() => {
+        const items = Array.from(prefetchQueue.current);
 
-          // Only prefetch first 3 items to limit requests
-          const toProcess = items.slice(0, 3);
+        // Only prefetch first 3 items to limit requests
+        const toProcess = items.slice(0, 3);
 
-          toProcess.forEach((id) => {
-            prefetchProduct(id);
-            prefetchQueue.current.delete(id);
-          });
+        toProcess.forEach((id) => {
+          prefetchProduct(id);
+          prefetchQueue.current.delete(id);
+        });
 
-          processingRef.current = false;
+        processingRef.current = false;
 
-          // Continue processing if queue not empty
-          if (prefetchQueue.current.size > 0) {
-            setTimeout(() => {
-              processingRef.current = false;
-            }, 1000); // 1 second delay between batches
-          }
-        }, 100); // 100ms initial delay
-      }
-    },
-    [prefetchProduct],
-  );
+        // Continue processing if queue not empty
+        if (prefetchQueue.current.size > 0) {
+          setTimeout(() => {
+            processingRef.current = false;
+          }, 1000); // 1 second delay between batches
+        }
+      }, 100); // 100ms initial delay
+    }
+  };
 
   return { queuePrefetch };
 };

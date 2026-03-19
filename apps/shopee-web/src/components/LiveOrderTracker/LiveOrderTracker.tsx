@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import classNames from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import orderTrackingApi from 'src/apis/orderTracking.api';
@@ -84,7 +84,7 @@ export default function LiveOrderTracker({
   });
 
   // Build timestamps from tracking API timeline + websocket statusHistory
-  const timestamps = useMemo(() => {
+  const timestamps = (() => {
     const result: Record<number, string> = {};
     // From tracking API timeline
     const timeline = trackingData?.data?.data?.timeline;
@@ -104,7 +104,7 @@ export default function LiveOrderTracker({
       }
     }
     return result;
-  }, [trackingData?.data?.data?.timeline, statusHistory]);
+  })();
 
   // Handle real-time status updates from socket (for currentStatus and toast notifications)
   useEffect(() => {
@@ -128,7 +128,7 @@ export default function LiveOrderTracker({
   }, [socketStatus, currentStatus, t]);
 
   // Calculate estimated delivery time (mock: 2-3 days from now for in-progress orders)
-  const getEstimatedDelivery = useCallback(() => {
+  const getEstimatedDelivery = () => {
     if (currentStatus === purchasesStatus.inProgress) {
       const now = new Date();
       const minDate = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
@@ -136,7 +136,7 @@ export default function LiveOrderTracker({
       return `${minDate.toLocaleDateString('vi-VN')} - ${maxDate.toLocaleDateString('vi-VN')}`;
     }
     return null;
-  }, [currentStatus]);
+  };
 
   const estimatedDelivery = getEstimatedDelivery();
   const isDelivered = currentStatus === purchasesStatus.delivered;

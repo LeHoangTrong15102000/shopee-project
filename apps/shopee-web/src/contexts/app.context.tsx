@@ -1,4 +1,4 @@
-import { createContext, useState, useMemo, useCallback } from 'react';
+import { createContext, useState } from 'react';
 import { User } from 'src/types/user.type';
 import { getAccessTokenFromLS, getProfileFromLS } from 'src/utils/auth';
 import { useCartStore } from 'src/stores/cart.store';
@@ -42,24 +42,21 @@ export const AppProvider = ({
   );
 
   // Mỗi khi mà clearLS thì hàm reset này nó sẽ gọi lại
-  const reset = useCallback(() => {
+  const reset = () => {
     // Không nên reset lại bằng giá trị của initalAppContext
     setIsAuthenticated(false);
     setProfile(null);
     // Clear cart state in Zustand store
     useCartStore.getState().clearCart();
-  }, []);
+  };
 
-  const value = useMemo(
-    () => ({
-      isAuthenticated,
-      setIsAuthenticated,
-      profile,
-      setProfile,
-      reset,
-    }),
-    [isAuthenticated, profile, reset],
-  );
+  const value = {
+    isAuthenticated,
+    setIsAuthenticated,
+    profile,
+    setProfile,
+    reset,
+  };
 
   return (
     // Trong đây truyền những giá trị được khai báo trong AppProvider

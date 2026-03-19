@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useReducedMotion } from 'src/hooks/useReducedMotion';
@@ -20,7 +19,7 @@ const popularSearchTerms = [
   'Mỹ phẩm',
 ];
 
-const SearchNoResults = memo(function SearchNoResults({
+const SearchNoResults = function SearchNoResults({
   searchTerm,
   onPopularSearch,
 }: SearchNoResultsProps) {
@@ -171,6 +170,6 @@ const SearchNoResults = memo(function SearchNoResults({
       </motion.div>
     </motion.div>
   );
-});
+};
 
 export default SearchNoResults;

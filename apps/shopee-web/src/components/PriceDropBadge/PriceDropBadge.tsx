@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import classNames from 'classnames';
 import { useReducedMotion } from 'src/hooks/useReducedMotion';
@@ -17,10 +16,10 @@ export default function PriceDropBadge({
   const prefersReducedMotion = useReducedMotion();
 
   // Calculate discount percentage
-  const discountPercentage = useMemo(() => {
+  const discountPercentage = (() => {
     if (originalPrice <= 0 || currentPrice >= originalPrice) return 0;
     return Math.round(((originalPrice - currentPrice) / originalPrice) * 100);
-  }, [originalPrice, currentPrice]);
+  })();
 
   // Don't render if no discount
   if (discountPercentage <= 0) return null;

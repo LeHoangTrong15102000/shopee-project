@@ -1,4 +1,4 @@
-import { memo, useEffect } from 'react';
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 // ---- EWallet-style CountdownTimer ----
@@ -10,7 +10,7 @@ const formatTimeSimple = (seconds: number): string => {
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 };
 
-export const EWalletCountdownTimer = memo(function EWalletCountdownTimer({
+export function EWalletCountdownTimer({
   seconds,
   isExpired,
 }: {
@@ -37,7 +37,7 @@ export const EWalletCountdownTimer = memo(function EWalletCountdownTimer({
       </span>
     </div>
   );
-});
+}
 
 // ---- BankTransfer-style CountdownTimer ----
 const PAYMENT_DEADLINE_SECONDS = 24 * 60 * 60;
@@ -50,7 +50,7 @@ const formatTimeParts = (seconds: number): { hours: number; minutes: number; sec
   return { hours, minutes, secs };
 };
 
-export const BankTransferCountdownTimer = memo(function BankTransferCountdownTimer({
+export function BankTransferCountdownTimer({
   seconds,
   onExpired,
 }: {
@@ -160,4 +160,4 @@ export const BankTransferCountdownTimer = memo(function BankTransferCountdownTim
       )}
     </motion.div>
   );
-});
+}

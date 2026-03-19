@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import { motion } from 'framer-motion';
 import Button from 'src/components/Button';
 import { formatVNDCurrency } from '@shopee/shared-utils';
@@ -51,7 +50,7 @@ export const WALLETS: WalletInfo[] = [
 
 export const formatCurrency = formatVNDCurrency;
 
-export const WalletLogo = memo(function WalletLogo({ wallet }: { wallet: WalletType }) {
+export function WalletLogo({ wallet }: { wallet: WalletType }) {
   const logoConfig: Record<WalletType, { gradient: string; text: string }> = {
     momo: { gradient: 'from-pink-500 to-pink-600', text: 'M' },
     zalopay: { gradient: 'from-blue-500 to-blue-600', text: 'Z' },
@@ -65,9 +64,9 @@ export const WalletLogo = memo(function WalletLogo({ wallet }: { wallet: WalletT
       <span className="text-xl font-bold text-white">{config.text}</span>
     </div>
   );
-});
+}
 
-const LinkedBadge = memo(function LinkedBadge({ isLinked }: { isLinked: boolean }) {
+function LinkedBadge({ isLinked }: { isLinked: boolean }) {
   return (
     <span
       className={`rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -79,9 +78,9 @@ const LinkedBadge = memo(function LinkedBadge({ isLinked }: { isLinked: boolean 
       {isLinked ? 'Đã liên kết' : 'Chưa liên kết'}
     </span>
   );
-});
+}
 
-const WalletCard = memo(function WalletCard({
+function WalletCard({
   wallet,
   isSelected,
   onSelect,
@@ -138,6 +137,6 @@ const WalletCard = memo(function WalletCard({
       </Button>
     </motion.div>
   );
-});
+}
 
 export default WalletCard;

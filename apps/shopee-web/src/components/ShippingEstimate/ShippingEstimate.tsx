@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, memo } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { addDays, format } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -58,26 +58,17 @@ function ShippingEstimate({
   const [selectedOptionId, setSelectedOptionId] = useState<string>(defaultShippingOptions[0].id);
   const [isEditingAddress, setIsEditingAddress] = useState(false);
 
-  const selectedOption = useMemo(
-    () => defaultShippingOptions.find((opt) => opt.id === selectedOptionId),
-    [selectedOptionId],
-  );
+  const selectedOption = defaultShippingOptions.find((opt) => opt.id === selectedOptionId);
 
-  const handleAddressChange = useCallback(
-    (newAddress: string) => {
-      setAddress(newAddress);
-      onAddressChange?.(newAddress);
-    },
-    [onAddressChange],
-  );
+  const handleAddressChange = (newAddress: string) => {
+    setAddress(newAddress);
+    onAddressChange?.(newAddress);
+  };
 
-  const handleShippingSelect = useCallback(
-    (option: ShippingOption) => {
-      setSelectedOptionId(option.id);
-      onShippingSelect?.(option);
-    },
-    [onShippingSelect],
-  );
+  const handleShippingSelect = (option: ShippingOption) => {
+    setSelectedOptionId(option.id);
+    onShippingSelect?.(option);
+  };
 
   return (
     <div className={classNames('rounded-xs bg-gray-50 p-3 sm:p-4 dark:bg-slate-900', className)}>
@@ -212,4 +203,4 @@ function ShippingEstimate({
   );
 }
 
-export default memo(ShippingEstimate);
+export default ShippingEstimate;

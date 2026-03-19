@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import classNames from 'classnames';
 
 const DEFAULT_FALLBACK =
@@ -21,6 +21,8 @@ export interface OptimizedImageProps {
   height?: number | string;
   sizes?: string;
   srcSet?: string;
+  webpSrc?: string;
+  avifSrc?: string;
 }
 
 type ImageState = 'loading' | 'loaded' | 'error';
@@ -57,6 +59,8 @@ export default function OptimizedImage({
   height,
   sizes,
   srcSet,
+  webpSrc,
+  avifSrc,
 }: OptimizedImageProps) {
   const [imageState, setImageState] = useState<ImageState>('loading');
   const [currentSrc, setCurrentSrc] = useState(src);
@@ -80,12 +84,12 @@ export default function OptimizedImage({
     setImageState('loading');
   }, [src]);
 
-  const handleLoad = useCallback(() => {
+  const handleLoad = () => {
     setImageState('loaded');
     onLoad?.();
-  }, [onLoad]);
+  };
 
-  const handleError = useCallback(() => {
+  const handleError = () => {
     if (!hasTriedFallback.current && currentSrc !== fallbackSrc) {
       hasTriedFallback.current = true;
       setCurrentSrc(fallbackSrc);
@@ -93,7 +97,7 @@ export default function OptimizedImage({
       setImageState('error');
       onError?.();
     }
-  }, [currentSrc, fallbackSrc, onError]);
+  };
 
   const isLoading = imageState === 'loading';
   const isLoaded = imageState === 'loaded';
@@ -115,20 +119,34 @@ export default function OptimizedImage({
       />
     ) : null;
 
-  const renderImage = (additionalClasses = '') => (
-    <img
-      src={currentSrc}
-      alt={alt}
-      loading={loading}
-      onLoad={handleLoad}
-      onError={handleError}
-      width={width}
-      height={height}
-      sizes={sizes}
-      srcSet={srcSet}
-      className={classNames(imageClasses, additionalClasses, className)}
-    />
-  );
+  const usePicture = !!(webpSrc || avifSrc);
+
+  const renderImage = (additionalClasses = '') => {
+    const imgElement = (
+      <img
+        src={currentSrc}
+        alt={alt}
+        loading={loading}
+        onLoad={handleLoad}
+        onError={handleError}
+        width={width}
+        height={height}
+        sizes={sizes}
+        srcSet={srcSet}
+        className={classNames(imageClasses, additionalClasses, className)}
+      />
+    );
+
+    if (!usePicture) return imgElement;
+
+    return (
+      <picture>
+        {avifSrc && <source srcSet={avifSrc} type="image/avif" />}
+        {webpSrc && <source srcSet={webpSrc} type="image/webp" />}
+        {imgElement}
+      </picture>
+    );
+  };
 
   if (aspectRatio === 'auto') {
     return (

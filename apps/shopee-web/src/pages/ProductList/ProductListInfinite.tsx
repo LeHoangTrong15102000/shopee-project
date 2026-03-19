@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useCallback, useMemo, useRef } from 'react';
+import { useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ProductListConfig } from 'src/types/product.type';
 import { RetryError } from 'src/types/utils.type';
@@ -36,16 +36,16 @@ const ProductListInfinite = () => {
   const { viewMode, changeViewMode } = useViewMode();
 
   // Remove page from filters for infinite query (we manage pages internally)
-  const infiniteQueryConfig = useMemo(() => {
+  const infiniteQueryConfig = (() => {
     const { page, ...rest } = filters;
     return { ...rest, limit: filters.limit };
-  }, [filters]);
+  })();
 
   // Normalized key for cache compatibility
-  const normalizedInfiniteKey = useMemo(() => {
+  const normalizedInfiniteKey = (() => {
     const { page, ...rest } = normalizeProductQueryKey(filters);
     return rest;
-  }, [filters]);
+  })();
 
   /**
    * Infinite Query for Products
@@ -96,20 +96,20 @@ const ProductListInfinite = () => {
   });
 
   // Flatten all products from all pages
-  const allProducts = useMemo(() => {
+  const allProducts = (() => {
     if (!productsData?.pages) return [];
     return productsData.pages.flatMap((page) => page.data.data.products);
-  }, [productsData?.pages]);
+  })();
 
   // Get pagination info from last page
   const pagination = productsData?.pages[productsData.pages.length - 1]?.data.data.pagination;
 
   // Infinite scroll hook
-  const handleLoadMore = useCallback(() => {
+  const handleLoadMore = () => {
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  };
 
   const { sentinelRef } = useInfiniteScroll({
     onLoadMore: handleLoadMore,
@@ -122,13 +122,13 @@ const ProductListInfinite = () => {
 
   // Grid columns count for virtualization
   const gridColumns = 5; // matches xl:grid-cols-5
-  const gridRows = useMemo(() => {
+  const gridRows = (() => {
     const rows: (typeof allProducts)[] = [];
     for (let i = 0; i < allProducts.length; i += gridColumns) {
       rows.push(allProducts.slice(i, i + gridColumns));
     }
     return rows;
-  }, [allProducts]);
+  })();
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -154,7 +154,9 @@ const ProductListInfinite = () => {
   // Build breadcrumb items
   const breadcrumbItems = [
     { label: t('breadcrumb.home'), to: path.home },
-    ...(currentCategory ? [{ label: currentCategory.name }] : [{ label: t('breadcrumb.allProducts') }]),
+    ...(currentCategory
+      ? [{ label: currentCategory.name }]
+      : [{ label: t('breadcrumb.allProducts') }]),
   ];
 
   // Initial loading state with skeletons
@@ -375,7 +377,11 @@ const ProductListInfinite = () => {
               {/* Load more status */}
               <div className="mt-6 text-center">
                 {isFetchingNextPage && (
-                  <div role="status" aria-live="polite" className="flex items-center justify-center space-x-2 text-gray-600 dark:text-gray-300">
+                  <div
+                    role="status"
+                    aria-live="polite"
+                    className="flex items-center justify-center space-x-2 text-gray-600 dark:text-gray-300"
+                  >
                     <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-orange"></div>
                     <span>{t('loadingMore')}</span>
                   </div>
@@ -421,9 +427,7 @@ const ProductListInfinite = () => {
               <h3 className="mb-2 text-xl font-semibold text-gray-600 dark:text-gray-300">
                 {t('empty.noProducts')}
               </h3>
-              <p className="text-gray-500 dark:text-gray-400">
-                {t('empty.adjustFilters')}
-              </p>
+              <p className="text-gray-500 dark:text-gray-400">{t('empty.adjustFilters')}</p>
             </div>
           ))}
       </div>

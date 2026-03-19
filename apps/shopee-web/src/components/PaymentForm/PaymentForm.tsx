@@ -1,4 +1,4 @@
-import { memo, useState, useCallback, useMemo } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -80,7 +80,7 @@ const PaymentTabIcon = ({ type }: { type: string }) => {
   return <>{icons[type] || null}</>;
 };
 
-const SecureBadge = memo(function SecureBadge({ label }: { label: string }) {
+function SecureBadge({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-400">
       <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
@@ -93,15 +93,9 @@ const SecureBadge = memo(function SecureBadge({ label }: { label: string }) {
       <span>{label}</span>
     </div>
   );
-});
+}
 
-const SuccessFeedback = memo(function SuccessFeedback({
-  title,
-  message,
-}: {
-  title: string;
-  message: string;
-}) {
+function SuccessFeedback({ title, message }: { title: string; message: string }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -122,9 +116,9 @@ const SuccessFeedback = memo(function SuccessFeedback({
       <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{message}</p>
     </motion.div>
   );
-});
+}
 
-const ErrorFeedback = memo(function ErrorFeedback({
+function ErrorFeedback({
   title,
   message,
   retryLabel,
@@ -162,9 +156,9 @@ const ErrorFeedback = memo(function ErrorFeedback({
       </Button>
     </motion.div>
   );
-});
+}
 
-const PaymentForm = memo(function PaymentForm({
+function PaymentForm({
   onSubmit,
   onCancel,
   isProcessing = false,
@@ -177,7 +171,7 @@ const PaymentForm = memo(function PaymentForm({
   );
   const [errorMessage, setErrorMessage] = useState('');
 
-  const paymentSchema = useMemo(() => createPaymentSchema(t), [t]);
+  const paymentSchema = createPaymentSchema(t);
 
   const paymentTabs: { id: PaymentMethodTab; label: string }[] = [
     { id: 'credit_card', label: t('tabs.creditCard') },
@@ -201,25 +195,22 @@ const PaymentForm = memo(function PaymentForm({
     },
   });
 
-  const handleFormSubmit = useCallback(
-    async (data: PaymentFormData) => {
-      setPaymentStatus('processing');
-      setErrorMessage('');
-      try {
-        await onSubmit(data);
-        setPaymentStatus('success');
-      } catch (error) {
-        setPaymentStatus('error');
-        setErrorMessage(error instanceof Error ? error.message : t('status.error'));
-      }
-    },
-    [onSubmit, t],
-  );
+  const handleFormSubmit = async (data: PaymentFormData) => {
+    setPaymentStatus('processing');
+    setErrorMessage('');
+    try {
+      await onSubmit(data);
+      setPaymentStatus('success');
+    } catch (error) {
+      setPaymentStatus('error');
+      setErrorMessage(error instanceof Error ? error.message : t('status.error'));
+    }
+  };
 
-  const handleRetry = useCallback(() => {
+  const handleRetry = () => {
     setPaymentStatus('idle');
     setErrorMessage('');
-  }, []);
+  };
 
   if (paymentStatus === 'success') {
     return <SuccessFeedback title={t('status.success')} message={t('status.processing')} />;
@@ -350,6 +341,6 @@ const PaymentForm = memo(function PaymentForm({
       </AnimatePresence>
     </div>
   );
-});
+}
 
 export default PaymentForm;

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from 'src/components/Button';
 import BannerSlide from './BannerSlide';
@@ -46,14 +46,10 @@ const HeroBanner = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
 
-  const translatedSlides = useMemo(
-    () =>
-      bannerSlides.map((slide) => ({
-        ...slide,
-        subtitle: t(slide.subtitle, { defaultValue: slide.subtitle }),
-      })),
-    [t],
-  );
+  const translatedSlides = bannerSlides.map((slide) => ({
+    ...slide,
+    subtitle: t(slide.subtitle, { defaultValue: slide.subtitle }),
+  }));
 
   // Auto play banner
   useEffect(() => {

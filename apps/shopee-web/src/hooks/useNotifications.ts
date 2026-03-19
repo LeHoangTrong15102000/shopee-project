@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import useSocket from './useSocket';
 import { SocketEvent, NotificationPayload } from 'src/types/socket.types';
@@ -66,36 +66,33 @@ const useNotifications = () => {
   }, [socket, queryClient]);
 
   // Merge REST + socket notifications (deduplicated)
-  const notifications: Notification[] = useMemo(() => {
+  const notifications: Notification[] = (() => {
     const apiIds = new Set(apiNotifications.map((n) => n._id));
     const newRealtime = realtimeNotifications
       .filter((n) => !apiIds.has(n._id))
       .map(convertSocketToNotification);
     return [...newRealtime, ...apiNotifications];
-  }, [apiNotifications, realtimeNotifications]);
+  })();
 
   // Calculate total unread count
-  const unreadCount = useMemo(() => {
+  const unreadCount = (() => {
     const realtimeUnread = realtimeNotifications.filter(
       (n) => !apiNotifications.some((api) => api._id === n._id),
     ).length;
     return apiUnreadCount + realtimeUnread;
-  }, [apiUnreadCount, realtimeNotifications, apiNotifications]);
+  })();
 
-  const markAsRead = useCallback(
-    (notificationId: string) => {
-      if (!socket || !isConnected) return;
-      socket.emit(SocketEvent.NOTIFICATION_READ, { notification_id: notificationId });
-      setRealtimeNotifications((prev) => prev.filter((n) => n._id !== notificationId));
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-    },
-    [socket, isConnected, queryClient],
-  );
+  const markAsRead = (notificationId: string) => {
+    if (!socket || !isConnected) return;
+    socket.emit(SocketEvent.NOTIFICATION_READ, { notification_id: notificationId });
+    setRealtimeNotifications((prev) => prev.filter((n) => n._id !== notificationId));
+    queryClient.invalidateQueries({ queryKey: ['notifications'] });
+  };
 
-  const clearAll = useCallback(() => {
+  const clearAll = () => {
     setRealtimeNotifications([]);
     queryClient.invalidateQueries({ queryKey: ['notifications'] });
-  }, [queryClient]);
+  };
 
   return {
     notifications,

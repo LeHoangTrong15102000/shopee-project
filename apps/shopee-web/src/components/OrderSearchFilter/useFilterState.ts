@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { OrderSearchFilterProps } from './OrderSearchFilter';
 
 export function useFilterState({
@@ -47,10 +47,10 @@ export function useFilterState({
     setInputValue(e.target.value);
   };
 
-  const handleClearSearch = useCallback(() => {
+  const handleClearSearch = () => {
     setInputValue('');
     onSearchChange('');
-  }, [onSearchChange]);
+  };
 
   const handleDateFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFrom = e.target.value;
@@ -72,11 +72,11 @@ export function useFilterState({
     }
   };
 
-  const handleClearDateRange = useCallback(() => {
+  const handleClearDateRange = () => {
     setDateFrom('');
     setDateTo('');
     onDateRangeChange(null);
-  }, [onDateRangeChange]);
+  };
 
   const handlePriceMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -102,20 +102,20 @@ export function useFilterState({
     }
   };
 
-  const handleClearPriceRange = useCallback(() => {
+  const handleClearPriceRange = () => {
     setPriceMin('');
     setPriceMax('');
     onPriceRangeChange(null);
-  }, [onPriceRangeChange]);
+  };
 
-  const handleClearAllFilters = useCallback(() => {
+  const handleClearAllFilters = () => {
     setInputValue('');
     setDateFrom('');
     setDateTo('');
     setPriceMin('');
     setPriceMax('');
     onClearAll();
-  }, [onClearAll]);
+  };
 
   const toggleFilterPanel = () => {
     setIsFilterPanelOpen((prev) => !prev);

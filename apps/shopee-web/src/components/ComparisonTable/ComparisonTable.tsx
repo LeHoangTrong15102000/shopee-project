@@ -1,4 +1,3 @@
-import { memo, useCallback, useMemo } from 'react';
 import classNames from 'classnames';
 import { Product } from 'src/types/product.type';
 import { useProductComparison } from 'src/hooks/useProductComparison';
@@ -19,9 +18,9 @@ function ComparisonTable({ className, onAddToCart }: ComparisonTableProps) {
   const { compareList, removeFromCompare, clearCompare } = useProductComparison();
   const reduceMotion = useReducedMotion();
 
-  const bestValues = useMemo(() => getBestValues(compareList), [compareList]);
+  const bestValues = getBestValues(compareList);
 
-  const comparisonSummary = useMemo(() => {
+  const comparisonSummary = (() => {
     if (!bestValues || compareList.length < 2) return null;
 
     const summaryParts: { text: string; productName: string; color: string }[] = [];
@@ -58,14 +57,11 @@ function ComparisonTable({ className, onAddToCart }: ComparisonTableProps) {
     }
 
     return summaryParts;
-  }, [bestValues, compareList]);
+  })();
 
-  const handleAddToCart = useCallback(
-    (product: Product) => {
-      onAddToCart?.(product);
-    },
-    [onAddToCart],
-  );
+  const handleAddToCart = (product: Product) => {
+    onAddToCart?.(product);
+  };
 
   if (compareList.length === 0) {
     return <ComparisonTableEmpty className={className} />;
@@ -107,4 +103,4 @@ function ComparisonTable({ className, onAddToCart }: ComparisonTableProps) {
   );
 }
 
-export default memo(ComparisonTable);
+export default ComparisonTable;

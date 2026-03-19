@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
@@ -180,21 +180,21 @@ export const useCheckout = () => {
     !!selectedPaymentMethod &&
     checkedItems.length > 0;
 
-  const currentStep = useMemo(() => {
+  const currentStep = (() => {
     if (!selectedAddress) return 1;
     if (!selectedShippingMethod) return 2;
     if (!selectedPaymentMethod) return 3;
     return 4;
-  }, [selectedAddress, selectedShippingMethod, selectedPaymentMethod]);
+  })();
 
-  const totalAmount = useMemo(() => {
+  const totalAmount = (() => {
     const itemsTotal = checkedItems.reduce(
       (sum, item) => sum + item.product.price * item.buy_count,
       0,
     );
     const shippingFee = selectedShippingMethod?.price || 0;
     return itemsTotal + shippingFee - voucherDiscount - coinsUsed;
-  }, [checkedItems, selectedShippingMethod, voucherDiscount, coinsUsed]);
+  })();
 
   return {
     selectedAddress,

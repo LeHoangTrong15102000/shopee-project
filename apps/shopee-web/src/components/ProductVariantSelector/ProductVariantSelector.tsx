@@ -1,4 +1,4 @@
-import { useMemo, useId } from 'react';
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { ProductVariant, ProductVariantCombination } from 'src/types/variant.type';
@@ -60,7 +60,7 @@ export default function ProductVariantSelector({
     return label;
   };
 
-  const availableOptions = useMemo(() => {
+  const availableOptions = (() => {
     const available: { [key: string]: Set<string> } = {};
 
     variants.forEach((variant) => {
@@ -89,7 +89,7 @@ export default function ProductVariantSelector({
     });
 
     return available;
-  }, [variants, combinations, selectedValues]);
+  })();
 
   const isOptionAvailable = (type: string, value: string): boolean => {
     return availableOptions[type]?.has(value) ?? false;

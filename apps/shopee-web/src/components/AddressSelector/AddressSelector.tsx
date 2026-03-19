@@ -1,4 +1,4 @@
-import { memo, useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,10 +12,7 @@ interface AddressSelectorProps {
   onSelect: (address: Address) => void;
 }
 
-const AddressSelector = memo(function AddressSelector({
-  selectedAddressId,
-  onSelect,
-}: AddressSelectorProps) {
+function AddressSelector({ selectedAddressId, onSelect }: AddressSelectorProps) {
   const { t } = useTranslation('address');
   const [showForm, setShowForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
@@ -45,26 +42,26 @@ const AddressSelector = memo(function AddressSelector({
 
   const addresses = addressData?.addresses || [];
 
-  const handleAddNew = useCallback(() => {
+  const handleAddNew = () => {
     setEditingAddress(null);
     setShowForm(true);
-  }, []);
+  };
 
-  const handleEdit = useCallback((address: Address) => {
+  const handleEdit = (address: Address) => {
     setEditingAddress(address);
     setShowForm(true);
-  }, []);
+  };
 
-  const handleFormClose = useCallback(() => {
+  const handleFormClose = () => {
     setShowForm(false);
     setEditingAddress(null);
-  }, []);
+  };
 
-  const handleFormSuccess = useCallback(() => {
+  const handleFormSuccess = () => {
     setShowForm(false);
     setEditingAddress(null);
     queryClient.invalidateQueries({ queryKey: ['addresses'] });
-  }, [queryClient]);
+  };
 
   if (isLoading) {
     return (
@@ -232,6 +229,6 @@ const AddressSelector = memo(function AddressSelector({
       </AnimatePresence>
     </div>
   );
-});
+}
 
 export default AddressSelector;

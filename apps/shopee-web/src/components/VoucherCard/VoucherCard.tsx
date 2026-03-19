@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import { differenceInDays, parseISO } from 'date-fns';
-import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Voucher } from 'src/types/voucher.type';
 import { formatCurrency, formatDate, formatDiscount } from 'src/utils/utils';
@@ -54,18 +53,15 @@ function VoucherCard({
   isLoading = false,
 }: VoucherCardProps) {
   const { t } = useTranslation('product');
-  const status = useMemo(() => getVoucherStatus(voucher, isSaved), [voucher, isSaved]);
+  const status = getVoucherStatus(voucher, isSaved);
 
-  const daysRemaining = useMemo(() => getDaysRemaining(voucher.end_date), [voucher.end_date]);
+  const daysRemaining = getDaysRemaining(voucher.end_date);
 
   const isExpired = status === 'expired';
 
-  const discountDisplay = useMemo(
-    () => formatDiscount(voucher.discount_type, voucher.discount_value),
-    [voucher.discount_type, voucher.discount_value],
-  );
+  const discountDisplay = formatDiscount(voucher.discount_type, voucher.discount_value);
 
-  const handleButtonClick = useCallback(() => {
+  const handleButtonClick = () => {
     if (isLoading || isExpired) return;
 
     if (isSaved && onApply) {
@@ -73,7 +69,7 @@ function VoucherCard({
     } else if (!isSaved && onSave) {
       onSave(voucher._id);
     }
-  }, [isLoading, isExpired, isSaved, onApply, onSave, voucher.code, voucher._id]);
+  };
 
   const isSavedWithoutApply = isSaved && !onApply;
   const buttonText = isLoading
@@ -84,14 +80,14 @@ function VoucherCard({
         ? t('voucher.apply')
         : t('voucher.save');
 
-  const buttonAriaLabel = useMemo(() => {
+  const buttonAriaLabel = (() => {
     if (isExpired) return t('voucher.ariaExpired', { name: voucher.name });
     if (isLoading) return t('voucher.ariaProcessing');
     if (isSavedWithoutApply) return t('voucher.ariaSaved', { name: voucher.name });
     return isSaved
       ? t('voucher.ariaApply', { name: voucher.name, discount: discountDisplay })
       : t('voucher.ariaSave', { name: voucher.name, discount: discountDisplay });
-  }, [isExpired, isLoading, isSaved, isSavedWithoutApply, voucher.name, discountDisplay, t]);
+  })();
 
   return (
     <div
@@ -195,4 +191,4 @@ function VoucherCard({
   );
 }
 
-export default memo(VoucherCard);
+export default VoucherCard;

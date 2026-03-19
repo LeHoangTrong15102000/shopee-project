@@ -1,6 +1,4 @@
-import { memo } from 'react';
-
-const ShieldIcon = memo(function ShieldIcon() {
+function ShieldIcon() {
   return (
     <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
       <path
@@ -10,9 +8,9 @@ const ShieldIcon = memo(function ShieldIcon() {
       />
     </svg>
   );
-});
+}
 
-const LockIcon = memo(function LockIcon() {
+function LockIcon() {
   return (
     <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
       <path
@@ -22,9 +20,9 @@ const LockIcon = memo(function LockIcon() {
       />
     </svg>
   );
-});
+}
 
-const SecurityBadges = memo(function SecurityBadges() {
+function SecurityBadges() {
   return (
     <div className="flex items-center justify-center gap-4 pt-4">
       <div className="flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1.5 text-xs text-green-700 dark:bg-green-900/30 dark:text-green-400">
@@ -37,6 +35,6 @@ const SecurityBadges = memo(function SecurityBadges() {
       </div>
     </div>
   );
-});
+}
 
 export default SecurityBadges;

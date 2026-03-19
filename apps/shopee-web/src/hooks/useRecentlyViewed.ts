@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Product } from 'src/types/product.type';
 
 const STORAGE_KEY = 'recently_viewed_products';
@@ -42,7 +42,7 @@ export function useRecentlyViewed() {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
-  const addProduct = useCallback((product: Product) => {
+  const addProduct = (product: Product) => {
     setRecentlyViewed((prev) => {
       const filtered = prev.filter((p) => p._id !== product._id);
 
@@ -61,20 +61,20 @@ export function useRecentlyViewed() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       return updated;
     });
-  }, []);
+  };
 
-  const removeProduct = useCallback((productId: string) => {
+  const removeProduct = (productId: string) => {
     setRecentlyViewed((prev) => {
       const updated = prev.filter((p) => p._id !== productId);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       return updated;
     });
-  }, []);
+  };
 
-  const clearAll = useCallback(() => {
+  const clearAll = () => {
     localStorage.removeItem(STORAGE_KEY);
     setRecentlyViewed([]);
-  }, []);
+  };
 
   return {
     recentlyViewed,

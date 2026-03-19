@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 
 interface UseKeyboardNavigationOptions {
   onEnter?: () => void;
@@ -11,31 +11,28 @@ interface UseKeyboardNavigationOptions {
 export const useKeyboardNavigation = (options: UseKeyboardNavigationOptions) => {
   const { onEnter, onEscape, onArrowUp, onArrowDown, enabled = true } = options;
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (!enabled) return;
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (!enabled) return;
 
-      switch (event.key) {
-        case 'Enter':
-        case ' ':
-          event.preventDefault();
-          onEnter?.();
-          break;
-        case 'Escape':
-          onEscape?.();
-          break;
-        case 'ArrowUp':
-          event.preventDefault();
-          onArrowUp?.();
-          break;
-        case 'ArrowDown':
-          event.preventDefault();
-          onArrowDown?.();
-          break;
-      }
-    },
-    [enabled, onEnter, onEscape, onArrowUp, onArrowDown],
-  );
+    switch (event.key) {
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        onEnter?.();
+        break;
+      case 'Escape':
+        onEscape?.();
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        onArrowUp?.();
+        break;
+      case 'ArrowDown':
+        event.preventDefault();
+        onArrowDown?.();
+        break;
+    }
+  };
 
   return { handleKeyDown };
 };

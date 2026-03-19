@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import useSocket from './useSocket';
 import { SocketEvent, UserTypingPayload } from 'src/types/socket.types';
 
@@ -10,17 +10,17 @@ const useTypingIndicator = (chatId: string | null) => {
   const typingTimeoutRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const isTypingRef = useRef(false);
 
-  const startTyping = useCallback(() => {
+  const startTyping = () => {
     if (!chatId || isTypingRef.current) return;
     isTypingRef.current = true;
     emit(SocketEvent.TYPING_START, { chat_id: chatId });
-  }, [chatId, emit]);
+  };
 
-  const stopTyping = useCallback(() => {
+  const stopTyping = () => {
     if (!chatId || !isTypingRef.current) return;
     isTypingRef.current = false;
     emit(SocketEvent.TYPING_STOP, { chat_id: chatId });
-  }, [chatId, emit]);
+  };
 
   useEffect(() => {
     if (!socket || !chatId) return;

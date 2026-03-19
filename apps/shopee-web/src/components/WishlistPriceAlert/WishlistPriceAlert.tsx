@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import useSocket from 'src/hooks/useSocket';
 import { SocketEvent, PriceUpdatedPayload } from 'src/types/socket.types';
@@ -21,46 +21,43 @@ export default function WishlistPriceAlert({ productIds, onPriceChange }: Wishli
   const subscribedProductsRef = useRef<Set<string>>(new Set());
 
   // Handle price update from socket
-  const handlePriceUpdate = useCallback(
-    (data: PriceUpdatedPayload) => {
-      const { product_id, old_price, new_price } = data;
+  const handlePriceUpdate = (data: PriceUpdatedPayload) => {
+    const { product_id, old_price, new_price } = data;
 
-      // Only process if this product is in our watchlist
-      if (!productIds.includes(product_id)) return;
+    // Only process if this product is in our watchlist
+    if (!productIds.includes(product_id)) return;
 
-      // Check if price dropped
-      if (new_price >= old_price) return;
+    // Check if price dropped
+    if (new_price >= old_price) return;
 
-      // Check cooldown
-      const priceRecord = priceHistoryRef.current.get(product_id);
-      const now = Date.now();
+    // Check cooldown
+    const priceRecord = priceHistoryRef.current.get(product_id);
+    const now = Date.now();
 
-      if (priceRecord && now - priceRecord.lastAlertTime < ALERT_COOLDOWN_MS) {
-        // Still in cooldown, skip toast but still call callback
-        onPriceChange?.(product_id, old_price, new_price);
-        return;
-      }
-
-      // Calculate discount percentage
-      const discountPercentage = Math.round(((old_price - new_price) / old_price) * 100);
-
-      // Show toast notification
-      toast.success(`🎉 Sản phẩm yêu thích đã giảm giá ${discountPercentage}%!`, {
-        autoClose: 5000,
-        position: 'top-right',
-      });
-
-      // Update price history
-      priceHistoryRef.current.set(product_id, {
-        price: new_price,
-        lastAlertTime: now,
-      });
-
-      // Call callback
+    if (priceRecord && now - priceRecord.lastAlertTime < ALERT_COOLDOWN_MS) {
+      // Still in cooldown, skip toast but still call callback
       onPriceChange?.(product_id, old_price, new_price);
-    },
-    [productIds, onPriceChange],
-  );
+      return;
+    }
+
+    // Calculate discount percentage
+    const discountPercentage = Math.round(((old_price - new_price) / old_price) * 100);
+
+    // Show toast notification
+    toast.success(`🎉 Sản phẩm yêu thích đã giảm giá ${discountPercentage}%!`, {
+      autoClose: 5000,
+      position: 'top-right',
+    });
+
+    // Update price history
+    priceHistoryRef.current.set(product_id, {
+      price: new_price,
+      lastAlertTime: now,
+    });
+
+    // Call callback
+    onPriceChange?.(product_id, old_price, new_price);
+  };
 
   // Subscribe/unsubscribe to product price updates
   useEffect(() => {

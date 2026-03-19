@@ -1,9 +1,8 @@
-import { memo } from 'react';
 import { motion } from 'framer-motion';
 import Button from 'src/components/Button';
 import { formatCurrency } from './WalletCard';
 
-const LoadingSpinner = memo(function LoadingSpinner() {
+function LoadingSpinner() {
   return (
     <motion.div
       animate={{ rotate: 360 }}
@@ -11,9 +10,9 @@ const LoadingSpinner = memo(function LoadingSpinner() {
       className="h-12 w-12 rounded-full border-4 border-gray-200 border-t-orange"
     />
   );
-});
+}
 
-const SuccessAnimation = memo(function SuccessAnimation() {
+function SuccessAnimation() {
   return (
     <motion.div
       initial={{ scale: 0 }}
@@ -39,9 +38,9 @@ const SuccessAnimation = memo(function SuccessAnimation() {
       </motion.svg>
     </motion.div>
   );
-});
+}
 
-const FailedAnimation = memo(function FailedAnimation() {
+function FailedAnimation() {
   return (
     <motion.div
       initial={{ scale: 0 }}
@@ -59,9 +58,9 @@ const FailedAnimation = memo(function FailedAnimation() {
       </svg>
     </motion.div>
   );
-});
+}
 
-export const WaitingView = memo(function WaitingView({ walletName }: { walletName: string }) {
+export function WaitingView({ walletName }: { walletName: string }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -88,9 +87,9 @@ export const WaitingView = memo(function WaitingView({ walletName }: { walletNam
       </motion.div>
     </motion.div>
   );
-});
+}
 
-export const SuccessView = memo(function SuccessView({ amount }: { amount: number }) {
+export function SuccessView({ amount }: { amount: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -117,9 +116,9 @@ export const SuccessView = memo(function SuccessView({ amount }: { amount: numbe
       </motion.div>
     </motion.div>
   );
-});
+}
 
-export const FailedView = memo(function FailedView({
+export function FailedView({
   message,
   onRetry,
   onCancel,
@@ -160,9 +159,9 @@ export const FailedView = memo(function FailedView({
       </div>
     </motion.div>
   );
-});
+}
 
-export const TimeoutView = memo(function TimeoutView({
+export function TimeoutView({
   onRegenerateQR,
   onCancel,
 }: {
@@ -215,4 +214,4 @@ export const TimeoutView = memo(function TimeoutView({
       </div>
     </motion.div>
   );
-});
+}

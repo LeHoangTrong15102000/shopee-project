@@ -1,4 +1,4 @@
-import { useState, useRef, useId, useEffect, useCallback, type ElementType } from 'react';
+import { useState, useRef, useId, useEffect, type ElementType } from 'react';
 import {
   useFloating,
   FloatingPortal,
@@ -61,7 +61,7 @@ const Popover = ({
 
   const mergedFloatingRef = useMergeRefs([refs.setFloating, floatingRef]);
 
-  const showPopover = useCallback(() => {
+  const showPopover = () => {
     // Cancel any pending hide when mouse re-enters trigger or popup
     if (hideTimeoutRef.current) {
       clearTimeout(hideTimeoutRef.current);
@@ -73,43 +73,40 @@ const Popover = ({
     requestAnimationFrame(() => {
       justOpenedViaHover.current = false;
     });
-  }, []);
+  };
 
-  const hidePopover = useCallback(() => {
+  const hidePopover = () => {
     // Delay hide to allow mouse to travel from trigger to popup (or vice versa)
     hideTimeoutRef.current = setTimeout(() => {
       setIsOpen(false);
       hideTimeoutRef.current = null;
     }, 150);
-  }, []);
+  };
 
-  const togglePopover = useCallback(() => {
+  const togglePopover = () => {
     // Skip toggle if mouseenter just opened the popover (touch device tap fires both)
     if (justOpenedViaHover.current) return;
     setIsOpen((prev) => !prev);
-  }, []);
+  };
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isOpen) {
-        event.preventDefault();
-        setIsOpen(false);
-        // Return focus to trigger element
-        if (refs.reference.current && 'focus' in refs.reference.current) {
-          (refs.reference.current as HTMLElement).focus();
-        }
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === 'Escape' && isOpen) {
+      event.preventDefault();
+      setIsOpen(false);
+      // Return focus to trigger element
+      if (refs.reference.current && 'focus' in refs.reference.current) {
+        (refs.reference.current as HTMLElement).focus();
       }
-    },
-    [isOpen, refs.reference],
-  );
+    }
+  };
 
-  const handleTriggerKeyDown = useCallback((event: React.KeyboardEvent) => {
+  const handleTriggerKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       openedViaKeyboard.current = true;
       setIsOpen((prev) => !prev);
     }
-  }, []);
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -211,7 +208,7 @@ const Popover = ({
               {enableArrow && (
                 <span
                   ref={arrowRef}
-                  className="absolute -top-[10px] z-10"
+                  className="absolute -top-[9px] z-10"
                   style={{
                     left: middlewareData.arrow?.x,
                   }}

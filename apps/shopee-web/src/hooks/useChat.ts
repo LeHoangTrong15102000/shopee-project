@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import useSocket from './useSocket';
 import {
   SocketEvent,
@@ -22,33 +22,27 @@ const useChat = () => {
     isLoading: false,
   });
 
-  const joinChat = useCallback(
-    (chatId: string) => {
-      setChatState((prev) => ({ ...prev, currentChatId: chatId, messages: [], isLoading: true }));
-      emit(SocketEvent.JOIN_CHAT, { chat_id: chatId } as JoinChatPayload);
-    },
-    [emit],
-  );
+  const joinChat = (chatId: string) => {
+    setChatState((prev) => ({ ...prev, currentChatId: chatId, messages: [], isLoading: true }));
+    emit(SocketEvent.JOIN_CHAT, { chat_id: chatId } as JoinChatPayload);
+  };
 
-  const leaveChat = useCallback(() => {
+  const leaveChat = () => {
     if (chatState.currentChatId) {
       emit(SocketEvent.LEAVE_CHAT, { chat_id: chatState.currentChatId });
       setChatState((prev) => ({ ...prev, currentChatId: null, messages: [] }));
     }
-  }, [chatState.currentChatId, emit]);
+  };
 
-  const sendMessage = useCallback(
-    (message: string) => {
-      if (!chatState.currentChatId || !message.trim()) return;
-      const payload: SendMessagePayload = {
-        chat_id: chatState.currentChatId,
-        message: message.trim(),
-        message_type: 'text',
-      };
-      emit(SocketEvent.SEND_MESSAGE, payload);
-    },
-    [chatState.currentChatId, emit],
-  );
+  const sendMessage = (message: string) => {
+    if (!chatState.currentChatId || !message.trim()) return;
+    const payload: SendMessagePayload = {
+      chat_id: chatState.currentChatId,
+      message: message.trim(),
+      message_type: 'text',
+    };
+    emit(SocketEvent.SEND_MESSAGE, payload);
+  };
 
   useEffect(() => {
     if (!socket) return;

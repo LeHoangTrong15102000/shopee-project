@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import useSocket from './useSocket';
 import {
   SocketEvent,
@@ -20,9 +20,9 @@ const useLiveQA = (productId: string | undefined): UseLiveQAReturn => {
   const [newAnswers, setNewAnswers] = useState<NewAnswerPayload[]>([]);
   const [likeUpdates, setLikeUpdates] = useState<Map<string, number>>(new Map());
 
-  const clearNewQuestions = useCallback(() => {
+  const clearNewQuestions = () => {
     setNewQuestions([]);
-  }, []);
+  };
 
   useEffect(() => {
     if (!socket || !isConnected || !productId) return;

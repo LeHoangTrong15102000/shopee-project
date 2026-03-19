@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 const STORAGE_KEY = 'notification_sound_enabled';
 
@@ -16,15 +16,15 @@ const useNotificationSound = () => {
   const audioContextRef = useRef<AudioContext | null>(null);
 
   // Initialize AudioContext lazily (must be triggered by user interaction)
-  const getAudioContext = useCallback(() => {
+  const getAudioContext = () => {
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
     }
     return audioContextRef.current;
-  }, []);
+  };
 
   // Play a subtle notification beep
-  const playNotificationSound = useCallback(() => {
+  const playNotificationSound = () => {
     if (isMuted) return;
 
     try {
@@ -58,22 +58,22 @@ const useNotificationSound = () => {
     } catch (error) {
       console.warn('Failed to play notification sound:', error);
     }
-  }, [isMuted, getAudioContext]);
+  };
 
   // Toggle mute state
-  const toggleMute = useCallback(() => {
+  const toggleMute = () => {
     setIsMuted((prev) => {
       const newValue = !prev;
       localStorage.setItem(STORAGE_KEY, String(!newValue)); // Store as "enabled" state
       return newValue;
     });
-  }, []);
+  };
 
   // Set mute state directly
-  const setMuted = useCallback((muted: boolean) => {
+  const setMuted = (muted: boolean) => {
     setIsMuted(muted);
     localStorage.setItem(STORAGE_KEY, String(!muted));
-  }, []);
+  };
 
   // Cleanup audio context on unmount
   useEffect(() => {

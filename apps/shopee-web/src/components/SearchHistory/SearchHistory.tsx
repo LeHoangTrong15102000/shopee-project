@@ -1,5 +1,4 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SearchHistoryItem } from 'src/hooks/useSearchHistory';
 import Button from 'src/components/Button';
@@ -12,7 +11,7 @@ interface SearchHistoryProps {
   onClearAll: () => void;
 }
 
-const SearchHistory = memo(function SearchHistory({
+const SearchHistory = function SearchHistory({
   history,
   trendingSearches = [
     'iPhone 15',
@@ -26,13 +25,10 @@ const SearchHistory = memo(function SearchHistory({
   onClearAll,
 }: SearchHistoryProps) {
   const { t } = useTranslation('home');
-  const handleRemove = useCallback(
-    (e: React.MouseEvent, query: string) => {
-      e.stopPropagation();
-      onRemove(query);
-    },
-    [onRemove],
-  );
+  const handleRemove = (e: React.MouseEvent, query: string) => {
+    e.stopPropagation();
+    onRemove(query);
+  };
 
   return (
     <div className="absolute top-full right-0 left-0 z-50 mt-1 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-slate-600 dark:bg-slate-800">
@@ -135,6 +131,6 @@ const SearchHistory = memo(function SearchHistory({
       </div>
     </div>
   );
-});
+};
 
 export default SearchHistory;

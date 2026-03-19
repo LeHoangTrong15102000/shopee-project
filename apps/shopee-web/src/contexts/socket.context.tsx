@@ -1,12 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-  useRef,
-  useMemo,
-} from 'react';
+import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import type { Socket } from 'socket.io-client';
 import { getAccessTokenFromLS } from 'src/utils/auth';
 import config from 'src/constant/config';
@@ -39,7 +31,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
   const isConnected = connectionStatus === 'connected';
 
-  const connect = useCallback(async () => {
+  const connect = async () => {
     if (socketRef.current?.connected || !isAuthenticated) {
       return;
     }
@@ -104,9 +96,9 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       console.error('Failed to load socket.io-client:', error);
       setConnectionStatus('disconnected');
     }
-  }, [isAuthenticated]);
+  };
 
-  const disconnect = useCallback(() => {
+  const disconnect = () => {
     if (socketRef.current) {
       socketRef.current.removeAllListeners();
       socketRef.current.disconnect();
@@ -114,7 +106,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       setSocket(null);
       setConnectionStatus('disconnected');
     }
-  }, []);
+  };
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -134,16 +126,13 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
-  const value = useMemo(
-    () => ({
-      socket,
-      isConnected,
-      connectionStatus,
-      connect,
-      disconnect,
-    }),
-    [socket, isConnected, connectionStatus, connect, disconnect],
-  );
+  const value = {
+    socket,
+    isConnected,
+    connectionStatus,
+    connect,
+    disconnect,
+  };
 
   return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>;
 };

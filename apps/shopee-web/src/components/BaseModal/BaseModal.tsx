@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useFocusTrap } from 'src/hooks/useFocusTrap';
@@ -41,9 +41,9 @@ const BaseModal = ({
     };
   }, [isOpen]);
 
-  const handleBackdropClick = useCallback(() => {
+  const handleBackdropClick = () => {
     if (closeOnBackdrop) onClose();
-  }, [closeOnBackdrop, onClose]);
+  };
 
   const animationDuration = reducedMotion ? 0 : 0.2;
 

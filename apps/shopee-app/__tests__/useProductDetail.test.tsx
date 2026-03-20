@@ -25,7 +25,12 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-const mockToast = { showSuccess: jest.fn(), showError: jest.fn(), showInfo: jest.fn(), showWarning: jest.fn() };
+const mockToast = {
+  showSuccess: jest.fn(),
+  showError: jest.fn(),
+  showInfo: jest.fn(),
+  showWarning: jest.fn(),
+};
 jest.mock('@/components/ui/ToastProvider', () => ({
   useToast: () => mockToast,
 }));
@@ -49,17 +54,26 @@ const mockProduct = {
 
 const server = setupServer(
   http.get(`${API_BASE}/products/:id`, () =>
-    HttpResponse.json({ message: 'OK', data: mockProduct }),
+    HttpResponse.json({ message: 'OK', data: mockProduct })
   ),
   http.get(`${API_BASE}/reviews/product/:id`, () =>
     HttpResponse.json({
       message: 'OK',
       data: {
-        reviews: [{ _id: 'r1', rating: 5, comment: 'Great', user: { _id: 'u1', name: 'U' }, helpful_count: 0, is_liked: false }],
+        reviews: [
+          {
+            _id: 'r1',
+            rating: 5,
+            comment: 'Great',
+            user: { _id: 'u1', name: 'U' },
+            helpful_count: 0,
+            is_liked: false,
+          },
+        ],
         pagination: { page: 1, limit: 5, total: 1, total_pages: 1 },
         stats: { total_reviews: 1, average_rating: 5, rating_breakdown: { 5: 1 } },
       },
-    }),
+    })
   ),
   http.get(`${API_BASE}/qa/questions`, () =>
     HttpResponse.json({
@@ -68,48 +82,49 @@ const server = setupServer(
         questions: [{ _id: 'q1', question: 'Q?', answers: [], likes_count: 0, is_liked: false }],
         pagination: { page: 1, limit: 5, total: 1, total_pages: 1 },
       },
-    }),
+    })
   ),
   http.get(`${API_BASE}/wishlist/check/:id`, () =>
-    HttpResponse.json({ message: 'OK', data: { in_wishlist: false } }),
+    HttpResponse.json({ message: 'OK', data: { in_wishlist: false } })
   ),
-  http.post(`${API_BASE}/wishlist`, () =>
-    HttpResponse.json({ message: 'OK', data: {} }),
-  ),
-  http.delete(`${API_BASE}/wishlist/:id`, () =>
-    HttpResponse.json({ message: 'OK', data: {} }),
-  ),
+  http.post(`${API_BASE}/wishlist`, () => HttpResponse.json({ message: 'OK', data: {} })),
+  http.delete(`${API_BASE}/wishlist/:id`, () => HttpResponse.json({ message: 'OK', data: {} })),
   http.post(`${API_BASE}/purchases/add-to-cart`, () =>
-    HttpResponse.json({ message: 'OK', data: {} }),
+    HttpResponse.json({ message: 'OK', data: {} })
   ),
-  http.post(`${API_BASE}/reviews`, () =>
-    HttpResponse.json({ message: 'OK', data: { _id: 'r2' } }),
-  ),
+  http.post(`${API_BASE}/reviews`, () => HttpResponse.json({ message: 'OK', data: { _id: 'r2' } })),
   http.post(`${API_BASE}/qa/questions`, () =>
-    HttpResponse.json({ message: 'OK', data: { _id: 'q2' } }),
+    HttpResponse.json({ message: 'OK', data: { _id: 'q2' } })
   ),
   http.post(`${API_BASE}/purchases/buy-products`, () =>
-    HttpResponse.json({ message: 'OK', data: {} }),
+    HttpResponse.json({ message: 'OK', data: {} })
   ),
   http.post(`${API_BASE}/reviews/like/:id`, () =>
-    HttpResponse.json({ message: 'OK', data: { is_liked: true, helpful_count: 1 } }),
+    HttpResponse.json({ message: 'OK', data: { is_liked: true, helpful_count: 1 } })
   ),
   http.post(`${API_BASE}/qa/questions/:id/answers`, () =>
-    HttpResponse.json({ message: 'OK', data: { _id: 'a1', answer: 'Yes', is_seller: false } }),
+    HttpResponse.json({ message: 'OK', data: { _id: 'a1', answer: 'Yes', is_seller: false } })
   ),
   http.post(`${API_BASE}/qa/questions/:id/like`, () =>
-    HttpResponse.json({ message: 'OK', data: { is_liked: true, likes_count: 1 } }),
+    HttpResponse.json({ message: 'OK', data: { is_liked: true, likes_count: 1 } })
   ),
   http.get(`${API_BASE}/products`, () =>
     HttpResponse.json({
       message: 'OK',
-      data: { products: [{ ...mockProduct, _id: 'p2', name: 'Related Product' }], pagination: { page: 1, limit: 10, page_size: 10 } },
-    }),
-  ),
+      data: {
+        products: [{ ...mockProduct, _id: 'p2', name: 'Related Product' }],
+        pagination: { page: 1, limit: 10, page_size: 10 },
+      },
+    })
+  )
 );
 
 beforeAll(() => server.listen());
-afterEach(() => { server.resetHandlers(); mockToast.showSuccess.mockClear(); mockToast.showError.mockClear(); });
+afterEach(() => {
+  server.resetHandlers();
+  mockToast.showSuccess.mockClear();
+  mockToast.showError.mockClear();
+});
 afterAll(() => server.close());
 
 function createWrapper() {
@@ -166,7 +181,9 @@ describe('useToggleWishlist', () => {
     await waitFor(() => expect(wishlistResult.current.isSuccess).toBe(true));
 
     const { result } = renderHook(() => useToggleWishlist('p1'), { wrapper });
-    await act(async () => { result.current.mutate(false); });
+    await act(async () => {
+      result.current.mutate(false);
+    });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(mockToast.showSuccess).toHaveBeenCalledWith('PD_WISHLIST_ADDED');
   });
@@ -175,7 +192,9 @@ describe('useToggleWishlist', () => {
 describe('useAddToCart', () => {
   it('shows success toast on add', async () => {
     const { result } = renderHook(() => useAddToCart(), { wrapper: createWrapper() });
-    await act(async () => { result.current.mutate({ product_id: 'p1', buy_count: 2 }); });
+    await act(async () => {
+      result.current.mutate({ product_id: 'p1', buy_count: 2 });
+    });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(mockToast.showSuccess).toHaveBeenCalledWith('PD_ADD_TO_CART_SUCCESS');
   });
@@ -184,7 +203,9 @@ describe('useAddToCart', () => {
 describe('useCreateReview', () => {
   it('shows success toast on review creation', async () => {
     const { result } = renderHook(() => useCreateReview('p1'), { wrapper: createWrapper() });
-    await act(async () => { result.current.mutate({ purchase_id: 'pur1', rating: 5, comment: 'Great product!' }); });
+    await act(async () => {
+      result.current.mutate({ purchase_id: 'pur1', rating: 5, comment: 'Great product!' });
+    });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(mockToast.showSuccess).toHaveBeenCalledWith('PD_REVIEW_SUCCESS');
   });
@@ -193,7 +214,9 @@ describe('useCreateReview', () => {
 describe('useAskQuestion', () => {
   it('shows success toast on question submission', async () => {
     const { result } = renderHook(() => useAskQuestion('p1'), { wrapper: createWrapper() });
-    await act(async () => { result.current.mutate({ product_id: 'p1', question: 'Is this good?' }); });
+    await act(async () => {
+      result.current.mutate({ product_id: 'p1', question: 'Is this good?' });
+    });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(mockToast.showSuccess).toHaveBeenCalledWith('PD_QUESTION_SUCCESS');
   });
@@ -201,14 +224,18 @@ describe('useAskQuestion', () => {
 
 describe('useRelatedProducts', () => {
   it('returns related products when categoryId is provided', async () => {
-    const { result } = renderHook(() => useRelatedProducts('cat-1', 'p1'), { wrapper: createWrapper() });
+    const { result } = renderHook(() => useRelatedProducts('cat-1', 'p1'), {
+      wrapper: createWrapper(),
+    });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data?.data.products).toHaveLength(1);
     expect(result.current.data?.data.products[0].name).toBe('Related Product');
   });
 
   it('is disabled when categoryId is undefined', () => {
-    const { result } = renderHook(() => useRelatedProducts(undefined, 'p1'), { wrapper: createWrapper() });
+    const { result } = renderHook(() => useRelatedProducts(undefined, 'p1'), {
+      wrapper: createWrapper(),
+    });
     expect(result.current.fetchStatus).toBe('idle');
   });
 });
@@ -216,16 +243,22 @@ describe('useRelatedProducts', () => {
 describe('useBuyNow', () => {
   it('calls buyNow API successfully', async () => {
     const { result } = renderHook(() => useBuyNow(), { wrapper: createWrapper() });
-    await act(async () => { result.current.mutate({ product_id: 'p1', buy_count: 1 }); });
+    await act(async () => {
+      result.current.mutate({ product_id: 'p1', buy_count: 1 });
+    });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
   });
 
   it('shows error toast on failure', async () => {
     server.use(
-      http.post(`${API_BASE}/purchases/buy-products`, () => HttpResponse.json({ message: 'Error' }, { status: 500 })),
+      http.post(`${API_BASE}/purchases/buy-products`, () =>
+        HttpResponse.json({ message: 'Error' }, { status: 500 })
+      )
     );
     const { result } = renderHook(() => useBuyNow(), { wrapper: createWrapper() });
-    await act(async () => { result.current.mutate({ product_id: 'p1', buy_count: 1 }); });
+    await act(async () => {
+      result.current.mutate({ product_id: 'p1', buy_count: 1 });
+    });
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(mockToast.showError).toHaveBeenCalledWith('PD_BUY_NOW_ERROR');
   });
@@ -238,7 +271,9 @@ describe('useToggleReviewLike', () => {
     await waitFor(() => expect(reviewsResult.current.isSuccess).toBe(true));
 
     const { result } = renderHook(() => useToggleReviewLike('p1'), { wrapper });
-    await act(async () => { result.current.mutate('r1'); });
+    await act(async () => {
+      result.current.mutate('r1');
+    });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
   });
 });
@@ -246,7 +281,9 @@ describe('useToggleReviewLike', () => {
 describe('useAnswerQuestion', () => {
   it('shows success toast on answer submission', async () => {
     const { result } = renderHook(() => useAnswerQuestion('p1'), { wrapper: createWrapper() });
-    await act(async () => { result.current.mutate({ questionId: 'q1', answer: 'Yes it is!' }); });
+    await act(async () => {
+      result.current.mutate({ questionId: 'q1', answer: 'Yes it is!' });
+    });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(mockToast.showSuccess).toHaveBeenCalledWith('PD_ANSWER_SUCCESS');
   });
@@ -259,7 +296,9 @@ describe('useLikeQuestion', () => {
     await waitFor(() => expect(questionsResult.current.isSuccess).toBe(true));
 
     const { result } = renderHook(() => useLikeQuestion('p1'), { wrapper });
-    await act(async () => { result.current.mutate('q1'); });
+    await act(async () => {
+      result.current.mutate('q1');
+    });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
   });
 });

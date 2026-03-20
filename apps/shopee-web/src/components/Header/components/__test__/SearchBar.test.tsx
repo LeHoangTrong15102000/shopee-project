@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import SearchBar from '../SearchBar';
 
 // Mock dependencies
@@ -46,11 +45,27 @@ vi.mock('src/components/Button', () => ({
 }));
 
 describe('SearchBar', () => {
-  const mockSetFilters = vi.fn();
+  const mockSetFilters = vi.fn() as any;
   const defaultProps = {
-    filters: { name: '', order: null, sort_by: 'createdAt' as const },
+    filters: {
+      page: 1,
+      limit: 20,
+      name: '',
+      order: null,
+      sort_by: 'createdAt' as const,
+      exclude: null,
+      price_min: null,
+      price_max: null,
+      rating_filter: null,
+      category: null,
+    },
     setFilters: mockSetFilters,
   };
+
+  const createProps = (overrides: Partial<typeof defaultProps.filters>) => ({
+    filters: { ...defaultProps.filters, ...overrides },
+    setFilters: mockSetFilters,
+  });
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -152,7 +167,12 @@ describe('SearchBar', () => {
 
   it('resets order filter when submitting with existing order', () => {
     const propsWithOrder = {
-      filters: { name: '', order: 'asc' as const, sort_by: 'price' as const },
+      filters: {
+        ...defaultProps.filters,
+        name: '',
+        order: 'asc' as const,
+        sort_by: 'price' as const,
+      },
       setFilters: mockSetFilters,
     };
 
@@ -269,7 +289,7 @@ describe('SearchBar', () => {
 
   it('initializes search value from filters.name', () => {
     const propsWithName = {
-      filters: { name: 'phone', order: null, sort_by: 'createdAt' as const },
+      filters: { ...defaultProps.filters, name: 'phone' },
       setFilters: mockSetFilters,
     };
 
@@ -286,7 +306,7 @@ describe('SearchBar', () => {
     expect(input.value).toBe('');
 
     const updatedProps = {
-      filters: { name: 'tablet', order: null, sort_by: 'createdAt' as const },
+      filters: { ...defaultProps.filters, name: 'tablet' },
       setFilters: mockSetFilters,
     };
 

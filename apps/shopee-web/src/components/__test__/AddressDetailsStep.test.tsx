@@ -61,9 +61,9 @@ vi.mock('src/components/Input', () => ({
 
 describe('AddressDetailsStep', () => {
   let mockForm: UseFormReturn<AddressSchemaFormData>;
-  let mockOnShowStreetSuggestions: ReturnType<typeof vi.fn>;
-  let mockOnStreetSelect: ReturnType<typeof vi.fn>;
-  let mockOnTypeSelect: ReturnType<typeof vi.fn>;
+  let mockOnShowStreetSuggestions: (show: boolean) => void;
+  let mockOnStreetSelect: (street: string) => void;
+  let mockOnTypeSelect: (type: 'home' | 'office' | 'other') => void;
 
   beforeEach(() => {
     mockOnShowStreetSuggestions = vi.fn();

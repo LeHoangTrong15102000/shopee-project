@@ -44,8 +44,7 @@ export default function ReviewForm({ onSubmit, loading, bottomSheetRef }: Review
       enableDynamicSizing
       backgroundStyle={{ backgroundColor: colors.background }}
       handleIndicatorStyle={{ backgroundColor: colors.neutrals400 }}
-      onDismiss={resetForm}
-    >
+      onDismiss={resetForm}>
       <BottomSheetView className="px-4 pb-8">
         <AppText raw variant="heading4" weight="bold" className="mb-4">
           {t('PD_WRITE_REVIEW')}
@@ -55,15 +54,17 @@ export default function ReviewForm({ onSubmit, loading, bottomSheetRef }: Review
         <AppText raw variant="bodySmall" weight="medium" className="mb-2">
           {t('PD_REVIEW_RATING_LABEL')}
         </AppText>
-        <View className="mb-4 flex-row gap-2" accessibilityRole="radiogroup" accessibilityLabel={t('PD_REVIEW_RATING_LABEL')}>
+        <View
+          className="mb-4 flex-row gap-2"
+          accessibilityRole="radiogroup"
+          accessibilityLabel={t('PD_REVIEW_RATING_LABEL')}>
           {[1, 2, 3, 4, 5].map((s) => (
             <TouchableOpacity
               key={s}
               onPress={() => setRating(s)}
               accessibilityRole="button"
               accessibilityLabel={`Rate ${s} stars`}
-              accessibilityState={{ selected: s <= rating }}
-            >
+              accessibilityState={{ selected: s <= rating }}>
               <Star
                 size={32}
                 color={colors.warning}

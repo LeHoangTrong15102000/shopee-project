@@ -49,7 +49,7 @@ describe('PurchaseItem', () => {
     buy_count: 2,
     price: 100000,
     price_before_discount: 150000,
-    status: 0,
+    status: 1,
     user: 'user1',
     product: {
       _id: 'prod1',
@@ -70,7 +70,7 @@ describe('PurchaseItem', () => {
     },
     createdAt: '2024-01-01',
     updatedAt: '2024-01-01',
-  } as unknown as Purchase;
+  };
 
   const mockProps = {
     purchase: mockPurchase,

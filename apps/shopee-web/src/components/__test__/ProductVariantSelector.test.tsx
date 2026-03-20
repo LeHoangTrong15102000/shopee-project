@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render } from '@testing-library/react';
-import React from 'react';
 import ProductVariantSelector from '../ProductVariantSelector/ProductVariantSelector';
 
 vi.mock('react-i18next', () => ({
@@ -38,13 +37,17 @@ describe('ProductVariantSelector', () => {
       _id: '1',
       variant_values: { color: 'red', size: 'S' },
       price: 100000,
+      price_before_discount: 120000,
       quantity: 10,
+      sku: 'SKU-RED-S',
     },
     {
       _id: '2',
       variant_values: { color: 'blue', size: 'M' },
       price: 100000,
+      price_before_discount: 120000,
       quantity: 5,
+      sku: 'SKU-BLUE-M',
     },
   ];
 

@@ -57,8 +57,15 @@ jest.mock('react-native-gesture-handler', () => {
     gestureHandlerRootHOC: jest.fn((component) => component),
     Directions: {},
     Gesture: {
-      Pan: jest.fn(() => ({ onStart: jest.fn().mockReturnThis(), onUpdate: jest.fn().mockReturnThis(), onEnd: jest.fn().mockReturnThis() })),
-      Tap: jest.fn(() => ({ onStart: jest.fn().mockReturnThis(), onEnd: jest.fn().mockReturnThis() })),
+      Pan: jest.fn(() => ({
+        onStart: jest.fn().mockReturnThis(),
+        onUpdate: jest.fn().mockReturnThis(),
+        onEnd: jest.fn().mockReturnThis(),
+      })),
+      Tap: jest.fn(() => ({
+        onStart: jest.fn().mockReturnThis(),
+        onEnd: jest.fn().mockReturnThis(),
+      })),
     },
     GestureDetector: View,
   };
@@ -133,7 +140,11 @@ jest.mock('@gorhom/bottom-sheet', () => {
     BottomSheetScrollView: (props) => mockReactBS.createElement('View', props),
     BottomSheetFlatList: (props) => mockReactBS.createElement('View', props),
     BottomSheetModalProvider: (props) => mockReactBS.createElement('View', props),
-    useBottomSheet: jest.fn(() => ({ close: jest.fn(), expand: jest.fn(), snapToIndex: jest.fn() })),
+    useBottomSheet: jest.fn(() => ({
+      close: jest.fn(),
+      expand: jest.fn(),
+      snapToIndex: jest.fn(),
+    })),
     useBottomSheetModal: jest.fn(() => ({ dismiss: jest.fn(), present: jest.fn() })),
   };
 });
@@ -158,7 +169,8 @@ jest.mock('expo-router', () => ({
 jest.mock('lucide-react-native', () => {
   const mockReact = require('react');
   const mockCreateIcon = (name) => {
-    const MockIcon = (props) => mockReact.createElement('View', { ...props, testID: `icon-${name}` });
+    const MockIcon = (props) =>
+      mockReact.createElement('View', { ...props, testID: `icon-${name}` });
     MockIcon.displayName = name;
     return MockIcon;
   };

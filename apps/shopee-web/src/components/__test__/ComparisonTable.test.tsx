@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import React from 'react';
 import ComparisonTable from '../ComparisonTable/ComparisonTable';
 import CompareButton from '../CompareButton/CompareButton';
 import CompareFloatingBar from '../CompareFloatingBar/CompareFloatingBar';
@@ -50,6 +49,7 @@ const mockProduct = {
   category: { _id: '1', name: 'Test' },
   images: [],
   view: 0,
+  location: 'Test Location',
   createdAt: '',
   updatedAt: '',
 };

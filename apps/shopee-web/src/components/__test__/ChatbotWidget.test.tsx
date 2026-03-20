@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React from 'react';
 import ChatbotWidget from '../ChatbotWidget/ChatbotWidget';
 
 vi.mock('react-i18next', () => ({

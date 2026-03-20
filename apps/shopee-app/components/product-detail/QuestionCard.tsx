@@ -21,7 +21,9 @@ export default function QuestionCard({ question, onAnswer, onToggleLike }: Quest
 
   const locale = i18n.language === 'vi' ? 'vi-VN' : 'en-US';
   const date = new Date(question.createdAt).toLocaleDateString(locale);
-  const visibleAnswers = showAllAnswers ? question.answers : question.answers.slice(0, INITIAL_ANSWERS);
+  const visibleAnswers = showAllAnswers
+    ? question.answers
+    : question.answers.slice(0, INITIAL_ANSWERS);
   const hiddenCount = question.answers.length - INITIAL_ANSWERS;
 
   return (
@@ -55,8 +57,7 @@ export default function QuestionCard({ question, onAnswer, onToggleLike }: Quest
           accessibilityRole="button"
           accessibilityLabel={question.is_liked ? 'Unlike question' : 'Like question'}
           accessibilityState={{ selected: question.is_liked }}
-          className="flex-row items-center gap-1"
-        >
+          className="flex-row items-center gap-1">
           <ThumbsUp
             size={14}
             color={question.is_liked ? colors.primary : colors.neutrals400}
@@ -73,8 +74,7 @@ export default function QuestionCard({ question, onAnswer, onToggleLike }: Quest
           onPress={() => onAnswer(question._id)}
           accessibilityRole="button"
           accessibilityLabel={t('PD_ANSWER_A11Y')}
-          className="flex-row items-center gap-1"
-        >
+          className="flex-row items-center gap-1">
           <MessageCircle size={14} color={colors.neutrals400} />
           <AppText raw variant="labelSmall" color="muted">
             {t('PD_ANSWER')}
@@ -97,9 +97,7 @@ export default function QuestionCard({ question, onAnswer, onToggleLike }: Quest
                   <AppText raw variant="labelSmall" weight="medium">
                     {ans.user_name}
                   </AppText>
-                  {ans.is_seller && (
-                    <ShieldCheck size={12} color={colors.primary} />
-                  )}
+                  {ans.is_seller && <ShieldCheck size={12} color={colors.primary} />}
                 </View>
                 <AppText raw variant="bodySmall" color="muted">
                   {ans.answer}

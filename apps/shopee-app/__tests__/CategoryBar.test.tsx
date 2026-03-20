@@ -14,9 +14,7 @@ const mockCategories = [
 describe('CategoryBar', () => {
   it('renders "All" chip and category chips', () => {
     const onSelect = jest.fn();
-    const { getByText } = render(
-      <CategoryBar categories={mockCategories} onSelect={onSelect} />
-    );
+    const { getByText } = render(<CategoryBar categories={mockCategories} onSelect={onSelect} />);
     expect(getByText('CATEGORY_ALL')).toBeTruthy();
     expect(getByText('Áo thun')).toBeTruthy();
     expect(getByText('Đồng hồ')).toBeTruthy();
@@ -24,9 +22,7 @@ describe('CategoryBar', () => {
 
   it('calls onSelect with category id when chip pressed', () => {
     const onSelect = jest.fn();
-    const { getByText } = render(
-      <CategoryBar categories={mockCategories} onSelect={onSelect} />
-    );
+    const { getByText } = render(<CategoryBar categories={mockCategories} onSelect={onSelect} />);
     fireEvent.press(getByText('Áo thun'));
     expect(onSelect).toHaveBeenCalledWith('cat-1');
   });

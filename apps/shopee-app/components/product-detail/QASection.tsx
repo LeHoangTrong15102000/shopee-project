@@ -35,8 +35,7 @@ export default function QASection({
         <TouchableOpacity
           onPress={onAskQuestion}
           accessibilityRole="button"
-          accessibilityLabel={t('PD_ASK_QUESTION_A11Y')}
-        >
+          accessibilityLabel={t('PD_ASK_QUESTION_A11Y')}>
           <AppText raw variant="bodySmall" style={{ color: colors.primary }}>
             {t('PD_ASK_QUESTION')}
           </AppText>

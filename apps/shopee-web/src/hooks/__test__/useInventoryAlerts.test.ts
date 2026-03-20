@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import useInventoryAlerts from '../useInventoryAlerts';
-import React from 'react';
 
 vi.mock('../useSocket', () => ({
   default: vi.fn(() => ({ socket: null, isConnected: false })),

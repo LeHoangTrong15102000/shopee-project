@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import React from 'react';
 import SearchNoResults from '../SearchNoResults/SearchNoResults';
 import ImageWithFallback from '../ImageWithFallback/ImageWithFallback';
 import OptimizedImage from '../OptimizedImage/OptimizedImage';

@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import React from 'react';
 import SaveForLaterSection from '../SaveForLaterSection/SaveForLaterSection';
 import ShareButton from '../ShareButton/ShareButton';
 import RecentlyViewed from '../RecentlyViewed/RecentlyViewed';
@@ -42,8 +41,10 @@ const mockProduct = {
   category: { _id: '1', name: 'Test' },
   images: [],
   view: 0,
+  location: 'Test Location',
   createdAt: '',
   updatedAt: '',
+  viewedAt: '2024-01-01',
 };
 
 describe('SaveForLaterSection', () => {
@@ -62,7 +63,11 @@ describe('SaveForLaterSection', () => {
   });
 
   it('renders with saved items', () => {
-    const savedItems = [{ product: mockProduct, savedAt: '2024-01-01', originalBuyCount: 1 }];
+    const savedItems: Array<{
+      product: typeof mockProduct;
+      savedAt: string;
+      originalBuyCount: number;
+    }> = [{ product: mockProduct, savedAt: '2024-01-01', originalBuyCount: 1 }];
     render(
       <MemoryRouter>
         <SaveForLaterSection

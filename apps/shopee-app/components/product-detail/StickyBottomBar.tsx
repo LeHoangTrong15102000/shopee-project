@@ -32,8 +32,7 @@ export default function StickyBottomBar({
         paddingBottom: Math.max(insets.bottom, 12),
         backgroundColor: colors.background,
         borderTopColor: colors.neutrals800,
-      }}
-    >
+      }}>
       <View className="flex-1">
         <AppButton
           variant="outline"
@@ -43,8 +42,7 @@ export default function StickyBottomBar({
           icon={<ShoppingCart />}
           accessibilityRole="button"
           accessibilityLabel={t('PD_ADD_TO_CART')}
-          accessibilityState={{ disabled: !!disabled }}
-        >
+          accessibilityState={{ disabled: !!disabled }}>
           {t('PD_ADD_TO_CART')}
         </AppButton>
       </View>
@@ -57,8 +55,7 @@ export default function StickyBottomBar({
           icon={<Zap />}
           accessibilityRole="button"
           accessibilityLabel={t('PD_BUY_NOW')}
-          accessibilityState={{ disabled: !!disabled }}
-        >
+          accessibilityState={{ disabled: !!disabled }}>
           {t('PD_BUY_NOW')}
         </AppButton>
       </View>

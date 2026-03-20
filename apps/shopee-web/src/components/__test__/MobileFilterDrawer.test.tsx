@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import React from 'react';
 import MobileFilterDrawer from '../MobileFilterDrawer/MobileFilterDrawer';
 
 vi.mock('react-i18next', () => ({

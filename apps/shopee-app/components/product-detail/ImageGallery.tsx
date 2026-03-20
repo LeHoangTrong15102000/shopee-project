@@ -50,8 +50,7 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
             activeOpacity={0.95}
             onPress={() => setFullscreenVisible(true)}
             accessibilityRole="image"
-            accessibilityLabel="Product image, tap to zoom"
-          >
+            accessibilityLabel="Product image, tap to zoom">
             <Image
               source={{ uri: item }}
               style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
@@ -66,8 +65,7 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
         <View
           className="absolute bottom-3 left-0 right-0 flex-row items-center justify-center gap-1.5"
           accessibilityElementsHidden={true}
-          importantForAccessibility="no-hide-descendants"
-        >
+          importantForAccessibility="no-hide-descendants">
           {images.map((_, i) => (
             <View
               key={i}
@@ -100,8 +98,7 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
                 borderColor: index === activeIndex ? colors.primary : colors.neutrals700,
                 borderRadius: 6,
                 marginRight: 8,
-              }}
-            >
+              }}>
               <Image
                 source={{ uri: item }}
                 style={{ width: 48, height: 48, borderRadius: 4 }}
@@ -118,15 +115,13 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
         transparent
         animationType="fade"
         onRequestClose={() => setFullscreenVisible(false)}
-        accessibilityViewIsModal={true}
-      >
+        accessibilityViewIsModal={true}>
         <View style={{ flex: 1, backgroundColor: colors.background }}>
           <TouchableOpacity
             onPress={() => setFullscreenVisible(false)}
             className="absolute right-4 top-14 z-10 rounded-full bg-black/50 p-2"
             accessibilityRole="button"
-            accessibilityLabel="Close fullscreen"
-          >
+            accessibilityLabel="Close fullscreen">
             <X size={24} color={colors.foreground} />
           </TouchableOpacity>
           <FlatList

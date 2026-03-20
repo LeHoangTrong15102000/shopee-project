@@ -43,6 +43,7 @@ const createWrapper = () => {
 
 const mockAddress1: Address = {
   _id: 'addr1',
+  userId: 'user1',
   fullName: 'John Doe',
   phone: '0123456789',
   street: '123 Main St',
@@ -55,10 +56,13 @@ const mockAddress1: Address = {
   isDefault: true,
   addressType: 'home',
   label: '',
+  createdAt: '2024-01-01',
+  updatedAt: '2024-01-01',
 };
 
 const mockAddress2: Address = {
   _id: 'addr2',
+  userId: 'user1',
   fullName: 'Jane Smith',
   phone: '0987654321',
   street: '456 Oak Ave',
@@ -71,6 +75,8 @@ const mockAddress2: Address = {
   isDefault: false,
   addressType: 'office',
   label: 'Office',
+  createdAt: '2024-01-02',
+  updatedAt: '2024-01-02',
 };
 
 const mockAddress3: Address = {

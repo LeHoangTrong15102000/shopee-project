@@ -16,7 +16,17 @@ interface ReviewSectionProps {
   onToggleLike: (reviewId: string) => void;
 }
 
-function RatingBar({ rating, count, total, color }: { rating: number; count: number; total: number; color: string }) {
+function RatingBar({
+  rating,
+  count,
+  total,
+  color,
+}: {
+  rating: number;
+  count: number;
+  total: number;
+  color: string;
+}) {
   const pct = total > 0 ? (count / total) * 100 : 0;
   const colors = useColors();
   return (
@@ -25,8 +35,12 @@ function RatingBar({ rating, count, total, color }: { rating: number; count: num
         {rating}
       </AppText>
       <Star size={10} color={colors.warning} fill={colors.warning} />
-      <View className="h-2 flex-1 overflow-hidden rounded-full" style={{ backgroundColor: colors.neutrals800 }}>
-        <View style={{ width: `${pct}%`, height: '100%', backgroundColor: color, borderRadius: 999 }} />
+      <View
+        className="h-2 flex-1 overflow-hidden rounded-full"
+        style={{ backgroundColor: colors.neutrals800 }}>
+        <View
+          style={{ width: `${pct}%`, height: '100%', backgroundColor: color, borderRadius: 999 }}
+        />
       </View>
       <AppText raw variant="labelSmall" color="muted" style={{ width: 28, textAlign: 'right' }}>
         {count}
@@ -54,8 +68,7 @@ export default function ReviewSection({
         <TouchableOpacity
           onPress={onWriteReview}
           accessibilityRole="button"
-          accessibilityLabel={t('PD_WRITE_REVIEW')}
-        >
+          accessibilityLabel={t('PD_WRITE_REVIEW')}>
           <AppText raw variant="bodySmall" style={{ color: colors.primary }}>
             {t('PD_WRITE_REVIEW')}
           </AppText>

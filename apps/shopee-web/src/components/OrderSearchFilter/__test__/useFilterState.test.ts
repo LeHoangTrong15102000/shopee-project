@@ -11,9 +11,9 @@ describe('useFilterState', () => {
   const defaultProps = {
     searchQuery: '',
     onSearchChange: mockOnSearchChange,
-    dateRange: null,
+    dateRange: null as { from: string; to: string } | null,
     onDateRangeChange: mockOnDateRangeChange,
-    priceRange: null,
+    priceRange: null as { min: number; max: number } | null,
     onPriceRangeChange: mockOnPriceRangeChange,
     onClearAll: mockOnClearAll,
     activeFilterCount: 0,
@@ -802,7 +802,7 @@ describe('useFilterState', () => {
     expect(result.current.dateFrom).toBe('2024-01-01');
     expect(result.current.dateTo).toBe('2024-12-31');
 
-    rerender({ ...defaultProps, dateRange: null });
+    rerender({ ...defaultProps, dateRange: null as { from: string; to: string } | null });
 
     expect(result.current.dateFrom).toBe('');
     expect(result.current.dateTo).toBe('');
@@ -819,7 +819,7 @@ describe('useFilterState', () => {
     expect(result.current.priceMin).toBe('100');
     expect(result.current.priceMax).toBe('500');
 
-    rerender({ ...defaultProps, priceRange: null });
+    rerender({ ...defaultProps, priceRange: null as { min: number; max: number } | null });
 
     expect(result.current.priceMin).toBe('');
     expect(result.current.priceMax).toBe('');

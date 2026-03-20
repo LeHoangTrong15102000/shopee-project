@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React from 'react';
 import ProductReviews from '../ProductReviews/ProductReviews';
 import { Review, ReviewComment } from 'src/types/review.type';
 
@@ -18,6 +17,7 @@ const mockReviews: Review[] = [
     user: {
       _id: 'user-1',
       name: 'John Doe',
+      email: 'john@example.com',
       avatar: 'https://example.com/avatar1.jpg',
     },
     rating: 5,
@@ -28,13 +28,18 @@ const mockReviews: Review[] = [
     comments_count: 2,
     createdAt: '2026-03-15T10:00:00Z',
     updatedAt: '2026-03-15T10:00:00Z',
-    product: 'product-1',
+    product: {
+      _id: 'product-1',
+      name: 'Test Product',
+      image: 'https://example.com/product1.jpg',
+    },
   },
   {
     _id: 'review-2',
     user: {
       _id: 'user-2',
       name: 'Jane Smith',
+      email: 'jane@example.com',
       avatar: '',
     },
     rating: 4,
@@ -45,7 +50,11 @@ const mockReviews: Review[] = [
     comments_count: 0,
     createdAt: '2026-03-14T15:30:00Z',
     updatedAt: '2026-03-14T15:30:00Z',
-    product: 'product-1',
+    product: {
+      _id: 'product-1',
+      name: 'Test Product',
+      image: 'https://example.com/product1.jpg',
+    },
   },
 ];
 
@@ -55,10 +64,13 @@ const mockComments: ReviewComment[] = [
     user: {
       _id: 'user-3',
       name: 'Admin User',
+      email: 'admin@example.com',
       avatar: 'https://example.com/admin.jpg',
     },
     content: 'Thank you for your feedback!',
     review: 'review-1',
+    level: 0,
+    replies_count: 0,
     createdAt: '2026-03-15T11:00:00Z',
     updatedAt: '2026-03-15T11:00:00Z',
     replies: [],
@@ -68,10 +80,13 @@ const mockComments: ReviewComment[] = [
     user: {
       _id: 'user-4',
       name: 'Support Team',
+      email: 'support@example.com',
       avatar: '',
     },
     content: 'We appreciate your review.',
     review: 'review-1',
+    level: 0,
+    replies_count: 0,
     createdAt: '2026-03-15T12:00:00Z',
     updatedAt: '2026-03-15T12:00:00Z',
     replies: [

@@ -63,10 +63,7 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
   const reviewsQuery = useProductReviews(productId);
   const questionsQuery = useProductQuestions(productId);
   const wishlistQuery = useWishlistStatus(productId);
-  const relatedQuery = useRelatedProducts(
-    productQuery.data?.data.category._id,
-    productId,
-  );
+  const relatedQuery = useRelatedProducts(productQuery.data?.data.category._id, productId);
 
   // ─── Mutations ──────────────────────────────────────────────────────────────
   const toggleWishlist = useToggleWishlist(productId);
@@ -109,14 +106,14 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
     // For now, pass empty string; the backend will reject if no valid purchase exists.
     createReview.mutate(
       { purchase_id: '', ...data },
-      { onSuccess: () => reviewFormRef.current?.dismiss() },
+      { onSuccess: () => reviewFormRef.current?.dismiss() }
     );
   };
 
   const handleSubmitQuestion = (text: string) => {
     askQuestion.mutate(
       { product_id: productId, question: text },
-      { onSuccess: () => questionFormRef.current?.dismiss() },
+      { onSuccess: () => questionFormRef.current?.dismiss() }
     );
   };
 
@@ -131,7 +128,7 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
     if (!answerTargetId) return;
     answerQuestion.mutate(
       { questionId: answerTargetId, answer: text },
-      { onSuccess: () => answerFormRef.current?.dismiss() },
+      { onSuccess: () => answerFormRef.current?.dismiss() }
     );
   };
 
@@ -149,7 +146,10 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
     return (
       <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
         <View className="flex-row items-center px-4 py-3">
-          <TouchableOpacity onPress={() => router.back()} accessibilityRole="button" accessibilityLabel="Go back">
+          <TouchableOpacity
+            onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel="Go back">
             <ChevronLeft size={24} color={colors.foreground} />
           </TouchableOpacity>
         </View>
@@ -163,7 +163,9 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
     if (is404) return null;
 
     return (
-      <View className="flex-1 items-center justify-center bg-background" style={{ paddingTop: insets.top }}>
+      <View
+        className="flex-1 items-center justify-center bg-background"
+        style={{ paddingTop: insets.top }}>
         <AppText raw variant="heading4" weight="bold" className="mb-2">
           {t('PD_SERVER_ERROR')}
         </AppText>
@@ -187,14 +189,12 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
         {/* Header overlay */}
         <View
           className="absolute left-0 right-0 z-10 flex-row items-center justify-between px-4 py-3"
-          style={{ paddingTop: insets.top + 4 }}
-        >
+          style={{ paddingTop: insets.top + 4 }}>
           <TouchableOpacity
             onPress={() => router.back()}
             accessibilityRole="button"
             accessibilityLabel="Go back"
-            className="rounded-full bg-background/70 p-2"
-          >
+            className="rounded-full bg-background/70 p-2">
             <ChevronLeft size={24} color={colors.foreground} />
           </TouchableOpacity>
           <View className="flex-row gap-2">
@@ -208,24 +208,21 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 100 }}
-        >
+          contentContainerStyle={{ paddingBottom: 100 }}>
           <ImageGallery images={product.images.length > 0 ? product.images : [product.image]} />
 
           <ProductInfo product={product} />
 
           {isOutOfStock ? (
-            <View className="mx-4 mt-3 rounded-lg p-3" style={{ backgroundColor: colors.neutrals800 }}>
+            <View
+              className="mx-4 mt-3 rounded-lg p-3"
+              style={{ backgroundColor: colors.neutrals800 }}>
               <AppText raw variant="bodySmall" weight="bold" color="error">
                 {t('PD_OUT_OF_STOCK')}
               </AppText>
             </View>
           ) : (
-            <QuantitySelector
-              value={quantity}
-              onChange={setQuantity}
-              max={product.quantity}
-            />
+            <QuantitySelector value={quantity} onChange={setQuantity} max={product.quantity} />
           )}
 
           <View className="mt-2" style={{ height: 8, backgroundColor: colors.neutrals800 }} />

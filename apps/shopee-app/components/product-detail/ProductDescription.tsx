@@ -28,8 +28,7 @@ export default function ProductDescription({ description }: ProductDescriptionPr
           if (e.nativeEvent.lines.length > 4 && !needsTruncation) {
             setNeedsTruncation(true);
           }
-        }}
-      >
+        }}>
         {description}
       </AppText>
       {needsTruncation && (
@@ -37,8 +36,7 @@ export default function ProductDescription({ description }: ProductDescriptionPr
           onPress={() => setExpanded(!expanded)}
           accessibilityRole="button"
           accessibilityLabel={expanded ? t('PD_SHOW_LESS') : t('PD_SHOW_MORE')}
-          className="mt-1"
-        >
+          className="mt-1">
           <AppText raw variant="bodySmall" style={{ color: colors.primary }}>
             {expanded ? t('PD_SHOW_LESS') : t('PD_SHOW_MORE')}
           </AppText>

@@ -22,9 +22,7 @@ describe('WishlistButton', () => {
   });
 
   it('calls onToggle when pressed', () => {
-    const { getByRole } = render(
-      <WishlistButton inWishlist={false} onToggle={onToggle} />,
-    );
+    const { getByRole } = render(<WishlistButton inWishlist={false} onToggle={onToggle} />);
     fireEvent.press(getByRole('button'));
     expect(onToggle).toHaveBeenCalledTimes(1);
   });
@@ -33,9 +31,7 @@ describe('WishlistButton', () => {
     let now = 1000;
     jest.spyOn(Date, 'now').mockImplementation(() => now);
 
-    const { getByRole } = render(
-      <WishlistButton inWishlist={false} onToggle={onToggle} />,
-    );
+    const { getByRole } = render(<WishlistButton inWishlist={false} onToggle={onToggle} />);
     const btn = getByRole('button');
 
     fireEvent.press(btn);
@@ -51,28 +47,22 @@ describe('WishlistButton', () => {
   });
 
   it('does not call onToggle when loading', () => {
-    const { getByRole } = render(
-      <WishlistButton inWishlist={false} onToggle={onToggle} loading />,
-    );
+    const { getByRole } = render(<WishlistButton inWishlist={false} onToggle={onToggle} loading />);
     fireEvent.press(getByRole('button'));
     expect(onToggle).not.toHaveBeenCalled();
   });
 
   it('sets selected accessibility state when in wishlist', () => {
-    const { getByRole } = render(
-      <WishlistButton inWishlist={true} onToggle={onToggle} />,
-    );
+    const { getByRole } = render(<WishlistButton inWishlist={true} onToggle={onToggle} />);
     expect(getByRole('button').props.accessibilityState).toEqual(
-      expect.objectContaining({ selected: true }),
+      expect.objectContaining({ selected: true })
     );
   });
 
   it('sets not-selected accessibility state when not in wishlist', () => {
-    const { getByRole } = render(
-      <WishlistButton inWishlist={false} onToggle={onToggle} />,
-    );
+    const { getByRole } = render(<WishlistButton inWishlist={false} onToggle={onToggle} />);
     expect(getByRole('button').props.accessibilityState).toEqual(
-      expect.objectContaining({ selected: false }),
+      expect.objectContaining({ selected: false })
     );
   });
 });

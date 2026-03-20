@@ -11,9 +11,7 @@ jest.mock('@/hooks/useColors', () => ({
 
 describe('EmptyState', () => {
   it('renders icon and message', () => {
-    const { getByText } = render(
-      <EmptyState icon={ShoppingBag} message="No products found" />
-    );
+    const { getByText } = render(<EmptyState icon={ShoppingBag} message="No products found" />);
     expect(getByText('No products found')).toBeTruthy();
   });
 
@@ -32,9 +30,7 @@ describe('EmptyState', () => {
   });
 
   it('does not render CTA when actionLabel not provided', () => {
-    const { queryByText } = render(
-      <EmptyState icon={ShoppingBag} message="No products" />
-    );
+    const { queryByText } = render(<EmptyState icon={ShoppingBag} message="No products" />);
     expect(queryByText('Browse all')).toBeNull();
   });
 });

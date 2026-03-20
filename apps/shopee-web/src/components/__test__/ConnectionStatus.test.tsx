@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render } from '@testing-library/react';
-import React from 'react';
 import ConnectionStatus from '../ConnectionStatus/ConnectionStatus';
 import CartSyncIndicator from '../CartSyncIndicator/CartSyncIndicator';
 import RealTimeStockAlert from '../RealTimeStockAlert/RealTimeStockAlert';

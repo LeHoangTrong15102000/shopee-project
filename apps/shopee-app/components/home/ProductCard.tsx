@@ -28,8 +28,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       accessibilityRole="button"
       accessibilityLabel={`View ${product.name}`}
       style={{ width: CARD_WIDTH }}
-      className="overflow-hidden rounded-lg bg-neutrals900"
-    >
+      className="overflow-hidden rounded-lg bg-neutrals900">
       <View style={{ width: CARD_WIDTH, height: CARD_WIDTH, position: 'relative' }}>
         <Image
           source={{ uri: product.image }}

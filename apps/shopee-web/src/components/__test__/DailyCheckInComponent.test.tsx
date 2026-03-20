@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import DailyCheckIn from '../DailyCheckIn/DailyCheckIn';
 import { toast } from 'react-toastify';
 import * as useDailyCheckInModule from 'src/hooks/useDailyCheckIn';
@@ -25,15 +24,18 @@ vi.mock('react-i18next', () => ({
 
 const mockCheckIn = vi.fn();
 const mockGetMonthCalendar = vi.fn();
+const mockGetCheckInStatus = vi.fn();
 
 const defaultMockReturn = {
-  streak: { current: 5, longest: 10 },
+  streak: { current: 5, longest: 10, lastCheckIn: null },
+  history: [],
   totalCoins: 1000,
   canCheckInToday: true,
   checkIn: mockCheckIn,
+  getCheckInStatus: mockGetCheckInStatus,
   getMonthCalendar: mockGetMonthCalendar,
-  nextReward: { value: 10 },
-  streakProgress: { progress: 50, current: 5, next: 7 },
+  nextReward: { value: 10, type: 'coins' as const },
+  streakProgress: { progress: 50, current: 5, nextMilestone: 7, prevMilestone: 3 },
 };
 
 vi.mock('src/hooks/useDailyCheckIn', () => ({
@@ -58,7 +60,7 @@ describe('DailyCheckIn', () => {
 
   describe('Basic Rendering', () => {
     it('renders daily check-in component', () => {
-      const { container } = render(<DailyCheckIn />);
+      render(<DailyCheckIn />);
       expect(screen.getByText('title')).toBeInTheDocument();
     });
 
@@ -500,10 +502,11 @@ describe('DailyCheckIn', () => {
     it('handles zero streak', () => {
       vi.mocked(useDailyCheckInModule.default).mockReturnValueOnce({
         ...defaultMockReturn,
-        streak: { current: 0, longest: 0 },
+        streak: { current: 0, longest: 0, lastCheckIn: null },
+        history: [],
         totalCoins: 0,
-        nextReward: { value: 5 },
-        streakProgress: { progress: 0, current: 0, next: 3 },
+        nextReward: { value: 5, type: 'coins' as const },
+        streakProgress: { progress: 0, current: 0, nextMilestone: 3, prevMilestone: 0 },
       });
 
       render(<DailyCheckIn />);
@@ -513,10 +516,11 @@ describe('DailyCheckIn', () => {
     it('handles very high streak numbers', () => {
       vi.mocked(useDailyCheckInModule.default).mockReturnValueOnce({
         ...defaultMockReturn,
-        streak: { current: 365, longest: 500 },
+        streak: { current: 365, longest: 500, lastCheckIn: '2024-01-01' },
+        history: [],
         totalCoins: 100000,
-        nextReward: { value: 50 },
-        streakProgress: { progress: 95, current: 365, next: 400 },
+        nextReward: { value: 50, type: 'coins' as const },
+        streakProgress: { progress: 95, current: 365, nextMilestone: 400, prevMilestone: 300 },
       });
 
       render(<DailyCheckIn />);
@@ -527,10 +531,11 @@ describe('DailyCheckIn', () => {
     it('handles progress over 100%', () => {
       vi.mocked(useDailyCheckInModule.default).mockReturnValueOnce({
         ...defaultMockReturn,
-        streak: { current: 50, longest: 50 },
+        streak: { current: 50, longest: 50, lastCheckIn: '2024-01-01' },
+        history: [],
         totalCoins: 5000,
-        nextReward: { value: 20 },
-        streakProgress: { progress: 150, current: 50, next: 60 },
+        nextReward: { value: 20, type: 'coins' as const },
+        streakProgress: { progress: 150, current: 50, nextMilestone: 60, prevMilestone: 30 },
       });
 
       const { container } = render(<DailyCheckIn />);

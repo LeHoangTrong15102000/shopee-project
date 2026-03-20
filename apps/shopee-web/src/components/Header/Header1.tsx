@@ -38,7 +38,6 @@ const Header1 = () => {
   // console.log(purchasesInCart)
 
   // useMutation để logout - giữ lại hook call cho side effects
-  // @ts-expect-error logoutMutation is kept for its onSuccess side effects
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const logoutMutation = useMutation({
     mutationFn: () => authApi.logoutAccount(),

@@ -10,7 +10,7 @@ export default function SearchHeader() {
   const { t } = useTranslation();
 
   return (
-    <View className="flex-row items-center gap-3 bg-primary px-4 pb-3 pt-safe-offset-3">
+    <View className="pt-safe-offset-3 flex-row items-center gap-3 bg-primary px-4 pb-3">
       <Pressable
         onPress={() => {
           // Navigate to search screen (placeholder)

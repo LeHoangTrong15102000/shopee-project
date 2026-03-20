@@ -98,7 +98,12 @@ export async function getProductReviews(productId: string, page: number) {
   return res.data;
 }
 
-export async function createReview(body: { purchase_id: string; rating: number; comment: string; images?: string[] }) {
+export async function createReview(body: {
+  purchase_id: string;
+  rating: number;
+  comment: string;
+  images?: string[];
+}) {
   const res = await http.post<ApiResponse<Review>>('reviews', body);
   return res.data;
 }
@@ -139,9 +144,7 @@ export async function likeQuestion(questionId: string) {
 // ─── Wishlist API ────────────────────────────────────────────────────────────
 
 export async function checkWishlist(productId: string) {
-  const res = await http.get<ApiResponse<{ in_wishlist: boolean }>>(
-    `wishlist/check/${productId}`
-  );
+  const res = await http.get<ApiResponse<{ in_wishlist: boolean }>>(`wishlist/check/${productId}`);
   return res.data;
 }
 

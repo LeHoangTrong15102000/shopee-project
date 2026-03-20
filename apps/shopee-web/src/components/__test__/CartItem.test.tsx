@@ -214,7 +214,7 @@ describe('CartItemList', () => {
       const checkedPurchase = { ...mockPurchase, isChecked: true };
       renderComponent({ extendedPurchases: [checkedPurchase] });
       const checkboxes = screen.getAllByTestId('checkbox');
-      expect(checkboxes.some((cb) => cb.checked)).toBe(true);
+      expect(checkboxes.some((cb) => (cb as HTMLInputElement).checked)).toBe(true);
     });
 
     it('shows all items as checked when isAllChecked is true', () => {

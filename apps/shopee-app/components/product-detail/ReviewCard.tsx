@@ -55,8 +55,7 @@ export default function ReviewCard({ review, onToggleLike }: ReviewCardProps) {
         numberOfLines={expanded ? undefined : 3}
         onPress={() => setExpanded(!expanded)}
         accessibilityRole="button"
-        accessibilityHint={expanded ? 'Collapse review text' : 'Expand review text'}
-      >
+        accessibilityHint={expanded ? 'Collapse review text' : 'Expand review text'}>
         {review.comment}
       </AppText>
 
@@ -66,8 +65,7 @@ export default function ReviewCard({ review, onToggleLike }: ReviewCardProps) {
           accessibilityRole="button"
           accessibilityLabel={review.is_liked ? 'Unlike review' : 'Like review'}
           accessibilityState={{ selected: !!review.is_liked }}
-          className="flex-row items-center gap-1"
-        >
+          className="flex-row items-center gap-1">
           <ThumbsUp
             size={14}
             color={review.is_liked ? colors.primary : colors.neutrals400}

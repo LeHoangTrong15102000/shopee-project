@@ -51,18 +51,14 @@ export default function QuestionForm({
       enableDynamicSizing
       backgroundStyle={{ backgroundColor: colors.background }}
       handleIndicatorStyle={{ backgroundColor: colors.neutrals400 }}
-      onDismiss={resetForm}
-    >
+      onDismiss={resetForm}>
       <BottomSheetView className="px-4 pb-8">
         <AppText raw variant="heading4" weight="bold" className="mb-4">
           {t(titleKey)}
         </AppText>
 
         {isAnswer && questionContext && (
-          <View
-            className="mb-3 rounded-lg p-3"
-            style={{ backgroundColor: colors.neutrals800 }}
-          >
+          <View className="mb-3 rounded-lg p-3" style={{ backgroundColor: colors.neutrals800 }}>
             <AppText raw variant="bodySmall" color="muted">
               {questionContext}
             </AppText>

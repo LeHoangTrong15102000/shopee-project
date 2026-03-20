@@ -30,8 +30,15 @@ import { useTranslation } from 'react-i18next';
 
 type ApiResponse<T> = { message: string; data: T };
 type WishlistData = ApiResponse<{ in_wishlist: boolean }>;
-type ReviewsPage = ApiResponse<{ reviews: Review[]; pagination: import('@/apis/product-detail.api').Pagination; stats: import('@/apis/product-detail.api').ReviewStats }>;
-type QuestionsPage = ApiResponse<{ questions: Question[]; pagination: import('@/apis/product-detail.api').Pagination }>;
+type ReviewsPage = ApiResponse<{
+  reviews: Review[];
+  pagination: import('@/apis/product-detail.api').Pagination;
+  stats: import('@/apis/product-detail.api').ReviewStats;
+}>;
+type QuestionsPage = ApiResponse<{
+  questions: Question[];
+  pagination: import('@/apis/product-detail.api').Pagination;
+}>;
 
 // ─── Query Hooks ─────────────────────────────────────────────────────────────
 
@@ -143,8 +150,12 @@ export function useCreateReview(productId: string) {
   const { t } = useTranslation();
 
   return useMutation({
-    mutationFn: (body: { purchase_id: string; rating: number; comment: string; images?: string[] }) =>
-      createReviewApi(body),
+    mutationFn: (body: {
+      purchase_id: string;
+      rating: number;
+      comment: string;
+      images?: string[];
+    }) => createReviewApi(body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reviews', productId] });
       showSuccess(t('PD_REVIEW_SUCCESS'));
@@ -163,27 +174,30 @@ export function useToggleReviewLike(productId: string) {
     onMutate: async (reviewId) => {
       await queryClient.cancelQueries({ queryKey: ['reviews', productId] });
       const previous = queryClient.getQueryData(['reviews', productId]);
-      queryClient.setQueryData(['reviews', productId], (old: InfiniteData<ReviewsPage> | undefined) => {
-        if (!old?.pages) return old;
-        return {
-          ...old,
-          pages: old.pages.map((page) => ({
-            ...page,
-            data: {
-              ...page.data,
-              reviews: page.data.reviews.map((r: Review) =>
-                r._id === reviewId
-                  ? {
-                      ...r,
-                      is_liked: !r.is_liked,
-                      helpful_count: r.is_liked ? r.helpful_count - 1 : r.helpful_count + 1,
-                    }
-                  : r
-              ),
-            },
-          })),
-        };
-      });
+      queryClient.setQueryData(
+        ['reviews', productId],
+        (old: InfiniteData<ReviewsPage> | undefined) => {
+          if (!old?.pages) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              data: {
+                ...page.data,
+                reviews: page.data.reviews.map((r: Review) =>
+                  r._id === reviewId
+                    ? {
+                        ...r,
+                        is_liked: !r.is_liked,
+                        helpful_count: r.is_liked ? r.helpful_count - 1 : r.helpful_count + 1,
+                      }
+                    : r
+                ),
+              },
+            })),
+          };
+        }
+      );
       return { previous };
     },
     onError: (_err, _vars, context) => {
@@ -237,27 +251,30 @@ export function useLikeQuestion(productId: string) {
     onMutate: async (questionId) => {
       await queryClient.cancelQueries({ queryKey: ['questions', productId] });
       const previous = queryClient.getQueryData(['questions', productId]);
-      queryClient.setQueryData(['questions', productId], (old: InfiniteData<QuestionsPage> | undefined) => {
-        if (!old?.pages) return old;
-        return {
-          ...old,
-          pages: old.pages.map((page) => ({
-            ...page,
-            data: {
-              ...page.data,
-              questions: page.data.questions.map((q: Question) =>
-                q._id === questionId
-                  ? {
-                      ...q,
-                      is_liked: !q.is_liked,
-                      likes_count: q.is_liked ? q.likes_count - 1 : q.likes_count + 1,
-                    }
-                  : q
-              ),
-            },
-          })),
-        };
-      });
+      queryClient.setQueryData(
+        ['questions', productId],
+        (old: InfiniteData<QuestionsPage> | undefined) => {
+          if (!old?.pages) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              data: {
+                ...page.data,
+                questions: page.data.questions.map((q: Question) =>
+                  q._id === questionId
+                    ? {
+                        ...q,
+                        is_liked: !q.is_liked,
+                        likes_count: q.is_liked ? q.likes_count - 1 : q.likes_count + 1,
+                      }
+                    : q
+                ),
+              },
+            })),
+          };
+        }
+      );
       return { previous };
     },
     onError: (_err, _vars, context) => {

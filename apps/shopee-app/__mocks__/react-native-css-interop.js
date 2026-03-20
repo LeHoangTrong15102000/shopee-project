@@ -5,11 +5,15 @@ module.exports = {
     const React = require('react');
     return React.createElement(type, props, ...children);
   }),
-  useColorScheme: jest.fn(() => ({ colorScheme: 'light', setColorScheme: jest.fn(), toggleColorScheme: jest.fn() })),
+  useColorScheme: jest.fn(() => ({
+    colorScheme: 'light',
+    setColorScheme: jest.fn(),
+    toggleColorScheme: jest.fn(),
+  })),
   useUnstableNativeVariable: jest.fn(() => ''),
   vars: jest.fn(() => ({})),
   StyleSheet: {
     create: (styles) => styles,
-    flatten: (styles) => Object.assign({}, ...([].concat(styles).filter(Boolean))),
+    flatten: (styles) => Object.assign({}, ...[].concat(styles).filter(Boolean)),
   },
 };

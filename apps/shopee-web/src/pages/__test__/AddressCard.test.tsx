@@ -39,18 +39,22 @@ vi.mock('src/components/ShopeeCheckbox', () => ({
 describe('AddressCard', () => {
   const mockAddress: Address = {
     _id: 'addr-123',
+    userId: 'user-123',
     fullName: 'John Doe',
     phone: '0123456789',
-    specificAddress: '123 Main St',
+    street: '123 Main St',
     ward: 'Ward 1',
     district: 'District 1',
     province: 'Ho Chi Minh',
+    isDefault: false,
     addressType: 'home' as AddressType,
     label: '',
+    createdAt: '2024-01-01',
+    updatedAt: '2024-01-01',
   };
 
   const mockFormatAddress = vi.fn((address: Address) => {
-    return `${address.specificAddress}, ${address.ward}, ${address.district}, ${address.province}`;
+    return `${address.street}, ${address.ward}, ${address.district}, ${address.province}`;
   });
 
   const mockGetAddressTypeInfo = vi.fn((type?: AddressType) => {

@@ -11,7 +11,12 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: 'en' } }),
 }));
 
-const mockToast = { showSuccess: jest.fn(), showError: jest.fn(), showInfo: jest.fn(), showWarning: jest.fn() };
+const mockToast = {
+  showSuccess: jest.fn(),
+  showError: jest.fn(),
+  showInfo: jest.fn(),
+  showWarning: jest.fn(),
+};
 jest.mock('@/components/ui/ToastProvider', () => ({
   useToast: () => mockToast,
 }));
@@ -108,7 +113,7 @@ const mockProduct = {
 
 const server = setupServer(
   http.get(`${API_BASE}/products/:id`, () =>
-    HttpResponse.json({ message: 'OK', data: mockProduct }),
+    HttpResponse.json({ message: 'OK', data: mockProduct })
   ),
   http.get(`${API_BASE}/reviews/product/:id`, () =>
     HttpResponse.json({
@@ -118,74 +123,59 @@ const server = setupServer(
         pagination: { page: 1, limit: 5, total: 0, total_pages: 0 },
         stats: { total_reviews: 0, average_rating: 0, rating_breakdown: {} },
       },
-    }),
+    })
   ),
   http.get(`${API_BASE}/qa/questions`, () =>
     HttpResponse.json({
       message: 'OK',
       data: { questions: [], pagination: { page: 1, limit: 5, total: 0, total_pages: 0 } },
-    }),
+    })
   ),
   http.get(`${API_BASE}/wishlist/check/:id`, () =>
-    HttpResponse.json({ message: 'OK', data: { in_wishlist: false } }),
+    HttpResponse.json({ message: 'OK', data: { in_wishlist: false } })
   ),
   http.get(`${API_BASE}/products`, () =>
     HttpResponse.json({
       message: 'OK',
       data: { products: [], pagination: { page: 1, limit: 10, page_size: 0 } },
-    }),
-  ),
+    })
+  )
 );
 
 beforeAll(() => server.listen());
-afterEach(() => { server.resetHandlers(); jest.clearAllMocks(); });
+afterEach(() => {
+  server.resetHandlers();
+  jest.clearAllMocks();
+});
 afterAll(() => server.close());
 
 function renderWithProviders(ui: React.ReactElement) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
-  return render(
-    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>,
-  );
+  return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
 }
 
 describe('ProductDetailScreen', () => {
   it('shows skeleton while loading', () => {
-    server.use(
-      http.get(`${API_BASE}/products/:id`, () => new Promise(() => {})),
-    );
-    const { getByText } = renderWithProviders(
-      <ProductDetailScreen productId="p1" />,
-    );
+    server.use(http.get(`${API_BASE}/products/:id`, () => new Promise(() => {})));
+    const { getByText } = renderWithProviders(<ProductDetailScreen productId="p1" />);
     expect(getByText('Loading...')).toBeTruthy();
   });
 
   it('shows error state on server error', async () => {
-    server.use(
-      http.get(`${API_BASE}/products/:id`, () =>
-        new HttpResponse(null, { status: 500 }),
-      ),
-    );
-    const { findByText } = renderWithProviders(
-      <ProductDetailScreen productId="p1" />,
-    );
+    server.use(http.get(`${API_BASE}/products/:id`, () => new HttpResponse(null, { status: 500 })));
+    const { findByText } = renderWithProviders(<ProductDetailScreen productId="p1" />);
     expect(await findByText('PD_SERVER_ERROR')).toBeTruthy();
   });
 
   it('renders product name on success', async () => {
-    const { findByText } = renderWithProviders(
-      <ProductDetailScreen productId="p1" />,
-    );
+    const { findByText } = renderWithProviders(<ProductDetailScreen productId="p1" />);
     expect(await findByText('Test Product')).toBeTruthy();
   });
 
   it('shows 404 toast and navigates back', async () => {
-    server.use(
-      http.get(`${API_BASE}/products/:id`, () =>
-        new HttpResponse(null, { status: 404 }),
-      ),
-    );
+    server.use(http.get(`${API_BASE}/products/:id`, () => new HttpResponse(null, { status: 404 })));
     renderWithProviders(<ProductDetailScreen productId="p1" />);
     await waitFor(() => {
       expect(mockToast.showError).toHaveBeenCalledWith('PD_PRODUCT_NOT_FOUND');

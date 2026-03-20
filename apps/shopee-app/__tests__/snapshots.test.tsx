@@ -21,7 +21,12 @@ describe('Snapshot tests', () => {
 
   it('EmptyState matches snapshot', () => {
     const tree = render(
-      <EmptyState icon={ShoppingBag} message="Nothing here" actionLabel="Go back" onAction={() => {}} />
+      <EmptyState
+        icon={ShoppingBag}
+        message="Nothing here"
+        actionLabel="Go back"
+        onAction={() => {}}
+      />
     );
     expect(tree.toJSON()).toMatchSnapshot();
   });

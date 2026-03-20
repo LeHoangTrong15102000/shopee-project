@@ -133,13 +133,21 @@ export default function HomeScreen() {
         keyExtractor={(item) => item._id}
         numColumns={2}
         columnWrapperStyle={{ gap: CARD_GAP }}
-        contentContainerStyle={{ paddingHorizontal: CARD_PADDING, gap: CARD_GAP, paddingBottom: 16 }}
+        contentContainerStyle={{
+          paddingHorizontal: CARD_PADDING,
+          gap: CARD_GAP,
+          paddingBottom: 16,
+        }}
         ListHeaderComponent={ListHeader}
         ListFooterComponent={ListFooter}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+          />
         }
       />
     </View>

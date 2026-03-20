@@ -12,7 +12,12 @@ interface QuantitySelectorProps {
   disabled?: boolean;
 }
 
-export default function QuantitySelector({ value, onChange, max, disabled }: QuantitySelectorProps) {
+export default function QuantitySelector({
+  value,
+  onChange,
+  max,
+  disabled,
+}: QuantitySelectorProps) {
   const colors = useColors();
   const { t } = useTranslation();
   const isMin = value <= 1;
@@ -37,8 +42,7 @@ export default function QuantitySelector({ value, onChange, max, disabled }: Qua
             height: 36,
             backgroundColor: colors.neutrals800,
             opacity: isMin || disabled ? 0.4 : 1,
-          }}
-        >
+          }}>
           <Minus size={16} color={colors.foreground} />
         </TouchableOpacity>
         <View
@@ -52,8 +56,7 @@ export default function QuantitySelector({ value, onChange, max, disabled }: Qua
             borderLeftWidth: 1,
             borderRightWidth: 1,
             borderColor: colors.neutrals700,
-          }}
-        >
+          }}>
           <AppText raw variant="body" weight="medium">
             {value}
           </AppText>
@@ -71,8 +74,7 @@ export default function QuantitySelector({ value, onChange, max, disabled }: Qua
             height: 36,
             backgroundColor: colors.neutrals800,
             opacity: isMax || disabled ? 0.4 : 1,
-          }}
-        >
+          }}>
           <Plus size={16} color={colors.foreground} />
         </TouchableOpacity>
       </View>

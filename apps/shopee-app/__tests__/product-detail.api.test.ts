@@ -65,7 +65,7 @@ const mockQuestion = {
 
 const server = setupServer(
   http.get(`${API_BASE}/products/:id`, () =>
-    HttpResponse.json({ message: 'OK', data: mockProduct }),
+    HttpResponse.json({ message: 'OK', data: mockProduct })
   ),
   http.get(`${API_BASE}/reviews/product/:id`, () =>
     HttpResponse.json({
@@ -75,13 +75,11 @@ const server = setupServer(
         pagination: { page: 1, limit: 5, total: 1, total_pages: 1 },
         stats: { total_reviews: 1, average_rating: 5, rating_breakdown: { 5: 1 } },
       },
-    }),
+    })
   ),
-  http.post(`${API_BASE}/reviews`, () =>
-    HttpResponse.json({ message: 'OK', data: mockReview }),
-  ),
+  http.post(`${API_BASE}/reviews`, () => HttpResponse.json({ message: 'OK', data: mockReview })),
   http.post(`${API_BASE}/reviews/like/:id`, () =>
-    HttpResponse.json({ message: 'OK', data: { is_liked: true, helpful_count: 4 } }),
+    HttpResponse.json({ message: 'OK', data: { is_liked: true, helpful_count: 4 } })
   ),
   http.get(`${API_BASE}/qa/questions`, () =>
     HttpResponse.json({
@@ -90,41 +88,46 @@ const server = setupServer(
         questions: [mockQuestion],
         pagination: { page: 1, limit: 5, total: 1, total_pages: 1 },
       },
-    }),
+    })
   ),
   http.post(`${API_BASE}/qa/questions`, () =>
-    HttpResponse.json({ message: 'OK', data: mockQuestion }),
+    HttpResponse.json({ message: 'OK', data: mockQuestion })
   ),
   http.post(`${API_BASE}/qa/questions/:id/answers`, () =>
     HttpResponse.json({
       message: 'OK',
-      data: { _id: 'a1', user_id: 'u1', user_name: 'User', is_seller: false, answer: 'Yes', likes_count: 0, is_liked: false, created_at: '2024-01-01' },
-    }),
+      data: {
+        _id: 'a1',
+        user_id: 'u1',
+        user_name: 'User',
+        is_seller: false,
+        answer: 'Yes',
+        likes_count: 0,
+        is_liked: false,
+        created_at: '2024-01-01',
+      },
+    })
   ),
   http.post(`${API_BASE}/qa/questions/:id/like`, () =>
-    HttpResponse.json({ message: 'OK', data: { is_liked: true, likes_count: 1 } }),
+    HttpResponse.json({ message: 'OK', data: { is_liked: true, likes_count: 1 } })
   ),
   http.get(`${API_BASE}/wishlist/check/:id`, () =>
-    HttpResponse.json({ message: 'OK', data: { in_wishlist: false } }),
+    HttpResponse.json({ message: 'OK', data: { in_wishlist: false } })
   ),
-  http.post(`${API_BASE}/wishlist`, () =>
-    HttpResponse.json({ message: 'OK', data: {} }),
-  ),
-  http.delete(`${API_BASE}/wishlist/:id`, () =>
-    HttpResponse.json({ message: 'OK', data: {} }),
-  ),
+  http.post(`${API_BASE}/wishlist`, () => HttpResponse.json({ message: 'OK', data: {} })),
+  http.delete(`${API_BASE}/wishlist/:id`, () => HttpResponse.json({ message: 'OK', data: {} })),
   http.post(`${API_BASE}/purchases/add-to-cart`, () =>
-    HttpResponse.json({ message: 'OK', data: {} }),
+    HttpResponse.json({ message: 'OK', data: {} })
   ),
   http.post(`${API_BASE}/purchases/buy-products`, () =>
-    HttpResponse.json({ message: 'OK', data: {} }),
+    HttpResponse.json({ message: 'OK', data: {} })
   ),
   http.get(`${API_BASE}/products`, () =>
     HttpResponse.json({
       message: 'OK',
       data: { products: [mockProduct], pagination: { page: 1, limit: 10, page_size: 1 } },
-    }),
-  ),
+    })
+  )
 );
 
 beforeAll(() => server.listen());
@@ -145,7 +148,11 @@ describe('Product Detail API', () => {
   });
 
   it('createReview posts a new review', async () => {
-    const result = await createReview({ purchase_id: 'pur1', rating: 5, comment: 'Great product!' });
+    const result = await createReview({
+      purchase_id: 'pur1',
+      rating: 5,
+      comment: 'Great product!',
+    });
     expect(result.data._id).toBe('r1');
   });
 
@@ -200,7 +207,7 @@ describe('Product Detail API', () => {
       http.post(`${API_BASE}/purchases/buy-products`, async ({ request }) => {
         capturedBody = await request.json();
         return HttpResponse.json({ message: 'OK', data: {} });
-      }),
+      })
     );
     await buyNow({ product_id: 'p1', buy_count: 1 });
     expect(Array.isArray(capturedBody)).toBe(true);
@@ -213,11 +220,7 @@ describe('Product Detail API', () => {
   });
 
   it('handles API errors', async () => {
-    server.use(
-      http.get(`${API_BASE}/products/:id`, () =>
-        new HttpResponse(null, { status: 500 }),
-      ),
-    );
+    server.use(http.get(`${API_BASE}/products/:id`, () => new HttpResponse(null, { status: 500 })));
     await expect(getProductDetail('p1')).rejects.toThrow();
   });
 });

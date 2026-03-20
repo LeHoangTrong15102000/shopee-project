@@ -26,7 +26,7 @@ describe('ReviewForm', () => {
   it('shows validation error when comment is too short', () => {
     const ref = createRef<any>();
     const { getByText, getByLabelText } = render(
-      <ReviewForm bottomSheetRef={ref} onSubmit={onSubmit} />,
+      <ReviewForm bottomSheetRef={ref} onSubmit={onSubmit} />
     );
     fireEvent.changeText(getByLabelText('PD_REVIEW_COMMENT_LABEL'), 'Short');
     fireEvent.press(getByText('PD_REVIEW_SUBMIT'));
@@ -36,7 +36,7 @@ describe('ReviewForm', () => {
   it('rejects whitespace-only comment', () => {
     const ref = createRef<any>();
     const { getByText, getByLabelText } = render(
-      <ReviewForm bottomSheetRef={ref} onSubmit={onSubmit} />,
+      <ReviewForm bottomSheetRef={ref} onSubmit={onSubmit} />
     );
     fireEvent.changeText(getByLabelText('PD_REVIEW_COMMENT_LABEL'), '          ');
     fireEvent.press(getByText('PD_REVIEW_SUBMIT'));
@@ -46,9 +46,12 @@ describe('ReviewForm', () => {
   it('shows validation error when no rating selected', () => {
     const ref = createRef<any>();
     const { getByText, getByLabelText } = render(
-      <ReviewForm bottomSheetRef={ref} onSubmit={onSubmit} />,
+      <ReviewForm bottomSheetRef={ref} onSubmit={onSubmit} />
     );
-    fireEvent.changeText(getByLabelText('PD_REVIEW_COMMENT_LABEL'), 'This is a valid review comment');
+    fireEvent.changeText(
+      getByLabelText('PD_REVIEW_COMMENT_LABEL'),
+      'This is a valid review comment'
+    );
     fireEvent.press(getByText('PD_REVIEW_SUBMIT'));
     expect(onSubmit).not.toHaveBeenCalled();
   });
@@ -56,10 +59,13 @@ describe('ReviewForm', () => {
   it('submits when rating and valid comment provided', () => {
     const ref = createRef<any>();
     const { getByText, getByLabelText } = render(
-      <ReviewForm bottomSheetRef={ref} onSubmit={onSubmit} />,
+      <ReviewForm bottomSheetRef={ref} onSubmit={onSubmit} />
     );
     fireEvent.press(getByLabelText('Rate 4 stars'));
-    fireEvent.changeText(getByLabelText('PD_REVIEW_COMMENT_LABEL'), 'This is a valid review comment');
+    fireEvent.changeText(
+      getByLabelText('PD_REVIEW_COMMENT_LABEL'),
+      'This is a valid review comment'
+    );
     fireEvent.press(getByText('PD_REVIEW_SUBMIT'));
     expect(onSubmit).toHaveBeenCalledWith({ rating: 4, comment: 'This is a valid review comment' });
   });
@@ -73,7 +79,7 @@ describe('QuestionForm', () => {
   it('shows validation error when question is too short', () => {
     const ref = createRef<any>();
     const { getByText, getByLabelText } = render(
-      <QuestionForm mode="ask" bottomSheetRef={ref} onSubmit={onSubmit} />,
+      <QuestionForm mode="ask" bottomSheetRef={ref} onSubmit={onSubmit} />
     );
     fireEvent.changeText(getByLabelText('PD_ASK_QUESTION'), 'Short');
     fireEvent.press(getByText('PD_QUESTION_SUBMIT'));
@@ -83,7 +89,7 @@ describe('QuestionForm', () => {
   it('submits valid question', () => {
     const ref = createRef<any>();
     const { getByText, getByLabelText } = render(
-      <QuestionForm mode="ask" bottomSheetRef={ref} onSubmit={onSubmit} />,
+      <QuestionForm mode="ask" bottomSheetRef={ref} onSubmit={onSubmit} />
     );
     fireEvent.changeText(getByLabelText('PD_ASK_QUESTION'), 'Is this product waterproof?');
     fireEvent.press(getByText('PD_QUESTION_SUBMIT'));
@@ -98,7 +104,7 @@ describe('QuestionForm', () => {
         questionContext="Is this product waterproof?"
         bottomSheetRef={ref}
         onSubmit={onSubmit}
-      />,
+      />
     );
     expect(getByText('Is this product waterproof?')).toBeTruthy();
   });
@@ -106,7 +112,7 @@ describe('QuestionForm', () => {
   it('validates answer minimum length', () => {
     const ref = createRef<any>();
     const { getByText, getByLabelText } = render(
-      <QuestionForm mode="answer" bottomSheetRef={ref} onSubmit={onSubmit} />,
+      <QuestionForm mode="answer" bottomSheetRef={ref} onSubmit={onSubmit} />
     );
     fireEvent.changeText(getByLabelText('PD_ANSWER'), 'No');
     fireEvent.press(getByText('PD_ANSWER_SUBMIT'));

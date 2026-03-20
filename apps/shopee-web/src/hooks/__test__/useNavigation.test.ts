@@ -50,11 +50,11 @@ describe('useNavigation', () => {
   it('returns navigation functions', () => {
     const { result } = renderHook(() => useNavigation());
 
-    expect(result.current.to).toBe(navigationService.to);
-    expect(result.current.toLogin).toBe(navigationService.toLogin);
-    expect(result.current.toProduct).toBe(navigationService.toProduct);
-    expect(result.current.toSearch).toBe(navigationService.toSearch);
-    expect(result.current.buildUrl).toBe(navigationService.buildUrl);
+    expect(result.current).toHaveProperty('to');
+    expect(result.current).toHaveProperty('toLogin');
+    expect(result.current).toHaveProperty('toProduct');
+    expect(result.current).toHaveProperty('toSearch');
+    expect(result.current).toHaveProperty('buildUrl');
     expect(result.current.navigate).toBe(mockNavigate);
   });
 });

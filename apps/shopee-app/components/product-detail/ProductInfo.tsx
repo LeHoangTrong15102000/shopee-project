@@ -31,7 +31,11 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         </AppText>
         {hasDiscount && (
           <>
-            <AppText raw variant="bodySmall" color="muted" style={{ textDecorationLine: 'line-through' }}>
+            <AppText
+              raw
+              variant="bodySmall"
+              color="muted"
+              style={{ textDecorationLine: 'line-through' }}>
               {formatPrice(product.price_before_discount)}
             </AppText>
             <View className="rounded bg-primary/10 px-1.5 py-0.5">

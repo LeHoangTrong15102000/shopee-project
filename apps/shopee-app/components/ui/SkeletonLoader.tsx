@@ -16,7 +16,12 @@ interface SkeletonLoaderProps {
   style?: ViewStyle;
 }
 
-export default function SkeletonLoader({ width, height, borderRadius = 4, style }: SkeletonLoaderProps) {
+export default function SkeletonLoader({
+  width,
+  height,
+  borderRadius = 4,
+  style,
+}: SkeletonLoaderProps) {
   const colors = useColors();
   const shimmer = useSharedValue(0);
 

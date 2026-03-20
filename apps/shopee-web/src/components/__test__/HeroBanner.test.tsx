@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import React from 'react';
 import HeroBanner from '../HeroBanner/HeroBanner';
 import FormField from '../FormField/FormField';
 import InputV2 from '../InputV2/InputV2';

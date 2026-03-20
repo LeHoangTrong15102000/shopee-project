@@ -113,7 +113,8 @@ describe('useOptimisticNotification', () => {
   describe('markAsReadMutation', () => {
     it('should optimistically update notification to read', async () => {
       const wrapper = createWrapper();
-      const queryClient = (wrapper({}) as React.ReactElement).props.client;
+      const queryClient = (wrapper({ children: null }) as React.ReactElement).props
+        .client as QueryClient;
 
       queryClient.setQueryData(QUERY_KEYS.NOTIFICATIONS, mockNotificationsData);
 
@@ -139,7 +140,8 @@ describe('useOptimisticNotification', () => {
 
     it('should decrease unreadCount when marking unread notification as read', async () => {
       const wrapper = createWrapper();
-      const queryClient = (wrapper({}) as React.ReactElement).props.client;
+      const queryClient = (wrapper({ children: null }) as React.ReactElement).props
+        .client as QueryClient;
 
       queryClient.setQueryData(QUERY_KEYS.NOTIFICATIONS, mockNotificationsData);
 
@@ -164,7 +166,8 @@ describe('useOptimisticNotification', () => {
 
     it('should not decrease unreadCount when marking already read notification', async () => {
       const wrapper = createWrapper();
-      const queryClient = (wrapper({}) as React.ReactElement).props.client;
+      const queryClient = (wrapper({ children: null }) as React.ReactElement).props
+        .client as QueryClient;
 
       queryClient.setQueryData(QUERY_KEYS.NOTIFICATIONS, mockNotificationsData);
 
@@ -189,7 +192,8 @@ describe('useOptimisticNotification', () => {
 
     it('should not decrease unreadCount below 0', async () => {
       const wrapper = createWrapper();
-      const queryClient = (wrapper({}) as React.ReactElement).props.client;
+      const queryClient = (wrapper({ children: null }) as React.ReactElement).props
+        .client as QueryClient;
 
       const dataWithZeroUnread = {
         ...mockNotificationsData,
@@ -225,7 +229,8 @@ describe('useOptimisticNotification', () => {
 
     it('should handle case when query data is undefined', async () => {
       const wrapper = createWrapper();
-      const queryClient = (wrapper({}) as React.ReactElement).props.client;
+      const queryClient = (wrapper({ children: null }) as React.ReactElement).props
+        .client as QueryClient;
 
       const { result } = renderHook(() => useOptimisticNotification(), { wrapper });
 
@@ -246,7 +251,8 @@ describe('useOptimisticNotification', () => {
 
     it('should restore previous data on error', async () => {
       const wrapper = createWrapper();
-      const queryClient = (wrapper({}) as React.ReactElement).props.client;
+      const queryClient = (wrapper({ children: null }) as React.ReactElement).props
+        .client as QueryClient;
 
       queryClient.setQueryData(QUERY_KEYS.NOTIFICATIONS, mockNotificationsData);
 
@@ -267,7 +273,8 @@ describe('useOptimisticNotification', () => {
 
     it('should show error toast on failure', async () => {
       const wrapper = createWrapper();
-      const queryClient = (wrapper({}) as React.ReactElement).props.client;
+      const queryClient = (wrapper({ children: null }) as React.ReactElement).props
+        .client as QueryClient;
 
       queryClient.setQueryData(QUERY_KEYS.NOTIFICATIONS, mockNotificationsData);
 
@@ -285,7 +292,8 @@ describe('useOptimisticNotification', () => {
 
     it('should log error on failure', async () => {
       const wrapper = createWrapper();
-      const queryClient = (wrapper({}) as React.ReactElement).props.client;
+      const queryClient = (wrapper({ children: null }) as React.ReactElement).props
+        .client as QueryClient;
 
       queryClient.setQueryData(QUERY_KEYS.NOTIFICATIONS, mockNotificationsData);
 
@@ -325,7 +333,8 @@ describe('useOptimisticNotification', () => {
       });
 
       const wrapper = createWrapper();
-      const queryClient = (wrapper({}) as React.ReactElement).props.client;
+      const queryClient = (wrapper({ children: null }) as React.ReactElement).props
+        .client as QueryClient;
 
       queryClient.setQueryData(QUERY_KEYS.NOTIFICATIONS, mockNotificationsData);
 
@@ -349,7 +358,8 @@ describe('useOptimisticNotification', () => {
   describe('markAllAsReadMutation', () => {
     it('should optimistically mark all notifications as read', async () => {
       const wrapper = createWrapper();
-      const queryClient = (wrapper({}) as React.ReactElement).props.client;
+      const queryClient = (wrapper({ children: null }) as React.ReactElement).props
+        .client as QueryClient;
 
       queryClient.setQueryData(QUERY_KEYS.NOTIFICATIONS, mockNotificationsData);
 
@@ -372,7 +382,8 @@ describe('useOptimisticNotification', () => {
 
     it('should set unreadCount to 0', async () => {
       const wrapper = createWrapper();
-      const queryClient = (wrapper({}) as React.ReactElement).props.client;
+      const queryClient = (wrapper({ children: null }) as React.ReactElement).props
+        .client as QueryClient;
 
       queryClient.setQueryData(QUERY_KEYS.NOTIFICATIONS, mockNotificationsData);
 
@@ -394,7 +405,8 @@ describe('useOptimisticNotification', () => {
 
     it('should handle case when query data is undefined', async () => {
       const wrapper = createWrapper();
-      const queryClient = (wrapper({}) as React.ReactElement).props.client;
+      const queryClient = (wrapper({ children: null }) as React.ReactElement).props
+        .client as QueryClient;
 
       const { result } = renderHook(() => useOptimisticNotification(), { wrapper });
 
@@ -412,7 +424,8 @@ describe('useOptimisticNotification', () => {
 
     it('should restore previous data on error', async () => {
       const wrapper = createWrapper();
-      const queryClient = (wrapper({}) as React.ReactElement).props.client;
+      const queryClient = (wrapper({ children: null }) as React.ReactElement).props
+        .client as QueryClient;
 
       queryClient.setQueryData(QUERY_KEYS.NOTIFICATIONS, mockNotificationsData);
 
@@ -433,7 +446,8 @@ describe('useOptimisticNotification', () => {
 
     it('should show error toast on failure', async () => {
       const wrapper = createWrapper();
-      const queryClient = (wrapper({}) as React.ReactElement).props.client;
+      const queryClient = (wrapper({ children: null }) as React.ReactElement).props
+        .client as QueryClient;
 
       queryClient.setQueryData(QUERY_KEYS.NOTIFICATIONS, mockNotificationsData);
 
@@ -451,7 +465,8 @@ describe('useOptimisticNotification', () => {
 
     it('should log error on failure', async () => {
       const wrapper = createWrapper();
-      const queryClient = (wrapper({}) as React.ReactElement).props.client;
+      const queryClient = (wrapper({ children: null }) as React.ReactElement).props
+        .client as QueryClient;
 
       queryClient.setQueryData(QUERY_KEYS.NOTIFICATIONS, mockNotificationsData);
 
@@ -490,7 +505,8 @@ describe('useOptimisticNotification', () => {
 
     it('should show success toast on success', async () => {
       const wrapper = createWrapper();
-      const queryClient = (wrapper({}) as React.ReactElement).props.client;
+      const queryClient = (wrapper({ children: null }) as React.ReactElement).props
+        .client as QueryClient;
 
       queryClient.setQueryData(QUERY_KEYS.NOTIFICATIONS, mockNotificationsData);
 
@@ -514,7 +530,8 @@ describe('useOptimisticNotification', () => {
       });
 
       const wrapper = createWrapper();
-      const queryClient = (wrapper({}) as React.ReactElement).props.client;
+      const queryClient = (wrapper({ children: null }) as React.ReactElement).props
+        .client as QueryClient;
 
       queryClient.setQueryData(QUERY_KEYS.NOTIFICATIONS, mockNotificationsData);
 
@@ -533,7 +550,8 @@ describe('useOptimisticNotification', () => {
 
     it('should preserve previousUnreadCount in context', async () => {
       const wrapper = createWrapper();
-      const queryClient = (wrapper({}) as React.ReactElement).props.client;
+      const queryClient = (wrapper({ children: null }) as React.ReactElement).props
+        .client as QueryClient;
 
       queryClient.setQueryData(QUERY_KEYS.NOTIFICATIONS, mockNotificationsData);
 

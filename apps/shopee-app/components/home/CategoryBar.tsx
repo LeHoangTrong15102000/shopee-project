@@ -18,10 +18,7 @@ export default function CategoryBar({ categories, selectedCategory, onSelect }: 
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerClassName="gap-2 px-4 py-3">
-      <Chip
-        selected={!selectedCategory}
-        onPress={() => onSelect(undefined)}
-        variant="default">
+      <Chip selected={!selectedCategory} onPress={() => onSelect(undefined)} variant="default">
         {t('CATEGORY_ALL')}
       </Chip>
       {categories.map((cat) => (

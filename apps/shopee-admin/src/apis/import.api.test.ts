@@ -21,4 +21,3 @@ describe('import.api', () => {
     expect(mockHttp.get).toHaveBeenCalledWith('admin/import/products/stats');
   });
 });
-

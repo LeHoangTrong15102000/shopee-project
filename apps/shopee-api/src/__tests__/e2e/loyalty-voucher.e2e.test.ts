@@ -43,7 +43,7 @@ describe('Loyalty and Voucher Flow E2E', () => {
       const voucherRes = await supertest(app)
         .get(`/vouchers/code/${voucherCode}`)
       expect(voucherRes.status).toBe(200)
-      expect(voucherRes.body.data.code).toBe(voucherCode)
+      expect(voucherRes.body.data.voucher.code).toBe(voucherCode)
     })
   })
 
@@ -94,15 +94,15 @@ describe('Loyalty and Voucher Flow E2E', () => {
         .set('Authorization', `Bearer ${auth.access_token}`)
         .send({
           code: voucherCode,
-          order_total: 200000,
+          order_value: 200000,
         })
       expect(applyRes.status).toBe(200)
-      expect(applyRes.body.data).toHaveProperty('discount')
-      // 20% of 200000 = 40000 (within max_discount of 50000)
-      expect(applyRes.body.data.discount).toBe(40000)
+      expect(applyRes.body.data).toHaveProperty('discount_amount')
+      // 20% of 200000 = 40000 (within max_discount_amount of 50000)
+      expect(applyRes.body.data.discount_amount).toBe(40000)
     })
 
-    it('should respect max_discount limit', async () => {
+    it('should respect max_discount_amount limit', async () => {
       const auth = await getAuthToken(app)
 
       await supertest(app)
@@ -115,11 +115,11 @@ describe('Loyalty and Voucher Flow E2E', () => {
         .set('Authorization', `Bearer ${auth.access_token}`)
         .send({
           code: voucherCode,
-          order_total: 500000,
+          order_value: 500000,
         })
       expect(applyRes.status).toBe(200)
-      // 20% of 500000 = 100000, but max_discount is 50000
-      expect(applyRes.body.data.discount).toBeLessThanOrEqual(50000)
+      // 20% of 500000 = 100000, but max_discount_amount is 50000
+      expect(applyRes.body.data.discount_amount).toBeLessThanOrEqual(50000)
     })
 
     it('should reject voucher below min_order_value', async () => {
@@ -134,7 +134,7 @@ describe('Loyalty and Voucher Flow E2E', () => {
         .set('Authorization', `Bearer ${auth.access_token}`)
         .send({
           code: voucherCode,
-          order_total: 50000, // Below min_order_value of 100000
+          order_value: 50000, // Below min_order_value of 100000
         })
       expect(applyRes.status).toBeGreaterThanOrEqual(400)
     })
@@ -165,10 +165,10 @@ describe('Loyalty and Voucher Flow E2E', () => {
         .set('Authorization', `Bearer ${auth.access_token}`)
         .send({
           code: 'FIXED50K',
-          order_total: 200000,
+          order_value: 200000,
         })
       expect(applyRes.status).toBe(200)
-      expect(applyRes.body.data.discount).toBe(50000)
+      expect(applyRes.body.data.discount_amount).toBe(50000)
     })
   })
 })

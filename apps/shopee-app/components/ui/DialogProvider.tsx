@@ -38,11 +38,7 @@ export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
     dialogRef.current?.hideAll();
   };
 
-  const showMessage = (
-    title: string,
-    message?: string,
-    onOk?: () => void | Promise<void>
-  ) => {
+  const showMessage = (title: string, message?: string, onOk?: () => void | Promise<void>) => {
     dialogRef.current?.show({
       type: 'message',
       title,
@@ -109,8 +105,7 @@ export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
         showConfirm,
         showLoading,
         hideLoading,
-      }}
-    >
+      }}>
       {children}
       <Dialog ref={dialogRef} />
     </DialogContext.Provider>
@@ -124,4 +119,3 @@ export const useDialog = (): DialogContextType => {
   }
   return context;
 };
-

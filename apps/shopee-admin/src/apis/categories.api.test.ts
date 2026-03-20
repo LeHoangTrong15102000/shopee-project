@@ -13,7 +13,9 @@ describe('categories.api', () => {
 
   it('getCategories calls GET /admin/categories with params', () => {
     categoriesApi.getCategories({ page: 1, limit: 10 });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/categories', { params: { page: 1, limit: 10 } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/categories', {
+      params: { page: 1, limit: 10 },
+    });
   });
 
   it('getCategory calls GET /admin/categories/:id', () => {
@@ -36,4 +38,3 @@ describe('categories.api', () => {
     expect(mockHttp.delete).toHaveBeenCalledWith('admin/categories/delete/cat-1');
   });
 });
-

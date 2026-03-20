@@ -13,12 +13,16 @@ describe('inventory.api', () => {
 
   it('getLowStock calls GET /admin/inventory/low-stock', () => {
     inventoryApi.getLowStock({ page: 1, limit: 10, threshold: 5 });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/inventory/low-stock', { params: { page: 1, limit: 10, threshold: 5 } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/inventory/low-stock', {
+      params: { page: 1, limit: 10, threshold: 5 },
+    });
   });
 
   it('getOutOfStock calls GET /admin/inventory/out-of-stock', () => {
     inventoryApi.getOutOfStock({ page: 1, limit: 10 });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/inventory/out-of-stock', { params: { page: 1, limit: 10 } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/inventory/out-of-stock', {
+      params: { page: 1, limit: 10 },
+    });
   });
 
   it('updateStock calls PUT /admin/inventory/:id/stock', () => {
@@ -32,4 +36,3 @@ describe('inventory.api', () => {
     expect(mockHttp.put).toHaveBeenCalledWith('admin/inventory/bulk-stock', body);
   });
 });
-

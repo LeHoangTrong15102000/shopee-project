@@ -18,32 +18,43 @@ describe('dashboard.api', () => {
 
   it('getRevenue calls GET /admin/dashboard/revenue with params', () => {
     dashboardApi.getRevenue({ period: '7d' });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/dashboard/revenue', { params: { period: '7d' } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/dashboard/revenue', {
+      params: { period: '7d' },
+    });
   });
 
   it('getRevenueByCategory calls GET /admin/dashboard/revenue/by-category', () => {
     dashboardApi.getRevenueByCategory({ period: '30d' });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/dashboard/revenue/by-category', { params: { period: '30d' } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/dashboard/revenue/by-category', {
+      params: { period: '30d' },
+    });
   });
 
   it('getRevenueByProduct calls GET /admin/dashboard/revenue/by-product', () => {
     dashboardApi.getRevenueByProduct({ period: '7d', limit: 5 });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/dashboard/revenue/by-product', { params: { period: '7d', limit: 5 } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/dashboard/revenue/by-product', {
+      params: { period: '7d', limit: 5 },
+    });
   });
 
   it('getOrderTrend calls GET /admin/dashboard/orders/trend', () => {
     dashboardApi.getOrderTrend({ period: '30d' });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/dashboard/orders/trend', { params: { period: '30d' } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/dashboard/orders/trend', {
+      params: { period: '30d' },
+    });
   });
 
   it('getUserGrowth calls GET /admin/dashboard/users/growth', () => {
     dashboardApi.getUserGrowth({ period: '30d' });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/dashboard/users/growth', { params: { period: '30d' } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/dashboard/users/growth', {
+      params: { period: '30d' },
+    });
   });
 
   it('getTopBuyers calls GET /admin/dashboard/users/top-buyers', () => {
     dashboardApi.getTopBuyers({ period: '7d', limit: 10 });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/dashboard/users/top-buyers', { params: { period: '7d', limit: 10 } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/dashboard/users/top-buyers', {
+      params: { period: '7d', limit: 10 },
+    });
   });
 });
-

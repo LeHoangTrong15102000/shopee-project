@@ -29,7 +29,10 @@ interface UserCategoryChartsProps {
   revenueByCategory: Array<{ category: string; revenue: number; percent: number }> | undefined;
 }
 
-export default function UserCategoryCharts({ userGrowth, revenueByCategory }: UserCategoryChartsProps) {
+export default function UserCategoryCharts({
+  userGrowth,
+  revenueByCategory,
+}: UserCategoryChartsProps) {
   const { t } = useTranslation('dashboard');
   const isMobile = useIsMobile();
 

@@ -204,3 +204,10 @@ export const getRateLimitStats = () => {
 
 // Chạy cleanup mỗi 10 phút
 setInterval(cleanupExpiredRateLimits, 10 * 60 * 1000)
+
+/**
+ * Reset all rate limit counters — dùng cho testing
+ */
+export const resetAllRateLimits = (): void => {
+  requestCounts.clear()
+}

@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text, Image, ImageSourcePropType } from 'react-native';
 import { cn } from '@/utils';
 import { cva } from 'class-variance-authority';
-import {ClassValue} from "clsx";
-import {useColors} from "@/hooks/useColors.ts";
+import { ClassValue } from 'clsx';
+import { useColors } from '@/hooks/useColors.ts';
 
 interface AvatarProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -18,56 +18,50 @@ interface AvatarProps {
   alt?: string;
 }
 
-const avatarVariants = cva(
-  'rounded-full items-center justify-center overflow-hidden',
-  {
-    variants: {
-      size: {
-        sm: 'w-8 h-8',
-        md: 'w-12 h-12',
-        lg: 'w-16 h-16',
-        xl: 'w-20 h-20',
-      },
-      variant: {
-        default: 'bg-neutrals700',
-        primary: 'bg-primary',
-        secondary: 'bg-secondary',
-      },
+const avatarVariants = cva('rounded-full items-center justify-center overflow-hidden', {
+  variants: {
+    size: {
+      sm: 'w-8 h-8',
+      md: 'w-12 h-12',
+      lg: 'w-16 h-16',
+      xl: 'w-20 h-20',
     },
-    defaultVariants: {
-      size: 'md',
-      variant: 'default',
+    variant: {
+      default: 'bg-neutrals700',
+      primary: 'bg-primary',
+      secondary: 'bg-secondary',
     },
-  }
-);
+  },
+  defaultVariants: {
+    size: 'md',
+    variant: 'default',
+  },
+});
 
-const avatarTextVariants = cva(
-  'font-sans-semibold text-center',
-  {
-    variants: {
-      size: {
-        sm: 'text-xs',
-        md: 'text-sm',
-        lg: 'text-lg',
-        xl: 'text-xl',
-      },
-      variant: {
-        default: 'text-neutrals100',
-        primary: 'text-white',
-        secondary: 'text-neutrals800',
-      },
+const avatarTextVariants = cva('font-sans-semibold text-center', {
+  variants: {
+    size: {
+      sm: 'text-xs',
+      md: 'text-sm',
+      lg: 'text-lg',
+      xl: 'text-xl',
     },
-    defaultVariants: {
-      size: 'md',
-      variant: 'default',
+    variant: {
+      default: 'text-neutrals100',
+      primary: 'text-white',
+      secondary: 'text-neutrals800',
     },
-  }
-);
+  },
+  defaultVariants: {
+    size: 'md',
+    variant: 'default',
+  },
+});
 
 const getInitials = (text: string): string => {
   return text
     .split(' ')
-    .map(word => word.charAt(0))
+    .map((word) => word.charAt(0))
     .join('')
     .toUpperCase()
     .slice(0, 2);
@@ -75,11 +69,16 @@ const getInitials = (text: string): string => {
 
 const getIconSize = (size: 'sm' | 'md' | 'lg' | 'xl'): number => {
   switch (size) {
-    case 'sm': return 12;
-    case 'md': return 20;
-    case 'lg': return 28;
-    case 'xl': return 36;
-    default: return 20;
+    case 'sm':
+      return 12;
+    case 'md':
+      return 20;
+    case 'lg':
+      return 28;
+    case 'xl':
+      return 36;
+    default:
+      return 20;
   }
 };
 
@@ -110,18 +109,18 @@ export default function Avatar({
     if (icon) {
       return React.cloneElement(icon as any, {
         size: getIconSize(size),
-        color: variant === 'default' ? colors.foreground : variant === 'primary' ? colors.primaryForeground : colors.secondaryForeground,
+        color:
+          variant === 'default'
+            ? colors.foreground
+            : variant === 'primary'
+              ? colors.primaryForeground
+              : colors.secondaryForeground,
       });
     }
 
     if (text) {
       return (
-        <Text
-          className={cn(
-            avatarTextVariants({ size, variant }),
-            textClassName
-          )}
-        >
+        <Text className={cn(avatarTextVariants({ size, variant }), textClassName)}>
           {getInitials(text)}
         </Text>
       );
@@ -132,13 +131,6 @@ export default function Avatar({
   };
 
   return (
-    <View
-      className={cn(
-        avatarVariants({ size, variant }),
-        className
-      )}
-    >
-      {renderContent()}
-    </View>
+    <View className={cn(avatarVariants({ size, variant }), className)}>{renderContent()}</View>
   );
 }

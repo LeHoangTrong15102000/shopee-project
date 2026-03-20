@@ -38,4 +38,3 @@ describe('orders.api', () => {
     expect(mockHttp.put).toHaveBeenCalledWith('admin/orders/bulk-status', body);
   });
 });
-

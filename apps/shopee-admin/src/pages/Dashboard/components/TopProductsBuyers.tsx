@@ -12,7 +12,9 @@ import { formatCurrency } from 'src/utils/format';
 
 interface TopProductsBuyersProps {
   topProducts: Array<{ _id: string; name: string; revenue: number; sold: number }> | undefined;
-  topBuyers: Array<{ _id: string; name: string; email: string; total_orders: number; total_spent: number }> | undefined;
+  topBuyers:
+    | Array<{ _id: string; name: string; email: string; total_orders: number; total_spent: number }>
+    | undefined;
 }
 
 export default function TopProductsBuyers({ topProducts, topBuyers }: TopProductsBuyersProps) {

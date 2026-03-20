@@ -13,7 +13,9 @@ describe('notifications.api', () => {
 
   it('getNotifications calls GET /admin/notifications with params', () => {
     notificationsApi.getNotifications({ page: 1, limit: 10, type: 'broadcast' });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/notifications', { params: { page: 1, limit: 10, type: 'broadcast' } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/notifications', {
+      params: { page: 1, limit: 10, type: 'broadcast' },
+    });
   });
 
   it('createNotification calls POST /admin/notifications', () => {
@@ -38,4 +40,3 @@ describe('notifications.api', () => {
     expect(mockHttp.put).toHaveBeenCalledWith('admin/notifications/n-1/read');
   });
 });
-

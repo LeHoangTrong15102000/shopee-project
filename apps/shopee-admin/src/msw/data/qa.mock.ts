@@ -35,4 +35,3 @@ export const mockQAStats = {
   unanswered: 1,
   avg_answers_per_question: 1,
 };
-

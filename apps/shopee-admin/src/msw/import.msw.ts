@@ -16,4 +16,3 @@ const importHandlers = [
 ];
 
 export default importHandlers;
-

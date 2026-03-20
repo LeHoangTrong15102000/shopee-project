@@ -8,7 +8,11 @@ const gridColsClass: Record<number, string> = {
 
 export function ChartSkeleton({ columns = 2 }: { columns?: number }) {
   return (
-    <div className={`grid gap-4 ${gridColsClass[columns] ?? ''}`} aria-busy="true" aria-label="Loading charts">
+    <div
+      className={`grid gap-4 ${gridColsClass[columns] ?? ''}`}
+      aria-busy="true"
+      aria-label="Loading charts"
+    >
       {Array.from({ length: columns }).map((_, i) => (
         <Card key={i}>
           <CardHeader>

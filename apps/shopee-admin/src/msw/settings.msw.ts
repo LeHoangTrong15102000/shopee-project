@@ -17,4 +17,3 @@ const settingsHandlers = [
 ];
 
 export default settingsHandlers;
-

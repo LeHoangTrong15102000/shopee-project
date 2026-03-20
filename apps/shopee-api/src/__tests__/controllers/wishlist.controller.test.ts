@@ -60,7 +60,7 @@ describe('Wishlist Controller', () => {
       const req = createMockRequest({ query: {} })
       const res = createMockResponse()
 
-      await getWishlist(req as Request, res as Response)
+      await getWishlist(req as any, res as Response)
 
       expect(mockWishlistService.getWishlist).toHaveBeenCalledWith('user123', { page: 1, limit: 10 })
       expect(res.status).toHaveBeenCalledWith(200)
@@ -78,7 +78,7 @@ describe('Wishlist Controller', () => {
       const req = createMockRequest({ query: { page: '2', limit: '20' } })
       const res = createMockResponse()
 
-      await getWishlist(req as Request, res as Response)
+      await getWishlist(req as any, res as Response)
 
       expect(mockWishlistService.getWishlist).toHaveBeenCalledWith('user123', { page: 2, limit: 20 })
     })
@@ -88,7 +88,7 @@ describe('Wishlist Controller', () => {
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await expect(getWishlist(req as Request, res as Response)).rejects.toThrow('Service error')
+      await expect(getWishlist(req as any, res as Response)).rejects.toThrow('Service error')
     })
   })
 
@@ -99,7 +99,7 @@ describe('Wishlist Controller', () => {
       const req = createMockRequest({ body: { product_id: 'prod1' } })
       const res = createMockResponse()
 
-      await addToWishlist(req as Request, res as Response)
+      await addToWishlist(req as any, res as Response)
 
       expect(mockWishlistService.addToWishlist).toHaveBeenCalledWith('user123', 'prod1')
       expect(res.status).toHaveBeenCalledWith(200)
@@ -114,7 +114,7 @@ describe('Wishlist Controller', () => {
       const req = createMockRequest({ body: { product_id: 'prod1' } })
       const res = createMockResponse()
 
-      await expect(addToWishlist(req as Request, res as Response)).rejects.toThrow('Add error')
+      await expect(addToWishlist(req as any, res as Response)).rejects.toThrow('Add error')
     })
   })
 
@@ -124,7 +124,7 @@ describe('Wishlist Controller', () => {
       const req = createMockRequest({ params: { product_id: 'prod1' } })
       const res = createMockResponse()
 
-      await removeFromWishlist(req as Request, res as Response)
+      await removeFromWishlist(req as any, res as Response)
 
       expect(mockWishlistService.removeFromWishlist).toHaveBeenCalledWith('user123', 'prod1')
       expect(res.status).toHaveBeenCalledWith(200)
@@ -138,7 +138,7 @@ describe('Wishlist Controller', () => {
       const req = createMockRequest({ params: { product_id: 'prod1' } })
       const res = createMockResponse()
 
-      await expect(removeFromWishlist(req as Request, res as Response)).rejects.toThrow('Remove error')
+      await expect(removeFromWishlist(req as any, res as Response)).rejects.toThrow('Remove error')
     })
   })
 
@@ -148,7 +148,7 @@ describe('Wishlist Controller', () => {
       const req = createMockRequest({ params: { product_id: 'prod1' } })
       const res = createMockResponse()
 
-      await checkInWishlist(req as Request, res as Response)
+      await checkInWishlist(req as any, res as Response)
 
       expect(mockWishlistService.isInWishlist).toHaveBeenCalledWith('user123', 'prod1')
       expect(res.status).toHaveBeenCalledWith(200)
@@ -163,7 +163,7 @@ describe('Wishlist Controller', () => {
       const req = createMockRequest({ params: { product_id: 'prod2' } })
       const res = createMockResponse()
 
-      await checkInWishlist(req as Request, res as Response)
+      await checkInWishlist(req as any, res as Response)
 
       expect(mockWishlistService.isInWishlist).toHaveBeenCalledWith('user123', 'prod2')
       expect(res.json).toHaveBeenCalledWith({
@@ -177,7 +177,7 @@ describe('Wishlist Controller', () => {
       const req = createMockRequest({ params: { product_id: 'prod1' } })
       const res = createMockResponse()
 
-      await expect(checkInWishlist(req as Request, res as Response)).rejects.toThrow('Check error')
+      await expect(checkInWishlist(req as any, res as Response)).rejects.toThrow('Check error')
     })
   })
 
@@ -187,7 +187,7 @@ describe('Wishlist Controller', () => {
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await clearWishlist(req as Request, res as Response)
+      await clearWishlist(req as any, res as Response)
 
       expect(mockWishlistService.clearWishlist).toHaveBeenCalledWith('user123')
       expect(res.status).toHaveBeenCalledWith(200)
@@ -202,7 +202,7 @@ describe('Wishlist Controller', () => {
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await expect(clearWishlist(req as Request, res as Response)).rejects.toThrow('Clear error')
+      await expect(clearWishlist(req as any, res as Response)).rejects.toThrow('Clear error')
     })
   })
 
@@ -212,7 +212,7 @@ describe('Wishlist Controller', () => {
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await getWishlistCount(req as Request, res as Response)
+      await getWishlistCount(req as any, res as Response)
 
       expect(mockWishlistService.getWishlistCount).toHaveBeenCalledWith('user123')
       expect(res.status).toHaveBeenCalledWith(200)
@@ -227,7 +227,7 @@ describe('Wishlist Controller', () => {
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await expect(getWishlistCount(req as Request, res as Response)).rejects.toThrow('Count error')
+      await expect(getWishlistCount(req as any, res as Response)).rejects.toThrow('Count error')
     })
   })
 })

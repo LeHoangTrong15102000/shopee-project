@@ -61,7 +61,10 @@ describe('csv-export worker logic', () => {
 
   describe('generateCSV', () => {
     it('generates CSV with header and data rows', () => {
-      const data = [{ name: 'Alice', age: 30 }, { name: 'Bob', age: 25 }];
+      const data = [
+        { name: 'Alice', age: 30 },
+        { name: 'Bob', age: 25 },
+      ];
       const columns = [
         { key: 'name', header: 'Name', hasAccessor: false },
         { key: 'age', header: 'Age', hasAccessor: false },

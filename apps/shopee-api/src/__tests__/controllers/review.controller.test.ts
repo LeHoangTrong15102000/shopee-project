@@ -96,7 +96,7 @@ describe('Review Controller', () => {
       })
       const res = createMockResponse()
 
-      await createReview(req as Request, res as Response)
+      await createReview(req as any, res as Response)
 
       expect(mockReviewService.createReview).toHaveBeenCalledWith('user123', 'purchase123', 5, 'Great product!', ['img1.jpg'])
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
@@ -109,7 +109,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ body: { purchase_id: 'p1', rating: 10, comment: 'Test' } })
       const res = createMockResponse()
 
-      await createReview(req as Request, res as Response)
+      await createReview(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.BAD_REQUEST)
       expect(res.json).toHaveBeenCalledWith({ message: 'Invalid rating' })
@@ -121,7 +121,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ body: { purchase_id: 'p1', rating: 5, comment: 'Test' } })
       const res = createMockResponse()
 
-      await createReview(req as Request, res as Response)
+      await createReview(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.BAD_REQUEST)
       expect(res.json).toHaveBeenCalledWith({ message: 'Already reviewed' })
@@ -133,7 +133,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ body: { purchase_id: 'p1', rating: 5, comment: 'Test' } })
       const res = createMockResponse()
 
-      await createReview(req as Request, res as Response)
+      await createReview(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.INTERNAL_SERVER_ERROR)
       expect(res.json).toHaveBeenCalledWith({ message: 'Lỗi server khi tạo đánh giá' })
@@ -152,7 +152,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ params: { product_id: 'prod123' }, query: { page: '1', limit: '10' } })
       const res = createMockResponse()
 
-      await getProductReviews(req as Request, res as Response)
+      await getProductReviews(req as any, res as Response)
 
       expect(mockReviewService.getProductReviews).toHaveBeenCalledWith('prod123', 'user123', { rating: undefined, sort: 'newest' }, { page: 1, limit: 10 })
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
@@ -168,7 +168,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ params: { product_id: 'prod123' } })
       const res = createMockResponse()
 
-      await getProductReviews(req as Request, res as Response)
+      await getProductReviews(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.INTERNAL_SERVER_ERROR)
       expect(res.json).toHaveBeenCalledWith({ message: 'Lỗi server khi lấy danh sách đánh giá' })
@@ -182,7 +182,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ params: { review_id: 'review123' } })
       const res = createMockResponse()
 
-      await toggleReviewLike(req as Request, res as Response)
+      await toggleReviewLike(req as any, res as Response)
 
       expect(mockReviewService.toggleReviewLike).toHaveBeenCalledWith('user123', 'review123')
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
@@ -195,7 +195,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ params: { review_id: 'review123' } })
       const res = createMockResponse()
 
-      await toggleReviewLike(req as Request, res as Response)
+      await toggleReviewLike(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
       expect(res.json).toHaveBeenCalledWith({ message: 'Bỏ thích đánh giá thành công', data: { is_liked: false, helpful_count: 4 } })
@@ -207,7 +207,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ params: { review_id: 'invalid' } })
       const res = createMockResponse()
 
-      await toggleReviewLike(req as Request, res as Response)
+      await toggleReviewLike(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.BAD_REQUEST)
       expect(res.json).toHaveBeenCalledWith({ message: 'Invalid review id' })
@@ -219,7 +219,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ params: { review_id: 'notfound' } })
       const res = createMockResponse()
 
-      await toggleReviewLike(req as Request, res as Response)
+      await toggleReviewLike(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.NOT_FOUND)
       expect(res.json).toHaveBeenCalledWith({ message: 'Review not found' })
@@ -231,7 +231,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ params: { review_id: 'review123' } })
       const res = createMockResponse()
 
-      await toggleReviewLike(req as Request, res as Response)
+      await toggleReviewLike(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.INTERNAL_SERVER_ERROR)
       expect(res.json).toHaveBeenCalledWith({ message: 'Lỗi server khi thích/bỏ thích đánh giá' })
@@ -252,7 +252,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ body: { review_id: 'review123', content: 'Nice review!' } })
       const res = createMockResponse()
 
-      await createReviewComment(req as Request, res as Response)
+      await createReviewComment(req as any, res as Response)
 
       expect(mockReviewService.createReviewComment).toHaveBeenCalledWith('user123', 'review123', 'Nice review!', undefined)
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
@@ -265,7 +265,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ body: { review_id: 'r1', content: 'Hi' } })
       const res = createMockResponse()
 
-      await createReviewComment(req as Request, res as Response)
+      await createReviewComment(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.BAD_REQUEST)
       expect(res.json).toHaveBeenCalledWith({ message: 'Content too short' })
@@ -277,7 +277,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ body: { review_id: 'notfound', content: 'Test comment' } })
       const res = createMockResponse()
 
-      await createReviewComment(req as Request, res as Response)
+      await createReviewComment(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.NOT_FOUND)
       expect(res.json).toHaveBeenCalledWith({ message: 'Review not found' })
@@ -289,7 +289,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ body: { review_id: 'r1', content: 'Test' } })
       const res = createMockResponse()
 
-      await createReviewComment(req as Request, res as Response)
+      await createReviewComment(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.INTERNAL_SERVER_ERROR)
       expect(res.json).toHaveBeenCalledWith({ message: 'Lỗi server khi tạo bình luận' })
@@ -307,7 +307,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ params: { review_id: 'review123' }, query: { page: '1', limit: '10' } })
       const res = createMockResponse()
 
-      await getReviewComments(req as Request, res as Response)
+      await getReviewComments(req as any, res as Response)
 
       expect(mockReviewService.getReviewComments).toHaveBeenCalledWith('review123', { page: 1, limit: 10 })
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
@@ -323,7 +323,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ params: { review_id: 'invalid' } })
       const res = createMockResponse()
 
-      await getReviewComments(req as Request, res as Response)
+      await getReviewComments(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.BAD_REQUEST)
       expect(res.json).toHaveBeenCalledWith({ message: 'Invalid review id' })
@@ -335,7 +335,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ params: { review_id: 'review123' } })
       const res = createMockResponse()
 
-      await getReviewComments(req as Request, res as Response)
+      await getReviewComments(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.INTERNAL_SERVER_ERROR)
       expect(res.json).toHaveBeenCalledWith({ message: 'Lỗi server khi lấy danh sách bình luận' })
@@ -350,7 +350,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ params: { purchase_id: 'purchase123' } })
       const res = createMockResponse()
 
-      await canReviewPurchase(req as Request, res as Response)
+      await canReviewPurchase(req as any, res as Response)
 
       expect(mockReviewService.canReviewPurchase).toHaveBeenCalledWith('user123', 'purchase123')
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
@@ -363,7 +363,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ params: { purchase_id: 'invalid' } })
       const res = createMockResponse()
 
-      await canReviewPurchase(req as Request, res as Response)
+      await canReviewPurchase(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.BAD_REQUEST)
       expect(res.json).toHaveBeenCalledWith({ message: 'Invalid purchase id' })
@@ -375,7 +375,7 @@ describe('Review Controller', () => {
       const req = createMockRequest({ params: { purchase_id: 'purchase123' } })
       const res = createMockResponse()
 
-      await canReviewPurchase(req as Request, res as Response)
+      await canReviewPurchase(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.INTERNAL_SERVER_ERROR)
       expect(res.json).toHaveBeenCalledWith({ message: 'Lỗi server khi kiểm tra quyền đánh giá' })

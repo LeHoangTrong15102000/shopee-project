@@ -299,7 +299,7 @@ describe('Product Integration', () => {
           quantity: 50,
         })
       expect(res.status).toBeLessThan(400)
-      expect(res.body.data.variants).toBeUndefined()
+      expect(!res.body.data.variants || res.body.data.variants.length === 0).toBe(true)
     })
 
     it('should remove variants when updating with empty array', async () => {

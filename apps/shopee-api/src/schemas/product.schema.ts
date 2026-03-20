@@ -44,7 +44,7 @@ const VARIANT_TYPES = ['color', 'size', 'style', 'material'] as const
  * Validates individual variant structure (type, name, options).
  */
 const variantItemSchema = z.object({
-  type: z.enum(VARIANT_TYPES, { errorMap: () => ({ message: 'Loại biến thể phải là: color, size, style, hoặc material' }) }),
+  type: z.enum(VARIANT_TYPES, { message: 'Loại biến thể phải là: color, size, style, hoặc material' }),
   name: z.string().min(1, 'Tên biến thể không được để trống').max(100, 'Tên biến thể phải ít hơn 100 ký tự'),
   options: z.array(variantOptionSchema).min(1, 'Biến thể phải có ít nhất 1 tùy chọn'),
 })

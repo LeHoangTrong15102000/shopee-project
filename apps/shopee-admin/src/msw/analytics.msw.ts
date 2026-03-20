@@ -1,5 +1,9 @@
 import { http, HttpResponse } from 'msw';
-import { mockProductAnalytics, mockCategoryStats, mockChatbotAnalytics } from './data/analytics.mock';
+import {
+  mockProductAnalytics,
+  mockCategoryStats,
+  mockChatbotAnalytics,
+} from './data/analytics.mock';
 import { API_URL } from './msw-utils';
 
 const analyticsHandlers = [
@@ -27,12 +31,23 @@ const analyticsHandlers = [
     return HttpResponse.json({
       message: 'Thành công',
       data: [
-        { date: '2024-01-01', conversationCount: 50, totalMessages: 250, uniqueUserCount: 30, avgResponseTime: 2.5 },
-        { date: '2024-01-02', conversationCount: 65, totalMessages: 320, uniqueUserCount: 40, avgResponseTime: 2.3 },
+        {
+          date: '2024-01-01',
+          conversationCount: 50,
+          totalMessages: 250,
+          uniqueUserCount: 30,
+          avgResponseTime: 2.5,
+        },
+        {
+          date: '2024-01-02',
+          conversationCount: 65,
+          totalMessages: 320,
+          uniqueUserCount: 40,
+          avgResponseTime: 2.3,
+        },
       ],
     });
   }),
 ];
 
 export default analyticsHandlers;
-

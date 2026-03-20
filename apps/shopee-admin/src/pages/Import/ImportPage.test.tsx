@@ -145,13 +145,15 @@ describe('ImportPage', () => {
     if (confirmBtn) {
       await user.click(confirmBtn);
       // Wait for import result to appear (MSW has 1s delay)
-      await waitFor(() => {
-        expect(screen.getByText('result.title')).toBeInTheDocument();
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(screen.getByText('result.title')).toBeInTheDocument();
+        },
+        { timeout: 5000 },
+      );
       // Result card should contain imported/deleted info
       expect(screen.getByText(/result.imported/)).toBeInTheDocument();
       expect(screen.getByText(/result.deleted/)).toBeInTheDocument();
     }
   });
 });
-

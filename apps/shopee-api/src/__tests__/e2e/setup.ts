@@ -3,6 +3,8 @@ import { connectTestDB, clearTestDB, disconnectTestDB } from '../helpers/db-setu
 import { CategoryModel } from '@database/models/category.model'
 import { UserModel } from '@database/models/user.model'
 import { hashValue } from '@utils/crypt'
+import { resetAllRateLimits } from '@middleware/rateLimiter.middleware'
+import { resetAllLoginAttempts } from '@middleware/security.middleware'
 
 beforeAll(async () => {
   await connectTestDB()
@@ -19,7 +21,9 @@ beforeAll(async () => {
 }, 30000)
 
 afterEach(async () => {
-  // Don't clear between tests in E2E - tests build on each other within a describe
+  // Reset rate limits and login attempts between tests to prevent cross-test interference
+  resetAllRateLimits()
+  resetAllLoginAttempts()
 })
 
 afterAll(async () => {

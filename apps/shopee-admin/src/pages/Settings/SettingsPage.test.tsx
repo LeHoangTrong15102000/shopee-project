@@ -147,4 +147,3 @@ describe('SettingsPage', () => {
     await user.click(changeBtn);
   });
 });
-

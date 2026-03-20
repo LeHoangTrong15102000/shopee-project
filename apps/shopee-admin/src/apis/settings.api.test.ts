@@ -22,4 +22,3 @@ describe('settings.api', () => {
     expect(mockHttp.put).toHaveBeenCalledWith('me', body);
   });
 });
-

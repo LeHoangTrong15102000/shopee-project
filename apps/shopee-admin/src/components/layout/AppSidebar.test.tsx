@@ -47,4 +47,3 @@ describe('AppSidebar', () => {
     expect(screen.getByText('menu.products')).toBeInTheDocument();
   });
 });
-

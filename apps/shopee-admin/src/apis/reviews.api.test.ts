@@ -37,4 +37,3 @@ describe('reviews.api', () => {
     expect(mockHttp.delete).toHaveBeenCalledWith('admin/reviews/comments/comment-1');
   });
 });
-

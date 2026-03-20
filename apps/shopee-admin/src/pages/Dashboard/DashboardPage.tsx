@@ -55,11 +55,7 @@ export default function DashboardPage() {
         title={t('title')}
         description={t('description')}
         actions={
-          <PeriodSelect
-            value={period}
-            onChange={setPeriod}
-            onCustomRange={handleCustomRange}
-          />
+          <PeriodSelect value={period} onChange={setPeriod} onCustomRange={handleCustomRange} />
         }
       />
 

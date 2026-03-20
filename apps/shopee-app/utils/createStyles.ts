@@ -1,8 +1,8 @@
-import {StyleSheet} from "react-native";
-import { useInsets } from "@/hooks/useInsets";
-import {useMemo} from "react";
-import {useColors} from "@/hooks/useColors.ts";
-import {AppColors} from "@/config/colors.ts";
+import { StyleSheet } from 'react-native';
+import { useInsets } from '@/hooks/useInsets';
+import { useMemo } from 'react';
+import { useColors } from '@/hooks/useColors.ts';
+import { AppColors } from '@/config/colors.ts';
 
 type Insets = {
   left: number;

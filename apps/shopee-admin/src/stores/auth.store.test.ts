@@ -112,5 +112,4 @@ describe('auth.store', () => {
     // getProfileFromLS returns null when no profile stored
     expect(() => useAuthStore.getState()).not.toThrow();
   });
-
 });

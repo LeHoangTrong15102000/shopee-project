@@ -1,13 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  Line,
-  LineChart,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { Area, AreaChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from 'src/components/ui/chart';
 

@@ -25,87 +25,72 @@ interface ProgressBarProps {
   valueClassName?: string;
 }
 
-const progressContainerVariants = cva(
-  'w-full',
-  {
-    variants: {
-      size: {
-        sm: 'gap-1',
-        md: 'gap-2',
-        lg: 'gap-3',
-      },
+const progressContainerVariants = cva('w-full', {
+  variants: {
+    size: {
+      sm: 'gap-1',
+      md: 'gap-2',
+      lg: 'gap-3',
     },
-    defaultVariants: {
-      size: 'md',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+});
 
-const progressTrackVariants = cva(
-  'w-full rounded-full bg-neutrals800 overflow-hidden',
-  {
-    variants: {
-      size: {
-        sm: 'h-1',
-        md: 'h-2',
-        lg: 'h-3',
-      },
+const progressTrackVariants = cva('w-full rounded-full bg-neutrals800 overflow-hidden', {
+  variants: {
+    size: {
+      sm: 'h-1',
+      md: 'h-2',
+      lg: 'h-3',
     },
-    defaultVariants: {
-      size: 'md',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+});
 
-const progressFillVariants = cva(
-  'h-full rounded-full',
-  {
-    variants: {
-      variant: {
-        default: 'bg-neutrals400',
-        primary: 'bg-primary',
-        success: 'bg-success200',
-        warning: 'bg-warning200',
-        error: 'bg-error200',
-      },
+const progressFillVariants = cva('h-full rounded-full', {
+  variants: {
+    variant: {
+      default: 'bg-neutrals400',
+      primary: 'bg-primary',
+      success: 'bg-success200',
+      warning: 'bg-warning200',
+      error: 'bg-error200',
     },
-    defaultVariants: {
-      variant: 'default',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    variant: 'default',
+  },
+});
 
-const labelVariants = cva(
-  'font-sans-medium',
-  {
-    variants: {
-      size: {
-        sm: 'text-sm',
-        md: 'text-base',
-        lg: 'text-lg',
-      },
+const labelVariants = cva('font-sans-medium', {
+  variants: {
+    size: {
+      sm: 'text-sm',
+      md: 'text-base',
+      lg: 'text-lg',
     },
-    defaultVariants: {
-      size: 'md',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+});
 
-const valueVariants = cva(
-  'font-sans-medium text-right',
-  {
-    variants: {
-      size: {
-        sm: 'text-sm',
-        md: 'text-base',
-        lg: 'text-lg',
-      },
+const valueVariants = cva('font-sans-medium text-right', {
+  variants: {
+    size: {
+      sm: 'text-sm',
+      md: 'text-base',
+      lg: 'text-lg',
     },
-    defaultVariants: {
-      size: 'md',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+});
 
 export default function ProgressBar({
   value,
@@ -137,12 +122,7 @@ export default function ProgressBar({
   }, [clampedValue, animated, progress, scale]);
 
   const fillAnimatedStyle = useAnimatedStyle(() => {
-    const width = interpolate(
-      progress.value,
-      [0, 100],
-      [0, 100],
-      Extrapolate.CLAMP
-    );
+    const width = interpolate(progress.value, [0, 100], [0, 100], Extrapolate.CLAMP);
 
     return {
       width: `${width}%`,
@@ -160,27 +140,15 @@ export default function ProgressBar({
     <View className={cn(progressContainerVariants({ size }), className)}>
       {/* Header with label and value */}
       {(label || showValue) && (
-        <View className="flex-row justify-between items-center">
+        <View className="flex-row items-center justify-between">
           {label && (
-            <Text
-              className={cn(
-                labelVariants({ size }),
-                'text-foreground',
-                labelClassName
-              )}
-            >
+            <Text className={cn(labelVariants({ size }), 'text-foreground', labelClassName)}>
               {label}
             </Text>
           )}
-          
+
           {showValue && (
-            <Text
-              className={cn(
-                valueVariants({ size }),
-                'text-neutrals400',
-                valueClassName
-              )}
-            >
+            <Text className={cn(valueVariants({ size }), 'text-neutrals400', valueClassName)}>
               {Math.round(clampedValue)}%
             </Text>
           )}
@@ -190,18 +158,11 @@ export default function ProgressBar({
       {/* Progress track */}
       <Animated.View
         style={trackAnimatedStyle}
-        className={cn(
-          progressTrackVariants({ size }),
-          trackClassName
-        )}
-      >
+        className={cn(progressTrackVariants({ size }), trackClassName)}>
         {/* Progress fill */}
         <Animated.View
           style={fillAnimatedStyle}
-          className={cn(
-            progressFillVariants({ variant }),
-            fillClassName
-          )}
+          className={cn(progressFillVariants({ variant }), fillClassName)}
         />
       </Animated.View>
     </View>

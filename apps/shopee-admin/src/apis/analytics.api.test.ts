@@ -13,17 +13,23 @@ describe('analytics.api', () => {
 
   it('getTopSelling calls GET /admin/products/analytics/top-selling', () => {
     analyticsApi.getTopSelling({ period: '30d', limit: 10 });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/products/analytics/top-selling', { params: { period: '30d', limit: 10 } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/products/analytics/top-selling', {
+      params: { period: '30d', limit: 10 },
+    });
   });
 
   it('getTopViewed calls GET /admin/products/analytics/top-viewed', () => {
     analyticsApi.getTopViewed({ limit: 5 });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/products/analytics/top-viewed', { params: { limit: 5 } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/products/analytics/top-viewed', {
+      params: { limit: 5 },
+    });
   });
 
   it('getTopRated calls GET /admin/products/analytics/top-rated', () => {
     analyticsApi.getTopRated({ limit: 10, min_reviews: 5 });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/products/analytics/top-rated', { params: { limit: 10, min_reviews: 5 } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/products/analytics/top-rated', {
+      params: { limit: 10, min_reviews: 5 },
+    });
   });
 
   it('getStatsByCategory calls GET /admin/products/analytics/by-category', () => {
@@ -38,7 +44,8 @@ describe('analytics.api', () => {
 
   it('getChatbotPerformance calls GET /admin/analytics/chatbot-performance', () => {
     analyticsApi.getChatbotPerformance({ period: '7d' });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/analytics/chatbot-performance', { params: { period: '7d' } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/analytics/chatbot-performance', {
+      params: { period: '7d' },
+    });
   });
 });
-

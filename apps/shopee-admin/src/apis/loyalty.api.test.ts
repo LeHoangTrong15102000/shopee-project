@@ -13,7 +13,9 @@ describe('loyalty.api', () => {
 
   it('getRewards calls GET /admin/loyalty/rewards', () => {
     loyaltyApi.getRewards({ page: 1, limit: 10, is_active: true });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/loyalty/rewards', { params: { page: 1, limit: 10, is_active: true } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/loyalty/rewards', {
+      params: { page: 1, limit: 10, is_active: true },
+    });
   });
 
   it('createReward calls POST /admin/loyalty/rewards', () => {
@@ -45,7 +47,9 @@ describe('loyalty.api', () => {
 
   it('getTransactions calls GET /admin/loyalty/transactions', () => {
     loyaltyApi.getTransactions({ page: 1, limit: 10, type: 'earn' });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/loyalty/transactions', { params: { page: 1, limit: 10, type: 'earn' } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/loyalty/transactions', {
+      params: { page: 1, limit: 10, type: 'earn' },
+    });
   });
 
   it('getStats calls GET /admin/loyalty/stats', () => {
@@ -53,4 +57,3 @@ describe('loyalty.api', () => {
     expect(mockHttp.get).toHaveBeenCalledWith('admin/loyalty/stats');
   });
 });
-

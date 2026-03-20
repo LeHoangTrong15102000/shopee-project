@@ -70,4 +70,3 @@ describe('ProductFormPage', () => {
     expect(screen.getByRole('button', { name: /buttons.create/i })).toBeInTheDocument();
   });
 });
-

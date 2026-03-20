@@ -100,7 +100,7 @@ describe('Product Controller', () => {
       })
       const res = createMockResponse()
 
-      await ProductController.getProduct(req as Request, res as Response)
+      await ProductController.getProduct(req as any, res as Response)
 
       expect(mockProductService.getProductById).toHaveBeenCalledWith(productId)
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
@@ -116,7 +116,7 @@ describe('Product Controller', () => {
       const res = createMockResponse()
 
       await expect(
-        ProductController.getProduct(req as Request, res as Response)
+        ProductController.getProduct(req as any, res as Response)
       ).rejects.toMatchObject({
         status: STATUS.NOT_FOUND,
       })
@@ -134,7 +134,7 @@ describe('Product Controller', () => {
       const req = createMockRequest({ query: {} })
       const res = createMockResponse()
 
-      await ProductController.getProducts(req as Request, res as Response)
+      await ProductController.getProducts(req as any, res as Response)
 
       expect(mockProductService.getProducts).toHaveBeenCalledWith(
         expect.objectContaining({ category: undefined }),
@@ -162,7 +162,7 @@ describe('Product Controller', () => {
       })
       const res = createMockResponse()
 
-      await ProductController.getProducts(req as Request, res as Response)
+      await ProductController.getProducts(req as any, res as Response)
 
       expect(mockProductService.getProducts).toHaveBeenCalledWith(
         expect.objectContaining({ category: 'cat_1' }),
@@ -184,7 +184,7 @@ describe('Product Controller', () => {
       })
       const res = createMockResponse()
 
-      await ProductController.getProducts(req as Request, res as Response)
+      await ProductController.getProducts(req as any, res as Response)
 
       expect(mockProductService.getProducts).toHaveBeenCalledWith(
         expect.any(Object),

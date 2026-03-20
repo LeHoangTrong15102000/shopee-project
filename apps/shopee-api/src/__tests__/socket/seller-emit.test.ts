@@ -94,6 +94,8 @@ describe('Seller Emit Utils', () => {
         today_revenue: 5000000,
         pending_orders: 3,
         pending_qa: 5,
+        active_users: 42,
+        orders_per_hour: 8,
       }
 
       emitSellerMetricsUpdate(sellerId, metrics)
@@ -111,6 +113,8 @@ describe('Seller Emit Utils', () => {
         today_revenue: 0,
         pending_orders: 0,
         pending_qa: 0,
+        active_users: 0,
+        orders_per_hour: 0,
       }
 
       expect(() => emitSellerMetricsUpdate('seller-error', metrics)).not.toThrow()

@@ -60,4 +60,3 @@ describe('ProductDetailPage', () => {
     expect(images.length).toBeGreaterThan(0);
   });
 });
-

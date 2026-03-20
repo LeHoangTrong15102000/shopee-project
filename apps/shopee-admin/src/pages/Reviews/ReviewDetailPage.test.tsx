@@ -149,7 +149,11 @@ describe('ReviewDetailPage', () => {
           data: {
             _id: 'review-1',
             user: { _id: 'user-1', name: 'Nguyễn Văn A', email: 'user@example.com' },
-            product: { _id: 'product-1', name: 'iPhone 15', image: 'https://example.com/iphone.jpg' },
+            product: {
+              _id: 'product-1',
+              name: 'iPhone 15',
+              image: 'https://example.com/iphone.jpg',
+            },
             rating: 5,
             comment: 'Sản phẩm rất tốt, giao hàng nhanh',
             images: [],
@@ -202,4 +206,3 @@ describe('ReviewDetailPage', () => {
     });
   });
 });
-

@@ -122,7 +122,7 @@ describe('Purchase Controller', () => {
 
       await updatePurchase(req as Request, res as Response)
 
-      expect(mockPurchaseService.updateCartItem).toHaveBeenCalledWith('user_1', 'product_1', 3)
+      expect(mockPurchaseService.updateCartItem).toHaveBeenCalledWith('user_1', 'product_1', 3, undefined)
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
 

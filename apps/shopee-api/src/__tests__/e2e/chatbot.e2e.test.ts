@@ -47,11 +47,11 @@ describe('Chatbot Flow E2E', () => {
           message: 'Hello, I need help with my order',
           title: 'Order Help',
         })
-      expect(createRes.status).toBe(200)
-      expect(createRes.body.data).toHaveProperty('_id')
-      expect(createRes.body.data).toHaveProperty('messages')
-      expect(createRes.body.data.messages.length).toBeGreaterThan(0)
-      conversationId = createRes.body.data._id
+      expect(createRes.status).toBe(201)
+      expect(createRes.body.data).toHaveProperty('conversationId')
+      expect(createRes.body.data).toHaveProperty('totalMessages')
+      expect(createRes.body.data.totalMessages).toBeGreaterThan(0)
+      conversationId = createRes.body.data.conversationId
     })
 
     it('should get all conversations for user', async () => {
@@ -78,13 +78,13 @@ describe('Chatbot Flow E2E', () => {
         .post('/conversations')
         .set('Authorization', `Bearer ${auth.access_token}`)
         .send({ message: 'Get by ID test' })
-      const convId = createRes.body.data._id
+      const convId = createRes.body.data.conversationId
 
       const getRes = await supertest(app)
         .get(`/conversations/${convId}`)
         .set('Authorization', `Bearer ${auth.access_token}`)
       expect(getRes.status).toBe(200)
-      expect(getRes.body.data._id).toBe(convId)
+      expect(getRes.body.data._id.toString()).toBe(convId.toString())
     })
 
     it('should send message to existing conversation', async () => {
@@ -94,14 +94,14 @@ describe('Chatbot Flow E2E', () => {
         .post('/conversations')
         .set('Authorization', `Bearer ${auth.access_token}`)
         .send({ message: 'Initial message' })
-      const convId = createRes.body.data._id
+      const convId = createRes.body.data.conversationId
 
       const messageRes = await supertest(app)
         .post(`/conversations/${convId}/messages`)
         .set('Authorization', `Bearer ${auth.access_token}`)
         .send({ message: 'Follow up question' })
       expect(messageRes.status).toBe(200)
-      expect(messageRes.body.data.messages.length).toBeGreaterThan(2)
+      expect(messageRes.body.data.totalMessages).toBeGreaterThan(2)
     })
 
     it('should delete a conversation', async () => {
@@ -111,7 +111,7 @@ describe('Chatbot Flow E2E', () => {
         .post('/conversations')
         .set('Authorization', `Bearer ${auth.access_token}`)
         .send({ message: 'Conversation to delete' })
-      const convId = createRes.body.data._id
+      const convId = createRes.body.data.conversationId
 
       const deleteRes = await supertest(app)
         .delete(`/conversations/${convId}`)
@@ -148,7 +148,7 @@ describe('Chatbot Flow E2E', () => {
         .post('/conversations')
         .set('Authorization', `Bearer ${auth1.access_token}`)
         .send({ message: 'User 1 conversation' })
-      const convId = createRes.body.data._id
+      const convId = createRes.body.data.conversationId
 
       // User 2 tries to access User 1's conversation
       const getRes = await supertest(app)

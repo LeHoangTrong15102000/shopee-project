@@ -35,7 +35,9 @@ describe('products.api', () => {
 
   it('getAllProducts calls GET /admin/products/all', () => {
     productsApi.getAllProducts({ category: 'cat-1' });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/products/all', { params: { category: 'cat-1' } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/products/all', {
+      params: { category: 'cat-1' },
+    });
   });
 
   it('getProduct calls GET /admin/products/:id', () => {
@@ -82,4 +84,3 @@ describe('products.api', () => {
     });
   });
 });
-

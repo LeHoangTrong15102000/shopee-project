@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { AccessibilityInfo, KeyboardAvoidingView, Platform, ScrollView, TextInput, View } from 'react-native';
+import {
+  AccessibilityInfo,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  TextInput,
+  View,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -58,12 +65,10 @@ export default function SignUpScreen() {
   return (
     <LinearGradient
       colors={[AppColors.gradientStart, AppColors.gradientMiddle, AppColors.gradientEnd]}
-      style={{ flex: 1 }}
-    >
+      style={{ flex: 1 }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
-      >
+        style={{ flex: 1 }}>
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
@@ -72,14 +77,15 @@ export default function SignUpScreen() {
             paddingTop: insets.top + AppSpacing.screenPaddingVertical,
             paddingBottom: insets.bottom + AppSpacing.screenPaddingVertical,
           }}
-          keyboardShouldPersistTaps="handled"
-        >
+          keyboardShouldPersistTaps="handled">
           {/* Title */}
-          <Animated.View entering={reduceMotion ? undefined : FadeInDown.delay(100).duration(600)} className="items-center mb-8">
+          <Animated.View
+            entering={reduceMotion ? undefined : FadeInDown.delay(100).duration(600)}
+            className="mb-8 items-center">
             <AppText variant="display3" weight="bold" className="text-white" raw>
               Shopee
             </AppText>
-            <AppText variant="body" className="text-white/70 mt-2">
+            <AppText variant="body" className="mt-2 text-white/70">
               {t('AUTH_SIGN_UP_TITLE')}
             </AppText>
           </Animated.View>
@@ -143,16 +149,30 @@ export default function SignUpScreen() {
                       className="mt-2"
                       accessibilityRole="progressbar"
                       accessibilityValue={{ min: 0, max: 100, now: strength.percent }}
-                      accessibilityLabel={t(strength.level === 'weak' ? 'AUTH_PASSWORD_WEAK' : strength.level === 'medium' ? 'AUTH_PASSWORD_MEDIUM' : 'AUTH_PASSWORD_STRONG')}
-                    >
-                      <View className="h-1.5 rounded-full bg-white/20 overflow-hidden">
+                      accessibilityLabel={t(
+                        strength.level === 'weak'
+                          ? 'AUTH_PASSWORD_WEAK'
+                          : strength.level === 'medium'
+                            ? 'AUTH_PASSWORD_MEDIUM'
+                            : 'AUTH_PASSWORD_STRONG'
+                      )}>
+                      <View className="h-1.5 overflow-hidden rounded-full bg-white/20">
                         <View
                           style={{ width: strength.width, backgroundColor: strength.color }}
                           className="h-full rounded-full"
                         />
                       </View>
-                      <AppText variant="bodySmall" style={{ color: strength.color }} className="mt-1">
-                        {t(strength.level === 'weak' ? 'AUTH_PASSWORD_WEAK' : strength.level === 'medium' ? 'AUTH_PASSWORD_MEDIUM' : 'AUTH_PASSWORD_STRONG')}
+                      <AppText
+                        variant="bodySmall"
+                        style={{ color: strength.color }}
+                        className="mt-1">
+                        {t(
+                          strength.level === 'weak'
+                            ? 'AUTH_PASSWORD_WEAK'
+                            : strength.level === 'medium'
+                              ? 'AUTH_PASSWORD_MEDIUM'
+                              : 'AUTH_PASSWORD_STRONG'
+                        )}
                       </AppText>
                     </View>
                   )}
@@ -191,7 +211,9 @@ export default function SignUpScreen() {
           </Animated.View>
 
           {/* Sign Up Button */}
-          <Animated.View entering={reduceMotion ? undefined : FadeInDown.delay(500).duration(600)} className="mt-2">
+          <Animated.View
+            entering={reduceMotion ? undefined : FadeInDown.delay(500).duration(600)}
+            className="mt-2">
             <AppButton
               variant="primary"
               size="lg"
@@ -200,14 +222,15 @@ export default function SignUpScreen() {
               disabled={loading}
               className="w-full"
               accessibilityRole="button"
-              accessibilityLabel={t('AUTH_SIGN_UP_BUTTON')}
-            >
+              accessibilityLabel={t('AUTH_SIGN_UP_BUTTON')}>
               {t('AUTH_SIGN_UP_BUTTON')}
             </AppButton>
           </Animated.View>
 
           {/* Sign In Link */}
-          <Animated.View entering={reduceMotion ? undefined : FadeInDown.delay(600).duration(600)} className="flex-row justify-center items-center mt-6">
+          <Animated.View
+            entering={reduceMotion ? undefined : FadeInDown.delay(600).duration(600)}
+            className="mt-6 flex-row items-center justify-center">
             <AppText variant="body" className="text-white/70">
               {t('AUTH_HAS_ACCOUNT')}{' '}
             </AppText>
@@ -217,8 +240,7 @@ export default function SignUpScreen() {
               className="min-h-[44px] px-2"
               textClassname="text-primary"
               accessibilityRole="link"
-              accessibilityLabel={t('AUTH_SIGN_IN_LINK')}
-            >
+              accessibilityLabel={t('AUTH_SIGN_IN_LINK')}>
               {t('AUTH_SIGN_IN_LINK')}
             </AppButton>
           </Animated.View>

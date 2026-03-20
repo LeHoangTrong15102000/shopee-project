@@ -1,8 +1,8 @@
 import React from 'react';
-import {Text, TextProps} from 'react-native';
-import {cn} from '@/utils';
-import {cva} from 'class-variance-authority';
-import {useTranslation} from "react-i18next";
+import { Text, TextProps } from 'react-native';
+import { cn } from '@/utils';
+import { cva } from 'class-variance-authority';
+import { useTranslation } from 'react-i18next';
 
 interface AppTextProps extends TextProps {
   variant?:
@@ -29,68 +29,65 @@ interface AppTextProps extends TextProps {
   className?: string;
 }
 
-const textVariants = cva(
-  'text-foreground font-sans-regular',
-  {
-    variants: {
-      variant: {
-        display1: 'text-5xl leading-tight',
-        display2: 'text-4xl leading-tight',
-        display3: 'text-3xl leading-tight',
-        heading1: 'text-2xl leading-tight',
-        heading2: 'text-xl leading-tight',
-        heading3: 'text-lg leading-tight',
-        heading4: 'text-base leading-tight',
-        heading5: 'text-sm leading-tight',
-        body: 'text-base leading-normal',
-        bodyLarge: 'text-lg leading-normal',
-        bodySmall: 'text-sm leading-normal',
-        caption: 'text-lg leading-normal',
-        overline: 'text-xs leading-normal uppercase tracking-wide',
-        label: 'text-sm leading-normal',
-        labelSmall: 'text-xs leading-normal',
-      },
-      weight: {
-        regular: 'font-sans-regular',
-        medium: 'font-sans-medium',
-        semibold: 'font-sans-semibold',
-        bold: 'font-sans-bold',
-      },
-      color: {
-        default: 'text-foreground',
-        primary: 'text-primary',
-        secondary: 'text-secondary',
-        muted: 'text-neutrals400',
-        success: 'text-success200',
-        warning: 'text-warning200',
-        error: 'text-error200',
-      },
-      align: {
-        left: 'text-left',
-        center: 'text-center',
-        right: 'text-right',
-      },
+const textVariants = cva('text-foreground font-sans-regular', {
+  variants: {
+    variant: {
+      display1: 'text-5xl leading-tight',
+      display2: 'text-4xl leading-tight',
+      display3: 'text-3xl leading-tight',
+      heading1: 'text-2xl leading-tight',
+      heading2: 'text-xl leading-tight',
+      heading3: 'text-lg leading-tight',
+      heading4: 'text-base leading-tight',
+      heading5: 'text-sm leading-tight',
+      body: 'text-base leading-normal',
+      bodyLarge: 'text-lg leading-normal',
+      bodySmall: 'text-sm leading-normal',
+      caption: 'text-lg leading-normal',
+      overline: 'text-xs leading-normal uppercase tracking-wide',
+      label: 'text-sm leading-normal',
+      labelSmall: 'text-xs leading-normal',
     },
-    defaultVariants: {
-      variant: 'body',
-      weight: 'regular',
-      color: 'default',
-      align: 'left',
+    weight: {
+      regular: 'font-sans-regular',
+      medium: 'font-sans-medium',
+      semibold: 'font-sans-semibold',
+      bold: 'font-sans-bold',
     },
-  }
-);
+    color: {
+      default: 'text-foreground',
+      primary: 'text-primary',
+      secondary: 'text-secondary',
+      muted: 'text-neutrals400',
+      success: 'text-success200',
+      warning: 'text-warning200',
+      error: 'text-error200',
+    },
+    align: {
+      left: 'text-left',
+      center: 'text-center',
+      right: 'text-right',
+    },
+  },
+  defaultVariants: {
+    variant: 'body',
+    weight: 'regular',
+    color: 'default',
+    align: 'left',
+  },
+});
 
 export default function AppText({
-                                  variant = 'body',
-                                  weight,
-                                  color = 'default',
-                                  align = 'left',
-                                  children,
-                                  className,
-                                  ...props
-                                }: AppTextProps) {
-  const {t} = useTranslation();
-  let computedClassName = textVariants({variant, weight, color, align});
+  variant = 'body',
+  weight,
+  color = 'default',
+  align = 'left',
+  children,
+  className,
+  ...props
+}: AppTextProps) {
+  const { t } = useTranslation();
+  let computedClassName = textVariants({ variant, weight, color, align });
   if (!props.raw && typeof children === 'string') {
     children = t((children as string).toString().trim());
   }
@@ -108,10 +105,7 @@ export default function AppText({
   }
 
   return (
-    <Text
-      {...props}
-      className={cn(computedClassName, className)}
-    >
+    <Text {...props} className={cn(computedClassName, className)}>
       {children}
     </Text>
   );

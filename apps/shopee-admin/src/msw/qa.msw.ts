@@ -27,4 +27,3 @@ const qaHandlers = [
 ];
 
 export default qaHandlers;
-

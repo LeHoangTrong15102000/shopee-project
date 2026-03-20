@@ -1,17 +1,13 @@
-import {useEffect, useRef, useState} from "react";
-import {AppState} from "react-native";
-
+import { useEffect, useRef, useState } from 'react';
+import { AppState } from 'react-native';
 
 export default function useAppState() {
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', nextAppState => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
-      ) {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
         console.log('App has come to the foreground!');
       }
 
@@ -23,6 +19,5 @@ export default function useAppState() {
       subscription.remove();
     };
   }, []);
-  return appStateVisible
+  return appStateVisible;
 }
-

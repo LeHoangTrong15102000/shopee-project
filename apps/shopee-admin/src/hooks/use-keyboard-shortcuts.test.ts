@@ -69,4 +69,3 @@ describe('useKeyboardShortcuts', () => {
     expect(SHORTCUT_ROUTES[0]).toBe('/');
   });
 });
-

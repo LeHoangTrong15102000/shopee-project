@@ -63,9 +63,7 @@ function AppContent() {
   };
 
   if (!isReady) {
-    return (
-      <View style={{ flex: 1, backgroundColor: colors.background }} />
-    );
+    return <View style={{ flex: 1, backgroundColor: colors.background }} />;
   }
 
   return (
@@ -77,6 +75,7 @@ function AppContent() {
               <Stack>
                 <Stack.Screen name="(auth)" options={{ headerShown: false }} />
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="product/[id]" options={{ headerShown: false }} />
               </Stack>
             </ThemeProvider>
             <StatusBar style="auto" />

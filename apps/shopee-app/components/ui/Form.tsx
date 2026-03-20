@@ -1,11 +1,11 @@
-import React, {createContext, useContext, useMemo} from 'react';
-import {Text, View} from 'react-native';
-import {cn} from '@/utils';
-import {FieldValues, FieldPath, UseFormReturn, FieldError} from '@/hooks/useForm';
+import React, { createContext, useContext, useMemo } from 'react';
+import { Text, View } from 'react-native';
+import { cn } from '@/utils';
+import { FieldValues, FieldPath, UseFormReturn, FieldError } from '@/hooks/useForm';
 
 type FormFieldContextValue<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
   name: TName;
   control: UseFormReturn<TFieldValues>['control'];
@@ -17,7 +17,7 @@ type FormItemContextValue = {
 
 type ControllerRenderProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
   value: any;
   onChangeText: (text: string) => void;
@@ -44,7 +44,7 @@ const useFormField = () => {
     throw new Error('useFormField should be used within <FormField>');
   }
 
-  const {id} = itemContext;
+  const { id } = itemContext;
   const error = fieldContext.control._formState.errors[fieldContext.name];
 
   return {
@@ -72,7 +72,7 @@ export function Form<TFieldValues extends FieldValues = FieldValues>({
 
 export type FormFieldProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
   control: UseFormReturn<TFieldValues>['control'];
   name: TName;
@@ -84,8 +84,8 @@ export type FormFieldProps<
 
 export function FormField<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
->({control, name, render}: FormFieldProps<TFieldValues, TName>) {
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({ control, name, render }: FormFieldProps<TFieldValues, TName>) {
   const fieldRegistration = control.register(name);
   const error = control._formState.errors[name];
   const isTouched = control._formState.touchedFields[name] ?? false;
@@ -104,8 +104,8 @@ export function FormField<
   };
 
   return (
-    <FormFieldContext.Provider value={{name, control}}>
-      {render({field, fieldState})}
+    <FormFieldContext.Provider value={{ name, control }}>
+      {render({ field, fieldState })}
     </FormFieldContext.Provider>
   );
 }
@@ -115,12 +115,12 @@ export type FormItemProps = {
   className?: string;
 };
 
-export const FormItem = React.forwardRef<View, FormItemProps>(({className, children}, ref) => {
+export const FormItem = React.forwardRef<View, FormItemProps>(({ className, children }, ref) => {
   const id = React.useId();
 
   return (
-    <FormItemContext.Provider value={{id}}>
-      <View ref={ref} className={cn('w-full mb-4', className)}>
+    <FormItemContext.Provider value={{ id }}>
+      <View ref={ref} className={cn('mb-4 w-full', className)}>
         {children}
       </View>
     </FormItemContext.Provider>
@@ -136,17 +136,16 @@ export type FormLabelProps = {
 };
 
 export const FormLabel = React.forwardRef<Text, FormLabelProps>(
-  ({className, children, required}, ref) => {
-    const {formItemId} = useFormField();
+  ({ className, children, required }, ref) => {
+    const { formItemId } = useFormField();
 
     return (
       <Text
         ref={ref}
         nativeID={formItemId}
-        className={cn('font-sans-medium text-base text-foreground mb-1.5', className)}
-      >
+        className={cn('mb-1.5 font-sans-medium text-base text-foreground', className)}>
         {children}
-        {required && <Text className="text-error ml-1">*</Text>}
+        {required && <Text className="ml-1 text-error">*</Text>}
       </Text>
     );
   }
@@ -158,8 +157,8 @@ export type FormControlProps = {
   children: React.ReactElement;
 };
 
-export const FormControl = React.forwardRef<View, FormControlProps>(({children}, ref) => {
-  const {formItemId, formDescriptionId, formMessageId} = useFormField();
+export const FormControl = React.forwardRef<View, FormControlProps>(({ children }, ref) => {
+  const { formItemId, formDescriptionId, formMessageId } = useFormField();
 
   return React.cloneElement(children, {
     ...(children.props as Record<string, any>),
@@ -177,15 +176,14 @@ export type FormDescriptionProps = {
 };
 
 export const FormDescription = React.forwardRef<Text, FormDescriptionProps>(
-  ({className, children}, ref) => {
-    const {formDescriptionId} = useFormField();
+  ({ className, children }, ref) => {
+    const { formDescriptionId } = useFormField();
 
     return (
       <Text
         ref={ref}
         nativeID={formDescriptionId}
-        className={cn('text-sm text-neutrals100 mt-1.5', className)}
-      >
+        className={cn('mt-1.5 text-sm text-neutrals100', className)}>
         {children}
       </Text>
     );
@@ -200,8 +198,8 @@ export type FormMessageProps = {
 };
 
 export const FormMessage = React.forwardRef<Text, FormMessageProps>(
-  ({className, children}, ref) => {
-    const {formMessageId, error} = useFormField();
+  ({ className, children }, ref) => {
+    const { formMessageId, error } = useFormField();
 
     const body = error?.message ?? children;
 
@@ -215,8 +213,7 @@ export const FormMessage = React.forwardRef<Text, FormMessageProps>(
         nativeID={formMessageId}
         accessibilityRole="alert"
         accessibilityLiveRegion="polite"
-        className={cn('text-sm font-sans-medium text-error mt-1.5', className)}
-      >
+        className={cn('mt-1.5 font-sans-medium text-sm text-error', className)}>
         {body}
       </Text>
     );
@@ -232,4 +229,3 @@ export type FormSubmitButtonProps = {
   loading?: boolean;
   className?: string;
 };
-

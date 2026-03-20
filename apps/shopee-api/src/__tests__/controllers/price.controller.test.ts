@@ -50,7 +50,7 @@ describe('Price Controller', () => {
       const req = createMockRequest({ params: { productId: 'product-123' }, query: {} })
       const res = createMockResponse()
 
-      await getPriceHistory(req as Request, res as Response)
+      await getPriceHistory(req as any, res as Response)
 
       expect(mockPriceService.getPriceHistory).toHaveBeenCalledWith('product-123', 30)
       expect(res.status).toHaveBeenCalledWith(200)
@@ -64,7 +64,7 @@ describe('Price Controller', () => {
       const req = createMockRequest({ params: { productId: 'product-123' }, query: { days: '7' } })
       const res = createMockResponse()
 
-      await getPriceHistory(req as Request, res as Response)
+      await getPriceHistory(req as any, res as Response)
 
       expect(mockPriceService.getPriceHistory).toHaveBeenCalledWith('product-123', 7)
       expect(res.status).toHaveBeenCalledWith(200)
@@ -88,7 +88,7 @@ describe('Price Controller', () => {
       const req = createMockRequest({ body: { product_id: 'product-123', target_price: '90000' } })
       const res = createMockResponse()
 
-      await createPriceAlert(req as Request, res as Response)
+      await createPriceAlert(req as any, res as Response)
 
       expect(mockPriceService.createPriceAlert).toHaveBeenCalledWith('user-123', 'product-123', 90000)
       expect(res.status).toHaveBeenCalledWith(200)
@@ -116,7 +116,7 @@ describe('Price Controller', () => {
       const req = createMockRequest({ query: {} })
       const res = createMockResponse()
 
-      await getPriceAlerts(req as Request, res as Response)
+      await getPriceAlerts(req as any, res as Response)
 
       expect(mockPriceService.getPriceAlerts).toHaveBeenCalledWith(
         'user-123',
@@ -149,7 +149,7 @@ describe('Price Controller', () => {
       const req = createMockRequest({ query: { page: '2', limit: '5', is_active: 'true', is_triggered: 'false' } })
       const res = createMockResponse()
 
-      await getPriceAlerts(req as Request, res as Response)
+      await getPriceAlerts(req as any, res as Response)
 
       expect(mockPriceService.getPriceAlerts).toHaveBeenCalledWith(
         'user-123',
@@ -177,7 +177,7 @@ describe('Price Controller', () => {
       const req = createMockRequest({ params: { alertId: 'alert-123' } })
       const res = createMockResponse()
 
-      await deletePriceAlert(req as Request, res as Response)
+      await deletePriceAlert(req as any, res as Response)
 
       expect(mockPriceService.deletePriceAlert).toHaveBeenCalledWith('user-123', 'alert-123')
       expect(res.status).toHaveBeenCalledWith(200)

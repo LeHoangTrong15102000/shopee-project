@@ -1,5 +1,5 @@
-import {useCallback, useRef, useState} from 'react';
-import {z} from 'zod';
+import { useCallback, useRef, useState } from 'react';
+import { z } from 'zod';
 
 export type FieldValues = Record<string, any>;
 
@@ -48,7 +48,11 @@ export type UseFormReturn<TFieldValues extends FieldValues> = {
     onInvalid?: (errors: FieldErrors<TFieldValues>) => void
   ) => () => Promise<void>;
   formState: FormState<TFieldValues>;
-  setValue: (name: FieldPath<TFieldValues>, value: any, options?: {shouldValidate?: boolean; shouldDirty?: boolean; shouldTouch?: boolean}) => void;
+  setValue: (
+    name: FieldPath<TFieldValues>,
+    value: any,
+    options?: { shouldValidate?: boolean; shouldDirty?: boolean; shouldTouch?: boolean }
+  ) => void;
   getValue: (name: FieldPath<TFieldValues>) => any;
   getValues: () => TFieldValues;
   setError: (name: FieldPath<TFieldValues>, error: FieldError) => void;
@@ -80,7 +84,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
     reValidateMode = 'onChange',
   } = props;
 
-  const [formValues, setFormValues] = useState<TFieldValues>({...defaultValues} as TFieldValues);
+  const [formValues, setFormValues] = useState<TFieldValues>({ ...defaultValues } as TFieldValues);
   const [formState, setFormState] = useState<FormState<TFieldValues>>({
     errors: {},
     touchedFields: {},
@@ -100,7 +104,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
       if (!validationSchema) return null;
 
       try {
-        await validationSchema.parseAsync({...formValues, [name]: value});
+        await validationSchema.parseAsync({ ...formValues, [name]: value });
         return null;
       } catch (error) {
         if (error instanceof z.ZodError) {
@@ -149,16 +153,16 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
     (
       name: FieldPath<TFieldValues>,
       value: any,
-      options: {shouldValidate?: boolean; shouldDirty?: boolean; shouldTouch?: boolean} = {}
+      options: { shouldValidate?: boolean; shouldDirty?: boolean; shouldTouch?: boolean } = {}
     ) => {
-      const {shouldValidate = false, shouldDirty = true, shouldTouch = false} = options;
+      const { shouldValidate = false, shouldDirty = true, shouldTouch = false } = options;
 
-      setFormValues((prev) => ({...prev, [name]: value}));
+      setFormValues((prev) => ({ ...prev, [name]: value }));
 
       if (shouldDirty) {
         setFormState((prev) => ({
           ...prev,
-          dirtyFields: {...prev.dirtyFields, [name]: value !== defaultValuesRef.current[name]},
+          dirtyFields: { ...prev.dirtyFields, [name]: value !== defaultValuesRef.current[name] },
           isDirty: true,
         }));
       }
@@ -166,7 +170,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
       if (shouldTouch) {
         setFormState((prev) => ({
           ...prev,
-          touchedFields: {...prev.touchedFields, [name]: true},
+          touchedFields: { ...prev.touchedFields, [name]: true },
         }));
       }
 
@@ -174,7 +178,9 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
         validateField(name, value).then((error) => {
           setFormState((prev) => ({
             ...prev,
-            errors: error ? {...prev.errors, [name]: error} : {...prev.errors, [name]: undefined},
+            errors: error
+              ? { ...prev.errors, [name]: error }
+              : { ...prev.errors, [name]: undefined },
           }));
         });
       }
@@ -189,7 +195,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
   const setError = useCallback((name: FieldPath<TFieldValues>, error: FieldError) => {
     setFormState((prev) => ({
       ...prev,
-      errors: {...prev.errors, [name]: error},
+      errors: { ...prev.errors, [name]: error },
       isValid: false,
     }));
   }, []);
@@ -197,22 +203,22 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
   const clearErrors = useCallback((name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[]) => {
     setFormState((prev) => {
       if (!name) {
-        return {...prev, errors: {}, isValid: true};
+        return { ...prev, errors: {}, isValid: true };
       }
 
       const names = Array.isArray(name) ? name : [name];
-      const newErrors = {...prev.errors};
+      const newErrors = { ...prev.errors };
       names.forEach((n) => {
         delete newErrors[n];
       });
 
-      return {...prev, errors: newErrors, isValid: Object.keys(newErrors).length === 0};
+      return { ...prev, errors: newErrors, isValid: Object.keys(newErrors).length === 0 };
     });
   }, []);
 
   const trigger = useCallback(
     async (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[]): Promise<boolean> => {
-      setFormState((prev) => ({...prev, isValidating: true}));
+      setFormState((prev) => ({ ...prev, isValidating: true }));
 
       let isValid = true;
 
@@ -227,7 +233,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
         }));
       } else {
         const names = Array.isArray(name) ? name : [name];
-        const newErrors = {...formState.errors};
+        const newErrors = { ...formState.errors };
 
         for (const fieldName of names) {
           const error = await validateField(fieldName, formValues[fieldName]);
@@ -255,7 +261,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
   const register = useCallback(
     (name: FieldPath<TFieldValues>): UseFormRegisterReturn => {
       if (!fieldsRef.current.has(name)) {
-        fieldsRef.current.set(name, {name});
+        fieldsRef.current.set(name, { name });
       }
 
       return {
@@ -269,7 +275,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
         onBlur: () => {
           setFormState((prev) => ({
             ...prev,
-            touchedFields: {...prev.touchedFields, [name]: true},
+            touchedFields: { ...prev.touchedFields, [name]: true },
           }));
 
           if (mode === 'onBlur' || mode === 'all') {
@@ -279,7 +285,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
           }
         },
         ref: (instance: any) => {
-          fieldsRef.current.set(name, {...fieldsRef.current.get(name), ref: instance});
+          fieldsRef.current.set(name, { ...fieldsRef.current.get(name), ref: instance });
         },
       };
     },
@@ -292,7 +298,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
       onInvalid?: (errors: FieldErrors<TFieldValues>) => void
     ) => {
       return async () => {
-        setFormState((prev) => ({...prev, isSubmitting: true}));
+        setFormState((prev) => ({ ...prev, isSubmitting: true }));
 
         const errors = await validateForm(formValues);
         const isValid = Object.keys(errors).length === 0;
@@ -314,7 +320,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
           onInvalid?.(errors);
         }
 
-        setFormState((prev) => ({...prev, isSubmitting: false}));
+        setFormState((prev) => ({ ...prev, isSubmitting: false }));
       };
     },
     [formValues, validateForm]
@@ -322,7 +328,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
 
   const reset = useCallback((values?: Partial<TFieldValues>) => {
     const newValues = values ?? defaultValuesRef.current;
-    setFormValues({...newValues} as TFieldValues);
+    setFormValues({ ...newValues } as TFieldValues);
     setFormState({
       errors: {},
       touchedFields: {},
@@ -373,4 +379,3 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
     control,
   };
 }
-

@@ -62,4 +62,3 @@ describe('AppHeader', () => {
     expect(screen.getByText('menu.products')).toBeInTheDocument();
   });
 });
-

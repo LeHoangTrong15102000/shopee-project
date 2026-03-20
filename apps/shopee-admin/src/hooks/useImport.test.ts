@@ -16,7 +16,9 @@ describe('useImportStats', () => {
 describe('useImportProducts', () => {
   it('imports products successfully', async () => {
     const onSuccess = vi.fn();
-    const { result } = renderHook(() => useImportProducts(onSuccess), { wrapper: createQueryWrapper() });
+    const { result } = renderHook(() => useImportProducts(onSuccess), {
+      wrapper: createQueryWrapper(),
+    });
     result.current.mutate();
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
   });
@@ -27,4 +29,3 @@ describe('useImportProducts', () => {
     expect(result.current.mutate).toBeDefined();
   });
 });
-

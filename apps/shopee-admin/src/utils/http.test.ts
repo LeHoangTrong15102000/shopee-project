@@ -1,6 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axios from 'axios';
-import { Http, setOnAuthFailure, setOnTokenRefreshed, getAccessTokenFromLS, setAccessTokenToLS, setProfileToLS, clearLS, URL_LOGIN, URL_LOGOUT, URL_REFRESH_TOKEN } from './http';
+import {
+  Http,
+  setOnAuthFailure,
+  setOnTokenRefreshed,
+  getAccessTokenFromLS,
+  setAccessTokenToLS,
+  setProfileToLS,
+  clearLS,
+  URL_LOGIN,
+  URL_LOGOUT,
+  URL_REFRESH_TOKEN,
+} from './http';
 
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
@@ -43,7 +54,11 @@ describe('Http class', () => {
       const mockAdapter = vi.fn().mockImplementation((config: any) => {
         capturedHeaders = config.headers || {};
         return Promise.resolve({
-          data: {}, status: 200, statusText: 'OK', headers: {}, config,
+          data: {},
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+          config,
         });
       });
       httpInstance.instance.defaults.adapter = mockAdapter;
@@ -57,7 +72,11 @@ describe('Http class', () => {
       const mockAdapter = vi.fn().mockImplementation((config: any) => {
         capturedHeaders = config.headers || {};
         return Promise.resolve({
-          data: {}, status: 200, statusText: 'OK', headers: {}, config,
+          data: {},
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+          config,
         });
       });
       httpInstance.instance.defaults.adapter = mockAdapter;
@@ -132,13 +151,20 @@ describe('Http class', () => {
         callCount++;
         if (callCount === 1) {
           const error = new axios.AxiosError('Unauthorized', '401', config, null, {
-            status: 401, data: {}, statusText: 'Unauthorized', headers: {}, config,
+            status: 401,
+            data: {},
+            statusText: 'Unauthorized',
+            headers: {},
+            config,
           } as any);
           return Promise.reject(error);
         }
         return Promise.resolve({
           data: { message: 'Success', data: [] },
-          status: 200, statusText: 'OK', headers: {}, config,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+          config,
         });
       });
       httpInstance.instance.defaults.adapter = mockAdapter;
@@ -155,12 +181,20 @@ describe('Http class', () => {
       const mockAdapter = vi.fn().mockImplementation((config: any) => {
         if (config.url === URL_REFRESH_TOKEN) {
           const error = new axios.AxiosError('Refresh failed', '401', config, null, {
-            status: 401, data: {}, statusText: 'Unauthorized', headers: {}, config,
+            status: 401,
+            data: {},
+            statusText: 'Unauthorized',
+            headers: {},
+            config,
           } as any);
           return Promise.reject(error);
         }
         const error = new axios.AxiosError('Unauthorized', '401', config, null, {
-          status: 401, data: {}, statusText: 'Unauthorized', headers: {}, config,
+          status: 401,
+          data: {},
+          statusText: 'Unauthorized',
+          headers: {},
+          config,
         } as any);
         return Promise.reject(error);
       });
@@ -185,12 +219,20 @@ describe('Http class', () => {
       const mockAdapter = vi.fn().mockImplementation((config: any) => {
         if (config.url === URL_REFRESH_TOKEN) {
           const error = new axios.AxiosError('Refresh failed', '401', config, null, {
-            status: 401, data: {}, statusText: 'Unauthorized', headers: {}, config,
+            status: 401,
+            data: {},
+            statusText: 'Unauthorized',
+            headers: {},
+            config,
           } as any);
           return Promise.reject(error);
         }
         const error = new axios.AxiosError('Unauthorized', '401', config, null, {
-          status: 401, data: {}, statusText: 'Unauthorized', headers: {}, config,
+          status: 401,
+          data: {},
+          statusText: 'Unauthorized',
+          headers: {},
+          config,
         } as any);
         return Promise.reject(error);
       });
@@ -207,7 +249,11 @@ describe('Http class', () => {
       const httpInstance = new Http();
       const mockAdapter = vi.fn().mockImplementation((config: any) => {
         const error = new axios.AxiosError('Server Error', '500', config, null, {
-          status: 500, data: { message: 'Internal Server Error' }, statusText: 'Internal Server Error', headers: {}, config,
+          status: 500,
+          data: { message: 'Internal Server Error' },
+          statusText: 'Internal Server Error',
+          headers: {},
+          config,
         } as any);
         return Promise.reject(error);
       });
@@ -262,4 +308,3 @@ describe('Http class', () => {
     });
   });
 });
-

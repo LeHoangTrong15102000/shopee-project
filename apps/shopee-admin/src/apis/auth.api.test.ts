@@ -37,4 +37,3 @@ describe('auth.api', () => {
     expect(mockHttp.post).toHaveBeenCalledWith('logout');
   });
 });
-

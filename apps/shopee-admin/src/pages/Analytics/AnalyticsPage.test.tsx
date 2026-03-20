@@ -72,4 +72,3 @@ describe('AnalyticsPage', () => {
     expect(screen.getByText('chatbot.totalMessages')).toBeInTheDocument();
   });
 });
-

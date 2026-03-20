@@ -58,4 +58,3 @@ describe('VoucherDetailPage', () => {
     expect(screen.getByText('detail.status')).toBeInTheDocument();
   });
 });
-

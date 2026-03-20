@@ -201,4 +201,3 @@ describe('CategoryListPage', () => {
     });
   });
 });
-

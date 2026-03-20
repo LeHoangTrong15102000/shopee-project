@@ -148,4 +148,3 @@ if (shouldWatch) {
 }
 
 export default { buildColorsCss };
-

@@ -13,7 +13,9 @@ describe('users.api', () => {
 
   it('getUsers calls GET /admin/users with params', () => {
     usersApi.getUsers({ page: 1, limit: 10, search: 'test' });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/users', { params: { page: 1, limit: 10, search: 'test' } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/users', {
+      params: { page: 1, limit: 10, search: 'test' },
+    });
   });
 
   it('getUser calls GET /admin/users/:id', () => {
@@ -37,4 +39,3 @@ describe('users.api', () => {
     expect(mockHttp.delete).toHaveBeenCalledWith('admin/users/delete/user-1');
   });
 });
-

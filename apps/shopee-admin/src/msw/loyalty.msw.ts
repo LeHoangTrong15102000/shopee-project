@@ -15,10 +15,13 @@ const loyaltyHandlers = [
 
   http.post(`${API_URL}/admin/loyalty/rewards`, async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown>;
-    return HttpResponse.json({
-      message: 'Tạo phần thưởng thành công',
-      data: { ...mockRewards[0], ...body, _id: `reward-new-${Date.now()}` },
-    }, { status: 201 });
+    return HttpResponse.json(
+      {
+        message: 'Tạo phần thưởng thành công',
+        data: { ...mockRewards[0], ...body, _id: `reward-new-${Date.now()}` },
+      },
+      { status: 201 },
+    );
   }),
 
   http.put(`${API_URL}/admin/loyalty/rewards/:id`, async ({ params, request }) => {
@@ -65,4 +68,3 @@ const loyaltyHandlers = [
 ];
 
 export default loyaltyHandlers;
-

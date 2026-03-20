@@ -175,7 +175,9 @@ describe('InventoryPage', () => {
       expect(screen.getByRole('table')).toBeInTheDocument();
     });
     await waitFor(() => {
-      expect(screen.getAllByRole('button', { name: /actions.updateStock/i }).length).toBeGreaterThan(0);
+      expect(
+        screen.getAllByRole('button', { name: /actions.updateStock/i }).length,
+      ).toBeGreaterThan(0);
     });
     const updateButtons = screen.getAllByRole('button', { name: /actions.updateStock/i });
     await user.click(updateButtons[0]);
@@ -204,7 +206,9 @@ describe('InventoryPage', () => {
       expect(screen.getByRole('table')).toBeInTheDocument();
     });
     await waitFor(() => {
-      expect(screen.getAllByRole('button', { name: /actions.updateStock/i }).length).toBeGreaterThan(0);
+      expect(
+        screen.getAllByRole('button', { name: /actions.updateStock/i }).length,
+      ).toBeGreaterThan(0);
     });
     const updateButtons = screen.getAllByRole('button', { name: /actions.updateStock/i });
     await user.click(updateButtons[0]);
@@ -220,7 +224,9 @@ describe('InventoryPage', () => {
       expect(screen.getByRole('table')).toBeInTheDocument();
     });
     await waitFor(() => {
-      expect(screen.getAllByRole('button', { name: /actions.updateStock/i }).length).toBeGreaterThan(0);
+      expect(
+        screen.getAllByRole('button', { name: /actions.updateStock/i }).length,
+      ).toBeGreaterThan(0);
     });
     const updateButtons = screen.getAllByRole('button', { name: /actions.updateStock/i });
     await user.click(updateButtons[0]);
@@ -239,7 +245,9 @@ describe('InventoryPage', () => {
       expect(screen.getByRole('table')).toBeInTheDocument();
     });
     await waitFor(() => {
-      expect(screen.getAllByRole('button', { name: /actions.updateStock/i }).length).toBeGreaterThan(0);
+      expect(
+        screen.getAllByRole('button', { name: /actions.updateStock/i }).length,
+      ).toBeGreaterThan(0);
     });
     await user.click(screen.getAllByRole('button', { name: /actions.updateStock/i })[0]);
     await waitFor(() => {
@@ -255,4 +263,3 @@ describe('InventoryPage', () => {
     });
   });
 });
-

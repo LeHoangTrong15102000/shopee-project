@@ -28,7 +28,7 @@ class Http {
         }
         return config;
       },
-      (error) => Promise.reject(error),
+      (error) => Promise.reject(error)
     );
 
     this.instance.interceptors.response.use(
@@ -63,7 +63,7 @@ class Http {
         }
 
         return Promise.reject(error);
-      },
+      }
     );
   }
 

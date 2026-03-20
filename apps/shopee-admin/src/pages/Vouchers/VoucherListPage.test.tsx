@@ -254,4 +254,3 @@ describe('VoucherListPage', () => {
     expect(screen.getByLabelText('form.minOrder')).toHaveValue(50000);
   });
 });
-

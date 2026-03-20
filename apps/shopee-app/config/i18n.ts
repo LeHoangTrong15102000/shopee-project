@@ -1,5 +1,5 @@
 import i18n from 'i18next';
-import {initReactI18next} from 'react-i18next';
+import { initReactI18next } from 'react-i18next';
 import * as Localization from 'expo-localization';
 import en from './locales/en.json';
 import vi from './locales/vi.json';
@@ -35,32 +35,28 @@ const getDeviceLanguage = (): LanguageCode => {
 };
 
 const resources = {
-  en: {translation: en},
-  vi: {translation: vi},
+  en: { translation: en },
+  vi: { translation: vi },
 };
 
-i18n
-  .use(initReactI18next)
-  .init({
-    resources,
-    lng: getDeviceLanguage(),
-    fallbackLng: 'en',
-    defaultNS: 'translation',
-    ns: ['translation'],
-    interpolation: {
-      escapeValue: false,
-    },
-    react: {
-      useSuspense: false,
-    },
-    keySeparator: '.',
-    nsSeparator: ':',
-    returnEmptyString: false,
-  });
+i18n.use(initReactI18next).init({
+  resources,
+  lng: getDeviceLanguage(),
+  fallbackLng: 'en',
+  defaultNS: 'translation',
+  ns: ['translation'],
+  interpolation: {
+    escapeValue: false,
+  },
+  react: {
+    useSuspense: false,
+  },
+  keySeparator: '.',
+  nsSeparator: ':',
+  returnEmptyString: false,
+});
 
-
-
-Object.values(LANGUAGES).forEach(lang => {
+Object.values(LANGUAGES).forEach((lang) => {
   if (Object.keys(lang.schema).length > 0) {
     i18n.addResourceBundle(lang.code, 'translation', lang.schema, true, true);
   }

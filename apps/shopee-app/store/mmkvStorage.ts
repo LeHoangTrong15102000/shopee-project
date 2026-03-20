@@ -9,4 +9,3 @@ export const mmkvStorage = {
   setItem: (name: string, value: string) => storage.set(name, value),
   removeItem: (name: string) => storage.delete(name),
 };
-

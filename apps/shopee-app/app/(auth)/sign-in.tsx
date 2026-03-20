@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { AccessibilityInfo, KeyboardAvoidingView, Platform, ScrollView, TextInput, View } from 'react-native';
+import {
+  AccessibilityInfo,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  TextInput,
+  View,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -53,12 +60,10 @@ export default function SignInScreen() {
   return (
     <LinearGradient
       colors={[AppColors.gradientStart, AppColors.gradientMiddle, AppColors.gradientEnd]}
-      style={{ flex: 1 }}
-    >
+      style={{ flex: 1 }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
-      >
+        style={{ flex: 1 }}>
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
@@ -67,14 +72,15 @@ export default function SignInScreen() {
             paddingTop: insets.top + AppSpacing.screenPaddingVertical,
             paddingBottom: insets.bottom + AppSpacing.screenPaddingVertical,
           }}
-          keyboardShouldPersistTaps="handled"
-        >
+          keyboardShouldPersistTaps="handled">
           {/* Logo / Title */}
-          <Animated.View entering={reduceMotion ? undefined : FadeInDown.delay(100).duration(600)} className="items-center mb-8">
+          <Animated.View
+            entering={reduceMotion ? undefined : FadeInDown.delay(100).duration(600)}
+            className="mb-8 items-center">
             <AppText variant="display3" weight="bold" className="text-white" raw>
               Shopee
             </AppText>
-            <AppText variant="body" className="text-white/70 mt-2">
+            <AppText variant="body" className="mt-2 text-white/70">
               {t('AUTH_SIGN_IN_TITLE')}
             </AppText>
           </Animated.View>
@@ -138,7 +144,9 @@ export default function SignInScreen() {
           </Animated.View>
 
           {/* Sign In Button */}
-          <Animated.View entering={reduceMotion ? undefined : FadeInDown.delay(400).duration(600)} className="mt-2">
+          <Animated.View
+            entering={reduceMotion ? undefined : FadeInDown.delay(400).duration(600)}
+            className="mt-2">
             <AppButton
               variant="primary"
               size="lg"
@@ -147,30 +155,32 @@ export default function SignInScreen() {
               disabled={loading}
               className="w-full"
               accessibilityRole="button"
-              accessibilityLabel={t('AUTH_SIGN_IN_BUTTON')}
-            >
+              accessibilityLabel={t('AUTH_SIGN_IN_BUTTON')}>
               {t('AUTH_SIGN_IN_BUTTON')}
             </AppButton>
           </Animated.View>
 
           {/* Google Sign-In Placeholder */}
-          <Animated.View entering={reduceMotion ? undefined : FadeInDown.delay(500).duration(600)} className="mt-4">
+          <Animated.View
+            entering={reduceMotion ? undefined : FadeInDown.delay(500).duration(600)}
+            className="mt-4">
             <AppButton
               variant="outline"
               size="lg"
               onPress={() => showInfo(t('AUTH_COMING_SOON'))}
               className="w-full border-white/30"
               textClassname="text-white"
-              icon={<Icon name="Chrome" className="w-5 h-5 text-white" />}
+              icon={<Icon name="Chrome" className="h-5 w-5 text-white" />}
               accessibilityRole="button"
-              accessibilityLabel={t('AUTH_GOOGLE_SIGN_IN')}
-            >
+              accessibilityLabel={t('AUTH_GOOGLE_SIGN_IN')}>
               {t('AUTH_GOOGLE_SIGN_IN')}
             </AppButton>
           </Animated.View>
 
           {/* Sign Up Link */}
-          <Animated.View entering={reduceMotion ? undefined : FadeInDown.delay(600).duration(600)} className="flex-row justify-center items-center mt-6">
+          <Animated.View
+            entering={reduceMotion ? undefined : FadeInDown.delay(600).duration(600)}
+            className="mt-6 flex-row items-center justify-center">
             <AppText variant="body" className="text-white/70">
               {t('AUTH_NO_ACCOUNT')}{' '}
             </AppText>
@@ -180,8 +190,7 @@ export default function SignInScreen() {
               className="min-h-[44px] px-2"
               textClassname="text-primary"
               accessibilityRole="link"
-              accessibilityLabel={t('AUTH_SIGN_UP_LINK')}
-            >
+              accessibilityLabel={t('AUTH_SIGN_UP_LINK')}>
               {t('AUTH_SIGN_UP_LINK')}
             </AppButton>
           </Animated.View>

@@ -32,4 +32,3 @@ describe('AdminLayout', () => {
     expect(screen.getByText('Outlet Content')).toBeInTheDocument();
   });
 });
-

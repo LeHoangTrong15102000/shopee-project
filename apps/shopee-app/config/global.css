@@ -1,17 +1,17 @@
-@import "generated/colors.css";
+@import 'generated/colors.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 .screen-title {
-  @apply text-foreground text-4xl font-sans-bold;
+  @apply font-sans-bold text-4xl text-foreground;
 }
 
 .screen-subtitle {
-  @apply text-neutral-400 text-lg font-sans-regular leading-tight;
+  @apply font-sans-regular text-lg leading-tight text-neutral-400;
 }
 
 .section-title {
-  @apply text-foreground text-lg font-bold font-sans-regular;
+  @apply font-sans-regular text-lg font-bold text-foreground;
 }

@@ -82,4 +82,3 @@ describe('useIsMobile', () => {
     expect(result.current).toBe(true);
   });
 });
-

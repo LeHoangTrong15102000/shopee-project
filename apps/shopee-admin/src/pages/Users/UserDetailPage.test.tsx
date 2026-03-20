@@ -59,4 +59,3 @@ describe('UserDetailPage', () => {
     expect(screen.getByText('detail.roles')).toBeInTheDocument();
   });
 });
-

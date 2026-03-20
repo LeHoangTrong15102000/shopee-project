@@ -25,7 +25,7 @@ import { ErrorResponseApi } from 'src/types/utils.type';
 // Sử dụng import.meta.env của Vite thay vì process.env (không hoạt động trong browser)
 const LOGIN_REDIRECT_URL =
   import.meta.env.VITE_LOGIN_REDIRECT_URL ??
-  (import.meta.env.DEV ? 'http://localhost:4000/login' : 'https://shop.lehoangtrong.online/login');
+  (import.meta.env.DEV ? 'http://localhost:4000/login' : 'https://shop.lehoangtrong.com/login');
 
 interface HttpOptions {
   redirectOnTokenExpiry?: boolean;

@@ -184,7 +184,15 @@ export function DataTable<TData, TValue>({
         </div>
       )}
 
-      <div ref={tableContainerRef} tabIndex={0} role="region" aria-label={t('table.region', { defaultValue: 'Data table' })} aria-busy={isLoading} className="overflow-auto rounded-md border" style={{ maxHeight: 'min(600px, 70vh)' }}>
+      <div
+        ref={tableContainerRef}
+        tabIndex={0}
+        role="region"
+        aria-label={t('table.region', { defaultValue: 'Data table' })}
+        aria-busy={isLoading}
+        className="overflow-auto rounded-md border"
+        style={{ maxHeight: 'min(600px, 70vh)' }}
+      >
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (

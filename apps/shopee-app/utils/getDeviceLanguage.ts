@@ -1,5 +1,5 @@
-import {LanguageCode} from "@/config/i18n.ts";
-import * as RNLocalize from "react-native-localize";
+import { LanguageCode } from '@/config/i18n.ts';
+import * as RNLocalize from 'react-native-localize';
 
 export const getDeviceLanguage = (): LanguageCode => {
   const locales = RNLocalize.getLocales();

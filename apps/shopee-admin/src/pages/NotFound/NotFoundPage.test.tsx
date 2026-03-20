@@ -31,4 +31,3 @@ describe('NotFoundPage', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/');
   });
 });
-

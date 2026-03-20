@@ -58,4 +58,3 @@ describe('OrderDetailPage', () => {
     expect(screen.getByText('detail.customer')).toBeInTheDocument();
   });
 });
-

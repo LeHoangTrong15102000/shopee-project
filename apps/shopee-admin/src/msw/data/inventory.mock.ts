@@ -11,4 +11,3 @@ export const mockOutOfStockProducts: Product[] = [
   createMockProduct({ _id: 'inv-4', name: 'MacBook Pro M3', quantity: 0, sold: 100 }),
   createMockProduct({ _id: 'inv-5', name: 'iPad Air', quantity: 0, sold: 50 }),
 ];
-

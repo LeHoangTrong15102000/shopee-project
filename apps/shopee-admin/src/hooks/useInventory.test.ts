@@ -23,7 +23,9 @@ describe('useOutOfStock', () => {
 describe('useUpdateStock', () => {
   it('updates stock successfully', async () => {
     const onSuccess = vi.fn();
-    const { result } = renderHook(() => useUpdateStock(onSuccess), { wrapper: createQueryWrapper() });
+    const { result } = renderHook(() => useUpdateStock(onSuccess), {
+      wrapper: createQueryWrapper(),
+    });
     result.current.mutate({ id: 'inv-1', qty: 50 });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
   });
@@ -32,9 +34,10 @@ describe('useUpdateStock', () => {
 describe('useBulkUpdateStock', () => {
   it('bulk updates stock successfully', async () => {
     const onSuccess = vi.fn();
-    const { result } = renderHook(() => useBulkUpdateStock(onSuccess), { wrapper: createQueryWrapper() });
+    const { result } = renderHook(() => useBulkUpdateStock(onSuccess), {
+      wrapper: createQueryWrapper(),
+    });
     result.current.mutate([{ product_id: 'inv-1', quantity: 50 }]);
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
   });
 });
-

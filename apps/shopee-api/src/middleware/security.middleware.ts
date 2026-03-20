@@ -216,6 +216,13 @@ export const resetLoginAttempts = (ip: string, email?: string): void => {
 }
 
 /**
+ * Reset all login attempts — dùng cho testing
+ */
+export const resetAllLoginAttempts = (): void => {
+  loginAttempts.clear()
+}
+
+/**
  * Middleware log các hoạt động đáng ngờ
  */
 export const suspiciousActivityMiddleware = (

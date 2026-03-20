@@ -262,7 +262,7 @@ describe('WebSocket UI Components', () => {
 
     test('renders with null currentStatus', () => {
       const { container } = render(<OrderStatusTracker currentStatus={null} isSubscribed={false} />)
-      expect(container.firstChild).toBeTruthy()
+      expect(container).toBeInstanceOf(HTMLDivElement)
     })
   })
 

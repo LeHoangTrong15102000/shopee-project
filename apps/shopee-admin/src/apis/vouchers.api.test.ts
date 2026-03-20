@@ -24,7 +24,9 @@ describe('vouchers.api', () => {
 
   it('getVoucherUsage calls GET /admin/vouchers/:id/usage', () => {
     vouchersApi.getVoucherUsage('v-1', { page: 1, limit: 10 });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/vouchers/v-1/usage', { params: { page: 1, limit: 10 } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/vouchers/v-1/usage', {
+      params: { page: 1, limit: 10 },
+    });
   });
 
   it('getVoucherStats calls GET /admin/vouchers/stats', () => {
@@ -54,4 +56,3 @@ describe('vouchers.api', () => {
     expect(mockHttp.delete).toHaveBeenCalledWith('admin/vouchers/v-1');
   });
 });
-

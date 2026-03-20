@@ -32,7 +32,9 @@ const inventoryHandlers = [
   }),
 
   http.put(`${API_URL}/admin/inventory/bulk-stock`, async ({ request }) => {
-    const body = (await request.json()) as { items: Array<{ product_id: string; quantity: number }> };
+    const body = (await request.json()) as {
+      items: Array<{ product_id: string; quantity: number }>;
+    };
     return HttpResponse.json({
       message: 'Cập nhật hàng loạt thành công',
       data: { modifiedCount: body.items.length },
@@ -41,4 +43,3 @@ const inventoryHandlers = [
 ];
 
 export default inventoryHandlers;
-

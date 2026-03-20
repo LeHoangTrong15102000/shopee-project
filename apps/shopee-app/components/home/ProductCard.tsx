@@ -1,22 +1,15 @@
 import React from 'react';
-import { View, Image, Dimensions } from 'react-native';
+import { View, Image, Dimensions, TouchableOpacity } from 'react-native';
 import { Star } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 import { AppText } from '@/components/ui';
 import { useColors } from '@/hooks/useColors';
+import { formatPrice, getDiscountPercent } from '@/utils/price';
 import { Product } from '@/services/product.api';
 
 const CARD_GAP = 8;
 const CARD_PADDING = 16;
 const CARD_WIDTH = (Dimensions.get('window').width - CARD_PADDING * 2 - CARD_GAP) / 2;
-
-function formatPrice(price: number): string {
-  return '₫' + price.toLocaleString('vi-VN');
-}
-
-function getDiscountPercent(price: number, original: number): number {
-  if (original <= price) return 0;
-  return Math.round(((original - price) / original) * 100);
-}
 
 interface ProductCardProps {
   product: Product;
@@ -24,11 +17,19 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const colors = useColors();
+  const router = useRouter();
   const discount = getDiscountPercent(product.price, product.price_before_discount);
   const hasDiscount = discount > 0;
 
   return (
-    <View style={{ width: CARD_WIDTH }} className="overflow-hidden rounded-lg bg-neutrals900">
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={() => router.push(`/product/${product._id}`)}
+      accessibilityRole="button"
+      accessibilityLabel={`View ${product.name}`}
+      style={{ width: CARD_WIDTH }}
+      className="overflow-hidden rounded-lg bg-neutrals900"
+    >
       <View style={{ width: CARD_WIDTH, height: CARD_WIDTH, position: 'relative' }}>
         <Image
           source={{ uri: product.image }}
@@ -78,7 +79,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           </AppText>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

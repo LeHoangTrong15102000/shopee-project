@@ -13,7 +13,9 @@ describe('qa.api', () => {
 
   it('getQuestions calls GET /admin/qa/questions with params', () => {
     qaApi.getQuestions({ page: 1, limit: 10, unanswered: 'true' });
-    expect(mockHttp.get).toHaveBeenCalledWith('admin/qa/questions', { params: { page: 1, limit: 10, unanswered: 'true' } });
+    expect(mockHttp.get).toHaveBeenCalledWith('admin/qa/questions', {
+      params: { page: 1, limit: 10, unanswered: 'true' },
+    });
   });
 
   it('getQAStats calls GET /admin/qa/stats', () => {
@@ -31,4 +33,3 @@ describe('qa.api', () => {
     expect(mockHttp.delete).toHaveBeenCalledWith('admin/qa/questions/q-1/answers/a-1');
   });
 });
-

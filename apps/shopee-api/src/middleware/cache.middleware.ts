@@ -3,7 +3,6 @@
  */
 
 import { Request, Response, NextFunction } from 'express'
-type Req = Request<Record<string, string>>
 import { cacheService, CacheKeys, CacheTTL } from '@utils/cache.service'
 
 /**
@@ -113,7 +112,7 @@ export const cacheProductsList = cacheResponse(
  * Cache middleware cho chi tiết sản phẩm (TTL: 10 phút)
  */
 export const cacheProductDetail = cacheResponse(
-  (req: Req) => CacheKeys.productDetail(req.params.product_id),
+  (req: Request) => CacheKeys.productDetail(req.params.product_id as string),
   CacheTTL.PRODUCT_DETAIL
 )
 

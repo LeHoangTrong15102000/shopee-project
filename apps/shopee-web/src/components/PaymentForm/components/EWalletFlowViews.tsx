@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import Button from 'src/components/Button';
 import { formatCurrency } from './WalletCard';
 
@@ -61,6 +62,7 @@ function FailedAnimation() {
 }
 
 export function WaitingView({ walletName }: { walletName: string }) {
+  const { t } = useTranslation('payment');
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -71,10 +73,10 @@ export function WaitingView({ walletName }: { walletName: string }) {
       <LoadingSpinner />
       <div className="text-center">
         <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-          Đang chờ thanh toán...
+          {t('eWallet.waitingPayment')}
         </h4>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Vui lòng hoàn tất thanh toán trên ứng dụng {walletName}
+          {t('eWallet.completePaymentOn', { walletName })}
         </p>
       </div>
       <motion.div
@@ -83,13 +85,14 @@ export function WaitingView({ walletName }: { walletName: string }) {
         className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
       >
         <span className="h-2 w-2 rounded-full bg-orange" />
-        <span>Đang xử lý giao dịch</span>
+        <span>{t('eWallet.processingTransaction')}</span>
       </motion.div>
     </motion.div>
   );
 }
 
 export function SuccessView({ amount }: { amount: number }) {
+  const { t } = useTranslation('payment');
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -100,10 +103,10 @@ export function SuccessView({ amount }: { amount: number }) {
       <SuccessAnimation />
       <div className="text-center">
         <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-          Thanh toán thành công!
+          {t('eWallet.paymentSuccess')}
         </h4>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Bạn đã thanh toán thành công {formatCurrency(amount)}
+          {t('eWallet.paidSuccessfully', { amount: formatCurrency(amount) })}
         </p>
       </div>
       <motion.div
@@ -112,7 +115,7 @@ export function SuccessView({ amount }: { amount: number }) {
         transition={{ delay: 0.5 }}
         className="rounded-lg bg-green-50 px-4 py-2 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-400"
       >
-        Đơn hàng của bạn đang được xử lý
+        {t('eWallet.orderProcessing')}
       </motion.div>
     </motion.div>
   );
@@ -127,6 +130,7 @@ export function FailedView({
   onRetry: () => void;
   onCancel: () => void;
 }) {
+  const { t } = useTranslation('payment');
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -137,7 +141,7 @@ export function FailedView({
       <FailedAnimation />
       <div className="text-center">
         <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-          Thanh toán thất bại
+          {t('eWallet.paymentFailed')}
         </h4>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{message}</p>
       </div>
@@ -147,14 +151,14 @@ export function FailedView({
           onClick={onRetry}
           className="rounded-lg bg-orange px-6 py-3 text-white hover:bg-orange/90"
         >
-          Thử lại
+          {t('eWallet.retryPayment')}
         </Button>
         <Button
           type="button"
           onClick={onCancel}
           className="rounded-lg border border-gray-300 bg-white px-6 py-3 text-gray-700 hover:bg-gray-50 dark:border-slate-600 dark:bg-slate-800 dark:text-gray-300 dark:hover:bg-slate-700"
         >
-          Chọn phương thức khác
+          {t('eWallet.chooseOtherMethod')}
         </Button>
       </div>
     </motion.div>
@@ -168,6 +172,7 @@ export function TimeoutView({
   onRegenerateQR: () => void;
   onCancel: () => void;
 }) {
+  const { t } = useTranslation('payment');
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -191,9 +196,11 @@ export function TimeoutView({
         </svg>
       </div>
       <div className="text-center">
-        <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">Mã QR đã hết hạn</h4>
+        <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+          {t('eWallet.qrExpired')}
+        </h4>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Mã QR thanh toán đã hết hạn. Vui lòng tạo mã mới để tiếp tục.
+          {t('eWallet.qrExpiredMessage')}
         </p>
       </div>
       <div className="flex w-full flex-col gap-3 sm:flex-row sm:justify-center">
@@ -202,14 +209,14 @@ export function TimeoutView({
           onClick={onRegenerateQR}
           className="rounded-lg bg-orange px-6 py-3 text-white hover:bg-orange/90"
         >
-          Tạo mã QR mới
+          {t('eWallet.regenerateQR')}
         </Button>
         <Button
           type="button"
           onClick={onCancel}
           className="rounded-lg border border-gray-300 bg-white px-6 py-3 text-gray-700 hover:bg-gray-50 dark:border-slate-600 dark:bg-slate-800 dark:text-gray-300 dark:hover:bg-slate-700"
         >
-          Hủy
+          {t('eWallet.cancel')}
         </Button>
       </div>
     </motion.div>

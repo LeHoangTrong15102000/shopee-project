@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import Button from 'src/components/Button';
 
 interface EmptyStateProps {
@@ -6,6 +7,7 @@ interface EmptyStateProps {
 }
 
 const EmptyState = ({ onAddNew }: EmptyStateProps) => {
+  const { t } = useTranslation('address');
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -59,11 +61,9 @@ const EmptyState = ({ onAddNew }: EmptyStateProps) => {
         transition={{ delay: 0.2 }}
         className="mt-6 text-center"
       >
-        <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
-          Chưa có địa chỉ nào
-        </h3>
+        <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">{t('noAddress')}</h3>
         <p className="mx-auto mt-2 max-w-xs text-sm text-gray-500 dark:text-gray-400">
-          Thêm địa chỉ giao hàng để việc mua sắm trở nên nhanh chóng và thuận tiện hơn
+          {t('empty.description')}
         </p>
       </motion.div>
 
@@ -82,7 +82,7 @@ const EmptyState = ({ onAddNew }: EmptyStateProps) => {
               clipRule="evenodd"
             />
           </svg>
-          Giao hàng nhanh
+          {t('empty.feature.fastDelivery')}
         </span>
         <span className="flex items-center gap-1">
           <svg className="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
@@ -92,7 +92,7 @@ const EmptyState = ({ onAddNew }: EmptyStateProps) => {
               clipRule="evenodd"
             />
           </svg>
-          Lưu nhiều địa chỉ
+          {t('empty.feature.multipleAddresses')}
         </span>
         <span className="flex items-center gap-1">
           <svg className="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
@@ -102,7 +102,7 @@ const EmptyState = ({ onAddNew }: EmptyStateProps) => {
               clipRule="evenodd"
             />
           </svg>
-          Thanh toán dễ dàng
+          {t('empty.feature.easyCheckout')}
         </span>
       </motion.div>
 
@@ -118,7 +118,7 @@ const EmptyState = ({ onAddNew }: EmptyStateProps) => {
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          Thêm địa chỉ đầu tiên
+          {t('addFirst')}
         </Button>
       </motion.div>
     </motion.div>

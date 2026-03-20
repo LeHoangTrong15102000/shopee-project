@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import SearchSuggestions from '../SearchSuggestions';
 import SearchHistory from 'src/components/SearchHistory';
 import { useProductQueryStates } from 'src/hooks/nuqs';
@@ -11,6 +12,7 @@ interface SearchBarProps {
 }
 
 const SearchBar = ({ filters, setFilters }: SearchBarProps) => {
+  const { t } = useTranslation('nav');
   const [searchValue, setSearchValue] = useState<string>('');
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
   const [showSearchHistory, setShowSearchHistory] = useState<boolean>(false);
@@ -138,7 +140,7 @@ const SearchBar = ({ filters, setFilters }: SearchBarProps) => {
             value={searchValue}
             type="text"
             className="grow border-none bg-transparent px-2 py-2 text-xs text-[rgba(0,0,0,.95)] outline-hidden placeholder:text-gray-400 sm:px-3 sm:py-2.5 sm:text-sm dark:text-gray-100 dark:placeholder:text-gray-300"
-            placeholder="Tìm kiếm sản phẩm"
+            placeholder={t('nav.searchPlaceholder')}
             onChange={handleChangeInput}
             onFocus={handleFocusInput}
             onBlur={handleBlurInput}

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import SkeletonBase from './SkeletonBase';
 
 interface NotificationSkeletonProps {
@@ -5,8 +6,14 @@ interface NotificationSkeletonProps {
 }
 
 export default function NotificationSkeleton({ count = 3 }: NotificationSkeletonProps) {
+  const { t } = useTranslation('common');
   return (
-    <div role="status" aria-busy="true" aria-label="Đang tải thông báo" className="min-h-[200px]">
+    <div
+      role="status"
+      aria-busy="true"
+      aria-label={t('loading.notifications')}
+      className="min-h-[200px]"
+    >
       {[...Array(count)].map((_, index) => (
         <div
           key={index}

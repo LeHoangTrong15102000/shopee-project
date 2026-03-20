@@ -14,7 +14,7 @@ import {
   formatDate,
   getStatusDisplay,
   pageContainerVariants,
-  paymentMethodLabels,
+  paymentMethodLabelKeys,
   reducedMotionVariants,
   sectionVariants,
   statusBadgeVariants,
@@ -22,7 +22,7 @@ import {
 import { useOrderDetail } from './useOrderDetail';
 
 export default function OrderDetail() {
-  const { t } = useTranslation('order');
+  const { t, i18n } = useTranslation(['order', 'payment']);
   const {
     order,
     tracking,
@@ -239,7 +239,9 @@ export default function OrderDetail() {
             {t('detail.payment')}
           </h2>
           <p className="ml-10.5 text-sm text-gray-600 dark:text-gray-300">
-            {paymentMethodLabels[order.paymentMethod] || order.paymentMethod}
+            {paymentMethodLabelKeys[order.paymentMethod]
+              ? t(paymentMethodLabelKeys[order.paymentMethod] as never)
+              : order.paymentMethod}
           </p>
         </motion.div>
         <motion.div
@@ -320,7 +322,7 @@ export default function OrderDetail() {
             <div>
               <span className="text-gray-500 dark:text-gray-300">{t('detail.orderDate')}</span>
               <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">
-                {formatDate(order.createdAt)}
+                {formatDate(order.createdAt, i18n.language)}
               </span>
             </div>
           </div>

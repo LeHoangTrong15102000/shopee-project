@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { Product } from 'src/types/product.type';
 import { formatCurrency, formatNumberToSocialStyle, generateNameId } from 'src/utils/utils';
 import Button from 'src/components/Button';
@@ -14,6 +15,7 @@ export default function ComparisonMobileCard({
   compareList,
   removeFromCompare,
 }: ComparisonMobileCardProps) {
+  const { t } = useTranslation('compare');
   return (
     <div className="space-y-4 md:hidden">
       {compareList.map((product) => (
@@ -28,7 +30,7 @@ export default function ComparisonMobileCard({
             >
               <img
                 src={product.image}
-                alt={`Hình ảnh sản phẩm ${product.name}`}
+                alt={t('productImage', { name: product.name })}
                 className="h-16 w-16 rounded-lg object-cover"
               />
               <span className="line-clamp-2 text-sm font-medium dark:text-gray-200">
@@ -39,7 +41,7 @@ export default function ComparisonMobileCard({
               animated={false}
               onClick={() => removeFromCompare(product._id)}
               className="shrink-0 rounded-full p-1 transition-colors hover:bg-gray-100 dark:hover:bg-slate-700"
-              aria-label={`Xóa ${product.name} khỏi so sánh`}
+              aria-label={t('removeAriaLabel', { name: product.name })}
             >
               <svg
                 className="h-4 w-4 text-gray-400 dark:text-gray-500"
@@ -58,15 +60,15 @@ export default function ComparisonMobileCard({
           </div>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-500 dark:text-gray-400">Giá</span>
+              <span className="text-gray-500 dark:text-gray-400">{t('price')}</span>
               <span className="font-medium text-orange">₫{formatCurrency(product.price)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500 dark:text-gray-400">Đánh giá</span>
+              <span className="text-gray-500 dark:text-gray-400">{t('rating')}</span>
               <span className="dark:text-gray-200">{product.rating} ⭐</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500 dark:text-gray-400">Đã bán</span>
+              <span className="text-gray-500 dark:text-gray-400">{t('sold')}</span>
               <span className="dark:text-gray-200">{formatNumberToSocialStyle(product.sold)}</span>
             </div>
           </div>

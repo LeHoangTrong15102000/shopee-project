@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { CreateReviewData } from 'src/types/review.type';
 import { Purchase } from 'src/types/purchases.type';
@@ -14,6 +15,7 @@ interface ProductReviewModalProps {
 }
 
 const ProductReviewModal = ({ isOpen, onClose, purchase }: ProductReviewModalProps) => {
+  const { t } = useTranslation('product');
   const [rating, setRating] = useState<number>(5);
   const [comment, setComment] = useState<string>('');
   const [images, _setImages] = useState<string[]>([]);
@@ -26,12 +28,12 @@ const ProductReviewModal = ({ isOpen, onClose, purchase }: ProductReviewModalPro
 
   const handleSubmit = async () => {
     if (!rating || !comment.trim()) {
-      toast.error('Vui lòng đánh giá và viết bình luận');
+      toast.error(t('review.rateAndComment'));
       return;
     }
 
     if (comment.length < 10) {
-      toast.error('Bình luận phải có ít nhất 10 ký tự');
+      toast.error(t('review.minChars'));
       return;
     }
 
@@ -44,14 +46,14 @@ const ProductReviewModal = ({ isOpen, onClose, purchase }: ProductReviewModalPro
 
     createReviewMutation.mutate(reviewData, {
       onSuccess: () => {
-        toast.success('Đánh giá sản phẩm thành công!');
+        toast.success(t('review.success'));
         queryClient.invalidateQueries({ queryKey: ['purchases'] });
         queryClient.invalidateQueries({ queryKey: ['product-reviews'] });
         onClose();
       },
       onError: (error) => {
         const axiosError = error as Error & { response?: { data?: { message?: string } } };
-        toast.error(axiosError?.response?.data?.message || 'Có lỗi xảy ra');
+        toast.error(axiosError?.response?.data?.message || t('error.title'));
       },
     });
   };
@@ -68,7 +70,7 @@ const ProductReviewModal = ({ isOpen, onClose, purchase }: ProductReviewModalPro
         {/* Header */}
         <div className="flex items-center justify-between border-b p-6 dark:border-slate-700">
           <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
-            Đánh Giá Sản Phẩm
+            {t('review.heading')}
           </h2>
           <button
             onClick={onClose}
@@ -92,10 +94,10 @@ const ProductReviewModal = ({ isOpen, onClose, purchase }: ProductReviewModalPro
                 {purchase.product.name}
               </h3>
               <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                Phân loại hàng:{' '}
+                {t('review.category')}{' '}
                 {typeof purchase.product.category === 'object'
                   ? purchase.product.category?.name
-                  : purchase.product.category || 'Mặc định'}
+                  : purchase.product.category || t('review.defaultCategory')}
               </p>
             </div>
           </div>
@@ -103,7 +105,7 @@ const ProductReviewModal = ({ isOpen, onClose, purchase }: ProductReviewModalPro
           {/* Rating */}
           <div className="mb-6">
             <h4 className="mb-3 font-medium text-gray-800 dark:text-gray-200">
-              Chất lượng sản phẩm
+              {t('review.quality')}
             </h4>
             <div className="flex items-center space-x-2">
               {[1, 2, 3, 4, 5].map((star) => (
@@ -121,22 +123,24 @@ const ProductReviewModal = ({ isOpen, onClose, purchase }: ProductReviewModalPro
                 </button>
               ))}
               <span className="ml-2 font-medium text-orange-500">
-                {rating === 5 && 'Tuyệt vời'}
-                {rating === 4 && 'Hài lòng'}
-                {rating === 3 && 'Bình thường'}
-                {rating === 2 && 'Không hài lòng'}
-                {rating === 1 && 'Tệ'}
+                {rating === 5 && t('review.rating.excellent')}
+                {rating === 4 && t('review.rating.satisfied')}
+                {rating === 3 && t('review.rating.normal')}
+                {rating === 2 && t('review.rating.unsatisfied')}
+                {rating === 1 && t('review.rating.terrible')}
               </span>
             </div>
           </div>
 
           {/* Comment */}
           <div className="mb-6">
-            <h4 className="mb-3 font-medium text-gray-800 dark:text-gray-200">Đánh giá của bạn</h4>
+            <h4 className="mb-3 font-medium text-gray-800 dark:text-gray-200">
+              {t('review.yourReview')}
+            </h4>
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="Hãy chia sẻ những điều bạn thích về sản phẩm này với những người mua khác nhé."
+              placeholder={t('review.placeholder')}
               className="w-full resize-none rounded-md border border-gray-300 bg-white p-3 text-gray-900 outline-hidden focus:border-orange-500 dark:border-slate-600 dark:bg-slate-700 dark:text-gray-100"
               rows={4}
               maxLength={2000}
@@ -148,7 +152,9 @@ const ProductReviewModal = ({ isOpen, onClose, purchase }: ProductReviewModalPro
 
           {/* Images Upload - Simplified for now */}
           <div className="mb-6">
-            <h4 className="mb-3 font-medium text-gray-800 dark:text-gray-200">Thêm Hình ảnh</h4>
+            <h4 className="mb-3 font-medium text-gray-800 dark:text-gray-200">
+              {t('review.addImages')}
+            </h4>
             <div className="flex items-center space-x-4">
               <div className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 hover:border-orange-500 dark:border-slate-600">
                 <div className="text-center">
@@ -165,39 +171,43 @@ const ProductReviewModal = ({ isOpen, onClose, purchase }: ProductReviewModalPro
                       d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                     />
                   </svg>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Thêm Hình ảnh</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {t('review.addImages')}
+                  </p>
                 </div>
               </div>
             </div>
-            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Tối đa 10 hình ảnh</p>
+            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">{t('review.maxImages')}</p>
           </div>
 
           {/* Service Rating */}
           <div className="mb-6">
-            <h4 className="mb-3 font-medium text-gray-800 dark:text-gray-200">Về Dịch vụ</h4>
+            <h4 className="mb-3 font-medium text-gray-800 dark:text-gray-200">
+              {t('review.service')}
+            </h4>
 
             <div className="mb-4">
               <label className="mb-2 block text-sm text-gray-700 dark:text-gray-300">
-                Dịch vụ của người bán
+                {t('review.sellerService')}
               </label>
               <ProductRating
                 rating={5}
                 activeClassname="w-5 h-5 fill-yellow-400 text-yellow-400"
                 nonActiveClassname="w-5 h-5 fill-gray-300 text-gray-300 dark:fill-gray-600 dark:text-gray-600"
               />
-              <span className="ml-2 text-sm text-orange-500">Tuyệt vời</span>
+              <span className="ml-2 text-sm text-orange-500">{t('review.rating.excellent')}</span>
             </div>
 
             <div className="mb-4">
               <label className="mb-2 block text-sm text-gray-700 dark:text-gray-300">
-                Dịch vụ vận chuyển
+                {t('review.shippingService')}
               </label>
               <ProductRating
                 rating={5}
                 activeClassname="w-5 h-5 fill-yellow-400 text-yellow-400"
                 nonActiveClassname="w-5 h-5 fill-gray-300 text-gray-300 dark:fill-gray-600 dark:text-gray-600"
               />
-              <span className="ml-2 text-sm text-orange-500">Tuyệt vời</span>
+              <span className="ml-2 text-sm text-orange-500">{t('review.rating.excellent')}</span>
             </div>
           </div>
         </div>
@@ -210,7 +220,7 @@ const ProductReviewModal = ({ isOpen, onClose, purchase }: ProductReviewModalPro
             animated={false}
             className="rounded-sm border border-gray-300 px-6 py-2 text-gray-600 hover:bg-gray-100 dark:border-slate-600 dark:text-gray-300 dark:hover:bg-slate-700"
           >
-            Trở Lại
+            {t('review.back')}
           </Button>
           <Button
             onClick={handleSubmit}
@@ -218,7 +228,7 @@ const ProductReviewModal = ({ isOpen, onClose, purchase }: ProductReviewModalPro
             animated={false}
             className="rounded-sm bg-orange-500 px-6 py-2 text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {createReviewMutation.isPending ? 'Đang gửi...' : 'Hoàn Thành'}
+            {createReviewMutation.isPending ? t('review.submitting') : t('review.submit')}
           </Button>
         </div>
       </div>

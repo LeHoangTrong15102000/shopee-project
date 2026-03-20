@@ -51,6 +51,9 @@
   "toast.voucherRemoved": "Đã xóa mã giảm giá",
   "toast.selectAddress": "Vui lòng chọn địa chỉ giao hàng",
   "toast.selectShipping": "Vui lòng chọn phương thức vận chuyển",
-  "toast.selectPayment": "Vui lòng chọn phương thức thanh toán"
+  "toast.selectPayment": "Vui lòng chọn phương thức thanh toán",
+  "trust.authentic": "Chính hãng",
+  "trust.sevenDayReturn": "Đổi trả 7 ngày",
+  "trust.fastDelivery": "Giao nhanh"
 }
 

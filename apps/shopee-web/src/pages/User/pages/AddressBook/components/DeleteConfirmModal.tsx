@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import Button from 'src/components/Button';
 
 interface DeleteConfirmModalProps {
@@ -13,9 +14,12 @@ const DeleteConfirmModal = ({
   onConfirm,
   onCancel,
   isLoading,
-  title = 'Xóa địa chỉ',
-  message = 'Bạn có chắc chắn muốn xóa địa chỉ này? Hành động này không thể hoàn tác.',
+  title,
+  message,
 }: DeleteConfirmModalProps) => {
+  const { t } = useTranslation('address');
+  const resolvedTitle = title || t('deleteModal.title');
+  const resolvedMessage = message || t('deleteModal.message');
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -49,15 +53,17 @@ const DeleteConfirmModal = ({
           </div>
         </div>
         <h3 className="mb-2 text-center text-lg font-medium text-gray-900 dark:text-gray-100">
-          {title}
+          {resolvedTitle}
         </h3>
-        <p className="mb-6 text-center text-sm text-gray-500 dark:text-gray-400">{message}</p>
+        <p className="mb-6 text-center text-sm text-gray-500 dark:text-gray-400">
+          {resolvedMessage}
+        </p>
         <div className="flex gap-3">
           <Button
             onClick={onCancel}
             className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50 dark:border-slate-600 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600"
           >
-            Hủy
+            {t('footer.cancel')}
           </Button>
           <Button
             onClick={onConfirm}
@@ -65,7 +71,7 @@ const DeleteConfirmModal = ({
             isLoading={isLoading}
             className="flex-1 rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 disabled:opacity-50"
           >
-            Xóa
+            {t('delete')}
           </Button>
         </div>
       </motion.div>

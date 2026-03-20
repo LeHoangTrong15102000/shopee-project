@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 import { useReducedMotion } from 'src/hooks/useReducedMotion';
 
 export interface FlashSaleUrgencyProps {
@@ -21,6 +22,7 @@ export default function FlashSaleUrgency({
   className,
 }: FlashSaleUrgencyProps) {
   const prefersReducedMotion = useReducedMotion();
+  const { t } = useTranslation('home');
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
 
   // Calculate stock metrics
@@ -58,15 +60,15 @@ export default function FlashSaleUrgency({
   const urgencyMessage = (() => {
     switch (urgencyLevel) {
       case 'ended':
-        return { text: 'Đã kết thúc!', emoji: '⏰' };
+        return { text: t('flashSale.ended'), emoji: '⏰' };
       case 'out_of_stock':
-        return { text: 'Đã hết hàng!', emoji: '🚫' };
+        return { text: t('flashSale.soldOut'), emoji: '🚫' };
       case 'critical':
-        return { text: `Chỉ còn ${remainingStock} sản phẩm!`, emoji: '🔥' };
+        return { text: t('flashSale.onlyNLeft', { count: remainingStock }), emoji: '🔥' };
       case 'low':
-        return { text: 'Sắp hết!', emoji: '⚡' };
+        return { text: t('flashSale.almostGone'), emoji: '⚡' };
       case 'ending_soon':
-        return { text: 'Sắp kết thúc!', emoji: '⏰' };
+        return { text: t('flashSale.endingSoon'), emoji: '⏰' };
       default:
         return null;
     }
@@ -108,7 +110,7 @@ export default function FlashSaleUrgency({
         />
         {/* Sold percentage text */}
         <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-white drop-shadow-xs">
-          Đã bán {soldPercentage}%
+          {t('flashSale.soldPercent', { percent: soldPercentage })}
         </span>
       </div>
 

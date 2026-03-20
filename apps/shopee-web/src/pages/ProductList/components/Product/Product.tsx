@@ -17,7 +17,7 @@ interface Props {
 
 const Product = ({ product }: Props) => {
   const navigate = useNavigate();
-  const { t } = useTranslation('home');
+  const { t } = useTranslation(['home', 'product']);
 
   // Hover prefetching với optimal strategy
   const {
@@ -85,11 +85,16 @@ const Product = ({ product }: Props) => {
               {/* price */}
               <div
                 className="mt-3 flex items-center"
-                aria-label={`Giá gốc ${formatCurrency(product.price_before_discount)} đồng, giá khuyến mãi ${formatCurrency(product.price)} đồng`}
+                aria-label={t('product:price.ariaLabel', {
+                  original: formatCurrency(product.price_before_discount),
+                  sale: formatCurrency(product.price),
+                })}
               >
                 <div
                   className="max-w-[50%] truncate text-gray-500 line-through dark:text-gray-400"
-                  aria-label={`Giá gốc ${formatCurrency(product.price_before_discount)} đồng`}
+                  aria-label={t('product:price.originalAria', {
+                    price: formatCurrency(product.price_before_discount),
+                  })}
                 >
                   <span className="text-xs">₫</span>
                   <span className="text-xs sm:text-sm">
@@ -98,7 +103,7 @@ const Product = ({ product }: Props) => {
                 </div>
                 <div
                   className="ml-[5px] max-w-[50%] truncate text-orange dark:text-orange-400"
-                  aria-label={`Giá khuyến mãi ${formatCurrency(product.price)} đồng`}
+                  aria-label={t('product:price.saleAria', { price: formatCurrency(product.price) })}
                 >
                   <span className="text-xs">₫</span>
                   <span className="text-xs sm:text-sm">{formatCurrency(product.price)}</span>

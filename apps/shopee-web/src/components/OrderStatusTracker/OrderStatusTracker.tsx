@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { formatCurrency } from 'src/utils/utils';
 
 interface OrderStatusTrackerProps {
@@ -106,11 +107,11 @@ const StepIcon = ({
 };
 
 const ORDER_STEPS = [
-  { key: 'pending', label: 'Đơn Hàng Đã Đặt' },
-  { key: 'confirmed', label: 'Đã Xác Nhận Thông Tin Thanh Toán' },
-  { key: 'processing', label: 'Vận Chuyển' },
-  { key: 'shipping', label: 'Chờ Giao Hàng' },
-  { key: 'delivered', label: 'Đánh Giá' },
+  { key: 'pending', labelKey: 'tracker.orderPlaced' },
+  { key: 'confirmed', labelKey: 'tracker.paymentConfirmed' },
+  { key: 'processing', labelKey: 'tracker.shipping' },
+  { key: 'shipping', labelKey: 'tracker.pendingDelivery' },
+  { key: 'delivered', labelKey: 'tracker.review' },
 ];
 
 const formatLastUpdate = (lastUpdate: string | null): string => {
@@ -131,6 +132,7 @@ export default function OrderStatusTracker({
   orderTotal,
   stepTimestamps,
 }: OrderStatusTrackerProps) {
+  const { t } = useTranslation('order');
   const isCancelled = currentStatus === 'cancelled';
   const isReturned = currentStatus === 'returned';
   const isSpecialStatus = isCancelled || isReturned;
@@ -153,14 +155,14 @@ export default function OrderStatusTracker({
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-4 flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-green-50 to-emerald-50 px-4 py-2.5 ring-1 ring-green-200/50 dark:from-green-900/30 dark:to-emerald-900/30 dark:ring-green-700/50"
-          aria-label="Đang theo dõi trạng thái đơn hàng trực tiếp"
+          aria-label={t('tracker.liveTrackingAria')}
         >
           <span className="relative flex h-2.5 w-2.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-linear-to-r from-green-500 to-emerald-500"></span>
           </span>
           <span className="text-sm font-medium text-green-700 dark:text-green-400">
-            Đang theo dõi trực tiếp
+            {t('tracker.liveTracking')}
           </span>
           <svg
             className="h-4 w-4 text-green-500"
@@ -231,7 +233,7 @@ export default function OrderStatusTracker({
                   : 'text-amber-700 dark:text-amber-400',
               )}
             >
-              {isCancelled ? 'Đơn hàng đã bị hủy' : 'Đơn hàng đã được trả lại'}
+              {isCancelled ? t('tracker.cancelledTitle') : t('tracker.returnedTitle')}
             </p>
             <p
               className={classNames(
@@ -241,9 +243,7 @@ export default function OrderStatusTracker({
                   : 'text-amber-500 dark:text-amber-400/80',
               )}
             >
-              {isCancelled
-                ? 'Liên hệ hỗ trợ nếu cần giúp đỡ'
-                : 'Hoàn tiền sẽ được xử lý trong 3-5 ngày'}
+              {isCancelled ? t('tracker.cancelledHelp') : t('tracker.returnedHelp')}
             </p>
           </div>
         </motion.div>
@@ -316,8 +316,8 @@ export default function OrderStatusTracker({
                     )}
                   >
                     {step.key === 'confirmed' && orderTotal !== undefined
-                      ? `${step.label} (₫${formatCurrency(orderTotal)})`
-                      : step.label}
+                      ? `${t(step.labelKey as never)} (₫${formatCurrency(orderTotal)})`
+                      : t(step.labelKey as never)}
                   </span>
 
                   {/* Step timestamp */}

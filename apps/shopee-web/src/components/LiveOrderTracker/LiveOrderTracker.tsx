@@ -59,9 +59,10 @@ export default function LiveOrderTracker({
   initialStatus,
   className,
   trackingNumber = 'VN2024SHOP001',
-  carrier = 'Giao Hàng Nhanh',
+  carrier,
 }: LiveOrderTrackerProps) {
-  const { t } = useTranslation('order');
+  const { t, i18n } = useTranslation('order');
+  const resolvedCarrier = carrier || t('carrier.ghn');
   const reducedMotion = useReducedMotion();
   const [currentStatus, setCurrentStatus] = useState(initialStatus);
 
@@ -133,7 +134,7 @@ export default function LiveOrderTracker({
       const now = new Date();
       const minDate = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
       const maxDate = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
-      return `${minDate.toLocaleDateString('vi-VN')} - ${maxDate.toLocaleDateString('vi-VN')}`;
+      return `${minDate.toLocaleDateString(i18n.language)} - ${maxDate.toLocaleDateString(i18n.language)}`;
     }
     return null;
   };
@@ -243,7 +244,9 @@ export default function LiveOrderTracker({
             </svg>
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{carrier}</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              {resolvedCarrier}
+            </p>
             <p className="text-xs text-gray-500 dark:text-gray-400">{t('tracking.carrier')}</p>
           </div>
           <div className="text-right">
@@ -315,7 +318,7 @@ export default function LiveOrderTracker({
             </svg>
             <p className="text-xs text-gray-400 dark:text-gray-500">
               {t('tracking.lastUpdate')}:{' '}
-              {new Date(lastUpdate).toLocaleString('vi-VN', {
+              {new Date(lastUpdate).toLocaleString(i18n.language, {
                 day: '2-digit',
                 month: '2-digit',
                 year: 'numeric',

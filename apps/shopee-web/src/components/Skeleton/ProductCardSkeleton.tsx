@@ -1,12 +1,14 @@
+import { useTranslation } from 'react-i18next';
 import SkeletonBase from './SkeletonBase';
 
 export default function ProductCardSkeleton() {
+  const { t } = useTranslation('common');
   return (
     <div
       className="min-h-[280px] overflow-hidden rounded-lg bg-white shadow-xs dark:bg-slate-800"
       role="status"
       aria-busy="true"
-      aria-label="Đang tải sản phẩm"
+      aria-label={t('loading.products')}
     >
       {/* Image placeholder - aspect ratio 1:1 */}
       <div className="relative w-full pt-[100%]">

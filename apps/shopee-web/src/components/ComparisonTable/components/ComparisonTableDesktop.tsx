@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import classNames from 'classnames';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Product } from 'src/types/product.type';
 import { formatCurrency, formatNumberToSocialStyle, generateNameId } from 'src/utils/utils';
 import ProductRating from 'src/components/ProductRating';
@@ -23,11 +24,12 @@ export default function ComparisonTableDesktop({
   handleAddToCart,
   reduceMotion,
 }: ComparisonTableDesktopProps) {
+  const { t } = useTranslation('compare');
   return (
     <table
       className="hidden w-full border-collapse md:table"
       role="table"
-      aria-label="So sánh sản phẩm"
+      aria-label={t('tableAriaLabel')}
     >
       <thead className="sticky top-0 z-10 bg-white dark:bg-slate-800">
         <tr role="row">
@@ -36,7 +38,7 @@ export default function ComparisonTableDesktop({
             className="w-32 border-b p-3 text-left text-sm font-medium text-gray-600 dark:border-slate-700 dark:text-gray-300"
             role="columnheader"
           >
-            Thuộc tính
+            {t('attribute')}
           </th>
           {compareList.map((product) => (
             <th
@@ -49,7 +51,7 @@ export default function ComparisonTableDesktop({
                 animated={false}
                 onClick={() => removeFromCompare(product._id)}
                 className="absolute top-2 right-2 rounded-full p-1 transition-colors hover:bg-gray-100 dark:hover:bg-slate-700"
-                aria-label={`Xóa ${product.name} khỏi so sánh`}
+                aria-label={t('removeAriaLabel', { name: product.name })}
               >
                 <svg
                   className="h-4 w-4 text-gray-400 dark:text-gray-500"
@@ -102,6 +104,7 @@ export default function ComparisonTableDesktop({
 }
 
 function ImageRow({ compareList }: { compareList: Product[] }) {
+  const { t } = useTranslation('compare');
   return (
     <tr role="row">
       <th
@@ -109,7 +112,7 @@ function ImageRow({ compareList }: { compareList: Product[] }) {
         className="border-b p-3 text-left text-sm font-normal text-gray-600 dark:border-slate-700 dark:text-gray-300"
         role="rowheader"
       >
-        Hình ảnh
+        {t('image')}
       </th>
       {compareList.map((product) => (
         <td
@@ -119,11 +122,11 @@ function ImageRow({ compareList }: { compareList: Product[] }) {
         >
           <Link
             to={`${path.home}${generateNameId({ name: product.name, id: product._id })}`}
-            aria-label={`Xem chi tiết sản phẩm ${product.name}`}
+            aria-label={t('viewProductDetail', { name: product.name })}
           >
             <img
               src={product.image}
-              alt={`Hình ảnh sản phẩm ${product.name}`}
+              alt={t('productImage', { name: product.name })}
               className="mx-auto h-24 w-24 rounded-lg object-cover transition-opacity hover:opacity-80"
             />
           </Link>
@@ -134,6 +137,7 @@ function ImageRow({ compareList }: { compareList: Product[] }) {
 }
 
 function NameRow({ compareList }: { compareList: Product[] }) {
+  const { t } = useTranslation('compare');
   return (
     <tr role="row">
       <th
@@ -141,7 +145,7 @@ function NameRow({ compareList }: { compareList: Product[] }) {
         className="border-b p-3 text-left text-sm font-normal text-gray-600 dark:border-slate-700 dark:text-gray-300"
         role="rowheader"
       >
-        Tên sản phẩm
+        {t('productName')}
       </th>
       {compareList.map((product) => (
         <td
@@ -152,7 +156,7 @@ function NameRow({ compareList }: { compareList: Product[] }) {
           <Link
             to={`${path.home}${generateNameId({ name: product.name, id: product._id })}`}
             className="line-clamp-2 text-sm font-medium text-gray-800 hover:text-orange dark:text-gray-200 dark:hover:text-orange-400"
-            aria-label={`Xem chi tiết sản phẩm ${product.name}`}
+            aria-label={t('viewProductDetail', { name: product.name })}
           >
             {product.name}
           </Link>
@@ -169,6 +173,7 @@ interface RowWithBestProps {
 }
 
 function PriceRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
+  const { t } = useTranslation('compare');
   return (
     <tr role="row">
       <th
@@ -176,7 +181,7 @@ function PriceRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
         className="border-b p-3 text-left text-sm font-normal text-gray-600 dark:border-slate-700 dark:text-gray-300"
         role="rowheader"
       >
-        Giá
+        {t('price')}
       </th>
       {compareList.map((product) => {
         const isBest = bestValues && product.price === bestValues.bestPrice;
@@ -189,7 +194,7 @@ function PriceRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
             role="cell"
           >
             <span className="font-semibold text-orange">₫{formatCurrency(product.price)}</span>
-            {isBest && <BestBadge label="Giá tốt nhất" reduceMotion={reduceMotion} />}
+            {isBest && <BestBadge label={t('bestPrice')} reduceMotion={reduceMotion} />}
           </td>
         );
       })}
@@ -198,6 +203,7 @@ function PriceRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
 }
 
 function OriginalPriceRow({ compareList }: { compareList: Product[] }) {
+  const { t } = useTranslation('compare');
   return (
     <tr role="row">
       <th
@@ -205,7 +211,7 @@ function OriginalPriceRow({ compareList }: { compareList: Product[] }) {
         className="border-b p-3 text-left text-sm font-normal text-gray-600 dark:border-slate-700 dark:text-gray-300"
         role="rowheader"
       >
-        Giá gốc
+        {t('originalPrice')}
       </th>
       {compareList.map((product) => (
         <td
@@ -223,6 +229,7 @@ function OriginalPriceRow({ compareList }: { compareList: Product[] }) {
 }
 
 function DiscountRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
+  const { t } = useTranslation('compare');
   return (
     <tr role="row">
       <th
@@ -230,7 +237,7 @@ function DiscountRow({ compareList, bestValues, reduceMotion }: RowWithBestProps
         className="border-b p-3 text-left text-sm font-normal text-gray-600 dark:border-slate-700 dark:text-gray-300"
         role="rowheader"
       >
-        Giảm giá
+        {t('discount')}
       </th>
       {compareList.map((product) => {
         const discount = getDiscountPercent(product);
@@ -246,7 +253,7 @@ function DiscountRow({ compareList, bestValues, reduceMotion }: RowWithBestProps
             {discount > 0 ? (
               <>
                 <span className="font-medium text-red-500 dark:text-red-400">-{discount}%</span>
-                {isBest && <BestBadge label="Giảm nhiều nhất" reduceMotion={reduceMotion} />}
+                {isBest && <BestBadge label={t('bestDiscount')} reduceMotion={reduceMotion} />}
               </>
             ) : (
               <span className="text-gray-400 dark:text-gray-500">-</span>
@@ -259,6 +266,7 @@ function DiscountRow({ compareList, bestValues, reduceMotion }: RowWithBestProps
 }
 
 function RatingRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
+  const { t } = useTranslation('compare');
   return (
     <tr role="row">
       <th
@@ -266,7 +274,7 @@ function RatingRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) 
         className="border-b p-3 text-left text-sm font-normal text-gray-600 dark:border-slate-700 dark:text-gray-300"
         role="rowheader"
       >
-        Đánh giá
+        {t('rating')}
       </th>
       {compareList.map((product) => {
         const isBest = bestValues && product.rating === bestValues.bestRating;
@@ -281,7 +289,7 @@ function RatingRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) 
             <div className="flex flex-wrap items-center justify-center gap-1">
               <ProductRating rating={product.rating} />
               <span className="text-sm text-gray-500 dark:text-gray-400">({product.rating})</span>
-              {isBest && <BestBadge label="Đánh giá cao nhất" reduceMotion={reduceMotion} />}
+              {isBest && <BestBadge label={t('highestRated')} reduceMotion={reduceMotion} />}
             </div>
           </td>
         );
@@ -291,6 +299,7 @@ function RatingRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) 
 }
 
 function SoldRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
+  const { t } = useTranslation('compare');
   return (
     <tr role="row">
       <th
@@ -298,7 +307,7 @@ function SoldRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
         className="border-b p-3 text-left text-sm font-normal text-gray-600 dark:border-slate-700 dark:text-gray-300"
         role="rowheader"
       >
-        Đã bán
+        {t('sold')}
       </th>
       {compareList.map((product) => {
         const isBest = bestValues && product.sold === bestValues.bestSold;
@@ -313,7 +322,7 @@ function SoldRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
             <span className="text-sm text-gray-700 dark:text-gray-300">
               {formatNumberToSocialStyle(product.sold)}
             </span>
-            {isBest && <BestBadge label="Bán chạy nhất" reduceMotion={reduceMotion} />}
+            {isBest && <BestBadge label={t('bestSeller')} reduceMotion={reduceMotion} />}
           </td>
         );
       })}
@@ -322,6 +331,7 @@ function SoldRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
 }
 
 function StockRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
+  const { t } = useTranslation('compare');
   return (
     <tr role="row">
       <th
@@ -329,7 +339,7 @@ function StockRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
         className="border-b p-3 text-left text-sm font-normal text-gray-600 dark:border-slate-700 dark:text-gray-300"
         role="rowheader"
       >
-        Tồn kho
+        {t('stock')}
       </th>
       {compareList.map((product) => {
         const isBest = bestValues && product.quantity === bestValues.bestStock;
@@ -344,7 +354,7 @@ function StockRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
             <span className="text-sm text-gray-700 dark:text-gray-300">
               {formatNumberToSocialStyle(product.quantity)}
             </span>
-            {isBest && <BestBadge label="Còn nhiều nhất" reduceMotion={reduceMotion} />}
+            {isBest && <BestBadge label={t('mostStock')} reduceMotion={reduceMotion} />}
           </td>
         );
       })}
@@ -353,6 +363,7 @@ function StockRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
 }
 
 function CategoryRow({ compareList }: { compareList: Product[] }) {
+  const { t } = useTranslation('compare');
   return (
     <tr role="row">
       <th
@@ -360,7 +371,7 @@ function CategoryRow({ compareList }: { compareList: Product[] }) {
         className="border-b p-3 text-left text-sm font-normal text-gray-600 dark:border-slate-700 dark:text-gray-300"
         role="rowheader"
       >
-        Danh mục
+        {t('category')}
       </th>
       {compareList.map((product) => (
         <td
@@ -378,6 +389,7 @@ function CategoryRow({ compareList }: { compareList: Product[] }) {
 }
 
 function RecommendationRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
+  const { t } = useTranslation('compare');
   return (
     <tr role="row">
       <th
@@ -385,7 +397,7 @@ function RecommendationRow({ compareList, bestValues, reduceMotion }: RowWithBes
         className="border-b p-3 text-left text-sm font-normal text-gray-600 dark:border-slate-700 dark:text-gray-300"
         role="rowheader"
       >
-        Đề xuất
+        {t('recommendation')}
       </th>
       {compareList.map((product) => {
         const isRecommended = product._id === bestValues?.recommendedProductId;
@@ -400,7 +412,7 @@ function RecommendationRow({ compareList, bestValues, reduceMotion }: RowWithBes
             {isRecommended ? (
               reduceMotion ? (
                 <span className="rounded-full bg-orange px-3 py-1 text-sm font-medium text-white">
-                  ⭐ Đề xuất
+                  ⭐ {t('recommended')}
                 </span>
               ) : (
                 <motion.span
@@ -408,7 +420,7 @@ function RecommendationRow({ compareList, bestValues, reduceMotion }: RowWithBes
                   animate={{ scale: [1, 1.05, 1] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                 >
-                  ⭐ Đề xuất
+                  ⭐ {t('recommended')}
                 </motion.span>
               )
             ) : (
@@ -428,6 +440,7 @@ interface ActionRowProps {
 }
 
 function ActionRow({ compareList, handleAddToCart, removeFromCompare }: ActionRowProps) {
+  const { t } = useTranslation('compare');
   return (
     <tr role="row">
       <td className="p-3 text-sm text-gray-600 dark:text-gray-300" role="cell"></td>
@@ -438,17 +451,17 @@ function ActionRow({ compareList, handleAddToCart, removeFromCompare }: ActionRo
               animated={false}
               onClick={() => handleAddToCart(product)}
               className="w-full rounded-sm bg-orange px-4 py-2 text-sm text-white transition-colors hover:bg-[#d73211]"
-              aria-label={`Thêm ${product.name} vào giỏ hàng`}
+              aria-label={t('addToCartAria', { name: product.name })}
             >
-              Thêm vào giỏ
+              {t('addToCart')}
             </Button>
             <Button
               animated={false}
               onClick={() => removeFromCompare(product._id)}
               className="w-full rounded-sm border border-gray-300 px-4 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 dark:border-slate-600 dark:text-gray-300 dark:hover:bg-slate-700"
-              aria-label={`Xóa ${product.name} khỏi bảng so sánh`}
+              aria-label={t('removeFromComparisonAria', { name: product.name })}
             >
-              Xóa khỏi so sánh
+              {t('removeFromComparison')}
             </Button>
           </div>
         </td>

@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MessageReceivedPayload } from 'src/types/socket.types';
 import MessageItem from './MessageItem';
 
@@ -9,6 +10,7 @@ interface MessageListProps {
 }
 
 export default function MessageList({ messages, isLoading, currentUserId }: MessageListProps) {
+  const { t } = useTranslation('chat');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -20,7 +22,7 @@ export default function MessageList({ messages, isLoading, currentUserId }: Mess
       <div className="flex flex-1 items-center justify-center">
         <div className="flex flex-col items-center gap-2">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-orange dark:border-slate-600" />
-          <span className="text-sm text-gray-500 dark:text-gray-400">Đang tải tin nhắn...</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">{t('loadingMessages')}</span>
         </div>
       </div>
     );
@@ -38,7 +40,7 @@ export default function MessageList({ messages, isLoading, currentUserId }: Mess
               d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
             />
           </svg>
-          <span className="text-sm">Chưa có tin nhắn</span>
+          <span className="text-sm">{t('noMessages')}</span>
         </div>
       </div>
     );

@@ -66,5 +66,11 @@
   "allProductsTitle": "All Products",
   "loading": "Loading...",
   "loadingMore": "Loading more products...",
-  "allProductsShown": "Showing all {{count}} products"
+  "allProductsShown": "Showing all {{count}} products",
+  "flashSale.ended": "Ended!",
+  "flashSale.soldOut": "Sold out!",
+  "flashSale.onlyNLeft": "Only {{count}} left!",
+  "flashSale.almostGone": "Almost gone!",
+  "flashSale.endingSoon": "Ending soon!",
+  "flashSale.soldPercent": "{{percent}}% sold"
 }

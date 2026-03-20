@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import useSocket from 'src/hooks/useSocket';
 import { SocketEvent, PriceUpdatedPayload } from 'src/types/socket.types';
 
@@ -17,6 +18,7 @@ const ALERT_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes cooldown between alerts fo
 
 export default function WishlistPriceAlert({ productIds, onPriceChange }: WishlistPriceAlertProps) {
   const { socket, isConnected } = useSocket();
+  const { t } = useTranslation('wishlist');
   const priceHistoryRef = useRef<Map<string, PriceRecord>>(new Map());
   const subscribedProductsRef = useRef<Set<string>>(new Set());
 
@@ -44,7 +46,7 @@ export default function WishlistPriceAlert({ productIds, onPriceChange }: Wishli
     const discountPercentage = Math.round(((old_price - new_price) / old_price) * 100);
 
     // Show toast notification
-    toast.success(`🎉 Sản phẩm yêu thích đã giảm giá ${discountPercentage}%!`, {
+    toast.success(`🎉 ${t('priceDropAlert', { percent: discountPercentage })}`, {
       autoClose: 5000,
       position: 'top-right',
     });

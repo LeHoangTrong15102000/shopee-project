@@ -75,6 +75,13 @@
   "book.searchPlaceholder": "Tìm theo tên, SĐT, địa chỉ...",
   "book.selectAll": "Chọn tất cả",
   "book.selectedCount": "Đã chọn {{count}} địa chỉ",
-  "book.deleteSelected": "Xóa đã chọn"
+  "book.deleteSelected": "Xóa đã chọn",
+  "empty.description": "Thêm địa chỉ giao hàng để việc mua sắm trở nên nhanh chóng và thuận tiện hơn",
+  "empty.feature.fastDelivery": "Giao hàng nhanh",
+  "empty.feature.multipleAddresses": "Lưu nhiều địa chỉ",
+  "empty.feature.easyCheckout": "Thanh toán dễ dàng",
+  "shippingAddress": "Địa chỉ giao hàng",
+  "deleteModal.title": "Xóa địa chỉ",
+  "deleteModal.message": "Bạn có chắc chắn muốn xóa địa chỉ này? Hành động này không thể hoàn tác."
 }
 

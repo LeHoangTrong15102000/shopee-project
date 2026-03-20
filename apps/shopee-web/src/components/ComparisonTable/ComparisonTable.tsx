@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 import { Product } from 'src/types/product.type';
 import { useProductComparison } from 'src/hooks/useProductComparison';
 import { useReducedMotion } from 'src/hooks/useReducedMotion';
@@ -17,6 +18,7 @@ interface ComparisonTableProps {
 function ComparisonTable({ className, onAddToCart }: ComparisonTableProps) {
   const { compareList, removeFromCompare, clearCompare } = useProductComparison();
   const reduceMotion = useReducedMotion();
+  const { t } = useTranslation('compare');
 
   const bestValues = getBestValues(compareList);
 
@@ -28,7 +30,7 @@ function ComparisonTable({ className, onAddToCart }: ComparisonTableProps) {
     const bestPriceProduct = compareList.find((p) => p.price === bestValues.bestPrice);
     if (bestPriceProduct) {
       summaryParts.push({
-        text: 'có giá tốt nhất',
+        text: t('summary.bestPrice'),
         productName: bestPriceProduct.name,
         color: 'text-green-600',
       });
@@ -37,7 +39,7 @@ function ComparisonTable({ className, onAddToCart }: ComparisonTableProps) {
     const bestRatingProduct = compareList.find((p) => p.rating === bestValues.bestRating);
     if (bestRatingProduct && bestRatingProduct._id !== bestPriceProduct?._id) {
       summaryParts.push({
-        text: 'có đánh giá cao nhất',
+        text: t('summary.highestRated'),
         productName: bestRatingProduct.name,
         color: 'text-blue-600',
       });
@@ -50,7 +52,7 @@ function ComparisonTable({ className, onAddToCart }: ComparisonTableProps) {
       bestSoldProduct._id !== bestRatingProduct?._id
     ) {
       summaryParts.push({
-        text: 'bán chạy nhất',
+        text: t('summary.bestSeller'),
         productName: bestSoldProduct.name,
         color: 'text-orange-600',
       });
@@ -71,7 +73,7 @@ function ComparisonTable({ className, onAddToCart }: ComparisonTableProps) {
     <div
       className={classNames('overflow-x-auto', className)}
       role="region"
-      aria-label="Bảng so sánh sản phẩm"
+      aria-label={t('tableAriaLabel')}
     >
       <ComparisonSummary comparisonSummary={comparisonSummary} />
 
@@ -80,9 +82,9 @@ function ComparisonTable({ className, onAddToCart }: ComparisonTableProps) {
           animated={false}
           onClick={clearCompare}
           className="text-sm text-gray-500 transition-colors hover:text-orange dark:text-gray-400 dark:hover:text-orange-400"
-          aria-label="Xóa tất cả sản phẩm khỏi bảng so sánh"
+          aria-label={t('clearAllAriaLabel')}
         >
-          Xóa tất cả
+          {t('clearAll')}
         </Button>
       </div>
 

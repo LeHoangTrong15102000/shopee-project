@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import { differenceInDays } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { SavedItem } from 'src/hooks/useSaveForLater';
 import { useReducedMotion } from 'src/hooks/useReducedMotion';
 import { formatCurrency, generateNameId } from 'src/utils/utils';
@@ -34,12 +35,15 @@ const BookmarkIcon = ({ className = 'w-5 h-5' }: { className?: string }) => (
   </svg>
 );
 
-// Calculate days since saved
-const getDaysSinceSaved = (savedAt: string): string => {
+// Calculate days since saved — returns translated string
+const getDaysSinceSaved = (
+  savedAt: string,
+  t: ReturnType<typeof useTranslation<'cart'>>['t'],
+): string => {
   const days = differenceInDays(new Date(), new Date(savedAt));
-  if (days === 0) return 'Hôm nay';
-  if (days === 1) return 'Hôm qua';
-  return `${days} ngày trước`;
+  if (days === 0) return t('savedForLater.today');
+  if (days === 1) return t('savedForLater.yesterday');
+  return t('savedForLater.daysAgo', { count: days });
 };
 
 const SaveForLaterSection = ({
@@ -48,6 +52,7 @@ const SaveForLaterSection = ({
   onRemove,
   onClear,
 }: SaveForLaterSectionProps) => {
+  const { t } = useTranslation('cart');
   const prefersReducedMotion = useReducedMotion();
   const [isExpanded, setIsExpanded] = useState(savedItems.length > 0);
 
@@ -93,11 +98,11 @@ const SaveForLaterSection = ({
       <div className="mt-6 rounded-lg bg-white p-6 shadow-xs dark:bg-slate-800">
         <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
           <BookmarkIcon className="h-5 w-5" />
-          <span className="font-medium">Đã lưu để mua sau</span>
+          <span className="font-medium">{t('savedForLater.title')}</span>
         </div>
         <div className="flex flex-col items-center justify-center py-8 text-gray-400 dark:text-gray-500">
           <BookmarkIcon className="mb-3 h-12 w-12 opacity-50" />
-          <p>Chưa có sản phẩm nào được lưu</p>
+          <p>{t('savedForLater.empty')}</p>
         </div>
       </div>
     );
@@ -113,7 +118,9 @@ const SaveForLaterSection = ({
           className="flex items-center gap-2 text-gray-700 transition-colors hover:text-[#ee4d2d] dark:text-gray-200"
         >
           <BookmarkIcon className="h-5 w-5 text-[#ee4d2d]" />
-          <span className="font-medium">Đã lưu để mua sau ({savedItems.length})</span>
+          <span className="font-medium">
+            {t('savedForLater.title')} ({savedItems.length})
+          </span>
           <motion.svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -133,7 +140,7 @@ const SaveForLaterSection = ({
             onClick={onClear}
             className="text-sm text-gray-500 transition-colors hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400"
           >
-            Xóa tất cả
+            {t('savedForLater.clearAll')}
           </Button>
         )}
       </div>
@@ -193,7 +200,10 @@ const SaveForLaterSection = ({
 
                     {/* Saved time */}
                     <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-                      Đã lưu {getDaysSinceSaved(item.savedAt)} • SL: {item.originalBuyCount}
+                      {t('savedForLater.savedInfo', {
+                        time: getDaysSinceSaved(item.savedAt, t),
+                        count: item.originalBuyCount,
+                      })}
                     </p>
 
                     {/* Action Buttons */}
@@ -207,7 +217,7 @@ const SaveForLaterSection = ({
                           onClick={() => onMoveToCart(item)}
                           className="rounded-sm bg-[#ee4d2d] px-3 py-1.5 text-sm text-white transition-colors hover:bg-[#d73211]"
                         >
-                          Thêm vào giỏ
+                          {t('savedForLater.moveToCart')}
                         </Button>
                       </motion.div>
                       <Button
@@ -215,7 +225,7 @@ const SaveForLaterSection = ({
                         onClick={() => onRemove(item.product._id)}
                         className="text-sm text-gray-500 transition-colors hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400"
                       >
-                        Xóa
+                        {t('savedForLater.remove')}
                       </Button>
                     </div>
                   </div>

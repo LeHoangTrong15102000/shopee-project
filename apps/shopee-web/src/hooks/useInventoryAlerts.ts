@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 import useSocket from './useSocket';
 import { SocketEvent, InventoryAlertPayload } from 'src/types/socket.types';
 import { toast } from 'react-toastify';
@@ -11,6 +12,7 @@ interface UseInventoryAlertsReturn {
 }
 
 const useInventoryAlerts = (): UseInventoryAlertsReturn => {
+  const { t } = useTranslation('common');
   const { socket, isConnected } = useSocket();
   const { profile } = useContext(AppContext);
   const [alerts, setAlerts] = useState<InventoryAlertPayload[]>([]);
@@ -26,11 +28,16 @@ const useInventoryAlerts = (): UseInventoryAlertsReturn => {
       setUnreadCount((prev) => prev + 1);
 
       if (data.severity === 'critical') {
-        toast.error(`🚨 ${data.product_name} đã hết hàng!`, { autoClose: 5000 });
-      } else {
-        toast.warning(`⚠️ ${data.product_name} chỉ còn ${data.current_quantity} sản phẩm!`, {
-          autoClose: 4000,
+        toast.error(`🚨 ${t('inventory.outOfStock', { name: data.product_name })}`, {
+          autoClose: 5000,
         });
+      } else {
+        toast.warning(
+          `⚠️ ${t('inventory.lowStock', { name: data.product_name, count: data.current_quantity })}`,
+          {
+            autoClose: 4000,
+          },
+        );
       }
     };
 
@@ -39,7 +46,7 @@ const useInventoryAlerts = (): UseInventoryAlertsReturn => {
     return () => {
       socket.off(SocketEvent.INVENTORY_ALERT, handleInventoryAlert);
     };
-  }, [socket, isConnected, isAdmin]);
+  }, [socket, isConnected, isAdmin, t]);
 
   const clearAlerts = () => {
     setAlerts([]);

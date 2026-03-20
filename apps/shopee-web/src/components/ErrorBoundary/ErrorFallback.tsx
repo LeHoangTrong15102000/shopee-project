@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { useReducedMotion } from 'src/hooks/useReducedMotion';
 import Button from 'src/components/Button';
@@ -16,15 +17,20 @@ interface ErrorFallbackProps {
 export default function ErrorFallback({
   error,
   resetErrorBoundary,
-  title = 'Đã xảy ra lỗi',
-  message = 'Không thể tải dữ liệu. Vui lòng thử lại.',
+  title,
+  message,
   showRetry = true,
-  retryText = 'Thử lại',
+  retryText,
   className = '',
 }: ErrorFallbackProps) {
+  const { t } = useTranslation('common');
   const [isRetrying, setIsRetrying] = useState(false);
   const isDevelopment = import.meta.env.DEV;
   const reducedMotion = useReducedMotion();
+
+  const resolvedTitle = title ?? t('error.title');
+  const resolvedMessage = message ?? t('error.loadingFailed');
+  const resolvedRetryText = retryText ?? t('error.retry');
 
   const handleRetry = async () => {
     if (!resetErrorBoundary) return;
@@ -73,7 +79,7 @@ export default function ErrorFallback({
         animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.2 }}
       >
-        {title}
+        {resolvedTitle}
       </motion.h3>
 
       {/* Message */}
@@ -83,14 +89,14 @@ export default function ErrorFallback({
         animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.3 }}
       >
-        {message}
+        {resolvedMessage}
       </motion.p>
 
       {/* Error Details (Development Mode) */}
       {isDevelopment && error && (
         <details className="mb-4 w-full max-w-md rounded-md bg-gray-100 p-3 dark:bg-slate-700">
           <summary className="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-200">
-            Chi tiết lỗi (Dev)
+            {t('error.details')}
           </summary>
           <div className="mt-2 overflow-auto">
             <p className="text-xs text-red-600 dark:text-red-400">
@@ -131,7 +137,7 @@ export default function ErrorFallback({
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-              <span>Đang thử lại...</span>
+              <span>{t('error.retrying')}</span>
             </>
           ) : (
             <>
@@ -148,7 +154,7 @@ export default function ErrorFallback({
                   d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                 />
               </svg>
-              <span>{retryText}</span>
+              <span>{resolvedRetryText}</span>
             </>
           )}
         </Button>

@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { RecentlyViewedProduct } from 'src/hooks/useRecentlyViewed';
 import { formatCurrency, generateNameId } from 'src/utils/utils';
 import path from 'src/constant/path';
@@ -20,6 +21,7 @@ function RecentlyViewed({
   onRemove,
   onClearAll,
 }: RecentlyViewedProps) {
+  const { t } = useTranslation('cart');
   const displayProducts = products.slice(0, maxItems);
 
   if (displayProducts.length === 0) {
@@ -29,20 +31,20 @@ function RecentlyViewed({
   return (
     <section
       className={`rounded-xs bg-white p-4 shadow-sm dark:bg-slate-800 ${className}`}
-      aria-label="Sản phẩm đã xem gần đây"
+      aria-label={t('recentlyViewed.title')}
     >
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-sm font-medium text-gray-500 uppercase dark:text-gray-400">
-          Sản phẩm đã xem gần đây
+          {t('recentlyViewed.title')}
         </h2>
         {onClearAll && displayProducts.length > 0 && (
           <Button
             animated={false}
             onClick={onClearAll}
             className="text-sm text-[#ee4d2d] transition-colors hover:text-[#d73211]"
-            aria-label="Xóa tất cả sản phẩm đã xem"
+            aria-label={t('recentlyViewed.clearAllAria')}
           >
-            Xóa tất cả
+            {t('recentlyViewed.clearAll')}
           </Button>
         )}
       </div>
@@ -53,7 +55,7 @@ function RecentlyViewed({
           className="flex gap-3"
           style={{ width: 'max-content' }}
           role="list"
-          aria-label="Danh sách sản phẩm đã xem"
+          aria-label={t('recentlyViewed.listAria')}
         >
           {displayProducts.map((product) => (
             <div key={product._id} className="relative w-32 shrink-0" role="listitem">
@@ -67,7 +69,7 @@ function RecentlyViewed({
       <div
         className="hidden gap-3 md:grid md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
         role="list"
-        aria-label="Danh sách sản phẩm đã xem"
+        aria-label={t('recentlyViewed.listAria')}
         aria-live="polite"
       >
         {displayProducts.map((product) => (
@@ -86,6 +88,7 @@ interface ProductCardProps {
 }
 
 const ProductCard = function ProductCard({ product, onRemove }: ProductCardProps) {
+  const { t } = useTranslation('cart');
   const handleRemove = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -99,7 +102,7 @@ const ProductCard = function ProductCard({ product, onRemove }: ProductCardProps
           animated={false}
           onClick={handleRemove}
           className="absolute top-1 right-1 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-black/70"
-          aria-label={`Xóa sản phẩm ${product.name} khỏi danh sách đã xem`}
+          aria-label={t('recentlyViewed.removeAria', { name: product.name })}
         >
           <svg
             className="h-3 w-3 text-white"
@@ -121,12 +124,15 @@ const ProductCard = function ProductCard({ product, onRemove }: ProductCardProps
       <Link
         to={`${path.home}${generateNameId({ name: product.name, id: product._id })}`}
         className="block"
-        aria-label={`Xem chi tiết sản phẩm ${product.name}, giá ${formatCurrency(product.price)} đồng`}
+        aria-label={t('recentlyViewed.viewDetailAria', {
+          name: product.name,
+          price: formatCurrency(product.price),
+        })}
       >
         <div className="relative pt-[100%]">
           <img
             src={product.image}
-            alt={`Hình ảnh sản phẩm ${product.name}`}
+            alt={t('recentlyViewed.imageAlt', { name: product.name })}
             className="absolute top-0 left-0 h-full w-full object-cover"
           />
         </div>
@@ -150,7 +156,9 @@ const ProductCard = function ProductCard({ product, onRemove }: ProductCardProps
               activeClassname="h-2.5 w-2.5 fill-[#ee4d2d] text-[#ee4d2d]"
               nonActiveClassname="h-2.5 w-2.5 fill-current text-gray-300 dark:text-gray-600"
             />
-            <span className="text-xs text-gray-500 dark:text-gray-400">Đã bán {product.sold}</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {t('recentlyViewed.sold', { count: product.sold })}
+            </span>
           </div>
         </div>
       </Link>

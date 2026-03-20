@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import useSocket from 'src/hooks/useSocket';
 import { SocketEvent, InventoryAlertPayload } from 'src/types/socket.types';
 import { useReducedMotion } from 'src/hooks/useReducedMotion';
@@ -24,6 +25,7 @@ const AUTO_DISMISS_DELAY = 5000;
 
 export default function RealTimeStockAlert({ productIds, onStockChange }: RealTimeStockAlertProps) {
   const { socket, isConnected } = useSocket();
+  const { t } = useTranslation('common');
   const prefersReducedMotion = useReducedMotion();
   const [alerts, setAlerts] = useState<StockChangeAlert[]>([]);
   const productIdsRef = useRef<Set<string>>(new Set(productIds));
@@ -72,18 +74,21 @@ export default function RealTimeStockAlert({ productIds, onStockChange }: RealTi
 
     // Show toast notification
     if (data.severity === 'critical' || data.current_quantity === 0) {
-      toast.error(`🚫 ${data.product_name} đã hết hàng!`, {
+      toast.error(`🚫 ${t('stock.productOutOfStock', { name: data.product_name })}`, {
         autoClose: AUTO_DISMISS_DELAY,
         position: 'top-right',
       });
     } else if (data.current_quantity <= 5) {
-      toast.warning(`⚠️ ${data.product_name} chỉ còn ${data.current_quantity} sản phẩm!`, {
-        autoClose: AUTO_DISMISS_DELAY,
-        position: 'top-right',
-      });
+      toast.warning(
+        `⚠️ ${t('stock.onlyNLeft', { count: data.current_quantity })} - ${data.product_name}`,
+        {
+          autoClose: AUTO_DISMISS_DELAY,
+          position: 'top-right',
+        },
+      );
     } else {
       toast.info(
-        `📦 Số lượng ${data.product_name} đã thay đổi: còn ${data.current_quantity} sản phẩm`,
+        `📦 ${t('stock.stockChanged', { name: data.product_name, count: data.current_quantity })}`,
         {
           autoClose: AUTO_DISMISS_DELAY,
           position: 'top-right',
@@ -143,15 +148,15 @@ export default function RealTimeStockAlert({ productIds, onStockChange }: RealTi
                 }`}
               >
                 {alert.newStock === 0
-                  ? `${alert.productName} đã hết hàng!`
-                  : `Số lượng tồn kho đã thay đổi: ${alert.productName} còn ${alert.newStock} sản phẩm`}
+                  ? `${alert.productName} ${t('stock.outOfStock')}!`
+                  : t('stock.stockChanged', { name: alert.productName, count: alert.newStock })}
               </p>
             </div>
             <Button
               animated={false}
               onClick={() => setAlerts((prev) => prev.filter((a) => a.id !== alert.id))}
               className="text-gray-400 transition-colors hover:text-gray-600"
-              aria-label="Đóng thông báo"
+              aria-label={t('aria.dismissAlert')}
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
@@ -184,6 +189,7 @@ export function InlineStockAlert({
   onDismiss: () => void;
 }) {
   const prefersReducedMotion = useReducedMotion();
+  const { t } = useTranslation('common');
 
   useEffect(() => {
     const timer = setTimeout(onDismiss, AUTO_DISMISS_DELAY);
@@ -213,8 +219,8 @@ export function InlineStockAlert({
         <span>{isCritical ? '🚫' : '⚠️'}</span>
         <span>
           {newStock === 0
-            ? 'Sản phẩm đã hết hàng!'
-            : `Số lượng tồn kho đã thay đổi: còn ${newStock} sản phẩm`}
+            ? t('stock.productOutOfStockInline')
+            : t('stock.onlyNLeftInline', { count: newStock })}
         </span>
       </div>
     </motion.div>

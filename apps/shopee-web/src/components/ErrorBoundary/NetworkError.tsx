@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { useReducedMotion } from 'src/hooks/useReducedMotion';
 import Button from 'src/components/Button';
@@ -18,6 +19,7 @@ export default function NetworkError({
   maxAutoRetries = 3,
   className = '',
 }: NetworkErrorProps) {
+  const { t } = useTranslation('common');
   const [isRetrying, setIsRetrying] = useState(false);
   const [autoRetryCount, setAutoRetryCount] = useState(0);
   const [countdown, setCountdown] = useState(0);
@@ -97,7 +99,7 @@ export default function NetworkError({
         animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.2 }}
       >
-        Mất kết nối mạng
+        {t('error.networkTitle')}
       </motion.h3>
 
       {/* Message */}
@@ -107,19 +109,23 @@ export default function NetworkError({
         animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.3 }}
       >
-        Vui lòng kiểm tra kết nối internet của bạn và thử lại.
+        {t('error.networkMessage')}
       </motion.p>
 
       {/* Auto Retry Info */}
       {autoRetry && autoRetryCount < maxAutoRetries && countdown > 0 && (
         <p className="mb-4 text-xs text-gray-400 dark:text-gray-500">
-          Tự động thử lại sau {countdown} giây... ({autoRetryCount + 1}/{maxAutoRetries})
+          {t('error.networkAutoRetry', {
+            countdown,
+            current: autoRetryCount + 1,
+            max: maxAutoRetries,
+          })}
         </p>
       )}
 
       {autoRetry && autoRetryCount >= maxAutoRetries && (
         <p className="mb-4 text-xs text-red-500 dark:text-red-400">
-          Đã hết số lần tự động thử lại. Vui lòng thử lại thủ công.
+          {t('error.networkRetryExhausted')}
         </p>
       )}
 
@@ -149,7 +155,7 @@ export default function NetworkError({
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-              <span>Đang kết nối...</span>
+              <span>{t('error.networkConnecting')}</span>
             </>
           ) : (
             <>
@@ -166,7 +172,7 @@ export default function NetworkError({
                   d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                 />
               </svg>
-              <span>Thử lại</span>
+              <span>{t('error.retry')}</span>
             </>
           )}
         </Button>

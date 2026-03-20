@@ -26,6 +26,15 @@
   "loyalty.remaining": "Còn {{count}} xu",
   "loyalty.eligible": "Đủ điều kiện!",
   "loyalty.expiryWarning": "{{count}} xu sẽ hết hạn vào {{date}}",
-  "loyalty.expiryDays": "({{count}} ngày nữa!)"
+  "loyalty.expiryDays": "({{count}} ngày nữa!)",
+  "page.title": "Điểm danh hàng ngày",
+  "page.description": "Điểm danh hàng ngày để nhận xu và phần thưởng",
+  "page.subtitle": "Điểm danh mỗi ngày để nhận xu và phần thưởng hấp dẫn",
+  "rewards.title": "Phần thưởng theo chuỗi điểm danh",
+  "rewards.multiplier": "x{{value}} xu",
+  "tips.title": "Mẹo nhỏ",
+  "tips.streak": "Điểm danh liên tục để nhận thưởng cao hơn",
+  "tips.reset": "Chuỗi điểm danh sẽ bị reset nếu bạn bỏ lỡ 1 ngày",
+  "tips.voucher": "Xu có thể dùng để đổi voucher giảm giá"
 }
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   historyItem: string;
@@ -7,6 +8,7 @@ interface Props {
 }
 
 const SearchHistoryItem = ({ historyItem, onSelect, onDelete }: Props) => {
+  const { t } = useTranslation('nav');
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     onDelete?.();
@@ -37,7 +39,7 @@ const SearchHistoryItem = ({ historyItem, onSelect, onDelete }: Props) => {
         <button
           onClick={handleDelete}
           className="rounded-sm p-1 opacity-0 transition-all group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-slate-600"
-          title="Xóa khỏi lịch sử"
+          title={t('nav.removeFromHistory')}
         >
           <svg
             className="h-3 w-3 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"

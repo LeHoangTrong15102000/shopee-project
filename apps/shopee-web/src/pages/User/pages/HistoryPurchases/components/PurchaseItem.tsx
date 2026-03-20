@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import LiveOrderTracker from 'src/components/LiveOrderTracker';
 import path from 'src/constant/path';
@@ -24,6 +25,7 @@ interface ReorderButtonProps {
 }
 
 const ReorderButton = ({ purchase, reducedMotion }: ReorderButtonProps) => {
+  const { t } = useTranslation('order');
   const addToCartMutation = useOptimisticAddToCart();
 
   const handleReorder = () => {
@@ -44,7 +46,7 @@ const ReorderButton = ({ purchase, reducedMotion }: ReorderButtonProps) => {
         type="button"
         onClick={handleReorder}
         disabled={addToCartMutation.isPending}
-        aria-label="Mua lại sản phẩm này"
+        aria-label={t('purchase.reorderAria')}
         aria-busy={addToCartMutation.isPending}
         className={classNames(
           'flex items-center gap-1.5 rounded-sm px-4 py-2 text-sm font-medium text-white transition-colors',
@@ -88,7 +90,7 @@ const ReorderButton = ({ purchase, reducedMotion }: ReorderButtonProps) => {
             />
           </svg>
         )}
-        <span>Mua lại</span>
+        <span>{t('purchase.reorderLabel')}</span>
       </Button>
     </motion.div>
   );
@@ -109,6 +111,7 @@ const PurchaseItem = ({
   onToggleTracking,
   onReviewClick,
 }: PurchaseItemProps) => {
+  const { t } = useTranslation('order');
   return (
     <motion.div key={purchase._id} variants={reducedMotion ? undefined : staggerItem}>
       <div className="mt-4 rounded-lg border border-gray-200 bg-white p-6 text-gray-800 shadow-xs dark:border-slate-600 dark:bg-slate-800 dark:text-gray-200">
@@ -144,7 +147,7 @@ const PurchaseItem = ({
             {/* Hoàn thành - Delivered */}
             {purchase.status === purchasesStatus.delivered && (
               <span className="inline-flex items-center rounded-full bg-linear-to-r from-green-50 to-emerald-50 px-3 py-1.5 text-sm font-medium text-green-600 shadow-xs ring-1 ring-green-200/50">
-                Hoàn thành
+                {t('purchase.completed')}
               </span>
             )}
             {/* Chờ xác nhận - Waiting for confirmation */}
@@ -155,7 +158,7 @@ const PurchaseItem = ({
                   { 'animate-[status-pulse_2s_ease-in-out_infinite]': !reducedMotion },
                 )}
               >
-                Chờ xác nhận
+                {t('purchase.waitForConfirmation')}
               </span>
             )}
             {/* Chờ lấy hàng - Waiting for pickup */}
@@ -166,7 +169,7 @@ const PurchaseItem = ({
                   { 'animate-[status-pulse-blue_2s_ease-in-out_infinite]': !reducedMotion },
                 )}
               >
-                Chờ lấy hàng
+                {t('purchase.waitForGetting')}
               </span>
             )}
             {/* Đang giao - In transit */}
@@ -177,13 +180,13 @@ const PurchaseItem = ({
                   { 'animate-[status-pulse_2s_ease-in-out_infinite]': !reducedMotion },
                 )}
               >
-                Đang giao
+                {t('purchase.inTransit')}
               </span>
             )}
             {/* Đã hủy - Cancelled */}
             {purchase.status === purchasesStatus.cancelled && (
               <span className="inline-flex items-center rounded-full bg-linear-to-r from-red-50 to-rose-50 px-3 py-1.5 text-sm font-medium text-red-600 shadow-xs ring-1 ring-red-200/50">
-                Đã hủy
+                {t('purchase.cancelled')}
               </span>
             )}
           </div>
@@ -208,7 +211,7 @@ const PurchaseItem = ({
                   <path d="M8.25 19.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0zM15.75 6.75a.75.75 0 00-.75.75v7.5h7.5v-1.5a3 3 0 00-3-3h-.375V7.5a.75.75 0 00-.75-.75h-2.625z" />
                   <path d="M21.75 18h.75a.75.75 0 00.75-.75v-1.5a.75.75 0 00-.75-.75h-.75v3zM19.5 19.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0z" />
                 </svg>
-                <span>Theo dõi đơn hàng</span>
+                <span>{t('purchase.trackOrder')}</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -236,14 +239,14 @@ const PurchaseItem = ({
                 onClick={() => onReviewClick(purchase)}
                 className="rounded-sm border border-[#ee4d2d] px-4 py-2 text-[#ee4d2d] transition-colors hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-400/10"
               >
-                Đánh Giá Sản Phẩm
+                {t('purchase.reviewProduct')}
               </Button>
             )}
             <Button
               animated={false}
               className="rounded-sm border border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:bg-gray-50 dark:border-slate-600 dark:text-gray-300 dark:hover:bg-slate-700"
             >
-              Xem Đánh Giá Shop
+              {t('purchase.viewShopReview')}
             </Button>
           </div>
         </div>
@@ -295,7 +298,7 @@ const PurchaseItem = ({
               />
             </svg>
           </span>
-          <span className="text-md dark:text-gray-200">Thành tiền:</span>
+          <span className="text-md dark:text-gray-200">{t('purchase.total')}</span>
           <span className="ml-2 text-[25px] text-orange dark:text-orange-400">
             ₫{formatCurrency(purchase.product.price * purchase.buy_count)}
           </span>

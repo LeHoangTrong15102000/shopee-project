@@ -59,14 +59,14 @@ export default function CancelOrderModal({
           </svg>
         </button>
         <div className="mb-4">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('cancel.title')}</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+            {t('cancel.title')}
+          </h3>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             {t('cancel.irreversible')}
           </p>
         </div>
-        <p className="mb-4 text-sm text-gray-600 dark:text-gray-300">
-          {t('cancel.confirm')}
-        </p>
+        <p className="mb-4 text-sm text-gray-600 dark:text-gray-300">{t('cancel.confirm')}</p>
         <textarea
           value={cancelReason}
           onChange={(e) => setCancelReason(e.target.value)}

@@ -61,10 +61,10 @@ export default function ReturnOrderModal({
           </svg>
         </button>
         <div className="mb-4">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('return.title')}</h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {t('return.description')}
-          </p>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+            {t('return.title')}
+          </h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('return.description')}</p>
         </div>
         <textarea
           value={returnReason}

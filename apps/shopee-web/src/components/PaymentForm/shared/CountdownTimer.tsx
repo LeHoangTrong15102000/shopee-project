@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 
 // ---- EWallet-style CountdownTimer ----
@@ -17,6 +18,7 @@ export function EWalletCountdownTimer({
   seconds: number;
   isExpired: boolean;
 }) {
+  const { t } = useTranslation('payment');
   const progressPercent = (seconds / QR_EXPIRATION_SECONDS) * 100;
   const isWarning = seconds <= 60;
 
@@ -33,7 +35,9 @@ export function EWalletCountdownTimer({
       <span
         className={`text-sm font-medium ${isExpired ? 'text-red-600 dark:text-red-400' : isWarning ? 'text-orange-600 dark:text-orange-400' : 'text-gray-600 dark:text-gray-400'}`}
       >
-        {isExpired ? 'Đã hết hạn' : `Còn lại: ${formatTimeSimple(seconds)}`}
+        {isExpired
+          ? t('countdown.expired')
+          : t('countdown.remaining', { time: formatTimeSimple(seconds) })}
       </span>
     </div>
   );
@@ -57,6 +61,7 @@ export function BankTransferCountdownTimer({
   seconds: number;
   onExpired: () => void;
 }) {
+  const { t } = useTranslation('payment');
   const isWarning = seconds <= WARNING_THRESHOLD_SECONDS && seconds > 0;
   const isExpired = seconds <= 0;
   const { hours, minutes, secs } = formatTimeParts(Math.max(0, seconds));
@@ -93,7 +98,7 @@ export function BankTransferCountdownTimer({
           <span
             className={`text-sm font-medium ${isExpired ? 'text-red-700' : isWarning ? 'text-orange-700' : 'text-blue-700'}`}
           >
-            {isExpired ? 'Đã hết hạn thanh toán' : 'Thời hạn thanh toán'}
+            {isExpired ? t('countdown.paymentExpired') : t('countdown.paymentDeadline')}
           </span>
         </div>
         {!isExpired && (
@@ -145,7 +150,7 @@ export function BankTransferCountdownTimer({
               clipRule="evenodd"
             />
           </svg>
-          Sắp hết hạn! Vui lòng hoàn tất chuyển khoản ngay.
+          {t('countdown.expiringWarning')}
         </motion.p>
       )}
 
@@ -155,7 +160,7 @@ export function BankTransferCountdownTimer({
           animate={{ opacity: 1 }}
           className="mt-2 text-sm text-red-600"
         >
-          Đơn hàng đã bị hủy do quá thời hạn thanh toán. Vui lòng đặt hàng lại.
+          {t('countdown.orderCancelledExpired')}
         </motion.p>
       )}
     </motion.div>

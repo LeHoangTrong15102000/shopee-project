@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 import { InventoryAlertPayload } from 'src/types/socket.types';
 import Button from 'src/components/Button';
 
@@ -15,6 +16,7 @@ export default function InventoryAlertBadge({
   onClear,
   className,
 }: InventoryAlertBadgeProps) {
+  const { t } = useTranslation('nav');
   if (unreadCount === 0) return null;
 
   return (
@@ -49,7 +51,7 @@ export default function InventoryAlertBadge({
         <div className="absolute top-full right-0 z-50 mt-2 w-[calc(100vw-2rem)] rounded-lg border border-gray-200 bg-white shadow-lg sm:w-80 dark:border-slate-700 dark:bg-slate-800 dark:shadow-slate-900/50">
           <div className="flex items-center justify-between border-b border-gray-100 px-3 py-2 sm:px-4 dark:border-slate-700">
             <span className="text-xs font-medium text-gray-700 sm:text-sm dark:text-gray-200">
-              Cảnh báo tồn kho
+              {t('nav.inventoryAlerts')}
             </span>
             {onClear && (
               <Button
@@ -57,7 +59,7 @@ export default function InventoryAlertBadge({
                 onClick={onClear}
                 className="text-xs text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
               >
-                Xóa tất cả
+                {t('nav.clearAll')}
               </Button>
             )}
           </div>
@@ -80,8 +82,8 @@ export default function InventoryAlertBadge({
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
                       {alert.current_quantity === 0
-                        ? 'Đã hết hàng!'
-                        : `Chỉ còn ${alert.current_quantity} sản phẩm`}
+                        ? t('nav.outOfStock')
+                        : t('nav.onlyNLeft', { count: alert.current_quantity })}
                     </p>
                   </div>
                 </div>

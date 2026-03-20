@@ -1,5 +1,6 @@
 import SEO from 'src/components/SEO';
 import DailyCheckIn from 'src/components/DailyCheckIn';
+import { useTranslation } from 'react-i18next';
 
 // SVG Icon Components for reward tiers
 const BronzeShieldIcon = () => (
@@ -103,21 +104,16 @@ const LightbulbIcon = () => (
 );
 
 export default function DailyCheckInPage() {
+  const { t } = useTranslation('checkin');
   return (
     <div className="rounded-xs bg-white px-2 pb-10 shadow-sm md:px-7 md:pb-20 dark:bg-slate-800">
-      <SEO
-        title="Điểm danh hàng ngày"
-        description="Điểm danh hàng ngày để nhận xu và phần thưởng"
-        noindex
-      />
+      <SEO title={t('page.title')} description={t('page.description')} noindex />
 
       <div className="border-b border-b-gray-200 py-6 dark:border-b-slate-700">
         <h1 className="text-lg font-medium text-gray-900 capitalize dark:text-gray-100">
-          Điểm danh hàng ngày
+          {t('page.title')}
         </h1>
-        <div className="mt-1 text-sm text-gray-700 dark:text-gray-300">
-          Điểm danh mỗi ngày để nhận xu và phần thưởng hấp dẫn
-        </div>
+        <div className="mt-1 text-sm text-gray-700 dark:text-gray-300">{t('page.subtitle')}</div>
       </div>
 
       <div className="mt-8 flex flex-col items-center">
@@ -126,7 +122,7 @@ export default function DailyCheckInPage() {
         {/* Rewards Info */}
         <div className="mt-8 w-full max-w-2xl">
           <h2 className="mb-4 text-base font-medium text-gray-900 dark:text-gray-100">
-            Phần thưởng theo chuỗi điểm danh
+            {t('rewards.title')}
           </h2>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <div className="relative overflow-hidden rounded-xl border border-amber-200 bg-amber-50 p-4 text-center transition-all duration-300 dark:border-amber-700/50 dark:bg-amber-950/30">
@@ -134,9 +130,11 @@ export default function DailyCheckInPage() {
               <div className="relative mb-2">
                 <BronzeShieldIcon />
               </div>
-              <div className="relative font-semibold text-gray-900 dark:text-gray-100">3 ngày</div>
+              <div className="relative font-semibold text-gray-900 dark:text-gray-100">
+                {t('milestone', { count: 3 })}
+              </div>
               <div className="relative text-sm font-bold text-amber-600 dark:text-amber-400">
-                x1.5 xu
+                {t('rewards.multiplier', { value: '1.5' })}
               </div>
             </div>
             <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-4 text-center transition-all duration-300 dark:border-slate-600/50 dark:bg-slate-700/50">
@@ -144,9 +142,11 @@ export default function DailyCheckInPage() {
               <div className="relative mb-2">
                 <SilverStarIcon />
               </div>
-              <div className="relative font-semibold text-gray-900 dark:text-gray-100">7 ngày</div>
+              <div className="relative font-semibold text-gray-900 dark:text-gray-100">
+                {t('milestone', { count: 7 })}
+              </div>
               <div className="relative text-sm font-bold text-slate-500 dark:text-slate-300">
-                x2 xu
+                {t('rewards.multiplier', { value: '2' })}
               </div>
             </div>
             <div className="relative overflow-hidden rounded-xl border border-yellow-200 bg-yellow-50 p-4 text-center transition-all duration-300 dark:border-yellow-700/50 dark:bg-yellow-950/30">
@@ -154,9 +154,11 @@ export default function DailyCheckInPage() {
               <div className="relative mb-2">
                 <GoldTrophyIcon />
               </div>
-              <div className="relative font-semibold text-gray-900 dark:text-gray-100">14 ngày</div>
+              <div className="relative font-semibold text-gray-900 dark:text-gray-100">
+                {t('milestone', { count: 14 })}
+              </div>
               <div className="relative text-sm font-bold text-yellow-500 dark:text-yellow-400">
-                x2.5 xu
+                {t('rewards.multiplier', { value: '2.5' })}
               </div>
             </div>
             <div className="relative overflow-hidden rounded-xl border border-violet-200 bg-violet-50 p-4 text-center shadow-md shadow-violet-100 transition-all duration-300 dark:border-violet-500/30 dark:bg-violet-950/30 dark:shadow-violet-900/30">
@@ -164,9 +166,11 @@ export default function DailyCheckInPage() {
               <div className="relative mb-2">
                 <DiamondCrownIcon />
               </div>
-              <div className="relative font-semibold text-gray-900 dark:text-gray-100">30 ngày</div>
+              <div className="relative font-semibold text-gray-900 dark:text-gray-100">
+                {t('milestone', { count: 30 })}
+              </div>
               <div className="relative text-sm font-bold text-violet-500 dark:text-violet-400">
-                x3 xu
+                {t('rewards.multiplier', { value: '3' })}
               </div>
             </div>
           </div>
@@ -175,12 +179,12 @@ export default function DailyCheckInPage() {
         {/* Tips */}
         <div className="mt-8 w-full max-w-2xl rounded-lg bg-orange-50 p-4 dark:bg-slate-700">
           <h3 className="mb-2 flex items-center font-medium text-gray-900 dark:text-gray-100">
-            <LightbulbIcon /> Mẹo nhỏ
+            <LightbulbIcon /> {t('tips.title')}
           </h3>
           <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-300">
-            <li>• Điểm danh liên tục để nhận thưởng cao hơn</li>
-            <li>• Chuỗi điểm danh sẽ bị reset nếu bạn bỏ lỡ 1 ngày</li>
-            <li>• Xu có thể dùng để đổi voucher giảm giá</li>
+            <li>• {t('tips.streak')}</li>
+            <li>• {t('tips.reset')}</li>
+            <li>• {t('tips.voucher')}</li>
           </ul>
         </div>
       </div>

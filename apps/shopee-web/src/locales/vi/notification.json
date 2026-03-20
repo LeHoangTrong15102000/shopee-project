@@ -30,5 +30,7 @@
   "realtime.connected": "Cập nhật thời gian thực",
   "realtime.connecting": "Đang kết nối...",
   "sound.enable": "Bật âm thanh thông báo",
-  "sound.disable": "Tắt âm thanh thông báo"
+  "sound.disable": "Tắt âm thanh thông báo",
+  "recentNotifications": "Thông báo mới nhận",
+  "newCount": "{{count}} thông báo mới"
 }

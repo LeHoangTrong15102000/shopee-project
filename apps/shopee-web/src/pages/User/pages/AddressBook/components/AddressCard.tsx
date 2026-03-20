@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import Button from 'src/components/Button';
 import ShopeeCheckbox from 'src/components/ShopeeCheckbox';
 import { Address, AddressType } from 'src/types/checkout.type';
@@ -32,6 +33,7 @@ const AddressCard = ({
   isSelected,
   onToggleSelect,
 }: AddressCardProps) => {
+  const { t } = useTranslation('address');
   const typeInfo = getAddressTypeInfo(address.addressType);
   const displayLabel =
     address.addressType === 'other' && address.label ? address.label : typeInfo.label;
@@ -83,7 +85,7 @@ const AddressCard = ({
       {/* Default badge ribbon */}
       {isDefault && (
         <div className="absolute top-3 -right-8 rotate-45 bg-orange px-10 py-1 text-xs font-medium text-white shadow-xs">
-          Mặc định
+          {t('default')}
         </div>
       )}
 
@@ -164,7 +166,7 @@ const AddressCard = ({
                     clipRule="evenodd"
                   />
                 </svg>
-                Địa chỉ giao hàng
+                {t('shippingAddress')}
               </span>
             )}
           </div>
@@ -196,7 +198,7 @@ const AddressCard = ({
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-                Đặt mặc định
+                {t('setDefault')}
               </Button>
             )}
           </div>
@@ -222,7 +224,7 @@ const AddressCard = ({
                   d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                 />
               </svg>
-              Sửa
+              {t('edit')}
             </Button>
             {!isDefault && (
               <Button
@@ -245,7 +247,7 @@ const AddressCard = ({
                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                   />
                 </svg>
-                Xóa
+                {t('delete')}
               </Button>
             )}
           </div>

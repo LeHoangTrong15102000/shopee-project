@@ -60,6 +60,24 @@
   "mobile.checkin": "Điểm danh",
   "mobile.address": "Địa chỉ",
   "mobile.notifications": "Thông báo",
-  "mobile.accountMenu": "Menu tài khoản"
+  "mobile.accountMenu": "Menu tài khoản",
+  "nav.signInToViewNotifications": "Đăng nhập để xem Thông báo",
+  "nav.signUp": "Đăng ký",
+  "nav.signIn": "Đăng nhập",
+  "nav.searchPlaceholder": "Tìm kiếm sản phẩm",
+  "nav.productsCount": "Sản phẩm ({{count}})",
+  "nav.clearAll": "Xóa tất cả",
+  "nav.removeFromHistory": "Xóa khỏi lịch sử",
+  "nav.searching": "Đang tìm kiếm...",
+  "nav.searchSuggestions": "Gợi ý tìm kiếm",
+  "nav.searchHistory": "Lịch sử tìm kiếm",
+  "nav.noResults": "Không tìm thấy kết quả cho \"{{query}}\"",
+  "nav.deletedFromHistory": "Đã xóa khỏi lịch sử tìm kiếm",
+  "nav.deleteHistoryError": "Không thể xóa lịch sử tìm kiếm",
+  "nav.clearedHistory": "Đã xóa toàn bộ lịch sử tìm kiếm",
+  "nav.clearHistoryError": "Không thể xóa lịch sử tìm kiếm",
+  "nav.inventoryAlerts": "Cảnh báo tồn kho",
+  "nav.outOfStock": "Đã hết hàng!",
+  "nav.onlyNLeft": "Chỉ còn {{count}} sản phẩm"
 }
 

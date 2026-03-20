@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 import { OrderStatus, getStatusLabel } from 'src/config/orderStatus';
 import { OrderTracking, getCarrierDisplayName } from 'src/types/orderTracking.type';
 
@@ -131,9 +132,9 @@ function StatusIcon({ status, className }: { status: string; className?: string 
   }
 }
 
-function formatDateTime(timestamp: string): string {
+function formatDateTime(timestamp: string, locale: string): string {
   const date = new Date(timestamp);
-  return date.toLocaleString('vi-VN', {
+  return date.toLocaleString(locale, {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -147,6 +148,7 @@ function getStatusIndex(status: OrderStatus): number {
 }
 
 export default function OrderTrackingTimeline({ tracking, className }: OrderTrackingTimelineProps) {
+  const { t, i18n } = useTranslation('order');
   const currentStatusIndex = getStatusIndex(tracking.status);
   const isCancelled = tracking.status === 'cancelled';
   const isReturned = tracking.status === 'returned';
@@ -177,7 +179,7 @@ export default function OrderTrackingTimeline({ tracking, className }: OrderTrac
               {getCarrierDisplayName(tracking.carrier)}
             </h3>
             <p className="text-sm text-gray-500 dark:text-gray-300">
-              Mã vận đơn:{' '}
+              {t('tracking.trackingNumberLabel')}{' '}
               <span className="rounded-md bg-teal-50 px-2 py-0.5 text-xs font-semibold text-[#26aa99] dark:bg-teal-950/30 dark:text-[#26aa99]">
                 {tracking.tracking_number}
               </span>
@@ -203,9 +205,9 @@ export default function OrderTrackingTimeline({ tracking, className }: OrderTrac
                 />
               </svg>
               <p className="text-sm text-gray-600 dark:text-gray-300">
-                Dự kiến giao hàng:{' '}
+                {t('tracking.estimatedDeliveryLabel')}{' '}
                 <span className="font-semibold text-[#26aa99] dark:text-[#26aa99]">
-                  {formatDateTime(tracking.estimated_delivery)}
+                  {formatDateTime(tracking.estimated_delivery, i18n.language)}
                 </span>
               </p>
             </div>
@@ -215,7 +217,7 @@ export default function OrderTrackingTimeline({ tracking, className }: OrderTrac
         {tracking.status === 'delivered' && (
           <div className="mt-3 rounded-lg bg-green-50 p-3 dark:bg-green-900/20">
             <p className="text-sm font-medium text-green-700 dark:text-green-400">
-              ✓ Đơn hàng đã được giao thành công
+              {t('tracking.deliveredSuccess')}
             </p>
           </div>
         )}
@@ -223,7 +225,7 @@ export default function OrderTrackingTimeline({ tracking, className }: OrderTrac
         {isCancelled && (
           <div className="mt-3 rounded-lg bg-red-50 p-3 dark:bg-red-900/20">
             <p className="text-sm font-medium text-red-700 dark:text-red-400">
-              ✕ Đơn hàng đã bị hủy
+              {t('tracking.cancelledMessage')}
             </p>
           </div>
         )}
@@ -231,7 +233,7 @@ export default function OrderTrackingTimeline({ tracking, className }: OrderTrac
         {isReturned && (
           <div className="mt-3 rounded-lg bg-red-50 p-3 dark:bg-red-900/20">
             <p className="text-sm font-medium text-red-700 dark:text-red-400">
-              ↩ Đơn hàng đã được trả lại
+              {t('tracking.returnedMessage')}
             </p>
           </div>
         )}
@@ -239,7 +241,9 @@ export default function OrderTrackingTimeline({ tracking, className }: OrderTrac
 
       {/* Timeline - only shows events up to current status */}
       <div className="p-3 md:p-4">
-        <h4 className="mb-4 font-medium text-gray-900 dark:text-gray-100">Trạng thái đơn hàng</h4>
+        <h4 className="mb-4 font-medium text-gray-900 dark:text-gray-100">
+          {t('tracking.orderStatus')}
+        </h4>
 
         <div className="relative">
           {visibleTimeline.map((event, index) => {
@@ -323,7 +327,7 @@ export default function OrderTrackingTimeline({ tracking, className }: OrderTrac
                     </p>
                   )}
                   <p className="mt-1 text-xs text-gray-500 dark:text-slate-400">
-                    {formatDateTime(event.timestamp)}
+                    {formatDateTime(event.timestamp, i18n.language)}
                   </p>
                 </div>
               </div>
@@ -335,7 +339,7 @@ export default function OrderTrackingTimeline({ tracking, className }: OrderTrac
       {/* Last Updated */}
       <div className="px-3 pb-3 md:px-4 md:pb-4">
         <p className="text-right text-xs text-gray-500 dark:text-slate-400">
-          Cập nhật lần cuối: {formatDateTime(tracking.updatedAt)}
+          {t('tracking.lastUpdated', { time: formatDateTime(tracking.updatedAt, i18n.language) })}
         </p>
       </div>
     </div>

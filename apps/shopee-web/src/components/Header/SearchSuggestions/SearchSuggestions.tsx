@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import Button from 'src/components/Button';
 import productApi from 'src/apis/product.api';
 import path from 'src/constant/path';
@@ -45,6 +46,7 @@ const mockProducts = [
  * Tự động hủy các request search cũ khi user gõ tiếp
  */
 const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide }: Props) => {
+  const { t, i18n } = useTranslation('nav');
   const queryClient = useQueryClient();
   const debouncedSearchValue = useDebounce(searchValue, 300); // Giảm từ 500ms xuống 300ms cho responsive hơn
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
@@ -103,10 +105,10 @@ const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide 
     mutationFn: (keyword: string) => productApi.deleteSearchHistoryItem(keyword),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['searchHistory'] });
-      toast.success('Đã xóa khỏi lịch sử tìm kiếm');
+      toast.success(t('nav.deletedFromHistory'));
     },
     onError: () => {
-      toast.error('Không thể xóa lịch sử tìm kiếm');
+      toast.error(t('nav.deleteHistoryError'));
     },
   });
 
@@ -117,10 +119,10 @@ const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide 
     mutationFn: () => productApi.deleteSearchHistory(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['searchHistory'] });
-      toast.success('Đã xóa toàn bộ lịch sử tìm kiếm');
+      toast.success(t('nav.clearedHistory'));
     },
     onError: () => {
-      toast.error('Không thể xóa lịch sử tìm kiếm');
+      toast.error(t('nav.clearHistoryError'));
     },
   });
 
@@ -217,7 +219,7 @@ const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide 
             {product.name}
           </div>
           <div className="text-xs font-semibold text-orange">
-            ₫{product.price.toLocaleString('vi-VN')}
+            ₫{product.price.toLocaleString(i18n.language)}
           </div>
         </div>
         <div className="shrink-0">
@@ -244,7 +246,9 @@ const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide 
       {showLoading && (
         <div className="flex items-center justify-center py-4">
           <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-orange"></div>
-          <span className="ml-2 text-sm text-gray-600 dark:text-gray-200">Đang tìm kiếm...</span>
+          <span className="ml-2 text-sm text-gray-600 dark:text-gray-200">
+            {t('nav.searching')}
+          </span>
         </div>
       )}
 
@@ -254,7 +258,7 @@ const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide 
           {suggestions.length > 0 && (
             <div className="border-b border-gray-100 dark:border-slate-700">
               <div className="px-4 py-2 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-300">
-                Gợi ý tìm kiếm
+                {t('nav.searchSuggestions')}
               </div>
               {suggestions.slice(0, 5).map((suggestion, index) => (
                 <SearchSuggestionItem
@@ -271,7 +275,8 @@ const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide 
           {products.length > 0 && (
             <div>
               <div className="px-4 py-2 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-300">
-                Sản phẩm ({products.length > 5 ? '5+' : products.length})
+                {/* @ts-expect-error — dynamic count type (string | number) */}
+                {t('nav.productsCount', { count: products.length > 5 ? '5+' : products.length })}
               </div>
               <div className="px-4 pb-2">
                 {products.slice(0, 5).map((product) => (
@@ -297,7 +302,7 @@ const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide 
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                 />
               </svg>
-              <p className="text-sm">Không tìm thấy kết quả cho "{debouncedSearchValue}"</p>
+              <p className="text-sm">{t('nav.noResults', { query: debouncedSearchValue })}</p>
             </div>
           )}
         </>
@@ -308,7 +313,7 @@ const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide 
         <div>
           <div className="flex items-center justify-between px-4 py-2">
             <span className="text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-300">
-              Lịch sử tìm kiếm
+              {t('nav.searchHistory')}
             </span>
             <Button
               animated={false}
@@ -316,7 +321,7 @@ const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide 
               disabled={clearHistoryMutation.isPending}
               className="text-xs text-orange hover:underline disabled:opacity-50"
             >
-              Xóa tất cả
+              {t('nav.clearAll')}
             </Button>
           </div>
           {searchHistory.slice(0, 5).map((item, index) => (

@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import path from 'src/constant/path';
 import NotificationList from '../../NotificationList';
 
@@ -9,6 +10,7 @@ interface NotificationPopoverProps {
 }
 
 const NotificationPopover = ({ isAuthenticated, variant = 'full' }: NotificationPopoverProps) => {
+  const { t } = useTranslation('nav');
   if (isAuthenticated) {
     return (
       <div className='before:absolute before:top-0 before:left-0 before:h-[15px] before:w-full before:-translate-y-full before:bg-transparent before:content-[""]'>
@@ -27,20 +29,20 @@ const NotificationPopover = ({ isAuthenticated, variant = 'full' }: Notification
               src="https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/assets/99e561e3944805a023e87a81d4869600.png"
               alt="notification"
             />
-            <span className="mt-5 text-xs">Đăng nhập để xem Thông báo</span>
+            <span className="mt-5 text-xs">{t('nav.signInToViewNotifications')}</span>
           </div>
           <div className="flex w-full items-center border-0">
             <Link
               to={path.register}
               className="h-10 w-[50%] bg-[rgba(0,0,0,0.04)] p-2 text-center text-xs hover:text-orange dark:hover:text-orange-400"
             >
-              Đăng ký
+              {t('nav.signUp')}
             </Link>
             <Link
               to={path.login}
               className="h-10 w-[50%] bg-[rgba(0,0,0,0.04)] p-2 text-center text-xs hover:text-orange dark:hover:text-orange-400"
             >
-              Đăng nhập
+              {t('nav.signIn')}
             </Link>
           </div>
         </div>
@@ -63,20 +65,20 @@ const NotificationPopover = ({ isAuthenticated, variant = 'full' }: Notification
               alt="anh"
             />
           </div>
-          <span className="mt-5 text-xs md:text-sm">Đăng nhập để xem Thông báo</span>
+          <span className="mt-5 text-xs md:text-sm">{t('nav.signInToViewNotifications')}</span>
         </div>
         <div className="flex w-full items-center border-0">
           <Link
             to={path.register}
             className="h-10 w-[50%] bg-[rgba(0,0,0,0.04)] p-2 text-center text-xs hover:text-orange md:text-sm dark:hover:text-orange-400"
           >
-            Đăng ký
+            {t('nav.signUp')}
           </Link>
           <Link
             to={path.login}
             className="h-10 w-[50%] bg-[rgba(0,0,0,0.04)] p-2 text-center text-xs hover:text-orange md:text-sm dark:hover:text-orange-400"
           >
-            Đăng nhập
+            {t('nav.signIn')}
           </Link>
         </div>
       </div>

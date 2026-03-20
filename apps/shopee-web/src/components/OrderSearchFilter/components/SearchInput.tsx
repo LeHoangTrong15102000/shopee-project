@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import Button from 'src/components/Button';
 
 interface SearchInputProps {
@@ -11,6 +12,7 @@ export default function SearchInput({
   onInputChange,
   onClearSearch,
 }: SearchInputProps) {
+  const { t } = useTranslation('order');
   return (
     <div className="relative flex-1">
       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -34,9 +36,9 @@ export default function SearchInput({
         type="text"
         value={inputValue}
         onChange={onInputChange}
-        placeholder="Tìm kiếm đơn hàng theo tên sản phẩm..."
+        placeholder={t('search.placeholder')}
         className="w-full rounded-xs border border-gray-300 bg-gray-50 py-2.5 pr-10 pl-10 text-sm text-gray-900 transition-colors focus:border-[#ee4d2d] focus:bg-white focus:ring-1 focus:ring-[#ee4d2d] focus:outline-hidden dark:border-slate-600 dark:bg-slate-900 dark:text-gray-100 dark:focus:bg-slate-800"
-        aria-label="Tìm kiếm đơn hàng"
+        aria-label={t('search.ariaLabel')}
       />
       {inputValue && (
         <Button
@@ -45,7 +47,7 @@ export default function SearchInput({
           type="button"
           onClick={onClearSearch}
           className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 transition-colors hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-          aria-label="Xóa tìm kiếm"
+          aria-label={t('search.clearAria')}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

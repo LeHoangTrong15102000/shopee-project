@@ -12,5 +12,22 @@
   "status.noConnection": "Không có kết nối",
   "status.online": "Trực tuyến",
   "button.minimize": "Thu nhỏ",
-  "button.close": "Đóng"
+  "button.close": "Đóng",
+  "history.title": "Lịch sử hội thoại",
+  "history.seoTitle": "Lịch sử hội thoại | Shopee Clone",
+  "history.seoDescription": "Quản lý lịch sử hội thoại với trợ lý AI",
+  "history.subtitle": "Quản lý các cuộc hội thoại với trợ lý AI",
+  "history.empty": "Chưa có cuộc hội thoại nào",
+  "history.deleteSuccess": "Xóa hội thoại thành công",
+  "history.deleteError": "Xóa hội thoại thất bại",
+  "history.statusActive": "Đang hoạt động",
+  "history.statusArchived": "Đã lưu trữ",
+  "history.deleteAria": "Xóa hội thoại {{title}}",
+  "history.confirmTitle": "Xác nhận xóa",
+  "history.confirmMessage": "Bạn có chắc muốn xóa cuộc hội thoại này? Hành động này không thể hoàn tác.",
+  "history.cancel": "Hủy",
+  "history.deleting": "Đang xóa...",
+  "history.delete": "Xóa",
+  "loadingMessages": "Đang tải tin nhắn...",
+  "noMessages": "Chưa có tin nhắn"
 }

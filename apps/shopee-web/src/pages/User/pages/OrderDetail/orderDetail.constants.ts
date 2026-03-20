@@ -96,15 +96,15 @@ export function getStatusDisplay(status: OrderStatus) {
   };
 }
 
-export const paymentMethodLabels: Record<string, string> = {
-  cod: 'Thanh toán khi nhận hàng (COD)',
-  bank_transfer: 'Chuyển khoản ngân hàng',
-  e_wallet: 'Ví điện tử',
-  credit_card: 'Thẻ tín dụng/Ghi nợ',
+export const paymentMethodLabelKeys: Record<string, string> = {
+  cod: 'payment:method.cod',
+  bank_transfer: 'payment:method.bankTransfer',
+  e_wallet: 'payment:method.eWallet',
+  credit_card: 'payment:method.creditCard',
 };
 
-export const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('vi-VN', {
+export const formatDate = (dateString: string, locale: string = 'vi-VN') => {
+  return new Date(dateString).toLocaleDateString(locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',

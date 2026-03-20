@@ -55,6 +55,7 @@
   "stock.outOfStock": "Hết hàng",
   "stock.runningLow": "Sắp hết",
   "toast.removedFromWishlist": "Đã xóa khỏi danh sách yêu thích",
-  "toast.addedToCart": "Đã thêm vào giỏ hàng"
+  "toast.addedToCart": "Đã thêm vào giỏ hàng",
+  "priceDropAlert": "Sản phẩm yêu thích đã giảm giá {{percent}}%!"
 }
 

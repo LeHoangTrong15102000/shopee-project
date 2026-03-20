@@ -1,12 +1,14 @@
+import { useTranslation } from 'react-i18next';
 import SkeletonBase from './SkeletonBase';
 
 export default function ProductDetailSkeleton() {
+  const { t } = useTranslation('common');
   return (
     <div
       className="min-h-[800px] bg-gray-200 py-6 dark:bg-slate-900"
       role="status"
       aria-busy="true"
-      aria-label="Đang tải chi tiết sản phẩm"
+      aria-label={t('loading.productDetails')}
     >
       <div className="container">
         <div className="bg-white p-4 shadow-sm dark:bg-slate-800 dark:shadow-slate-900/50">

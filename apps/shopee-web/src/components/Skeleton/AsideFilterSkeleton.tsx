@@ -1,8 +1,15 @@
+import { useTranslation } from 'react-i18next';
 import SkeletonBase from './SkeletonBase';
 
 export default function AsideFilterSkeleton() {
+  const { t } = useTranslation('common');
   return (
-    <div className="min-h-[500px] py-4" role="status" aria-busy="true" aria-label="Đang tải bộ lọc">
+    <div
+      className="min-h-[500px] py-4"
+      role="status"
+      aria-busy="true"
+      aria-label={t('loading.filters')}
+    >
       {/* Categories title skeleton */}
       <div className="flex items-center">
         <SkeletonBase className="mr-2 h-4 w-3" />

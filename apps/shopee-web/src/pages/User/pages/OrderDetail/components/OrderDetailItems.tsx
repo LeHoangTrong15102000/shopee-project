@@ -111,7 +111,9 @@ export default function OrderDetailItems({ order, shouldReduceMotion }: OrderDet
                   </span>
                 </div>
                 <div className="flex items-baseline gap-1.5 sm:ml-auto">
-                  <span className="text-xs text-gray-400 dark:text-gray-500">{t('detail.itemTotal')}</span>
+                  <span className="text-xs text-gray-400 dark:text-gray-500">
+                    {t('detail.itemTotal')}
+                  </span>
                   <span className="text-sm font-bold text-orange sm:text-base dark:text-orange-400">
                     ₫{formatCurrency(item.price * item.buyCount)}
                   </span>

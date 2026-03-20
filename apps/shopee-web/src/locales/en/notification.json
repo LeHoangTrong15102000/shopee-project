@@ -30,5 +30,7 @@
   "realtime.connected": "Real-time updates",
   "realtime.connecting": "Connecting...",
   "sound.enable": "Enable notification sound",
-  "sound.disable": "Disable notification sound"
+  "sound.disable": "Disable notification sound",
+  "recentNotifications": "Recent Notifications",
+  "newCount": "{{count}} new notifications"
 }

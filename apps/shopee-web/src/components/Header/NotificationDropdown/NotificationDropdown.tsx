@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import Popover from 'src/components/Popover';
 import NotificationItem from './NotificationItem';
 import NotificationBadge from './NotificationBadge';
@@ -7,6 +8,7 @@ import path from 'src/constant/path';
 import Button from 'src/components/Button';
 
 const NotificationDropdown = () => {
+  const { t } = useTranslation('notification');
   const { notifications, unreadCount, markAsRead, clearAll, isConnected } = useNotifications();
 
   const handleMarkAsRead = (id: string) => {
@@ -23,16 +25,16 @@ const NotificationDropdown = () => {
       <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3 dark:border-slate-700">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            Thông báo mới nhận
+            {t('recentNotifications')}
           </h3>
           {/* Real-time connection indicator */}
           <span
             className={`h-1.5 w-1.5 rounded-full ${isConnected ? 'bg-green-500' : 'bg-gray-400'}`}
-            title={isConnected ? 'Đang kết nối thời gian thực' : 'Đang kết nối...'}
+            title={isConnected ? t('realtime.connected') : t('realtime.connecting')}
           />
         </div>
         {unreadCount > 0 && (
-          <span className="text-xs text-orange">{unreadCount} thông báo mới</span>
+          <span className="text-xs text-orange">{t('newCount', { count: unreadCount })}</span>
         )}
       </div>
 
@@ -62,7 +64,7 @@ const NotificationDropdown = () => {
               />
             </svg>
             <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-              Chưa có thông báo nào
+              {t('noNotifications')}
             </p>
           </div>
         )}
@@ -72,7 +74,7 @@ const NotificationDropdown = () => {
       {notifications.length > 0 && (
         <div className="flex items-center justify-between border-t border-gray-100 px-4 py-3 dark:border-slate-700">
           <Link to={path.notifications} className="text-sm text-orange hover:text-[#d73527]">
-            Xem tất cả thông báo
+            {t('viewAll')}
           </Link>
           <Button
             variant="text"
@@ -80,7 +82,7 @@ const NotificationDropdown = () => {
             onClick={handleClearAll}
             className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
           >
-            Đánh dấu đã đọc tất cả
+            {t('markAllRead')}
           </Button>
         </div>
       )}

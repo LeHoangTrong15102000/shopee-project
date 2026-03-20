@@ -457,7 +457,7 @@ const UserSideNav = () => {
                       />
                     </svg>
                   </div>
-                  <span className="font-medium capitalize">Lịch sử hội thoại</span>
+                  <span className="font-medium capitalize">{t('sideNav.conversations')}</span>
                 </div>
               </>
             )}

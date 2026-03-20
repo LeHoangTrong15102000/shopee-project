@@ -26,6 +26,15 @@
   "loyalty.remaining": "{{count}} coins remaining",
   "loyalty.eligible": "Eligible!",
   "loyalty.expiryWarning": "{{count}} coins will expire on {{date}}",
-  "loyalty.expiryDays": "({{count}} days left!)"
+  "loyalty.expiryDays": "({{count}} days left!)",
+  "page.title": "Daily Check-in",
+  "page.description": "Check in daily to earn coins and rewards",
+  "page.subtitle": "Check in every day to earn coins and exciting rewards",
+  "rewards.title": "Streak Rewards",
+  "rewards.multiplier": "x{{value}} coins",
+  "tips.title": "Tips",
+  "tips.streak": "Check in consecutively for higher rewards",
+  "tips.reset": "Your streak will reset if you miss a day",
+  "tips.voucher": "Coins can be used to redeem discount vouchers"
 }
 

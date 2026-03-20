@@ -12,5 +12,22 @@
   "status.noConnection": "No connection",
   "status.online": "Online",
   "button.minimize": "Minimize",
-  "button.close": "Close"
+  "button.close": "Close",
+  "history.title": "Conversation History",
+  "history.seoTitle": "Conversation History | Shopee Clone",
+  "history.seoDescription": "Manage your conversation history with AI assistant",
+  "history.subtitle": "Manage your conversations with AI assistant",
+  "history.empty": "No conversations yet",
+  "history.deleteSuccess": "Conversation deleted successfully",
+  "history.deleteError": "Failed to delete conversation",
+  "history.statusActive": "Active",
+  "history.statusArchived": "Archived",
+  "history.deleteAria": "Delete conversation {{title}}",
+  "history.confirmTitle": "Confirm Delete",
+  "history.confirmMessage": "Are you sure you want to delete this conversation? This action cannot be undone.",
+  "history.cancel": "Cancel",
+  "history.deleting": "Deleting...",
+  "history.delete": "Delete",
+  "loadingMessages": "Loading messages...",
+  "noMessages": "No messages yet"
 }

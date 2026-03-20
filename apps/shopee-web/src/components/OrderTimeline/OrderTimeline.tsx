@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { purchasesStatus } from 'src/constant/purchase';
 import { ANIMATION_DURATION } from 'src/styles/animations';
 
@@ -91,10 +92,14 @@ const StepSvgIcon = ({
 };
 
 const ORDER_STEPS = [
-  { status: purchasesStatus.waitForConfirmation, label: 'Chờ xác nhận', icon: 'clock' },
-  { status: purchasesStatus.waitForGetting, label: 'Chờ lấy hàng', icon: 'package' },
-  { status: purchasesStatus.inProgress, label: 'Đang giao', icon: 'truck' },
-  { status: purchasesStatus.delivered, label: 'Đã giao', icon: 'check-circle' },
+  {
+    status: purchasesStatus.waitForConfirmation,
+    labelKey: 'timeline.waitForConfirmation',
+    icon: 'clock',
+  },
+  { status: purchasesStatus.waitForGetting, labelKey: 'timeline.waitForGetting', icon: 'package' },
+  { status: purchasesStatus.inProgress, labelKey: 'timeline.inProgress', icon: 'truck' },
+  { status: purchasesStatus.delivered, labelKey: 'timeline.delivered', icon: 'check-circle' },
 ];
 
 function formatDateTime(timestamp: string): string {
@@ -113,6 +118,7 @@ export default function OrderTimeline({
   className,
   timestamps,
 }: OrderTimelineProps) {
+  const { t } = useTranslation('order');
   const isCancelled = currentStatus === purchasesStatus.cancelled;
 
   const currentStepIndex = (() => {
@@ -141,10 +147,10 @@ export default function OrderTimeline({
           </div>
           <div>
             <span className="text-lg font-semibold text-red-600 dark:text-red-400">
-              Đơn hàng đã hủy
+              {t('timeline.cancelled')}
             </span>
             <p className="mt-1 text-sm text-red-500/80 dark:text-red-400/70">
-              Đơn hàng này đã bị hủy bởi người bán hoặc người mua
+              {t('timeline.cancelledDescription')}
             </p>
           </div>
         </motion.div>
@@ -216,7 +222,7 @@ export default function OrderTimeline({
                   },
                 )}
               >
-                {step.label}
+                {t(step.labelKey as never)}
               </span>
 
               {/* Step timestamp */}

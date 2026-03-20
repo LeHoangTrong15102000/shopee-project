@@ -66,5 +66,11 @@
   "allProductsTitle": "Tất cả sản phẩm",
   "loading": "Đang tải...",
   "loadingMore": "Đang tải thêm sản phẩm...",
-  "allProductsShown": "Đã hiển thị tất cả {{count}} sản phẩm"
+  "allProductsShown": "Đã hiển thị tất cả {{count}} sản phẩm",
+  "flashSale.ended": "Đã kết thúc!",
+  "flashSale.soldOut": "Đã hết hàng!",
+  "flashSale.onlyNLeft": "Chỉ còn {{count}} sản phẩm!",
+  "flashSale.almostGone": "Sắp hết!",
+  "flashSale.endingSoon": "Sắp kết thúc!",
+  "flashSale.soldPercent": "Đã bán {{percent}}%"
 }

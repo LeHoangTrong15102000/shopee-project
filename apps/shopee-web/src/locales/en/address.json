@@ -75,6 +75,13 @@
   "book.searchPlaceholder": "Search by name, phone, address...",
   "book.selectAll": "Select all",
   "book.selectedCount": "Selected {{count}} addresses",
-  "book.deleteSelected": "Delete selected"
+  "book.deleteSelected": "Delete selected",
+  "empty.description": "Add a shipping address to make shopping faster and more convenient",
+  "empty.feature.fastDelivery": "Fast Delivery",
+  "empty.feature.multipleAddresses": "Save Multiple Addresses",
+  "empty.feature.easyCheckout": "Easy Checkout",
+  "shippingAddress": "Shipping Address",
+  "deleteModal.title": "Delete Address",
+  "deleteModal.message": "Are you sure you want to delete this address? This action cannot be undone."
 }
 

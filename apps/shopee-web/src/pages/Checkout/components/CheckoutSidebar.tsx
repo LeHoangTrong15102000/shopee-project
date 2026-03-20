@@ -29,7 +29,7 @@ export const CheckoutSidebar = ({
   onRemoveVoucher,
   onGoToReview,
 }: CheckoutSidebarProps) => {
-  const { t } = useTranslation('checkout');
+  const { t, i18n } = useTranslation('checkout');
   return (
     <div className="lg:col-span-1">
       <div className="sticky top-4 space-y-4">
@@ -59,7 +59,7 @@ export const CheckoutSidebar = ({
               {t('total')}
             </span>
             <span className="text-xl font-bold text-orange md:text-2xl">
-              ₫{totalAmount.toLocaleString('vi-VN')}
+              ₫{totalAmount.toLocaleString(i18n.language)}
             </span>
           </div>
 

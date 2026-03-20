@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import SkeletonBase from './SkeletonBase';
 
 interface CartItemSkeletonProps {
@@ -5,6 +6,7 @@ interface CartItemSkeletonProps {
 }
 
 export default function CartItemSkeleton({ count = 1 }: CartItemSkeletonProps) {
+  const { t } = useTranslation('common');
   return (
     <>
       {[...Array(count)].map((_, index) => (
@@ -13,7 +15,7 @@ export default function CartItemSkeleton({ count = 1 }: CartItemSkeletonProps) {
           className="mt-4 grid min-h-[100px] grid-cols-1 items-center rounded-xs border border-gray-200 bg-white px-4 py-5 text-center text-sm text-gray-500 shadow-sm sm:grid-cols-12 dark:border-slate-700 dark:bg-slate-800 dark:text-gray-400 dark:shadow-slate-900/30"
           role="status"
           aria-busy="true"
-          aria-label="Đang tải sản phẩm trong giỏ hàng"
+          aria-label={t('loading.cartItems')}
         >
           {/* Checkbox and product info */}
           <div className="col-span-6">

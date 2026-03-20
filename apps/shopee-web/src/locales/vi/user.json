@@ -122,5 +122,6 @@
   "vouchers.collectNow": "Thu thập voucher ngay",
   "vouchers.copied": "Đã sao chép mã voucher!",
   "vouchers.copiedCode": "Đã sao chép mã: {{code}}",
-  "history.seo.title": "Đơn mua"
+  "history.seo.title": "Đơn mua",
+  "sideNav.conversations": "Lịch sử hội thoại"
 }

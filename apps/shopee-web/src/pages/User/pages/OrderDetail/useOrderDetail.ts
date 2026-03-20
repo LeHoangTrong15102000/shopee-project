@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import orderApi from 'src/apis/order.api';
 import orderTrackingApi from 'src/apis/orderTracking.api';
@@ -8,6 +9,7 @@ import { orderStatusFromNumber } from 'src/constant/order';
 import useOrderTracking from 'src/hooks/useOrderTracking';
 
 export function useOrderDetail() {
+  const { t } = useTranslation('order');
   const { orderId } = useParams<{ orderId: string }>();
   const [searchParams] = useSearchParams();
   const statusParam = searchParams.get('status');
@@ -43,13 +45,13 @@ export function useOrderDetail() {
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
       orderApi.cancelOrder(id, reason),
     onSuccess: () => {
-      toast.success('Hủy đơn hàng thành công');
+      toast.success(t('cancel.success'));
       queryClient.invalidateQueries({ queryKey: ['order', orderId] });
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       setShowCancelModal(false);
     },
     onError: () => {
-      toast.error('Hủy đơn hàng thất bại');
+      toast.error(t('cancel.error'));
     },
   });
 
@@ -57,7 +59,7 @@ export function useOrderDetail() {
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
       orderApi.returnOrder(id, reason),
     onSuccess: () => {
-      toast.success('Yêu cầu trả hàng thành công');
+      toast.success(t('return.success'));
       queryClient.invalidateQueries({ queryKey: ['order', orderId] });
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       setShowReturnModal(false);
@@ -65,7 +67,7 @@ export function useOrderDetail() {
       setReturnReasonError('');
     },
     onError: () => {
-      toast.error('Yêu cầu trả hàng thất bại');
+      toast.error(t('return.error'));
     },
   });
 
@@ -98,7 +100,7 @@ export function useOrderDetail() {
 
   const handleReturnOrder = () => {
     if (!returnReason.trim()) {
-      setReturnReasonError('Vui lòng nhập lý do trả hàng');
+      setReturnReasonError(t('return.reasonRequired'));
       return;
     }
     if (orderId) {

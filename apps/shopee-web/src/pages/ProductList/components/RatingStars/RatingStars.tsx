@@ -1,6 +1,8 @@
+import { useTranslation } from 'react-i18next';
 import { useProductQueryStates } from 'src/hooks/nuqs';
 
 const RatingStars = () => {
+  const { t } = useTranslation('product');
   const [, setFilters] = useProductQueryStates();
 
   const handleFilterStar = (ratingFilterNumber: number) => {
@@ -25,7 +27,7 @@ const RatingStars = () => {
               }}
               tabIndex={0}
               role="button"
-              aria-label={`${5 - index} sao trở lên`}
+              aria-label={t('rating.starsAboveAria', { count: 5 - index })}
             >
               {Array(5)
                 .fill(0)
@@ -104,7 +106,9 @@ const RatingStars = () => {
                     </svg>
                   );
                 })}
-              {index !== 0 && <span className="ml-1 dark:text-gray-300">trở lên</span>}
+              {index !== 0 && (
+                <span className="ml-1 dark:text-gray-300">{t('rating.andAbove')}</span>
+              )}
             </div>
           </li>
         ))}

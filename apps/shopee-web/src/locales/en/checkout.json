@@ -51,6 +51,9 @@
   "toast.voucherRemoved": "Voucher removed",
   "toast.selectAddress": "Please select a delivery address",
   "toast.selectShipping": "Please select a shipping method",
-  "toast.selectPayment": "Please select a payment method"
+  "toast.selectPayment": "Please select a payment method",
+  "trust.authentic": "Authentic",
+  "trust.sevenDayReturn": "7-day return",
+  "trust.fastDelivery": "Fast delivery"
 }
 

@@ -60,6 +60,24 @@
   "mobile.checkin": "Daily Check-in",
   "mobile.address": "Address",
   "mobile.notifications": "Notifications",
-  "mobile.accountMenu": "Account menu"
+  "mobile.accountMenu": "Account menu",
+  "nav.signInToViewNotifications": "Sign in to view Notifications",
+  "nav.signUp": "Sign Up",
+  "nav.signIn": "Sign In",
+  "nav.searchPlaceholder": "Search products",
+  "nav.productsCount": "Products ({{count}})",
+  "nav.clearAll": "Clear all",
+  "nav.removeFromHistory": "Remove from history",
+  "nav.searching": "Searching...",
+  "nav.searchSuggestions": "Search suggestions",
+  "nav.searchHistory": "Search history",
+  "nav.noResults": "No results found for \"{{query}}\"",
+  "nav.deletedFromHistory": "Removed from search history",
+  "nav.deleteHistoryError": "Cannot delete search history",
+  "nav.clearedHistory": "Cleared all search history",
+  "nav.clearHistoryError": "Cannot clear search history",
+  "nav.inventoryAlerts": "Inventory alerts",
+  "nav.outOfStock": "Out of stock!",
+  "nav.onlyNLeft": "Only {{count}} left"
 }
 

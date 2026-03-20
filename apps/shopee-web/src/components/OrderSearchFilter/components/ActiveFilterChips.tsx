@@ -35,13 +35,13 @@ export default function ActiveFilterChips({
   onClearPriceRange,
   onClearAllFilters,
 }: ActiveFilterChipsProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['common', 'order']);
   return (
     <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
       <div className="flex flex-wrap items-center gap-2">
         {totalResults !== undefined && (
           <span className="text-sm text-gray-600 dark:text-gray-300">
-            Tìm thấy {totalResults} đơn hàng
+            {t('order:filter.foundOrders', { count: totalResults })}
           </span>
         )}
 
@@ -189,7 +189,7 @@ export default function ActiveFilterChips({
           onClick={onClearAllFilters}
           className="text-sm font-medium text-[#ee4d2d] underline transition-colors hover:text-[#d73211]"
         >
-          Xóa tất cả bộ lọc
+          {t('order:filter.clearAll')}
         </Button>
       )}
     </div>

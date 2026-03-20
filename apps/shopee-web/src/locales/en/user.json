@@ -122,5 +122,6 @@
   "vouchers.collectNow": "Collect vouchers now",
   "vouchers.copied": "Voucher code copied!",
   "vouchers.copiedCode": "Copied code: {{code}}",
-  "history.seo.title": "My Purchases"
+  "history.seo.title": "My Purchases",
+  "sideNav.conversations": "Conversation History"
 }

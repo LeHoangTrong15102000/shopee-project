@@ -1,16 +1,14 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 let requestInterceptorSuccess: any;
-let requestInterceptorError: any;
 let responseInterceptorSuccess: any;
 let responseInterceptorError: any;
 
 const mockAxiosInstance = {
   interceptors: {
     request: {
-      use: vi.fn((success: any, error: any) => {
+      use: vi.fn((success: any) => {
         requestInterceptorSuccess = success;
-        requestInterceptorError = error;
       }),
     },
     response: {

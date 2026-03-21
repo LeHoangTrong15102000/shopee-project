@@ -172,24 +172,28 @@ describe('variants', () => {
       const variants = staggerContainer();
       expect(variants).toHaveProperty('hidden');
       expect(variants).toHaveProperty('visible');
-      expect(variants.visible).toHaveProperty('transition');
-      expect(variants.visible.transition).toHaveProperty('staggerChildren');
+      const visible = variants.visible as any;
+      expect(visible).toHaveProperty('transition');
+      expect(visible.transition).toHaveProperty('staggerChildren');
     });
 
     it('should use default STAGGER_DELAY.normal', () => {
       const variants = staggerContainer();
-      expect(variants.visible.transition?.staggerChildren).toBe(STAGGER_DELAY.normal);
+      const visible = variants.visible as any;
+      expect(visible.transition?.staggerChildren).toBe(STAGGER_DELAY.normal);
     });
 
     it('should accept custom delay', () => {
       const customDelay = 0.05;
       const variants = staggerContainer(customDelay);
-      expect(variants.visible.transition?.staggerChildren).toBe(customDelay);
+      const visible = variants.visible as any;
+      expect(visible.transition?.staggerChildren).toBe(customDelay);
     });
 
     it('should have delayChildren property', () => {
       const variants = staggerContainer();
-      expect(variants.visible.transition?.delayChildren).toBe(0.1);
+      const visible = variants.visible as any;
+      expect(visible.transition?.delayChildren).toBe(0.1);
     });
   });
 
@@ -220,7 +224,8 @@ describe('variants', () => {
     });
 
     it('should use fast duration', () => {
-      expect(pageTransition.animate.transition?.duration).toBe(ANIMATION_DURATION.fast);
+      const animate = pageTransition.animate as any;
+      expect(animate.transition?.duration).toBe(ANIMATION_DURATION.fast);
     });
   });
 
@@ -232,11 +237,11 @@ describe('variants', () => {
     });
 
     it('should have shorter durations than pageTransition', () => {
-      expect(pageTransitionReduced.animate.transition?.duration).toBe(0.1);
-      expect(pageTransitionReduced.exit.transition?.duration).toBe(0.1);
-      expect(pageTransitionReduced.animate.transition?.duration).toBeLessThan(
-        ANIMATION_DURATION.fast,
-      );
+      const animate = pageTransitionReduced.animate as any;
+      const exit = pageTransitionReduced.exit as any;
+      expect(animate.transition?.duration).toBe(0.1);
+      expect(exit.transition?.duration).toBe(0.1);
+      expect(animate.transition?.duration).toBeLessThan(ANIMATION_DURATION.fast);
     });
 
     it('should only animate opacity', () => {
@@ -292,11 +297,12 @@ describe('variants', () => {
 
     it('should have scale array in bounce state', () => {
       expect(badgeBounce.bounce).toHaveProperty('scale');
-      expect(badgeBounce.bounce.scale).toEqual([1, 1.4, 1]);
+      expect((badgeBounce.bounce as any).scale).toEqual([1, 1.4, 1]);
     });
 
     it('should have transition with duration and ease', () => {
-      expect(badgeBounce.bounce.transition).toMatchObject({
+      const bounce = badgeBounce.bounce as any;
+      expect(bounce.transition).toMatchObject({
         duration: 0.4,
         ease: 'easeOut',
       });
@@ -337,7 +343,8 @@ describe('variants', () => {
     });
 
     it('should use normal duration for visible', () => {
-      expect(imageCrossfade.visible.transition?.duration).toBe(ANIMATION_DURATION.normal);
+      const visible = imageCrossfade.visible as any;
+      expect(visible.transition?.duration).toBe(ANIMATION_DURATION.normal);
     });
   });
 
@@ -356,7 +363,8 @@ describe('variants', () => {
     });
 
     it('should use slow duration', () => {
-      expect(sectionEntrance.visible.transition?.duration).toBe(ANIMATION_DURATION.slow);
+      const visible = sectionEntrance.visible as any;
+      expect(visible.transition?.duration).toBe(ANIMATION_DURATION.slow);
     });
   });
 });

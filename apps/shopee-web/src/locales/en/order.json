@@ -151,6 +151,7 @@
   "search.placeholder": "Search orders by product name...",
   "search.ariaLabel": "Search orders",
   "search.clearAria": "Clear search",
+  "filter.title": "Filter",
   "filter.foundOrders": "Found {{count}} orders",
   "filter.clearAll": "Clear all filters",
   "return.reasonRequired": "Enter return reason (required)",

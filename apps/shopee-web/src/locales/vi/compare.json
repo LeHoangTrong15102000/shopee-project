@@ -20,6 +20,7 @@
   "clearAllAriaLabel": "Xóa tất cả sản phẩm khỏi danh sách so sánh",
   "addToCompareAriaLabel": "Thêm {{name}} vào danh sách so sánh",
   "removeFromCompareAriaLabel": "Xóa {{name}} khỏi danh sách so sánh",
+  "summary.title": "Tóm tắt so sánh",
   "summary.bestPrice": "có giá tốt nhất",
   "summary.highestRated": "có đánh giá cao nhất",
   "summary.bestSeller": "bán chạy nhất",

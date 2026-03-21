@@ -20,6 +20,7 @@
   "clearAllAriaLabel": "Clear all products from compare list",
   "addToCompareAriaLabel": "Add {{name}} to compare list",
   "removeFromCompareAriaLabel": "Remove {{name}} from compare list",
+  "summary.title": "Comparison Summary",
   "summary.bestPrice": "has the best price",
   "summary.highestRated": "has the highest rating",
   "summary.bestSeller": "is the best seller",

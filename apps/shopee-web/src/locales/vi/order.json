@@ -151,6 +151,7 @@
   "search.placeholder": "Tìm kiếm đơn hàng theo tên sản phẩm...",
   "search.ariaLabel": "Tìm kiếm đơn hàng",
   "search.clearAria": "Xóa tìm kiếm",
+  "filter.title": "Bộ lọc",
   "filter.foundOrders": "Tìm thấy {{count}} đơn hàng",
   "filter.clearAll": "Xóa tất cả bộ lọc",
   "return.reasonRequired": "Nhập lý do trả hàng (bắt buộc)",

@@ -8,8 +8,12 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "vite build",
-        "cwd": "apps/shopee-web"
+        "commands": [
+          "tsc --noEmit",
+          "vite build"
+        ],
+        "cwd": "apps/shopee-web",
+        "parallel": false
       }
     },
     "serve": {
@@ -30,6 +34,13 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "eslint --ext ts,tsx src/",
+        "cwd": "apps/shopee-web"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit",
         "cwd": "apps/shopee-web"
       }
     }

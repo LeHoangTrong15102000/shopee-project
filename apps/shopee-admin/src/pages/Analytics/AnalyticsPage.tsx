@@ -7,11 +7,10 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
 } from 'recharts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'src/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from 'src/components/ui/chart';
 import { DataTable } from 'src/components/shared/DataTable';
 import { PageHeader } from 'src/components/shared/PageHeader';
 import { PeriodSelect } from 'src/components/shared/PeriodSelect';
@@ -163,28 +162,34 @@ export default function AnalyticsPage() {
                     <CardTitle>{t('chatbot.performanceOverTime')}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ChartContainer
+                      config={{
+                        conversations: { label: t('chatbot.conversations'), color: 'hsl(var(--chart-1))' },
+                        messages: { label: t('chatbot.messages'), color: 'hsl(var(--chart-2))' }
+                      }}
+                      className="h-[300px]"
+                    >
                       <LineChart data={chatbotPerf}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="date" tick={{ fontSize: 12 }} />
                         <YAxis tick={{ fontSize: 12 }} />
-                        <Tooltip />
+                        <ChartTooltip content={<ChartTooltipContent />} />
                         <Line
                           type="monotone"
                           dataKey="conversations"
-                          stroke="hsl(var(--chart-1))"
+                          stroke="var(--color-conversations)"
                           strokeWidth={2}
                           dot={false}
                         />
                         <Line
                           type="monotone"
                           dataKey="messages"
-                          stroke="hsl(var(--chart-2))"
+                          stroke="var(--color-messages)"
                           strokeWidth={2}
                           dot={false}
                         />
                       </LineChart>
-                    </ResponsiveContainer>
+                    </ChartContainer>
                   </CardContent>
                 </Card>
               )}

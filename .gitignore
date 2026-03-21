@@ -36,6 +36,13 @@ test-results/
 npm-debug.log*
 pnpm-debug.log*
 
+# Expo generated folders (can be regenerated with expo prebuild)
+apps/shopee-app/android/
+apps/shopee-app/ios/
+
+# Expo build cache and development artifacts
+.expo/
+.expo-shared/
 
 /.augment
 /.claude

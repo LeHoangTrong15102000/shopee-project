@@ -6,10 +6,8 @@ import {
   Cell,
   Pie,
   PieChart,
-  Tooltip,
   XAxis,
   YAxis,
-  ResponsiveContainer,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from 'src/components/ui/chart';
@@ -38,10 +36,13 @@ export default function UserCategoryCharts({
 
   const userChartConfig = { users: { label: t('charts.userGrowth'), color: 'var(--chart-3)' } };
 
+  const categoryChartConfig = (revenueByCategory ?? []).reduce((acc, item, i) => {
+    acc[item.category] = { label: item.category, color: COLORS[i % COLORS.length] };
+    return acc;
+  }, {} as Record<string, { label: string; color: string }>);
+
   const pieLabel = ({ category, percent }: { category: string; percent: number }) =>
     `${category} ${(percent * 100).toFixed(0)}%`;
-
-  const tooltipFormatter = (v: number) => formatCurrency(v);
 
   return (
     <div className="grid gap-4 lg:grid-cols-3">
@@ -70,7 +71,7 @@ export default function UserCategoryCharts({
           className="flex items-center justify-center"
           aria-label={t('charts.revenueByCategory')}
         >
-          <ResponsiveContainer width="100%" height={isMobile ? 200 : 250}>
+          <ChartContainer config={categoryChartConfig} className={isMobile ? "h-[200px]" : "h-[250px]"}>
             <PieChart>
               <Pie
                 data={revenueByCategory ?? []}
@@ -85,9 +86,9 @@ export default function UserCategoryCharts({
                   <Cell key={i} fill={COLORS[i % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={tooltipFormatter} />
+              <ChartTooltip content={<ChartTooltipContent formatter={(v) => formatCurrency(v as number)} />} />
             </PieChart>
-          </ResponsiveContainer>
+          </ChartContainer>
         </CardContent>
       </Card>
     </div>

@@ -62,9 +62,6 @@ export default defineConfig(({ mode }) => {
             if (id.includes('node_modules/@tanstack/react-table')) {
               return 'table-vendor';
             }
-            if (id.includes('node_modules/recharts') || id.includes('node_modules/d3-')) {
-              return 'chart-vendor';
-            }
             if (id.includes('node_modules/@radix-ui/') || id.includes('node_modules/@base-ui/')) {
               return 'ui-vendor';
             }

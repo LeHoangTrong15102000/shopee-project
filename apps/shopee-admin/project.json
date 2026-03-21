@@ -8,8 +8,12 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "vite build",
-        "cwd": "apps/shopee-admin"
+        "commands": [
+          "tsc --noEmit",
+          "vite build"
+        ],
+        "cwd": "apps/shopee-admin",
+        "parallel": false
       }
     },
     "serve": {
@@ -37,6 +41,13 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "prettier --write \"src/**/(*.tsx|*.ts|*.css|*.scss)\"",
+        "cwd": "apps/shopee-admin"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit",
         "cwd": "apps/shopee-admin"
       }
     }

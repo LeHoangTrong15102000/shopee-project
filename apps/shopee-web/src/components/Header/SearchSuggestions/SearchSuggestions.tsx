@@ -275,7 +275,6 @@ const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide 
           {products.length > 0 && (
             <div>
               <div className="px-4 py-2 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-300">
-                {/* @ts-expect-error — dynamic count type (string | number) */}
                 {t('nav.productsCount', { count: products.length > 5 ? '5+' : products.length })}
               </div>
               <div className="px-4 pb-2">

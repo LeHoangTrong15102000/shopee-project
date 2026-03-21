@@ -95,7 +95,11 @@ export default function QAPage() {
                                 a.user?.email ||
                                 a.user_name ||
                                 t('common:states.unknown')}{' '}
-                              · {format(new Date(a.createdAt || a.created_at), 'MMM d, yyyy')}
+                              ·{' '}
+                              {format(
+                                new Date(a.createdAt || a.created_at || Date.now()),
+                                'MMM d, yyyy',
+                              )}
                             </p>
                           </div>
                           <Button

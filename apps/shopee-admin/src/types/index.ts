@@ -196,6 +196,7 @@ export interface TopBuyer {
 export interface RevenueByCategoryData {
   category: string;
   revenue: number;
+  percent: number;
 }
 
 // Analytics

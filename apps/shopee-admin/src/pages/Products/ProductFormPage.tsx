@@ -25,9 +25,9 @@ import { useCategories } from 'src/hooks/useCategories';
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
-  price: z.coerce.number().min(0),
-  price_before_discount: z.coerce.number().min(0).optional(),
-  quantity: z.coerce.number().int().min(0),
+  price: z.number().min(0),
+  price_before_discount: z.number().min(0).optional(),
+  quantity: z.number().int().min(0),
   category: z.string().min(1, 'Category is required'),
   image: z.string().min(1, 'Image URL is required'),
   location: z.string().optional(),
@@ -133,7 +133,7 @@ export default function ProductFormPage() {
             <div>
               <Label htmlFor="product-category">{t('form.category')}</Label>
               <Select
-                onValueChange={(v) => setValue('category', v)}
+                onValueChange={(v) => setValue('category', v || '')}
                 defaultValue={
                   product
                     ? typeof product.category === 'object'

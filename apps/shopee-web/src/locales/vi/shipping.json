@@ -26,6 +26,10 @@
   "hours": "Giờ",
   "free": "Miễn phí",
   "pickupPoint": "Điểm nhận hàng",
+  "selectMethod": "Chọn phương thức vận chuyển",
+  "estimatedTime": "Thời gian giao hàng",
+  "estimatedDeliveryLabel": "Dự kiến giao hàng",
+  "express": "Nhanh",
   "method.instant": "Hỏa Tốc",
   "method.instantDesc": "Giao hàng siêu nhanh trong vòng 4 giờ",
   "method.bulky": "Hàng Cồng Kềnh",
@@ -35,6 +39,11 @@
   "method.economy": "Tiết Kiệm",
   "method.economyDesc": "Giao hàng tiết kiệm trong 3-5 ngày",
   "method.pickup": "Tủ Nhận Hàng",
-  "method.pickupDesc": "Nhận hàng tại điểm nhận hàng"
+  "method.pickupDesc": "Nhận hàng tại điểm nhận hàng",
+  "time.instant": "4 giờ",
+  "time.bulky": "2-4 ngày",
+  "time.express": "1 ngày",
+  "time.economy": "3-5 ngày",
+  "time.pickup": "2-3 ngày"
 }
 

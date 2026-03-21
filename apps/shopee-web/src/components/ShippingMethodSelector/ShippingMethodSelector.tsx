@@ -111,7 +111,9 @@ function ShippingMethodSelector({
               </p>
               <p className="mt-0.5 text-xs text-gray-600 sm:mt-1 sm:text-sm dark:text-gray-400">
                 {t('shipping.estimatedTime')}:{' '}
-                <span className="font-medium">{method.estimatedDays}</span>
+                <span className="font-medium">
+                  {t(`shipping:time.${method._id}`, { defaultValue: method.estimatedDays })}
+                </span>
               </p>
               <motion.p
                 initial={reducedMotion ? false : { opacity: 0, y: -5 }}

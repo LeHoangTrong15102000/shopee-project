@@ -1,13 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type ColumnDef } from '@tanstack/react-table';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-} from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'src/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from 'src/components/ui/chart';
@@ -164,8 +158,11 @@ export default function AnalyticsPage() {
                   <CardContent>
                     <ChartContainer
                       config={{
-                        conversations: { label: t('chatbot.conversations'), color: 'hsl(var(--chart-1))' },
-                        messages: { label: t('chatbot.messages'), color: 'hsl(var(--chart-2))' }
+                        conversations: {
+                          label: t('chatbot.conversations'),
+                          color: 'hsl(var(--chart-1))',
+                        },
+                        messages: { label: t('chatbot.messages'), color: 'hsl(var(--chart-2))' },
                       }}
                       className="h-[300px]"
                     >

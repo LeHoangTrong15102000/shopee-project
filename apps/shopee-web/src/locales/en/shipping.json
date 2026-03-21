@@ -26,6 +26,10 @@
   "hours": "Hours",
   "free": "Free",
   "pickupPoint": "Pickup point",
+  "selectMethod": "Select shipping method",
+  "estimatedTime": "Delivery time",
+  "estimatedDeliveryLabel": "Estimated delivery",
+  "express": "Express",
   "method.instant": "Instant",
   "method.instantDesc": "Super fast delivery within 4 hours",
   "method.bulky": "Bulky Items",
@@ -35,6 +39,11 @@
   "method.economy": "Economy",
   "method.economyDesc": "Affordable delivery in 3-5 days",
   "method.pickup": "Pickup Locker",
-  "method.pickupDesc": "Pick up at a pickup point"
+  "method.pickupDesc": "Pick up at a pickup point",
+  "time.instant": "4 hours",
+  "time.bulky": "2-4 days",
+  "time.express": "1 day",
+  "time.economy": "3-5 days",
+  "time.pickup": "2-3 days"
 }
 

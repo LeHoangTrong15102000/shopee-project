@@ -185,7 +185,7 @@ export default function NotificationListPage() {
                 <Select
                   value={selectedTemplate}
                   onValueChange={(v) => {
-                    setSelectedTemplate(v);
+                    setSelectedTemplate(v || '');
                     const tpl = notificationTemplates.find((tp) => tp.value === v);
                     if (tpl) {
                       if (tpl.value === 'custom') {

@@ -570,10 +570,20 @@ export const topBuyers: TopBuyer[] = users.slice(0, 10).map((u, i) => ({
   total_orders: 10 + (10 - i) * 3,
 }));
 
-export const revenueByCategoryData: RevenueByCategoryData[] = categories.slice(0, 6).map((c) => ({
-  category: c.name,
-  revenue: 100_000_000 + Math.floor(Math.random() * 500_000_000),
-}));
+export const revenueByCategoryData: RevenueByCategoryData[] = categories
+  .slice(0, 6)
+  .map((c, i, arr) => {
+    const revenue = 100_000_000 + Math.floor(Math.random() * 500_000_000);
+    const totalRevenue = arr.reduce(
+      (sum) => sum + 100_000_000 + Math.floor(Math.random() * 500_000_000),
+      0,
+    );
+    return {
+      category: c.name,
+      revenue,
+      percent: Math.round((revenue / totalRevenue) * 100),
+    };
+  });
 
 // ─── Analytics ─────────────────────────────────────────────
 export const productAnalytics: ProductAnalytics[] = products.slice(0, 15).map((p) => ({

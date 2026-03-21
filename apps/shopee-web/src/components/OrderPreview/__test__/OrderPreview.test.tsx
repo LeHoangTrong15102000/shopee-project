@@ -63,6 +63,8 @@ const mockItems = [
 ];
 
 const mockAddress = {
+  _id: 'addr-1',
+  userId: 'user-1',
   fullName: 'John Doe',
   phone: '0123456789',
   street: '123 Test St',
@@ -70,9 +72,12 @@ const mockAddress = {
   district: 'Test District',
   province: 'Test Province',
   isDefault: true,
+  createdAt: '2024-01-01T00:00:00Z',
+  updatedAt: '2024-01-01T00:00:00Z',
 };
 
 const mockShippingMethod = {
+  _id: 'ship-1',
   name: 'Express Shipping',
   description: 'Fast delivery',
   price: 30000,

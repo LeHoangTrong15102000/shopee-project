@@ -5,7 +5,7 @@ describe('NavigationService', () => {
   let mockNavigate: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    mockNavigate = vi.fn();
+    mockNavigate = vi.fn() as any;
     navigationService.init(mockNavigate);
   });
 

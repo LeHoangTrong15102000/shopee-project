@@ -167,7 +167,6 @@ describe('ProductImages', () => {
   it('switches to SKU image when SKU with image is selected', () => {
     const mockSKU: ProductSKU = {
       _id: 'sku1',
-      product_id: 'prod1',
       tier_index: [0],
       price: 100000,
       price_before_discount: 150000,

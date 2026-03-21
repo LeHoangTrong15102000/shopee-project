@@ -42,7 +42,10 @@ describe('LocationStep', () => {
     return '';
   });
 
-  const createMockForm = (errors = {}, watchValues = {}): UseFormReturn<AddressSchemaFormData> => {
+  const createMockForm = (
+    errors = {},
+    watchValues: Record<string, any> = {},
+  ): UseFormReturn<AddressSchemaFormData> => {
     const mockWatchFn = vi.fn((field?: string) => {
       if (field && watchValues[field] !== undefined) {
         return watchValues[field];

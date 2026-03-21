@@ -98,9 +98,24 @@ const mockPurchase: ExtendedPurchase = {
     price: 100000,
     price_before_discount: 150000,
     quantity: 10,
+    sold: 50,
+    view: 100,
+    description: 'Test product description',
+    category: { _id: 'cat-1', name: 'Test Category' },
+    rating: 4.5,
+    images: ['https://example.com/image.jpg'],
+    location: 'Test Location',
+    createdAt: '2024-01-01',
+    updatedAt: '2024-01-01',
   },
   buy_count: 2,
   price: 100000,
+  price_before_discount: 150000,
+  status: 1,
+  user: 'user-1',
+  createdAt: '2024-01-01',
+  updatedAt: '2024-01-01',
+  disabled: false,
   isChecked: false,
 };
 
@@ -295,6 +310,7 @@ describe('CartItemList', () => {
         [
           'product-1',
           {
+            productId: 'product-1',
             productName: 'Test Product',
             newStock: 5,
             severity: 'warning',
@@ -310,6 +326,7 @@ describe('CartItemList', () => {
         [
           'product-1',
           {
+            productId: 'product-1',
             productName: 'Test Product',
             newStock: 3,
             severity: 'critical',
@@ -329,6 +346,7 @@ describe('CartItemList', () => {
         [
           'product-1',
           {
+            productId: 'product-1',
             productName: 'Test Product',
             newStock: 5,
             severity: 'warning',

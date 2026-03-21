@@ -111,11 +111,20 @@ describe('OrderTrackingTimeline', () => {
   const mockTracking = {
     _id: '1',
     order_id: '1',
+    user_id: 'user-1',
     carrier: 'ghn',
     tracking_number: 'TN123',
     status: 'pending' as const,
     estimated_delivery: '2024-12-31',
     timeline: [{ status: 'pending', description: 'Order placed', timestamp: '2024-01-01' }],
+    shipping_address: {
+      name: 'Test User',
+      phone: '0123456789',
+      address: '123 Test St',
+      province: 'Test Province',
+      district: 'Test District',
+      ward: 'Test Ward',
+    },
     createdAt: '2024-01-01',
     updatedAt: '2024-01-01',
   };

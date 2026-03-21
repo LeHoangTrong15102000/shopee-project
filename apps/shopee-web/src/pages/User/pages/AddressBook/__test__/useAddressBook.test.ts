@@ -81,6 +81,7 @@ const mockAddress2: Address = {
 
 const mockAddress3: Address = {
   _id: 'addr3',
+  userId: 'user1',
   fullName: 'Bob Johnson',
   phone: '0111222333',
   street: '789 Pine Rd',
@@ -92,7 +93,9 @@ const mockAddress3: Address = {
   wardId: 'ward3',
   isDefault: false,
   addressType: 'other',
-  label: 'Vacation Home',
+  label: 'Other',
+  createdAt: '2024-01-03',
+  updatedAt: '2024-01-03',
 };
 
 describe('useAddressBook', () => {

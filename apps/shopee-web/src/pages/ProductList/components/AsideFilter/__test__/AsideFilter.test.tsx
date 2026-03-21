@@ -72,9 +72,9 @@ vi.mock('src/pages/ProductList/components/RatingStars', () => ({
 
 describe('AsideFilter', () => {
   const mockCategories: Category[] = [
-    { _id: '1', name: 'Electronics', __v: 0 },
-    { _id: '2', name: 'Fashion', __v: 0 },
-    { _id: '3', name: 'Books', __v: 0 },
+    { _id: '1', name: 'Electronics' },
+    { _id: '2', name: 'Fashion' },
+    { _id: '3', name: 'Books' },
   ];
 
   beforeEach(() => {

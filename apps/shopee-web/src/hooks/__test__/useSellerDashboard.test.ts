@@ -30,7 +30,7 @@ describe('useSellerDashboard', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     const appContext = await import('src/contexts/app.context');
-    vi.spyOn(appContext.AppContext, '_currentValue', 'get').mockReturnValue({
+    vi.spyOn(appContext.AppContext as any, '_currentValue', 'get').mockReturnValue({
       profile: mockProfile,
     } as any);
   });

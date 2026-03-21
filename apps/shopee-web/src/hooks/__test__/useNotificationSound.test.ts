@@ -216,6 +216,8 @@ describe('useNotificationSound', () => {
       state: 'running',
       resume: vi.fn(),
       close: vi.fn(),
+      _mockOscillator: {} as any,
+      _mockGainNode: {} as any,
     };
 
     // Temporarily replace the constructor for this test only

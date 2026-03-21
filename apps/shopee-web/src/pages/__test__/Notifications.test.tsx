@@ -105,16 +105,16 @@ const createWrapper = () => {
     );
 };
 
-const createMockNotification = (overrides?: Partial<Notification>): Notification => ({
-  _id: `notif-${Math.random()}`,
-  userId: 'user-1',
-  type: 'order',
-  title: 'Test Notification',
-  content: 'Test content',
-  isRead: false,
-  createdAt: '2026-03-18T10:00:00Z',
-  ...overrides,
-});
+const createMockNotification = (overrides?: Partial<Notification>): Notification =>
+  ({
+    _id: `notif-${Math.random()}`,
+    type: 'order',
+    title: 'Test Notification',
+    content: 'Test content',
+    isRead: false,
+    createdAt: '2026-03-18T10:00:00Z',
+    ...overrides,
+  }) as Notification;
 
 describe('Notifications', () => {
   beforeEach(() => {

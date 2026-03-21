@@ -147,13 +147,27 @@ describe('NavHeaderFull', () => {
   });
 
   it('renders user menu when authenticated', () => {
-    const profile = { email: 'test@example.com', avatar: 'avatar.png' };
+    const profile = {
+      _id: 'user1',
+      email: 'test@example.com',
+      avatar: 'avatar.png',
+      roles: ['user'],
+      createdAt: '2024-01-01',
+      updatedAt: '2024-01-01',
+    };
     render(<NavHeaderFull {...defaultProps} isAuthenticated={true} profile={profile} />);
     expect(screen.getByText('test@example.com')).toBeInTheDocument();
   });
 
   it('calls handleLogout when logout button is clicked', () => {
-    const profile = { email: 'test@example.com', avatar: 'avatar.png' };
+    const profile = {
+      _id: 'user1',
+      email: 'test@example.com',
+      avatar: 'avatar.png',
+      roles: ['user'],
+      createdAt: '2024-01-01',
+      updatedAt: '2024-01-01',
+    };
     render(<NavHeaderFull {...defaultProps} isAuthenticated={true} profile={profile} />);
     const logoutButton = screen.getByText('header.logout');
     fireEvent.click(logoutButton);
@@ -212,14 +226,28 @@ describe('NavHeaderFull', () => {
   });
 
   it('renders user avatar with correct src', () => {
-    const profile = { email: 'test@example.com', avatar: 'custom-avatar.png' };
+    const profile = {
+      _id: 'user1',
+      email: 'test@example.com',
+      avatar: 'custom-avatar.png',
+      roles: ['user'],
+      createdAt: '2024-01-01',
+      updatedAt: '2024-01-01',
+    };
     render(<NavHeaderFull {...defaultProps} isAuthenticated={true} profile={profile} />);
     const avatar = screen.getByAltText('avatar');
     expect(avatar).toHaveAttribute('src', 'custom-avatar.png');
   });
 
   it('renders default avatar when profile avatar is null', () => {
-    const profile = { email: 'test@example.com', avatar: null };
+    const profile = {
+      _id: 'user1',
+      email: 'test@example.com',
+      avatar: undefined,
+      roles: ['user'],
+      createdAt: '2024-01-01',
+      updatedAt: '2024-01-01',
+    };
     render(<NavHeaderFull {...defaultProps} isAuthenticated={true} profile={profile} />);
     const avatar = screen.getByAltText('avatar');
     expect(avatar).toHaveAttribute('src', 'default-avatar.png');

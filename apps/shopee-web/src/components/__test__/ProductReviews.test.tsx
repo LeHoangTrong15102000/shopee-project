@@ -20,6 +20,7 @@ const mockReviews: Review[] = [
       email: 'john@example.com',
       avatar: 'https://example.com/avatar1.jpg',
     },
+    purchase: 'purchase-1',
     rating: 5,
     comment: 'Great product! Highly recommended.',
     images: ['https://example.com/review1.jpg', 'https://example.com/review2.jpg'],
@@ -42,6 +43,7 @@ const mockReviews: Review[] = [
       email: 'jane@example.com',
       avatar: '',
     },
+    purchase: 'purchase-2',
     rating: 4,
     comment: 'Good quality but shipping was slow.',
     images: [],
@@ -95,6 +97,7 @@ const mockComments: ReviewComment[] = [
         user: {
           _id: 'user-1',
           name: 'John Doe',
+          email: 'john@example.com',
           avatar: 'https://example.com/avatar1.jpg',
         },
         content: 'You are welcome!',

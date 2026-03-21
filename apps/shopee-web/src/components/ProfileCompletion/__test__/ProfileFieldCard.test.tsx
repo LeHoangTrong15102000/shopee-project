@@ -121,7 +121,7 @@ describe('ProfileFieldCard Component', () => {
     test('should show checkmarks for all fields when all are completed', () => {
       render(
         <TestWrapper>
-          <ProfileFieldCard completedFields={PROFILE_FIELDS} reducedMotion={false} />
+          <ProfileFieldCard completedFields={[...PROFILE_FIELDS]} reducedMotion={false} />
         </TestWrapper>,
       );
 
@@ -132,7 +132,7 @@ describe('ProfileFieldCard Component', () => {
     test('should not show any update buttons when all fields are completed', () => {
       render(
         <TestWrapper>
-          <ProfileFieldCard completedFields={PROFILE_FIELDS} reducedMotion={false} />
+          <ProfileFieldCard completedFields={[...PROFILE_FIELDS]} reducedMotion={false} />
         </TestWrapper>,
       );
 
@@ -143,7 +143,7 @@ describe('ProfileFieldCard Component', () => {
     test('should render all field labels even when completed', () => {
       render(
         <TestWrapper>
-          <ProfileFieldCard completedFields={PROFILE_FIELDS} reducedMotion={false} />
+          <ProfileFieldCard completedFields={[...PROFILE_FIELDS]} reducedMotion={false} />
         </TestWrapper>,
       );
 
@@ -240,7 +240,7 @@ describe('ProfileFieldCard Component', () => {
     test('should apply completed field styling to completed fields', () => {
       const { container } = render(
         <TestWrapper>
-          <ProfileFieldCard completedFields={PROFILE_FIELDS} reducedMotion={false} />
+          <ProfileFieldCard completedFields={[...PROFILE_FIELDS]} reducedMotion={false} />
         </TestWrapper>,
       );
 

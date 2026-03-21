@@ -6,7 +6,8 @@ import { Notification } from 'src/types/notification.type';
 let mockFormatDistanceToNow = vi.fn(() => '2 giờ trước');
 
 vi.mock('date-fns', () => ({
-  formatDistanceToNow: (...args: any[]) => mockFormatDistanceToNow(...args),
+  formatDistanceToNow: (date: Date | number, options?: any) =>
+    mockFormatDistanceToNow(date, options),
 }));
 
 vi.mock('date-fns/locale', () => ({
@@ -20,8 +21,8 @@ describe('NotificationItem', () => {
     content: 'This is a test notification',
     type: 'promotion',
     createdAt: '2024-01-01T00:00:00.000Z',
-    read: false,
-    user: 'user1',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+    isRead: false,
   };
 
   it('should render notification with title and content', () => {

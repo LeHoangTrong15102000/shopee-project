@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 import { useReducedMotion } from 'src/hooks/useReducedMotion';
 import Button from 'src/components/Button';
 import SearchInput from './components/SearchInput';
@@ -20,6 +21,7 @@ export interface OrderSearchFilterProps {
 }
 
 export default function OrderSearchFilter(props: OrderSearchFilterProps) {
+  const { t } = useTranslation('order');
   const { totalResults, className, searchQuery, dateRange, priceRange } = props;
   const reducedMotion = useReducedMotion();
 
@@ -86,7 +88,7 @@ export default function OrderSearchFilter(props: OrderSearchFilterProps) {
               d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"
             />
           </svg>
-          <span>Bộ lọc</span>
+          <span>{t('filter.title')}</span>
           {props.activeFilterCount > 0 && (
             <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#ee4d2d] text-xs font-bold text-white">
               {props.activeFilterCount}

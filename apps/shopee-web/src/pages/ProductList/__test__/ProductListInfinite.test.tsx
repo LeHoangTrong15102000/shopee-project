@@ -280,7 +280,7 @@ describe('ProductListInfinite', () => {
       // Mock window.location.reload
       const originalLocation = window.location;
       delete (window as any).location;
-      window.location = { ...originalLocation, reload: vi.fn() };
+      (window as any).location = { ...originalLocation, reload: vi.fn() };
 
       renderWithProviders(<ProductListInfinite />);
 
@@ -290,7 +290,7 @@ describe('ProductListInfinite', () => {
       expect(window.location.reload).toHaveBeenCalled();
 
       // Restore
-      window.location = originalLocation;
+      (window as any).location = originalLocation;
     });
   });
 

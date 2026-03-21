@@ -107,7 +107,12 @@ vi.mock('@dnd-kit/sortable', () => ({
   rectSortingStrategy: {},
 }));
 
-const mockAddr = (id: string, name: string, isDefault = false, type = 'home' as const) => ({
+const mockAddr = (
+  id: string,
+  name: string,
+  isDefault = false,
+  type: 'home' | 'office' | 'other' = 'home',
+) => ({
   _id: id,
   name,
   phone: '0123456789',

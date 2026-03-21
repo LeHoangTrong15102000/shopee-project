@@ -312,7 +312,7 @@ describe('OrderList', () => {
 
   it('should not render pagination when not available', async () => {
     mockGetOrders.mockResolvedValue({
-      data: { data: { orders: mockOrders, pagination: null } },
+      data: { data: { orders: mockOrders, pagination: null as any } },
     });
 
     render(<OrderList />, { wrapper });

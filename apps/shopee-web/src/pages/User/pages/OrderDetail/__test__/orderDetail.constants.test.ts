@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { getStatusDisplay, paymentMethodLabels, formatDate } from '../orderDetail.constants';
+import { getStatusDisplay, paymentMethodLabelKeys, formatDate } from '../orderDetail.constants';
 
 vi.mock('src/styles/animations/motion.config', () => ({
   ANIMATION_DURATION: { fast: 0.15, normal: 0.3 },

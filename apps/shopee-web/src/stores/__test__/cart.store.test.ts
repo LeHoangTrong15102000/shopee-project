@@ -20,6 +20,9 @@ describe('useCartStore', () => {
     price: 100000,
     price_before_discount: 120000,
     status: -1,
+    user: 'user-1',
+    createdAt: '2024-01-01',
+    updatedAt: '2024-01-01',
     isChecked: false,
     disabled: false,
   };

@@ -110,7 +110,7 @@ vi.mock('src/hooks/useAnimatedNumber', () => ({
 
 vi.mock('src/apis/purchases.api', () => ({
   default: {
-    getPurchases: () => mockGetPurchases(),
+    getPurchases: (...args: any[]) => mockGetPurchases(...args),
     addToCart: (body: any) => mockAddToCart(body),
   },
 }));

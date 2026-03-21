@@ -252,12 +252,12 @@ describe('updatePurchasesCache', () => {
 
 describe('createExtendedPurchase', () => {
   it('should add disabled and isChecked defaults', () => {
-    const mockPurchase: Purchase = {
+    const mockPurchase = {
       _id: 'purchase-123',
       buy_count: 1,
       price: 100,
       status: 0,
-    } as Purchase;
+    } as unknown as Purchase;
 
     const extended = createExtendedPurchase(mockPurchase);
 
@@ -269,12 +269,12 @@ describe('createExtendedPurchase', () => {
   });
 
   it('should use provided options', () => {
-    const mockPurchase: Purchase = {
+    const mockPurchase = {
       _id: 'purchase-123',
       buy_count: 1,
       price: 100,
       status: 0,
-    } as Purchase;
+    } as unknown as Purchase;
 
     const extended = createExtendedPurchase(mockPurchase, {
       disabled: true,

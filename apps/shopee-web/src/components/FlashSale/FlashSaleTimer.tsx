@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 interface FlashSaleProduct {
   product_id: string;
@@ -39,6 +40,7 @@ const FlashSaleTimer = ({
   products,
   isEnded = false,
 }: Props) => {
+  const { t } = useTranslation('home');
   const [timeLeft, setTimeLeft] = useState({
     hours: 0,
     minutes: 0,
@@ -104,7 +106,7 @@ const FlashSaleTimer = ({
       <div
         className={`flex items-center space-x-2 rounded-sm bg-gray-500 px-3 py-1 text-white dark:bg-gray-600 ${className}`}
       >
-        <span className="text-sm font-medium">Đã kết thúc</span>
+        <span className="text-sm font-medium">{t('flashSale.ended')}</span>
       </div>
     );
   }
@@ -125,7 +127,7 @@ const FlashSaleTimer = ({
           clipRule="evenodd"
         />
       </svg>
-      <span className="text-sm font-medium">Kết thúc trong</span>
+      <span className="text-sm font-medium">{t('flashSale.endsIn')}</span>
       <div className="flex items-center space-x-1">
         <FlipDigit value={formatNumber(timeLeft.hours)} />
         <span className="text-sm">:</span>
@@ -135,7 +137,7 @@ const FlashSaleTimer = ({
       </div>
       {isServerSynced && products && products.length > 0 && (
         <span className="ml-2 text-xs opacity-90">
-          Đã bán: {totalSold} | Còn: {totalStock}
+          {t('flashSale.sold')}: {totalSold} | {t('flashSale.remaining')}: {totalStock}
         </span>
       )}
     </div>

@@ -13,6 +13,12 @@ const mockSocket = {
 const mockUseSocket = vi.fn(() => ({
   socket: mockSocket,
   isConnected: true,
+  connectionStatus: 'connected' as const,
+  connect: vi.fn(),
+  disconnect: vi.fn(),
+  emit: vi.fn(),
+  on: vi.fn(),
+  off: vi.fn(),
 }));
 
 vi.mock('src/hooks/useSocket', () => ({

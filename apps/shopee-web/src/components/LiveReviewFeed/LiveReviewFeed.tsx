@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 interface LatestReview {
   name: string;
@@ -22,6 +23,8 @@ export default function LiveReviewFeed({
   onViewReviews,
   className,
 }: LiveReviewFeedProps) {
+  const { t } = useTranslation('product');
+
   if (newReviewCount <= 0) {
     return null;
   }
@@ -42,14 +45,16 @@ export default function LiveReviewFeed({
         {latestReview && (
           <p className="truncate text-gray-700 dark:text-gray-200">
             <span className="text-yellow-500">{renderStars(latestReview.rating)}</span>{' '}
-            <span className="font-medium">{latestReview.name}</span> vừa đánh giá{' '}
-            {latestReview.rating} sao
+            <span className="font-medium">{latestReview.name}</span> {t('reviews.justReviewed')}{' '}
+            {latestReview.rating} {t('reviews.stars')}
           </p>
         )}
-        <p className="font-medium text-[#ee4d2d]">{newReviewCount} đánh giá mới</p>
+        <p className="font-medium text-[#ee4d2d]">
+          {newReviewCount} {t('reviews.newReviews')}
+        </p>
       </div>
       <span className="ml-auto shrink-0 text-xs text-gray-400 dark:text-gray-500">
-        Nhấn để xem ↓
+        {t('reviews.clickToView')} ↓
       </span>
     </div>
   );

@@ -1,17 +1,20 @@
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 interface ComparisonSummaryProps {
   comparisonSummary: { text: string; productName: string; color: string }[] | null;
 }
 
 export default function ComparisonSummary({ comparisonSummary }: ComparisonSummaryProps) {
+  const { t } = useTranslation('compare');
+
   if (!comparisonSummary || comparisonSummary.length === 0) {
     return null;
   }
 
   return (
     <div className="mb-4 rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm dark:border-blue-800 dark:bg-blue-900/20">
-      <span className="font-medium text-gray-700 dark:text-gray-200">Tóm tắt so sánh: </span>
+      <span className="font-medium text-gray-700 dark:text-gray-200">{t('summary.title')}: </span>
       {comparisonSummary.map((item, index) => (
         <span key={index}>
           <span className={classNames('font-medium', item.color)}>{item.productName}</span>

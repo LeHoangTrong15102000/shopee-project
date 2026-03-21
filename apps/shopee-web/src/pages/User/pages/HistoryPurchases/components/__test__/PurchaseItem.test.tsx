@@ -112,55 +112,55 @@ describe('PurchaseItem', () => {
 
   // delivered = 4
   it('should render delivered status', () => {
-    const deliveredPurchase = { ...mockPurchase, status: 4 };
+    const deliveredPurchase = { ...mockPurchase, status: 4 as any };
     render(<PurchaseItem {...mockProps} purchase={deliveredPurchase} />);
     expect(screen.getByText('Hoàn thành')).toBeInTheDocument();
   });
 
   // waitForConfirmation = 1
   it('should render waiting for confirmation status', () => {
-    const waitingPurchase = { ...mockPurchase, status: 1 };
+    const waitingPurchase = { ...mockPurchase, status: 1 as any };
     render(<PurchaseItem {...mockProps} purchase={waitingPurchase} />);
     expect(screen.getByText('Chờ xác nhận')).toBeInTheDocument();
   });
 
   // waitForGetting = 2
   it('should render waiting for pickup status', () => {
-    const pickupPurchase = { ...mockPurchase, status: 2 };
+    const pickupPurchase = { ...mockPurchase, status: 2 as any };
     render(<PurchaseItem {...mockProps} purchase={pickupPurchase} />);
     expect(screen.getByText('Chờ lấy hàng')).toBeInTheDocument();
   });
 
   // inProgress = 3
   it('should render in progress status', () => {
-    const inProgressPurchase = { ...mockPurchase, status: 3 };
+    const inProgressPurchase = { ...mockPurchase, status: 3 as any };
     render(<PurchaseItem {...mockProps} purchase={inProgressPurchase} />);
     expect(screen.getByText('Đang giao')).toBeInTheDocument();
   });
 
   // cancelled = 5
   it('should render cancelled status', () => {
-    const cancelledPurchase = { ...mockPurchase, status: 5 };
+    const cancelledPurchase = { ...mockPurchase, status: 5 as any };
     render(<PurchaseItem {...mockProps} purchase={cancelledPurchase} />);
     expect(screen.getByText('Đã hủy')).toBeInTheDocument();
   });
 
   // Active orders: waitForConfirmation(1), waitForGetting(2), inProgress(3)
   it('should show order tracking button for active orders', () => {
-    const activePurchase = { ...mockPurchase, status: 1 };
+    const activePurchase = { ...mockPurchase, status: 1 as any };
     render(<PurchaseItem {...mockProps} purchase={activePurchase} />);
     expect(screen.getByText('Theo dõi đơn hàng')).toBeInTheDocument();
   });
 
   it('should not show order tracking button for delivered orders', () => {
-    const deliveredPurchase = { ...mockPurchase, status: 4 };
+    const deliveredPurchase = { ...mockPurchase, status: 4 as any };
     render(<PurchaseItem {...mockProps} purchase={deliveredPurchase} />);
     expect(screen.queryByText('Theo dõi đơn hàng')).not.toBeInTheDocument();
   });
 
   it('should call onToggleTracking when tracking button is clicked', () => {
     const onToggleTracking = vi.fn();
-    const activePurchase = { ...mockPurchase, status: 1 };
+    const activePurchase = { ...mockPurchase, status: 1 as any };
     render(
       <PurchaseItem {...mockProps} purchase={activePurchase} onToggleTracking={onToggleTracking} />,
     );
@@ -170,32 +170,32 @@ describe('PurchaseItem', () => {
   });
 
   it('should show order tracker when expanded', () => {
-    const activePurchase = { ...mockPurchase, status: 1 };
+    const activePurchase = { ...mockPurchase, status: 1 as any };
     render(<PurchaseItem {...mockProps} purchase={activePurchase} isExpanded={true} />);
     expect(screen.getByTestId('order-tracker')).toBeInTheDocument();
   });
 
   it('should not show order tracker when not expanded', () => {
-    const activePurchase = { ...mockPurchase, status: 1 };
+    const activePurchase = { ...mockPurchase, status: 1 as any };
     render(<PurchaseItem {...mockProps} purchase={activePurchase} isExpanded={false} />);
     expect(screen.queryByTestId('order-tracker')).not.toBeInTheDocument();
   });
 
   it('should show reorder button for delivered orders', () => {
-    const deliveredPurchase = { ...mockPurchase, status: 4 };
+    const deliveredPurchase = { ...mockPurchase, status: 4 as any };
     render(<PurchaseItem {...mockProps} purchase={deliveredPurchase} />);
     expect(screen.getByText('Mua lại')).toBeInTheDocument();
   });
 
   it('should show review button for delivered orders', () => {
-    const deliveredPurchase = { ...mockPurchase, status: 4 };
+    const deliveredPurchase = { ...mockPurchase, status: 4 as any };
     render(<PurchaseItem {...mockProps} purchase={deliveredPurchase} />);
     expect(screen.getByText('Đánh Giá Sản Phẩm')).toBeInTheDocument();
   });
 
   it('should call onReviewClick when review button is clicked', () => {
     const onReviewClick = vi.fn();
-    const deliveredPurchase = { ...mockPurchase, status: 4 };
+    const deliveredPurchase = { ...mockPurchase, status: 4 as any };
     render(
       <PurchaseItem {...mockProps} purchase={deliveredPurchase} onReviewClick={onReviewClick} />,
     );
@@ -217,7 +217,7 @@ describe('PurchaseItem', () => {
 
   it('should handle reorder with loading state', () => {
     mockIsPending = true;
-    const deliveredPurchase = { ...mockPurchase, status: 4 };
+    const deliveredPurchase = { ...mockPurchase, status: 4 as any };
     render(<PurchaseItem {...mockProps} purchase={deliveredPurchase} />);
     const reorderButton = screen.getByText('Mua lại').closest('button');
     expect(reorderButton).toBeDisabled();

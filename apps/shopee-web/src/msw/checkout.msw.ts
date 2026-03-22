@@ -15,69 +15,69 @@ import {
 const mockShippingMethods: ShippingMethod[] = [
   {
     _id: 'instant',
-    name: 'Hỏa Tốc',
-    description: 'Giao hàng siêu nhanh trong vòng 4 giờ',
+    name: 'Instant',
+    description: 'Super fast delivery within 4 hours',
     price: 112600,
-    estimatedDays: '4 giờ',
+    estimatedDays: '4 hours',
     icon: 'truck',
     type: 'instant',
     deliveryHours: 4,
     details: [
-      { text: 'Tặng Voucher ₫20.000 nếu đơn giao sau thời gian trên', type: 'voucher' },
-      { text: 'Miễn phí vận chuyển đơn tối thiểu 0₫', type: 'free_threshold' },
-      { text: 'Kênh không hỗ trợ chương trình Shopee Đồng Kiểm', type: 'note' },
+      { text: 'Get ₫20,000 voucher if order arrives late', type: 'voucher' },
+      { text: 'Free shipping for orders over ₫0', type: 'free_threshold' },
+      { text: 'This channel does not support Shopee Inspection', type: 'note' },
     ],
   },
   {
     _id: 'bulky',
-    name: 'Hàng Cồng Kềnh',
-    description: 'Dành cho hàng hóa kích thước lớn',
+    name: 'Bulky Items',
+    description: 'Specialized delivery for large items',
     price: 30800,
-    estimatedDays: '2-4 ngày',
+    estimatedDays: '2-4 days',
     icon: 'box',
     type: 'standard',
     details: [
-      { text: 'Tặng Voucher ₫15.000 nếu đơn giao sau thời gian trên', type: 'voucher' },
-      { text: 'Giảm 95% đơn tối thiểu 100.000₫ (giảm tối đa 200.000₫)', type: 'discount' },
-      { text: 'Miễn phí vận chuyển đơn tối thiểu 500.000₫', type: 'free_threshold' },
-      { text: 'Miễn phí vận chuyển đơn tối thiểu 1.000.000₫', type: 'free_threshold' },
+      { text: 'Get ₫15,000 voucher if order arrives late', type: 'voucher' },
+      { text: '95% off for orders over ₫100,000 (max ₫200,000 discount)', type: 'discount' },
+      { text: 'Free shipping for orders over ₫500,000', type: 'free_threshold' },
+      { text: 'Free shipping for orders over ₫1,000,000', type: 'free_threshold' },
     ],
   },
   {
     _id: 'express',
-    name: 'Nhanh',
-    description: 'Giao hàng nhanh trong 1-2 ngày',
+    name: 'Express',
+    description: 'Fast delivery in 1-2 days',
     price: 30800,
-    estimatedDays: '1 ngày',
+    estimatedDays: '1 day',
     icon: 'rocket',
     type: 'express',
     details: [
-      { text: 'Tặng Voucher ₫15.000 nếu đơn giao sau thời gian trên', type: 'voucher' },
-      { text: 'Miễn phí vận chuyển đơn tối thiểu 0₫', type: 'free_threshold' },
+      { text: 'Get ₫15,000 voucher if order arrives late', type: 'voucher' },
+      { text: 'Free shipping for orders over ₫0', type: 'free_threshold' },
     ],
   },
   {
-    _id: 'standard',
-    name: 'Tiết Kiệm',
-    description: 'Giao hàng tiết kiệm trong 3-5 ngày',
+    _id: 'economy',
+    name: 'Economy',
+    description: 'Affordable delivery in 3-5 days',
     price: 16500,
-    estimatedDays: '3-5 ngày',
+    estimatedDays: '3-5 days',
     icon: 'standard',
     type: 'economy',
     details: [
-      { text: 'Tặng Voucher ₫15.000 nếu đơn giao sau thời gian trên', type: 'voucher' },
-      { text: 'Miễn phí vận chuyển đơn tối thiểu 0₫', type: 'free_threshold' },
+      { text: 'Get ₫15,000 voucher if order arrives late', type: 'voucher' },
+      { text: 'Free shipping for orders over ₫0', type: 'free_threshold' },
     ],
   },
   {
     _id: 'pickup',
-    name: 'Tủ Nhận Hàng',
-    description: 'Nhận hàng tại điểm nhận hàng',
+    name: 'Pickup Locker',
+    description: 'Pick up at a pickup point',
     price: 30800,
-    estimatedDays: '2-3 ngày',
+    estimatedDays: '2-3 days',
     icon: 'locker',
     type: 'pickup',
-    details: [{ text: 'Miễn phí vận chuyển đơn tối thiểu 0₫', type: 'free_threshold' }],
+    details: [{ text: 'Free shipping for orders over ₫0', type: 'free_threshold' }],
   },
 ];
 
@@ -85,31 +85,31 @@ const mockPaymentMethods: PaymentMethod[] = [
   {
     _id: 'cod',
     type: 'cod',
-    name: 'Thanh toán khi nhận hàng (COD)',
-    description: 'Thanh toán bằng tiền mặt khi nhận hàng',
+    name: 'Cash on Delivery (COD)',
+    description: 'Pay with cash when you receive the order',
     icon: 'cod',
     isAvailable: true,
   },
   {
     _id: 'bank_transfer',
     type: 'bank_transfer',
-    name: 'Chuyển khoản ngân hàng',
-    description: 'Chuyển khoản qua tài khoản ngân hàng',
+    name: 'Bank Transfer',
+    description: 'Transfer via bank account',
     icon: 'bank_transfer',
     isAvailable: true,
   },
   {
     _id: 'e_wallet',
     type: 'e_wallet',
-    name: 'Ví điện tử',
-    description: 'Thanh toán qua MoMo, ZaloPay, VNPay',
+    name: 'E-Wallet',
+    description: 'Pay via MoMo, ZaloPay, VNPay',
     icon: 'e_wallet',
     isAvailable: true,
   },
   {
     _id: 'credit_card',
     type: 'credit_card',
-    name: 'Thẻ tín dụng/Ghi nợ',
+    name: 'Credit/Debit Card',
     description: 'Visa, Mastercard, JCB',
     icon: 'credit_card',
     isAvailable: true,
@@ -120,12 +120,12 @@ const mockAddresses: Address[] = [
   {
     _id: '1',
     userId: 'user1',
-    fullName: 'Nguyễn Văn A',
+    fullName: 'John Doe',
     phone: '0901234567',
-    province: 'Hồ Chí Minh',
-    district: 'Quận 1',
-    ward: 'Phường Bến Nghé',
-    street: '123 Đường Lê Lợi',
+    province: 'Ho Chi Minh',
+    district: 'District 1',
+    ward: 'Ben Nghe Ward',
+    street: '123 Le Loi Street',
     addressType: 'home',
     isDefault: true,
     createdAt: '2024-01-01T00:00:00.000Z',
@@ -134,12 +134,12 @@ const mockAddresses: Address[] = [
   {
     _id: '2',
     userId: 'user1',
-    fullName: 'Nguyễn Văn A',
+    fullName: 'John Doe',
     phone: '0909876543',
-    province: 'Hồ Chí Minh',
-    district: 'Quận 7',
-    ward: 'Phường Tân Phú',
-    street: '456 Đường Nguyễn Văn Linh',
+    province: 'Ho Chi Minh',
+    district: 'District 7',
+    ward: 'Tan Phu Ward',
+    street: '456 Nguyen Van Linh Street',
     addressType: 'home',
     isDefault: false,
     createdAt: '2024-01-01T00:00:00.000Z',
@@ -148,14 +148,14 @@ const mockAddresses: Address[] = [
   {
     _id: '3',
     userId: 'user1',
-    fullName: 'Trần Thị B',
+    fullName: 'Jane Smith',
     phone: '0912345678',
-    province: 'Hà Nội',
-    district: 'Quận Cầu Giấy',
-    ward: 'Phường Dịch Vọng',
-    street: '789 Đường Xuân Thủy',
+    province: 'Hanoi',
+    district: 'Cau Giay District',
+    ward: 'Dich Vong Ward',
+    street: '789 Xuan Thuy Street',
     addressType: 'office',
-    label: 'Văn phòng công ty',
+    label: 'Company Office',
     isDefault: false,
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
@@ -163,12 +163,12 @@ const mockAddresses: Address[] = [
   {
     _id: '4',
     userId: 'user1',
-    fullName: 'Lê Văn C',
+    fullName: 'Mike Johnson',
     phone: '0923456789',
-    province: 'Đà Nẵng',
-    district: 'Quận Hải Châu',
-    ward: 'Phường Thạch Thang',
-    street: '321 Đường Nguyễn Văn Linh',
+    province: 'Da Nang',
+    district: 'Hai Chau District',
+    ward: 'Thach Thang Ward',
+    street: '321 Nguyen Van Linh Street',
     addressType: 'home',
     isDefault: false,
     createdAt: '2024-01-01T00:00:00.000Z',
@@ -177,14 +177,14 @@ const mockAddresses: Address[] = [
   {
     _id: '5',
     userId: 'user1',
-    fullName: 'Phạm Thị D',
+    fullName: 'Sarah Williams',
     phone: '0934567890',
-    province: 'Cần Thơ',
-    district: 'Quận Ninh Kiều',
-    ward: 'Phường An Hòa',
-    street: '654 Đường 30 Tháng 4',
+    province: 'Can Tho',
+    district: 'Ninh Kieu District',
+    ward: 'An Hoa Ward',
+    street: '654 April 30th Street',
     addressType: 'other',
-    label: 'Nhà bà ngoại',
+    label: "Grandmother's House",
     isDefault: false,
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
@@ -247,7 +247,7 @@ export const getShippingMethodsRequest = http.get(
   `${config.baseUrl}orders/shipping/methods`,
   () => {
     return HttpResponse.json(
-      { message: 'Lấy phương thức vận chuyển thành công', data: mockShippingMethods },
+      { message: 'Get shipping methods successfully', data: mockShippingMethods },
       { status: HTTP_STATUS_CODE.Ok },
     );
   },
@@ -256,7 +256,7 @@ export const getShippingMethodsRequest = http.get(
 // Payment Methods Handlers
 export const getPaymentMethodsRequest = http.get(`${config.baseUrl}orders/payment/methods`, () => {
   return HttpResponse.json(
-    { message: 'Lấy phương thức thanh toán thành công', data: mockPaymentMethods },
+    { message: 'Get payment methods successfully', data: mockPaymentMethods },
     { status: HTTP_STATUS_CODE.Ok },
   );
 });
@@ -292,7 +292,7 @@ export const calculateCheckoutRequest = http.post(
     };
 
     return HttpResponse.json(
-      { message: 'Tính toán thành công', data: summary },
+      { message: 'Calculate successfully', data: summary },
       { status: HTTP_STATUS_CODE.Ok },
     );
   },
@@ -325,7 +325,7 @@ export const createOrderRequest = http.post(
       `${Date.now().toString(16)}${Math.random().toString(16).slice(2, 10)}`,
     );
     return HttpResponse.json(
-      { message: 'Đặt hàng thành công', data: order },
+      { message: 'Create order successfully', data: order },
       { status: HTTP_STATUS_CODE.Created },
     );
   },
@@ -338,7 +338,7 @@ export const getOrdersRequest = http.get(`${config.baseUrl}orders`, ({ request }
 
   return HttpResponse.json(
     {
-      message: 'Lấy danh sách đơn hàng thành công',
+      message: 'Get orders successfully',
       data: {
         orders: [],
         pagination: { page, limit, total: 0, totalPages: 0 },
@@ -360,7 +360,7 @@ export const getOrderByIdRequest = http.get(`${config.baseUrl}orders/:id`, ({ pa
     id as string,
   );
   return HttpResponse.json(
-    { message: 'Lấy đơn hàng thành công', data: mockOrder },
+    { message: 'Get order successfully', data: mockOrder },
     { status: HTTP_STATUS_CODE.Ok },
   );
 });
@@ -380,7 +380,7 @@ export const cancelOrderRequest = http.put(
     );
     cancelledOrder.status = 'cancelled';
     return HttpResponse.json(
-      { message: 'Hủy đơn hàng thành công', data: cancelledOrder },
+      { message: 'Cancel order successfully', data: cancelledOrder },
       { status: HTTP_STATUS_CODE.Ok },
     );
   },
@@ -390,7 +390,7 @@ export const cancelOrderRequest = http.put(
 export const getAddressesRequest = http.get(`${config.baseUrl}addresses`, () => {
   return HttpResponse.json(
     {
-      message: 'Lấy danh sách địa chỉ thành công',
+      message: 'Get addresses successfully',
       data: { addresses: mockAddresses, total: mockAddresses.length },
     },
     { status: HTTP_STATUS_CODE.Ok },
@@ -401,7 +401,7 @@ export const getAddressByIdRequest = http.get(`${config.baseUrl}addresses/:id`, 
   const { id } = params;
   const address = mockAddresses.find((a) => a._id === id) || mockAddresses[0];
   return HttpResponse.json(
-    { message: 'Lấy địa chỉ thành công', data: address },
+    { message: 'Get address successfully', data: address },
     { status: HTTP_STATUS_CODE.Ok },
   );
 });
@@ -422,7 +422,7 @@ export const createAddressRequest = http.post(`${config.baseUrl}addresses`, asyn
     updatedAt: new Date().toISOString(),
   };
   return HttpResponse.json(
-    { message: 'Tạo địa chỉ thành công', data: newAddress },
+    { message: 'Create address successfully', data: newAddress },
     { status: HTTP_STATUS_CODE.Created },
   );
 });
@@ -439,7 +439,7 @@ export const updateAddressRequest = http.put(
       updatedAt: new Date().toISOString(),
     };
     return HttpResponse.json(
-      { message: 'Cập nhật địa chỉ thành công', data: updatedAddress },
+      { message: 'Update address successfully', data: updatedAddress },
       { status: HTTP_STATUS_CODE.Ok },
     );
   },
@@ -447,7 +447,7 @@ export const updateAddressRequest = http.put(
 
 export const deleteAddressRequest = http.delete(`${config.baseUrl}addresses/:id`, () => {
   return HttpResponse.json(
-    { message: 'Xóa địa chỉ thành công', data: { message: 'Xóa địa chỉ thành công' } },
+    { message: 'Delete address successfully', data: { message: 'Delete address successfully' } },
     { status: HTTP_STATUS_CODE.Ok },
   );
 });
@@ -463,7 +463,7 @@ export const setDefaultAddressRequest = http.put(
       updatedAt: new Date().toISOString(),
     };
     return HttpResponse.json(
-      { message: 'Đặt địa chỉ mặc định thành công', data: updatedAddress },
+      { message: 'Set default address successfully', data: updatedAddress },
       { status: HTTP_STATUS_CODE.Ok },
     );
   },
@@ -472,28 +472,28 @@ export const setDefaultAddressRequest = http.put(
 // Error Handlers
 export const createOrderErrorHandler = http.post(`${config.baseUrl}checkout/create-order`, () => {
   return HttpResponse.json(
-    { message: 'Lỗi khi đặt hàng', data: { error: 'Internal Server Error' } },
+    { message: 'Error creating order', data: { error: 'Internal Server Error' } },
     { status: HTTP_STATUS_CODE.InternalServerError },
   );
 });
 
 export const cancelOrderErrorHandler = http.put(`${config.baseUrl}orders/:id/cancel`, () => {
   return HttpResponse.json(
-    { message: 'Lỗi khi hủy đơn hàng', data: { error: 'Internal Server Error' } },
+    { message: 'Error cancelling order', data: { error: 'Internal Server Error' } },
     { status: HTTP_STATUS_CODE.InternalServerError },
   );
 });
 
 export const createAddressErrorHandler = http.post(`${config.baseUrl}addresses`, () => {
   return HttpResponse.json(
-    { message: 'Lỗi khi tạo địa chỉ', data: { error: 'Internal Server Error' } },
+    { message: 'Error creating address', data: { error: 'Internal Server Error' } },
     { status: HTTP_STATUS_CODE.InternalServerError },
   );
 });
 
 export const deleteAddressErrorHandler = http.delete(`${config.baseUrl}addresses/:id`, () => {
   return HttpResponse.json(
-    { message: 'Lỗi khi xóa địa chỉ', data: { error: 'Internal Server Error' } },
+    { message: 'Error deleting address', data: { error: 'Internal Server Error' } },
     { status: HTTP_STATUS_CODE.InternalServerError },
   );
 });

@@ -44,19 +44,19 @@ const mockShippingAddress = {
 
 const mockShippingStandard = {
   _id: 'standard',
-  name: 'Giao hàng tiêu chuẩn',
-  description: 'Giao hàng trong 3-5 ngày',
+  name: 'Standard Delivery',
+  description: 'Delivery in 3-5 days',
   price: 30000,
-  estimatedDays: '3-5 ngày',
+  estimatedDays: '3-5 days',
   icon: '🚚',
 };
 
 const mockShippingExpress = {
   _id: 'express',
-  name: 'Giao hàng nhanh',
-  description: 'Giao hàng trong 1-2 ngày',
+  name: 'Express Delivery',
+  description: 'Delivery in 1-2 days',
   price: 50000,
-  estimatedDays: '1-2 ngày',
+  estimatedDays: '1-2 days',
   icon: '⚡',
 };
 

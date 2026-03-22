@@ -6,32 +6,32 @@ import http from 'src/utils/http';
 const allTrackingEvents: TrackingEvent[] = [
   {
     status: 'pending',
-    description: 'Đơn hàng đã được tạo',
-    location: 'Hệ thống',
+    description: 'Order has been created',
+    location: 'System',
     timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
     status: 'confirmed',
-    description: 'Đơn hàng đã được xác nhận',
-    location: 'Kho hàng TP.HCM',
+    description: 'Order has been confirmed',
+    location: 'Ho Chi Minh Warehouse',
     timestamp: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
     status: 'processing',
-    description: 'Đang chuẩn bị hàng',
-    location: 'Kho hàng TP.HCM',
+    description: 'Preparing items',
+    location: 'Ho Chi Minh Warehouse',
     timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
     status: 'shipping',
-    description: 'Đang vận chuyển đến bạn',
-    location: 'Trung tâm phân loại Hà Nội',
+    description: 'On the way to you',
+    location: 'Hanoi Sorting Center',
     timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
     status: 'delivered',
-    description: 'Giao hàng thành công',
-    location: 'Hà Nội - Cầu Giấy - Dịch Vọng',
+    description: 'Successfully delivered',
+    location: 'Hanoi - Cau Giay - Dich Vong',
     timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
   },
 ];

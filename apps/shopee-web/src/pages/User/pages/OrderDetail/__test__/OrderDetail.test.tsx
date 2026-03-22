@@ -5,7 +5,30 @@ import OrderDetail from '../OrderDetail';
 import React from 'react';
 
 vi.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string, params?: any) => {
+      const translations: Record<string, string> = {
+        'detail.title': 'Chi tiết đơn hàng',
+        'detail.orderId': 'Mã đơn hàng:',
+        'detail.notFound': 'Không tìm thấy đơn hàng',
+        'detail.backToOrders': 'Quay lại danh sách đơn hàng',
+        'detail.back': 'Quay lại',
+        'detail.backAria': 'Quay lại trang trước',
+        'detail.shippingAddress': 'Địa chỉ nhận hàng',
+        'detail.payment': 'Thanh toán',
+        'detail.shipping': 'Vận chuyển',
+        'detail.orderInfo': 'Thông tin đơn hàng',
+        'detail.orderDate': 'Ngày đặt hàng:',
+        'detail.note': 'Ghi chú:',
+        'payment:method.cod': 'Thanh toán khi nhận hàng',
+        'payment:method.bankTransfer': 'Chuyển khoản ngân hàng',
+        'payment:method.eWallet': 'Ví điện tử',
+        'payment:method.creditCard': 'Thẻ tín dụng',
+      };
+      return translations[key] || key;
+    },
+    i18n: { language: 'vi' },
+  }),
 }));
 
 vi.mock('framer-motion', () => ({
@@ -79,6 +102,12 @@ vi.mock('../orderDetail.constants', () => ({
   getStatusDisplay: () => ({ label: 'Pending', color: 'text-yellow-600', bgColor: 'bg-yellow-50' }),
   pageContainerVariants: {},
   paymentMethodLabels: { cod: 'Cash on Delivery' },
+  paymentMethodLabelKeys: {
+    cod: 'payment:method.cod',
+    bank_transfer: 'payment:method.bankTransfer',
+    e_wallet: 'payment:method.eWallet',
+    credit_card: 'payment:method.creditCard',
+  },
   reducedMotionVariants: {},
   sectionVariants: {},
   statusBadgeVariants: {},
@@ -125,7 +154,7 @@ describe('OrderDetail', () => {
 
   it('should render payment method', () => {
     render(<OrderDetail />, { wrapper });
-    expect(screen.getByText(/detail.payment/)).toBeInTheDocument();
+    expect(screen.getByText('Thanh toán khi nhận hàng')).toBeInTheDocument();
   });
 
   it('should render shipping method', () => {
@@ -135,7 +164,7 @@ describe('OrderDetail', () => {
 
   it('should render back button', () => {
     render(<OrderDetail />, { wrapper });
-    expect(screen.getByText('detail.back')).toBeInTheDocument();
+    expect(screen.getByText('Quay lại')).toBeInTheDocument();
   });
 
   it('should show loading state', () => {
@@ -148,6 +177,6 @@ describe('OrderDetail', () => {
   it('should show not found message when order is null', () => {
     mockUseOrderDetailReturn = { ...defaultOrderDetailReturn, order: null };
     render(<OrderDetail />, { wrapper });
-    expect(screen.getByText('detail.notFound')).toBeInTheDocument();
+    expect(screen.getByText('Không tìm thấy đơn hàng')).toBeInTheDocument();
   });
 });

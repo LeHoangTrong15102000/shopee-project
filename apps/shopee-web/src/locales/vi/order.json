@@ -154,7 +154,7 @@
   "filter.title": "Bộ lọc",
   "filter.foundOrders": "Tìm thấy {{count}} đơn hàng",
   "filter.clearAll": "Xóa tất cả bộ lọc",
-  "return.reasonRequired": "Nhập lý do trả hàng (bắt buộc)",
+  "return.reasonRequired": "Vui lòng nhập lý do trả hàng",
   "return.success": "Yêu cầu trả hàng thành công",
   "return.error": "Yêu cầu trả hàng thất bại"
 }

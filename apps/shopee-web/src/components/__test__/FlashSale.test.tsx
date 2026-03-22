@@ -2,6 +2,30 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 import FlashSaleUrgency from '../FlashSale/FlashSaleUrgency';
 
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, params?: any) => {
+      const translations: Record<string, string> = {
+        'flashSale.ended': 'Đã kết thúc',
+        'flashSale.soldOut': 'Đã hết hàng!',
+        'flashSale.onlyNLeft': 'Chỉ còn {{count}} sản phẩm!',
+        'flashSale.almostGone': 'Sắp hết!',
+        'flashSale.endingSoon': 'Sắp kết thúc!',
+        'flashSale.soldPercent': 'Đã bán {{percent}}%',
+      };
+      if (key === 'flashSale.onlyNLeft' && params?.count !== undefined) {
+        return `Chỉ còn ${params.count} sản phẩm!`;
+      }
+      if (key === 'flashSale.soldPercent' && params?.percent !== undefined) {
+        return `Đã bán ${params.percent}%`;
+      }
+      return translations[key] || key;
+    },
+    i18n: { language: 'vi' },
+  }),
+}));
+
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
@@ -19,6 +43,7 @@ describe('FlashSaleUrgency', () => {
   const mockNow = new Date('2024-03-17T12:00:00Z');
 
   beforeEach(() => {
+    vi.resetModules();
     vi.useFakeTimers();
     vi.setSystemTime(mockNow);
   });
@@ -111,7 +136,7 @@ describe('FlashSaleUrgency', () => {
   });
 
   describe('Urgency Levels - Ended', () => {
-    it('shows "Đã kết thúc!" when time has expired', () => {
+    it('shows "Đã kết thúc" when time has expired', () => {
       render(
         <FlashSaleUrgency
           productId="test-product"
@@ -121,7 +146,7 @@ describe('FlashSaleUrgency', () => {
         />,
       );
 
-      expect(screen.getByText('Đã kết thúc!')).toBeInTheDocument();
+      expect(screen.getByText('Đã kết thúc')).toBeInTheDocument();
       expect(screen.getByText('⏰')).toBeInTheDocument();
     });
 
@@ -345,7 +370,7 @@ describe('FlashSaleUrgency', () => {
         />,
       );
 
-      expect(screen.getByText('Đã kết thúc!')).toBeInTheDocument();
+      expect(screen.getByText('Đã kết thúc')).toBeInTheDocument();
     });
 
     it('handles endTime as Date object', () => {
@@ -358,7 +383,7 @@ describe('FlashSaleUrgency', () => {
         />,
       );
 
-      expect(screen.getByText('Đã kết thúc!')).toBeInTheDocument();
+      expect(screen.getByText('Đã kết thúc')).toBeInTheDocument();
     });
 
     it('updates time remaining every second', () => {
@@ -414,7 +439,7 @@ describe('FlashSaleUrgency', () => {
         />,
       );
 
-      expect(screen.getByText('Đã kết thúc!')).toBeInTheDocument();
+      expect(screen.getByText('Đã kết thúc')).toBeInTheDocument();
       expect(screen.queryByText('Đã hết hàng!')).not.toBeInTheDocument();
     });
 

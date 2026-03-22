@@ -47,18 +47,18 @@ describe('orderDetail.constants', () => {
     });
   });
 
-  describe('paymentMethodLabels', () => {
+  describe('paymentMethodLabelKeys', () => {
     it('has cod label', () => {
-      expect(paymentMethodLabels.cod).toBe('Thanh toán khi nhận hàng (COD)');
+      expect(paymentMethodLabelKeys.cod).toBe('payment:method.cod');
     });
     it('has bank_transfer label', () => {
-      expect(paymentMethodLabels.bank_transfer).toBe('Chuyển khoản ngân hàng');
+      expect(paymentMethodLabelKeys.bank_transfer).toBe('payment:method.bankTransfer');
     });
     it('has e_wallet label', () => {
-      expect(paymentMethodLabels.e_wallet).toBe('Ví điện tử');
+      expect(paymentMethodLabelKeys.e_wallet).toBe('payment:method.eWallet');
     });
     it('has credit_card label', () => {
-      expect(paymentMethodLabels.credit_card).toBe('Thẻ tín dụng/Ghi nợ');
+      expect(paymentMethodLabelKeys.credit_card).toBe('payment:method.creditCard');
     });
   });
 

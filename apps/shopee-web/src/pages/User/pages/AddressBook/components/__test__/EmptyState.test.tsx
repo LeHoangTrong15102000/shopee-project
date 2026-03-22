@@ -22,6 +22,24 @@ vi.mock('src/components/Button', () => ({
   },
 }));
 
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        noAddress: 'Chưa có địa chỉ nào',
+        'empty.description':
+          'Thêm địa chỉ giao hàng để việc mua sắm trở nên nhanh chóng và thuận tiện hơn',
+        'empty.feature.fastDelivery': 'Giao hàng nhanh',
+        'empty.feature.multipleAddresses': 'Lưu nhiều địa chỉ',
+        'empty.feature.easyCheckout': 'Thanh toán dễ dàng',
+        addFirst: 'Thêm địa chỉ đầu tiên',
+      };
+      return translations[key] || key;
+    },
+    i18n: { language: 'vi' },
+  }),
+}));
+
 describe('EmptyState', () => {
   it('renders empty state title', () => {
     render(<EmptyState onAddNew={vi.fn()} />);

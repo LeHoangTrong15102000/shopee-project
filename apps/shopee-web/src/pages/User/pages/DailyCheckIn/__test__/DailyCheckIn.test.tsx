@@ -21,7 +21,30 @@ vi.mock('framer-motion', () => ({
 }));
 
 vi.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (key: string) => key, i18n: { language: 'vi' } }),
+  useTranslation: () => ({
+    t: (key: string, params?: any) => {
+      const translations: Record<string, string> = {
+        'page.title': 'Điểm danh hàng ngày',
+        'page.description': 'Điểm danh hàng ngày để nhận xu và phần thưởng',
+        'page.subtitle': 'Điểm danh mỗi ngày để nhận xu và phần thưởng hấp dẫn',
+        'rewards.title': 'Phần thưởng theo chuỗi điểm danh',
+        'tips.title': 'Mẹo nhỏ',
+        'tips.streak': 'Điểm danh liên tục để nhận thưởng cao hơn',
+        'tips.reset': 'Chuỗi điểm danh sẽ bị reset nếu bạn bỏ lỡ 1 ngày',
+        'tips.voucher': 'Xu có thể dùng để đổi voucher giảm giá',
+      };
+
+      if (key === 'milestone' && params?.count) {
+        return `${params.count} ngày`;
+      }
+      if (key === 'rewards.multiplier' && params?.value) {
+        return `x${params.value} xu`;
+      }
+
+      return translations[key] || key;
+    },
+    i18n: { language: 'vi' },
+  }),
 }));
 
 vi.mock('react-helmet-async', () => ({

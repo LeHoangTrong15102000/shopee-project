@@ -4,7 +4,20 @@ import LiveReviewFeed from '../LiveReviewFeed/LiveReviewFeed';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: (key: string, params?: any) => {
+      const translations: Record<string, string> = {
+        'reviews.stars': '{{count}} sao',
+        'reviews.justReviewed': 'vừa đánh giá',
+        'reviews.newReviews': 'đánh giá mới',
+        'reviews.clickToView': 'Nhấn để xem',
+      };
+
+      if (key === 'reviews.stars' && params?.count !== undefined) {
+        return `${params.count} sao`;
+      }
+
+      return translations[key] || key;
+    },
     i18n: { language: 'vi', changeLanguage: vi.fn() },
   }),
   Trans: ({ children }: any) => children,

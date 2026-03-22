@@ -81,6 +81,34 @@ vi.mock('date-fns', () => ({
   differenceInDays: () => 0,
 }));
 
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, params?: any) => {
+      const translations: Record<string, string> = {
+        'savedForLater.title': 'Đã lưu để mua sau',
+        'savedForLater.empty': 'Chưa có sản phẩm nào được lưu',
+        'savedForLater.moveToCart': 'Thêm vào giỏ',
+        'savedForLater.remove': 'Xóa',
+        'savedForLater.clearAll': 'Xóa tất cả',
+        'savedForLater.today': 'Hôm nay',
+        'savedForLater.yesterday': 'Hôm qua',
+        'savedForLater.savedInfo': 'Đã lưu {{time}} • SL: {{count}}',
+      };
+
+      if (key === 'savedForLater.daysAgo' && params?.count) {
+        return `${params.count} ngày trước`;
+      }
+
+      if (key === 'savedForLater.savedInfo' && params) {
+        return `${params.time} • SL: ${params.count}`;
+      }
+
+      return translations[key] || key;
+    },
+    i18n: { language: 'vi' },
+  }),
+}));
+
 const makeItem = (id: string, overrides: any = {}) => ({
   product: {
     _id: id,

@@ -7,7 +7,16 @@ import ConversationHistory from '../User/pages/ConversationHistory/ConversationH
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'history.title': 'Lịch sử hội thoại',
+        'history.subtitle': 'Quản lý các cuộc hội thoại với trợ lý AI',
+        'history.empty': 'Chưa có cuộc hội thoại nào',
+        'history.seoTitle': 'Lịch sử hội thoại | Shopee Clone',
+        'history.seoDescription': 'Quản lý lịch sử hội thoại với trợ lý AI',
+      };
+      return translations[key] || key;
+    },
     i18n: { language: 'vi', changeLanguage: vi.fn() },
   }),
 }));

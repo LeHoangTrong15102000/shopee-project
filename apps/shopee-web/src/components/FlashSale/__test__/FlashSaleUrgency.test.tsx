@@ -111,7 +111,7 @@ describe('FlashSaleUrgency', () => {
   });
 
   describe('Urgency Levels - Ended', () => {
-    it('shows "Đã kết thúc!" when time has expired', () => {
+    it('shows "Đã kết thúc" when time has expired', () => {
       render(
         <FlashSaleUrgency
           productId="test-product"
@@ -121,7 +121,7 @@ describe('FlashSaleUrgency', () => {
         />,
       );
 
-      expect(screen.getByText('Đã kết thúc!')).toBeInTheDocument();
+      expect(screen.getByText('Đã kết thúc')).toBeInTheDocument();
       expect(screen.getByText('⏰')).toBeInTheDocument();
     });
 
@@ -345,7 +345,7 @@ describe('FlashSaleUrgency', () => {
         />,
       );
 
-      expect(screen.getByText('Đã kết thúc!')).toBeInTheDocument();
+      expect(screen.getByText('Đã kết thúc')).toBeInTheDocument();
     });
 
     it('handles endTime as Date object', () => {
@@ -358,7 +358,7 @@ describe('FlashSaleUrgency', () => {
         />,
       );
 
-      expect(screen.getByText('Đã kết thúc!')).toBeInTheDocument();
+      expect(screen.getByText('Đã kết thúc')).toBeInTheDocument();
     });
 
     it('updates time remaining every second', () => {
@@ -414,7 +414,7 @@ describe('FlashSaleUrgency', () => {
         />,
       );
 
-      expect(screen.getByText('Đã kết thúc!')).toBeInTheDocument();
+      expect(screen.getByText('Đã kết thúc')).toBeInTheDocument();
       expect(screen.queryByText('Đã hết hàng!')).not.toBeInTheDocument();
     });
 

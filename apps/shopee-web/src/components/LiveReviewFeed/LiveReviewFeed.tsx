@@ -46,7 +46,7 @@ export default function LiveReviewFeed({
           <p className="truncate text-gray-700 dark:text-gray-200">
             <span className="text-yellow-500">{renderStars(latestReview.rating)}</span>{' '}
             <span className="font-medium">{latestReview.name}</span> {t('reviews.justReviewed')}{' '}
-            {latestReview.rating} {t('reviews.stars')}
+            {t('reviews.stars', { count: latestReview.rating })}
           </p>
         )}
         <p className="font-medium text-[#ee4d2d]">

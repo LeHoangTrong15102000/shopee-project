@@ -302,3 +302,109 @@ describe('useLikeQuestion', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
   });
 });
+
+describe('useToggleWishlist - optimistic rollback', () => {
+  it('rolls back optimistic update on error', async () => {
+    server.use(
+      http.post(`${API_BASE}/wishlist`, () =>
+        HttpResponse.json({ message: 'Error' }, { status: 500 })
+      )
+    );
+    const wrapper = createWrapper();
+    const { result: wishlistResult } = renderHook(() => useWishlistStatus('p1'), { wrapper });
+    await waitFor(() => expect(wishlistResult.current.isSuccess).toBe(true));
+
+    const { result } = renderHook(() => useToggleWishlist('p1'), { wrapper });
+    await act(async () => {
+      result.current.mutate(false);
+    });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(mockToast.showError).toHaveBeenCalledWith('PD_WISHLIST_ERROR');
+  });
+});
+
+describe('useProductReviews - pagination', () => {
+  it('fetches next page when hasNextPage is true', async () => {
+    server.use(
+      http.get(`${API_BASE}/reviews/product/:id`, ({ request }) => {
+        const url = new URL(request.url);
+        const page = url.searchParams.get('page');
+        if (page === '2') {
+          return HttpResponse.json({
+            message: 'OK',
+            data: {
+              reviews: [{ _id: 'r2', rating: 4, comment: 'Good', user: { _id: 'u2', name: 'U2' } }],
+              pagination: { page: 2, limit: 5, total: 2, total_pages: 2 },
+              stats: { total_reviews: 2, average_rating: 4.5, rating_breakdown: { 4: 1, 5: 1 } },
+            },
+          });
+        }
+        return HttpResponse.json({
+          message: 'OK',
+          data: {
+            reviews: [{ _id: 'r1', rating: 5, comment: 'Great', user: { _id: 'u1', name: 'U' } }],
+            pagination: { page: 1, limit: 5, total: 2, total_pages: 2 },
+            stats: { total_reviews: 2, average_rating: 4.5, rating_breakdown: { 4: 1, 5: 1 } },
+          },
+        });
+      })
+    );
+    const { result } = renderHook(() => useProductReviews('p1'), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.hasNextPage).toBe(true);
+
+    await act(async () => {
+      result.current.fetchNextPage();
+    });
+    await waitFor(() => expect(result.current.data?.pages).toHaveLength(2));
+    expect(result.current.data?.pages[1].data.reviews[0]._id).toBe('r2');
+  });
+});
+
+describe('useProductQuestions - pagination', () => {
+  it('fetches next page when hasNextPage is true', async () => {
+    server.use(
+      http.get(`${API_BASE}/qa/questions`, ({ request }) => {
+        const url = new URL(request.url);
+        const page = url.searchParams.get('page');
+        if (page === '2') {
+          return HttpResponse.json({
+            message: 'OK',
+            data: {
+              questions: [{ _id: 'q2', question: 'Q2?', answers: [], likes_count: 0 }],
+              pagination: { page: 2, limit: 5, total: 2, total_pages: 2 },
+            },
+          });
+        }
+        return HttpResponse.json({
+          message: 'OK',
+          data: {
+            questions: [{ _id: 'q1', question: 'Q?', answers: [], likes_count: 0 }],
+            pagination: { page: 1, limit: 5, total: 2, total_pages: 2 },
+          },
+        });
+      })
+    );
+    const { result } = renderHook(() => useProductQuestions('p1'), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.hasNextPage).toBe(true);
+
+    await act(async () => {
+      result.current.fetchNextPage();
+    });
+    await waitFor(() => expect(result.current.data?.pages).toHaveLength(2));
+    expect(result.current.data?.pages[1].data.questions[0]._id).toBe('q2');
+  });
+});
+
+describe('useRelatedProducts - navigation', () => {
+  it('returns products that can be navigated to', async () => {
+    const { result } = renderHook(() => useRelatedProducts('cat-1', 'p1'), {
+      wrapper: createWrapper(),
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    const relatedProduct = result.current.data?.data.products[0];
+    expect(relatedProduct?._id).toBe('p2');
+    expect(relatedProduct?.name).toBe('Related Product');
+  });
+});

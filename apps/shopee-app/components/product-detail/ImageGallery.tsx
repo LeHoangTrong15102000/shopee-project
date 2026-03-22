@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  ScrollView,
 } from 'react-native';
 import { X } from 'lucide-react-native';
 import { useColors } from '@/hooks/useColors';
@@ -45,12 +46,12 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
         onScroll={onScroll}
         scrollEventThrottle={16}
         keyExtractor={(_, i) => `img-${i}`}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <TouchableOpacity
             activeOpacity={0.95}
             onPress={() => setFullscreenVisible(true)}
             accessibilityRole="image"
-            accessibilityLabel="Product image, tap to zoom">
+            accessibilityLabel={`Product image ${index + 1} of ${images.length}, tap to zoom`}>
             <Image
               source={{ uri: item }}
               style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
@@ -103,6 +104,7 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
                 source={{ uri: item }}
                 style={{ width: 48, height: 48, borderRadius: 4 }}
                 resizeMode="cover"
+                accessible={false}
               />
             </TouchableOpacity>
           )}
@@ -115,7 +117,8 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
         transparent
         animationType="fade"
         onRequestClose={() => setFullscreenVisible(false)}
-        accessibilityViewIsModal={true}>
+        accessibilityViewIsModal={true}
+        accessibilityRole="dialog">
         <View style={{ flex: 1, backgroundColor: colors.background }}>
           <TouchableOpacity
             onPress={() => setFullscreenVisible(false)}
@@ -136,14 +139,22 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
               index,
             })}
             keyExtractor={(_, i) => `full-${i}`}
-            renderItem={({ item }) => (
-              <View style={{ width: SCREEN_WIDTH, flex: 1, justifyContent: 'center' }}>
+            renderItem={({ item, index }) => (
+              <ScrollView
+                style={{ width: SCREEN_WIDTH, flex: 1 }}
+                contentContainerStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+                maximumZoomScale={3}
+                minimumZoomScale={1}
+                bouncesZoom={true}
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}>
                 <Image
                   source={{ uri: item }}
                   style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
                   resizeMode="contain"
+                  accessibilityLabel={`Product image ${index + 1} of ${images.length}`}
                 />
-              </View>
+              </ScrollView>
             )}
           />
         </View>

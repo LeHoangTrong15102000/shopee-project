@@ -1,6 +1,11 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import ProductCard from '../components/home/ProductCard';
+
+const mockPush = jest.fn();
+jest.mock('expo-router', () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
 
 const mockProduct = {
   _id: 'p1',
@@ -34,6 +39,10 @@ jest.mock('@/hooks/useColors', () => ({
 }));
 
 describe('ProductCard', () => {
+  beforeEach(() => {
+    mockPush.mockClear();
+  });
+
   it('renders product name and price', () => {
     const { getByText } = render(<ProductCard product={mockProduct} />);
     expect(getByText(mockProduct.name)).toBeTruthy();
@@ -53,5 +62,12 @@ describe('ProductCard', () => {
   it('formats sold count with k suffix', () => {
     const { getByText } = render(<ProductCard product={mockProduct} />);
     expect(getByText(/1.5k sold/)).toBeTruthy();
+  });
+
+  it('navigates to product detail on press', () => {
+    const { getByA11yRole } = render(<ProductCard product={mockProduct} />);
+    const card = getByA11yRole('button');
+    fireEvent.press(card);
+    expect(mockPush).toHaveBeenCalledWith('/product/p1');
   });
 });

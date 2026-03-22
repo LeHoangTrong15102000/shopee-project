@@ -31,7 +31,7 @@ export default function ReviewCard({ review, onToggleLike }: ReviewCardProps) {
           <AppText raw variant="bodySmall" weight="medium">
             {review.user.name}
           </AppText>
-          <View className="flex-row items-center gap-1">
+          <View className="flex-row items-center gap-1" accessible={false}>
             {[1, 2, 3, 4, 5].map((s) => (
               <Star
                 key={s}

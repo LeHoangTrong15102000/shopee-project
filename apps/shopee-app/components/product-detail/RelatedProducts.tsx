@@ -4,7 +4,6 @@ import { AppText } from '@/components/ui';
 import { useTranslation } from 'react-i18next';
 import ProductCard from '@/components/home/ProductCard';
 import type { ProductDetail } from '@/apis/product-detail.api';
-import type { Product } from '@/services/product.api';
 
 interface RelatedProductsProps {
   products: ProductDetail[];
@@ -26,7 +25,7 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
-        renderItem={({ item }) => <ProductCard product={item as Product} />}
+        renderItem={({ item }) => <ProductCard product={item} />}
       />
     </View>
   );

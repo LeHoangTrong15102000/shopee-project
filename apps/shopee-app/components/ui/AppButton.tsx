@@ -1,7 +1,13 @@
-import { ActivityIndicator, Pressable, PressableProps, Text } from 'react-native';
+import {
+  AccessibilityInfo,
+  ActivityIndicator,
+  Pressable,
+  PressableProps,
+  Text,
+} from 'react-native';
 import { cn } from '@/utils';
 import { cva } from 'class-variance-authority';
-import React, { JSX, ReactNode } from 'react';
+import React, { JSX, ReactNode, useEffect, useState } from 'react';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -95,6 +101,11 @@ export default function AppButton(props: AppButtonProps) {
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
   const colors = useColors();
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
+  }, []);
 
   const getIconColor = () => {
     switch (variant) {
@@ -132,6 +143,11 @@ export default function AppButton(props: AppButtonProps) {
   });
 
   const handlePressIn = () => {
+    if (reduceMotion) {
+      scale.value = 1;
+      opacity.value = 1;
+      return;
+    }
     scale.value = withSpring(0.95, { damping: 15, stiffness: 300 });
     if (variant === 'ghost' || variant === 'outline' || variant === 'link') {
       opacity.value = withTiming(0.7, { duration: 150 });
@@ -139,6 +155,11 @@ export default function AppButton(props: AppButtonProps) {
   };
 
   const handlePressOut = () => {
+    if (reduceMotion) {
+      scale.value = 1;
+      opacity.value = 1;
+      return;
+    }
     scale.value = withSpring(1, { damping: 15, stiffness: 300 });
     opacity.value = withTiming(1, { duration: 150 });
   };
@@ -165,7 +186,7 @@ export default function AppButton(props: AppButtonProps) {
           size="small"
           color={
             variant === 'ghost' || variant === 'outline' || variant === 'link'
-              ? colors.error
+              ? colors.foreground
               : colors.primaryForeground
           }
         />

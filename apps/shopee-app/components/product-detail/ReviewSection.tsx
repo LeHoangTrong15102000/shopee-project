@@ -29,12 +29,16 @@ function RatingBar({
 }) {
   const pct = total > 0 ? (count / total) * 100 : 0;
   const colors = useColors();
+  const { t } = useTranslation();
   return (
-    <View className="flex-row items-center gap-2">
+    <View
+      className="flex-row items-center gap-2"
+      accessibilityRole="text"
+      accessibilityLabel={t('PD_RATING_BAR_LABEL', { rating, count, percent: pct.toFixed(0) })}>
       <AppText raw variant="labelSmall" color="muted" style={{ width: 12, textAlign: 'right' }}>
         {rating}
       </AppText>
-      <Star size={10} color={colors.warning} fill={colors.warning} />
+      <Star size={10} color={colors.warning} fill={colors.warning} accessible={false} />
       <View
         className="h-2 flex-1 overflow-hidden rounded-full"
         style={{ backgroundColor: colors.neutrals800 }}>
@@ -65,14 +69,7 @@ export default function ReviewSection({
         <AppText raw variant="heading4" weight="bold">
           {t('PD_REVIEWS')}
         </AppText>
-        <TouchableOpacity
-          onPress={onWriteReview}
-          accessibilityRole="button"
-          accessibilityLabel={t('PD_WRITE_REVIEW')}>
-          <AppText raw variant="bodySmall" style={{ color: colors.primary }}>
-            {t('PD_WRITE_REVIEW')}
-          </AppText>
-        </TouchableOpacity>
+        {/* Write review button hidden — requires purchase verification */}
       </View>
 
       {/* Rating breakdown */}
@@ -82,7 +79,7 @@ export default function ReviewSection({
             <AppText raw variant="display3" weight="bold">
               {stats.average_rating.toFixed(1)}
             </AppText>
-            <View className="flex-row">
+            <View className="flex-row" accessible={false}>
               {[1, 2, 3, 4, 5].map((s) => (
                 <Star
                   key={s}
@@ -116,11 +113,7 @@ export default function ReviewSection({
           <AppText raw variant="bodySmall" color="muted">
             {t('PD_NO_REVIEWS')}
           </AppText>
-          <TouchableOpacity onPress={onWriteReview} className="mt-2" accessibilityRole="button">
-            <AppText raw variant="bodySmall" style={{ color: colors.primary }}>
-              {t('PD_BE_FIRST_REVIEW')}
-            </AppText>
-          </TouchableOpacity>
+          {/* "Be first to review" button hidden — requires purchase verification */}
         </View>
       ) : (
         <>

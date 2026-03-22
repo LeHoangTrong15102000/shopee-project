@@ -6,13 +6,14 @@ import { AppText } from '@/components/ui';
 import { useColors } from '@/hooks/useColors';
 import { formatPrice, getDiscountPercent } from '@/utils/price';
 import { Product } from '@/services/product.api';
+import type { ProductDetail } from '@/apis/product-detail.api';
 
 const CARD_GAP = 8;
 const CARD_PADDING = 16;
 const CARD_WIDTH = (Dimensions.get('window').width - CARD_PADDING * 2 - CARD_GAP) / 2;
 
 interface ProductCardProps {
-  product: Product;
+  product: Product | ProductDetail;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
@@ -37,7 +38,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         />
         {hasDiscount && (
           <View className="absolute right-0 top-0 rounded-bl-lg bg-primary px-1.5 py-0.5">
-            <AppText raw variant="labelSmall" style={{ color: '#fff', fontSize: 11 }}>
+            <AppText raw variant="labelSmall" style={{ color: colors.primaryForeground }}>
               -{discount}%
             </AppText>
           </View>
@@ -66,7 +67,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-0.5">
-            <Star size={12} color={colors.warning} fill={colors.warning} />
+            <Star size={12} color={colors.warning} fill={colors.warning} accessible={false} />
             <AppText raw variant="labelSmall" color="muted">
               {product.rating.toFixed(1)}
             </AppText>

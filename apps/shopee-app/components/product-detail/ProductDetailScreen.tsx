@@ -101,13 +101,10 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
   };
 
   const handleSubmitReview = (data: { rating: number; comment: string }) => {
-    // TODO: purchase_id is required by backend — review creation should be gated
-    // by checking if user has a completed purchase for this product.
-    // For now, pass empty string; the backend will reject if no valid purchase exists.
-    createReview.mutate(
-      { purchase_id: '', ...data },
-      { onSuccess: () => reviewFormRef.current?.dismiss() }
-    );
+    // Review creation disabled — requires purchase_id from a completed purchase.
+    // This function is kept for future implementation when purchase verification is added.
+    // Users should not be able to reach this point as the review button is hidden.
+    console.warn('Review submission attempted without purchase_id');
   };
 
   const handleSubmitQuestion = (text: string) => {
@@ -165,7 +162,8 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
     return (
       <View
         className="flex-1 items-center justify-center bg-background"
-        style={{ paddingTop: insets.top }}>
+        style={{ paddingTop: insets.top }}
+        accessibilityLiveRegion="polite">
         <AppText raw variant="heading4" weight="bold" className="mb-2">
           {t('PD_SERVER_ERROR')}
         </AppText>
@@ -216,7 +214,8 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
           {isOutOfStock ? (
             <View
               className="mx-4 mt-3 rounded-lg p-3"
-              style={{ backgroundColor: colors.neutrals800 }}>
+              style={{ backgroundColor: colors.neutrals800 }}
+              accessibilityLiveRegion="polite">
               <AppText raw variant="bodySmall" weight="bold" color="error">
                 {t('PD_OUT_OF_STOCK')}
               </AppText>

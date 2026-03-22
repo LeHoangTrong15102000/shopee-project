@@ -85,6 +85,14 @@ jest.mock('../components/product-detail/StickyBottomBar', () => {
   const { Text } = require('react-native');
   return () => <Text>BottomBar</Text>;
 });
+jest.mock('../components/product-detail/QuantitySelector', () => {
+  const { Text } = require('react-native');
+  return () => <Text>QuantitySelector</Text>;
+});
+jest.mock('../components/product-detail/WishlistButton', () => {
+  const { Text } = require('react-native');
+  return () => <Text>WishlistButton</Text>;
+});
 jest.mock('../components/product-detail/ReviewForm', () => {
   const R = require('react');
   return R.forwardRef(() => null);
@@ -109,6 +117,18 @@ const mockProduct = {
   view: 1000,
   createdAt: '2024-01-01T00:00:00.000Z',
   updatedAt: '2024-01-01T00:00:00.000Z',
+};
+
+const mockProductOutOfStock = {
+  ...mockProduct,
+  _id: 'p2',
+  quantity: 0,
+};
+
+const mockProductSingleImage = {
+  ...mockProduct,
+  _id: 'p3',
+  images: [],
 };
 
 const server = setupServer(
@@ -181,5 +201,25 @@ describe('ProductDetailScreen', () => {
       expect(mockToast.showError).toHaveBeenCalledWith('PD_PRODUCT_NOT_FOUND');
     });
     expect(mockRouter.back).toHaveBeenCalled();
+  });
+
+  it('shows out-of-stock message when quantity is 0', async () => {
+    server.use(
+      http.get(`${API_BASE}/products/:id`, () =>
+        HttpResponse.json({ message: 'OK', data: mockProductOutOfStock })
+      )
+    );
+    const { findByText } = renderWithProviders(<ProductDetailScreen productId="p2" />);
+    expect(await findByText('PD_OUT_OF_STOCK')).toBeTruthy();
+  });
+
+  it('renders single image when images array is empty', async () => {
+    server.use(
+      http.get(`${API_BASE}/products/:id`, () =>
+        HttpResponse.json({ message: 'OK', data: mockProductSingleImage })
+      )
+    );
+    const { findByText } = renderWithProviders(<ProductDetailScreen productId="p3" />);
+    expect(await findByText('ImageGallery:1')).toBeTruthy();
   });
 });

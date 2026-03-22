@@ -27,10 +27,10 @@ export default function WishlistButton({ inWishlist, onToggle, loading }: Wishli
       onPress={handlePress}
       disabled={loading}
       accessibilityRole="button"
-      accessibilityLabel={inWishlist ? t('PD_WISHLIST_REMOVED') : t('PD_WISHLIST_ADDED')}
+      accessibilityLabel={inWishlist ? t('PD_REMOVE_FROM_WISHLIST') : t('PD_ADD_TO_WISHLIST')}
       accessibilityState={{ selected: inWishlist }}
       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-      className="items-center justify-center rounded-full p-2">
+      className="items-center justify-center rounded-full bg-background/70 p-2">
       <Heart
         size={22}
         color={inWishlist ? colors.primary : colors.foreground}

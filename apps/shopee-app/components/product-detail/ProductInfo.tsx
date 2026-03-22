@@ -55,7 +55,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       {/* Rating, sold, stock */}
       <View className="flex-row items-center gap-3">
         <View className="flex-row items-center gap-1">
-          <Star size={14} color={colors.warning} fill={colors.warning} />
+          <Star size={14} color={colors.warning} fill={colors.warning} accessible={false} />
           <AppText raw variant="bodySmall" weight="medium">
             {product.rating.toFixed(1)}
           </AppText>

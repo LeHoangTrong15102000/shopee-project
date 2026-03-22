@@ -71,12 +71,6 @@ export interface Pagination {
   total_pages: number;
 }
 
-export interface ProductListPagination {
-  page: number;
-  limit: number;
-  page_size: number;
-}
-
 interface ApiResponse<T> {
   message: string;
   data: T;
@@ -173,8 +167,9 @@ export async function buyNow(body: { product_id: string; buy_count: number }) {
 // ─── Related Products API ────────────────────────────────────────────────────
 
 export async function getRelatedProducts(categoryId: string, excludeProductId: string) {
-  const res = await http.get<
-    ApiResponse<{ products: ProductDetail[]; pagination: ProductListPagination }>
-  >('products', { params: { category: categoryId, limit: 10, exclude: excludeProductId } });
+  const res = await http.get<ApiResponse<{ products: ProductDetail[]; pagination: Pagination }>>(
+    'products',
+    { params: { category: categoryId, limit: 10, exclude: excludeProductId } }
+  );
   return res.data;
 }

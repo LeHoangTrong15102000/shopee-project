@@ -11,7 +11,9 @@
     "revenue": "Revenue",
     "orderTrend": "Order Trend",
     "userGrowth": "User Growth",
-    "revenueByCategory": "Revenue by Category"
+    "revenueByCategory": "Revenue by Category",
+    "noData": "No data available",
+    "noDataDescription": "There is no data to display for the selected period"
   },
   "tables": {
     "topProductsByRevenue": "Top Products by Revenue",

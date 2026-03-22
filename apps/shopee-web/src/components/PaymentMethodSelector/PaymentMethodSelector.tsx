@@ -23,6 +23,11 @@ function PaymentMethodSelector({ selectedMethodType, onSelect }: PaymentMethodSe
 
   const methods = methodsData || [];
 
+  // Helper function to convert snake_case to camelCase for translation keys
+  const toCamelCase = (str: string) => {
+    return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+  };
+
   if (isLoading) {
     return (
       <div className="animate-pulse space-y-3">
@@ -74,10 +79,10 @@ function PaymentMethodSelector({ selectedMethodType, onSelect }: PaymentMethodSe
                 <PaymentIcon type={method.type} className="h-6 w-6" />
                 <div>
                   <span className="font-medium text-gray-900 dark:text-gray-100">
-                    {t(`method.${method.type}`, { defaultValue: method.name })}
+                    {t(`method.${toCamelCase(method.type)}` as any)}
                   </span>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {t(`method.${method.type}Desc`, { defaultValue: method.description })}
+                    {t(`method.${toCamelCase(method.type)}Desc` as any)}
                   </p>
                 </div>
               </div>

@@ -11,7 +11,9 @@
     "revenue": "Doanh thu",
     "orderTrend": "Xu hướng đơn hàng",
     "userGrowth": "Tăng trưởng người dùng",
-    "revenueByCategory": "Doanh thu theo danh mục"
+    "revenueByCategory": "Doanh thu theo danh mục",
+    "noData": "Không có dữ liệu",
+    "noDataDescription": "Không có dữ liệu để hiển thị cho khoảng thời gian đã chọn"
   },
   "tables": {
     "topProductsByRevenue": "Sản phẩm doanh thu cao nhất",

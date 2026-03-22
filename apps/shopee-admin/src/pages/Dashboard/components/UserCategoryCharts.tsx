@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from 'src/components/ui/chart';
 import { formatCurrency } from 'src/utils/format';
 import { useIsMobile } from 'src/hooks/use-mobile';
+import { EmptyState } from 'src/components/shared/EmptyState';
 
 const COLORS = [
   'hsl(var(--chart-1))',
@@ -44,16 +45,28 @@ export default function UserCategoryCharts({
         <CardHeader>
           <CardTitle>{t('charts.userGrowth')}</CardTitle>
         </CardHeader>
-        <CardContent aria-label={t('charts.userGrowth')}>
-          <ChartContainer config={userChartConfig} className="h-[200px] md:h-[250px]">
-            <BarChart data={userGrowth ?? []}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" fontSize={12} tickLine={false} />
-              <YAxis fontSize={12} tickLine={false} />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Bar dataKey="users" fill="var(--color-users)" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ChartContainer>
+        <CardContent>
+          {!userGrowth || userGrowth.length === 0 ? (
+            <EmptyState
+              title={t('charts.noData')}
+              description={t('charts.noDataDescription')}
+              className="h-[200px] md:h-[250px]"
+            />
+          ) : (
+            <ChartContainer
+              config={userChartConfig}
+              className="h-[200px] md:h-[250px]"
+              aria-label={t('charts.userGrowth')}
+            >
+              <BarChart data={userGrowth}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" fontSize={12} tickLine={false} />
+                <YAxis fontSize={12} tickLine={false} />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar dataKey="users" fill="var(--color-users)" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ChartContainer>
+          )}
         </CardContent>
       </Card>
 
@@ -61,33 +74,39 @@ export default function UserCategoryCharts({
         <CardHeader>
           <CardTitle>{t('charts.revenueByCategory')}</CardTitle>
         </CardHeader>
-        <CardContent
-          className="flex items-center justify-center"
-          aria-label={t('charts.revenueByCategory')}
-        >
-          <ChartContainer
-            config={categoryChartConfig}
-            className={isMobile ? 'h-[200px]' : 'h-[250px]'}
-          >
-            <PieChart>
-              <Pie
-                data={revenueByCategory ?? []}
-                dataKey="revenue"
-                nameKey="category"
-                cx="50%"
-                cy="50%"
-                outerRadius={isMobile ? 60 : 90}
-                label={pieLabel}
-              >
-                {(revenueByCategory ?? []).map((_, i) => (
-                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                ))}
-              </Pie>
-              <ChartTooltip
-                content={<ChartTooltipContent formatter={(v) => formatCurrency(v as number)} />}
-              />
-            </PieChart>
-          </ChartContainer>
+        <CardContent className="flex items-center justify-center">
+          {!revenueByCategory || revenueByCategory.length === 0 ? (
+            <EmptyState
+              title={t('charts.noData')}
+              description={t('charts.noDataDescription')}
+              className={isMobile ? 'h-[200px]' : 'h-[250px]'}
+            />
+          ) : (
+            <ChartContainer
+              config={categoryChartConfig}
+              className={isMobile ? 'h-[200px]' : 'h-[250px]'}
+              aria-label={t('charts.revenueByCategory')}
+            >
+              <PieChart>
+                <Pie
+                  data={revenueByCategory}
+                  dataKey="revenue"
+                  nameKey="category"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={isMobile ? 60 : 90}
+                  label={pieLabel}
+                >
+                  {revenueByCategory.map((_, i) => (
+                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                  ))}
+                </Pie>
+                <ChartTooltip
+                  content={<ChartTooltipContent formatter={(v) => formatCurrency(v as number)} />}
+                />
+              </PieChart>
+            </ChartContainer>
+          )}
         </CardContent>
       </Card>
     </div>

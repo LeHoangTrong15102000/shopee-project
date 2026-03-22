@@ -217,6 +217,12 @@ export interface ChatbotAnalytics {
   satisfaction_rate: number;
 }
 
+export interface ChatbotPerformanceData {
+  date: string;
+  conversations: number;
+  messages: number;
+}
+
 // Import
 export interface ImportResult {
   imported: number;

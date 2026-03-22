@@ -24,7 +24,13 @@
     "totalMessages": "Tổng tin nhắn",
     "avgMessagesPerConv": "TB tin nhắn/cuộc",
     "satisfactionRate": "Tỷ lệ hài lòng",
-    "performanceOverTime": "Hiệu suất Chatbot theo thời gian"
+    "performanceOverTime": "Hiệu suất Chatbot theo thời gian",
+    "conversations": "Cuộc hội thoại",
+    "messages": "Tin nhắn"
+  },
+  "charts": {
+    "noData": "Không có dữ liệu",
+    "noDataDescription": "Không có dữ liệu để hiển thị cho khoảng thời gian đã chọn"
   },
   "error": "Không thể tải phân tích"
 }

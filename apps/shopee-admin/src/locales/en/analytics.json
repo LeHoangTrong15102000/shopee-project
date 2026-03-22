@@ -24,7 +24,13 @@
     "totalMessages": "Total Messages",
     "avgMessagesPerConv": "Avg Messages/Conv",
     "satisfactionRate": "Satisfaction Rate",
-    "performanceOverTime": "Chatbot Performance Over Time"
+    "performanceOverTime": "Chatbot Performance Over Time",
+    "conversations": "Conversations",
+    "messages": "Messages"
+  },
+  "charts": {
+    "noData": "No data available",
+    "noDataDescription": "There is no data to display for the selected period"
   },
   "error": "Failed to load analytics"
 }

@@ -10,6 +10,8 @@ import { PageHeader } from 'src/components/shared/PageHeader';
 import { PeriodSelect } from 'src/components/shared/PeriodSelect';
 import { StatCard } from 'src/components/shared/StatCard';
 import { ErrorState } from 'src/components/shared/ErrorState';
+import { EmptyState } from 'src/components/shared/EmptyState';
+import { ChartSkeleton } from 'src/pages/Dashboard/components/ChartSkeleton';
 import {
   useTopSelling,
   useTopViewed,
@@ -37,7 +39,7 @@ export default function AnalyticsPage() {
   const { data: topRated, isLoading: loadingRated } = useTopRated();
   const { data: byCategory, isLoading: loadingCategory } = useStatsByCategory();
   const { data: chatbot } = useChatbotOverview();
-  const { data: chatbotPerf } = useChatbotPerformance(period);
+  const { data: chatbotPerf, isLoading: loadingChatbotPerf } = useChatbotPerformance(period);
 
   const productCols: ColumnDef<ProductAnalytics>[] = [
     {
@@ -150,7 +152,22 @@ export default function AnalyticsPage() {
                   value={`${((chatbot.satisfaction_rate ?? 0) * 100).toFixed(0)}%`}
                 />
               </div>
-              {Array.isArray(chatbotPerf) && chatbotPerf.length > 0 && (
+              {loadingChatbotPerf ? (
+                <ChartSkeleton columns={1} />
+              ) : !chatbotPerf || chatbotPerf.length === 0 ? (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t('chatbot.performanceOverTime')}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <EmptyState
+                      title={t('charts.noData')}
+                      description={t('charts.noDataDescription')}
+                      className="h-[300px]"
+                    />
+                  </CardContent>
+                </Card>
+              ) : (
                 <Card>
                   <CardHeader>
                     <CardTitle>{t('chatbot.performanceOverTime')}</CardTitle>
@@ -165,6 +182,7 @@ export default function AnalyticsPage() {
                         messages: { label: t('chatbot.messages'), color: 'hsl(var(--chart-2))' },
                       }}
                       className="h-[300px]"
+                      aria-label={t('chatbot.performanceOverTime')}
                     >
                       <LineChart data={chatbotPerf}>
                         <CartesianGrid strokeDasharray="3 3" />

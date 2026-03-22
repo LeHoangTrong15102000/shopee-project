@@ -1,5 +1,10 @@
 import http from 'src/utils/http';
-import type { SuccessResponse, ProductAnalytics, ChatbotAnalytics } from 'src/types';
+import type {
+  SuccessResponse,
+  ProductAnalytics,
+  ChatbotAnalytics,
+  ChatbotPerformanceData,
+} from 'src/types';
 
 interface AnalyticsParams {
   period?: string;
@@ -38,7 +43,9 @@ const analyticsApi = {
     http.get<SuccessResponse<ChatbotAnalytics>>('admin/analytics/chatbot-overview'),
 
   getChatbotPerformance: (params?: { period?: string }) =>
-    http.get<SuccessResponse<unknown>>('admin/analytics/chatbot-performance', { params }),
+    http.get<SuccessResponse<ChatbotPerformanceData[]>>('admin/analytics/chatbot-performance', {
+      params,
+    }),
 };
 
 export default analyticsApi;

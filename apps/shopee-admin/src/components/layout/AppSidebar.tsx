@@ -1,6 +1,6 @@
 import { useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useRef } from 'react';
+import { useRef, useEffect, useCallback, type ComponentType } from 'react';
 import {
   LayoutDashboard,
   Users,
@@ -18,6 +18,7 @@ import {
   Settings,
   FileText,
 } from 'lucide-react';
+import { ROUTES } from 'src/constants/routes';
 import {
   Sidebar,
   SidebarContent,
@@ -36,58 +37,129 @@ import { SHORTCUT_ROUTES } from 'src/hooks/use-keyboard-shortcuts';
 const navSections = [
   {
     labelKey: 'sections.dashboard',
-    items: [{ titleKey: 'menu.overview', href: '/', icon: LayoutDashboard }],
+    items: [{ titleKey: 'menu.overview', href: ROUTES.DASHBOARD, icon: LayoutDashboard }],
   },
   {
     labelKey: 'sections.management',
     items: [
-      { titleKey: 'menu.users', href: '/users', icon: Users },
-      { titleKey: 'menu.products', href: '/products', icon: Package },
-      { titleKey: 'menu.categories', href: '/categories', icon: FolderTree },
-      { titleKey: 'menu.orders', href: '/orders', icon: ShoppingCart },
-      { titleKey: 'menu.vouchers', href: '/vouchers', icon: Ticket },
-      { titleKey: 'menu.reviews', href: '/reviews', icon: Star },
+      { titleKey: 'menu.users', href: ROUTES.USERS, icon: Users },
+      { titleKey: 'menu.products', href: ROUTES.PRODUCTS, icon: Package },
+      { titleKey: 'menu.categories', href: ROUTES.CATEGORIES, icon: FolderTree },
+      { titleKey: 'menu.orders', href: ROUTES.ORDERS, icon: ShoppingCart },
+      { titleKey: 'menu.vouchers', href: ROUTES.VOUCHERS, icon: Ticket },
+      { titleKey: 'menu.reviews', href: ROUTES.REVIEWS, icon: Star },
     ],
   },
   {
     labelKey: 'sections.advanced',
     items: [
-      { titleKey: 'menu.loyalty', href: '/loyalty', icon: Gift },
-      { titleKey: 'menu.inventory', href: '/inventory', icon: Warehouse },
-      { titleKey: 'menu.analytics', href: '/analytics', icon: BarChart3 },
+      { titleKey: 'menu.loyalty', href: ROUTES.LOYALTY, icon: Gift },
+      { titleKey: 'menu.inventory', href: ROUTES.INVENTORY, icon: Warehouse },
+      { titleKey: 'menu.analytics', href: ROUTES.ANALYTICS, icon: BarChart3 },
     ],
   },
   {
     labelKey: 'sections.system',
     items: [
-      { titleKey: 'menu.notifications', href: '/notifications', icon: Bell },
-      { titleKey: 'menu.qa', href: '/qa', icon: HelpCircle },
-      { titleKey: 'menu.import', href: '/import', icon: Upload },
-      { titleKey: 'menu.settings', href: '/settings', icon: Settings },
-      { titleKey: 'menu.activityLog', href: '/activity-log', icon: FileText },
+      { titleKey: 'menu.notifications', href: ROUTES.NOTIFICATIONS, icon: Bell },
+      { titleKey: 'menu.qa', href: ROUTES.QA, icon: HelpCircle },
+      { titleKey: 'menu.import', href: ROUTES.IMPORT, icon: Upload },
+      { titleKey: 'menu.settings', href: ROUTES.SETTINGS, icon: Settings },
+      { titleKey: 'menu.activityLog', href: ROUTES.ACTIVITY_LOG, icon: FileText },
     ],
   },
 ];
 
 const routePrefetchMap: Record<string, () => Promise<unknown>> = {
-  '/': () => import('src/pages/Dashboard/DashboardPage'),
-  '/users': () => import('src/pages/Users/UserListPage'),
-  '/products': () => import('src/pages/Products/ProductListPage'),
-  '/categories': () => import('src/pages/Categories/CategoryListPage'),
-  '/orders': () => import('src/pages/Orders/OrderListPage'),
-  '/vouchers': () => import('src/pages/Vouchers/VoucherListPage'),
-  '/reviews': () => import('src/pages/Reviews/ReviewListPage'),
-  '/loyalty': () => import('src/pages/Loyalty/LoyaltyPage'),
-  '/inventory': () => import('src/pages/Inventory/InventoryPage'),
-  '/analytics': () => import('src/pages/Analytics/AnalyticsPage'),
-  '/notifications': () => import('src/pages/Notifications/NotificationListPage'),
-  '/qa': () => import('src/pages/QA/QAPage'),
-  '/import': () => import('src/pages/Import/ImportPage'),
-  '/settings': () => import('src/pages/Settings/SettingsPage'),
-  '/activity-log': () => import('src/pages/ActivityLog/ActivityLogPage'),
+  [ROUTES.DASHBOARD]: () => import('src/pages/Dashboard/DashboardPage'),
+  [ROUTES.USERS]: () => import('src/pages/Users/UserListPage'),
+  [ROUTES.PRODUCTS]: () => import('src/pages/Products/ProductListPage'),
+  [ROUTES.CATEGORIES]: () => import('src/pages/Categories/CategoryListPage'),
+  [ROUTES.ORDERS]: () => import('src/pages/Orders/OrderListPage'),
+  [ROUTES.VOUCHERS]: () => import('src/pages/Vouchers/VoucherListPage'),
+  [ROUTES.REVIEWS]: () => import('src/pages/Reviews/ReviewListPage'),
+  [ROUTES.LOYALTY]: () => import('src/pages/Loyalty/LoyaltyPage'),
+  [ROUTES.INVENTORY]: () => import('src/pages/Inventory/InventoryPage'),
+  [ROUTES.ANALYTICS]: () => import('src/pages/Analytics/AnalyticsPage'),
+  [ROUTES.NOTIFICATIONS]: () => import('src/pages/Notifications/NotificationListPage'),
+  [ROUTES.QA]: () => import('src/pages/QA/QAPage'),
+  [ROUTES.IMPORT]: () => import('src/pages/Import/ImportPage'),
+  [ROUTES.SETTINGS]: () => import('src/pages/Settings/SettingsPage'),
+  [ROUTES.ACTIVITY_LOG]: () => import('src/pages/ActivityLog/ActivityLogPage'),
 };
 
 const prefetchedRoutes = new Set<string>();
+
+const BRAND_COLOR = 'oklch(0.642 0.203 33)';
+const STROKE_DRAW_DURATION = 800;
+
+type StrokableElement = SVGPathElement | SVGLineElement | SVGCircleElement | SVGRectElement | SVGEllipseElement | SVGPolylineElement | SVGPolygonElement;
+
+function isStrokable(el: SVGElement): el is StrokableElement {
+  return 'getTotalLength' in el && typeof (el as StrokableElement).getTotalLength === 'function';
+}
+
+function AnimatedIcon({
+  icon: Icon,
+  isActive,
+  className,
+}: {
+  icon: ComponentType<{ className?: string; ref?: React.Ref<SVGSVGElement> }>;
+  isActive: boolean;
+  className?: string;
+}) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const hasAnimated = useRef(false);
+
+  const animate = useCallback(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+
+    const children = svg.querySelectorAll<SVGElement>('path, line, circle, rect, ellipse, polyline, polygon');
+    if (children.length === 0) return;
+
+    children.forEach((child) => {
+      if (!isStrokable(child)) return;
+      const length = child.getTotalLength();
+
+      child.style.stroke = BRAND_COLOR;
+      child.style.strokeDasharray = `${length}`;
+      child.style.strokeDashoffset = `${length}`;
+      child.style.transition = 'none';
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          child.style.transition = `stroke-dashoffset ${STROKE_DRAW_DURATION}ms ease-out`;
+          child.style.strokeDashoffset = '0';
+        });
+      });
+    });
+
+    hasAnimated.current = true;
+  }, []);
+
+  useEffect(() => {
+    if (isActive && !hasAnimated.current) {
+      const frame = requestAnimationFrame(animate);
+      return () => cancelAnimationFrame(frame);
+    }
+    if (!isActive) {
+      hasAnimated.current = false;
+      const svg = svgRef.current;
+      if (svg) {
+        const children = svg.querySelectorAll<SVGElement>('path, line, circle, rect, ellipse, polyline, polygon');
+        children.forEach((child) => {
+          child.style.stroke = '';
+          child.style.strokeDasharray = '';
+          child.style.strokeDashoffset = '';
+          child.style.transition = '';
+        });
+      }
+    }
+  }, [isActive, animate]);
+
+  return <Icon ref={svgRef} className={className} />;
+}
 
 export function AppSidebar() {
   const location = useLocation();
@@ -130,10 +202,10 @@ export function AppSidebar() {
                   {section.items.map((item) => {
                     const title = t(item.titleKey);
                     const isActive =
-                      item.href === '/'
-                        ? location.pathname === '/'
+                      item.href === ROUTES.DASHBOARD
+                        ? location.pathname === ROUTES.DASHBOARD
                         : location.pathname.startsWith(item.href);
-                    const idx = SHORTCUT_ROUTES.indexOf(item.href);
+                    const idx = (SHORTCUT_ROUTES as readonly string[]).indexOf(item.href);
                     const hint = idx !== -1 ? `⌥${idx + 1}` : null;
                     return (
                       <SidebarMenuItem
@@ -146,7 +218,11 @@ export function AppSidebar() {
                           isActive={isActive}
                           tooltip={title}
                         >
-                          <item.icon className="size-4" />
+                          <AnimatedIcon
+                            icon={item.icon}
+                            isActive={isActive}
+                            className="size-4"
+                          />
                           <span>{title}</span>
                           {hint && (
                             <kbd className="ml-auto text-[10px] text-muted-foreground opacity-60 group-data-[collapsible=icon]:hidden">

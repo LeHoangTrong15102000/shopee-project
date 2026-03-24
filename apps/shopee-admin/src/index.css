@@ -23,7 +23,7 @@
   --destructive: oklch(0.577 0.245 16);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.642 0.203 33);
+  --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.642 0.203 33);
   --chart-2: oklch(0.623 0.214 259.815);
   --chart-3: oklch(0.696 0.165 163);
@@ -34,7 +34,7 @@
   --sidebar-foreground: oklch(0.40 0 0);
   --sidebar-primary: oklch(0.575 0.205 33);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.977 0.011 37);
+  --sidebar-accent: oklch(0.96 0 0);
   --sidebar-accent-foreground: oklch(0.575 0.205 33);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.642 0.203 33);
@@ -58,7 +58,7 @@
   --destructive: oklch(0.704 0.191 16);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.642 0.203 33);
+  --ring: oklch(0.556 0 0);
   --chart-1: oklch(0.642 0.203 33);
   --chart-2: oklch(0.623 0.214 259.815);
   --chart-3: oklch(0.696 0.165 163);
@@ -68,7 +68,7 @@
   --sidebar-foreground: oklch(0.708 0 0);
   --sidebar-primary: oklch(0.642 0.203 33);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.266 0.076 36);
+  --sidebar-accent: oklch(0.25 0 0);
   --sidebar-accent-foreground: oklch(0.748 0.140 35);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.642 0.203 33);
@@ -118,7 +118,7 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring;
+    @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
@@ -137,6 +137,7 @@
     cursor: pointer;
   }
 }
+
 
 @utility no-scrollbar {
   -ms-overflow-style: none;

@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate, useLocation, type RouteObject } from 'react-router-dom';
 import { useAuthStore } from 'src/stores/auth.store';
 import { LoadingState } from 'src/components/shared/LoadingState';
+import { ROUTES } from 'src/constants/routes';
 
 const AdminLayout = lazy(() => import('src/components/layout/AdminLayout'));
 const LoginPage = lazy(() => import('src/pages/Login/LoginPage'));
@@ -32,7 +33,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const location = useLocation();
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    return <Navigate to={ROUTES.LOGIN} state={{ from: location.pathname }} replace />;
   }
   return <>{children}</>;
 }
@@ -222,7 +223,7 @@ const protectedRoutes: RouteObject[] = [
 
 export const router = createBrowserRouter([
   {
-    path: '/login',
+    path: ROUTES.LOGIN,
     element: (
       <SuspenseWrapper>
         <LoginPage />
@@ -230,7 +231,7 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: '/',
+    path: ROUTES.DASHBOARD,
     element: (
       <ProtectedRoute>
         <SuspenseWrapper>

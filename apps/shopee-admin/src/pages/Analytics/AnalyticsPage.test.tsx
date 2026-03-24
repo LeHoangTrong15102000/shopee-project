@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import * as chartUI from 'src/components/ui/chart';
 import { renderWithProviders } from 'src/test-utils';
 import AnalyticsPage from './AnalyticsPage';
 
@@ -19,6 +20,15 @@ vi.mock('recharts', () => ({
   YAxis: () => null,
   Tooltip: () => null,
   Legend: () => null,
+}));
+
+vi.mock('src/components/ui/chart', () => ({
+  ChartContainer: vi.fn(({ children }: { children: React.ReactNode }) => <div>{children}</div>),
+  ChartTooltip: () => null,
+  ChartTooltipContent: () => null,
+  ChartStyle: () => null,
+  ChartLegend: () => null,
+  ChartLegendContent: () => null,
 }));
 
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
@@ -70,5 +80,31 @@ describe('AnalyticsPage', () => {
       expect(screen.getByText('chatbot.totalConversations')).toBeInTheDocument();
     });
     expect(screen.getByText('chatbot.totalMessages')).toBeInTheDocument();
+  });
+
+  // Regression test: chatbot chart config must use var(--color-chart-N), not hsl() wrappers
+  it('uses CSS variable syntax in chatbot chart config colors', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<AnalyticsPage />);
+    await waitFor(() => {
+      expect(screen.getByRole('tablist')).toBeInTheDocument();
+    });
+    const chatbotTab = screen.getByRole('tab', { name: /tabs.chatbot/i });
+    await user.click(chatbotTab);
+    await waitFor(() => {
+      const ChartContainerMock = vi.mocked(chartUI.ChartContainer);
+      expect(ChartContainerMock).toHaveBeenCalled();
+    });
+    const ChartContainerMock = vi.mocked(chartUI.ChartContainer);
+    const colorValues = ChartContainerMock.mock.calls.flatMap(([props]: any[]) =>
+      Object.values(props.config as Record<string, { color?: string }>)
+        .map((c) => c?.color)
+        .filter(Boolean),
+    );
+    expect(colorValues.length).toBeGreaterThan(0);
+    colorValues.forEach((color) => {
+      expect(color).toMatch(/^var\(--color-chart-\d\)$/);
+      expect(color).not.toContain('hsl(');
+    });
   });
 });

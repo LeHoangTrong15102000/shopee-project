@@ -1,16 +1,12 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type ColumnDef } from '@tanstack/react-table';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'src/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from 'src/components/ui/chart';
 import { DataTable } from 'src/components/shared/DataTable';
 import { PageHeader } from 'src/components/shared/PageHeader';
 import { PeriodSelect } from 'src/components/shared/PeriodSelect';
 import { StatCard } from 'src/components/shared/StatCard';
 import { ErrorState } from 'src/components/shared/ErrorState';
-import { EmptyState } from 'src/components/shared/EmptyState';
 import { ChartSkeleton } from 'src/pages/Dashboard/components/ChartSkeleton';
 import {
   useTopSelling,
@@ -23,23 +19,34 @@ import {
 import { formatCurrency } from 'src/utils/format';
 import type { ProductAnalytics } from 'src/types';
 
+const ChatbotChart = lazy(() => import('./ChatbotChart'));
+
 export default function AnalyticsPage() {
   const { t } = useTranslation('analytics');
   const [period, setPeriod] = useState('30d');
+  const [activeTab, setActiveTab] = useState('top-selling');
 
   const {
     data: topSelling,
     isLoading: loadingSelling,
     isError: sellingError,
     refetch: refetchSelling,
-  } = useTopSelling(period);
+  } = useTopSelling(period, { enabled: activeTab === 'top-selling' });
   // Note: topViewed and topRated backend endpoints return all-time data (no period filter).
   // Period is excluded from their query keys to avoid unnecessary refetches.
-  const { data: topViewed, isLoading: loadingViewed } = useTopViewed();
-  const { data: topRated, isLoading: loadingRated } = useTopRated();
-  const { data: byCategory, isLoading: loadingCategory } = useStatsByCategory();
-  const { data: chatbot } = useChatbotOverview();
-  const { data: chatbotPerf, isLoading: loadingChatbotPerf } = useChatbotPerformance(period);
+  const { data: topViewed, isLoading: loadingViewed } = useTopViewed({
+    enabled: activeTab === 'top-viewed',
+  });
+  const { data: topRated, isLoading: loadingRated } = useTopRated({
+    enabled: activeTab === 'top-rated',
+  });
+  const { data: byCategory, isLoading: loadingCategory } = useStatsByCategory({
+    enabled: activeTab === 'by-category',
+  });
+  const { data: chatbot } = useChatbotOverview({ enabled: activeTab === 'chatbot' });
+  const { data: chatbotPerf, isLoading: loadingChatbotPerf } = useChatbotPerformance(period, {
+    enabled: activeTab === 'chatbot',
+  });
 
   const productCols: ColumnDef<ProductAnalytics>[] = [
     {
@@ -93,7 +100,7 @@ export default function AnalyticsPage() {
         description={t('description')}
         actions={<PeriodSelect value={period} onChange={setPeriod} />}
       />
-      <Tabs defaultValue="top-selling">
+      <Tabs defaultValue="top-selling" onValueChange={(v) => setActiveTab(v as string)}>
         <TabsList className="w-full justify-start overflow-x-auto flex-nowrap scroll-p-1">
           <TabsTrigger value="top-selling">{t('tabs.topSelling')}</TabsTrigger>
           <TabsTrigger value="top-viewed">{t('tabs.topViewed')}</TabsTrigger>
@@ -152,62 +159,9 @@ export default function AnalyticsPage() {
                   value={`${((chatbot.satisfaction_rate ?? 0) * 100).toFixed(0)}%`}
                 />
               </div>
-              {loadingChatbotPerf ? (
-                <ChartSkeleton columns={1} />
-              ) : !chatbotPerf || chatbotPerf.length === 0 ? (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{t('chatbot.performanceOverTime')}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <EmptyState
-                      title={t('charts.noData')}
-                      description={t('charts.noDataDescription')}
-                      className="h-[300px]"
-                    />
-                  </CardContent>
-                </Card>
-              ) : (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{t('chatbot.performanceOverTime')}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ChartContainer
-                      config={{
-                        conversations: {
-                          label: t('chatbot.conversations'),
-                          color: 'hsl(var(--chart-1))',
-                        },
-                        messages: { label: t('chatbot.messages'), color: 'hsl(var(--chart-2))' },
-                      }}
-                      className="h-[300px]"
-                      aria-label={t('chatbot.performanceOverTime')}
-                    >
-                      <LineChart data={chatbotPerf}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                        <YAxis tick={{ fontSize: 12 }} />
-                        <ChartTooltip content={<ChartTooltipContent />} />
-                        <Line
-                          type="monotone"
-                          dataKey="conversations"
-                          stroke="var(--color-conversations)"
-                          strokeWidth={2}
-                          dot={false}
-                        />
-                        <Line
-                          type="monotone"
-                          dataKey="messages"
-                          stroke="var(--color-messages)"
-                          strokeWidth={2}
-                          dot={false}
-                        />
-                      </LineChart>
-                    </ChartContainer>
-                  </CardContent>
-                </Card>
-              )}
+              <Suspense fallback={<ChartSkeleton columns={1} />}>
+                <ChatbotChart data={chatbotPerf} isLoading={loadingChatbotPerf} />
+              </Suspense>
             </div>
           )}
         </TabsContent>

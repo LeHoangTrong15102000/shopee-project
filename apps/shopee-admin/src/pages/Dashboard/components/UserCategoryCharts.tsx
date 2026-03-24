@@ -7,11 +7,11 @@ import { useIsMobile } from 'src/hooks/use-mobile';
 import { EmptyState } from 'src/components/shared/EmptyState';
 
 const COLORS = [
-  'hsl(var(--chart-1))',
-  'hsl(var(--chart-2))',
-  'hsl(var(--chart-3))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--chart-5))',
+  'var(--color-chart-1)',
+  'var(--color-chart-2)',
+  'var(--color-chart-3)',
+  'var(--color-chart-4)',
+  'var(--color-chart-5)',
 ];
 
 interface UserCategoryChartsProps {
@@ -26,7 +26,7 @@ export default function UserCategoryCharts({
   const { t } = useTranslation('dashboard');
   const isMobile = useIsMobile();
 
-  const userChartConfig = { users: { label: t('charts.userGrowth'), color: 'var(--chart-3)' } };
+  const userChartConfig = { users: { label: t('charts.userGrowth'), color: 'var(--color-chart-3)' } };
 
   const categoryChartConfig = (revenueByCategory ?? []).reduce(
     (acc, item, i) => {

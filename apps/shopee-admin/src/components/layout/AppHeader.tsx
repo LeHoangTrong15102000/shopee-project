@@ -27,7 +27,9 @@ import { locales, changeLanguage } from 'src/i18n/i18n';
 function FlagGB({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg">
-      <clipPath id="gb"><path d="M0 0v30h60V0z" /></clipPath>
+      <clipPath id="gb">
+        <path d="M0 0v30h60V0z" />
+      </clipPath>
       <g clipPath="url(#gb)">
         <path fill="#012169" d="M0 0v30h60V0z" />
         <path stroke="#fff" strokeWidth="6" d="M0 0l60 30m0-30L0 30" />

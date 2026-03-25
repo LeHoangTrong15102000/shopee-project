@@ -26,9 +26,7 @@ const sampleData = [
 
 describe('ChatbotChart', () => {
   it('returns null when isLoading is true', () => {
-    const { container } = renderWithProviders(
-      <ChatbotChart data={sampleData} isLoading={true} />,
-    );
+    const { container } = renderWithProviders(<ChatbotChart data={sampleData} isLoading={true} />);
     expect(container.firstChild).toBeNull();
   });
 

@@ -12,8 +12,12 @@ interface RevenueOrderChartsProps {
 export default function RevenueOrderCharts({ revenue, orderTrend }: RevenueOrderChartsProps) {
   const { t } = useTranslation('dashboard');
 
-  const revenueChartConfig = { revenue: { label: t('charts.revenue'), color: 'var(--color-chart-1)' } };
-  const orderChartConfig = { orders: { label: t('charts.orderTrend'), color: 'var(--color-chart-2)' } };
+  const revenueChartConfig = {
+    revenue: { label: t('charts.revenue'), color: 'var(--color-chart-1)' },
+  };
+  const orderChartConfig = {
+    orders: { label: t('charts.orderTrend'), color: 'var(--color-chart-2)' },
+  };
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">

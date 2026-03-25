@@ -28,7 +28,7 @@ describe('Http class', () => {
   describe('constructor', () => {
     it('creates axios instance with correct baseURL', () => {
       const httpInstance = new Http();
-      expect(httpInstance.instance.defaults.baseURL).toBe('http://localhost:3000/');
+      expect(httpInstance.instance.defaults.baseURL).toBe('https://api-ecom.duthanhduoc.com/');
     });
 
     it('sets default Content-Type header', () => {

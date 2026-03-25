@@ -26,7 +26,9 @@ export default function UserCategoryCharts({
   const { t } = useTranslation('dashboard');
   const isMobile = useIsMobile();
 
-  const userChartConfig = { users: { label: t('charts.userGrowth'), color: 'var(--color-chart-3)' } };
+  const userChartConfig = {
+    users: { label: t('charts.userGrowth'), color: 'var(--color-chart-3)' },
+  };
 
   const categoryChartConfig = (revenueByCategory ?? []).reduce(
     (acc, item, i) => {

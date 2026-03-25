@@ -27,7 +27,7 @@ import {
   importStats,
 } from './data';
 
-const BASE = 'http://localhost:3000';
+const BASE = 'https://api-ecom.duthanhduoc.com';
 
 // Wrap data in SuccessResponse shape
 const ok = <T>(data: T) => HttpResponse.json({ message: 'Success', data });
@@ -47,13 +47,31 @@ function paginate<T>(items: T[], page = 1, limit = 10) {
 }
 
 // ─── Auth ──────────────────────────────────────────────────
+const MOCK_CREDENTIALS = { email: 'admin@shopee.com', password: 'admin123' };
+const MOCK_ADMIN_USER = {
+  _id: 'admin-001',
+  email: 'admin@shopee.com',
+  name: 'Admin Shopee',
+  roles: ['Admin'] as string[],
+  avatar: '',
+  phone: '0900000000',
+  address: '',
+  date_of_birth: '1990-01-01',
+  createdAt: '2024-01-01T00:00:00.000Z',
+  updatedAt: '2024-01-01T00:00:00.000Z',
+};
+
 const authHandlers = [
-  http.post(`${BASE}/login`, async () => {
+  http.post(`${BASE}/login`, async ({ request }) => {
     await delay(300);
+    const body = (await request.json()) as { email: string; password: string };
+    if (body.email !== MOCK_CREDENTIALS.email || body.password !== MOCK_CREDENTIALS.password) {
+      return HttpResponse.json({ message: 'Email hoặc mật khẩu không đúng' }, { status: 401 });
+    }
     return ok({
       access_token: 'mock-access-token-xyz',
       refresh_token: 'mock-refresh-token-xyz',
-      user: users[0],
+      user: MOCK_ADMIN_USER,
     });
   }),
   http.post(`${BASE}/logout`, () => ok(null)),

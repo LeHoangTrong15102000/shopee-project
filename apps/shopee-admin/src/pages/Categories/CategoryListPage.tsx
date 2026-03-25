@@ -113,7 +113,7 @@ export default function CategoryListPage() {
           <DialogHeader>
             <DialogTitle>{t('actions.createCategory')}</DialogTitle>
           </DialogHeader>
-          <div>
+          <div className="space-y-1.5">
             <Label htmlFor="create-cat-name">{t('form.name')}</Label>
             <Input id="create-cat-name" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
@@ -134,7 +134,7 @@ export default function CategoryListPage() {
           <DialogHeader>
             <DialogTitle>{t('actions.editCategory')}</DialogTitle>
           </DialogHeader>
-          <div>
+          <div className="space-y-1.5">
             <Label htmlFor="edit-cat-name">{t('form.name')}</Label>
             <Input id="edit-cat-name" value={name} onChange={(e) => setName(e.target.value)} />
           </div>

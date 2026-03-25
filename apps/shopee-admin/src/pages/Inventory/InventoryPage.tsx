@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type ColumnDef } from '@tanstack/react-table';
-import { Trash2 } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { Checkbox } from 'src/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'src/components/ui/tabs';
 import {
@@ -131,6 +131,21 @@ export default function InventoryPage() {
     },
   ];
 
+  const bulkActions =
+    selected.length > 0 ? (
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => {
+          setBulkOpen(true);
+          setBulkQty(0);
+        }}
+      >
+        <RefreshCw className="mr-2 size-4" />
+        {t('actions.bulkUpdate')} ({selected.length})
+      </Button>
+    ) : undefined;
+
   return (
     <div className="space-y-6">
       <PageHeader title={t('title')} description={t('description')} />
@@ -153,21 +168,7 @@ export default function InventoryPage() {
             searchPlaceholder={t('search')}
             enableRowSelection
             onRowSelectionChange={setSelected}
-            bulkActions={
-              selected.length > 0 ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setBulkOpen(true);
-                    setBulkQty(0);
-                  }}
-                >
-                  <Trash2 className="mr-2 size-4" />
-                  {t('actions.bulkUpdate')} ({selected.length})
-                </Button>
-              ) : undefined
-            }
+            bulkActions={bulkActions}
           />
         </TabsContent>
         <TabsContent value="out-of-stock">
@@ -180,21 +181,7 @@ export default function InventoryPage() {
             searchPlaceholder={t('search')}
             enableRowSelection
             onRowSelectionChange={setSelected}
-            bulkActions={
-              selected.length > 0 ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setBulkOpen(true);
-                    setBulkQty(0);
-                  }}
-                >
-                  <Trash2 className="mr-2 size-4" />
-                  {t('actions.bulkUpdate')} ({selected.length})
-                </Button>
-              ) : undefined
-            }
+            bulkActions={bulkActions}
           />
         </TabsContent>
       </Tabs>
@@ -206,7 +193,7 @@ export default function InventoryPage() {
               {t('actions.updateStock')}: {updateProduct?.name}
             </DialogTitle>
           </DialogHeader>
-          <div>
+          <div className="space-y-1.5">
             <Label htmlFor="inv-qty">{t('actions.newQuantity')}</Label>
             <Input
               id="inv-qty"
@@ -236,7 +223,7 @@ export default function InventoryPage() {
               {t('actions.bulkUpdate')} ({selected.length} products)
             </DialogTitle>
           </DialogHeader>
-          <div>
+          <div className="space-y-1.5">
             <Label htmlFor="inv-bulk-qty">{t('actions.setQuantity')}</Label>
             <Input
               id="inv-bulk-qty"

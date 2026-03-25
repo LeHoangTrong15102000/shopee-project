@@ -16,6 +16,7 @@
   "success": "Đăng nhập thành công",
   "dev": {
     "loginSuccess": "Đăng nhập dev thành công",
-    "loginButton": "Đăng nhập Dev (bỏ qua API)"
+    "loginButton": "Đăng nhập Dev (bỏ qua API)",
+    "credentialHint": "Tài khoản mock: admin@shopee.com / admin123"
   }
 }

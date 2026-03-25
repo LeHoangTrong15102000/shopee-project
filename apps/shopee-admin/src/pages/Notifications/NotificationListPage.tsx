@@ -170,7 +170,7 @@ export default function NotificationListPage() {
       />
 
       <Dialog open={!!createType} onOpenChange={(o) => !o && setCreateType(null)}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
               {createType === 'broadcast'
@@ -178,9 +178,9 @@ export default function NotificationListPage() {
                 : t('form.targetedNotification')}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {createType === 'broadcast' && (
-              <div>
+              <div className="space-y-1.5">
                 <Label htmlFor="notif-template">{t('form.template')}</Label>
                 <Select
                   value={selectedTemplate}
@@ -214,7 +214,7 @@ export default function NotificationListPage() {
               </div>
             )}
             {createType === 'targeted' && (
-              <div>
+              <div className="space-y-1.5">
                 <Label htmlFor="notif-user-id">{t('form.userId')}</Label>
                 <Input
                   id="notif-user-id"
@@ -223,7 +223,7 @@ export default function NotificationListPage() {
                 />
               </div>
             )}
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="notif-title">{t('form.title')}</Label>
               <Input
                 id="notif-title"
@@ -231,7 +231,7 @@ export default function NotificationListPage() {
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="notif-message">{t('form.message')}</Label>
               <Textarea
                 id="notif-message"

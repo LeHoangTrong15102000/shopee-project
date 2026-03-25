@@ -176,12 +176,12 @@ export default function UserListPage() {
 
       {/* Create Dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{t('actions.createUser')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="create-user-name">{t('form.name')}</Label>
               <Input
                 id="create-user-name"
@@ -189,7 +189,7 @@ export default function UserListPage() {
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="create-user-email">{t('form.email')}</Label>
               <Input
                 id="create-user-email"
@@ -198,7 +198,7 @@ export default function UserListPage() {
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="create-user-password">{t('form.password')}</Label>
               <Input
                 id="create-user-password"
@@ -207,7 +207,7 @@ export default function UserListPage() {
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="create-user-role">{t('form.role')}</Label>
               <Input
                 id="create-user-role"
@@ -237,12 +237,12 @@ export default function UserListPage() {
 
       {/* Edit Dialog */}
       <Dialog open={!!editUser} onOpenChange={(o) => !o && setEditUser(null)}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{t('actions.editUser')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="edit-user-name">{t('form.name')}</Label>
               <Input
                 id="edit-user-name"
@@ -250,7 +250,7 @@ export default function UserListPage() {
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="edit-user-email">{t('form.email')}</Label>
               <Input
                 id="edit-user-email"
@@ -259,7 +259,7 @@ export default function UserListPage() {
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="edit-user-role">{t('form.role')}</Label>
               <Input
                 id="edit-user-role"

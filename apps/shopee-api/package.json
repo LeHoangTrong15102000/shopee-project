@@ -21,7 +21,8 @@
     "frontend-fix-complete": "npx ts-node -r tsconfig-paths/register scripts/frontend-fix-complete.ts",
     "safe-import": "pnpm run backup-data && pnpm run import-data",
     "test-chatbot": "npx ts-node -r tsconfig-paths/register scripts/test-chatbot.ts",
-    "chatbot-health": "curl -s http://localhost:4000/analytics/health | json_pp"
+    "chatbot-health": "curl -s http://localhost:4000/analytics/health | json_pp",
+    "seed-users": "npx ts-node -r tsconfig-paths/register scripts/seed-users.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.22",

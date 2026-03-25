@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Moon, Sun, LogOut, Settings, Globe, Check } from 'lucide-react';
+import { Moon, Sun, LogOut, Settings, Check } from 'lucide-react';
 import { Button } from 'src/components/ui/button';
 import { SidebarTrigger } from 'src/components/ui/sidebar';
 import { Separator } from 'src/components/ui/separator';
@@ -23,6 +23,38 @@ import { Avatar, AvatarFallback } from 'src/components/ui/avatar';
 import { useAuthStore } from 'src/stores/auth.store';
 import { useThemeStore } from 'src/stores/theme.store';
 import { locales, changeLanguage } from 'src/i18n/i18n';
+
+function FlagGB({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg">
+      <clipPath id="gb"><path d="M0 0v30h60V0z" /></clipPath>
+      <g clipPath="url(#gb)">
+        <path fill="#012169" d="M0 0v30h60V0z" />
+        <path stroke="#fff" strokeWidth="6" d="M0 0l60 30m0-30L0 30" />
+        <path stroke="#C8102E" strokeWidth="4" d="M0 0l60 30m0-30L0 30" clipPath="url(#gb)" />
+        <path stroke="#fff" strokeWidth="10" d="M30 0v30M0 15h60" />
+        <path stroke="#C8102E" strokeWidth="6" d="M30 0v30M0 15h60" />
+      </g>
+    </svg>
+  );
+}
+
+function FlagVN({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+      <rect fill="#da251d" width="30" height="20" />
+      <polygon
+        fill="#ff0"
+        points="15,4 16.35,8.15 20.71,8.15 17.18,10.71 18.53,14.85 15,12.29 11.47,14.85 12.82,10.71 9.29,8.15 13.65,8.15"
+      />
+    </svg>
+  );
+}
+
+const languageFlags: Record<string, React.ComponentType<{ className?: string }>> = {
+  en: FlagGB,
+  vi: FlagVN,
+};
 
 const routeLabelKeys: Record<string, string> = {
   '': 'menu.overview',
@@ -114,19 +146,29 @@ export function AppHeader() {
               />
             }
           >
-            <Globe className="size-4" />
+            {(() => {
+              const CurrentFlag = languageFlags[i18n.language];
+              return CurrentFlag ? (
+                <CurrentFlag className="size-6 shrink-0 rounded-sm" />
+              ) : (
+                <span className="size-6" />
+              );
+            })()}
             <span className="hidden sm:inline text-xs">
               {locales[i18n.language as keyof typeof locales] ?? i18n.language}
             </span>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {(Object.entries(locales) as [string, string][]).map(([code, label]) => (
-              <DropdownMenuItem key={code} onClick={() => changeLanguage(code)}>
-                {i18n.language === code && <Check className="mr-2 size-4" />}
-                {i18n.language !== code && <span className="mr-2 size-4" />}
-                {label}
-              </DropdownMenuItem>
-            ))}
+          <DropdownMenuContent align="end" className="min-w-[160px]">
+            {(Object.entries(locales) as [string, string][]).map(([code, label]) => {
+              const Flag = languageFlags[code];
+              return (
+                <DropdownMenuItem key={code} onClick={() => changeLanguage(code)} className="gap-2">
+                  {Flag && <Flag className="size-6 shrink-0 rounded-sm" />}
+                  <span className="flex-1">{label}</span>
+                  {i18n.language === code && <Check className="size-4 shrink-0" />}
+                </DropdownMenuItem>
+              );
+            })}
           </DropdownMenuContent>
         </DropdownMenu>
 

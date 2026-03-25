@@ -203,12 +203,12 @@ export default function LoyaltyPage() {
       </Tabs>
 
       <Dialog open={rewardDialog} onOpenChange={setRewardDialog}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{t('rewards.createReward')}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
-            <div>
+          <div className="space-y-4">
+            <div className="space-y-1.5">
               <Label htmlFor="create-reward-name">{t('rewards.name')}</Label>
               <Input
                 id="create-reward-name"
@@ -216,7 +216,7 @@ export default function LoyaltyPage() {
                 onChange={(e) => setRewardForm({ ...rewardForm, name: e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="create-reward-desc">{t('rewards.description')}</Label>
               <Textarea
                 id="create-reward-desc"
@@ -224,7 +224,7 @@ export default function LoyaltyPage() {
                 onChange={(e) => setRewardForm({ ...rewardForm, description: e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="create-reward-points">{t('rewards.pointsRequired')}</Label>
               <Input
                 id="create-reward-points"
@@ -246,12 +246,12 @@ export default function LoyaltyPage() {
       </Dialog>
 
       <Dialog open={!!editReward} onOpenChange={(o) => !o && setEditReward(null)}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{t('rewards.editReward')}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
-            <div>
+          <div className="space-y-4">
+            <div className="space-y-1.5">
               <Label htmlFor="edit-reward-name">{t('rewards.name')}</Label>
               <Input
                 id="edit-reward-name"
@@ -259,7 +259,7 @@ export default function LoyaltyPage() {
                 onChange={(e) => setRewardForm({ ...rewardForm, name: e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="edit-reward-desc">{t('rewards.description')}</Label>
               <Textarea
                 id="edit-reward-desc"
@@ -267,7 +267,7 @@ export default function LoyaltyPage() {
                 onChange={(e) => setRewardForm({ ...rewardForm, description: e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="edit-reward-points">{t('rewards.pointsRequired')}</Label>
               <Input
                 id="edit-reward-points"
@@ -295,8 +295,8 @@ export default function LoyaltyPage() {
           <DialogHeader>
             <DialogTitle>{t('actions.adjustPoints')}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
-            <div>
+          <div className="space-y-4">
+            <div className="space-y-1.5">
               <Label htmlFor="adjust-user-id">{t('actions.userId')}</Label>
               <Input
                 id="adjust-user-id"
@@ -304,7 +304,7 @@ export default function LoyaltyPage() {
                 onChange={(e) => setAdjustForm({ ...adjustForm, user_id: e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="adjust-points">{t('actions.pointsAmount')}</Label>
               <Input
                 id="adjust-points"
@@ -313,7 +313,7 @@ export default function LoyaltyPage() {
                 onChange={(e) => setAdjustForm({ ...adjustForm, points: +e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="adjust-desc">{t('rewards.description')}</Label>
               <Input
                 id="adjust-desc"

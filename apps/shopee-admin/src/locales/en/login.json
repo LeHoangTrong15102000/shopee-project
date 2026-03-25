@@ -16,6 +16,7 @@
   "success": "Login successful",
   "dev": {
     "loginSuccess": "Dev login successful",
-    "loginButton": "Dev Login (bypass API)"
+    "loginButton": "Dev Login (bypass API)",
+    "credentialHint": "Mock credentials: admin@shopee.com / admin123"
   }
 }

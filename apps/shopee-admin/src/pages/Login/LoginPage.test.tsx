@@ -55,7 +55,7 @@ describe('LoginPage', () => {
   it('successful login - navigates to dashboard', async () => {
     const { user } = renderWithProviders(<LoginPage />);
     await user.type(screen.getByLabelText('form.email'), 'admin@shopee.com');
-    await user.type(screen.getByLabelText('form.password'), 'password123');
+    await user.type(screen.getByLabelText('form.password'), 'admin123');
     await user.click(screen.getByRole('button', { name: /form.signIn/i }));
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/dashboard', { replace: true });

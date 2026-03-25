@@ -139,14 +139,19 @@ export default function LoginPage() {
               {t('form.signIn')}
             </Button>
             {import.meta.env.DEV && (
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full border-dashed border-yellow-500 text-yellow-500 hover:bg-yellow-500/10 hover:text-yellow-400"
-                onClick={handleDevLogin}
-              >
-                {t('dev.loginButton')}
-              </Button>
+              <div className="space-y-2">
+                <p className="text-center text-xs text-muted-foreground">
+                  {t('dev.credentialHint')}
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full border-dashed border-yellow-500 text-yellow-500 hover:bg-yellow-500/10 hover:text-yellow-400"
+                  onClick={handleDevLogin}
+                >
+                  {t('dev.loginButton')}
+                </Button>
+              </div>
             )}
           </form>
         </CardContent>

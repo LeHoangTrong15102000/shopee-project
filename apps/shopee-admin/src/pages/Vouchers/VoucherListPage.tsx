@@ -185,12 +185,12 @@ export default function VoucherListPage() {
       />
 
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{t('actions.createVoucher')}</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
               <Label htmlFor="create-v-code">{t('form.code')}</Label>
               <Input
                 id="create-v-code"
@@ -198,7 +198,7 @@ export default function VoucherListPage() {
                 onChange={(e) => setForm({ ...form, code: e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="create-v-type">{t('form.type')}</Label>
               <Select
                 value={form.discount_type}
@@ -213,7 +213,7 @@ export default function VoucherListPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="create-v-value">{t('form.value')}</Label>
               <Input
                 id="create-v-value"
@@ -222,7 +222,7 @@ export default function VoucherListPage() {
                 onChange={(e) => setForm({ ...form, discount_value: +e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="create-v-min">{t('form.minOrder')}</Label>
               <Input
                 id="create-v-min"
@@ -231,7 +231,7 @@ export default function VoucherListPage() {
                 onChange={(e) => setForm({ ...form, min_order_value: +e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="create-v-max">{t('form.maxUsage')}</Label>
               <Input
                 id="create-v-max"
@@ -240,7 +240,7 @@ export default function VoucherListPage() {
                 onChange={(e) => setForm({ ...form, usage_limit: +e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="create-v-start">{t('form.startDate')}</Label>
               <Input
                 id="create-v-start"
@@ -249,7 +249,7 @@ export default function VoucherListPage() {
                 onChange={(e) => setForm({ ...form, start_date: e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="create-v-end">{t('form.endDate')}</Label>
               <Input
                 id="create-v-end"
@@ -268,12 +268,12 @@ export default function VoucherListPage() {
       </Dialog>
 
       <Dialog open={!!editVoucher} onOpenChange={(o) => !o && setEditVoucher(null)}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{t('actions.editVoucher')}</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
               <Label htmlFor="edit-v-code">{t('form.code')}</Label>
               <Input
                 id="edit-v-code"
@@ -281,7 +281,7 @@ export default function VoucherListPage() {
                 onChange={(e) => setForm({ ...form, code: e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="edit-v-type">{t('form.type')}</Label>
               <Select
                 value={form.discount_type}
@@ -296,7 +296,7 @@ export default function VoucherListPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="edit-v-value">{t('form.value')}</Label>
               <Input
                 id="edit-v-value"
@@ -305,7 +305,7 @@ export default function VoucherListPage() {
                 onChange={(e) => setForm({ ...form, discount_value: +e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="edit-v-min">{t('form.minOrder')}</Label>
               <Input
                 id="edit-v-min"
@@ -314,7 +314,7 @@ export default function VoucherListPage() {
                 onChange={(e) => setForm({ ...form, min_order_value: +e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="edit-v-max">{t('form.maxUsage')}</Label>
               <Input
                 id="edit-v-max"
@@ -323,7 +323,7 @@ export default function VoucherListPage() {
                 onChange={(e) => setForm({ ...form, usage_limit: +e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="edit-v-start">{t('form.startDate')}</Label>
               <Input
                 id="edit-v-start"
@@ -332,7 +332,7 @@ export default function VoucherListPage() {
                 onChange={(e) => setForm({ ...form, start_date: e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-1.5">
               <Label htmlFor="edit-v-end">{t('form.endDate')}</Label>
               <Input
                 id="edit-v-end"

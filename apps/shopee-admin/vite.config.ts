@@ -74,6 +74,9 @@ export default defineConfig(({ mode }) => {
             if (id.includes('node_modules/sonner')) {
               return 'toast-vendor';
             }
+            if (id.includes('node_modules/recharts') || id.includes('node_modules/d3-')) {
+              return 'chart-vendor';
+            }
           },
         },
       },

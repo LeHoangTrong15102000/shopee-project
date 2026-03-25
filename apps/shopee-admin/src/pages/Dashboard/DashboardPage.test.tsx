@@ -24,7 +24,9 @@ vi.mock('recharts', () => ({
 describe('DashboardPage', () => {
   it('renders loading state initially', () => {
     renderWithProviders(<DashboardPage />);
-    expect(screen.getByRole('status')).toBeInTheDocument();
+    // Stat cards show skeleton placeholders while overview data loads
+    const skeletons = document.querySelectorAll('[data-slot="skeleton"]');
+    expect(skeletons.length).toBeGreaterThan(0);
   });
 
   it('renders page header after loading', async () => {

@@ -16,7 +16,7 @@ export function useNotificationUnreadCount() {
     queryKey: NOTIFICATION_KEYS.unreadCount,
     queryFn: () =>
       notificationsApi
-        .getNotifications({ page: 1, limit: 100 })
+        .getNotifications({ page: 1, limit: 20 })
         .then((r) => r.data.data.notifications.filter((n) => !n.is_read).length),
     refetchInterval: 60000,
     refetchIntervalInBackground: false,

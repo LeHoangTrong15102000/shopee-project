@@ -72,8 +72,6 @@ export function DataTable<TData, TValue>({
   manualPagination = false,
   totalRows,
 }: DataTableProps<TData, TValue>) {
-  'use no memo';
-
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});

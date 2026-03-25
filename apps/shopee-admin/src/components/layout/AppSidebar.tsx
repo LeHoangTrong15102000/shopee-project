@@ -93,7 +93,14 @@ const prefetchedRoutes = new Set<string>();
 const BRAND_COLOR = 'oklch(0.642 0.203 33)';
 const STROKE_DRAW_DURATION = 800;
 
-type StrokableElement = SVGPathElement | SVGLineElement | SVGCircleElement | SVGRectElement | SVGEllipseElement | SVGPolylineElement | SVGPolygonElement;
+type StrokableElement =
+  | SVGPathElement
+  | SVGLineElement
+  | SVGCircleElement
+  | SVGRectElement
+  | SVGEllipseElement
+  | SVGPolylineElement
+  | SVGPolygonElement;
 
 function isStrokable(el: SVGElement): el is StrokableElement {
   return 'getTotalLength' in el && typeof (el as StrokableElement).getTotalLength === 'function';
@@ -115,7 +122,9 @@ function AnimatedIcon({
     const svg = svgRef.current;
     if (!svg) return;
 
-    const children = svg.querySelectorAll<SVGElement>('path, line, circle, rect, ellipse, polyline, polygon');
+    const children = svg.querySelectorAll<SVGElement>(
+      'path, line, circle, rect, ellipse, polyline, polygon',
+    );
     if (children.length === 0) return;
 
     children.forEach((child) => {
@@ -147,7 +156,9 @@ function AnimatedIcon({
       hasAnimated.current = false;
       const svg = svgRef.current;
       if (svg) {
-        const children = svg.querySelectorAll<SVGElement>('path, line, circle, rect, ellipse, polyline, polygon');
+        const children = svg.querySelectorAll<SVGElement>(
+          'path, line, circle, rect, ellipse, polyline, polygon',
+        );
         children.forEach((child) => {
           child.style.stroke = '';
           child.style.strokeDasharray = '';
@@ -194,6 +205,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <nav aria-label={t('sidebar.mainNavigation')}>
+          ``
           {navSections.map((section) => (
             <SidebarGroup key={section.labelKey}>
               <SidebarGroupLabel>{t(section.labelKey)}</SidebarGroupLabel>
@@ -218,11 +230,7 @@ export function AppSidebar() {
                           isActive={isActive}
                           tooltip={title}
                         >
-                          <AnimatedIcon
-                            icon={item.icon}
-                            isActive={isActive}
-                            className="size-4"
-                          />
+                          <AnimatedIcon icon={item.icon} isActive={isActive} className="size-4" />
                           <span>{title}</span>
                           {hint && (
                             <kbd className="ml-auto text-[10px] text-muted-foreground opacity-60 group-data-[collapsible=icon]:hidden">

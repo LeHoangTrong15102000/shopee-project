@@ -24,36 +24,48 @@ import { useAuthStore } from 'src/stores/auth.store';
 import { useThemeStore } from 'src/stores/theme.store';
 import { locales, changeLanguage } from 'src/i18n/i18n';
 
-function FlagGB({ className }: { className?: string }) {
+function FlagIcon({ children }: { children: React.ReactNode }) {
   return (
-    <svg className={className} viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
-      <clipPath id="gb">
-        <path d="M0 0v20h30V0z" />
-      </clipPath>
-      <g clipPath="url(#gb)">
-        <path fill="#012169" d="M0 0v20h30V0z" />
-        <path stroke="#fff" strokeWidth="4" d="M0 0l30 20m0-20L0 20" />
-        <path stroke="#C8102E" strokeWidth="2.5" d="M0 0l30 20m0-20L0 20" clipPath="url(#gb)" />
-        <path stroke="#fff" strokeWidth="6.67" d="M15 0v20M0 10h30" />
-        <path stroke="#C8102E" strokeWidth="4" d="M15 0v20M0 10h30" />
-      </g>
-    </svg>
+    <span className="inline-flex h-[18px] w-[27px] shrink-0 items-center justify-center overflow-hidden rounded-sm">
+      {children}
+    </span>
   );
 }
 
-function FlagVN({ className }: { className?: string }) {
+function FlagGB() {
   return (
-    <svg className={className} viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
-      <rect fill="#da251d" width="30" height="20" />
-      <polygon
-        fill="#ff0"
-        points="15,4 16.35,8.15 20.71,8.15 17.18,10.71 18.53,14.85 15,12.29 11.47,14.85 12.82,10.71 9.29,8.15 13.65,8.15"
-      />
-    </svg>
+    <FlagIcon>
+      <svg className="size-full" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+        <clipPath id="gb">
+          <path d="M0 0v20h30V0z" />
+        </clipPath>
+        <g clipPath="url(#gb)">
+          <path fill="#012169" d="M0 0v20h30V0z" />
+          <path stroke="#fff" strokeWidth="4" d="M0 0l30 20m0-20L0 20" />
+          <path stroke="#C8102E" strokeWidth="2.5" d="M0 0l30 20m0-20L0 20" clipPath="url(#gb)" />
+          <path stroke="#fff" strokeWidth="6.67" d="M15 0v20M0 10h30" />
+          <path stroke="#C8102E" strokeWidth="4" d="M15 0v20M0 10h30" />
+        </g>
+      </svg>
+    </FlagIcon>
   );
 }
 
-const languageFlags: Record<string, React.ComponentType<{ className?: string }>> = {
+function FlagVN() {
+  return (
+    <FlagIcon>
+      <svg className="size-full" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+        <rect fill="#da251d" width="30" height="20" />
+        <polygon
+          fill="#ff0"
+          points="15,4 16.35,8.15 20.71,8.15 17.18,10.71 18.53,14.85 15,12.29 11.47,14.85 12.82,10.71 9.29,8.15 13.65,8.15"
+        />
+      </svg>
+    </FlagIcon>
+  );
+}
+
+const languageFlags: Record<string, React.ComponentType> = {
   en: FlagGB,
   vi: FlagVN,
 };
@@ -150,11 +162,7 @@ export function AppHeader() {
           >
             {(() => {
               const CurrentFlag = languageFlags[i18n.language];
-              return CurrentFlag ? (
-                <CurrentFlag className="size-6 shrink-0 rounded-sm" />
-              ) : (
-                <span className="size-6" />
-              );
+              return CurrentFlag ? <CurrentFlag /> : <span className="h-[18px] w-[27px]" />;
             })()}
             <span className="hidden sm:inline text-xs">
               {locales[i18n.language as keyof typeof locales] ?? i18n.language}
@@ -165,7 +173,7 @@ export function AppHeader() {
               const Flag = languageFlags[code];
               return (
                 <DropdownMenuItem key={code} onClick={() => changeLanguage(code)} className="gap-2">
-                  {Flag && <Flag className="size-6 shrink-0 rounded-sm" />}
+                  {Flag && <Flag />}
                   <span className="flex-1">{label}</span>
                   {i18n.language === code && <Check className="size-4 shrink-0" />}
                 </DropdownMenuItem>

@@ -3,6 +3,9 @@
   "framework": "vite",
   "buildCommand": "cd ../.. && pnpm install && cd apps/shopee-admin && pnpm run build",
   "outputDirectory": "dist",
+  "git": {
+    "deploymentEnabled": false
+  },
   "rewrites": [
     {
       "source": "/(.*)",

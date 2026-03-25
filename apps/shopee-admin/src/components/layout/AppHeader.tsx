@@ -26,16 +26,16 @@ import { locales, changeLanguage } from 'src/i18n/i18n';
 
 function FlagGB({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg">
+    <svg className={className} viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
       <clipPath id="gb">
-        <path d="M0 0v30h60V0z" />
+        <path d="M0 0v20h30V0z" />
       </clipPath>
       <g clipPath="url(#gb)">
-        <path fill="#012169" d="M0 0v30h60V0z" />
-        <path stroke="#fff" strokeWidth="6" d="M0 0l60 30m0-30L0 30" />
-        <path stroke="#C8102E" strokeWidth="4" d="M0 0l60 30m0-30L0 30" clipPath="url(#gb)" />
-        <path stroke="#fff" strokeWidth="10" d="M30 0v30M0 15h60" />
-        <path stroke="#C8102E" strokeWidth="6" d="M30 0v30M0 15h60" />
+        <path fill="#012169" d="M0 0v20h30V0z" />
+        <path stroke="#fff" strokeWidth="4" d="M0 0l30 20m0-20L0 20" />
+        <path stroke="#C8102E" strokeWidth="2.5" d="M0 0l30 20m0-20L0 20" clipPath="url(#gb)" />
+        <path stroke="#fff" strokeWidth="6.67" d="M15 0v20M0 10h30" />
+        <path stroke="#C8102E" strokeWidth="4" d="M15 0v20M0 10h30" />
       </g>
     </svg>
   );

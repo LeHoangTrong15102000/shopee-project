@@ -41,6 +41,7 @@ Lý do:
 | **PHẦN C: PERFORMANCE** | | |
 | 8 | [Core Web Vitals](#8-core-web-vitals) | Performance |
 | 9 | [Code Splitting and Lazy Loading](#9-code-splitting-and-lazy-loading) | Performance |
+| 9.5 | [Vendor Splitting — Chiến Lược Tách Chunk Nâng Cao](#95-vendor-splitting--chiến-lược-tách-chunk-nâng-cao) | Performance |
 | 10 | [Bundle Size Basics](#10-bundle-size-basics) | Performance |
 | 11 | [memo, useCallback, useMemo — Khi Nào Dùng, Khi Nào Không](#11-memo-usecallback-usememo--khi-nào-dùng-khi-nào-không) | Performance |
 | 12 | [SSR vs CSR Tradeoffs](#12-ssr-vs-csr-tradeoffs) | Performance |
@@ -1153,7 +1154,479 @@ Có code splitting:
   → User thấy content sau 2s
 ```
 
-### Route-based Splitting (quan trọng nhất)
+---
+
+### Tổng quan các Pattern trong Shopee Web
+
+Dự án shopee-web sử dụng **5 pattern** Lazy Loading + Code Splitting kết hợp nhau:
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    SHOPEE-WEB LAZY LOADING MAP                      │
+│                                                                     │
+│  1. ROUTE-BASED SPLITTING   ←── useRouteElements.tsx               │
+│     Layouts + Pages đều lazy                                        │
+│                                                                     │
+│  2. COMPONENT-BASED SPLITTING ←── App.tsx, MainLayout.tsx          │
+│     Heavy widgets: Chatbot, SellerDashboard, BackToTop, ...         │
+│                                                                     │
+│  3. VENDOR CHUNK SPLITTING  ←── vite.config.ts (manualChunks)      │
+│     react-vendor, motion-vendor, form-vendor, http-vendor, ...      │
+│                                                                     │
+│  4. DEV-ONLY SPLITTING      ←── main.tsx                           │
+│     ReactQueryDevtools chỉ load trong development                   │
+│                                                                     │
+│  5. IMAGE LAZY LOADING      ←── OptimizedImage.tsx                 │
+│     loading="lazy" + IntersectionObserver + skeleton                │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### Pattern 1: Route-based Splitting (quan trọng nhất)
+
+**File:** `useRouteElements.tsx`
+
+Đây là pattern quan trọng nhất — mỗi **page** và **layout** đều là một chunk riêng biệt.
+
+```typescript
+// useRouteElements.tsx — Lazy load TOÀN BỘ layouts và pages
+
+// ─── Lazy load Layouts ───────────────────────────────────────────
+const MainLayout    = lazy(() => import('./layouts/MainLayout'))
+const RegisterLayout = lazy(() => import('./layouts/RegisterLayout'))
+const CartLayout    = lazy(() => import('./layouts/CartLayout'))
+const UserLayout    = lazy(() => import('./pages/User/layouts/UserLayout'))
+
+// ─── Lazy load Pages ─────────────────────────────────────────────
+const Login         = lazy(() => import('./pages/Login'))
+const Register      = lazy(() => import('./pages/Register'))
+const Home          = lazy(() => import('./pages/Home'))
+const ProductList   = lazy(() => import('./pages/ProductList'))
+const ProductDetail = lazy(() => import('./pages/ProductDetail'))
+const Cart          = lazy(() => import('./pages/Cart'))
+const Checkout      = lazy(() => import('./pages/Checkout'))
+const Wishlist      = lazy(() => import('./pages/Wishlist'))
+const Compare       = lazy(() => import('./pages/Compare'))
+// ... và tất cả User sub-pages
+const Profile       = lazy(() => import('./pages/User/pages/Profile'))
+const ChangePassword = lazy(() => import('./pages/User/pages/ChangePassword'))
+const HistoryPurchases = lazy(() => import('./pages/User/pages/HistoryPurchases'))
+const OrderList     = lazy(() => import('./pages/User/pages/OrderList'))
+const OrderDetail   = lazy(() => import('./pages/User/pages/OrderDetail'))
+const MyVouchers    = lazy(() => import('./pages/User/pages/MyVouchers'))
+const DailyCheckInPage = lazy(() => import('./pages/User/pages/DailyCheckIn'))
+const AddressBook   = lazy(() => import('./pages/User/pages/AddressBook'))
+const Notifications = lazy(() => import('./pages/User/pages/Notifications'))
+const ConversationHistory = lazy(() => import('./pages/User/pages/ConversationHistory'))
+const NotFound      = lazy(() => import('./pages/NotFound'))
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword/ForgotPassword'))
+const ResetPassword  = lazy(() => import('./pages/ResetPassword/ResetPassword'))
+```
+
+**Điểm đặc biệt: Nested Suspense (2 lớp)**
+
+Dự án dùng **nested Suspense** cho các route cần layout lồng nhau — layout load trước, page load sau:
+
+```typescript
+// Cart route — 2 lớp Suspense
+{
+  path: path.cart,
+  element: (
+    <Suspense fallback={<Loader />}>   {/* ← Layout Suspense */}
+      <CartLayout>
+        <Suspense fallback={<Loader />}>  {/* ← Page Suspense */}
+          <Cart />
+        </Suspense>
+      </CartLayout>
+    </Suspense>
+  ),
+}
+
+// User sub-routes — 3 lớp Suspense
+{
+  path: path.user,
+  element: (
+    <Suspense fallback={<Loader />}>   {/* ← MainLayout Suspense */}
+      <MainLayout />
+    </Suspense>
+  ),
+  children: [{
+    path: '',
+    element: (
+      <Suspense fallback={<Loader />}>  {/* ← UserLayout Suspense */}
+        <UserLayout />
+      </Suspense>
+    ),
+    children: [{
+      path: path.profile,
+      element: (
+        <Suspense>                       {/* ← Page Suspense (no fallback = silent) */}
+          <Profile />
+        </Suspense>
+      ),
+    }]
+  }]
+}
+```
+
+> **Tại sao nested Suspense?**
+> Layout (MainLayout, CartLayout) là shell UI — load trước, hiển thị Header/Footer ngay.
+> Page content (Cart, Profile) load sau — user thấy skeleton thay vì blank screen.
+> Nếu chỉ dùng 1 Suspense bọc tất cả → Header cũng bị ẩn trong lúc page load.
+
+**Fallback strategy:**
+
+| Route group | Fallback |
+|---|---|
+| Public pages (Home, ProductList, ProductDetail) | `<Loader />` — spinner toàn trang |
+| Protected pages (Cart, Checkout, Wishlist) | `<Loader />` — spinner toàn trang |
+| User sub-pages (Profile, ChangePassword, ...) | `<Suspense>` không có fallback (silent) |
+| 404 NotFound | `<Suspense>` không có fallback |
+
+---
+
+### Pattern 2: Component-based Splitting
+
+**Files:** `App.tsx`, `MainLayout.tsx`, `CartLayout.tsx`
+
+Heavy components không cần thiết ngay khi trang load được tách riêng.
+
+**App.tsx — Global widgets:**
+
+```typescript
+// App.tsx — Lazy load 3 heavy widgets hiển thị trên mọi trang
+
+// Chatbot AI widget — heavy, chỉ cần sau khi page render xong
+const ChatbotWidget = lazy(() => import('./components/ChatbotWidget'))
+
+// Seller Dashboard Panel — chỉ dùng cho Admin, không cần cho user thường
+const SellerDashboardPanel = lazy(
+  () => import('./components/SellerDashboardPanel/SellerDashboardPanel')
+)
+
+// PWA Install Prompt — chỉ hiện khi browser support PWA
+const PWAInstallPrompt = lazy(() => import('./components/PWAInstallPrompt'))
+
+// Render với fallback={null} → không hiện gì khi đang load
+// Tránh layout shift
+return (
+  <>
+    {routeElements}
+    <Suspense fallback={null}><ChatbotWidget /></Suspense>
+    <Suspense fallback={null}><SellerDashboardPanel /></Suspense>
+    <Suspense fallback={null}><PWAInstallPrompt /></Suspense>
+  </>
+)
+```
+
+**MainLayout.tsx — Layout-level widgets:**
+
+```typescript
+// MainLayout.tsx — Lazy load UI widgets không cần thiết ngay lập tức
+
+const CompareFloatingBar = lazy(() => import('src/components/CompareFloatingBar'))
+const ConnectionStatus   = lazy(() => import('src/components/ConnectionStatus'))
+const BackToTop          = lazy(() => import('src/components/BackToTop'))
+
+return (
+  <div>
+    <Header />
+    <Suspense fallback={null}><ConnectionStatus /></Suspense>  {/* Banner mất kết nối */}
+    <PageTransition>
+      <Outlet />
+    </PageTransition>
+    <Footer />
+    <Suspense fallback={null}><CompareFloatingBar /></Suspense>  {/* Floating bar so sánh */}
+    <Suspense fallback={null}><BackToTop /></Suspense>           {/* Nút cuộn lên đầu */}
+  </div>
+)
+```
+
+**CartLayout.tsx — Consistent pattern:**
+
+```typescript
+// CartLayout.tsx — Áp dụng cùng pattern với MainLayout
+const BackToTop = lazy(() => import('src/components/BackToTop'))
+
+return (
+  <div>
+    <CartHeader />
+    <PageTransition>{children}</PageTransition>
+    <Footer />
+    <Suspense fallback={null}><BackToTop /></Suspense>
+  </div>
+)
+```
+
+> **Tại sao `fallback={null}` cho widgets?**
+> Floating widgets (BackToTop, ChatbotWidget, CompareFloatingBar) là **enhancement**, không phải core UI.
+> Nếu dùng `<Loader />` → spinner xuất hiện ở góc màn hình → confusing UX.
+> `fallback={null}` → widget xuất hiện silently khi load xong → không gây distraction.
+
+---
+
+### Pattern 3: Vendor Chunk Splitting (Vite manualChunks)
+
+**File:** `vite.config.ts`
+
+Code splitting ở level build tool — tách vendor libraries thành các chunk riêng để browser cache hiệu quả.
+
+```typescript
+// vite.config.ts — rollupOptions.output.manualChunks
+manualChunks(id) {
+  // React core — load đầu tiên, cache lâu nhất
+  if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
+    return 'react-vendor'       // react-vendor.[hash].js
+  }
+  // Router + URL state
+  if (id.includes('node_modules/react-router') || id.includes('node_modules/nuqs')) {
+    return 'router-vendor'      // router-vendor.[hash].js
+  }
+  // Animation library — dùng trong 82+ files, tách riêng để không bloat app chunk
+  if (id.includes('node_modules/framer-motion')) {
+    return 'motion-vendor'      // motion-vendor.[hash].js
+  }
+  // UI component library
+  if (id.includes('node_modules/@heroui/')) {
+    return 'heroui-vendor'      // heroui-vendor.[hash].js
+  }
+  // Form validation
+  if (id.includes('node_modules/react-hook-form') ||
+      id.includes('node_modules/@hookform/') ||
+      id.includes('node_modules/zod')) {
+    return 'form-vendor'        // form-vendor.[hash].js
+  }
+  // HTTP + data fetching (exclude devtools để tránh circular deps)
+  if (id.includes('node_modules/axios') ||
+      (id.includes('node_modules/@tanstack/react-query') && !id.includes('devtools'))) {
+    return 'http-vendor'        // http-vendor.[hash].js
+  }
+  // Drag & Drop
+  if (id.includes('node_modules/@dnd-kit/')) {
+    return 'dnd-vendor'         // dnd-vendor.[hash].js
+  }
+  // Internationalization
+  if (id.includes('node_modules/i18next') || id.includes('node_modules/react-i18next')) {
+    return 'i18n-vendor'        // i18n-vendor.[hash].js
+  }
+  // Tooltip/Popover positioning
+  if (id.includes('node_modules/@floating-ui/')) {
+    return 'floating-vendor'    // floating-vendor.[hash].js
+  }
+  // Toast
+  if (id.includes('node_modules/react-toastify')) {
+    return 'toast-vendor'       // toast-vendor.[hash].js
+  }
+  // Misc: SEO, sanitization
+  if (id.includes('node_modules/react-helmet-async') ||
+      id.includes('node_modules/dompurify') ||
+      id.includes('node_modules/html-to-text')) {
+    return 'misc-vendor'        // misc-vendor.[hash].js
+  }
+  // Utilities
+  if (id.includes('node_modules/classnames') ||
+      id.includes('node_modules/immer') ||
+      id.includes('node_modules/date-fns')) {
+    return 'utils-vendor'       // utils-vendor.[hash].js
+  }
+  // socket.io, devtools, ... → default chunks (Rollup tự quyết định)
+}
+```
+
+**Tại sao tách vendor chunks?**
+
+```
+Không tách:
+  app.js = 3MB (app code + react + framer-motion + axios + ...)
+  → Mỗi lần deploy: user re-download toàn bộ 3MB
+
+Có tách:
+  react-vendor.[hash].js     → cache 1 năm (không đổi)
+  motion-vendor.[hash].js    → cache 1 năm (không đổi)
+  http-vendor.[hash].js      → cache 1 năm (không đổi)
+  app.[new-hash].js          → chỉ file này thay đổi khi deploy
+  → User chỉ download lại app chunk (~50-100KB) khi có update
+```
+
+**Kết quả build (ví dụ):**
+
+```
+dist/assets/
+  react-vendor.[hash].js      ~140KB (gzipped ~45KB)
+  motion-vendor.[hash].js     ~95KB  (gzipped ~30KB)
+  http-vendor.[hash].js       ~80KB  (gzipped ~25KB)
+  router-vendor.[hash].js     ~40KB  (gzipped ~13KB)
+  form-vendor.[hash].js       ~35KB  (gzipped ~11KB)
+  i18n-vendor.[hash].js       ~30KB  (gzipped ~10KB)
+  heroui-vendor.[hash].js     ~60KB  (gzipped ~18KB)
+  app.[hash].js               ~80KB  (gzipped ~25KB)  ← chỉ cái này thay đổi khi deploy
+  home.[hash].js              ~20KB  (gzipped ~6KB)   ← route chunk
+  product-list.[hash].js      ~25KB  (gzipped ~8KB)   ← route chunk
+  ...
+```
+
+---
+
+### Pattern 4: Dev-only Splitting
+
+**File:** `main.tsx`
+
+Tách tools chỉ dùng trong development ra khỏi production bundle.
+
+```typescript
+// main.tsx — ReactQueryDevtools chỉ load trong development
+
+// Lazy load với named export extraction
+const ReactQueryDevtools = lazy(() =>
+  import('@tanstack/react-query-devtools').then((mod) => ({
+    default: mod.ReactQueryDevtools,  // extract named export thành default
+  }))
+)
+
+// Chỉ render trong DEV — import.meta.env.DEV = false trong production build
+{import.meta.env.DEV && (
+  <Suspense fallback={null}>
+    <ReactQueryDevtools initialIsOpen={false} />
+  </Suspense>
+)}
+```
+
+> **Tại sao cần lazy ở đây?**
+> Dù `import.meta.env.DEV` = false trong production, Vite vẫn có thể include module nếu import tĩnh.
+> Dùng `lazy()` + conditional render → Vite tree-shakes toàn bộ devtools khỏi production bundle.
+> Kết quả: production bundle nhỏ hơn ~100KB.
+
+---
+
+### Pattern 5: Image Lazy Loading
+
+**File:** `OptimizedImage.tsx`
+
+Lazy loading cho images sử dụng HTML native `loading="lazy"` + skeleton placeholder.
+
+```typescript
+// OptimizedImage.tsx — Image lazy loading với skeleton
+
+export default function OptimizedImage({
+  src,
+  alt,
+  loading = 'lazy',    // ← default là lazy cho tất cả images
+  showSkeleton = true, // ← hiện skeleton khi đang load
+  blurPlaceholder = true,
+  webpSrc,             // ← support modern formats
+  avifSrc,
+  ...
+}: OptimizedImageProps) {
+  const [imageState, setImageState] = useState<ImageState>('loading')
+
+  // Check browser cache — nếu đã cache thì skip skeleton
+  useEffect(() => {
+    const img = new Image()
+    img.src = src
+    if (img.complete && img.naturalWidth > 0) {
+      setImageState('loaded')  // ← already cached, no skeleton needed
+      return
+    }
+    setImageState('loading')
+  }, [src])
+
+  // Skeleton khi đang load
+  const renderSkeleton = () =>
+    showSkeleton && isLoading ? (
+      <div className="absolute inset-0 animate-pulse rounded-sm bg-gray-200" />
+    ) : null
+
+  // Support <picture> với multiple formats (avif > webp > jpg fallback)
+  if (webpSrc || avifSrc) {
+    return (
+      <picture>
+        {avifSrc && <source srcSet={avifSrc} type="image/avif" />}
+        {webpSrc && <source srcSet={webpSrc} type="image/webp" />}
+        <img src={src} loading={loading} ... />
+      </picture>
+    )
+  }
+
+  return <img src={src} loading={loading} ... />
+}
+```
+
+**Sử dụng trong Home.tsx:**
+
+```typescript
+// Home.tsx — Tất cả product images đều lazy load
+<OptimizedImage
+  src={product.image}
+  alt={product.name}
+  className="h-40 w-full"
+  loading="lazy"        // ← browser chỉ load khi image vào viewport
+  showSkeleton={true}   // ← hiện skeleton trước khi image load xong
+/>
+```
+
+---
+
+### Pattern 6: LazyMotion (Framer Motion Code Splitting)
+
+**File:** `main.tsx`
+
+Framer Motion cung cấp `LazyMotion` để chỉ load animation features khi cần.
+
+```typescript
+// main.tsx — LazyMotion với domAnimation feature set
+import { domAnimation, LazyMotion } from 'framer-motion'
+
+<LazyMotion features={domAnimation}>
+  <App />
+</LazyMotion>
+```
+
+> **`domAnimation` vs `domMax`:**
+> - `domAnimation` (~15KB gzipped): animations cơ bản — translate, scale, opacity, rotate
+> - `domMax` (~25KB gzipped): thêm drag, layout animations, advanced gestures
+> Dự án dùng `domAnimation` — đủ cho tất cả animations hiện tại, tiết kiệm ~10KB.
+
+---
+
+### Tổng kết: Toàn bộ Pattern trong Shopee Web
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  FILE                  │  PATTERN                │  MỤC ĐÍCH                │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  useRouteElements.tsx  │  Route-based splitting  │  Mỗi page = 1 chunk      │
+│                        │  Nested Suspense        │  Layout load trước page  │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  App.tsx               │  Component splitting    │  ChatBot, PWA, Seller    │
+│                        │  fallback={null}        │  Silent load cho widgets │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  MainLayout.tsx        │  Component splitting    │  BackToTop, Compare bar  │
+│  CartLayout.tsx        │  fallback={null}        │  Connection status       │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  vite.config.ts        │  Vendor chunk splitting │  12 vendor chunks        │
+│                        │  manualChunks           │  Browser cache hiệu quả  │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  main.tsx              │  Dev-only splitting     │  DevTools khỏi prod      │
+│                        │  LazyMotion             │  Framer Motion nhỏ hơn   │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  OptimizedImage.tsx    │  Image lazy loading     │  loading="lazy" native   │
+│                        │  Skeleton placeholder   │  Cache detection         │
+│                        │  <picture> multi-format │  avif > webp > jpg       │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Fallback Strategy Summary:**
+
+```
+Fallback = <Loader />   → Page-level routes (user thấy spinner, biết đang load)
+Fallback = null         → Floating widgets (silent load, không gây layout shift)
+Fallback = <Suspense>   → User sub-pages (silent, layout đã có sẵn từ UserLayout)
+```
+
+---
+
+### Route-based Splitting (quan trọng nhất) — Lý thuyết tổng quát
 
 ```typescript
 // Mỗi route là 1 chunk riêng
@@ -1172,7 +1645,7 @@ const Checkout = lazy(() => import('./pages/Checkout'))
 </Suspense>
 ```
 
-### Component-based Splitting
+### Component-based Splitting — Lý thuyết tổng quát
 
 ```typescript
 // Heavy components: chỉ load khi cần
@@ -1188,7 +1661,7 @@ const ChartDashboard = lazy(() => import('./components/ChartDashboard'))
 )}
 ```
 
-### Library Splitting
+### Library Splitting — Lý thuyết tổng quát
 
 ```typescript
 // BAD: import ngay lập tức (vào main bundle)
@@ -1221,6 +1694,408 @@ const handleMouseEnter = () => {
 <Link to={`/products/${id}`} onMouseEnter={handleMouseEnter}>
   {product.name}
 </Link>
+```
+
+---
+
+## 9.5. VENDOR SPLITTING — CHIẾN LƯỢC TÁCH CHUNK NÂNG CAO
+
+> **Vendor Splitting** là một nhánh chuyên biệt của Code Splitting — thay vì tách theo route hay component, ta tách theo **nguồn gốc code**: code của mình (app code) vs code của thư viện bên thứ ba (vendor code). Đây là kỹ thuật tối ưu **browser cache** quan trọng nhất trong production.
+
+---
+
+### Tại sao Vendor Splitting quan trọng hơn bạn nghĩ?
+
+**Vấn đề cốt lõi:** App code và vendor code có **vòng đời thay đổi hoàn toàn khác nhau**.
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                    VÒNG ĐỜI THAY ĐỔI CỦA CODE                       │
+│                                                                      │
+│  Vendor code (react, axios, framer-motion...)                        │
+│  ──────────────────────────────────────────────────────────────────  │
+│  v18.2.0   v18.2.0   v18.2.0   v18.2.0   v18.2.0   v18.3.0         │
+│  deploy1   deploy2   deploy3   deploy4   deploy5   deploy6           │
+│  │         │         │         │         │         │                 │
+│  └─────────┴─────────┴─────────┴─────────┘         └── thay đổi     │
+│  ← 5 lần deploy, vendor KHÔNG đổi →                                 │
+│                                                                      │
+│  App code (pages, components, business logic...)                     │
+│  ──────────────────────────────────────────────────────────────────  │
+│  v1.0      v1.1      v1.2      v1.3      v1.4      v1.5             │
+│  deploy1   deploy2   deploy3   deploy4   deploy5   deploy6           │
+│  │         │         │         │         │         │                 │
+│  └─────────┴─────────┴─────────┴─────────┴─────────┴── thay đổi     │
+│  ← Mỗi lần deploy, app code ĐỀU đổi →                               │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+**Kết luận:** Nếu trộn lẫn vendor + app code vào 1 file → mỗi lần deploy user phải re-download **cả vendor lẫn app**, dù vendor không hề thay đổi.
+
+---
+
+### Cơ chế: Content Hash + HTTP Cache
+
+Vendor Splitting hoạt động nhờ kết hợp **content-based hashing** và **HTTP Cache-Control**:
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                    CƠ CHẾ HOẠT ĐỘNG                                  │
+│                                                                      │
+│  BUILD TIME:                                                         │
+│  Vite hash file theo nội dung:                                       │
+│    react-vendor.abc123.js  ← hash = "abc123" (từ nội dung file)     │
+│    app.xyz789.js           ← hash = "xyz789"                        │
+│                                                                      │
+│  DEPLOY 1 (user lần đầu vào):                                        │
+│    Browser download: react-vendor.abc123.js ✓                       │
+│    Browser download: app.xyz789.js ✓                                 │
+│    Cache-Control: max-age=31536000 (1 năm)                           │
+│    → Browser lưu cả 2 vào cache                                      │
+│                                                                      │
+│  DEPLOY 2 (chỉ app code thay đổi):                                   │
+│    react-vendor.abc123.js → HASH KHÔNG ĐỔI                          │
+│    app.def456.js          → HASH MỚI (nội dung đổi)                 │
+│                                                                      │
+│    Browser check cache:                                              │
+│    react-vendor.abc123.js → CÓ trong cache → SKIP download ✓        │
+│    app.def456.js          → KHÔNG có trong cache → DOWNLOAD ✓       │
+│                                                                      │
+│  KẾT QUẢ: User chỉ download ~80KB thay vì 3MB                       │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### Hai cách implement Vendor Splitting trong Vite/Rollup
+
+**Cách 1: Static object (đơn giản, phù hợp dự án nhỏ)**
+
+```typescript
+// vite.config.ts — Static manualChunks
+rollupOptions: {
+  output: {
+    manualChunks: {
+      'react-vendor': ['react', 'react-dom'],
+      'router-vendor': ['react-router'],
+      'ui-vendor': ['@heroui/system', 'framer-motion'],
+      'query-vendor': ['@tanstack/react-query', 'axios'],
+      'form-vendor': ['react-hook-form', 'zod'],
+      'i18n-vendor': ['i18next', 'react-i18next'],
+    }
+  }
+}
+```
+
+> **Nhược điểm:** Không linh hoạt — phải biết trước tên package. Nếu package A import package B mà B không được khai báo trong cùng chunk, Rollup có thể tạo circular dependency hoặc duplicate module.
+
+**Cách 2: Function (linh hoạt, phù hợp dự án lớn — cách dự án shopee-web dùng)**
+
+```typescript
+// vite.config.ts — Function-based manualChunks
+rollupOptions: {
+  output: {
+    manualChunks(id) {
+      // id = đường dẫn tuyệt đối của module
+      // VD: "/Users/.../node_modules/react/index.js"
+
+      // Kiểm tra theo path pattern thay vì tên package cứng
+      if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
+        return 'react-vendor'
+      }
+      if (id.includes('node_modules/framer-motion')) {
+        return 'motion-vendor'
+      }
+      // ...
+      // Nếu return undefined → Rollup tự quyết định chunk
+    }
+  }
+}
+```
+
+> **Ưu điểm:** Linh hoạt hơn — có thể dùng regex, điều kiện phức tạp. Xử lý được edge cases như exclude devtools khỏi http-vendor chunk (tránh circular deps).
+
+---
+
+### Chiến lược phân nhóm Vendor Chunks
+
+Không phải cứ mỗi library là 1 chunk — cần **cân bằng** giữa số lượng HTTP requests và cache granularity:
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                    CHIẾN LƯỢC PHÂN NHÓM                              │
+│                                                                      │
+│  QUÁ NHIỀU CHUNK (anti-pattern):                                     │
+│    react.js, react-dom.js, react-router.js, axios.js,               │
+│    react-query.js, zod.js, react-hook-form.js, ...                  │
+│    → 20+ HTTP requests → HTTP/1.1 bị nghẽn                          │
+│    → HTTP/2 OK nhưng overhead header vẫn tốn                        │
+│                                                                      │
+│  QUÁ ÍT CHUNK (anti-pattern):                                        │
+│    vendor.js = react + framer-motion + heroui + axios + ...          │
+│    → 1 request nhưng 2MB → cache miss = re-download 2MB             │
+│                                                                      │
+│  BALANCED (best practice — shopee-web approach):                     │
+│    Nhóm theo: tần suất thay đổi + kích thước + dependency graph     │
+│    react-vendor   → ít thay đổi nhất, nhỏ, core                     │
+│    motion-vendor  → ít thay đổi, lớn (95KB), dùng khắp nơi         │
+│    http-vendor    → ít thay đổi, medium, critical path              │
+│    form-vendor    → ít thay đổi, chỉ dùng ở form pages             │
+│    i18n-vendor    → ít thay đổi, medium                             │
+│    ...                                                               │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+**Tiêu chí quyết định nhóm một library vào chunk riêng:**
+
+| Tiêu chí | Nên tách riêng | Nên gộp chung |
+|---|---|---|
+| Kích thước | > 30KB gzipped | < 10KB gzipped |
+| Tần suất dùng | Dùng ở nhiều pages | Chỉ dùng 1-2 pages |
+| Tần suất update | Hiếm khi update | Update thường xuyên |
+| Dependency | Độc lập | Phụ thuộc lẫn nhau |
+
+---
+
+### Vendor Splitting trong Shopee Web — Phân tích từng chunk
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  CHUNK            │ LIBRARIES                    │ LÝ DO TÁCH RIÊNG  │
+├──────────────────────────────────────────────────────────────────────┤
+│  react-vendor     │ react, react-dom             │ Core runtime,      │
+│                   │                              │ cực kỳ stable,     │
+│                   │                              │ load đầu tiên      │
+├──────────────────────────────────────────────────────────────────────┤
+│  router-vendor    │ react-router, nuqs           │ Routing + URL      │
+│                   │                              │ state, load sớm    │
+├──────────────────────────────────────────────────────────────────────┤
+│  motion-vendor    │ framer-motion                │ Dùng trong 82+     │
+│                   │                              │ files, ~95KB,      │
+│                   │                              │ tách để không      │
+│                   │                              │ bloat app chunk    │
+├──────────────────────────────────────────────────────────────────────┤
+│  heroui-vendor    │ @heroui/*                    │ UI lib, lớn,       │
+│                   │                              │ stable             │
+├──────────────────────────────────────────────────────────────────────┤
+│  http-vendor      │ axios,                       │ Critical path —    │
+│                   │ @tanstack/react-query        │ mọi page đều cần   │
+│                   │ (exclude devtools!)          │ fetch data         │
+├──────────────────────────────────────────────────────────────────────┤
+│  form-vendor      │ react-hook-form,             │ Chỉ load ở pages   │
+│                   │ @hookform/resolvers, zod     │ có form (Login,    │
+│                   │                              │ Register, Profile) │
+├──────────────────────────────────────────────────────────────────────┤
+│  i18n-vendor      │ i18next, react-i18next       │ Internationali-    │
+│                   │                              │ zation, stable     │
+├──────────────────────────────────────────────────────────────────────┤
+│  dnd-vendor       │ @dnd-kit/*                   │ Drag & Drop,       │
+│                   │                              │ chỉ dùng ở         │
+│                   │                              │ specific pages     │
+├──────────────────────────────────────────────────────────────────────┤
+│  floating-vendor  │ @floating-ui/*               │ Tooltip/Popover    │
+│                   │                              │ positioning        │
+├──────────────────────────────────────────────────────────────────────┤
+│  toast-vendor     │ react-toastify               │ Notification UI    │
+├──────────────────────────────────────────────────────────────────────┤
+│  misc-vendor      │ react-helmet-async,          │ SEO + sanitization │
+│                   │ dompurify, html-to-text      │ nhóm lại vì nhỏ   │
+├──────────────────────────────────────────────────────────────────────┤
+│  utils-vendor     │ classnames, immer, date-fns  │ Utilities nhỏ,     │
+│                   │                              │ không có React dep │
+├──────────────────────────────────────────────────────────────────────┤
+│  (default)        │ socket.io, devtools, ...     │ Rollup tự quyết    │
+│                   │                              │ định — ít dùng     │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+**Chú ý đặc biệt — tại sao exclude `devtools` khỏi `http-vendor`:**
+
+```typescript
+// ĐÚNG:
+if (
+  id.includes('node_modules/axios') ||
+  (id.includes('node_modules/@tanstack/react-query') && !id.includes('devtools'))
+) {
+  return 'http-vendor'
+}
+
+// SAI (nếu include devtools):
+// @tanstack/react-query-devtools import từ @tanstack/react-query
+// → Circular dependency: http-vendor → devtools → http-vendor
+// → Rollup warning hoặc duplicate module
+```
+
+---
+
+### Vendor Splitting vs Code Splitting — Phân biệt rõ ràng
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│              CODE SPLITTING vs VENDOR SPLITTING                      │
+│                                                                      │
+│  CODE SPLITTING                  VENDOR SPLITTING                    │
+│  ─────────────────────────────   ──────────────────────────────────  │
+│  Mục tiêu: Giảm initial load     Mục tiêu: Tối ưu browser cache     │
+│  Tách theo: Route / Component    Tách theo: Nguồn gốc (app/vendor)  │
+│  Trigger: User navigation        Trigger: Build time                 │
+│  Kỹ thuật: React.lazy()         Kỹ thuật: manualChunks              │
+│  Benefit: Faster FCP/LCP        Benefit: Faster repeat visits       │
+│                                                                      │
+│  Ví dụ:                          Ví dụ:                              │
+│  Home.js → load khi vào /        react-vendor.js → cache 1 năm     │
+│  Cart.js → load khi vào /cart    motion-vendor.js → cache 1 năm    │
+│                                                                      │
+│  DÙNG KẾT HỢP:                                                       │
+│  Code Splitting → giảm lượng JS cần load lần đầu                    │
+│  Vendor Splitting → tối ưu cache cho các lần visit sau              │
+│  → Cả hai cùng nhau = tốt nhất                                       │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### HTTP Caching Headers — Nền tảng của Vendor Splitting
+
+Vendor Splitting chỉ có giá trị khi server cấu hình đúng HTTP cache headers:
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                    HTTP CACHE STRATEGY                               │
+│                                                                      │
+│  Vendor chunks (hash trong tên file):                                │
+│  Cache-Control: public, max-age=31536000, immutable                  │
+│  ↑ 1 năm, immutable = browser không cần revalidate                   │
+│                                                                      │
+│  App chunks (hash trong tên file):                                   │
+│  Cache-Control: public, max-age=31536000, immutable                  │
+│  ↑ Cũng 1 năm — nhưng hash thay đổi mỗi deploy                      │
+│  → URL mới = browser coi là file mới = download lại                  │
+│                                                                      │
+│  index.html (KHÔNG có hash):                                         │
+│  Cache-Control: no-cache, no-store                                   │
+│  ↑ Luôn fetch mới — để browser biết hash mới nhất                    │
+│                                                                      │
+│  FLOW:                                                               │
+│  1. Browser fetch index.html (no-cache) → luôn mới nhất             │
+│  2. index.html reference react-vendor.abc123.js                      │
+│  3. Browser check cache: abc123 có không?                            │
+│     → Có → dùng cache (0ms, 0 bytes)                                 │
+│     → Không → download (1 lần duy nhất)                              │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### Đo lường hiệu quả Vendor Splitting
+
+**Công cụ phân tích bundle:**
+
+```typescript
+// vite.config.ts — rollup-plugin-visualizer (shopee-web đã cài)
+import { visualizer } from 'rollup-plugin-visualizer'
+
+plugins: [
+  visualizer(),  // ← tạo stats.html sau khi build
+]
+```
+
+Sau khi chạy `vite build`, mở `stats.html` để thấy:
+- Chunk nào lớn nhất
+- Library nào chiếm nhiều nhất trong mỗi chunk
+- Có module nào bị duplicate giữa các chunks không
+
+**Metrics cần theo dõi:**
+
+```
+Trước Vendor Splitting:
+  main.js = 2.8MB (gzipped 850KB)
+  Repeat visit: 850KB mỗi lần deploy
+
+Sau Vendor Splitting:
+  react-vendor.js  = 140KB (gzipped 45KB)   → cache hit sau lần đầu
+  motion-vendor.js = 95KB  (gzipped 30KB)   → cache hit sau lần đầu
+  http-vendor.js   = 80KB  (gzipped 25KB)   → cache hit sau lần đầu
+  app.js           = 80KB  (gzipped 25KB)   → download mỗi deploy
+  route chunks     = 200KB (gzipped 60KB)   → download khi navigate
+
+  First visit:   850KB (như cũ)
+  Repeat visit:  25KB  (chỉ app.js thay đổi)
+  → 97% bandwidth saved on repeat visits
+```
+
+---
+
+### Anti-patterns cần tránh
+
+```
+❌ Anti-pattern 1: Tách quá nhỏ
+   Mỗi component là 1 chunk → 200 HTTP requests → network overhead
+
+❌ Anti-pattern 2: Không exclude devtools
+   @tanstack/react-query-devtools vào production bundle
+   → +100KB không cần thiết
+
+❌ Anti-pattern 3: Vendor chunk quá lớn
+   Gộp tất cả vào 1 "vendor.js" = 2MB
+   → Nếu update 1 library nhỏ → invalidate toàn bộ 2MB cache
+
+❌ Anti-pattern 4: Không dùng content hash
+   react-vendor.js (không có hash)
+   → Browser không biết file đã thay đổi chưa
+   → Phải dùng ETag hoặc Last-Modified → thêm round-trip
+
+✅ Best practice: Tách theo "nhóm thay đổi cùng nhau"
+   Libraries cùng ecosystem (react + react-dom) → 1 chunk
+   Libraries độc lập, lớn (framer-motion) → chunk riêng
+   Libraries nhỏ, cùng mục đích (classnames + immer) → gộp
+```
+
+---
+
+### Trả lời phỏng vấn về Vendor Splitting
+
+**Q: "Vendor splitting là gì và tại sao dùng?"**
+
+```
+Vendor splitting là kỹ thuật tách third-party libraries (react, axios, ...)
+thành các JS chunk riêng biệt, tách khỏi application code.
+
+Lý do: App code thay đổi mỗi lần deploy, vendor code thay đổi rất ít.
+Nếu tách riêng + dùng content hash trong tên file:
+- Vendor chunks có thể cache ở browser 1 năm
+- Khi deploy, user chỉ download lại app chunk (~50-100KB)
+- Thay vì re-download toàn bộ bundle (2-3MB)
+
+Kết quả: Repeat visits nhanh hơn đáng kể — 97% bandwidth saved.
+```
+
+**Q: "Tại sao không tách mỗi library thành 1 chunk?"**
+
+```
+Vì HTTP requests có overhead — mỗi request tốn:
+- DNS lookup, TCP handshake, TLS negotiation (lần đầu)
+- HTTP header overhead (mỗi request)
+
+Dù HTTP/2 multiplexing giảm overhead, vẫn cần cân bằng:
+- Quá nhiều chunks → nhiều requests → overhead tăng
+- Quá ít chunks → cache granularity kém → cache miss lớn
+
+Best practice: Nhóm theo tần suất thay đổi và kích thước.
+Trong shopee-web: 12 vendor chunks — cân bằng giữa cache granularity
+và số lượng HTTP requests.
+```
+
+**Q: "Vendor splitting khác code splitting như thế nào?"**
+
+```
+Code splitting: tách theo route/component → giảm initial JS load
+Vendor splitting: tách theo nguồn gốc (app vs vendor) → tối ưu browser cache
+
+Chúng bổ sung cho nhau:
+- Code splitting giúp lần đầu vào trang nhanh hơn (ít JS hơn)
+- Vendor splitting giúp lần thứ 2, 3, ... nhanh hơn (cache hit)
+Dùng cả hai = tối ưu toàn diện.
 ```
 
 ---

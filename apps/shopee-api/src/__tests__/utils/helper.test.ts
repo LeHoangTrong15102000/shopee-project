@@ -21,4 +21,3 @@ describe('helper utils', () => {
     })
   })
 })
-

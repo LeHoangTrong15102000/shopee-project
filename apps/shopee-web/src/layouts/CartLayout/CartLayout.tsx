@@ -1,15 +1,15 @@
-import { lazy, Suspense } from 'react';
-import CartHeader from 'src/components/CartHeader';
-import Footer from 'src/components/Footer';
-import PageTransition from 'src/components/PageTransition';
+import { lazy, Suspense } from 'react'
+import CartHeader from 'src/components/CartHeader'
+import Footer from 'src/components/Footer'
+import PageTransition from 'src/components/PageTransition'
 
 // Lazy load BackToTop - matching pattern from MainLayout
-const BackToTop = lazy(() => import('src/components/BackToTop'));
+const BackToTop = lazy(() => import('src/components/BackToTop'))
 
 interface Props {
-  children: React.ReactNode;
-  headerTitle?: string;
-  showStepper?: boolean;
+  children: React.ReactNode
+  headerTitle?: string
+  showStepper?: boolean
 }
 
 const CartLayout = ({ children, headerTitle, showStepper = true }: Props) => {
@@ -23,7 +23,7 @@ const CartLayout = ({ children, headerTitle, showStepper = true }: Props) => {
         <BackToTop />
       </Suspense>
     </div>
-  );
-};
+  )
+}
 
-export default CartLayout;
+export default CartLayout

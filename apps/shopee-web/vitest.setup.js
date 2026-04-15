@@ -47,7 +47,7 @@ const allTranslations = {
   shipping: shippingVi,
   user: userVi,
   validation: validationVi,
-  wishlist: wishlistVi
+  wishlist: wishlistVi,
 }
 
 // Suppress SSL/TLS errors from socket cleanup in CI
@@ -82,14 +82,14 @@ const localStorageMock = (() => {
     },
     clear: () => {
       store = {}
-    }
+    },
   }
 })()
 
 // Setup localStorage mock
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
-  writable: true
+  writable: true,
 })
 
 // Setup sessionStorage mock — separate instance with its own store
@@ -105,13 +105,13 @@ const sessionStorageMock = (() => {
     },
     clear: () => {
       store = {}
-    }
+    },
   }
 })()
 
 Object.defineProperty(window, 'sessionStorage', {
   value: sessionStorageMock,
-  writable: true
+  writable: true,
 })
 
 // Mock window.matchMedia (required by useReducedMotion hook)
@@ -125,14 +125,14 @@ Object.defineProperty(window, 'matchMedia', {
     removeListener: vi.fn(),
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn()
-  }))
+    dispatchEvent: vi.fn(),
+  })),
 })
 
 // Mock window.scrollTo
 Object.defineProperty(window, 'scrollTo', {
   value: vi.fn(),
-  writable: true
+  writable: true,
 })
 
 // Mock IntersectionObserver (required by framer-motion viewport features)
@@ -141,10 +141,18 @@ global.IntersectionObserver = class IntersectionObserver {
     this.callback = callback
     this.options = options
   }
-  observe() { return null }
-  unobserve() { return null }
-  disconnect() { return null }
-  takeRecords() { return [] }
+  observe() {
+    return null
+  }
+  unobserve() {
+    return null
+  }
+  disconnect() {
+    return null
+  }
+  takeRecords() {
+    return []
+  }
 }
 
 // Additional mock APIs for categories and other endpoints
@@ -154,13 +162,13 @@ const additionalMocks = [
       message: 'Lấy categories thành công',
       data: [
         { _id: '1', name: 'Điện thoại' },
-        { _id: '2', name: 'Laptop' }
-      ]
+        { _id: '2', name: 'Laptop' },
+      ],
     })
   }),
   http.options('https://api-ecom.duthanhduoc.com/categories', () => {
     return new HttpResponse(null, { status: 200 })
-  })
+  }),
 ]
 
 // Mock react-i18next
@@ -170,7 +178,7 @@ vi.mock('react-i18next', async () => {
     ...actual,
     useTranslation: (ns = 'home') => ({
       t: (key, options) => {
-        const namespaces = typeof ns === 'string' ? [ns] : (Array.isArray(ns) ? ns : ['home'])
+        const namespaces = typeof ns === 'string' ? [ns] : Array.isArray(ns) ? ns : ['home']
 
         // Handle namespace-prefixed keys (e.g., 'order:preview.backButton')
         let searchKey = key
@@ -189,9 +197,12 @@ vi.mock('react-i18next', async () => {
             let value = translations[searchKey]
             // Handle interpolation: replace {{variable}} with actual values
             if (options && typeof value === 'string') {
-              Object.keys(options).forEach(optKey => {
+              Object.keys(options).forEach((optKey) => {
                 if (optKey !== 'defaultValue') {
-                  value = value.replace(new RegExp(`\\{\\{${optKey}\\}\\}`, 'g'), String(options[optKey]))
+                  value = value.replace(
+                    new RegExp(`\\{\\{${optKey}\\}\\}`, 'g'),
+                    String(options[optKey]),
+                  )
                 }
               })
             }
@@ -208,18 +219,29 @@ vi.mock('react-i18next', async () => {
         language: 'vi',
         hasResourceBundle: vi.fn().mockReturnValue(true),
         addResourceBundle: vi.fn(),
-        getResourceBundle: vi.fn()
-      }
+        getResourceBundle: vi.fn(),
+      },
     }),
     initReactI18next: {
       type: '3rdParty',
-      init: vi.fn()
+      init: vi.fn(),
     },
-    Trans: ({ children }) => children
+    Trans: ({ children }) => children,
   }
 })
 
-const server = setupServer(...authRequests, ...productRequests, ...userRequests, ...cartRequests, ...checkoutRequests, ...orderRequests, ...wishlistRequests, ...notificationRequests, ...addressRequests, ...additionalMocks)
+const server = setupServer(
+  ...authRequests,
+  ...productRequests,
+  ...userRequests,
+  ...cartRequests,
+  ...checkoutRequests,
+  ...orderRequests,
+  ...wishlistRequests,
+  ...notificationRequests,
+  ...addressRequests,
+  ...additionalMocks,
+)
 
 // Start server before all tests với strict mode — unhandled requests sẽ throw error
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
@@ -252,21 +274,21 @@ global.PointerEvent = class PointerEvent extends Event {
 
 // Mock additional globals for test environment
 Object.defineProperty(window, 'HTMLElement', {
-  value: HTMLElement
+  value: HTMLElement,
 })
 
 // Mock @heroui/tooltip to avoid @react-aria/interactions crash in jsdom
 // (@react-aria tries to set HTMLElement.focus which is read-only in jsdom)
 vi.mock('@heroui/tooltip', () => ({
-  Tooltip: ({ children }) => children
+  Tooltip: ({ children }) => children,
 }))
 
 // Mock heavy lazy-loaded components to prevent OOM in integration tests
 // These are only used in App.tsx via React.lazy() - component tests import directly and override
 vi.mock('src/components/ChatbotWidget', () => ({
-  default: () => null
+  default: () => null,
 }))
 
 vi.mock('src/components/PWAInstallPrompt', () => ({
-  default: () => null
+  default: () => null,
 }))

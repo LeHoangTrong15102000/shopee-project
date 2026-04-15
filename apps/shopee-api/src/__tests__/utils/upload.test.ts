@@ -179,7 +179,11 @@ describe('upload utility', () => {
     it('should reject with 422 error when one image has invalid mimetype', async () => {
       const mockFiles = [
         createMockFile({ filepath: '/tmp/upload_1', originalFilename: 'img1.jpg' }),
-        createMockFile({ filepath: '/tmp/upload_2', originalFilename: 'doc.pdf', mimetype: 'application/pdf' }),
+        createMockFile({
+          filepath: '/tmp/upload_2',
+          originalFilename: 'doc.pdf',
+          mimetype: 'application/pdf',
+        }),
       ]
       mockParse.mockImplementation((req, callback) => {
         callback(null, {}, { images: mockFiles })
@@ -213,4 +217,3 @@ describe('upload utility', () => {
     })
   })
 })
-

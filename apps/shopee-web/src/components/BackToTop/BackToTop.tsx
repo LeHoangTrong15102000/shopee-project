@@ -1,11 +1,11 @@
-import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import { ANIMATION_DURATION, ANIMATION_EASING } from 'src/styles/animations';
-import Button from 'src/components/Button';
+import { AnimatePresence, motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import { ANIMATION_DURATION, ANIMATION_EASING } from 'src/styles/animations'
+import Button from 'src/components/Button'
 
-const SCROLL_THRESHOLD = 300;
+const SCROLL_THRESHOLD = 300
 
 const backToTopVariants = {
   hidden: {
@@ -31,47 +31,47 @@ const backToTopVariants = {
       ease: ANIMATION_EASING.easeIn,
     },
   },
-};
+}
 
 const backToTopReducedVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { duration: 0.1 } },
   exit: { opacity: 0, transition: { duration: 0.1 } },
-};
+}
 
 const BackToTop = () => {
-  const { t } = useTranslation('common');
-  const [isVisible, setIsVisible] = useState(false);
-  const prefersReducedMotion = useReducedMotion();
+  const { t } = useTranslation('common')
+  const [isVisible, setIsVisible] = useState(false)
+  const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
-    let ticking = false;
+    let ticking = false
 
     const handleScroll = () => {
       if (!ticking) {
         requestAnimationFrame(() => {
-          setIsVisible(window.scrollY > SCROLL_THRESHOLD);
-          ticking = false;
-        });
-        ticking = true;
+          setIsVisible(window.scrollY > SCROLL_THRESHOLD)
+          ticking = false
+        })
+        ticking = true
       }
-    };
+    }
 
     // Check initial scroll position
-    handleScroll();
+    handleScroll()
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
       behavior: prefersReducedMotion ? 'auto' : 'smooth',
-    });
-  };
+    })
+  }
 
-  const variants = prefersReducedMotion ? backToTopReducedVariants : backToTopVariants;
+  const variants = prefersReducedMotion ? backToTopReducedVariants : backToTopVariants
 
   return (
     <AnimatePresence>
@@ -106,7 +106,7 @@ const BackToTop = () => {
         </motion.div>
       )}
     </AnimatePresence>
-  );
-};
+  )
+}
 
-export default BackToTop;
+export default BackToTop

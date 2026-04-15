@@ -9,20 +9,19 @@ export const userCheckinRouter = Router()
 userCheckinRouter.post(
   '/',
   authMiddleware.verifyAccessToken,
-  asyncHandler(checkinController.checkIn)
+  asyncHandler(checkinController.checkIn),
 )
 
 // Lấy thông tin streak hiện tại
 userCheckinRouter.get(
   '/streak',
   authMiddleware.verifyAccessToken,
-  asyncHandler(checkinController.getStreak)
+  asyncHandler(checkinController.getStreak),
 )
 
 // Lấy lịch sử điểm danh
 userCheckinRouter.get(
   '/history',
   authMiddleware.verifyAccessToken,
-  asyncHandler(checkinController.getHistory)
+  asyncHandler(checkinController.getHistory),
 )
-

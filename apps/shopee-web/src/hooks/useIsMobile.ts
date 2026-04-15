@@ -1,1 +1,1 @@
-export { useIsMobile } from '@shopee/shared-utils';
+export { useIsMobile } from '@shopee/shared-utils'

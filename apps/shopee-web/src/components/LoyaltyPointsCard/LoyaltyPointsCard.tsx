@@ -1,30 +1,30 @@
-import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
-import classNames from 'classnames';
-import { LoyaltyPoints } from 'src/types/loyalty.type';
-import { formatCurrency } from 'src/utils/utils';
-import Button from 'src/components/Button';
+import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import { motion, AnimatePresence } from 'framer-motion'
+import classNames from 'classnames'
+import { LoyaltyPoints } from 'src/types/loyalty.type'
+import { formatCurrency } from 'src/utils/utils'
+import Button from 'src/components/Button'
 
 interface LoyaltyPointsCardProps {
-  points: LoyaltyPoints;
-  nextRewardThreshold?: number;
-  className?: string;
+  points: LoyaltyPoints
+  nextRewardThreshold?: number
+  className?: string
 }
 
 const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  return `${day}/${month}`;
-};
+  const date = new Date(dateString)
+  const day = date.getDate().toString().padStart(2, '0')
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  return `${day}/${month}`
+}
 
 const getDaysUntilExpiry = (dateString: string): number => {
-  const expireDate = new Date(dateString);
-  const now = new Date();
-  const diffTime = expireDate.getTime() - now.getTime();
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-};
+  const expireDate = new Date(dateString)
+  const now = new Date()
+  const diffTime = expireDate.getTime() - now.getTime()
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+}
 
 const CoinIcon = ({ className = '' }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -40,46 +40,46 @@ const CoinIcon = ({ className = '' }: { className?: string }) => (
       </linearGradient>
     </defs>
   </svg>
-);
+)
 
 export default function LoyaltyPointsCard({
   points,
   nextRewardThreshold = 1000,
   className = '',
 }: LoyaltyPointsCardProps) {
-  const { t } = useTranslation('checkin');
-  const [displayPoints, setDisplayPoints] = useState(points.available_points);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const { t } = useTranslation('checkin')
+  const [displayPoints, setDisplayPoints] = useState(points.available_points)
+  const [isAnimating, setIsAnimating] = useState(false)
 
-  const progressPercentage = Math.min((points.available_points / nextRewardThreshold) * 100, 100);
-  const pointsToNextReward = Math.max(nextRewardThreshold - points.available_points, 0);
-  const daysUntilExpiry = getDaysUntilExpiry(points.expiring_soon.expire_date);
-  const showExpiryWarning = points.expiring_soon.points > 0 && daysUntilExpiry <= 7;
+  const progressPercentage = Math.min((points.available_points / nextRewardThreshold) * 100, 100)
+  const pointsToNextReward = Math.max(nextRewardThreshold - points.available_points, 0)
+  const daysUntilExpiry = getDaysUntilExpiry(points.expiring_soon.expire_date)
+  const showExpiryWarning = points.expiring_soon.points > 0 && daysUntilExpiry <= 7
 
   useEffect(() => {
     if (displayPoints !== points.available_points) {
-      setIsAnimating(true);
-      const diff = points.available_points - displayPoints;
-      const steps = 20;
-      const increment = diff / steps;
-      let current = displayPoints;
-      let step = 0;
+      setIsAnimating(true)
+      const diff = points.available_points - displayPoints
+      const steps = 20
+      const increment = diff / steps
+      let current = displayPoints
+      let step = 0
 
       const interval = setInterval(() => {
-        step++;
-        current += increment;
+        step++
+        current += increment
         if (step >= steps) {
-          setDisplayPoints(points.available_points);
-          setIsAnimating(false);
-          clearInterval(interval);
+          setDisplayPoints(points.available_points)
+          setIsAnimating(false)
+          clearInterval(interval)
         } else {
-          setDisplayPoints(Math.round(current));
+          setDisplayPoints(Math.round(current))
         }
-      }, 30);
+      }, 30)
 
-      return () => clearInterval(interval);
+      return () => clearInterval(interval)
     }
-  }, [points.available_points, displayPoints]);
+  }, [points.available_points, displayPoints])
 
   return (
     <motion.div
@@ -198,5 +198,5 @@ export default function LoyaltyPointsCard({
         )}
       </AnimatePresence>
     </motion.div>
-  );
+  )
 }

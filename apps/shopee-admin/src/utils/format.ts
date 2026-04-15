@@ -1,3 +1,3 @@
-import { formatPrice } from '@shopee/shared-utils';
+import { formatPrice } from '@shopee/shared-utils'
 
-export const formatCurrency = formatPrice;
+export const formatCurrency = formatPrice

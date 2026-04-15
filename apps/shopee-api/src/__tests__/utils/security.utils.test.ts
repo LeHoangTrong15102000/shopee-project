@@ -36,7 +36,9 @@ describe('security.utils', () => {
     })
 
     it('should mask IPv6 address correctly', () => {
-      expect(maskIP('2001:0db8:85a3::8a2e:0370:7334')).toBe('2001:0db8:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx')
+      expect(maskIP('2001:0db8:85a3::8a2e:0370:7334')).toBe(
+        '2001:0db8:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx',
+      )
     })
 
     it('should return xxx.xxx.xxx.xxx for invalid IP', () => {
@@ -125,4 +127,3 @@ describe('security.utils', () => {
     })
   })
 })
-

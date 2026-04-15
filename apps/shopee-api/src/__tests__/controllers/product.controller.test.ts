@@ -115,11 +115,11 @@ describe('Product Controller', () => {
       })
       const res = createMockResponse()
 
-      await expect(
-        ProductController.getProduct(req as any, res as Response)
-      ).rejects.toMatchObject({
-        status: STATUS.NOT_FOUND,
-      })
+      await expect(ProductController.getProduct(req as any, res as Response)).rejects.toMatchObject(
+        {
+          status: STATUS.NOT_FOUND,
+        },
+      )
     })
   })
 
@@ -139,7 +139,7 @@ describe('Product Controller', () => {
       expect(mockProductService.getProducts).toHaveBeenCalledWith(
         expect.objectContaining({ category: undefined }),
         expect.objectContaining({ sort_by: 'createdAt', order: 'desc' }),
-        expect.objectContaining({ page: 1, limit: 30 })
+        expect.objectContaining({ page: 1, limit: 30 }),
       )
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
@@ -167,7 +167,7 @@ describe('Product Controller', () => {
       expect(mockProductService.getProducts).toHaveBeenCalledWith(
         expect.objectContaining({ category: 'cat_1' }),
         expect.objectContaining({ sort_by: 'price', order: 'asc' }),
-        expect.objectContaining({ page: 2, limit: 10 })
+        expect.objectContaining({ page: 2, limit: 10 }),
       )
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
@@ -189,9 +189,8 @@ describe('Product Controller', () => {
       expect(mockProductService.getProducts).toHaveBeenCalledWith(
         expect.any(Object),
         expect.objectContaining({ sort_by: 'createdAt', order: 'desc' }),
-        expect.any(Object)
+        expect.any(Object),
       )
     })
   })
 })
-

@@ -1,36 +1,36 @@
-import { motion } from 'framer-motion';
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
-import ImageWithFallback from 'src/components/ImageWithFallback';
-import ProductRating from 'src/components/ProductRating';
-import path from 'src/constant/path';
-import { Product } from 'src/types/product.type';
-import { formatCurrency, formatNumberToSocialStyle, generateNameId } from 'src/utils/utils';
+import { motion } from 'framer-motion'
+import { Link } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
+import ImageWithFallback from 'src/components/ImageWithFallback'
+import ProductRating from 'src/components/ProductRating'
+import path from 'src/constant/path'
+import { Product } from 'src/types/product.type'
+import { formatCurrency, formatNumberToSocialStyle, generateNameId } from 'src/utils/utils'
 import {
   getCategoryIcon,
   IconFire,
   IconLightning,
   IconShoppingCart,
   IconSparkles,
-} from './WishlistIcons';
+} from './WishlistIcons'
 
 interface WishlistCardProps {
   item: {
-    _id: string;
-    product: Product;
-    addedAt: string;
-  };
-  hoveredCardId: string | null;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
-  onRemove: () => void;
-  onAddToCart: () => void;
-  isRecentlyAdded: (addedAt: string) => boolean;
-  isTrending: (product: Product) => boolean;
-  getStockStatus: (product: Product) => { label: string; color: string } | null;
-  getDiscountPercent: (product: Product) => number;
-  itemVariants: any;
+    _id: string
+    product: Product
+    addedAt: string
+  }
+  hoveredCardId: string | null
+  onMouseEnter: () => void
+  onMouseLeave: () => void
+  onRemove: () => void
+  onAddToCart: () => void
+  isRecentlyAdded: (addedAt: string) => boolean
+  isTrending: (product: Product) => boolean
+  getStockStatus: (product: Product) => { label: string; color: string } | null
+  getDiscountPercent: (product: Product) => number
+  itemVariants: any
 }
 
 export default function WishlistCard({
@@ -46,14 +46,14 @@ export default function WishlistCard({
   getDiscountPercent,
   itemVariants,
 }: WishlistCardProps) {
-  const { t } = useTranslation('wishlist');
-  const categoryName = item.product.category?.name || t('category.default');
-  const discount = getDiscountPercent(item.product);
-  const stock = getStockStatus(item.product);
-  const recent = isRecentlyAdded(item.addedAt);
-  const trending = isTrending(item.product);
+  const { t } = useTranslation('wishlist')
+  const categoryName = item.product.category?.name || t('category.default')
+  const discount = getDiscountPercent(item.product)
+  const stock = getStockStatus(item.product)
+  const recent = isRecentlyAdded(item.addedAt)
+  const trending = isTrending(item.product)
   const getProductLink = (product: Product) =>
-    `${path.home}${generateNameId({ name: product.name, id: product._id })}`;
+    `${path.home}${generateNameId({ name: product.name, id: product._id })}`
 
   return (
     <motion.div
@@ -158,8 +158,8 @@ export default function WishlistCard({
         <div className="mt-1.5">
           <span className="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2 py-0.5 text-[10px] text-gray-500 dark:bg-slate-700/50 dark:text-gray-400">
             {(() => {
-              const CatIcon = getCategoryIcon(item.product.category || categoryName);
-              return <CatIcon className="h-3 w-3" />;
+              const CatIcon = getCategoryIcon(item.product.category || categoryName)
+              return <CatIcon className="h-3 w-3" />
             })()}{' '}
             {categoryName}
           </span>
@@ -195,5 +195,5 @@ export default function WishlistCard({
         </Button>
       </div>
     </motion.div>
-  );
+  )
 }

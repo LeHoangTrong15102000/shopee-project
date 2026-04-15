@@ -1,5 +1,5 @@
-import { createMockUser } from 'src/test-utils/factories';
-import type { User } from 'src/types';
+import { createMockUser } from 'src/test-utils/factories'
+import type { User } from 'src/types'
 
 export const mockUsers: User[] = [
   createMockUser({ _id: 'user-1', email: 'admin@shopee.com', name: 'Admin', roles: ['Admin'] }),
@@ -17,4 +17,4 @@ export const mockUsers: User[] = [
     name: 'Phạm Thị D',
     roles: ['User', 'Seller'],
   }),
-];
+]

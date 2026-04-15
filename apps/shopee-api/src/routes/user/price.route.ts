@@ -8,26 +8,26 @@ export const userPriceRouter = Router()
 // Lấy lịch sử giá sản phẩm (public)
 userPriceRouter.get(
   '/products/:productId/price-history',
-  asyncHandler(priceController.getPriceHistory)
+  asyncHandler(priceController.getPriceHistory),
 )
 
 // Lấy danh sách cảnh báo giá (yêu cầu đăng nhập)
 userPriceRouter.get(
   '/price-alerts',
   authMiddleware.verifyAccessToken,
-  asyncHandler(priceController.getPriceAlerts)
+  asyncHandler(priceController.getPriceAlerts),
 )
 
 // Tạo cảnh báo giá (yêu cầu đăng nhập)
 userPriceRouter.post(
   '/price-alerts',
   authMiddleware.verifyAccessToken,
-  asyncHandler(priceController.createPriceAlert)
+  asyncHandler(priceController.createPriceAlert),
 )
 
 // Xóa cảnh báo giá (yêu cầu đăng nhập)
 userPriceRouter.delete(
   '/price-alerts/:alertId',
   authMiddleware.verifyAccessToken,
-  asyncHandler(priceController.deletePriceAlert)
+  asyncHandler(priceController.deletePriceAlert),
 )

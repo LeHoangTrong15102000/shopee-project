@@ -1,13 +1,13 @@
-import { lazy, Suspense, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { type ColumnDef } from '@tanstack/react-table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from 'src/components/ui/tabs';
-import { DataTable } from 'src/components/shared/DataTable';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { PeriodSelect } from 'src/components/shared/PeriodSelect';
-import { StatCard } from 'src/components/shared/StatCard';
-import { ErrorState } from 'src/components/shared/ErrorState';
-import { ChartSkeleton } from 'src/pages/Dashboard/components/ChartSkeleton';
+import { lazy, Suspense, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { type ColumnDef } from '@tanstack/react-table'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from 'src/components/ui/tabs'
+import { DataTable } from 'src/components/shared/DataTable'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { PeriodSelect } from 'src/components/shared/PeriodSelect'
+import { StatCard } from 'src/components/shared/StatCard'
+import { ErrorState } from 'src/components/shared/ErrorState'
+import { ChartSkeleton } from 'src/pages/Dashboard/components/ChartSkeleton'
 import {
   useTopSelling,
   useTopViewed,
@@ -15,38 +15,38 @@ import {
   useStatsByCategory,
   useChatbotOverview,
   useChatbotPerformance,
-} from 'src/hooks/useAnalytics';
-import { formatCurrency } from 'src/utils/format';
-import type { ProductAnalytics } from 'src/types';
+} from 'src/hooks/useAnalytics'
+import { formatCurrency } from 'src/utils/format'
+import type { ProductAnalytics } from 'src/types'
 
-const ChatbotChart = lazy(() => import('./ChatbotChart'));
+const ChatbotChart = lazy(() => import('./ChatbotChart'))
 
 export default function AnalyticsPage() {
-  const { t } = useTranslation('analytics');
-  const [period, setPeriod] = useState('30d');
-  const [activeTab, setActiveTab] = useState('top-selling');
+  const { t } = useTranslation('analytics')
+  const [period, setPeriod] = useState('30d')
+  const [activeTab, setActiveTab] = useState('top-selling')
 
   const {
     data: topSelling,
     isLoading: loadingSelling,
     isError: sellingError,
     refetch: refetchSelling,
-  } = useTopSelling(period, { enabled: activeTab === 'top-selling' });
+  } = useTopSelling(period, { enabled: activeTab === 'top-selling' })
   // Note: topViewed and topRated backend endpoints return all-time data (no period filter).
   // Period is excluded from their query keys to avoid unnecessary refetches.
   const { data: topViewed, isLoading: loadingViewed } = useTopViewed({
     enabled: activeTab === 'top-viewed',
-  });
+  })
   const { data: topRated, isLoading: loadingRated } = useTopRated({
     enabled: activeTab === 'top-rated',
-  });
+  })
   const { data: byCategory, isLoading: loadingCategory } = useStatsByCategory({
     enabled: activeTab === 'by-category',
-  });
-  const { data: chatbot } = useChatbotOverview({ enabled: activeTab === 'chatbot' });
+  })
+  const { data: chatbot } = useChatbotOverview({ enabled: activeTab === 'chatbot' })
   const { data: chatbotPerf, isLoading: loadingChatbotPerf } = useChatbotPerformance(period, {
     enabled: activeTab === 'chatbot',
-  });
+  })
 
   const productCols: ColumnDef<ProductAnalytics>[] = [
     {
@@ -74,14 +74,14 @@ export default function AnalyticsPage() {
       header: t('columns.revenue'),
       cell: ({ row }) => (row.original.revenue ? formatCurrency(row.original.revenue) : '—'),
     },
-  ];
+  ]
 
   const categoryCols: ColumnDef<{
-    _id: string;
-    category_name: string;
-    product_count: number;
-    total_sold: number;
-    average_price: number;
+    _id: string
+    category_name: string
+    product_count: number
+    total_sold: number
+    average_price: number
   }>[] = [
     { accessorKey: 'category_name', header: t('columns.category') },
     { accessorKey: 'product_count', header: t('columns.products') },
@@ -91,7 +91,7 @@ export default function AnalyticsPage() {
       header: t('columns.avgPrice'),
       cell: ({ row }) => formatCurrency(Math.round(row.original.average_price)),
     },
-  ];
+  ]
 
   return (
     <div className="space-y-6">
@@ -167,5 +167,5 @@ export default function AnalyticsPage() {
         </TabsContent>
       </Tabs>
     </div>
-  );
+  )
 }

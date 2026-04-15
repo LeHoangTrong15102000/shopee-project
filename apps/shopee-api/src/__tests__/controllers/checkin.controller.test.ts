@@ -73,7 +73,10 @@ describe('Checkin Controller', () => {
     const res = createMockResponse()
     await getHistory(req as Request, res as Response)
     // Controller does Number(page), Number(limit)
-    expect(container.services.checkin.getHistory).toHaveBeenCalledWith('user123', { page: 1, limit: 10 })
+    expect(container.services.checkin.getHistory).toHaveBeenCalledWith('user123', {
+      page: 1,
+      limit: 10,
+    })
     expect(res.status).toHaveBeenCalledWith(200)
     expect(res.json).toHaveBeenCalledWith({
       message: expect.any(String),

@@ -1,22 +1,22 @@
-import classNames from 'classnames';
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import path from 'src/constant/path';
-import NotificationList from '../../NotificationList';
+import classNames from 'classnames'
+import { Link } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import path from 'src/constant/path'
+import NotificationList from '../../NotificationList'
 
 interface NotificationPopoverProps {
-  isAuthenticated: boolean;
-  variant?: 'compact' | 'full';
+  isAuthenticated: boolean
+  variant?: 'compact' | 'full'
 }
 
 const NotificationPopover = ({ isAuthenticated, variant = 'full' }: NotificationPopoverProps) => {
-  const { t } = useTranslation('nav');
+  const { t } = useTranslation('nav')
   if (isAuthenticated) {
     return (
       <div className='before:absolute before:top-0 before:left-0 before:h-[15px] before:w-full before:-translate-y-full before:bg-transparent before:content-[""]'>
         <NotificationList />
       </div>
-    );
+    )
   }
 
   if (variant === 'compact') {
@@ -47,7 +47,7 @@ const NotificationPopover = ({ isAuthenticated, variant = 'full' }: Notification
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -83,7 +83,7 @@ const NotificationPopover = ({ isAuthenticated, variant = 'full' }: Notification
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default NotificationPopover;
+export default NotificationPopover

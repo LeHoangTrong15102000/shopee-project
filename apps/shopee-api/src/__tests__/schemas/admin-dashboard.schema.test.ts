@@ -1,7 +1,11 @@
 /// <reference types="jest" />
 import {
-  dashboardOverviewSchema, dashboardRevenueSchema, dashboardRevenueByCategorySchema,
-  dashboardRevenueByProductSchema, dashboardOrderTrendSchema, dashboardUserGrowthSchema,
+  dashboardOverviewSchema,
+  dashboardRevenueSchema,
+  dashboardRevenueByCategorySchema,
+  dashboardRevenueByProductSchema,
+  dashboardOrderTrendSchema,
+  dashboardUserGrowthSchema,
   dashboardTopBuyersSchema,
 } from '@schemas/admin-dashboard.schema'
 
@@ -16,7 +20,11 @@ describe('Admin Dashboard Schemas', () => {
   })
 
   it('dashboardRevenueSchema accepts date range', () => {
-    expect(dashboardRevenueSchema.safeParse({ query: { start_date: '2024-01-01', end_date: '2024-12-31' } }).success).toBe(true)
+    expect(
+      dashboardRevenueSchema.safeParse({
+        query: { start_date: '2024-01-01', end_date: '2024-12-31' },
+      }).success,
+    ).toBe(true)
   })
 
   it('dashboardRevenueSchema rejects invalid period', () => {
@@ -24,7 +32,9 @@ describe('Admin Dashboard Schemas', () => {
   })
 
   it('dashboardRevenueByCategorySchema accepts period', () => {
-    expect(dashboardRevenueByCategorySchema.safeParse({ query: { period: '30d' } }).success).toBe(true)
+    expect(dashboardRevenueByCategorySchema.safeParse({ query: { period: '30d' } }).success).toBe(
+      true,
+    )
   })
 
   it('dashboardRevenueByProductSchema accepts limit', () => {
@@ -40,6 +50,8 @@ describe('Admin Dashboard Schemas', () => {
   })
 
   it('dashboardTopBuyersSchema accepts period and limit', () => {
-    expect(dashboardTopBuyersSchema.safeParse({ query: { period: '7d', limit: 20 } }).success).toBe(true)
+    expect(dashboardTopBuyersSchema.safeParse({ query: { period: '7d', limit: 20 } }).success).toBe(
+      true,
+    )
   })
 })

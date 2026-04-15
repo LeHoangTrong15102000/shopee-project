@@ -18,7 +18,7 @@ export const getQuestions = async (req: Request, res: Response): Promise<void> =
     product_id as string,
     user_id,
     sort as 'newest' | 'oldest' | 'most_liked',
-    { page: Number(page), limit: Number(limit) }
+    { page: Number(page), limit: Number(limit) },
   )
 
   res.status(STATUS.OK).json({
@@ -39,7 +39,11 @@ export const askQuestion = async (req: Request, res: Response): Promise<void> =>
   const user_id = req.jwtDecoded?.id
   const { product_id, question } = req.body
 
-  const { question: newQuestion, product } = await qaService.askQuestion(user_id!, product_id, question)
+  const { question: newQuestion, product } = await qaService.askQuestion(
+    user_id!,
+    product_id,
+    question,
+  )
 
   // WebSocket: Emit new question to product room (fire-and-forget)
   void (async () => {
@@ -59,7 +63,9 @@ export const askQuestion = async (req: Request, res: Response): Promise<void> =>
         user_name: newQuestion.user_name,
       })
       await emitCurrentSellerMetrics('admin')
-    } catch (_) { /* non-critical */ }
+    } catch (_) {
+      /* non-critical */
+    }
   })()
 
   res.status(STATUS.OK).json({
@@ -73,7 +79,12 @@ export const answerQuestion = async (req: Req, res: Response): Promise<void> => 
   const { questionId } = req.params
   const { answer, is_seller = false } = req.body
 
-  const { answer: newAnswer, productId } = await qaService.answerQuestion(user_id!, questionId, answer, is_seller)
+  const { answer: newAnswer, productId } = await qaService.answerQuestion(
+    user_id!,
+    questionId,
+    answer,
+    is_seller,
+  )
 
   // WebSocket: Emit new answer to product room (fire-and-forget)
   void (() => {
@@ -85,7 +96,9 @@ export const answerQuestion = async (req: Req, res: Response): Promise<void> => 
         is_seller: newAnswer.is_seller,
         createdAt: newAnswer.created_at.toISOString(),
       })
-    } catch (_) { /* non-critical */ }
+    } catch (_) {
+      /* non-critical */
+    }
   })()
 
   res.status(STATUS.OK).json({
@@ -104,7 +117,9 @@ export const likeQuestion = async (req: Req, res: Response): Promise<void> => {
   void (() => {
     try {
       emitQuestionLiked(productId, questionId, likes_count)
-    } catch (_) { /* non-critical */ }
+    } catch (_) {
+      /* non-critical */
+    }
   })()
 
   res.status(STATUS.OK).json({
@@ -134,4 +149,3 @@ export const likeAnswer = async (req: Req, res: Response): Promise<void> => {
     throw error
   }
 }
-

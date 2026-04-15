@@ -1,24 +1,24 @@
-import classNames from 'classnames';
-import { ORDER_STATUS_CONFIG, OrderStatus, getStatusLabel } from 'src/config/orderStatus';
+import classNames from 'classnames'
+import { ORDER_STATUS_CONFIG, OrderStatus, getStatusLabel } from 'src/config/orderStatus'
 
 interface OrderStatusBadgeProps {
-  status: OrderStatus;
-  className?: string;
-  size?: 'sm' | 'md' | 'lg';
+  status: OrderStatus
+  className?: string
+  size?: 'sm' | 'md' | 'lg'
 }
 
 const SIZE_CLASSES = {
   sm: 'px-2 py-0.5 text-xs',
   md: 'px-2.5 py-1 text-sm',
   lg: 'px-3 py-1.5 text-base',
-};
+}
 
 export default function OrderStatusBadge({
   status,
   className,
   size = 'md',
 }: OrderStatusBadgeProps) {
-  const config = ORDER_STATUS_CONFIG[status];
+  const config = ORDER_STATUS_CONFIG[status]
 
   return (
     <span
@@ -36,5 +36,5 @@ export default function OrderStatusBadge({
     >
       {getStatusLabel(status)}
     </span>
-  );
+  )
 }

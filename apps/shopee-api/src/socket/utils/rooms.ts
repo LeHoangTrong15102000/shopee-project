@@ -165,4 +165,3 @@ export const leaveAllProductRooms = async (socket: Socket): Promise<void> => {
     })
   }
 }
-

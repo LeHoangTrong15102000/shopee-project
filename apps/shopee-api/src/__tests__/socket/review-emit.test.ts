@@ -23,7 +23,9 @@ describe('Review Emit Utils', () => {
     }
     const { getIORequired } = await import('../../socket/socket.init')
     if (throwError) {
-      ;(getIORequired as jest.Mock).mockImplementation(() => { throw new Error('IO not initialized') })
+      ;(getIORequired as jest.Mock).mockImplementation(() => {
+        throw new Error('IO not initialized')
+      })
     } else {
       ;(getIORequired as jest.Mock).mockReturnValue(mockIO)
     }

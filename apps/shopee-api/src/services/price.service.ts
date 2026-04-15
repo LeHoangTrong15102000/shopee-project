@@ -35,7 +35,11 @@ export class PriceService extends BaseService {
     return []
   }
 
-  async createPriceAlert(userId: string, productId: string, targetPrice: number): Promise<PriceAlert> {
+  async createPriceAlert(
+    userId: string,
+    productId: string,
+    targetPrice: number,
+  ): Promise<PriceAlert> {
     // TODO: Implement with PriceAlertRepository
     return {
       _id: '',
@@ -49,11 +53,7 @@ export class PriceService extends BaseService {
     }
   }
 
-  async getPriceAlerts(
-    userId: string,
-    filters: PriceAlertFilters,
-    pagination: PaginationOptions
-  ) {
+  async getPriceAlerts(userId: string, filters: PriceAlertFilters, pagination: PaginationOptions) {
     // TODO: Implement with PriceAlertRepository
     return {
       data: [] as PriceAlert[],
@@ -71,4 +71,3 @@ export class PriceService extends BaseService {
     return null
   }
 }
-

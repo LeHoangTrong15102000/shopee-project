@@ -1,6 +1,10 @@
 import { z } from 'zod'
 import { mongoIdSchema } from './common.schema'
-import { adminPaginationQuerySchema, sortQuerySchema, dateRangeQuerySchema } from './admin-common.schema'
+import {
+  adminPaginationQuerySchema,
+  sortQuerySchema,
+  dateRangeQuerySchema,
+} from './admin-common.schema'
 
 // ─── Admin Question List Query ────────────────────────────────
 
@@ -28,4 +32,3 @@ export const adminDeleteAnswerSchema = z.object({
     answer_id: mongoIdSchema,
   }),
 })
-

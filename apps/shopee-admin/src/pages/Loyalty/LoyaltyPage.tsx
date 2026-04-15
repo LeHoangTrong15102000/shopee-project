@@ -1,26 +1,26 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { type ColumnDef } from '@tanstack/react-table';
-import { format } from 'date-fns';
-import { Plus, Pencil, Trash2, Gift } from 'lucide-react';
-import { Button } from 'src/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from 'src/components/ui/tabs';
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { type ColumnDef } from '@tanstack/react-table'
+import { format } from 'date-fns'
+import { Plus, Pencil, Trash2, Gift } from 'lucide-react'
+import { Button } from 'src/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from 'src/components/ui/tabs'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from 'src/components/ui/dialog';
-import { Input } from 'src/components/ui/input';
-import { Label } from 'src/components/ui/label';
-import { Textarea } from 'src/components/ui/textarea';
-import { DataTable } from 'src/components/shared/DataTable';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { StatCard } from 'src/components/shared/StatCard';
-import { StatusBadge } from 'src/components/shared/StatusBadge';
-import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
-import { ErrorState } from 'src/components/shared/ErrorState';
+} from 'src/components/ui/dialog'
+import { Input } from 'src/components/ui/input'
+import { Label } from 'src/components/ui/label'
+import { Textarea } from 'src/components/ui/textarea'
+import { DataTable } from 'src/components/shared/DataTable'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { StatCard } from 'src/components/shared/StatCard'
+import { StatusBadge } from 'src/components/shared/StatusBadge'
+import { ConfirmDialog } from 'src/components/shared/ConfirmDialog'
+import { ErrorState } from 'src/components/shared/ErrorState'
 import {
   useRewards,
   useLoyaltyTransactions,
@@ -29,37 +29,37 @@ import {
   useUpdateReward,
   useDeleteReward,
   useAdjustPoints,
-} from 'src/hooks/useLoyalty';
-import type { LoyaltyReward, LoyaltyTransaction } from 'src/types';
+} from 'src/hooks/useLoyalty'
+import type { LoyaltyReward, LoyaltyTransaction } from 'src/types'
 
 export default function LoyaltyPage() {
-  const { t } = useTranslation('loyalty');
-  const { t: tc } = useTranslation('common');
-  const [rewardDialog, setRewardDialog] = useState(false);
-  const [editReward, setEditReward] = useState<LoyaltyReward | null>(null);
-  const [deleteReward, setDeleteReward] = useState<LoyaltyReward | null>(null);
-  const [adjustDialog, setAdjustDialog] = useState(false);
-  const [rewardForm, setRewardForm] = useState({ name: '', description: '', points_required: 0 });
-  const [adjustForm, setAdjustForm] = useState({ user_id: '', points: 0, description: '' });
+  const { t } = useTranslation('loyalty')
+  const { t: tc } = useTranslation('common')
+  const [rewardDialog, setRewardDialog] = useState(false)
+  const [editReward, setEditReward] = useState<LoyaltyReward | null>(null)
+  const [deleteReward, setDeleteReward] = useState<LoyaltyReward | null>(null)
+  const [adjustDialog, setAdjustDialog] = useState(false)
+  const [rewardForm, setRewardForm] = useState({ name: '', description: '', points_required: 0 })
+  const [adjustForm, setAdjustForm] = useState({ user_id: '', points: 0, description: '' })
 
   const {
     data: rewards,
     isLoading: loadingRewards,
     isError: rewardsError,
     refetch: refetchRewards,
-  } = useRewards();
+  } = useRewards()
   const {
     data: transactions,
     isLoading: loadingTx,
     isError: txError,
     refetch: refetchTx,
-  } = useLoyaltyTransactions();
-  const { data: stats } = useLoyaltyStats();
+  } = useLoyaltyTransactions()
+  const { data: stats } = useLoyaltyStats()
 
-  const createRewardMut = useCreateReward(() => setRewardDialog(false));
-  const updateRewardMut = useUpdateReward(() => setEditReward(null));
-  const deleteRewardMut = useDeleteReward(() => setDeleteReward(null));
-  const adjustMut = useAdjustPoints(() => setAdjustDialog(false));
+  const createRewardMut = useCreateReward(() => setRewardDialog(false))
+  const updateRewardMut = useUpdateReward(() => setEditReward(null))
+  const deleteRewardMut = useDeleteReward(() => setDeleteReward(null))
+  const adjustMut = useAdjustPoints(() => setAdjustDialog(false))
 
   const rewardCols: ColumnDef<LoyaltyReward>[] = [
     { accessorKey: 'name', header: t('rewards.name') },
@@ -84,12 +84,12 @@ export default function LoyaltyPage() {
             size="sm"
             aria-label={t('common:aria.editItem', { item: t('loyalty:reward') })}
             onClick={() => {
-              setEditReward(row.original);
+              setEditReward(row.original)
               setRewardForm({
                 name: row.original.name,
                 description: row.original.description,
                 points_required: row.original.points_required,
-              });
+              })
             }}
           >
             <Pencil className="size-4" />
@@ -105,15 +105,15 @@ export default function LoyaltyPage() {
         </div>
       ),
     },
-  ];
+  ]
 
   const txCols: ColumnDef<LoyaltyTransaction>[] = [
     {
       accessorKey: 'user',
       header: t('transactions.user'),
       cell: ({ row }) => {
-        const u = row.original.user;
-        return typeof u === 'object' ? u.email : u;
+        const u = row.original.user
+        return typeof u === 'object' ? u.email : u
       },
     },
     {
@@ -143,7 +143,7 @@ export default function LoyaltyPage() {
       header: t('transactions.date'),
       cell: ({ row }) => format(new Date(row.original.createdAt), 'MMM d, yyyy'),
     },
-  ];
+  ]
 
   return (
     <div className="space-y-6">
@@ -160,8 +160,8 @@ export default function LoyaltyPage() {
             <Button
               size="sm"
               onClick={() => {
-                setRewardDialog(true);
-                setRewardForm({ name: '', description: '', points_required: 0 });
+                setRewardDialog(true)
+                setRewardForm({ name: '', description: '', points_required: 0 })
               }}
             >
               <Plus className="mr-2 size-4" />
@@ -339,5 +339,5 @@ export default function LoyaltyPage() {
         isLoading={deleteRewardMut.isPending}
       />
     </div>
-  );
+  )
 }

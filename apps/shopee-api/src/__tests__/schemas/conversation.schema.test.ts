@@ -13,7 +13,9 @@ const VALID_ID = '507f1f77bcf86cd799439011'
 describe('Conversation Schemas', () => {
   describe('createConversationSchema', () => {
     it('should pass with valid input', () => {
-      const result = createConversationSchema.safeParse({ body: { message: 'Hello', title: 'Test' } })
+      const result = createConversationSchema.safeParse({
+        body: { message: 'Hello', title: 'Test' },
+      })
       expect(result.success).toBe(true)
     })
 
@@ -33,7 +35,9 @@ describe('Conversation Schemas', () => {
     })
 
     it('should fail when title is too long (>200)', () => {
-      const result = createConversationSchema.safeParse({ body: { message: 'Hello', title: 'a'.repeat(201) } })
+      const result = createConversationSchema.safeParse({
+        body: { message: 'Hello', title: 'a'.repeat(201) },
+      })
       expect(result.success).toBe(false)
     })
 
@@ -123,4 +127,3 @@ describe('Conversation Schemas', () => {
     })
   })
 })
-

@@ -1,23 +1,23 @@
-import classNames from 'classnames';
-import { format } from 'date-fns';
-import { MessageReceivedPayload } from 'src/types/socket.types';
+import classNames from 'classnames'
+import { format } from 'date-fns'
+import { MessageReceivedPayload } from 'src/types/socket.types'
 
 interface MessageItemProps {
-  message: MessageReceivedPayload;
-  isSent: boolean;
+  message: MessageReceivedPayload
+  isSent: boolean
 }
 
 export default function MessageItem({ message, isSent }: MessageItemProps) {
-  const formattedTime = format(new Date(message.created_at), 'HH:mm');
+  const formattedTime = format(new Date(message.created_at), 'HH:mm')
 
   const renderStatusIcon = () => {
-    if (!isSent) return null;
+    if (!isSent) return null
 
     switch (message.status) {
       case 'sent':
-        return <span className="text-xs text-gray-400">✓</span>;
+        return <span className="text-xs text-gray-400">✓</span>
       case 'delivered':
-        return <span className="text-xs text-gray-400">✓✓</span>;
+        return <span className="text-xs text-gray-400">✓✓</span>
       case 'read':
         return (
           <svg className="h-3.5 w-3.5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
@@ -28,11 +28,11 @@ export default function MessageItem({ message, isSent }: MessageItemProps) {
               clipRule="evenodd"
             />
           </svg>
-        );
+        )
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   return (
     <div className={classNames('flex', isSent ? 'justify-end' : 'justify-start')}>
@@ -80,5 +80,5 @@ export default function MessageItem({ message, isSent }: MessageItemProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -1,12 +1,12 @@
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next'
 
 interface AddressFormHeaderProps {
-  isEditing: boolean;
-  onClose: () => void;
+  isEditing: boolean
+  onClose: () => void
 }
 
 export default function AddressFormHeader({ isEditing, onClose }: AddressFormHeaderProps) {
-  const { t } = useTranslation('address');
+  const { t } = useTranslation('address')
 
   return (
     <div className="relative bg-linear-to-r from-orange to-orange/80 px-6 py-5">
@@ -62,5 +62,5 @@ export default function AddressFormHeader({ isEditing, onClose }: AddressFormHea
         </button>
       </div>
     </div>
-  );
+  )
 }

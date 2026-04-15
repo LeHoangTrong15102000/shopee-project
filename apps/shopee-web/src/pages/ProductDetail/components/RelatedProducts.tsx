@@ -1,37 +1,37 @@
-import { useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
-import productApi from 'src/apis/product.api';
-import Product from 'src/pages/ProductList/components/Product';
-import { ProductListConfig } from 'src/types/product.type';
-import { RetryError } from 'src/types/utils.type';
-import { sectionEntrance } from 'src/styles/animations';
-import path from 'src/constant/path';
+import { useQuery } from '@tanstack/react-query'
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
+import productApi from 'src/apis/product.api'
+import Product from 'src/pages/ProductList/components/Product'
+import { ProductListConfig } from 'src/types/product.type'
+import { RetryError } from 'src/types/utils.type'
+import { sectionEntrance } from 'src/styles/animations'
+import path from 'src/constant/path'
 
 interface RelatedProductsProps {
-  categoryId: string;
-  reducedMotion: boolean;
+  categoryId: string
+  reducedMotion: boolean
 }
 
 const RelatedProducts = ({ categoryId, reducedMotion }: RelatedProductsProps) => {
-  const { t } = useTranslation('product');
-  const queryConfig: ProductListConfig = { limit: '20', page: '1', category: categoryId };
+  const { t } = useTranslation('product')
+  const queryConfig: ProductListConfig = { limit: '20', page: '1', category: categoryId }
 
   const { data: productsData, isLoading } = useQuery({
     queryKey: ['products', queryConfig],
     queryFn: ({ signal }) => {
-      return productApi.getProducts(queryConfig, { signal });
+      return productApi.getProducts(queryConfig, { signal })
     },
     enabled: Boolean(categoryId),
     staleTime: 3 * 60 * 1000,
     retry: (failureCount, error: RetryError) => {
       if (error?.name === 'AbortError' || error?.code === 'ERR_CANCELED') {
-        return false;
+        return false
       }
-      return failureCount < 1;
+      return failureCount < 1
     },
-  });
+  })
 
   return (
     <motion.div
@@ -83,7 +83,7 @@ const RelatedProducts = ({ categoryId, reducedMotion }: RelatedProductsProps) =>
         </Link>
       </div>
     </motion.div>
-  );
-};
+  )
+}
 
-export default RelatedProducts;
+export default RelatedProducts

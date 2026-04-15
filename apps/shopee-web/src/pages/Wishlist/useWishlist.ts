@@ -1,36 +1,36 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
-import productApi from 'src/apis/product.api';
-import purchaseApi from 'src/apis/purchases.api';
-import wishlistApi from 'src/apis/wishlist.api';
-import { purchasesStatus } from 'src/constant/purchase';
-import { Product } from 'src/types/product.type';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+import productApi from 'src/apis/product.api'
+import purchaseApi from 'src/apis/purchases.api'
+import wishlistApi from 'src/apis/wishlist.api'
+import { purchasesStatus } from 'src/constant/purchase'
+import { Product } from 'src/types/product.type'
 
 export function useWishlist(activeFilter: string, activeSort: string) {
-  const { t } = useTranslation('wishlist');
-  const queryClient = useQueryClient();
+  const { t } = useTranslation('wishlist')
+  const queryClient = useQueryClient()
 
   // Fetch real products from API
   const { data: productsData } = useQuery({
     queryKey: ['products', { limit: 30, sort_by: 'sold' }],
     queryFn: () => productApi.getProducts({ limit: 30, sort_by: 'sold' as const }),
-  });
+  })
 
   // Fetch wishlist data (mock fallback since API not deployed)
   const { data: wishlistData, isLoading } = useQuery({
     queryKey: ['wishlist'],
     queryFn: () => wishlistApi.getWishlist({ page: 1, limit: 50 }),
-  });
+  })
 
   // Merge: create wishlist items from real products or API wishlist
   const allWishlistItems = (() => {
-    const apiWishlistItems = wishlistData?.data.data.wishlist ?? [];
-    const realProducts = productsData?.data.data.products ?? [];
+    const apiWishlistItems = wishlistData?.data.data.wishlist ?? []
+    const realProducts = productsData?.data.data.products ?? []
 
     // If we have real wishlist items with valid product data, use them
     if (apiWishlistItems.length > 0 && apiWishlistItems[0].product?.image) {
-      return apiWishlistItems;
+      return apiWishlistItems
     }
 
     // Otherwise, create mock wishlist entries from real products
@@ -40,74 +40,74 @@ export function useWishlist(activeFilter: string, activeSort: string) {
         user: 'current-user',
         product,
         addedAt: new Date(Date.now() - index * 24 * 60 * 60 * 1000).toISOString(),
-      }));
+      }))
     }
 
-    return apiWishlistItems;
-  })();
+    return apiWishlistItems
+  })()
 
   // Filter & Sort logic
   const wishlistItems = (() => {
-    let items = [...allWishlistItems];
+    let items = [...allWishlistItems]
 
     // Apply filter
     if (activeFilter === 'sale') {
-      items = items.filter((i) => i.product.price_before_discount > i.product.price);
+      items = items.filter((i) => i.product.price_before_discount > i.product.price)
     } else if (activeFilter === 'bestseller') {
-      items = items.filter((i) => i.product.sold >= 2000);
+      items = items.filter((i) => i.product.sold >= 2000)
     } else if (activeFilter === 'new') {
-      const threeDaysAgo = Date.now() - 3 * 24 * 60 * 60 * 1000;
-      items = items.filter((i) => new Date(i.addedAt).getTime() > threeDaysAgo);
+      const threeDaysAgo = Date.now() - 3 * 24 * 60 * 60 * 1000
+      items = items.filter((i) => new Date(i.addedAt).getTime() > threeDaysAgo)
     } else if (activeFilter === 'lowprice') {
-      items = items.filter((i) => i.product.price < 300000);
+      items = items.filter((i) => i.product.price < 300000)
     } else if (activeFilter === 'highrating') {
-      items = items.filter((i) => i.product.rating >= 4.5);
+      items = items.filter((i) => i.product.rating >= 4.5)
     }
 
     // Apply sort
-    if (activeSort === 'price-asc') items.sort((a, b) => a.product.price - b.product.price);
-    else if (activeSort === 'price-desc') items.sort((a, b) => b.product.price - a.product.price);
+    if (activeSort === 'price-asc') items.sort((a, b) => a.product.price - b.product.price)
+    else if (activeSort === 'price-desc') items.sort((a, b) => b.product.price - a.product.price)
     else if (activeSort === 'discount') {
       items.sort((a, b) => {
-        const dA = a.product.price_before_discount - a.product.price;
-        const dB = b.product.price_before_discount - b.product.price;
-        return dB - dA;
-      });
-    } else if (activeSort === 'bestseller') items.sort((a, b) => b.product.sold - a.product.sold);
-    else items.sort((a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime());
+        const dA = a.product.price_before_discount - a.product.price
+        const dB = b.product.price_before_discount - b.product.price
+        return dB - dA
+      })
+    } else if (activeSort === 'bestseller') items.sort((a, b) => b.product.sold - a.product.sold)
+    else items.sort((a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime())
 
-    return items;
-  })();
+    return items
+  })()
 
   // Extract product IDs for real-time price monitoring
-  const productIds = allWishlistItems.map((item) => item.product._id);
+  const productIds = allWishlistItems.map((item) => item.product._id)
 
   // Stats
-  const totalValue = allWishlistItems.reduce((sum, item) => sum + item.product.price, 0);
+  const totalValue = allWishlistItems.reduce((sum, item) => sum + item.product.price, 0)
   const totalSavings = allWishlistItems.reduce(
     (sum, item) => sum + (item.product.price_before_discount - item.product.price),
     0,
-  );
+  )
 
   // Insights
   const insights = (() => {
-    if (allWishlistItems.length === 0) return null;
-    const catCount: Record<string, number> = {};
-    let totalDiscount = 0;
-    let discountItems = 0;
+    if (allWishlistItems.length === 0) return null
+    const catCount: Record<string, number> = {}
+    let totalDiscount = 0
+    let discountItems = 0
     allWishlistItems.forEach((item) => {
-      const cat = item.product.category?.name || 'Other';
-      catCount[cat] = (catCount[cat] || 0) + 1;
+      const cat = item.product.category?.name || 'Other'
+      catCount[cat] = (catCount[cat] || 0) + 1
       if (item.product.price_before_discount > item.product.price) {
         totalDiscount += Math.round(
           ((item.product.price_before_discount - item.product.price) /
             item.product.price_before_discount) *
             100,
-        );
-        discountItems++;
+        )
+        discountItems++
       }
-    });
-    const topCat = Object.entries(catCount).sort((a, b) => b[1] - a[1])[0];
+    })
+    const topCat = Object.entries(catCount).sort((a, b) => b[1] - a[1])[0]
     return {
       topCategory: topCat ? topCat[0] : 'N/A',
       topCategoryCount: topCat ? topCat[1] : 0,
@@ -121,34 +121,34 @@ export function useWishlist(activeFilter: string, activeSort: string) {
               100,
           ) >= 30,
       ).length,
-    };
-  })();
+    }
+  })()
 
   // Badge helpers
   const isRecentlyAdded = (addedAt: string) => {
-    return Date.now() - new Date(addedAt).getTime() < 3 * 24 * 60 * 60 * 1000;
-  };
-  const isTrending = (product: Product) => product.sold >= 3000 && product.rating >= 4.5;
+    return Date.now() - new Date(addedAt).getTime() < 3 * 24 * 60 * 60 * 1000
+  }
+  const isTrending = (product: Product) => product.sold >= 3000 && product.rating >= 4.5
   const getStockStatus = (product: Product) => {
-    if (product.quantity <= 0) return { label: t('stock.outOfStock'), color: 'bg-red-500' };
-    if (product.quantity <= 20) return { label: t('stock.runningLow'), color: 'bg-amber-500' };
-    return null;
-  };
+    if (product.quantity <= 0) return { label: t('stock.outOfStock'), color: 'bg-red-500' }
+    if (product.quantity <= 20) return { label: t('stock.runningLow'), color: 'bg-amber-500' }
+    return null
+  }
   const getDiscountPercent = (product: Product) => {
-    if (product.price_before_discount <= product.price) return 0;
+    if (product.price_before_discount <= product.price) return 0
     return Math.round(
       ((product.price_before_discount - product.price) / product.price_before_discount) * 100,
-    );
-  };
+    )
+  }
 
   // Mutations
   const removeMutation = useMutation({
     mutationFn: (productId: string) => wishlistApi.removeFromWishlist(productId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wishlist'] });
-      toast.success(t('toast.removedFromWishlist'));
+      queryClient.invalidateQueries({ queryKey: ['wishlist'] })
+      toast.success(t('toast.removedFromWishlist'))
     },
-  });
+  })
 
   const addToCartMutation = useMutation({
     mutationFn: (productId: string) =>
@@ -156,10 +156,10 @@ export function useWishlist(activeFilter: string, activeSort: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['purchases', { status: purchasesStatus.inCart }],
-      });
-      toast.success(t('toast.addedToCart'));
+      })
+      toast.success(t('toast.addedToCart'))
     },
-  });
+  })
 
   return {
     allWishlistItems,
@@ -175,5 +175,5 @@ export function useWishlist(activeFilter: string, activeSort: string) {
     getDiscountPercent,
     removeMutation,
     addToCartMutation,
-  };
+  }
 }

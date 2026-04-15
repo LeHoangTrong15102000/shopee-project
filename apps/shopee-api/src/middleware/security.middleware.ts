@@ -102,7 +102,7 @@ export const getLoginAttemptKey = (ip: string, email?: string): string => {
 export const requestSizeLimitMiddleware = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   const contentLength = req.headers['content-length']
 
@@ -130,7 +130,7 @@ export const requestSizeLimitMiddleware = (
 export const bruteForceProtectionMiddleware = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   const clientIP = getClientIP(req)
   const email = req.body?.email
@@ -228,12 +228,10 @@ export const resetAllLoginAttempts = (): void => {
 export const suspiciousActivityMiddleware = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   const clientIP = getClientIP(req)
-  const isSensitiveEndpoint = SENSITIVE_ENDPOINTS.some((endpoint) =>
-    req.path.includes(endpoint)
-  )
+  const isSensitiveEndpoint = SENSITIVE_ENDPOINTS.some((endpoint) => req.path.includes(endpoint))
 
   // Log các request đến endpoint nhạy cảm
   if (isSensitiveEndpoint) {
@@ -255,7 +253,7 @@ export const suspiciousActivityMiddleware = (
 export const validateContentTypeMiddleware = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   // Bỏ qua GET, HEAD, OPTIONS requests
   if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
@@ -274,7 +272,7 @@ export const validateContentTypeMiddleware = (
   // Kiểm tra content-type có hợp lệ không
   if (contentType) {
     const isValidContentType = ALLOWED_CONTENT_TYPES.some((allowed) =>
-      contentType.toLowerCase().includes(allowed)
+      contentType.toLowerCase().includes(allowed),
     )
 
     if (!isValidContentType) {
@@ -333,7 +331,7 @@ const containsSuspiciousPattern = (value: string): { isSuspicious: boolean; patt
  */
 const checkObjectForSuspiciousPatterns = (
   obj: any,
-  path: string = ''
+  path: string = '',
 ): { isSuspicious: boolean; field?: string; pattern?: string } => {
   if (!obj || typeof obj !== 'object') {
     if (typeof obj === 'string') {
@@ -386,7 +384,7 @@ const checkObjectForSuspiciousPatterns = (
 export const suspiciousPatternMiddleware = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   // Kiểm tra URL path
   const urlCheck = containsSuspiciousPattern(req.path)
@@ -401,10 +399,7 @@ export const suspiciousPatternMiddleware = (
   // Kiểm tra query params
   const queryCheck = checkObjectForSuspiciousPatterns(req.query, 'query')
   if (queryCheck.isSuspicious) {
-    logSuspiciousActivity(
-      req,
-      `Suspicious pattern in ${queryCheck.field}: ${queryCheck.pattern}`
-    )
+    logSuspiciousActivity(req, `Suspicious pattern in ${queryCheck.field}: ${queryCheck.pattern}`)
     res.status(STATUS.BAD_REQUEST).json({
       message: 'Request chứa nội dung không hợp lệ.',
     })
@@ -415,10 +410,7 @@ export const suspiciousPatternMiddleware = (
   if (req.body && Object.keys(req.body).length > 0) {
     const bodyCheck = checkObjectForSuspiciousPatterns(req.body, 'body')
     if (bodyCheck.isSuspicious) {
-      logSuspiciousActivity(
-        req,
-        `Suspicious pattern in ${bodyCheck.field}: ${bodyCheck.pattern}`
-      )
+      logSuspiciousActivity(req, `Suspicious pattern in ${bodyCheck.field}: ${bodyCheck.pattern}`)
       res.status(STATUS.BAD_REQUEST).json({
         message: 'Request chứa nội dung không hợp lệ.',
       })
@@ -482,4 +474,3 @@ export const cleanupExpiredLoginAttempts = (): void => {
 
 // Chạy cleanup mỗi 30 phút
 setInterval(cleanupExpiredLoginAttempts, 30 * 60 * 1000)
-

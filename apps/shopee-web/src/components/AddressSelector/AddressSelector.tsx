@@ -1,67 +1,67 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Address } from 'src/types/checkout.type';
-import addressApi from 'src/apis/address.api';
-import Button from 'src/components/Button';
-import AddressForm from './AddressForm';
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Address } from 'src/types/checkout.type'
+import addressApi from 'src/apis/address.api'
+import Button from 'src/components/Button'
+import AddressForm from './AddressForm'
 
 interface AddressSelectorProps {
-  selectedAddressId: string | null;
-  onSelect: (address: Address) => void;
+  selectedAddressId: string | null
+  onSelect: (address: Address) => void
 }
 
 function AddressSelector({ selectedAddressId, onSelect }: AddressSelectorProps) {
-  const { t } = useTranslation('address');
-  const [showForm, setShowForm] = useState(false);
-  const [editingAddress, setEditingAddress] = useState<Address | null>(null);
-  const queryClient = useQueryClient();
+  const { t } = useTranslation('address')
+  const [showForm, setShowForm] = useState(false)
+  const [editingAddress, setEditingAddress] = useState<Address | null>(null)
+  const queryClient = useQueryClient()
 
   const { data: addressData, isLoading } = useQuery({
     queryKey: ['addresses'],
     queryFn: async () => {
-      const res = await addressApi.getAddresses();
-      return res.data.data;
+      const res = await addressApi.getAddresses()
+      return res.data.data
     },
-  });
+  })
 
   const setDefaultMutation = useMutation({
     mutationFn: (id: string) => addressApi.setDefaultAddress(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['addresses'] });
+      queryClient.invalidateQueries({ queryKey: ['addresses'] })
     },
-  });
+  })
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => addressApi.deleteAddress(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['addresses'] });
+      queryClient.invalidateQueries({ queryKey: ['addresses'] })
     },
-  });
+  })
 
-  const addresses = addressData?.addresses || [];
+  const addresses = addressData?.addresses || []
 
   const handleAddNew = () => {
-    setEditingAddress(null);
-    setShowForm(true);
-  };
+    setEditingAddress(null)
+    setShowForm(true)
+  }
 
   const handleEdit = (address: Address) => {
-    setEditingAddress(address);
-    setShowForm(true);
-  };
+    setEditingAddress(address)
+    setShowForm(true)
+  }
 
   const handleFormClose = () => {
-    setShowForm(false);
-    setEditingAddress(null);
-  };
+    setShowForm(false)
+    setEditingAddress(null)
+  }
 
   const handleFormSuccess = () => {
-    setShowForm(false);
-    setEditingAddress(null);
-    queryClient.invalidateQueries({ queryKey: ['addresses'] });
-  };
+    setShowForm(false)
+    setEditingAddress(null)
+    queryClient.invalidateQueries({ queryKey: ['addresses'] })
+  }
 
   if (isLoading) {
     return (
@@ -70,7 +70,7 @@ function AddressSelector({ selectedAddressId, onSelect }: AddressSelectorProps) 
           <div key={i} className="h-24 rounded-lg bg-gray-200 dark:bg-slate-700" />
         ))}
       </div>
-    );
+    )
   }
 
   return (
@@ -172,8 +172,8 @@ function AddressSelector({ selectedAddressId, onSelect }: AddressSelectorProps) 
                   <div className="mt-2 flex gap-3">
                     <Button
                       onClick={(e) => {
-                        e.stopPropagation();
-                        handleEdit(address);
+                        e.stopPropagation()
+                        handleEdit(address)
                       }}
                       variant="text"
                       size="sm"
@@ -186,8 +186,8 @@ function AddressSelector({ selectedAddressId, onSelect }: AddressSelectorProps) 
                       <>
                         <Button
                           onClick={(e) => {
-                            e.stopPropagation();
-                            setDefaultMutation.mutate(address._id);
+                            e.stopPropagation()
+                            setDefaultMutation.mutate(address._id)
                           }}
                           variant="text"
                           size="sm"
@@ -198,8 +198,8 @@ function AddressSelector({ selectedAddressId, onSelect }: AddressSelectorProps) 
                         </Button>
                         <Button
                           onClick={(e) => {
-                            e.stopPropagation();
-                            deleteMutation.mutate(address._id);
+                            e.stopPropagation()
+                            deleteMutation.mutate(address._id)
                           }}
                           variant="text"
                           size="sm"
@@ -228,7 +228,7 @@ function AddressSelector({ selectedAddressId, onSelect }: AddressSelectorProps) 
         )}
       </AnimatePresence>
     </div>
-  );
+  )
 }
 
-export default AddressSelector;
+export default AddressSelector

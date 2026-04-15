@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/components/ui/select';
-import { Input } from 'src/components/ui/input';
-import { Label } from 'src/components/ui/label';
+} from 'src/components/ui/select'
+import { Input } from 'src/components/ui/input'
+import { Label } from 'src/components/ui/label'
 
 const periodKeys = [
   { value: '7d', labelKey: 'period.last7days' },
@@ -16,13 +16,13 @@ const periodKeys = [
   { value: '90d', labelKey: 'period.last90days' },
   { value: '1y', labelKey: 'period.lastYear' },
   { value: 'custom', labelKey: 'period.customRange' },
-];
+]
 
 interface PeriodSelectProps {
-  value?: string;
-  onChange: (value: string) => void;
-  onCustomRange?: (startDate: string, endDate: string) => void;
-  className?: string;
+  value?: string
+  onChange: (value: string) => void
+  onCustomRange?: (startDate: string, endDate: string) => void
+  className?: string
 }
 
 export function PeriodSelect({
@@ -31,25 +31,25 @@ export function PeriodSelect({
   onCustomRange,
   className,
 }: PeriodSelectProps) {
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const { t } = useTranslation('layout');
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
+  const { t } = useTranslation('layout')
 
   const handleChange = (v: string) => {
-    onChange(v);
+    onChange(v)
     if (v !== 'custom') {
-      setStartDate('');
-      setEndDate('');
+      setStartDate('')
+      setEndDate('')
     }
-  };
+  }
 
   const handleDateChange = (start: string, end: string) => {
-    setStartDate(start);
-    setEndDate(end);
+    setStartDate(start)
+    setEndDate(end)
     if (start && end && onCustomRange) {
-      onCustomRange(start, end);
+      onCustomRange(start, end)
     }
-  };
+  }
 
   return (
     <div className="flex items-center gap-2">
@@ -89,5 +89,5 @@ export function PeriodSelect({
         </div>
       )}
     </div>
-  );
+  )
 }

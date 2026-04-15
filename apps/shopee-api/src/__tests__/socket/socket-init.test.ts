@@ -80,7 +80,9 @@ describe('socket.init', () => {
 
   it('getIORequired throws Error before initialization', async () => {
     const { getIORequired } = await import('../../socket/socket.init')
-    expect(() => getIORequired()).toThrow('Socket.io server not initialized. Call initializeSocket() first.')
+    expect(() => getIORequired()).toThrow(
+      'Socket.io server not initialized. Call initializeSocket() first.',
+    )
   })
 
   it('initializeSocket creates SocketIOServer with correct config', async () => {
@@ -89,17 +91,20 @@ describe('socket.init', () => {
 
     initializeSocket({} as any)
 
-    expect(Server).toHaveBeenCalledWith({}, {
-      cors: {
-        origin: ['http://localhost:3000'],
-        methods: ['GET', 'POST'],
-        credentials: true,
+    expect(Server).toHaveBeenCalledWith(
+      {},
+      {
+        cors: {
+          origin: ['http://localhost:3000'],
+          methods: ['GET', 'POST'],
+          credentials: true,
+        },
+        pingTimeout: 60000,
+        pingInterval: 25000,
+        maxHttpBufferSize: 1e6,
+        transports: ['websocket', 'polling'],
       },
-      pingTimeout: 60000,
-      pingInterval: 25000,
-      maxHttpBufferSize: 1e6,
-      transports: ['websocket', 'polling'],
-    })
+    )
   })
 
   it('initializeSocket applies socketAuthMiddleware', async () => {
@@ -144,14 +149,18 @@ describe('socket.init', () => {
   })
 
   it('connect handler joins user room, emits connected, registers all handlers', async () => {
-    const { handleConnect, registerConnectionHandlers } = await import('../../socket/handlers/connection.handler')
+    const { handleConnect, registerConnectionHandlers } =
+      await import('../../socket/handlers/connection.handler')
     const { registerChatHandlers } = await import('../../socket/handlers/chat.handler')
-    const { registerNotificationHandlers, sendPendingNotifications } = await import('../../socket/handlers/notification.handler')
-    const { registerProductHandlers, joinAdminRoomIfAdmin } = await import('../../socket/handlers/product.handler')
+    const { registerNotificationHandlers, sendPendingNotifications } =
+      await import('../../socket/handlers/notification.handler')
+    const { registerProductHandlers, joinAdminRoomIfAdmin } =
+      await import('../../socket/handlers/product.handler')
     const { registerPresenceHandlers } = await import('../../socket/handlers/presence.handler')
     const { registerOrderHandlers } = await import('../../socket/handlers/order.handler')
     const { registerFlashSaleHandlers } = await import('../../socket/handlers/flash-sale.handler')
-    const { registerSellerDashboardHandlers } = await import('../../socket/handlers/seller-dashboard.handler')
+    const { registerSellerDashboardHandlers } =
+      await import('../../socket/handlers/seller-dashboard.handler')
     const { initializeSocket } = await import('../../socket/socket.init')
 
     initializeSocket({} as any)
@@ -169,7 +178,10 @@ describe('socket.init', () => {
     connectHandler(mockSocket)
 
     expect(mockSocket.join).toHaveBeenCalledWith('user:user-1')
-    expect(mockSocket.emit).toHaveBeenCalledWith('connected', { user_id: 'user-1', socket_id: 'socket-1' })
+    expect(mockSocket.emit).toHaveBeenCalledWith('connected', {
+      user_id: 'user-1',
+      socket_id: 'socket-1',
+    })
     expect(handleConnect).toHaveBeenCalledWith(mockSocket)
     expect(joinAdminRoomIfAdmin).toHaveBeenCalledWith(mockSocket)
     expect(registerConnectionHandlers).toHaveBeenCalledWith(mockSocket)
@@ -183,4 +195,3 @@ describe('socket.init', () => {
     expect(sendPendingNotifications).toHaveBeenCalledWith(mockSocket)
   })
 })
-

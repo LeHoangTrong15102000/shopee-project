@@ -44,7 +44,10 @@ describe('QAService', () => {
         pagination: { page: 1, limit: 10, total_pages: 1, page_size: 10 },
       })
 
-      const result = await service.getQuestions(validObjectId, undefined, 'newest', { page: 1, limit: 10 })
+      const result = await service.getQuestions(validObjectId, undefined, 'newest', {
+        page: 1,
+        limit: 10,
+      })
 
       expect(result.data[0].is_liked).toBe(false)
     })
@@ -56,7 +59,10 @@ describe('QAService', () => {
         pagination: { page: 1, limit: 10, total_pages: 1, page_size: 10 },
       })
 
-      const result = await service.getQuestions(validObjectId, validObjectId, 'newest', { page: 1, limit: 10 })
+      const result = await service.getQuestions(validObjectId, validObjectId, 'newest', {
+        page: 1,
+        limit: 10,
+      })
 
       expect(result.data[0].is_liked).toBe(true)
     })
@@ -78,7 +84,9 @@ describe('QAService', () => {
     it('should throw NotFoundError when product not found', async () => {
       ;(mockProductRepository.findById as jest.Mock).mockResolvedValue(null)
 
-      await expect(service.askQuestion(validObjectId, validObjectId, 'Test?')).rejects.toThrow(NotFoundError)
+      await expect(service.askQuestion(validObjectId, validObjectId, 'Test?')).rejects.toThrow(
+        NotFoundError,
+      )
     })
   })
 
@@ -98,14 +106,19 @@ describe('QAService', () => {
     it('should throw NotFoundError when question not found', async () => {
       ;(mockQARepository.findQuestionById as jest.Mock).mockResolvedValue(null)
 
-      await expect(service.answerQuestion(validObjectId, validObjectId, 'Answer')).rejects.toThrow(NotFoundError)
+      await expect(service.answerQuestion(validObjectId, validObjectId, 'Answer')).rejects.toThrow(
+        NotFoundError,
+      )
     })
   })
 
   describe('likeQuestion', () => {
     it('should toggle like when question exists', async () => {
       ;(mockQARepository.findQuestionById as jest.Mock).mockResolvedValue(mockQuestion)
-      ;(mockQARepository.toggleQuestionLike as jest.Mock).mockResolvedValue({ is_liked: true, likes_count: 1 })
+      ;(mockQARepository.toggleQuestionLike as jest.Mock).mockResolvedValue({
+        is_liked: true,
+        likes_count: 1,
+      })
 
       const result = await service.likeQuestion(validObjectId, validObjectId)
 
@@ -115,14 +128,19 @@ describe('QAService', () => {
     it('should throw NotFoundError when question not found', async () => {
       ;(mockQARepository.findQuestionById as jest.Mock).mockResolvedValue(null)
 
-      await expect(service.likeQuestion(validObjectId, validObjectId)).rejects.toThrow(NotFoundError)
+      await expect(service.likeQuestion(validObjectId, validObjectId)).rejects.toThrow(
+        NotFoundError,
+      )
     })
   })
 
   describe('likeAnswer', () => {
     it('should toggle like when answer exists', async () => {
       ;(mockQARepository.findQuestionById as jest.Mock).mockResolvedValue(mockQuestion)
-      ;(mockQARepository.toggleAnswerLike as jest.Mock).mockResolvedValue({ is_liked: true, likes_count: 1 })
+      ;(mockQARepository.toggleAnswerLike as jest.Mock).mockResolvedValue({
+        is_liked: true,
+        likes_count: 1,
+      })
 
       const result = await service.likeAnswer(validObjectId, validObjectId, validObjectId)
 
@@ -133,7 +151,9 @@ describe('QAService', () => {
       const questionNoAnswer = { ...mockQuestion, answers: [] }
       ;(mockQARepository.findQuestionById as jest.Mock).mockResolvedValue(questionNoAnswer)
 
-      await expect(service.likeAnswer(validObjectId, validObjectId, validObjectId)).rejects.toThrow(NotFoundError)
+      await expect(service.likeAnswer(validObjectId, validObjectId, validObjectId)).rejects.toThrow(
+        NotFoundError,
+      )
     })
   })
 
@@ -147,4 +167,3 @@ describe('QAService', () => {
     })
   })
 })
-

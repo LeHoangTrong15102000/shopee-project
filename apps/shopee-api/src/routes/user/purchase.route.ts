@@ -16,32 +16,32 @@ userPurchaseRouter.post(
   '/buy-products',
   validate(buyProductsSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(purchaseController.buyProducts)
+  asyncHandler(purchaseController.buyProducts),
 )
 
 userPurchaseRouter.post(
   '/add-to-cart',
   validate(addToCartSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(purchaseController.addToCart)
+  asyncHandler(purchaseController.addToCart),
 )
 
 userPurchaseRouter.put(
   '/update-purchase',
   validate(updatePurchaseSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(purchaseController.updatePurchase)
+  asyncHandler(purchaseController.updatePurchase),
 )
 
 userPurchaseRouter.delete(
   '',
   validate(deletePurchasesSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(purchaseController.deletePurchases)
+  asyncHandler(purchaseController.deletePurchases),
 )
 
 userPurchaseRouter.get(
   '',
   authMiddleware.verifyAccessToken,
-  asyncHandler(purchaseController.getPurchases)
+  asyncHandler(purchaseController.getPurchases),
 )

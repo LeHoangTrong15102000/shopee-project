@@ -61,4 +61,3 @@ export const adminDashboardController = {
   getUserGrowth,
   getTopBuyers,
 }
-

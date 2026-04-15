@@ -1,18 +1,18 @@
-import { useTranslation } from 'react-i18next';
-import BaseModal from 'src/components/BaseModal/BaseModal';
-import VoucherCard from 'src/components/VoucherCard/VoucherCard';
-import useVoucherSave from 'src/hooks/useVoucherSave';
+import { useTranslation } from 'react-i18next'
+import BaseModal from 'src/components/BaseModal/BaseModal'
+import VoucherCard from 'src/components/VoucherCard/VoucherCard'
+import useVoucherSave from 'src/hooks/useVoucherSave'
 
 interface VoucherListModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen: boolean
+  onClose: () => void
 }
 
 const VoucherListModal = ({ isOpen, onClose }: VoucherListModalProps) => {
-  const { t } = useTranslation('product');
+  const { t } = useTranslation('product')
   const { vouchers, isLoading, isError, refetch, savedIds, savingIds, handleSave } = useVoucherSave(
     { enabled: isOpen },
-  );
+  )
 
   return (
     <BaseModal
@@ -102,7 +102,7 @@ const VoucherListModal = ({ isOpen, onClose }: VoucherListModalProps) => {
         )}
       </div>
     </BaseModal>
-  );
-};
+  )
+}
 
-export default VoucherListModal;
+export default VoucherListModal

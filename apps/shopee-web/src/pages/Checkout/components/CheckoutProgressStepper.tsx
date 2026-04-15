@@ -1,19 +1,19 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
 export const CHECKOUT_STEPS = [
   { id: 1, name: 'address', icon: 'location' },
   { id: 2, name: 'shipping', icon: 'truck' },
   { id: 3, name: 'payment', icon: 'payment' },
   { id: 4, name: 'confirm', icon: 'check' },
-];
+]
 
 interface CheckoutProgressStepperProps {
-  currentStep: number;
+  currentStep: number
 }
 
 export const CheckoutProgressStepper = ({ currentStep }: CheckoutProgressStepperProps) => {
-  const { t } = useTranslation('checkout');
+  const { t } = useTranslation('checkout')
   return (
     <div className="mb-6 md:mb-8">
       <div className="mx-auto flex max-w-2xl items-center justify-center">
@@ -75,5 +75,5 @@ export const CheckoutProgressStepper = ({ currentStep }: CheckoutProgressStepper
         ))}
       </div>
     </div>
-  );
-};
+  )
+}

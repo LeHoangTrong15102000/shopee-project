@@ -40,7 +40,7 @@ interface ConversationFilter {
 export const createNewConversation = async (
   userId: string,
   firstMessage: string,
-  title?: string
+  title?: string,
 ) => {
   // Validate message
   const messageValidation = validateMessageContent(firstMessage)
@@ -57,18 +57,12 @@ export const createNewConversation = async (
   }
 
   // Tạo user message
-  const userMessage = createMessage(
-    firstMessage.trim(),
-    MESSAGE_ROLE.USER,
-    nanoid()
-  )
+  const userMessage = createMessage(firstMessage.trim(), MESSAGE_ROLE.USER, nanoid())
 
   // Tạo conversation
   const conversation = new ConversationModel({
     user: userId,
-    title:
-      title ||
-      firstMessage.slice(0, 50) + (firstMessage.length > 50 ? '...' : ''),
+    title: title || firstMessage.slice(0, 50) + (firstMessage.length > 50 ? '...' : ''),
     messages: [userMessage],
     status: CONVERSATION_STATUS.ACTIVE,
     lastActivity: new Date(),
@@ -84,7 +78,7 @@ export const addMessageToConversation = async (
   conversationId: string,
   userId: string,
   messageContent: string,
-  role: MessageRole = MESSAGE_ROLE.USER
+  role: MessageRole = MESSAGE_ROLE.USER,
 ) => {
   // Validate message
   const messageValidation = validateMessageContent(messageContent)
@@ -125,7 +119,7 @@ export const getConversationsList = async (
   userId: string,
   page: number = 1,
   limit: number = 10,
-  status?: ConversationStatus
+  status?: ConversationStatus,
 ) => {
   const skip = (page - 1) * limit
 
@@ -160,10 +154,7 @@ export const getConversationsList = async (
 /**
  * Service function để lấy conversation detail
  */
-export const getConversationDetail = async (
-  conversationId: string,
-  userId: string
-) => {
+export const getConversationDetail = async (conversationId: string, userId: string) => {
   const conversation = await ConversationModel.findOne({
     _id: conversationId,
     user: userId,
@@ -182,7 +173,7 @@ export const getConversationDetail = async (
 export const updateConversationDetails = async (
   conversationId: string,
   userId: string,
-  updates: { title?: string; status?: ConversationStatus }
+  updates: { title?: string; status?: ConversationStatus },
 ) => {
   // Validate title nếu có
   if (updates.title) {
@@ -211,10 +202,7 @@ export const updateConversationDetails = async (
 /**
  * Service function để xóa conversation
  */
-export const deleteConversationById = async (
-  conversationId: string,
-  userId: string
-) => {
+export const deleteConversationById = async (conversationId: string, userId: string) => {
   const result = await ConversationModel.deleteOne({
     _id: conversationId,
     user: userId,
@@ -232,7 +220,7 @@ export const deleteConversationById = async (
  */
 export const getConversationMessages = async (
   conversationId: string,
-  userId: string
+  userId: string,
 ): Promise<ChatMessage[]> => {
   const conversation = await ConversationModel.findOne({
     _id: conversationId,

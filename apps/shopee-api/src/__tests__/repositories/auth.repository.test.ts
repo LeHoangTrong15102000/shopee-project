@@ -33,7 +33,10 @@ describe('AuthRepository', () => {
 
   describe('createRefreshToken', () => {
     it('should create a new refresh token', async () => {
-      const result = await repository.createRefreshToken('507f1f77bcf86cd799439012', 'new-refresh-token')
+      const result = await repository.createRefreshToken(
+        '507f1f77bcf86cd799439012',
+        'new-refresh-token',
+      )
       expect(result).toEqual(mockRefreshTokenData)
     })
   })
@@ -102,7 +105,9 @@ describe('AuthRepository', () => {
   describe('isRefreshTokenValid', () => {
     it('should return true for valid non-expired token', async () => {
       const validToken = { ...mockRefreshTokenData, expiresAt: new Date(Date.now() + 86400000) }
-      ;(RefreshTokenModel.findOne as jest.Mock).mockReturnValue({ lean: jest.fn().mockResolvedValue(validToken) })
+      ;(RefreshTokenModel.findOne as jest.Mock).mockReturnValue({
+        lean: jest.fn().mockResolvedValue(validToken),
+      })
 
       const result = await repository.isRefreshTokenValid('refresh-token-123')
 
@@ -111,7 +116,9 @@ describe('AuthRepository', () => {
 
     it('should return false for expired token', async () => {
       const expiredToken = { ...mockRefreshTokenData, expiresAt: new Date(Date.now() - 86400000) }
-      ;(RefreshTokenModel.findOne as jest.Mock).mockReturnValue({ lean: jest.fn().mockResolvedValue(expiredToken) })
+      ;(RefreshTokenModel.findOne as jest.Mock).mockReturnValue({
+        lean: jest.fn().mockResolvedValue(expiredToken),
+      })
 
       const result = await repository.isRefreshTokenValid('expired-token')
 
@@ -119,7 +126,9 @@ describe('AuthRepository', () => {
     })
 
     it('should return false if token not found', async () => {
-      ;(RefreshTokenModel.findOne as jest.Mock).mockReturnValue({ lean: jest.fn().mockResolvedValue(null) })
+      ;(RefreshTokenModel.findOne as jest.Mock).mockReturnValue({
+        lean: jest.fn().mockResolvedValue(null),
+      })
 
       const result = await repository.isRefreshTokenValid('nonexistent-token')
 
@@ -131,7 +140,11 @@ describe('AuthRepository', () => {
     it('should delete old token and create new one', async () => {
       ;(RefreshTokenModel.deleteOne as jest.Mock).mockResolvedValue({ deletedCount: 1 })
 
-      const result = await repository.rotateRefreshToken('old-token', 'new-token', '507f1f77bcf86cd799439012')
+      const result = await repository.rotateRefreshToken(
+        'old-token',
+        'new-token',
+        '507f1f77bcf86cd799439012',
+      )
 
       expect(RefreshTokenModel.deleteOne).toHaveBeenCalledWith({ token: 'old-token' })
       expect(result).toEqual(mockRefreshTokenData)
@@ -140,7 +153,11 @@ describe('AuthRepository', () => {
     it('should return null if old token not found', async () => {
       ;(RefreshTokenModel.deleteOne as jest.Mock).mockResolvedValue({ deletedCount: 0 })
 
-      const result = await repository.rotateRefreshToken('nonexistent-token', 'new-token', '507f1f77bcf86cd799439012')
+      const result = await repository.rotateRefreshToken(
+        'nonexistent-token',
+        'new-token',
+        '507f1f77bcf86cd799439012',
+      )
 
       expect(result).toBeNull()
     })

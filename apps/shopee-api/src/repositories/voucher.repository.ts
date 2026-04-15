@@ -1,13 +1,17 @@
 import { Types } from 'mongoose'
 import { VoucherModel, IVoucher } from '@database/models/voucher.model'
-import { SavedVoucherModel, ISavedVoucher, VoucherStatus } from '@database/models/saved-voucher.model'
+import {
+  SavedVoucherModel,
+  ISavedVoucher,
+  VoucherStatus,
+} from '@database/models/saved-voucher.model'
 import { IVoucherRepository, VoucherFilterOptions } from './interfaces/voucher.repository.interface'
 import { PaginatedResult, PaginationOptions } from './interfaces/base.repository.interface'
 
 export class VoucherRepository implements IVoucherRepository {
   async findAvailable(
     pagination: PaginationOptions,
-    filters?: VoucherFilterOptions
+    filters?: VoucherFilterOptions,
   ): Promise<PaginatedResult<IVoucher>> {
     const { page, limit } = pagination
     const skip = (page - 1) * limit
@@ -25,7 +29,12 @@ export class VoucherRepository implements IVoucherRepository {
     }
 
     const [data, total] = await Promise.all([
-      VoucherModel.find(query).select({ __v: 0 }).sort({ created_at: -1 }).skip(skip).limit(limit).lean<IVoucher[]>(),
+      VoucherModel.find(query)
+        .select({ __v: 0 })
+        .sort({ created_at: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean<IVoucher[]>(),
       VoucherModel.countDocuments(query),
     ])
 
@@ -36,7 +45,9 @@ export class VoucherRepository implements IVoucherRepository {
   }
 
   async findByCode(code: string): Promise<IVoucher | null> {
-    return VoucherModel.findOne({ code: code.toUpperCase() }).select({ __v: 0 }).lean<IVoucher | null>()
+    return VoucherModel.findOne({ code: code.toUpperCase() })
+      .select({ __v: 0 })
+      .lean<IVoucher | null>()
   }
 
   async findById(id: string | Types.ObjectId): Promise<IVoucher | null> {
@@ -44,13 +55,17 @@ export class VoucherRepository implements IVoucherRepository {
   }
 
   async incrementUsedCount(id: string | Types.ObjectId): Promise<IVoucher | null> {
-    return VoucherModel.findByIdAndUpdate(id, { $inc: { used_count: 1 } }, { new: true }).lean<IVoucher | null>()
+    return VoucherModel.findByIdAndUpdate(
+      id,
+      { $inc: { used_count: 1 } },
+      { new: true },
+    ).lean<IVoucher | null>()
   }
 
   async findSavedByUser(
     userId: string | Types.ObjectId,
     pagination: PaginationOptions,
-    status?: VoucherStatus
+    status?: VoucherStatus,
   ): Promise<PaginatedResult<ISavedVoucher>> {
     const { page, limit } = pagination
     const skip = (page - 1) * limit
@@ -78,7 +93,7 @@ export class VoucherRepository implements IVoucherRepository {
 
   async findSavedVoucher(
     userId: string | Types.ObjectId,
-    voucherId: string | Types.ObjectId
+    voucherId: string | Types.ObjectId,
   ): Promise<ISavedVoucher | null> {
     return SavedVoucherModel.findOne({
       user: new Types.ObjectId(userId.toString()),
@@ -88,7 +103,10 @@ export class VoucherRepository implements IVoucherRepository {
       .lean<ISavedVoucher | null>()
   }
 
-  async saveVoucher(userId: string | Types.ObjectId, voucherId: string | Types.ObjectId): Promise<ISavedVoucher> {
+  async saveVoucher(
+    userId: string | Types.ObjectId,
+    voucherId: string | Types.ObjectId,
+  ): Promise<ISavedVoucher> {
     const saved = await SavedVoucherModel.create({
       user: new Types.ObjectId(userId.toString()),
       voucher: new Types.ObjectId(voucherId.toString()),
@@ -102,7 +120,7 @@ export class VoucherRepository implements IVoucherRepository {
   async markVoucherUsed(
     userId: string | Types.ObjectId,
     voucherId: string | Types.ObjectId,
-    orderId?: string | Types.ObjectId
+    orderId?: string | Types.ObjectId,
   ): Promise<ISavedVoucher | null> {
     const update: Record<string, unknown> = { status: 'used', used_at: new Date() }
     if (orderId) {
@@ -115,7 +133,7 @@ export class VoucherRepository implements IVoucherRepository {
         status: 'available',
       },
       update,
-      { new: true }
+      { new: true },
     ).lean<ISavedVoucher | null>()
   }
 
@@ -130,7 +148,7 @@ export class VoucherRepository implements IVoucherRepository {
 
   async findAllWithFilters(
     filters: { is_active?: string; discount_type?: string; status?: string; search?: string },
-    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' }
+    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' },
   ): Promise<PaginatedResult<IVoucher>> {
     const { page, limit, sort_by = 'createdAt', order = 'desc' } = pagination
     const skip = (page - 1) * limit
@@ -158,7 +176,12 @@ export class VoucherRepository implements IVoucherRepository {
     const sortObj: Record<string, 1 | -1> = { [sort_by]: order === 'asc' ? 1 : -1 }
 
     const [data, total] = await Promise.all([
-      VoucherModel.find(query).select({ __v: 0 }).sort(sortObj).skip(skip).limit(limit).lean<IVoucher[]>(),
+      VoucherModel.find(query)
+        .select({ __v: 0 })
+        .sort(sortObj)
+        .skip(skip)
+        .limit(limit)
+        .lean<IVoucher[]>(),
       VoucherModel.countDocuments(query),
     ])
 
@@ -174,14 +197,18 @@ export class VoucherRepository implements IVoucherRepository {
       start_date: new Date(data.start_date),
       end_date: new Date(data.end_date),
     })
-    return VoucherModel.findById(voucher._id).select({ __v: 0 }).lean<IVoucher>() as Promise<IVoucher>
+    return VoucherModel.findById(voucher._id)
+      .select({ __v: 0 })
+      .lean<IVoucher>() as Promise<IVoucher>
   }
 
   async updateById(id: string, data: any): Promise<IVoucher> {
     const updateData = { ...data }
     if (data.start_date) updateData.start_date = new Date(data.start_date)
     if (data.end_date) updateData.end_date = new Date(data.end_date)
-    return VoucherModel.findByIdAndUpdate(id, updateData, { new: true }).select({ __v: 0 }).lean<IVoucher>() as Promise<IVoucher>
+    return VoucherModel.findByIdAndUpdate(id, updateData, { new: true })
+      .select({ __v: 0 })
+      .lean<IVoucher>() as Promise<IVoucher>
   }
 
   async deleteById(id: string): Promise<void> {
@@ -212,7 +239,11 @@ export class VoucherRepository implements IVoucherRepository {
     const now = new Date()
     const [total, active, expired, totalUsed] = await Promise.all([
       VoucherModel.countDocuments(),
-      VoucherModel.countDocuments({ is_active: true, start_date: { $lte: now }, end_date: { $gte: now } }),
+      VoucherModel.countDocuments({
+        is_active: true,
+        start_date: { $lte: now },
+        end_date: { $gte: now },
+      }),
       VoucherModel.countDocuments({ end_date: { $lt: now } }),
       VoucherModel.aggregate([{ $group: { _id: null, total: { $sum: '$used_count' } } }]),
     ])
@@ -226,4 +257,3 @@ export class VoucherRepository implements IVoucherRepository {
     }
   }
 }
-

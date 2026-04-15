@@ -39,11 +39,14 @@ export class LoyaltyRepository implements ILoyaltyRepository {
     return saved.toObject() as ILoyaltyPointsItem
   }
 
-  async updatePoints(userId: string | Types.ObjectId, data: Partial<ILoyaltyPointsItem>): Promise<ILoyaltyPointsItem | null> {
+  async updatePoints(
+    userId: string | Types.ObjectId,
+    data: Partial<ILoyaltyPointsItem>,
+  ): Promise<ILoyaltyPointsItem | null> {
     return LoyaltyPointsModel.findOneAndUpdate(
       { user: new Types.ObjectId(userId.toString()) },
       data,
-      { new: true }
+      { new: true },
     ).lean<ILoyaltyPointsItem | null>()
   }
 
@@ -51,7 +54,7 @@ export class LoyaltyRepository implements ILoyaltyRepository {
   async findTransactionsByUser(
     userId: string | Types.ObjectId,
     filters: TransactionFilterOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IPointsTransactionItem>> {
     const { page, limit, sort } = pagination
     const skip = (page - 1) * limit
@@ -98,7 +101,10 @@ export class LoyaltyRepository implements ILoyaltyRepository {
     return PointsRewardModel.findById(rewardId).lean<IPointsRewardItem | null>()
   }
 
-  async findRewards(filters: RewardFilterOptions, pagination: PaginationOptions): Promise<PaginatedResult<IPointsRewardItem>> {
+  async findRewards(
+    filters: RewardFilterOptions,
+    pagination: PaginationOptions,
+  ): Promise<PaginatedResult<IPointsRewardItem>> {
     const { page, limit, sort } = pagination
     const skip = (page - 1) * limit
 
@@ -134,11 +140,14 @@ export class LoyaltyRepository implements ILoyaltyRepository {
     }
   }
 
-  async updateRewardStock(rewardId: string | Types.ObjectId, decrement: number): Promise<IPointsRewardItem | null> {
+  async updateRewardStock(
+    rewardId: string | Types.ObjectId,
+    decrement: number,
+  ): Promise<IPointsRewardItem | null> {
     return PointsRewardModel.findByIdAndUpdate(
       rewardId,
       { $inc: { stock: -decrement } },
-      { new: true }
+      { new: true },
     ).lean<IPointsRewardItem | null>()
   }
 
@@ -146,7 +155,7 @@ export class LoyaltyRepository implements ILoyaltyRepository {
 
   async findRewardsWithFilters(
     filters: { reward_type?: string; is_active?: string },
-    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' }
+    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' },
   ): Promise<PaginatedResult<IPointsRewardItem>> {
     const { page, limit, sort_by = 'createdAt', order = 'desc' } = pagination
     const skip = (page - 1) * limit
@@ -179,7 +188,9 @@ export class LoyaltyRepository implements ILoyaltyRepository {
   }
 
   async updateReward(id: string, data: Partial<IPointsReward>): Promise<IPointsRewardItem | null> {
-    return PointsRewardModel.findByIdAndUpdate(id, data, { new: true }).lean<IPointsRewardItem | null>()
+    return PointsRewardModel.findByIdAndUpdate(id, data, {
+      new: true,
+    }).lean<IPointsRewardItem | null>()
   }
 
   async deleteReward(id: string): Promise<void> {
@@ -188,7 +199,7 @@ export class LoyaltyRepository implements ILoyaltyRepository {
 
   async findAllTransactions(
     filters: { type?: string; user_id?: string },
-    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' }
+    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' },
   ): Promise<PaginatedResult<IPointsTransactionItem>> {
     const { page, limit, sort_by = 'created_at', order = 'desc' } = pagination
     const skip = (page - 1) * limit
@@ -226,9 +237,7 @@ export class LoyaltyRepository implements ILoyaltyRepository {
         { $group: { _id: null, total: { $sum: { $abs: '$points' } } } },
       ]),
       LoyaltyPointsModel.countDocuments({ available_points: { $gt: 0 } }),
-      LoyaltyPointsModel.aggregate([
-        { $group: { _id: '$tier', count: { $sum: 1 } } },
-      ]),
+      LoyaltyPointsModel.aggregate([{ $group: { _id: '$tier', count: { $sum: 1 } } }]),
     ])
 
     const tier_distribution: Record<string, number> = { bronze: 0, silver: 0, gold: 0, platinum: 0 }
@@ -242,4 +251,3 @@ export class LoyaltyRepository implements ILoyaltyRepository {
     }
   }
 }
-

@@ -1,1 +1,1 @@
-export { default } from './ViewerCountBadge';
+export { default } from './ViewerCountBadge'

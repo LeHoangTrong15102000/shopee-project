@@ -46,7 +46,7 @@ describe('CheckInService', () => {
         expect.objectContaining({
           streak_day: 1,
           reward_value: 5,
-        })
+        }),
       )
     })
 
@@ -80,7 +80,7 @@ describe('CheckInService', () => {
         expect.objectContaining({
           streak_day: 4,
           reward_value: 10,
-        })
+        }),
       )
     })
   })
@@ -108,7 +108,6 @@ describe('CheckInService', () => {
     it('should return streak data when check-ins exist', async () => {
       // Fix date so '2026-03-15' is yesterday
       jest.useFakeTimers({ now: new Date('2026-03-16T12:00:00Z') })
-
       ;(CheckInModel.findOne as jest.Mock).mockReturnValue({
         sort: jest.fn().mockReturnValue({
           lean: jest.fn().mockResolvedValue({ date: '2026-03-15', streak_day: 5 }),

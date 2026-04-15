@@ -27,7 +27,9 @@ describe('Core Emit Utils', () => {
     setupMockIO()
     const { getIORequired } = await import('../../socket/socket.init')
     if (throwError) {
-      ;(getIORequired as jest.Mock).mockImplementation(() => { throw new Error('IO not initialized') })
+      ;(getIORequired as jest.Mock).mockImplementation(() => {
+        throw new Error('IO not initialized')
+      })
     } else {
       ;(getIORequired as jest.Mock).mockReturnValue(mockIO)
     }
@@ -91,7 +93,12 @@ describe('Core Emit Utils', () => {
     it('should emit notification to user', async () => {
       await setupMock()
       const { emitNotification } = await import('../../socket/utils/emit')
-      const result = emitNotification('user1', { _id: 'n1', type: 'order', title: 'Test', content: 'Content' } as any)
+      const result = emitNotification('user1', {
+        _id: 'n1',
+        type: 'order',
+        title: 'Test',
+        content: 'Content',
+      } as any)
       expect(result).toBe(true)
     })
 

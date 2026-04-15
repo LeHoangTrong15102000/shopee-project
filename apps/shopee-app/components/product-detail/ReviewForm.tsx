@@ -1,44 +1,44 @@
-import React, { useCallback, useRef, useState } from 'react';
-import { View, TextInput, TouchableOpacity } from 'react-native';
-import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
-import { Star } from 'lucide-react-native';
-import { AppText, AppButton } from '@/components/ui';
-import { useColors } from '@/hooks/useColors';
-import { useTranslation } from 'react-i18next';
-import { validateReviewComment } from '@/schemas/product-detail.schema';
+import React, { useCallback, useRef, useState } from 'react'
+import { View, TextInput, TouchableOpacity } from 'react-native'
+import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
+import { Star } from 'lucide-react-native'
+import { AppText, AppButton } from '@/components/ui'
+import { useColors } from '@/hooks/useColors'
+import { useTranslation } from 'react-i18next'
+import { validateReviewComment } from '@/schemas/product-detail.schema'
 
 interface ReviewFormProps {
-  onSubmit: (data: { rating: number; comment: string }) => void;
-  loading?: boolean;
-  bottomSheetRef: React.RefObject<BottomSheetModal | null>;
+  onSubmit: (data: { rating: number; comment: string }) => void
+  loading?: boolean
+  bottomSheetRef: React.RefObject<BottomSheetModal | null>
 }
 
 export default function ReviewForm({ onSubmit, loading, bottomSheetRef }: ReviewFormProps) {
-  const colors = useColors();
-  const { t } = useTranslation();
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState('');
-  const [error, setError] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
+  const colors = useColors()
+  const { t } = useTranslation()
+  const [rating, setRating] = useState(0)
+  const [comment, setComment] = useState('')
+  const [error, setError] = useState('')
+  const [isFocused, setIsFocused] = useState(false)
 
   const handleSubmit = () => {
     if (!validateReviewComment(comment)) {
-      setError(t('PD_REVIEW_MIN_LENGTH'));
-      return;
+      setError(t('PD_REVIEW_MIN_LENGTH'))
+      return
     }
     if (rating === 0) {
-      setError(t('PD_REVIEW_RATING_LABEL'));
-      return;
+      setError(t('PD_REVIEW_RATING_LABEL'))
+      return
     }
-    setError('');
-    onSubmit({ rating, comment: comment.trim() });
-  };
+    setError('')
+    onSubmit({ rating, comment: comment.trim() })
+  }
 
   const resetForm = useCallback(() => {
-    setRating(0);
-    setComment('');
-    setError('');
-  }, []);
+    setRating(0)
+    setComment('')
+    setError('')
+  }, [])
 
   return (
     <BottomSheetModal
@@ -87,8 +87,8 @@ export default function ReviewForm({ onSubmit, loading, bottomSheetRef }: Review
         <TextInput
           value={comment}
           onChangeText={(text) => {
-            setComment(text);
-            if (error) setError('');
+            setComment(text)
+            if (error) setError('')
           }}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
@@ -121,5 +121,5 @@ export default function ReviewForm({ onSubmit, loading, bottomSheetRef }: Review
         </View>
       </BottomSheetView>
     </BottomSheetModal>
-  );
+  )
 }

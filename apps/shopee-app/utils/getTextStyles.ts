@@ -1,4 +1,4 @@
-import { TextStyle } from 'react-native';
+import { TextStyle } from 'react-native'
 
 export const textStyles = {
   // Mobile Styles
@@ -158,6 +158,6 @@ export const textStyles = {
     fontSize: 10,
     letterSpacing: 0,
   },
-};
+}
 
-export const getTextStyles = (key: keyof typeof textStyles) => textStyles[key] as TextStyle;
+export const getTextStyles = (key: keyof typeof textStyles) => textStyles[key] as TextStyle

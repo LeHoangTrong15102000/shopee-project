@@ -1,19 +1,19 @@
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import Popover from 'src/components/Popover';
-import { getAvatarUrl } from 'src/utils/utils';
-import path from 'src/constant/path';
-import classNames from 'classnames';
-import Button from 'src/components/Button';
+import { Link } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import Popover from 'src/components/Popover'
+import { getAvatarUrl } from 'src/utils/utils'
+import path from 'src/constant/path'
+import classNames from 'classnames'
+import Button from 'src/components/Button'
 
 interface UserMenuProps {
-  isAuthenticated: boolean;
-  profile: { avatar?: string; email?: string } | null;
-  onLogout: () => void;
+  isAuthenticated: boolean
+  profile: { avatar?: string; email?: string } | null
+  onLogout: () => void
 }
 
 const UserMenu = ({ isAuthenticated, profile, onLogout }: UserMenuProps) => {
-  const { t } = useTranslation('nav');
+  const { t } = useTranslation('nav')
   return (
     <div className="flex shrink-0 items-center justify-end space-x-2 md:col-span-1 md:space-x-3">
       {/* User Menu - Hiện trên mobile */}
@@ -72,7 +72,7 @@ const UserMenu = ({ isAuthenticated, profile, onLogout }: UserMenuProps) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default UserMenu;
+export default UserMenu

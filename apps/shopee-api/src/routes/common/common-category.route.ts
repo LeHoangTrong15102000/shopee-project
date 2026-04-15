@@ -7,11 +7,11 @@ const commonCategoryRouter = Router()
 commonCategoryRouter.get(
   '/',
   validate(getCategorySchema),
-  asyncHandler(categoryController.getCategories)
+  asyncHandler(categoryController.getCategories),
 )
 commonCategoryRouter.get(
   '/:category_id',
   validate(categoryIdParamSchema),
-  asyncHandler(categoryController.getCategory)
+  asyncHandler(categoryController.getCategory),
 )
 export default commonCategoryRouter

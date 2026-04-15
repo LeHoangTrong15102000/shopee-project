@@ -1,1 +1,1 @@
-export { default } from './MobileAccountNav';
+export { default } from './MobileAccountNav'

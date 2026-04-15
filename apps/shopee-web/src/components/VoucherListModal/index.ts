@@ -1,1 +1,1 @@
-export { default } from './VoucherListModal';
+export { default } from './VoucherListModal'

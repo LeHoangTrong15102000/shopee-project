@@ -9,16 +9,16 @@ userUserRouter.put(
   '',
   validate(updateMeSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(userController.updateMe)
+  asyncHandler(userController.updateMe),
 )
 userUserRouter.post(
   '/upload-avatar',
   authMiddleware.verifyAccessToken,
-  asyncHandler(userController.uploadAvatar)
+  asyncHandler(userController.uploadAvatar),
 )
 
 userUserRouter.get(
   '',
   authMiddleware.verifyAccessToken,
-  asyncHandler(userController.getDetailMySelf)
+  asyncHandler(userController.getDetailMySelf),
 )

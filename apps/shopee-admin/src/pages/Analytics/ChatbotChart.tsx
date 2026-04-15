@@ -1,18 +1,18 @@
-import { useTranslation } from 'react-i18next';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from 'src/components/ui/chart';
-import { EmptyState } from 'src/components/shared/EmptyState';
+import { useTranslation } from 'react-i18next'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts'
+import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from 'src/components/ui/chart'
+import { EmptyState } from 'src/components/shared/EmptyState'
 
 interface ChatbotChartProps {
-  data: Array<{ date: string; conversations: number; messages: number }> | undefined;
-  isLoading: boolean;
+  data: Array<{ date: string; conversations: number; messages: number }> | undefined
+  isLoading: boolean
 }
 
 export default function ChatbotChart({ data, isLoading }: ChatbotChartProps) {
-  const { t } = useTranslation('analytics');
+  const { t } = useTranslation('analytics')
 
-  if (isLoading) return null;
+  if (isLoading) return null
 
   if (!data || data.length === 0) {
     return (
@@ -28,7 +28,7 @@ export default function ChatbotChart({ data, isLoading }: ChatbotChartProps) {
           />
         </CardContent>
       </Card>
-    );
+    )
   }
 
   return (
@@ -71,5 +71,5 @@ export default function ChatbotChart({ data, isLoading }: ChatbotChartProps) {
         </ChartContainer>
       </CardContent>
     </Card>
-  );
+  )
 }

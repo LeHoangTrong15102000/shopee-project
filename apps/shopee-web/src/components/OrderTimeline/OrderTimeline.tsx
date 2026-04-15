@@ -1,14 +1,14 @@
-import classNames from 'classnames';
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { purchasesStatus } from 'src/constant/purchase';
-import { ANIMATION_DURATION } from 'src/styles/animations';
+import classNames from 'classnames'
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { purchasesStatus } from 'src/constant/purchase'
+import { ANIMATION_DURATION } from 'src/styles/animations'
 
 interface OrderTimelineProps {
-  orderId: string;
-  currentStatus: number; // purchasesStatus value
-  className?: string;
-  timestamps?: Record<number, string>; // Optional timestamps for each status
+  orderId: string
+  currentStatus: number // purchasesStatus value
+  className?: string
+  timestamps?: Record<number, string> // Optional timestamps for each status
 }
 
 const StepSvgIcon = ({
@@ -16,11 +16,11 @@ const StepSvgIcon = ({
   className,
   isActive,
 }: {
-  iconKey: string;
-  className?: string;
-  isActive?: boolean;
+  iconKey: string
+  className?: string
+  isActive?: boolean
 }) => {
-  const sw = isActive ? 2 : 1.5;
+  const sw = isActive ? 2 : 1.5
   switch (iconKey) {
     case 'clock':
       return (
@@ -37,7 +37,7 @@ const StepSvgIcon = ({
             d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-      );
+      )
     case 'package':
       return (
         <svg
@@ -53,7 +53,7 @@ const StepSvgIcon = ({
             d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
           />
         </svg>
-      );
+      )
     case 'truck':
       return (
         <svg
@@ -69,7 +69,7 @@ const StepSvgIcon = ({
             d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"
           />
         </svg>
-      );
+      )
     case 'check-circle':
       return (
         <svg
@@ -85,11 +85,11 @@ const StepSvgIcon = ({
             d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-      );
+      )
     default:
-      return null;
+      return null
   }
-};
+}
 
 const ORDER_STEPS = [
   {
@@ -100,16 +100,16 @@ const ORDER_STEPS = [
   { status: purchasesStatus.waitForGetting, labelKey: 'timeline.waitForGetting', icon: 'package' },
   { status: purchasesStatus.inProgress, labelKey: 'timeline.inProgress', icon: 'truck' },
   { status: purchasesStatus.delivered, labelKey: 'timeline.delivered', icon: 'check-circle' },
-];
+]
 
 function formatDateTime(timestamp: string): string {
-  const date = new Date(timestamp);
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  return `${hours}:${minutes} ${day}-${month}-${year}`;
+  const date = new Date(timestamp)
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const year = date.getFullYear()
+  return `${hours}:${minutes} ${day}-${month}-${year}`
 }
 
 export default function OrderTimeline({
@@ -118,13 +118,13 @@ export default function OrderTimeline({
   className,
   timestamps,
 }: OrderTimelineProps) {
-  const { t } = useTranslation('order');
-  const isCancelled = currentStatus === purchasesStatus.cancelled;
+  const { t } = useTranslation('order')
+  const isCancelled = currentStatus === purchasesStatus.cancelled
 
   const currentStepIndex = (() => {
-    if (isCancelled) return -1;
-    return ORDER_STEPS.findIndex((step) => step.status === currentStatus);
-  })();
+    if (isCancelled) return -1
+    return ORDER_STEPS.findIndex((step) => step.status === currentStatus)
+  })()
 
   // Cancelled state
   if (isCancelled) {
@@ -155,7 +155,7 @@ export default function OrderTimeline({
           </div>
         </motion.div>
       </div>
-    );
+    )
   }
 
   return (
@@ -187,10 +187,10 @@ export default function OrderTimeline({
       {/* Steps */}
       <div className="relative flex justify-between">
         {ORDER_STEPS.map((step, index) => {
-          const isCompleted = index < currentStepIndex;
-          const isCurrent = index === currentStepIndex;
-          const isFuture = index > currentStepIndex;
-          const timestamp = timestamps?.[step.status];
+          const isCompleted = index < currentStepIndex
+          const isCurrent = index === currentStepIndex
+          const isFuture = index > currentStepIndex
+          const timestamp = timestamps?.[step.status]
 
           return (
             <div key={step.status} className="flex flex-1 flex-col items-center">
@@ -232,9 +232,9 @@ export default function OrderTimeline({
                 </span>
               )}
             </div>
-          );
+          )
         })}
       </div>
     </div>
-  );
+  )
 }

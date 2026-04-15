@@ -45,7 +45,9 @@ jest.mock('../../socket/managers/presence.manager', () => ({
 }))
 
 jest.mock('@schemas/admin-common.schema', () => ({
-  getDateRangeFromPeriod: jest.fn().mockReturnValue({ start: new Date('2026-01-01'), end: new Date('2026-03-16') }),
+  getDateRangeFromPeriod: jest
+    .fn()
+    .mockReturnValue({ start: new Date('2026-01-01'), end: new Date('2026-03-16') }),
   getGroupingForPeriod: jest.fn().mockReturnValue({ format: '%Y-%m-%d' }),
 }))
 

@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
-import { formatCurrency } from './WalletCard';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
+import { formatCurrency } from './WalletCard'
 
 function LoadingSpinner() {
   return (
@@ -10,7 +10,7 @@ function LoadingSpinner() {
       transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
       className="h-12 w-12 rounded-full border-4 border-gray-200 border-t-orange"
     />
-  );
+  )
 }
 
 function SuccessAnimation() {
@@ -38,7 +38,7 @@ function SuccessAnimation() {
         />
       </motion.svg>
     </motion.div>
-  );
+  )
 }
 
 function FailedAnimation() {
@@ -58,11 +58,11 @@ function FailedAnimation() {
         />
       </svg>
     </motion.div>
-  );
+  )
 }
 
 export function WaitingView({ walletName }: { walletName: string }) {
-  const { t } = useTranslation('payment');
+  const { t } = useTranslation('payment')
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -88,11 +88,11 @@ export function WaitingView({ walletName }: { walletName: string }) {
         <span>{t('eWallet.processingTransaction')}</span>
       </motion.div>
     </motion.div>
-  );
+  )
 }
 
 export function SuccessView({ amount }: { amount: number }) {
-  const { t } = useTranslation('payment');
+  const { t } = useTranslation('payment')
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -118,7 +118,7 @@ export function SuccessView({ amount }: { amount: number }) {
         {t('eWallet.orderProcessing')}
       </motion.div>
     </motion.div>
-  );
+  )
 }
 
 export function FailedView({
@@ -126,11 +126,11 @@ export function FailedView({
   onRetry,
   onCancel,
 }: {
-  message: string;
-  onRetry: () => void;
-  onCancel: () => void;
+  message: string
+  onRetry: () => void
+  onCancel: () => void
 }) {
-  const { t } = useTranslation('payment');
+  const { t } = useTranslation('payment')
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -162,17 +162,17 @@ export function FailedView({
         </Button>
       </div>
     </motion.div>
-  );
+  )
 }
 
 export function TimeoutView({
   onRegenerateQR,
   onCancel,
 }: {
-  onRegenerateQR: () => void;
-  onCancel: () => void;
+  onRegenerateQR: () => void
+  onCancel: () => void
 }) {
-  const { t } = useTranslation('payment');
+  const { t } = useTranslation('payment')
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -220,5 +220,5 @@ export function TimeoutView({
         </Button>
       </div>
     </motion.div>
-  );
+  )
 }

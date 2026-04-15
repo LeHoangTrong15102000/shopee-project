@@ -17,13 +17,16 @@ export class NotificationRepository implements INotificationRepository {
     return NotificationModel.findOne(filter).lean<INotificationItem | null>()
   }
 
-  async find(filter: FilterQuery<INotification>, options?: QueryOptions): Promise<INotificationItem[]> {
+  async find(
+    filter: FilterQuery<INotification>,
+    options?: QueryOptions,
+  ): Promise<INotificationItem[]> {
     return NotificationModel.find(filter, null, options).lean<INotificationItem[]>()
   }
 
   async findPaginated(
     filter: FilterQuery<INotification>,
-    options: PaginationOptions
+    options: PaginationOptions,
   ): Promise<PaginatedResult<INotificationItem>> {
     const { page, limit, sort } = options
     const skip = (page - 1) * limit
@@ -54,11 +57,19 @@ export class NotificationRepository implements INotificationRepository {
     return saved.toObject() as INotificationItem
   }
 
-  async updateById(id: string | Types.ObjectId, data: Partial<INotificationItem>): Promise<INotificationItem | null> {
-    return NotificationModel.findByIdAndUpdate(id, data, { new: true }).lean<INotificationItem | null>()
+  async updateById(
+    id: string | Types.ObjectId,
+    data: Partial<INotificationItem>,
+  ): Promise<INotificationItem | null> {
+    return NotificationModel.findByIdAndUpdate(id, data, {
+      new: true,
+    }).lean<INotificationItem | null>()
   }
 
-  async updateMany(filter: FilterQuery<INotification>, data: UpdateQuery<INotification>): Promise<number> {
+  async updateMany(
+    filter: FilterQuery<INotification>,
+    data: UpdateQuery<INotification>,
+  ): Promise<number> {
     const result = await NotificationModel.updateMany(filter, data)
     return result.modifiedCount
   }
@@ -84,10 +95,10 @@ export class NotificationRepository implements INotificationRepository {
   async findByUser(
     userId: string | Types.ObjectId,
     filters: NotificationFilterOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<INotificationItem>> {
     const filter: FilterQuery<INotification> = { user: new Types.ObjectId(userId.toString()) }
-    
+
     if (filters.type) {
       filter.type = filters.type
     }
@@ -98,21 +109,24 @@ export class NotificationRepository implements INotificationRepository {
     return this.findPaginated(filter, pagination)
   }
 
-  async markAsRead(userId: string | Types.ObjectId, notificationId: string | Types.ObjectId): Promise<INotificationItem | null> {
+  async markAsRead(
+    userId: string | Types.ObjectId,
+    notificationId: string | Types.ObjectId,
+  ): Promise<INotificationItem | null> {
     return NotificationModel.findOneAndUpdate(
       {
         _id: new Types.ObjectId(notificationId.toString()),
         user: new Types.ObjectId(userId.toString()),
       },
       { is_read: true },
-      { new: true }
+      { new: true },
     ).lean<INotificationItem | null>()
   }
 
   async markAllAsRead(userId: string | Types.ObjectId): Promise<number> {
     const result = await NotificationModel.updateMany(
       { user: new Types.ObjectId(userId.toString()), is_read: false },
-      { is_read: true }
+      { is_read: true },
     )
     return result.modifiedCount
   }
@@ -134,4 +148,3 @@ export class NotificationRepository implements INotificationRepository {
     return docs.map((doc) => doc.toObject() as INotificationItem)
   }
 }
-

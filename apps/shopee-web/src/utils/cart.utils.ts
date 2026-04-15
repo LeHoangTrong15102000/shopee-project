@@ -1,4 +1,4 @@
-import { ExtendedPurchase } from 'src/types/purchases.type';
+import { ExtendedPurchase } from 'src/types/purchases.type'
 
 /**
  * Get the quantity of a specific product already in the cart.
@@ -8,6 +8,6 @@ export const getProductQuantityInCart = (
   productId: string,
   cartItems: ExtendedPurchase[],
 ): number => {
-  const item = cartItems.find((item) => item.product._id === productId);
-  return item ? item.buy_count : 0;
-};
+  const item = cartItems.find((item) => item.product._id === productId)
+  return item ? item.buy_count : 0
+}

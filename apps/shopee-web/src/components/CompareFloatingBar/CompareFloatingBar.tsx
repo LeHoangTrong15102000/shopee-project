@@ -1,34 +1,34 @@
-import { useState } from 'react';
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import classNames from 'classnames';
-import Button from 'src/components/Button';
-import { useProductComparison } from 'src/hooks/useProductComparison';
+import { useState } from 'react'
+import { Link } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import classNames from 'classnames'
+import Button from 'src/components/Button'
+import { useProductComparison } from 'src/hooks/useProductComparison'
 
 interface CompareFloatingBarProps {
-  className?: string;
-  comparePath?: string;
+  className?: string
+  comparePath?: string
 }
 
 function CompareFloatingBar({ className, comparePath = '/compare' }: CompareFloatingBarProps) {
-  const { t } = useTranslation('compare');
-  const { compareList, removeFromCompare, clearCompare } = useProductComparison();
-  const [isExpanded, setIsExpanded] = useState(true);
+  const { t } = useTranslation('compare')
+  const { compareList, removeFromCompare, clearCompare } = useProductComparison()
+  const [isExpanded, setIsExpanded] = useState(true)
 
   const handleToggleExpand = () => {
-    setIsExpanded((prev) => !prev);
-  };
+    setIsExpanded((prev) => !prev)
+  }
 
   const handleRemoveFromCompare = (productId: string) => {
-    removeFromCompare(productId);
-  };
+    removeFromCompare(productId)
+  }
 
   const handleClearCompare = () => {
-    clearCompare();
-  };
+    clearCompare()
+  }
 
   if (compareList.length === 0) {
-    return null;
+    return null
   }
 
   return (
@@ -159,7 +159,7 @@ function CompareFloatingBar({ className, comparePath = '/compare' }: CompareFloa
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default CompareFloatingBar;
+export default CompareFloatingBar

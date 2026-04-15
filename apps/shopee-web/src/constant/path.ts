@@ -25,6 +25,6 @@ const path = {
   dailyCheckIn: '/user/daily-checkin', // Trang điểm danh hàng ngày
   notifications: '/user/notification', // Trang thông báo
   conversations: '/user/conversations', // Trang lịch sử hội thoại
-} as const;
+} as const
 
-export default path;
+export default path

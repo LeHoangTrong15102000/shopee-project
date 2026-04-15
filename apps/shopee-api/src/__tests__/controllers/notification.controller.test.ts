@@ -15,16 +15,28 @@ jest.mock('../../container', () => ({
 }))
 
 import { container } from '../../container'
-import { getNotifications, markAsRead, markAllAsRead, getUnreadCount } from '../../controllers/notification.controller'
+import {
+  getNotifications,
+  markAsRead,
+  markAllAsRead,
+  getUnreadCount,
+} from '../../controllers/notification.controller'
 
-const mockNotificationService = container.services.notification as jest.Mocked<typeof container.services.notification>
+const mockNotificationService = container.services.notification as jest.Mocked<
+  typeof container.services.notification
+>
 
 const createMockRequest = (options: any = {}): Partial<Request> => ({
   body: options.body || {},
   params: options.params || {},
   query: options.query || {},
   headers: options.headers || {},
-  jwtDecoded: options.jwtDecoded || { id: 'user123', email: 'test@test.com', roles: ['User'], created_at: '2024-01-01' },
+  jwtDecoded: options.jwtDecoded || {
+    id: 'user123',
+    email: 'test@test.com',
+    roles: ['User'],
+    created_at: '2024-01-01',
+  },
 })
 
 const createMockResponse = (): Partial<Response> => {
@@ -43,7 +55,16 @@ describe('Notification Controller', () => {
   describe('getNotifications', () => {
     it('should return notifications with default pagination', async () => {
       const mockResult = {
-        data: [{ _id: 'notif1', user: 'user123', title: 'Test Title', content: 'Test notification', type: 'order', is_read: false }],
+        data: [
+          {
+            _id: 'notif1',
+            user: 'user123',
+            title: 'Test Title',
+            content: 'Test notification',
+            type: 'order',
+            is_read: false,
+          },
+        ],
         pagination: { page: 1, limit: 10, total: 1, page_size: 1 },
       }
       mockNotificationService.getNotifications.mockResolvedValue(mockResult as any)
@@ -52,11 +73,18 @@ describe('Notification Controller', () => {
 
       await getNotifications(req as Request, res as Response)
 
-      expect(mockNotificationService.getNotifications).toHaveBeenCalledWith('user123', { type: undefined, is_read: undefined }, { page: 1, limit: 10 })
+      expect(mockNotificationService.getNotifications).toHaveBeenCalledWith(
+        'user123',
+        { type: undefined, is_read: undefined },
+        { page: 1, limit: 10 },
+      )
       expect(res.status).toHaveBeenCalledWith(200)
       expect(res.json).toHaveBeenCalledWith({
         message: 'Lấy danh sách thông báo thành công',
-        data: { notifications: mockResult.data, pagination: { page: 1, limit: 10, total: 1, total_pages: 1 } },
+        data: {
+          notifications: mockResult.data,
+          pagination: { page: 1, limit: 10, total: 1, total_pages: 1 },
+        },
       })
     })
 
@@ -68,7 +96,11 @@ describe('Notification Controller', () => {
 
       await getNotifications(req as Request, res as Response)
 
-      expect(mockNotificationService.getNotifications).toHaveBeenCalledWith('user123', { type: 'order', is_read: undefined }, { page: 2, limit: 5 })
+      expect(mockNotificationService.getNotifications).toHaveBeenCalledWith(
+        'user123',
+        { type: 'order', is_read: undefined },
+        { page: 2, limit: 5 },
+      )
       expect(res.status).toHaveBeenCalledWith(200)
     })
 
@@ -80,7 +112,11 @@ describe('Notification Controller', () => {
 
       await getNotifications(req as Request, res as Response)
 
-      expect(mockNotificationService.getNotifications).toHaveBeenCalledWith('user123', { type: undefined, is_read: true }, { page: 1, limit: 10 })
+      expect(mockNotificationService.getNotifications).toHaveBeenCalledWith(
+        'user123',
+        { type: undefined, is_read: true },
+        { page: 1, limit: 10 },
+      )
     })
 
     it('should handle is_read filter as false', async () => {
@@ -91,7 +127,11 @@ describe('Notification Controller', () => {
 
       await getNotifications(req as Request, res as Response)
 
-      expect(mockNotificationService.getNotifications).toHaveBeenCalledWith('user123', { type: undefined, is_read: false }, { page: 1, limit: 10 })
+      expect(mockNotificationService.getNotifications).toHaveBeenCalledWith(
+        'user123',
+        { type: undefined, is_read: false },
+        { page: 1, limit: 10 },
+      )
     })
 
     it('should propagate service errors', async () => {
@@ -99,13 +139,22 @@ describe('Notification Controller', () => {
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await expect(getNotifications(req as Request, res as Response)).rejects.toThrow('Service error')
+      await expect(getNotifications(req as Request, res as Response)).rejects.toThrow(
+        'Service error',
+      )
     })
   })
 
   describe('markAsRead', () => {
     it('should mark notification as read successfully', async () => {
-      const mockNotification = { _id: 'notif1', user: 'user123', title: 'Test Title', content: 'Test content', type: 'order', is_read: true }
+      const mockNotification = {
+        _id: 'notif1',
+        user: 'user123',
+        title: 'Test Title',
+        content: 'Test content',
+        type: 'order',
+        is_read: true,
+      }
       mockNotificationService.markAsRead.mockResolvedValue(mockNotification as any)
       const req = createMockRequest({ params: { id: 'notif1' } })
       const res = createMockResponse()
@@ -114,7 +163,10 @@ describe('Notification Controller', () => {
 
       expect(mockNotificationService.markAsRead).toHaveBeenCalledWith('user123', 'notif1')
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Đánh dấu thông báo đã đọc thành công', data: mockNotification })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Đánh dấu thông báo đã đọc thành công',
+        data: mockNotification,
+      })
     })
 
     it('should propagate service errors', async () => {
@@ -136,7 +188,10 @@ describe('Notification Controller', () => {
 
       expect(mockNotificationService.markAllAsRead).toHaveBeenCalledWith('user123')
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Đánh dấu tất cả thông báo đã đọc thành công', data: { updated_count: 5 } })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Đánh dấu tất cả thông báo đã đọc thành công',
+        data: { updated_count: 5 },
+      })
     })
 
     it('should propagate service errors', async () => {
@@ -158,7 +213,10 @@ describe('Notification Controller', () => {
 
       expect(mockNotificationService.getUnreadCount).toHaveBeenCalledWith('user123')
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Lấy số thông báo chưa đọc thành công', data: { count: 3 } })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Lấy số thông báo chưa đọc thành công',
+        data: { count: 3 },
+      })
     })
 
     it('should propagate service errors', async () => {
@@ -166,8 +224,9 @@ describe('Notification Controller', () => {
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await expect(getUnreadCount(req as Request, res as Response)).rejects.toThrow('Service unavailable')
+      await expect(getUnreadCount(req as Request, res as Response)).rejects.toThrow(
+        'Service unavailable',
+      )
     })
   })
 })
-

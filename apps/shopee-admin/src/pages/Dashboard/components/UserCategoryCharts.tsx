@@ -1,10 +1,10 @@
-import { useTranslation } from 'react-i18next';
-import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis, YAxis } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from 'src/components/ui/chart';
-import { formatCurrency } from 'src/utils/format';
-import { useIsMobile } from 'src/hooks/use-mobile';
-import { EmptyState } from 'src/components/shared/EmptyState';
+import { useTranslation } from 'react-i18next'
+import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis, YAxis } from 'recharts'
+import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from 'src/components/ui/chart'
+import { formatCurrency } from 'src/utils/format'
+import { useIsMobile } from 'src/hooks/use-mobile'
+import { EmptyState } from 'src/components/shared/EmptyState'
 
 const COLORS = [
   'var(--color-chart-1)',
@@ -12,34 +12,34 @@ const COLORS = [
   'var(--color-chart-3)',
   'var(--color-chart-4)',
   'var(--color-chart-5)',
-];
+]
 
 interface UserCategoryChartsProps {
-  userGrowth: Array<{ date: string; users: number }> | undefined;
-  revenueByCategory: Array<{ category: string; revenue: number; percent: number }> | undefined;
+  userGrowth: Array<{ date: string; users: number }> | undefined
+  revenueByCategory: Array<{ category: string; revenue: number; percent: number }> | undefined
 }
 
 export default function UserCategoryCharts({
   userGrowth,
   revenueByCategory,
 }: UserCategoryChartsProps) {
-  const { t } = useTranslation('dashboard');
-  const isMobile = useIsMobile();
+  const { t } = useTranslation('dashboard')
+  const isMobile = useIsMobile()
 
   const userChartConfig = {
     users: { label: t('charts.userGrowth'), color: 'var(--color-chart-3)' },
-  };
+  }
 
   const categoryChartConfig = (revenueByCategory ?? []).reduce(
     (acc, item, i) => {
-      acc[item.category] = { label: item.category, color: COLORS[i % COLORS.length] };
-      return acc;
+      acc[item.category] = { label: item.category, color: COLORS[i % COLORS.length] }
+      return acc
     },
     {} as Record<string, { label: string; color: string }>,
-  );
+  )
 
   const pieLabel = ({ category, percent }: { category: string; percent: number }) =>
-    `${category} ${(percent * 100).toFixed(0)}%`;
+    `${category} ${(percent * 100).toFixed(0)}%`
 
   return (
     <div className="grid gap-4 lg:grid-cols-3">
@@ -112,5 +112,5 @@ export default function UserCategoryCharts({
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

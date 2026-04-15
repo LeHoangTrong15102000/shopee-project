@@ -34,30 +34,26 @@ describe('Review and Social Flow E2E', () => {
 
   describe('Review endpoint existence', () => {
     it('should return reviews for a product (empty initially)', async () => {
-      const reviewsRes = await supertest(app)
-        .get(`/reviews/product/${productId}`)
+      const reviewsRes = await supertest(app).get(`/reviews/product/${productId}`)
       expect(reviewsRes.status).toBe(200)
       expect(reviewsRes.body.data).toHaveProperty('reviews')
       expect(Array.isArray(reviewsRes.body.data.reviews)).toBe(true)
     })
 
     it('should return 400/404 for invalid product id', async () => {
-      const reviewsRes = await supertest(app)
-        .get('/reviews/product/invalid-id')
+      const reviewsRes = await supertest(app).get('/reviews/product/invalid-id')
       expect(reviewsRes.status).toBeGreaterThanOrEqual(400)
     })
   })
 
   describe('Review authentication', () => {
     it('should require authentication to create review', async () => {
-      const reviewRes = await supertest(app)
-        .post('/reviews')
-        .send({
-          product_id: productId,
-          purchase_id: '507f1f77bcf86cd799439011',
-          rating: 5,
-          comment: 'Great product!',
-        })
+      const reviewRes = await supertest(app).post('/reviews').send({
+        product_id: productId,
+        purchase_id: '507f1f77bcf86cd799439011',
+        rating: 5,
+        comment: 'Great product!',
+      })
       expect(reviewRes.status).toBe(401)
     })
 
@@ -135,8 +131,7 @@ describe('Review and Social Flow E2E', () => {
       expect(reviewRes.status).toBe(200)
 
       // Verify review appears in product reviews
-      const reviewsRes = await supertest(app)
-        .get(`/reviews/product/${productId}`)
+      const reviewsRes = await supertest(app).get(`/reviews/product/${productId}`)
       expect(reviewsRes.status).toBe(200)
       expect(reviewsRes.body.data.reviews.length).toBeGreaterThan(0)
     })
@@ -162,4 +157,3 @@ describe('Review and Social Flow E2E', () => {
     })
   })
 })
-

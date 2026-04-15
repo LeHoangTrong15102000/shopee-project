@@ -52,17 +52,13 @@ describe('Middleware Chain Integration', () => {
     })
 
     it('should return 401 for invalid token', async () => {
-      const res = await supertest(app)
-        .get('/me')
-        .set('Authorization', 'Bearer invalid-token')
+      const res = await supertest(app).get('/me').set('Authorization', 'Bearer invalid-token')
 
       expect(res.status).toBe(401)
     })
 
     it('should return 401 for malformed authorization header', async () => {
-      const res = await supertest(app)
-        .get('/me')
-        .set('Authorization', 'InvalidFormat token123')
+      const res = await supertest(app).get('/me').set('Authorization', 'InvalidFormat token123')
 
       expect(res.status).toBe(401)
     })
@@ -83,9 +79,7 @@ describe('Middleware Chain Integration', () => {
     it('should reject oversized request body', async () => {
       const largePayload = { data: 'x'.repeat(2 * 1024 * 1024) }
 
-      const res = await supertest(app)
-        .post('/login')
-        .send(largePayload)
+      const res = await supertest(app).post('/login').send(largePayload)
 
       expect(res.status).toBeGreaterThanOrEqual(400)
     })
@@ -145,4 +139,3 @@ describe('Middleware Chain Integration', () => {
     })
   })
 })
-

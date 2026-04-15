@@ -1,6 +1,6 @@
-import SEO from 'src/components/SEO';
-import DailyCheckIn from 'src/components/DailyCheckIn';
-import { useTranslation } from 'react-i18next';
+import SEO from 'src/components/SEO'
+import DailyCheckIn from 'src/components/DailyCheckIn'
+import { useTranslation } from 'react-i18next'
 
 // SVG Icon Components for reward tiers
 const BronzeShieldIcon = () => (
@@ -29,7 +29,7 @@ const BronzeShieldIcon = () => (
       strokeLinejoin="round"
     />
   </svg>
-);
+)
 
 const SilverStarIcon = () => (
   <svg
@@ -50,7 +50,7 @@ const SilverStarIcon = () => (
       strokeLinejoin="round"
     />
   </svg>
-);
+)
 
 const GoldTrophyIcon = () => (
   <svg
@@ -66,7 +66,7 @@ const GoldTrophyIcon = () => (
     <path d="M18 2v1a3 3 0 01-3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     <path d="M6 2v1a3 3 0 003 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
   </svg>
-);
+)
 
 const DiamondCrownIcon = () => (
   <svg
@@ -84,7 +84,7 @@ const DiamondCrownIcon = () => (
     />
     <circle cx="12" cy="14" r="2" fill="currentColor" opacity="0.3" />
   </svg>
-);
+)
 
 const LightbulbIcon = () => (
   <svg
@@ -101,10 +101,10 @@ const LightbulbIcon = () => (
     />
     <path d="M9.5 14h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
   </svg>
-);
+)
 
 export default function DailyCheckInPage() {
-  const { t } = useTranslation('checkin');
+  const { t } = useTranslation('checkin')
   return (
     <div className="rounded-xs bg-white px-2 pb-10 shadow-sm md:px-7 md:pb-20 dark:bg-slate-800">
       <SEO title={t('page.title')} description={t('page.description')} noindex />
@@ -189,5 +189,5 @@ export default function DailyCheckInPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

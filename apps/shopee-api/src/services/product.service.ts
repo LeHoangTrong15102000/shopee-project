@@ -8,32 +8,51 @@ import {
   UpdateProductDTO,
 } from '@repositories/interfaces/product.repository.interface'
 import { ISKURepository, CreateSKUDTO } from '@repositories/interfaces/sku.repository.interface'
-import { PaginatedResult, PaginationOptions } from '@repositories/interfaces/base.repository.interface'
+import {
+  PaginatedResult,
+  PaginationOptions,
+} from '@repositories/interfaces/base.repository.interface'
 import { BaseService, NotFoundError, ValidationError } from './base.service'
 import { HOST } from '@utils/helper'
 import { FOLDERS, FOLDER_UPLOAD, ROUTE_IMAGE } from '@constants/config'
 import { cacheService, CacheKeys, CacheTTL } from '@utils/cache.service'
-import {
-  generateSKUCombinations,
-  generateVariantValues,
-  VariantInput,
-} from '@utils/variant.helper'
+import { generateSKUCombinations, generateVariantValues, VariantInput } from '@utils/variant.helper'
 import fs from 'fs'
 
 export interface CreateProductWithSKUsInput extends CreateProductDTO {
-  variants?: Array<{ type: string; name: string; options: Array<{ name: string; value: string; image?: string }> }>
-  skus?: Array<{ value: string; price: number; stock: number; image?: string; variant_values?: Record<string, string> }>
+  variants?: Array<{
+    type: string
+    name: string
+    options: Array<{ name: string; value: string; image?: string }>
+  }>
+  skus?: Array<{
+    value: string
+    price: number
+    stock: number
+    image?: string
+    variant_values?: Record<string, string>
+  }>
 }
 
 export interface UpdateProductWithSKUsInput extends UpdateProductDTO {
-  variants?: Array<{ type: string; name: string; options: Array<{ name: string; value: string; image?: string }> }>
-  skus?: Array<{ value: string; price: number; stock: number; image?: string; variant_values?: Record<string, string> }>
+  variants?: Array<{
+    type: string
+    name: string
+    options: Array<{ name: string; value: string; image?: string }>
+  }>
+  skus?: Array<{
+    value: string
+    price: number
+    stock: number
+    image?: string
+    variant_values?: Record<string, string>
+  }>
 }
 
 export class ProductService extends BaseService {
   constructor(
     private readonly productRepository: IProductRepository,
-    private readonly skuRepository?: ISKURepository
+    private readonly skuRepository?: ISKURepository,
   ) {
     super()
   }
@@ -47,7 +66,7 @@ export class ProductService extends BaseService {
     }
     if (product.images !== undefined && product.images.length !== 0) {
       product.images = product.images.map((image: string) =>
-        image !== '' ? HOST + `/${ROUTE_IMAGE}/` + image : ''
+        image !== '' ? HOST + `/${ROUTE_IMAGE}/` + image : '',
       )
     }
     return product
@@ -77,8 +96,14 @@ export class ProductService extends BaseService {
    */
   private autoGenerateSKUs(
     variants: VariantInput[],
-    defaultPrice: number
-  ): Array<{ value: string; price: number; stock: number; image?: string; variant_values: Record<string, string> }> {
+    defaultPrice: number,
+  ): Array<{
+    value: string
+    price: number
+    stock: number
+    image?: string
+    variant_values: Record<string, string>
+  }> {
     const combinations = generateSKUCombinations(variants)
     const variantValues = generateVariantValues(variants)
     return combinations.map((value, i) => ({
@@ -99,11 +124,12 @@ export class ProductService extends BaseService {
 
     let skus: ISKU[] | undefined
     // Auto-generate SKUs if variants provided but no SKUs
-    const effectiveSkuData = (skuData && skuData.length > 0)
-      ? skuData
-      : (productData.variants && productData.variants.length > 0)
-        ? this.autoGenerateSKUs(productData.variants as VariantInput[], productData.price ?? 0)
-        : undefined
+    const effectiveSkuData =
+      skuData && skuData.length > 0
+        ? skuData
+        : productData.variants && productData.variants.length > 0
+          ? this.autoGenerateSKUs(productData.variants as VariantInput[], productData.price ?? 0)
+          : undefined
 
     if (effectiveSkuData && effectiveSkuData.length > 0 && this.skuRepository) {
       skus = []
@@ -127,7 +153,7 @@ export class ProductService extends BaseService {
   async getProducts(
     filters: ProductFilterOptions,
     sort: ProductSortOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IProduct>> {
     const normalizedPagination = this.normalizePagination(pagination)
     const cacheKey = CacheKeys.productsList({
@@ -188,7 +214,10 @@ export class ProductService extends BaseService {
     return result
   }
 
-  async updateProduct(productId: string, data: UpdateProductWithSKUsInput): Promise<IProduct & { skus?: ISKU[] }> {
+  async updateProduct(
+    productId: string,
+    data: UpdateProductWithSKUsInput,
+  ): Promise<IProduct & { skus?: ISKU[] }> {
     if (!this.isValidObjectId(productId)) {
       throw new ValidationError('Invalid product ID format')
     }
@@ -209,8 +238,16 @@ export class ProductService extends BaseService {
       skus = []
     }
     // Auto-generate SKUs if variants changed but no SKUs provided
-    else if (productData.variants && productData.variants.length > 0 && !skuData && this.skuRepository) {
-      const autoSkuData = this.autoGenerateSKUs(productData.variants as VariantInput[], product.price ?? 0)
+    else if (
+      productData.variants &&
+      productData.variants.length > 0 &&
+      !skuData &&
+      this.skuRepository
+    ) {
+      const autoSkuData = this.autoGenerateSKUs(
+        productData.variants as VariantInput[],
+        product.price ?? 0,
+      )
       // Delete old SKUs and create new ones
       await this.skuRepository.deleteMany({ product: new Types.ObjectId(productId) })
       skus = []
@@ -311,8 +348,14 @@ export class ProductService extends BaseService {
     return deletedCount
   }
 
-  async searchProducts(query: string, pagination: PaginationOptions): Promise<PaginatedResult<IProduct>> {
-    const result = await this.productRepository.searchByName(query, this.normalizePagination(pagination))
+  async searchProducts(
+    query: string,
+    pagination: PaginationOptions,
+  ): Promise<PaginatedResult<IProduct>> {
+    const result = await this.productRepository.searchByName(
+      query,
+      this.normalizePagination(pagination),
+    )
     result.data = result.data.map((p: IProduct) => this.handleImageProduct(p))
     return result
   }
@@ -324,7 +367,10 @@ export class ProductService extends BaseService {
   // ─── Admin Inventory Methods ────────────────────────────────────
 
   async getLowStockProducts(threshold: number, pagination: PaginationOptions) {
-    return this.productRepository.findLowStockPaginated(threshold, this.normalizePagination(pagination))
+    return this.productRepository.findLowStockPaginated(
+      threshold,
+      this.normalizePagination(pagination),
+    )
   }
 
   async getOutOfStockProducts(pagination: PaginationOptions) {
@@ -339,7 +385,11 @@ export class ProductService extends BaseService {
   }
 
   async bulkUpdateStock(items: Array<{ product_id: string; quantity: number }>) {
-    const results = { updated: 0, failed: 0, errors: [] as Array<{ product_id: string; reason: string }> }
+    const results = {
+      updated: 0,
+      failed: 0,
+      errors: [] as Array<{ product_id: string; reason: string }>,
+    }
 
     for (const item of items) {
       try {
@@ -368,4 +418,3 @@ export class ProductService extends BaseService {
     return results
   }
 }
-

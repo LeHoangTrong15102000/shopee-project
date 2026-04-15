@@ -1,50 +1,50 @@
-import http from 'src/utils/http';
-import type { SuccessResponse, LoyaltyReward, LoyaltyTransaction } from 'src/types';
+import http from 'src/utils/http'
+import type { SuccessResponse, LoyaltyReward, LoyaltyTransaction } from 'src/types'
 
 interface RewardListParams {
-  page?: number;
-  limit?: number;
-  is_active?: boolean;
+  page?: number
+  limit?: number
+  is_active?: boolean
 }
 
 interface RewardListResponse {
-  rewards: LoyaltyReward[];
-  pagination: { page: number; limit: number; total: number; totalPages: number };
+  rewards: LoyaltyReward[]
+  pagination: { page: number; limit: number; total: number; totalPages: number }
 }
 
 interface TransactionListParams {
-  page?: number;
-  limit?: number;
-  type?: 'earn' | 'redeem' | 'adjust';
-  user_id?: string;
-  sort_by?: string;
-  order?: string;
+  page?: number
+  limit?: number
+  type?: 'earn' | 'redeem' | 'adjust'
+  user_id?: string
+  sort_by?: string
+  order?: string
 }
 
 interface TransactionListResponse {
-  transactions: LoyaltyTransaction[];
-  pagination: { page: number; limit: number; total: number; totalPages: number };
+  transactions: LoyaltyTransaction[]
+  pagination: { page: number; limit: number; total: number; totalPages: number }
 }
 
 interface LoyaltyStats {
-  total_users: number;
-  total_points_earned: number;
-  total_points_redeemed: number;
-  total_rewards: number;
-  active_rewards: number;
+  total_users: number
+  total_points_earned: number
+  total_points_redeemed: number
+  total_rewards: number
+  active_rewards: number
 }
 
 interface CreateRewardBody {
-  name: string;
-  description: string;
-  points_required: number;
-  is_active?: boolean;
+  name: string
+  description: string
+  points_required: number
+  is_active?: boolean
 }
 
 interface AdjustPointsBody {
-  user_id: string;
-  points: number;
-  description: string;
+  user_id: string
+  points: number
+  description: string
 }
 
 const loyaltyApi = {
@@ -69,6 +69,6 @@ const loyaltyApi = {
     http.get<SuccessResponse<TransactionListResponse>>('admin/loyalty/transactions', { params }),
 
   getStats: () => http.get<SuccessResponse<LoyaltyStats>>('admin/loyalty/stats'),
-};
+}
 
-export default loyaltyApi;
+export default loyaltyApi

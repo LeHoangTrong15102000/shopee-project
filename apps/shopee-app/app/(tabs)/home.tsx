@@ -1,11 +1,11 @@
-import React, { useCallback, useState } from 'react';
-import { View, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { ShoppingBag } from 'lucide-react-native';
-import { useProducts } from '@/hooks/useProducts';
-import { useCategories } from '@/hooks/useCategories';
-import { InlineError, EmptyState } from '@/components/ui';
-import { useColors } from '@/hooks/useColors';
+import React, { useCallback, useState } from 'react'
+import { View, FlatList, ActivityIndicator, RefreshControl } from 'react-native'
+import { useTranslation } from 'react-i18next'
+import { ShoppingBag } from 'lucide-react-native'
+import { useProducts } from '@/hooks/useProducts'
+import { useCategories } from '@/hooks/useCategories'
+import { InlineError, EmptyState } from '@/components/ui'
+import { useColors } from '@/hooks/useColors'
 import {
   SearchHeader,
   BannerCarousel,
@@ -16,13 +16,13 @@ import {
   BannerSkeleton,
   CategorySkeleton,
   ProductCardSkeleton,
-} from '@/components/home';
-import { Product } from '@/services/product.api';
+} from '@/components/home'
+import { Product } from '@/services/product.api'
 
 export default function HomeScreen() {
-  const { t } = useTranslation();
-  const colors = useColors();
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
+  const { t } = useTranslation()
+  const colors = useColors()
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>()
 
   const {
     data: productsData,
@@ -32,39 +32,39 @@ export default function HomeScreen() {
     hasNextPage,
     isFetchingNextPage,
     refetch: refetchProducts,
-  } = useProducts(selectedCategory);
+  } = useProducts(selectedCategory)
 
   const {
     data: categories,
     isLoading: categoriesLoading,
     isError: categoriesError,
     refetch: refetchCategories,
-  } = useCategories();
+  } = useCategories()
 
-  const products = productsData?.products ?? [];
+  const products = productsData?.products ?? []
 
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false)
 
   const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await Promise.all([refetchProducts(), refetchCategories()]);
-    setRefreshing(false);
-  }, [refetchProducts, refetchCategories]);
+    setRefreshing(true)
+    await Promise.all([refetchProducts(), refetchCategories()])
+    setRefreshing(false)
+  }, [refetchProducts, refetchCategories])
 
   const handleCategorySelect = useCallback((categoryId?: string) => {
-    setSelectedCategory(categoryId);
-  }, []);
+    setSelectedCategory(categoryId)
+  }, [])
 
   const handleLoadMore = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+      fetchNextPage()
     }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage])
 
   const renderProduct = useCallback(
     ({ item }: { item: Product }) => <ProductCard product={item} />,
     []
-  );
+  )
 
   const ListHeader = (
     <>
@@ -99,13 +99,13 @@ export default function HomeScreen() {
         />
       )}
     </>
-  );
+  )
 
   const ListFooter = isFetchingNextPage ? (
     <View className="items-center py-4">
       <ActivityIndicator color={colors.primary} />
     </View>
-  ) : null;
+  ) : null
 
   // Skeleton grid for initial load
   if (productsLoading) {
@@ -121,7 +121,7 @@ export default function HomeScreen() {
           ))}
         </View>
       </View>
-    );
+    )
   }
 
   return (
@@ -151,5 +151,5 @@ export default function HomeScreen() {
         }
       />
     </View>
-  );
+  )
 }

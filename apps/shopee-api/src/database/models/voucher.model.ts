@@ -99,7 +99,7 @@ const VoucherSchema = new Schema<IVoucher>(
       createdAt: 'created_at',
       updatedAt: 'updated_at',
     },
-  }
+  },
 )
 
 VoucherSchema.index({ is_active: 1, start_date: 1, end_date: 1 })
@@ -107,4 +107,3 @@ VoucherSchema.index({ is_active: 1, start_date: 1, end_date: 1 })
 export const VoucherModel = mongoose.model<IVoucher>('vouchers', VoucherSchema)
 
 export { IVoucher }
-

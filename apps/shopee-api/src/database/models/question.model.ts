@@ -65,7 +65,7 @@ const AnswerSchema = new Schema<IAnswer>(
       default: Date.now,
     },
   },
-  { _id: true }
+  { _id: true },
 )
 
 const QuestionSchema = new Schema<IQuestion>(
@@ -110,7 +110,7 @@ const QuestionSchema = new Schema<IQuestion>(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 QuestionSchema.index({ product_id: 1, createdAt: -1 })
@@ -119,4 +119,3 @@ QuestionSchema.index({ likes_count: -1 })
 
 export const QuestionModel = mongoose.model<IQuestion>('questions', QuestionSchema)
 export { IQuestion, IAnswer }
-

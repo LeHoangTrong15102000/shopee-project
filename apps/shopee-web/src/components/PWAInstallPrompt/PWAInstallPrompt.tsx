@@ -1,47 +1,47 @@
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
-import { usePWAInstall } from 'src/hooks/usePWAInstall';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import Button from 'src/components/Button';
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { motion, AnimatePresence } from 'framer-motion'
+import { usePWAInstall } from 'src/hooks/usePWAInstall'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import Button from 'src/components/Button'
 
-const AUTO_HIDE_DELAY = 10000; // 10 seconds
+const AUTO_HIDE_DELAY = 10000 // 10 seconds
 
 export default function PWAInstallPrompt() {
-  const { t } = useTranslation('common');
-  const { isInstallable, promptInstall, dismissPrompt } = usePWAInstall();
-  const prefersReducedMotion = useReducedMotion();
-  const [isVisible, setIsVisible] = useState(false);
+  const { t } = useTranslation('common')
+  const { isInstallable, promptInstall, dismissPrompt } = usePWAInstall()
+  const prefersReducedMotion = useReducedMotion()
+  const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
     if (isInstallable) {
-      setIsVisible(true);
+      setIsVisible(true)
 
       const timer = setTimeout(() => {
-        setIsVisible(false);
-      }, AUTO_HIDE_DELAY);
+        setIsVisible(false)
+      }, AUTO_HIDE_DELAY)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     } else {
-      setIsVisible(false);
+      setIsVisible(false)
     }
-  }, [isInstallable]);
+  }, [isInstallable])
 
   const handleInstall = async () => {
-    await promptInstall();
-    setIsVisible(false);
-  };
+    await promptInstall()
+    setIsVisible(false)
+  }
 
   const handleDismiss = () => {
-    dismissPrompt();
-    setIsVisible(false);
-  };
+    dismissPrompt()
+    setIsVisible(false)
+  }
 
   const slideUpVariants = {
     hidden: { y: 100, opacity: 0 },
     visible: { y: 0, opacity: 1 },
     exit: { y: 100, opacity: 0 },
-  };
+  }
 
   return (
     <AnimatePresence>
@@ -92,5 +92,5 @@ export default function PWAInstallPrompt() {
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }

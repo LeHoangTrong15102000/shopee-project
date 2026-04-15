@@ -48,7 +48,11 @@ export interface UpdateAddressDTO {
 /**
  * Address repository interface
  */
-export interface IAddressRepository extends IBaseRepository<IAddressItem, CreateAddressDTO, UpdateAddressDTO> {
+export interface IAddressRepository extends IBaseRepository<
+  IAddressItem,
+  CreateAddressDTO,
+  UpdateAddressDTO
+> {
   /**
    * Find all addresses for a user
    */
@@ -62,12 +66,18 @@ export interface IAddressRepository extends IBaseRepository<IAddressItem, Create
   /**
    * Find address by ID and user
    */
-  findByIdAndUser(addressId: string | Types.ObjectId, userId: string | Types.ObjectId): Promise<IAddressItem | null>
+  findByIdAndUser(
+    addressId: string | Types.ObjectId,
+    userId: string | Types.ObjectId,
+  ): Promise<IAddressItem | null>
 
   /**
    * Set address as default (unsets others)
    */
-  setAsDefault(userId: string | Types.ObjectId, addressId: string | Types.ObjectId): Promise<IAddressItem | null>
+  setAsDefault(
+    userId: string | Types.ObjectId,
+    addressId: string | Types.ObjectId,
+  ): Promise<IAddressItem | null>
 
   /**
    * Clear default flag for all user addresses
@@ -82,6 +92,8 @@ export interface IAddressRepository extends IBaseRepository<IAddressItem, Create
   /**
    * Delete address by ID and user
    */
-  deleteByIdAndUser(addressId: string | Types.ObjectId, userId: string | Types.ObjectId): Promise<IAddressItem | null>
+  deleteByIdAndUser(
+    addressId: string | Types.ObjectId,
+    userId: string | Types.ObjectId,
+  ): Promise<IAddressItem | null>
 }
-

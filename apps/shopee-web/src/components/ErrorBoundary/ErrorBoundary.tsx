@@ -1,31 +1,31 @@
-import { Component, ErrorInfo, ReactNode } from 'react';
-import path from 'src/constant/path';
-import Button from 'src/components/Button';
+import { Component, ErrorInfo, ReactNode } from 'react'
+import path from 'src/constant/path'
+import Button from 'src/components/Button'
 
 interface Props {
-  children?: ReactNode;
+  children?: ReactNode
 }
 
 interface State {
-  hasError: boolean;
-  error: Error | null;
+  hasError: boolean
+  error: Error | null
 }
 
 export default class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
     error: null,
-  };
+  }
 
   public static getDerivedStateFromError(error: Error): State {
     // Update state so the next render will show the fallback UI.
-    return { hasError: true, error };
+    return { hasError: true, error }
   }
 
   // Khi mà có lỗi gì thì nó sẽ nhảy vào đây
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // You can also log the error to an error reporting service
-    console.error('Uncaught error: ', error, errorInfo);
+    console.error('Uncaught error: ', error, errorInfo)
   }
 
   // UI dự phòng khi mà cái App chúng ta nó bị lỗi
@@ -52,7 +52,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             animated={false}
             className="mt-5"
             onClick={() => {
-              window.location.href = path.home;
+              window.location.href = path.home
             }}
           >
             <span className="relative block border border-current bg-orange px-8 py-3">
@@ -60,9 +60,9 @@ export default class ErrorBoundary extends Component<Props, State> {
             </span>
           </Button>
         </main>
-      );
+      )
     }
 
-    return this.props.children;
+    return this.props.children
   }
 }

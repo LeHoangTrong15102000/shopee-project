@@ -1,19 +1,19 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Upload, Loader2 } from 'lucide-react';
-import { Button } from 'src/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { StatCard } from 'src/components/shared/StatCard';
-import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
-import { useImportStats, useImportProducts } from 'src/hooks/useImport';
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Upload, Loader2 } from 'lucide-react'
+import { Button } from 'src/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { StatCard } from 'src/components/shared/StatCard'
+import { ConfirmDialog } from 'src/components/shared/ConfirmDialog'
+import { useImportStats, useImportProducts } from 'src/hooks/useImport'
 
 export default function ImportPage() {
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const { t } = useTranslation('import');
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const { t } = useTranslation('import')
 
-  const { data: stats } = useImportStats();
-  const importMut = useImportProducts(() => setConfirmOpen(false));
+  const { data: stats } = useImportStats()
+  const importMut = useImportProducts(() => setConfirmOpen(false))
 
   return (
     <div className="space-y-6">
@@ -77,5 +77,5 @@ export default function ImportPage() {
         confirmText={t('actions.importProducts')}
       />
     </div>
-  );
+  )
 }

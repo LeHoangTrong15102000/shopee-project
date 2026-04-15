@@ -45,10 +45,7 @@ export interface IBaseRepository<T, CreateDTO = Partial<T>, UpdateDTO = Partial<
   /**
    * Find documents with pagination
    */
-  findPaginated(
-    filter: FilterQuery<T>,
-    options: PaginationOptions
-  ): Promise<PaginatedResult<T>>
+  findPaginated(filter: FilterQuery<T>, options: PaginationOptions): Promise<PaginatedResult<T>>
 
   /**
    * Create a new document
@@ -58,18 +55,12 @@ export interface IBaseRepository<T, CreateDTO = Partial<T>, UpdateDTO = Partial<
   /**
    * Update a document by ID
    */
-  updateById(
-    id: string | Types.ObjectId,
-    data: UpdateDTO
-  ): Promise<T | null>
+  updateById(id: string | Types.ObjectId, data: UpdateDTO): Promise<T | null>
 
   /**
    * Update documents matching the filter
    */
-  updateMany(
-    filter: FilterQuery<T>,
-    data: UpdateQuery<T>
-  ): Promise<number>
+  updateMany(filter: FilterQuery<T>, data: UpdateQuery<T>): Promise<number>
 
   /**
    * Delete a document by ID
@@ -91,4 +82,3 @@ export interface IBaseRepository<T, CreateDTO = Partial<T>, UpdateDTO = Partial<
    */
   exists(filter: FilterQuery<T>): Promise<boolean>
 }
-

@@ -1,13 +1,13 @@
-import { Outlet } from 'react-router-dom';
-import { SidebarProvider, SidebarInset } from 'src/components/ui/sidebar';
-import { AppSidebar } from './AppSidebar';
-import { AppHeader } from './AppHeader';
-import { ErrorBoundary } from 'src/components/shared/ErrorBoundary';
-import { CommandPalette } from 'src/components/shared/CommandPalette';
-import { useKeyboardShortcuts } from 'src/hooks/use-keyboard-shortcuts';
+import { Outlet } from 'react-router-dom'
+import { SidebarProvider, SidebarInset } from 'src/components/ui/sidebar'
+import { AppSidebar } from './AppSidebar'
+import { AppHeader } from './AppHeader'
+import { ErrorBoundary } from 'src/components/shared/ErrorBoundary'
+import { CommandPalette } from 'src/components/shared/CommandPalette'
+import { useKeyboardShortcuts } from 'src/hooks/use-keyboard-shortcuts'
 
 export default function AdminLayout() {
-  useKeyboardShortcuts();
+  useKeyboardShortcuts()
 
   return (
     <SidebarProvider>
@@ -22,5 +22,5 @@ export default function AdminLayout() {
       </SidebarInset>
       <CommandPalette />
     </SidebarProvider>
-  );
+  )
 }

@@ -26,10 +26,14 @@ jest.mock('@constants/purchase', () => ({
 jest.mock('@database/models/purchase.model', () => {
   const mockModel: any = jest.fn()
   mockModel.findById = jest.fn().mockReturnValue({
-    populate: jest.fn().mockReturnValue({ populate: jest.fn().mockReturnValue({ lean: jest.fn() }) }),
+    populate: jest
+      .fn()
+      .mockReturnValue({ populate: jest.fn().mockReturnValue({ lean: jest.fn() }) }),
   })
   mockModel.findOne = jest.fn().mockReturnValue({
-    populate: jest.fn().mockReturnValue({ populate: jest.fn().mockReturnValue({ lean: jest.fn() }) }),
+    populate: jest
+      .fn()
+      .mockReturnValue({ populate: jest.fn().mockReturnValue({ lean: jest.fn() }) }),
   })
   mockModel.find = jest.fn().mockReturnValue({
     populate: jest.fn().mockReturnValue({
@@ -44,7 +48,9 @@ jest.mock('@database/models/purchase.model', () => {
     }),
   })
   mockModel.findByIdAndUpdate = jest.fn().mockReturnValue({
-    populate: jest.fn().mockReturnValue({ populate: jest.fn().mockReturnValue({ lean: jest.fn() }) }),
+    populate: jest
+      .fn()
+      .mockReturnValue({ populate: jest.fn().mockReturnValue({ lean: jest.fn() }) }),
   })
   mockModel.findByIdAndDelete = jest.fn().mockReturnValue({ lean: jest.fn() })
   mockModel.countDocuments = jest.fn()
@@ -155,7 +161,11 @@ describe('PurchaseRepository', () => {
 
       const result = await repository.updateById('507f1f77bcf86cd799439011', { buy_count: 3 })
 
-      expect(PurchaseModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', { buy_count: 3 }, { new: true })
+      expect(PurchaseModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        '507f1f77bcf86cd799439011',
+        { buy_count: 3 },
+        { new: true },
+      )
       expect(result).toEqual(mockPurchaseData)
     })
   })
@@ -227,7 +237,13 @@ describe('PurchaseRepository', () => {
       const mockPopulate1 = jest.fn().mockReturnValue({ populate: mockPopulate2 })
       ;(PurchaseModel.findOne as jest.Mock).mockReturnValue({ populate: mockPopulate1 })
 
-      const result = await repository.addToCart('507f1f77bcf86cd799439012', '507f1f77bcf86cd799439013', 2, 100, 120)
+      const result = await repository.addToCart(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439013',
+        2,
+        100,
+        120,
+      )
 
       expect(result).toEqual(mockPurchaseData)
     })
@@ -240,7 +256,13 @@ describe('PurchaseRepository', () => {
       ;(PurchaseModel.findOne as jest.Mock).mockReturnValue({ populate: mockPopulate1 })
       ;(PurchaseModel.findByIdAndUpdate as jest.Mock).mockReturnValue({ populate: mockPopulate1 })
 
-      const result = await repository.addToCart('507f1f77bcf86cd799439012', '507f1f77bcf86cd799439013', 2, 100, 120)
+      const result = await repository.addToCart(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439013',
+        2,
+        100,
+        120,
+      )
 
       expect(result).toBeDefined()
     })
@@ -306,11 +328,10 @@ describe('PurchaseRepository', () => {
     it('should bulk update purchase statuses', async () => {
       ;(PurchaseModel.updateMany as jest.Mock).mockResolvedValue({ modifiedCount: 3 })
 
-      const result = await repository.bulkUpdateStatus([
-        '507f1f77bcf86cd799439011',
-        '507f1f77bcf86cd799439012',
-        '507f1f77bcf86cd799439013',
-      ], 1)
+      const result = await repository.bulkUpdateStatus(
+        ['507f1f77bcf86cd799439011', '507f1f77bcf86cd799439012', '507f1f77bcf86cd799439013'],
+        1,
+      )
 
       expect(result).toBe(3)
     })
@@ -338,7 +359,10 @@ describe('PurchaseRepository', () => {
       ;(PurchaseModel.countDocuments as jest.Mock).mockResolvedValue(10)
       ;(PurchaseModel.aggregate as jest.Mock)
         .mockResolvedValueOnce([{ total: 1000 }])
-        .mockResolvedValueOnce([{ _id: -1, count: 2 }, { _id: 4, count: 8 }])
+        .mockResolvedValueOnce([
+          { _id: -1, count: 2 },
+          { _id: 4, count: 8 },
+        ])
 
       const result = await repository.getUserStats('507f1f77bcf86cd799439012')
 
@@ -354,7 +378,10 @@ describe('PurchaseRepository', () => {
       const mockPopulate1 = jest.fn().mockReturnValue({ populate: mockPopulate2 })
       ;(PurchaseModel.findOne as jest.Mock).mockReturnValue({ populate: mockPopulate1 })
 
-      const result = await repository.findCartItem('507f1f77bcf86cd799439012', '507f1f77bcf86cd799439013')
+      const result = await repository.findCartItem(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439013',
+      )
 
       expect(result).toEqual(mockPurchaseData)
     })
@@ -367,7 +394,10 @@ describe('PurchaseRepository', () => {
       const mockPopulate1 = jest.fn().mockReturnValue({ populate: mockPopulate2 })
       ;(PurchaseModel.findOne as jest.Mock).mockReturnValue({ populate: mockPopulate1 })
 
-      const result = await repository.findByIdAndUser('507f1f77bcf86cd799439011', '507f1f77bcf86cd799439012')
+      const result = await repository.findByIdAndUser(
+        '507f1f77bcf86cd799439011',
+        '507f1f77bcf86cd799439012',
+      )
 
       expect(result).toEqual(mockPurchaseData)
     })
@@ -377,10 +407,13 @@ describe('PurchaseRepository', () => {
     it('should delete purchase by user and product', async () => {
       ;(PurchaseModel.deleteMany as jest.Mock).mockResolvedValue({ deletedCount: 1 })
 
-      const result = await repository.deleteByUserAndProduct('507f1f77bcf86cd799439012', '507f1f77bcf86cd799439013', -1)
+      const result = await repository.deleteByUserAndProduct(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439013',
+        -1,
+      )
 
       expect(result).toBe(1)
     })
   })
 })
-

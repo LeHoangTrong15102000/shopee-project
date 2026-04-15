@@ -1,4 +1,4 @@
-import http from 'src/utils/http';
+import http from 'src/utils/http'
 import type {
   SuccessResponse,
   DashboardOverview,
@@ -8,10 +8,10 @@ import type {
   TopProduct,
   TopBuyer,
   RevenueByCategoryData,
-} from 'src/types';
+} from 'src/types'
 
 interface PeriodParams {
-  period?: string;
+  period?: string
 }
 
 const dashboardApi = {
@@ -36,6 +36,6 @@ const dashboardApi = {
 
   getTopBuyers: (params?: PeriodParams & { limit?: number }) =>
     http.get<SuccessResponse<TopBuyer[]>>('admin/dashboard/users/top-buyers', { params }),
-};
+}
 
-export default dashboardApi;
+export default dashboardApi

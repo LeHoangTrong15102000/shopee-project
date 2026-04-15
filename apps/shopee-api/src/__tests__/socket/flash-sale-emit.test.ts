@@ -94,7 +94,8 @@ describe('Flash Sale Emit Utils', () => {
   describe('startFlashSaleTimer', () => {
     it('should call setFlashSaleTimer with the interval reference', async () => {
       await setupMock()
-      const { getFlashSale, setFlashSaleTimer } = await import('../../socket/managers/flash-sale.manager')
+      const { getFlashSale, setFlashSaleTimer } =
+        await import('../../socket/managers/flash-sale.manager')
       const futureTime = new Date(Date.now() + 5000)
       const mockSale = {
         sale_id: 'sale123',
@@ -113,9 +114,7 @@ describe('Flash Sale Emit Utils', () => {
       await setupMock()
       const { getFlashSale } = await import('../../socket/managers/flash-sale.manager')
       const futureTime = new Date(Date.now() + 5000)
-      const mockProducts = new Map([
-        ['prod1', { product_id: 'prod1', current_stock: 10, sold: 5 }],
-      ])
+      const mockProducts = new Map([['prod1', { product_id: 'prod1', current_stock: 10, sold: 5 }]])
       const mockSale = {
         sale_id: 'sale123',
         end_time: futureTime,
@@ -129,16 +128,20 @@ describe('Flash Sale Emit Utils', () => {
       jest.advanceTimersByTime(1000)
 
       expect(mockIO.to).toHaveBeenCalledWith('flash_sale:sale123')
-      expect(mockEmit).toHaveBeenCalledWith(SocketEvent.FLASH_SALE_TICK, expect.objectContaining({
-        sale_id: 'sale123',
-        remaining_seconds: expect.any(Number),
-        products: [{ product_id: 'prod1', current_stock: 10, sold: 5 }],
-      }))
+      expect(mockEmit).toHaveBeenCalledWith(
+        SocketEvent.FLASH_SALE_TICK,
+        expect.objectContaining({
+          sale_id: 'sale123',
+          remaining_seconds: expect.any(Number),
+          products: [{ product_id: 'prod1', current_stock: 10, sold: 5 }],
+        }),
+      )
     })
 
     it('should clear interval when sale is not found', async () => {
       await setupMock()
-      const { getFlashSale, endFlashSale } = await import('../../socket/managers/flash-sale.manager')
+      const { getFlashSale, endFlashSale } =
+        await import('../../socket/managers/flash-sale.manager')
       ;(getFlashSale as jest.Mock).mockReturnValue(null)
 
       const { startFlashSaleTimer } = await import('../../socket/utils/flash-sale-emit')
@@ -155,7 +158,8 @@ describe('Flash Sale Emit Utils', () => {
 
     it('should call endFlashSale and clear interval when time has expired', async () => {
       await setupMock()
-      const { getFlashSale, endFlashSale } = await import('../../socket/managers/flash-sale.manager')
+      const { getFlashSale, endFlashSale } =
+        await import('../../socket/managers/flash-sale.manager')
       const pastTime = new Date(Date.now() - 1000)
       const mockSale = {
         sale_id: 'sale123',
@@ -174,4 +178,3 @@ describe('Flash Sale Emit Utils', () => {
     })
   })
 })
-

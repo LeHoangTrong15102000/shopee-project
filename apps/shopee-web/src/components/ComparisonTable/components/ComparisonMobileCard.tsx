@@ -1,21 +1,21 @@
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import { Product } from 'src/types/product.type';
-import { formatCurrency, formatNumberToSocialStyle, generateNameId } from 'src/utils/utils';
-import Button from 'src/components/Button';
-import path from 'src/constant/path';
+import { Link } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import { Product } from 'src/types/product.type'
+import { formatCurrency, formatNumberToSocialStyle, generateNameId } from 'src/utils/utils'
+import Button from 'src/components/Button'
+import path from 'src/constant/path'
 
 interface ComparisonMobileCardProps {
-  compareList: Product[];
-  removeFromCompare: (id: string) => void;
-  onAddToCart?: (product: Product) => void;
+  compareList: Product[]
+  removeFromCompare: (id: string) => void
+  onAddToCart?: (product: Product) => void
 }
 
 export default function ComparisonMobileCard({
   compareList,
   removeFromCompare,
 }: ComparisonMobileCardProps) {
-  const { t } = useTranslation('compare');
+  const { t } = useTranslation('compare')
   return (
     <div className="space-y-4 md:hidden">
       {compareList.map((product) => (
@@ -75,5 +75,5 @@ export default function ComparisonMobileCard({
         </div>
       ))}
     </div>
-  );
+  )
 }

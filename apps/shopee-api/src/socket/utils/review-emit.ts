@@ -1,5 +1,10 @@
 import { SOCKET_CONFIG } from '@constants/socket'
-import { SocketEvent, NewReviewPayload, NewReviewCommentPayload, ReviewLikedPayload } from '../../@types/socket.type'
+import {
+  SocketEvent,
+  NewReviewPayload,
+  NewReviewCommentPayload,
+  ReviewLikedPayload,
+} from '../../@types/socket.type'
 import { Logger } from '@utils/logger'
 import { getIORequired } from '../socket.init'
 
@@ -12,7 +17,7 @@ import { getIORequired } from '../socket.init'
 export const emitNewReview = (
   productId: string,
   review: NewReviewPayload['review'],
-  excludeSocketId?: string
+  excludeSocketId?: string,
 ): void => {
   try {
     const io = getIORequired()
@@ -51,7 +56,7 @@ export const emitNewReview = (
 export const emitNewReviewComment = (
   productId: string,
   reviewId: string,
-  comment: NewReviewCommentPayload['comment']
+  comment: NewReviewCommentPayload['comment'],
 ): void => {
   try {
     const io = getIORequired()
@@ -89,7 +94,7 @@ export const emitNewReviewComment = (
 export const emitReviewLiked = (
   productId: string,
   reviewId: string,
-  helpfulCount: number
+  helpfulCount: number,
 ): void => {
   try {
     const io = getIORequired()
@@ -117,4 +122,3 @@ export const emitReviewLiked = (
     })
   }
 }
-

@@ -1,13 +1,13 @@
-import { motion } from 'framer-motion';
-import { GoldenSparkle } from '../profileCompletion.constants';
+import { motion } from 'framer-motion'
+import { GoldenSparkle } from '../profileCompletion.constants'
 
 interface CircularProgressRingProps {
-  percentage: number;
-  circumference: number;
-  strokeDashoffset: number;
-  statusColor: { from: string; to: string };
-  reducedMotion: boolean;
-  radius: number;
+  percentage: number
+  circumference: number
+  strokeDashoffset: number
+  statusColor: { from: string; to: string }
+  reducedMotion: boolean
+  radius: number
 }
 
 const CircularProgressRing = ({
@@ -99,7 +99,7 @@ const CircularProgressRing = ({
         </span>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CircularProgressRing;
+export default CircularProgressRing

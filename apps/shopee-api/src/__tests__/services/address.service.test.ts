@@ -15,7 +15,7 @@ describe('AddressService', () => {
     district: 'Q1',
     ward: 'P1',
     street: '123 ABC',
-    is_default: false
+    is_default: false,
   }
 
   const mockAddressRepository = {
@@ -27,7 +27,7 @@ describe('AddressService', () => {
     setAsDefault: jest.fn(),
     clearDefaultFlags: jest.fn(),
     countByUser: jest.fn(),
-    deleteByIdAndUser: jest.fn()
+    deleteByIdAndUser: jest.fn(),
   } as unknown as jest.Mocked<IAddressRepository>
 
   let addressService: AddressService
@@ -49,14 +49,18 @@ describe('AddressService', () => {
   describe('getAddressById', () => {
     it('should return address when found', async () => {
       mockAddressRepository.findByIdAndUser.mockResolvedValue(mockAddress)
-      const result = await addressService.getAddressById(validObjectId.toString(), validObjectId.toString())
+      const result = await addressService.getAddressById(
+        validObjectId.toString(),
+        validObjectId.toString(),
+      )
       expect(result).toEqual(mockAddress)
     })
 
     it('should throw NotFoundError when not found', async () => {
       mockAddressRepository.findByIdAndUser.mockResolvedValue(null)
-      await expect(addressService.getAddressById(validObjectId.toString(), validObjectId.toString()))
-        .rejects.toThrow(NotFoundError)
+      await expect(
+        addressService.getAddressById(validObjectId.toString(), validObjectId.toString()),
+      ).rejects.toThrow(NotFoundError)
     })
   })
 
@@ -74,7 +78,7 @@ describe('AddressService', () => {
       mockAddressRepository.create.mockResolvedValue({ ...mockAddress, is_default: true })
       await addressService.createAddress(validObjectId.toString(), mockAddress)
       expect(mockAddressRepository.create).toHaveBeenCalledWith(
-        expect.objectContaining({ is_default: true })
+        expect.objectContaining({ is_default: true }),
       )
     })
   })
@@ -83,21 +87,28 @@ describe('AddressService', () => {
     it('should update address successfully', async () => {
       mockAddressRepository.findByIdAndUser.mockResolvedValue(mockAddress)
       mockAddressRepository.updateById.mockResolvedValue({ ...mockAddress, full_name: 'Updated' })
-      const result = await addressService.updateAddress(validObjectId.toString(), validObjectId.toString(), { full_name: 'Updated' })
+      const result = await addressService.updateAddress(
+        validObjectId.toString(),
+        validObjectId.toString(),
+        { full_name: 'Updated' },
+      )
       expect(result.full_name).toBe('Updated')
     })
 
     it('should clear other defaults when setting as default', async () => {
       mockAddressRepository.findByIdAndUser.mockResolvedValue(mockAddress)
       mockAddressRepository.updateById.mockResolvedValue({ ...mockAddress, is_default: true })
-      await addressService.updateAddress(validObjectId.toString(), validObjectId.toString(), { is_default: true })
+      await addressService.updateAddress(validObjectId.toString(), validObjectId.toString(), {
+        is_default: true,
+      })
       expect(mockAddressRepository.clearDefaultFlags).toHaveBeenCalled()
     })
 
     it('should throw NotFoundError when address not found', async () => {
       mockAddressRepository.findByIdAndUser.mockResolvedValue(null)
-      await expect(addressService.updateAddress(validObjectId.toString(), validObjectId.toString(), {}))
-        .rejects.toThrow(NotFoundError)
+      await expect(
+        addressService.updateAddress(validObjectId.toString(), validObjectId.toString(), {}),
+      ).rejects.toThrow(NotFoundError)
     })
   })
 
@@ -112,8 +123,9 @@ describe('AddressService', () => {
     it('should throw BusinessError when deleting default with others existing', async () => {
       mockAddressRepository.findByIdAndUser.mockResolvedValue({ ...mockAddress, is_default: true })
       mockAddressRepository.countByUser.mockResolvedValue(2)
-      await expect(addressService.deleteAddress(validObjectId.toString(), validObjectId.toString()))
-        .rejects.toThrow(BusinessError)
+      await expect(
+        addressService.deleteAddress(validObjectId.toString(), validObjectId.toString()),
+      ).rejects.toThrow(BusinessError)
     })
   })
 
@@ -121,9 +133,15 @@ describe('AddressService', () => {
     it('should set address as default successfully', async () => {
       mockAddressRepository.findByIdAndUser.mockResolvedValue(mockAddress)
       mockAddressRepository.setAsDefault.mockResolvedValue({ ...mockAddress, is_default: true })
-      const result = await addressService.setDefaultAddress(validObjectId.toString(), validObjectId.toString())
+      const result = await addressService.setDefaultAddress(
+        validObjectId.toString(),
+        validObjectId.toString(),
+      )
       expect(result.is_default).toBe(true)
-      expect(mockAddressRepository.setAsDefault).toHaveBeenCalledWith(validObjectId.toString(), validObjectId.toString())
+      expect(mockAddressRepository.setAsDefault).toHaveBeenCalledWith(
+        validObjectId.toString(),
+        validObjectId.toString(),
+      )
     })
   })
 
@@ -136,4 +154,3 @@ describe('AddressService', () => {
     })
   })
 })
-

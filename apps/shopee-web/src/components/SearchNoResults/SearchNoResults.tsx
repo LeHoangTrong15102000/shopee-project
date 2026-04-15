@@ -1,11 +1,11 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import Button from 'src/components/Button';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import Button from 'src/components/Button'
 
 interface SearchNoResultsProps {
-  searchTerm: string;
-  onPopularSearch?: (term: string) => void;
+  searchTerm: string
+  onPopularSearch?: (term: string) => void
 }
 
 const popularSearchTerms = [
@@ -17,14 +17,14 @@ const popularSearchTerms = [
   'Túi xách nữ',
   'Đồng hồ',
   'Mỹ phẩm',
-];
+]
 
 const SearchNoResults = function SearchNoResults({
   searchTerm,
   onPopularSearch,
 }: SearchNoResultsProps) {
-  const { t } = useTranslation('home');
-  const prefersReducedMotion = useReducedMotion();
+  const { t } = useTranslation('home')
+  const prefersReducedMotion = useReducedMotion()
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -33,7 +33,7 @@ const SearchNoResults = function SearchNoResults({
       y: 0,
       transition: prefersReducedMotion ? { duration: 0 } : { duration: 0.4, ease: 'easeOut' },
     },
-  };
+  }
 
   const itemVariants = {
     hidden: { opacity: 0, scale: 0.9 },
@@ -42,7 +42,7 @@ const SearchNoResults = function SearchNoResults({
       scale: 1,
       transition: prefersReducedMotion ? { duration: 0 } : { duration: 0.3 },
     },
-  };
+  }
 
   const listVariants = {
     hidden: { opacity: 0 },
@@ -55,7 +55,7 @@ const SearchNoResults = function SearchNoResults({
             delayChildren: 0.2,
           },
     },
-  };
+  }
 
   const listItemVariants = {
     hidden: { opacity: 0, x: -10 },
@@ -64,7 +64,7 @@ const SearchNoResults = function SearchNoResults({
       x: 0,
       transition: prefersReducedMotion ? { duration: 0 } : { duration: 0.2 },
     },
-  };
+  }
 
   return (
     <motion.div
@@ -169,7 +169,7 @@ const SearchNoResults = function SearchNoResults({
         </div>
       </motion.div>
     </motion.div>
-  );
-};
+  )
+}
 
-export default SearchNoResults;
+export default SearchNoResults

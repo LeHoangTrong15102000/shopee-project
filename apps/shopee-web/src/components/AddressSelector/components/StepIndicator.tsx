@@ -1,12 +1,12 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { FORM_STEPS } from '../addressForm.constants';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { FORM_STEPS } from '../addressForm.constants'
 
 interface StepIndicatorProps {
-  currentStep: number;
-  stepProgress: number;
-  canProceedToStep: (step: number) => boolean | string | undefined;
-  onStepClick: (step: number) => void;
+  currentStep: number
+  stepProgress: number
+  canProceedToStep: (step: number) => boolean | string | undefined
+  onStepClick: (step: number) => void
 }
 
 export default function StepIndicator({
@@ -15,16 +15,16 @@ export default function StepIndicator({
   canProceedToStep,
   onStepClick,
 }: StepIndicatorProps) {
-  const { t } = useTranslation('address');
+  const { t } = useTranslation('address')
 
   return (
     <div className="border-b border-gray-100 bg-linear-to-b from-gray-50/80 to-white px-4 py-5 sm:px-6 sm:py-6 dark:border-slate-700 dark:from-slate-700/50 dark:to-slate-800">
       <div className="flex items-center justify-center">
         {FORM_STEPS.map((step, index) => {
-          const isCompleted = stepProgress >= step.id && currentStep !== step.id;
-          const isCurrent = currentStep === step.id;
-          const canClick = canProceedToStep(step.id);
-          const stepTitle = t(step.titleKey as 'step.contact' | 'step.location' | 'step.details');
+          const isCompleted = stepProgress >= step.id && currentStep !== step.id
+          const isCurrent = currentStep === step.id
+          const canClick = canProceedToStep(step.id)
+          const stepTitle = t(step.titleKey as 'step.contact' | 'step.location' | 'step.details')
 
           return (
             <div key={step.id} className="flex items-center">
@@ -123,9 +123,9 @@ export default function StepIndicator({
                 </div>
               )}
             </div>
-          );
+          )
         })}
       </div>
     </div>
-  );
+  )
 }

@@ -1,13 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import NavHeaderFull from '../components/NavHeaderFull';
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
+import NavHeaderFull from '../components/NavHeaderFull'
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
     i18n: { language: 'vi', changeLanguage: vi.fn() },
   }),
-}));
+}))
 
 vi.mock('react-router', () => ({
   Link: ({ children, to, ...props }: any) => (
@@ -15,7 +15,7 @@ vi.mock('react-router', () => ({
       {children}
     </a>
   ),
-}));
+}))
 
 vi.mock('src/components/InventoryAlertBadge', () => ({
   default: ({ alerts, unreadCount, onClear, className }: any) => (
@@ -23,7 +23,7 @@ vi.mock('src/components/InventoryAlertBadge', () => ({
       {unreadCount > 0 && <span>{unreadCount}</span>}
     </div>
   ),
-}));
+}))
 
 vi.mock('src/components/ThemeToggle', () => ({
   default: ({ className }: any) => (
@@ -31,19 +31,19 @@ vi.mock('src/components/ThemeToggle', () => ({
       Theme
     </div>
   ),
-}));
+}))
 
 vi.mock('../../Popover', () => ({
   default: ({ children, renderPopover, className, as, ...props }: any) => {
-    const Tag = as || 'div';
+    const Tag = as || 'div'
     return (
       <Tag className={className} {...props}>
         {children}
         <div data-testid="popover-content">{renderPopover}</div>
       </Tag>
-    );
+    )
   },
-}));
+}))
 
 vi.mock('src/components/Button', () => ({
   default: ({ children, onClick, className, ...props }: any) => (
@@ -51,7 +51,7 @@ vi.mock('src/components/Button', () => ({
       {children}
     </button>
   ),
-}));
+}))
 
 vi.mock('../components/NotificationPopover', () => ({
   default: ({ isAuthenticated, variant }: any) => (
@@ -59,20 +59,20 @@ vi.mock('../components/NotificationPopover', () => ({
       {isAuthenticated ? 'Authenticated' : 'Not Authenticated'} - {variant}
     </div>
   ),
-}));
+}))
 
 vi.mock('../components/AppDownloadPopover', () => ({
   default: () => <div data-testid="app-download-popover">Download App</div>,
-}));
+}))
 
 vi.mock('src/utils/utils', () => ({
   getAvatarUrl: (avatar: string) => avatar || 'default-avatar.png',
-}));
+}))
 
 describe('NavHeaderFull', () => {
-  const mockHandleLogout = vi.fn();
-  const mockHandleTranslateLanguage = vi.fn();
-  const mockClearInventoryAlerts = vi.fn();
+  const mockHandleLogout = vi.fn()
+  const mockHandleTranslateLanguage = vi.fn()
+  const mockClearInventoryAlerts = vi.fn()
 
   const defaultProps = {
     isAuthenticated: false,
@@ -85,39 +85,39 @@ describe('NavHeaderFull', () => {
     currentLanguage: 'vi',
     profile: null,
     handleLogout: mockHandleLogout,
-  };
+  }
 
   beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    vi.clearAllMocks()
+  })
 
   it('renders without crashing', () => {
-    const { container } = render(<NavHeaderFull {...defaultProps} />);
-    expect(screen.getByTestId('theme-toggle')).toBeInTheDocument();
-  });
+    const { container } = render(<NavHeaderFull {...defaultProps} />)
+    expect(screen.getByTestId('theme-toggle')).toBeInTheDocument()
+  })
 
   it('renders ThemeToggle component', () => {
-    render(<NavHeaderFull {...defaultProps} />);
-    expect(screen.getByTestId('theme-toggle')).toBeInTheDocument();
-  });
+    render(<NavHeaderFull {...defaultProps} />)
+    expect(screen.getByTestId('theme-toggle')).toBeInTheDocument()
+  })
 
   it('renders notification bell with unread count badge when authenticated', () => {
-    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} unreadCount={5} />);
-    const badge = screen.getByText('5');
-    expect(badge).toBeInTheDocument();
-  });
+    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} unreadCount={5} />)
+    const badge = screen.getByText('5')
+    expect(badge).toBeInTheDocument()
+  })
 
   it('displays 9+ when unread count exceeds 9', () => {
-    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} unreadCount={15} />);
-    const badge = screen.getByText('9+');
-    expect(badge).toBeInTheDocument();
-  });
+    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} unreadCount={15} />)
+    const badge = screen.getByText('9+')
+    expect(badge).toBeInTheDocument()
+  })
 
   it('does not show unread badge when count is 0', () => {
-    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} unreadCount={0} />);
-    const badge = screen.queryByText('0');
-    expect(badge).not.toBeInTheDocument();
-  });
+    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} unreadCount={0} />)
+    const badge = screen.queryByText('0')
+    expect(badge).not.toBeInTheDocument()
+  })
 
   it('renders InventoryAlertBadge when user is admin and authenticated', () => {
     render(
@@ -127,24 +127,24 @@ describe('NavHeaderFull', () => {
         isAdmin={true}
         inventoryUnreadCount={3}
       />,
-    );
-    const inventoryBadge = screen.getByTestId('inventory-alert-badge');
-    expect(inventoryBadge).toBeInTheDocument();
-  });
+    )
+    const inventoryBadge = screen.getByTestId('inventory-alert-badge')
+    expect(inventoryBadge).toBeInTheDocument()
+  })
 
   it('does not render InventoryAlertBadge when user is not admin', () => {
-    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} isAdmin={false} />);
-    const inventoryBadge = screen.queryByTestId('inventory-alert-badge');
-    expect(inventoryBadge).not.toBeInTheDocument();
-  });
+    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} isAdmin={false} />)
+    const inventoryBadge = screen.queryByTestId('inventory-alert-badge')
+    expect(inventoryBadge).not.toBeInTheDocument()
+  })
 
   it('renders auth links when not authenticated', () => {
-    render(<NavHeaderFull {...defaultProps} isAuthenticated={false} />);
-    const registerLink = screen.getByText('header.register');
-    const loginLink = screen.getByText('header.login');
-    expect(registerLink).toBeInTheDocument();
-    expect(loginLink).toBeInTheDocument();
-  });
+    render(<NavHeaderFull {...defaultProps} isAuthenticated={false} />)
+    const registerLink = screen.getByText('header.register')
+    const loginLink = screen.getByText('header.login')
+    expect(registerLink).toBeInTheDocument()
+    expect(loginLink).toBeInTheDocument()
+  })
 
   it('renders user menu when authenticated', () => {
     const profile = {
@@ -154,10 +154,10 @@ describe('NavHeaderFull', () => {
       roles: ['user'],
       createdAt: '2024-01-01',
       updatedAt: '2024-01-01',
-    };
-    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} profile={profile} />);
-    expect(screen.getByText('test@example.com')).toBeInTheDocument();
-  });
+    }
+    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} profile={profile} />)
+    expect(screen.getByText('test@example.com')).toBeInTheDocument()
+  })
 
   it('calls handleLogout when logout button is clicked', () => {
     const profile = {
@@ -167,63 +167,63 @@ describe('NavHeaderFull', () => {
       roles: ['user'],
       createdAt: '2024-01-01',
       updatedAt: '2024-01-01',
-    };
-    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} profile={profile} />);
-    const logoutButton = screen.getByText('header.logout');
-    fireEvent.click(logoutButton);
-    expect(mockHandleLogout).toHaveBeenCalledTimes(1);
-  });
+    }
+    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} profile={profile} />)
+    const logoutButton = screen.getByText('header.logout')
+    fireEvent.click(logoutButton)
+    expect(mockHandleLogout).toHaveBeenCalledTimes(1)
+  })
 
   it('renders language popover with current language', () => {
-    render(<NavHeaderFull {...defaultProps} currentLanguage="en" />);
-    expect(screen.getByText('en')).toBeInTheDocument();
-  });
+    render(<NavHeaderFull {...defaultProps} currentLanguage="en" />)
+    expect(screen.getByText('en')).toBeInTheDocument()
+  })
 
   it('calls handleTranslateLanguage when language is changed to Vietnamese', () => {
-    render(<NavHeaderFull {...defaultProps} />);
-    const viButton = screen.getByText('Tiếng Việt');
-    fireEvent.click(viButton);
-    expect(mockHandleTranslateLanguage).toHaveBeenCalledWith('vi');
-  });
+    render(<NavHeaderFull {...defaultProps} />)
+    const viButton = screen.getByText('Tiếng Việt')
+    fireEvent.click(viButton)
+    expect(mockHandleTranslateLanguage).toHaveBeenCalledWith('vi')
+  })
 
   it('calls handleTranslateLanguage when language is changed to English', () => {
-    render(<NavHeaderFull {...defaultProps} />);
-    const enButton = screen.getByText('English');
-    fireEvent.click(enButton);
-    expect(mockHandleTranslateLanguage).toHaveBeenCalledWith('en');
-  });
+    render(<NavHeaderFull {...defaultProps} />)
+    const enButton = screen.getByText('English')
+    fireEvent.click(enButton)
+    expect(mockHandleTranslateLanguage).toHaveBeenCalledWith('en')
+  })
 
   it('renders authenticated left section when user is authenticated', () => {
-    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} />);
-    expect(screen.getByText('header.sellerChannel')).toBeInTheDocument();
-    expect(screen.getByText('header.downloadApp')).toBeInTheDocument();
-    expect(screen.getByText('header.connect')).toBeInTheDocument();
-  });
+    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} />)
+    expect(screen.getByText('header.sellerChannel')).toBeInTheDocument()
+    expect(screen.getByText('header.downloadApp')).toBeInTheDocument()
+    expect(screen.getByText('header.connect')).toBeInTheDocument()
+  })
 
   it('renders unauthenticated left section when user is not authenticated', () => {
-    render(<NavHeaderFull {...defaultProps} isAuthenticated={false} />);
-    expect(screen.getByText('header.sellerChannel')).toBeInTheDocument();
-    expect(screen.getByText('header.becomeSeller')).toBeInTheDocument();
-    expect(screen.getByText('header.downloadApp')).toBeInTheDocument();
-  });
+    render(<NavHeaderFull {...defaultProps} isAuthenticated={false} />)
+    expect(screen.getByText('header.sellerChannel')).toBeInTheDocument()
+    expect(screen.getByText('header.becomeSeller')).toBeInTheDocument()
+    expect(screen.getByText('header.downloadApp')).toBeInTheDocument()
+  })
 
   it('renders support link', () => {
-    render(<NavHeaderFull {...defaultProps} />);
-    expect(screen.getByText('header.support')).toBeInTheDocument();
-  });
+    render(<NavHeaderFull {...defaultProps} />)
+    expect(screen.getByText('header.support')).toBeInTheDocument()
+  })
 
   it('renders social links', () => {
-    render(<NavHeaderFull {...defaultProps} />);
-    const links = screen.getAllByRole('link');
+    render(<NavHeaderFull {...defaultProps} />)
+    const links = screen.getAllByRole('link')
     const facebookLink = links.find(
       (link) => link.getAttribute('href') === 'https://www.facebook.com/ShopeeVN',
-    );
+    )
     const instagramLink = links.find(
       (link) => link.getAttribute('href') === 'https://instagram.com/Shopee_VN',
-    );
-    expect(facebookLink).toBeInTheDocument();
-    expect(instagramLink).toBeInTheDocument();
-  });
+    )
+    expect(facebookLink).toBeInTheDocument()
+    expect(instagramLink).toBeInTheDocument()
+  })
 
   it('renders user avatar with correct src', () => {
     const profile = {
@@ -233,11 +233,11 @@ describe('NavHeaderFull', () => {
       roles: ['user'],
       createdAt: '2024-01-01',
       updatedAt: '2024-01-01',
-    };
-    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} profile={profile} />);
-    const avatar = screen.getByAltText('avatar');
-    expect(avatar).toHaveAttribute('src', 'custom-avatar.png');
-  });
+    }
+    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} profile={profile} />)
+    const avatar = screen.getByAltText('avatar')
+    expect(avatar).toHaveAttribute('src', 'custom-avatar.png')
+  })
 
   it('renders default avatar when profile avatar is null', () => {
     const profile = {
@@ -247,11 +247,11 @@ describe('NavHeaderFull', () => {
       roles: ['user'],
       createdAt: '2024-01-01',
       updatedAt: '2024-01-01',
-    };
-    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} profile={profile} />);
-    const avatar = screen.getByAltText('avatar');
-    expect(avatar).toHaveAttribute('src', 'default-avatar.png');
-  });
+    }
+    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} profile={profile} />)
+    const avatar = screen.getByAltText('avatar')
+    expect(avatar).toHaveAttribute('src', 'default-avatar.png')
+  })
 
   it('calls clearInventoryAlerts when inventory badge is clicked', () => {
     render(
@@ -261,9 +261,9 @@ describe('NavHeaderFull', () => {
         isAdmin={true}
         inventoryUnreadCount={3}
       />,
-    );
-    const inventoryBadge = screen.getByTestId('inventory-alert-badge');
-    fireEvent.click(inventoryBadge);
-    expect(mockClearInventoryAlerts).toHaveBeenCalledTimes(1);
-  });
-});
+    )
+    const inventoryBadge = screen.getByTestId('inventory-alert-badge')
+    fireEvent.click(inventoryBadge)
+    expect(mockClearInventoryAlerts).toHaveBeenCalledTimes(1)
+  })
+})

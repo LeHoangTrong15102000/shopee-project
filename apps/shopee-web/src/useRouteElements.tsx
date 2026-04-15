@@ -1,53 +1,53 @@
-import { Navigate, Outlet, useRoutes } from 'react-router';
-import { useContext, lazy, Suspense } from 'react';
-import { AppContext } from './contexts/app.context';
-import path from './constant/path';
-import Loader from './components/Loader';
+import { lazy, Suspense, useContext } from 'react'
+import { Navigate, Outlet, useRoutes } from 'react-router'
+import Loader from './components/Loader'
+import path from './constant/path'
+import { AppContext } from './contexts/app.context'
 
 // Lazy load layouts - giảm initial bundle size
-const MainLayout = lazy(() => import('./layouts/MainLayout'));
-const RegisterLayout = lazy(() => import('./layouts/RegisterLayout'));
-const CartLayout = lazy(() => import('./layouts/CartLayout'));
-const UserLayout = lazy(() => import('./pages/User/layouts/UserLayout'));
+const MainLayout = lazy(() => import('./layouts/MainLayout'))
+const RegisterLayout = lazy(() => import('./layouts/RegisterLayout'))
+const CartLayout = lazy(() => import('./layouts/CartLayout'))
+const UserLayout = lazy(() => import('./pages/User/layouts/UserLayout'))
 // import Profile from './pages/User/pages/Profile'
 // import ChangePassword from './pages/User/pages/ChangePassword'
 // import HistoryPurchases from './pages/User/pages/HistoryPurchases'
 // import NotFound from './pages/NotFound'
 
 // Khai báo lazyload cho các page
-const Login = lazy(() => import('./pages/Login'));
-const Register = lazy(() => import('./pages/Register'));
-const Home = lazy(() => import('./pages/Home'));
-const ProductList = lazy(() => import('./pages/ProductList'));
-const ProductDetail = lazy(() => import('./pages/ProductDetail'));
-const Cart = lazy(() => import('./pages/Cart'));
-const Checkout = lazy(() => import('./pages/Checkout'));
-const Wishlist = lazy(() => import('./pages/Wishlist'));
-const Compare = lazy(() => import('./pages/Compare'));
-const Profile = lazy(() => import('./pages/User/pages/Profile'));
-const ChangePassword = lazy(() => import('./pages/User/pages/ChangePassword'));
-const HistoryPurchases = lazy(() => import('./pages/User/pages/HistoryPurchases'));
-const OrderList = lazy(() => import('./pages/User/pages/OrderList'));
-const OrderDetail = lazy(() => import('./pages/User/pages/OrderDetail'));
-const MyVouchers = lazy(() => import('./pages/User/pages/MyVouchers'));
-const DailyCheckInPage = lazy(() => import('./pages/User/pages/DailyCheckIn'));
-const AddressBook = lazy(() => import('./pages/User/pages/AddressBook'));
-const Notifications = lazy(() => import('./pages/User/pages/Notifications'));
-const ConversationHistory = lazy(() => import('./pages/User/pages/ConversationHistory'));
-const NotFound = lazy(() => import('./pages/NotFound'));
-const ForgotPassword = lazy(() => import('./pages/ForgotPassword/ForgotPassword'));
-const ResetPassword = lazy(() => import('./pages/ResetPassword/ResetPassword'));
+const Login = lazy(() => import('./pages/Login'))
+const Register = lazy(() => import('./pages/Register'))
+const Home = lazy(() => import('./pages/Home'))
+const ProductList = lazy(() => import('./pages/ProductList'))
+const ProductDetail = lazy(() => import('./pages/ProductDetail'))
+const Cart = lazy(() => import('./pages/Cart'))
+const Checkout = lazy(() => import('./pages/Checkout'))
+const Wishlist = lazy(() => import('./pages/Wishlist'))
+const Compare = lazy(() => import('./pages/Compare'))
+const Profile = lazy(() => import('./pages/User/pages/Profile'))
+const ChangePassword = lazy(() => import('./pages/User/pages/ChangePassword'))
+const HistoryPurchases = lazy(() => import('./pages/User/pages/HistoryPurchases'))
+const OrderList = lazy(() => import('./pages/User/pages/OrderList'))
+const OrderDetail = lazy(() => import('./pages/User/pages/OrderDetail'))
+const MyVouchers = lazy(() => import('./pages/User/pages/MyVouchers'))
+const DailyCheckInPage = lazy(() => import('./pages/User/pages/DailyCheckIn'))
+const AddressBook = lazy(() => import('./pages/User/pages/AddressBook'))
+const Notifications = lazy(() => import('./pages/User/pages/Notifications'))
+const ConversationHistory = lazy(() => import('./pages/User/pages/ConversationHistory'))
+const NotFound = lazy(() => import('./pages/NotFound'))
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword/ForgotPassword'))
+const ResetPassword = lazy(() => import('./pages/ResetPassword/ResetPassword'))
 
 // Khai báo một Route Protected(Vì nó return về Outlet nên hàm này được coi là component)
 function ProtectedRoute() {
-  const { isAuthenticated } = useContext(AppContext);
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
+  const { isAuthenticated } = useContext(AppContext)
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />
 }
 
 // Khi mà đã đăng nhập rồi thì không cho nó vào trang login và register
 function RejectedRoute() {
-  const { isAuthenticated } = useContext(AppContext);
-  return !isAuthenticated ? <Outlet /> : <Navigate to="/" />;
+  const { isAuthenticated } = useContext(AppContext)
+  return !isAuthenticated ? <Outlet /> : <Navigate to="/" />
 }
 
 // Đừng khai báo component trong hook em, mỗi lần hoook render là nó tạo component mới
@@ -305,8 +305,8 @@ const useRouteElements = () => {
         },
       ],
     },
-  ]);
-  return routeElements;
-};
+  ])
+  return routeElements
+}
 
-export default useRouteElements;
+export default useRouteElements

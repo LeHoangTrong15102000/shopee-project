@@ -36,4 +36,3 @@ export const disconnectTestDB = async (): Promise<void> => {
     mongoServer = null
   }
 }
-

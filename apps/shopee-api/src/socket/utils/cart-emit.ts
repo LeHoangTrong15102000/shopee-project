@@ -14,7 +14,7 @@ export const emitCartUpdate = (
   userId: string,
   action: 'add' | 'update' | 'delete' | 'buy',
   productId?: string,
-  excludeSocketId?: string
+  excludeSocketId?: string,
 ): void => {
   try {
     const io = getIORequired()
@@ -47,4 +47,3 @@ export const emitCartUpdate = (
     })
   }
 }
-

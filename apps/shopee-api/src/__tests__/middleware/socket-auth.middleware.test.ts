@@ -91,7 +91,9 @@ describe('socketAuthMiddleware', () => {
   })
 
   it('should reject connection with tampered token signature', async () => {
-    const mockSocket = createMockSocket('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXItMTIzIn0.TAMPERED_SIGNATURE')
+    const mockSocket = createMockSocket(
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXItMTIzIn0.TAMPERED_SIGNATURE',
+    )
     ;(verifyToken as jest.Mock).mockRejectedValue(new Error('invalid signature'))
 
     await socketAuthMiddleware(mockSocket, mockNext)

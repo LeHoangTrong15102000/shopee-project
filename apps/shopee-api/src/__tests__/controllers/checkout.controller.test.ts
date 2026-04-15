@@ -25,7 +25,13 @@ jest.mock('../../container', () => ({
   },
 }))
 
-import { orderService, purchaseService, addressService, loyaltyService, voucherService } from '../../container'
+import {
+  orderService,
+  purchaseService,
+  addressService,
+  loyaltyService,
+  voucherService,
+} from '../../container'
 import { getCheckoutSummary, createCheckoutOrder } from '@controllers/checkout.controller'
 
 const mockOrderService = orderService as jest.Mocked<typeof orderService>
@@ -34,11 +40,18 @@ const mockAddressService = addressService as jest.Mocked<typeof addressService>
 const mockLoyaltyService = loyaltyService as jest.Mocked<typeof loyaltyService>
 const mockVoucherService = voucherService as jest.Mocked<typeof voucherService>
 
-const createMockRequest = (options: { body?: any; params?: any; query?: any; jwtDecoded?: any } = {}): Partial<Request> => ({
+const createMockRequest = (
+  options: { body?: any; params?: any; query?: any; jwtDecoded?: any } = {},
+): Partial<Request> => ({
   body: options.body || {},
   params: options.params || {},
   query: options.query || {},
-  jwtDecoded: options.jwtDecoded || { id: 'user_1', email: 'test@example.com', roles: ['User'], created_at: new Date().toISOString() },
+  jwtDecoded: options.jwtDecoded || {
+    id: 'user_1',
+    email: 'test@example.com',
+    roles: ['User'],
+    created_at: new Date().toISOString(),
+  },
 })
 
 const createMockResponse = (): Partial<Response> => {
@@ -107,23 +120,32 @@ describe('Checkout Controller', () => {
       const req = createMockRequest({ body: { purchase_ids: [] } })
       const res = createMockResponse()
 
-      await expect(getCheckoutSummary(req as Request, res as Response))
-        .rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
+      await expect(getCheckoutSummary(req as Request, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
     })
 
     it('should apply voucher discount when voucher_code is provided', async () => {
       mockPurchaseService.getCartItemsByIds.mockResolvedValue([mockPurchase] as any)
       mockOrderService.getShippingMethods.mockReturnValue(mockShippingMethods as any)
-      mockVoucherService.applyVoucher.mockResolvedValue({ code: 'DISCOUNT10', discount_amount: 10000 } as any)
+      mockVoucherService.applyVoucher.mockResolvedValue({
+        code: 'DISCOUNT10',
+        discount_amount: 10000,
+      } as any)
       mockLoyaltyService.getPoints.mockResolvedValue({ points: { available_points: 0 } } as any)
       mockAddressService.getDefaultAddress.mockResolvedValue(mockAddress as any)
 
-      const req = createMockRequest({ body: { purchase_ids: ['purchase_1'], voucher_code: 'DISCOUNT10' } })
+      const req = createMockRequest({
+        body: { purchase_ids: ['purchase_1'], voucher_code: 'DISCOUNT10' },
+      })
       const res = createMockResponse()
 
       await getCheckoutSummary(req as Request, res as Response)
 
-      expect(mockVoucherService.applyVoucher).toHaveBeenCalledWith({ code: 'DISCOUNT10', order_value: 200000 })
+      expect(mockVoucherService.applyVoucher).toHaveBeenCalledWith({
+        code: 'DISCOUNT10',
+        order_value: 200000,
+      })
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
 
@@ -149,7 +171,9 @@ describe('Checkout Controller', () => {
       mockLoyaltyService.getPoints.mockResolvedValue({ points: { available_points: 0 } } as any)
       mockAddressService.getDefaultAddress.mockResolvedValue(mockAddress as any)
 
-      const req = createMockRequest({ body: { purchase_ids: ['purchase_1'], voucher_code: 'INVALID' } })
+      const req = createMockRequest({
+        body: { purchase_ids: ['purchase_1'], voucher_code: 'INVALID' },
+      })
       const res = createMockResponse()
 
       await getCheckoutSummary(req as Request, res as Response)
@@ -158,13 +182,16 @@ describe('Checkout Controller', () => {
     })
 
     it('should throw BAD_REQUEST on ValidationError', async () => {
-      mockPurchaseService.getCartItemsByIds.mockRejectedValue(new ValidationError('Invalid purchase ids'))
+      mockPurchaseService.getCartItemsByIds.mockRejectedValue(
+        new ValidationError('Invalid purchase ids'),
+      )
 
       const req = createMockRequest({ body: { purchase_ids: ['invalid'] } })
       const res = createMockResponse()
 
-      await expect(getCheckoutSummary(req as Request, res as Response))
-        .rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
+      await expect(getCheckoutSummary(req as Request, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
     })
   })
 
@@ -193,10 +220,13 @@ describe('Checkout Controller', () => {
 
       await createCheckoutOrder(req as Request, res as Response)
 
-      expect(mockOrderService.createOrder).toHaveBeenCalledWith('user_1', expect.objectContaining({
-        items: [{ product_id: 'product_1', buy_count: 2 }],
-        shipping_address_id: 'addr_1',
-      }))
+      expect(mockOrderService.createOrder).toHaveBeenCalledWith(
+        'user_1',
+        expect.objectContaining({
+          items: [{ product_id: 'product_1', buy_count: 2 }],
+          shipping_address_id: 'addr_1',
+        }),
+      )
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
 
@@ -206,8 +236,9 @@ describe('Checkout Controller', () => {
       const req = createMockRequest({ body: { purchase_ids: [] } })
       const res = createMockResponse()
 
-      await expect(createCheckoutOrder(req as Request, res as Response))
-        .rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
+      await expect(createCheckoutOrder(req as Request, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
     })
 
     it('should use voucher when voucher_code is provided', async () => {
@@ -255,7 +286,11 @@ describe('Checkout Controller', () => {
 
       await createCheckoutOrder(req as Request, res as Response)
 
-      expect(mockLoyaltyService.deductPoints).toHaveBeenCalledWith('user_1', 100, 'Sử dụng xu cho đơn hàng')
+      expect(mockLoyaltyService.deductPoints).toHaveBeenCalledWith(
+        'user_1',
+        100,
+        'Sử dụng xu cho đơn hàng',
+      )
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
 
@@ -266,8 +301,9 @@ describe('Checkout Controller', () => {
       const req = createMockRequest({ body: { purchase_ids: ['purchase_1'] } })
       const res = createMockResponse()
 
-      await expect(createCheckoutOrder(req as Request, res as Response))
-        .rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
+      await expect(createCheckoutOrder(req as Request, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
     })
 
     it('should throw BAD_REQUEST on BusinessError', async () => {
@@ -277,20 +313,23 @@ describe('Checkout Controller', () => {
       const req = createMockRequest({ body: { purchase_ids: ['purchase_1'] } })
       const res = createMockResponse()
 
-      await expect(createCheckoutOrder(req as Request, res as Response))
-        .rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
+      await expect(createCheckoutOrder(req as Request, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
     })
 
     it('should throw NOT_FOUND on NotFoundError', async () => {
       mockPurchaseService.getCartItemsByIds.mockResolvedValue([mockPurchase] as any)
       mockOrderService.createOrder.mockRejectedValue(new NotFoundError('Address', 'addr_999'))
 
-      const req = createMockRequest({ body: { purchase_ids: ['purchase_1'], shipping_address_id: 'addr_999' } })
+      const req = createMockRequest({
+        body: { purchase_ids: ['purchase_1'], shipping_address_id: 'addr_999' },
+      })
       const res = createMockResponse()
 
-      await expect(createCheckoutOrder(req as Request, res as Response))
-        .rejects.toMatchObject({ status: STATUS.NOT_FOUND })
+      await expect(createCheckoutOrder(req as Request, res as Response)).rejects.toMatchObject({
+        status: STATUS.NOT_FOUND,
+      })
     })
   })
 })
-

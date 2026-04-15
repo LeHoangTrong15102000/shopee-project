@@ -96,7 +96,10 @@ describe('WishlistRepository', () => {
 
   describe('create', () => {
     it('should create a new wishlist item', async () => {
-      const result = await repository.create({ user: '507f1f77bcf86cd799439012', product: '507f1f77bcf86cd799439013' } as any)
+      const result = await repository.create({
+        user: '507f1f77bcf86cd799439012',
+        product: '507f1f77bcf86cd799439013',
+      } as any)
       expect(result).toEqual(mockWishlistData)
     })
   })
@@ -106,9 +109,15 @@ describe('WishlistRepository', () => {
       const mockLean = jest.fn().mockResolvedValue(mockWishlistData)
       ;(WishlistModel.findByIdAndUpdate as jest.Mock).mockReturnValue({ lean: mockLean })
 
-      const result = await repository.updateById('507f1f77bcf86cd799439011', { addedAt: new Date() })
+      const result = await repository.updateById('507f1f77bcf86cd799439011', {
+        addedAt: new Date(),
+      })
 
-      expect(WishlistModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', expect.any(Object), { new: true })
+      expect(WishlistModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        '507f1f77bcf86cd799439011',
+        expect.any(Object),
+        { new: true },
+      )
       expect(result).toEqual(mockWishlistData)
     })
   })
@@ -117,7 +126,10 @@ describe('WishlistRepository', () => {
     it('should update many wishlist items', async () => {
       ;(WishlistModel.updateMany as jest.Mock).mockResolvedValue({ modifiedCount: 5 })
 
-      const result = await repository.updateMany({ user: '507f1f77bcf86cd799439012' }, { $set: { addedAt: new Date() } })
+      const result = await repository.updateMany(
+        { user: '507f1f77bcf86cd799439012' },
+        { $set: { addedAt: new Date() } },
+      )
 
       expect(result).toBe(5)
     })
@@ -186,13 +198,19 @@ describe('WishlistRepository', () => {
   describe('isInWishlist', () => {
     it('should return true if product is in wishlist', async () => {
       ;(WishlistModel.exists as jest.Mock).mockResolvedValue({ _id: '507f1f77bcf86cd799439011' })
-      const result = await repository.isInWishlist('507f1f77bcf86cd799439012', '507f1f77bcf86cd799439013')
+      const result = await repository.isInWishlist(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439013',
+      )
       expect(result).toBe(true)
     })
 
     it('should return false if product is not in wishlist', async () => {
       ;(WishlistModel.exists as jest.Mock).mockResolvedValue(null)
-      const result = await repository.isInWishlist('507f1f77bcf86cd799439012', '507f1f77bcf86cd799439013')
+      const result = await repository.isInWishlist(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439013',
+      )
       expect(result).toBe(false)
     })
   })
@@ -202,7 +220,10 @@ describe('WishlistRepository', () => {
       const mockLean = jest.fn().mockResolvedValue(mockWishlistData)
       ;(WishlistModel.findOne as jest.Mock).mockReturnValue({ lean: mockLean })
 
-      const result = await repository.addToWishlist('507f1f77bcf86cd799439012', '507f1f77bcf86cd799439013')
+      const result = await repository.addToWishlist(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439013',
+      )
 
       expect(result).toEqual(mockWishlistData)
     })
@@ -211,7 +232,10 @@ describe('WishlistRepository', () => {
       const mockLean = jest.fn().mockResolvedValue(null)
       ;(WishlistModel.findOne as jest.Mock).mockReturnValue({ lean: mockLean })
 
-      const result = await repository.addToWishlist('507f1f77bcf86cd799439012', '507f1f77bcf86cd799439013')
+      const result = await repository.addToWishlist(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439013',
+      )
 
       expect(result).toEqual(mockWishlistData)
     })
@@ -222,7 +246,10 @@ describe('WishlistRepository', () => {
       const mockLean = jest.fn().mockResolvedValue(mockWishlistData)
       ;(WishlistModel.findOneAndDelete as jest.Mock).mockReturnValue({ lean: mockLean })
 
-      const result = await repository.removeFromWishlist('507f1f77bcf86cd799439012', '507f1f77bcf86cd799439013')
+      const result = await repository.removeFromWishlist(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439013',
+      )
 
       expect(WishlistModel.findOneAndDelete).toHaveBeenCalled()
       expect(result).toEqual(mockWishlistData)
@@ -251,16 +278,18 @@ describe('WishlistRepository', () => {
 
   describe('checkProducts', () => {
     it('should return map of product ids to wishlist status', async () => {
-      const mockLean = jest.fn().mockResolvedValue([
-        { product: { toString: () => '507f1f77bcf86cd799439013' } },
-      ])
+      const mockLean = jest
+        .fn()
+        .mockResolvedValue([{ product: { toString: () => '507f1f77bcf86cd799439013' } }])
       ;(WishlistModel.find as jest.Mock).mockReturnValue({ lean: mockLean })
 
-      const result = await repository.checkProducts('507f1f77bcf86cd799439012', ['507f1f77bcf86cd799439013', '507f1f77bcf86cd799439014'])
+      const result = await repository.checkProducts('507f1f77bcf86cd799439012', [
+        '507f1f77bcf86cd799439013',
+        '507f1f77bcf86cd799439014',
+      ])
 
       expect(result.get('507f1f77bcf86cd799439013')).toBe(true)
       expect(result.get('507f1f77bcf86cd799439014')).toBe(false)
     })
   })
 })
-

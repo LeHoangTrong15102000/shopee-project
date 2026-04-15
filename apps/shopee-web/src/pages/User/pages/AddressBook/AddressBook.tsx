@@ -1,20 +1,20 @@
-import { DndContext, DragOverlay, MeasuringStrategy } from '@dnd-kit/core';
-import { restrictToWindowEdges } from '@dnd-kit/modifiers';
-import { rectSortingStrategy, SortableContext } from '@dnd-kit/sortable';
-import { AnimatePresence } from 'framer-motion';
-import SEO from 'src/components/SEO';
-import { useTranslation } from 'react-i18next';
-import i18n from 'src/i18n/i18n';
-import AddressForm from 'src/components/AddressSelector/AddressForm';
-import Button from 'src/components/Button';
-import { AddressType } from 'src/types/checkout.type';
-import AddressCard from './components/AddressCard';
-import AddressBookToolbar from './components/AddressBookToolbar';
-import DeleteConfirmModal from './components/DeleteConfirmModal';
-import EmptyState from './components/EmptyState';
-import NoResultsState from './components/NoResultsState';
-import SortableAddressCard from './components/SortableAddressCard';
-import { useAddressBook } from './useAddressBook';
+import { DndContext, DragOverlay, MeasuringStrategy } from '@dnd-kit/core'
+import { restrictToWindowEdges } from '@dnd-kit/modifiers'
+import { rectSortingStrategy, SortableContext } from '@dnd-kit/sortable'
+import { AnimatePresence } from 'framer-motion'
+import SEO from 'src/components/SEO'
+import { useTranslation } from 'react-i18next'
+import i18n from 'src/i18n/i18n'
+import AddressForm from 'src/components/AddressSelector/AddressForm'
+import Button from 'src/components/Button'
+import { AddressType } from 'src/types/checkout.type'
+import AddressCard from './components/AddressCard'
+import AddressBookToolbar from './components/AddressBookToolbar'
+import DeleteConfirmModal from './components/DeleteConfirmModal'
+import EmptyState from './components/EmptyState'
+import NoResultsState from './components/NoResultsState'
+import SortableAddressCard from './components/SortableAddressCard'
+import { useAddressBook } from './useAddressBook'
 
 const ADDRESS_TYPE_CONFIG: Record<
   AddressType,
@@ -55,10 +55,10 @@ const ADDRESS_TYPE_CONFIG: Record<
       </svg>
     ),
   },
-};
+}
 
 const AddressBook = () => {
-  const { t } = useTranslation(['user', 'address']);
+  const { t } = useTranslation(['user', 'address'])
   const {
     showForm,
     editingAddress,
@@ -98,20 +98,20 @@ const AddressBook = () => {
     handleDragStart,
     handleDragEnd,
     handleDragCancel,
-  } = useAddressBook();
+  } = useAddressBook()
 
   const formatAddress = (address: {
-    street: string;
-    ward: string;
-    district: string;
-    province: string;
+    street: string
+    ward: string
+    district: string
+    province: string
   }) => {
-    return `${address.street}, ${address.ward}, ${address.district}, ${address.province}`;
-  };
+    return `${address.street}, ${address.ward}, ${address.district}, ${address.province}`
+  }
 
   const getAddressTypeInfo = (type?: AddressType) => {
-    return ADDRESS_TYPE_CONFIG[type || 'home'];
-  };
+    return ADDRESS_TYPE_CONFIG[type || 'home']
+  }
 
   if (isLoading) {
     return (
@@ -120,7 +120,7 @@ const AddressBook = () => {
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange border-t-transparent dark:border-orange-400"></div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -216,8 +216,8 @@ const AddressBook = () => {
             searchQuery={searchQuery}
             filterType={filterType}
             onClear={() => {
-              setSearchQuery('');
-              setFilterType('all');
+              setSearchQuery('')
+              setFilterType('all')
             }}
           />
         ) : (
@@ -376,7 +376,7 @@ const AddressBook = () => {
         )}
       </AnimatePresence>
     </div>
-  );
-};
+  )
+}
 
-export default AddressBook;
+export default AddressBook

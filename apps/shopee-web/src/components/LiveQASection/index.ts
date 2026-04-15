@@ -1,1 +1,1 @@
-export { default } from './LiveQASection';
+export { default } from './LiveQASection'

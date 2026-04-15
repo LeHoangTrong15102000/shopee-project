@@ -1,192 +1,192 @@
-import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import config from 'src/constant/config';
-import { toast } from 'react-toastify';
-import Button from 'src/components/Button';
+import { useEffect, useRef, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import config from 'src/constant/config'
+import { toast } from 'react-toastify'
+import Button from 'src/components/Button'
 
 interface AvatarCropModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: (croppedFile: File) => void;
-  imageFile: File | null;
+  isOpen: boolean
+  onClose: () => void
+  onConfirm: (croppedFile: File) => void
+  imageFile: File | null
 }
 
-const CROP_SIZE = 200;
-const MIN_SCALE = 1;
-const MAX_SCALE = 3;
+const CROP_SIZE = 200
+const MIN_SCALE = 1
+const MAX_SCALE = 3
 
 const AvatarCropModal = ({ isOpen, onClose, onConfirm, imageFile }: AvatarCropModalProps) => {
-  const { t } = useTranslation('user');
-  const { t: tCommon } = useTranslation('common');
-  const reducedMotion = useReducedMotion();
-  const [imageUrl, setImageUrl] = useState<string>('');
-  const [scale, setScale] = useState(1);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [isProcessing, setIsProcessing] = useState(false);
+  const { t } = useTranslation('user')
+  const { t: tCommon } = useTranslation('common')
+  const reducedMotion = useReducedMotion()
+  const [imageUrl, setImageUrl] = useState<string>('')
+  const [scale, setScale] = useState(1)
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
+  const [isProcessing, setIsProcessing] = useState(false)
 
-  const imageRef = useRef<HTMLImageElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (imageFile) {
       if (imageFile.size > config.maxSizeUploadAvatar) {
-        toast.error(t('avatar.maxSize'), { autoClose: 2000, position: 'top-center' });
-        onClose();
-        return;
+        toast.error(t('avatar.maxSize'), { autoClose: 2000, position: 'top-center' })
+        onClose()
+        return
       }
 
-      const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      const validTypes = ['image/jpeg', 'image/png', 'image/webp']
       if (!validTypes.includes(imageFile.type)) {
         toast.error(t('avatar.invalidFormat'), {
           autoClose: 2000,
           position: 'top-center',
-        });
-        onClose();
-        return;
+        })
+        onClose()
+        return
       }
 
-      const url = URL.createObjectURL(imageFile);
-      setImageUrl(url);
-      setScale(1);
-      setPosition({ x: 0, y: 0 });
+      const url = URL.createObjectURL(imageFile)
+      setImageUrl(url)
+      setScale(1)
+      setPosition({ x: 0, y: 0 })
 
-      return () => URL.revokeObjectURL(url);
+      return () => URL.revokeObjectURL(url)
     }
-  }, [imageFile, onClose]);
+  }, [imageFile, onClose])
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden'
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = ''
     }
     return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isOpen && !isProcessing) {
-        onClose();
+        onClose()
       }
-    };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, isProcessing, onClose]);
+    }
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isOpen, isProcessing, onClose])
 
   const handleImageLoad = () => {
     // Image loaded - ready for cropping
-  };
+  }
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-    setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
-  };
+    e.preventDefault()
+    setIsDragging(true)
+    setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y })
+  }
 
   const handleMouseMove = (e: MouseEvent) => {
-    if (!isDragging) return;
-    const newX = e.clientX - dragStart.x;
-    const newY = e.clientY - dragStart.y;
-    setPosition({ x: newX, y: newY });
-  };
+    if (!isDragging) return
+    const newX = e.clientX - dragStart.x
+    const newY = e.clientY - dragStart.y
+    setPosition({ x: newX, y: newY })
+  }
 
   const handleMouseUp = () => {
-    setIsDragging(false);
-  };
+    setIsDragging(false)
+  }
 
   useEffect(() => {
     if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('mousemove', handleMouseMove)
+      window.addEventListener('mouseup', handleMouseUp)
     }
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging, handleMouseMove, handleMouseUp]);
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [isDragging, handleMouseMove, handleMouseUp])
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    setIsDragging(true);
-    setDragStart({ x: touch.clientX - position.x, y: touch.clientY - position.y });
-  };
+    const touch = e.touches[0]
+    setIsDragging(true)
+    setDragStart({ x: touch.clientX - position.x, y: touch.clientY - position.y })
+  }
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging) return;
-    const touch = e.touches[0];
-    const newX = touch.clientX - dragStart.x;
-    const newY = touch.clientY - dragStart.y;
-    setPosition({ x: newX, y: newY });
-  };
+    if (!isDragging) return
+    const touch = e.touches[0]
+    const newX = touch.clientX - dragStart.x
+    const newY = touch.clientY - dragStart.y
+    setPosition({ x: newX, y: newY })
+  }
 
   const handleTouchEnd = () => {
-    setIsDragging(false);
-  };
+    setIsDragging(false)
+  }
 
   const handleScaleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setScale(parseFloat(e.target.value));
-  };
+    setScale(parseFloat(e.target.value))
+  }
 
   const handleConfirm = async () => {
-    if (!imageRef.current || !canvasRef.current || !imageFile) return;
+    if (!imageRef.current || !canvasRef.current || !imageFile) return
 
-    setIsProcessing(true);
+    setIsProcessing(true)
 
     try {
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
+      const canvas = canvasRef.current
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
 
-      canvas.width = CROP_SIZE;
-      canvas.height = CROP_SIZE;
+      canvas.width = CROP_SIZE
+      canvas.height = CROP_SIZE
 
-      const img = imageRef.current;
-      const containerSize = 250;
+      const img = imageRef.current
+      const containerSize = 250
       const imgDisplayWidth =
-        img.naturalWidth * scale * (containerSize / Math.max(img.naturalWidth, img.naturalHeight));
+        img.naturalWidth * scale * (containerSize / Math.max(img.naturalWidth, img.naturalHeight))
       const imgDisplayHeight =
-        img.naturalHeight * scale * (containerSize / Math.max(img.naturalWidth, img.naturalHeight));
+        img.naturalHeight * scale * (containerSize / Math.max(img.naturalWidth, img.naturalHeight))
 
-      const centerOffsetX = (containerSize - imgDisplayWidth) / 2;
-      const centerOffsetY = (containerSize - imgDisplayHeight) / 2;
+      const centerOffsetX = (containerSize - imgDisplayWidth) / 2
+      const centerOffsetY = (containerSize - imgDisplayHeight) / 2
 
-      const cropAreaLeft = (containerSize - CROP_SIZE) / 2;
-      const cropAreaTop = (containerSize - CROP_SIZE) / 2;
+      const cropAreaLeft = (containerSize - CROP_SIZE) / 2
+      const cropAreaTop = (containerSize - CROP_SIZE) / 2
 
-      const imgLeftInContainer = centerOffsetX + position.x;
-      const imgTopInContainer = centerOffsetY + position.y;
+      const imgLeftInContainer = centerOffsetX + position.x
+      const imgTopInContainer = centerOffsetY + position.y
 
-      const sourceX = ((cropAreaLeft - imgLeftInContainer) / imgDisplayWidth) * img.naturalWidth;
-      const sourceY = ((cropAreaTop - imgTopInContainer) / imgDisplayHeight) * img.naturalHeight;
-      const sourceWidth = (CROP_SIZE / imgDisplayWidth) * img.naturalWidth;
-      const sourceHeight = (CROP_SIZE / imgDisplayHeight) * img.naturalHeight;
+      const sourceX = ((cropAreaLeft - imgLeftInContainer) / imgDisplayWidth) * img.naturalWidth
+      const sourceY = ((cropAreaTop - imgTopInContainer) / imgDisplayHeight) * img.naturalHeight
+      const sourceWidth = (CROP_SIZE / imgDisplayWidth) * img.naturalWidth
+      const sourceHeight = (CROP_SIZE / imgDisplayHeight) * img.naturalHeight
 
-      ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, CROP_SIZE, CROP_SIZE);
+      ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, CROP_SIZE, CROP_SIZE)
 
       canvas.toBlob(
         (blob) => {
           if (blob) {
-            const fileName = imageFile.name.replace(/\.[^/.]+$/, '') + '_cropped.jpg';
-            const croppedFile = new File([blob], fileName, { type: 'image/jpeg' });
-            onConfirm(croppedFile);
+            const fileName = imageFile.name.replace(/\.[^/.]+$/, '') + '_cropped.jpg'
+            const croppedFile = new File([blob], fileName, { type: 'image/jpeg' })
+            onConfirm(croppedFile)
           }
-          setIsProcessing(false);
+          setIsProcessing(false)
         },
         'image/jpeg',
         0.9,
-      );
+      )
     } catch (error) {
-      toast.error(t('avatar.processingError'), { autoClose: 2000, position: 'top-center' });
-      setIsProcessing(false);
+      toast.error(t('avatar.processingError'), { autoClose: 2000, position: 'top-center' })
+      setIsProcessing(false)
     }
-  };
+  }
 
   const animationProps = reducedMotion
     ? { initial: false }
@@ -195,7 +195,7 @@ const AvatarCropModal = ({ isOpen, onClose, onConfirm, imageFile }: AvatarCropMo
         animate: { opacity: 1, scale: 1 },
         exit: { opacity: 0, scale: 0.95 },
         transition: { duration: 0.2 },
-      };
+      }
 
   const backdropAnimationProps = reducedMotion
     ? { initial: false }
@@ -204,7 +204,7 @@ const AvatarCropModal = ({ isOpen, onClose, onConfirm, imageFile }: AvatarCropMo
         animate: { opacity: 0.5 },
         exit: { opacity: 0 },
         transition: { duration: 0.2 },
-      };
+      }
 
   return (
     <AnimatePresence>
@@ -365,7 +365,7 @@ const AvatarCropModal = ({ isOpen, onClose, onConfirm, imageFile }: AvatarCropMo
         </>
       )}
     </AnimatePresence>
-  );
-};
+  )
+}
 
-export default AvatarCropModal;
+export default AvatarCropModal

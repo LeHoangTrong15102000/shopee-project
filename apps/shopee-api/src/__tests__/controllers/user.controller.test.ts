@@ -25,7 +25,9 @@ import { userService } from '../../container'
 
 const mockUserService = userService as jest.Mocked<typeof userService>
 
-const createMockRequest = (options: { body?: any; params?: any; query?: any; jwtDecoded?: any } = {}): Partial<Request> => ({
+const createMockRequest = (
+  options: { body?: any; params?: any; query?: any; jwtDecoded?: any } = {},
+): Partial<Request> => ({
   body: options.body || {},
   params: options.params || {},
   query: options.query || {},
@@ -82,9 +84,9 @@ describe('User Controller', () => {
       })
       const res = createMockResponse()
 
-      await expect(
-        userController.addUser(req as any, res as Response)
-      ).rejects.toMatchObject({ status: 422 })
+      await expect(userController.addUser(req as any, res as Response)).rejects.toMatchObject({
+        status: 422,
+      })
     })
   })
 
@@ -118,7 +120,7 @@ describe('User Controller', () => {
       const res = createMockResponse()
 
       await expect(
-        userController.getDetailMySelf(req as any, res as Response)
+        userController.getDetailMySelf(req as any, res as Response),
       ).rejects.toMatchObject({ status: STATUS.UNAUTHORIZED })
     })
 
@@ -128,7 +130,7 @@ describe('User Controller', () => {
       const res = createMockResponse()
 
       await expect(
-        userController.getDetailMySelf(req as any, res as Response)
+        userController.getDetailMySelf(req as any, res as Response),
       ).rejects.toMatchObject({ status: STATUS.UNAUTHORIZED })
     })
   })
@@ -150,9 +152,9 @@ describe('User Controller', () => {
       const req = createMockRequest({ params: { user_id: 'user_999' }, jwtDecoded })
       const res = createMockResponse()
 
-      await expect(
-        userController.getUser(req as any, res as Response)
-      ).rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
+      await expect(userController.getUser(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
     })
   })
 
@@ -182,9 +184,9 @@ describe('User Controller', () => {
       })
       const res = createMockResponse()
 
-      await expect(
-        userController.updateUser(req as any, res as Response)
-      ).rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
+      await expect(userController.updateUser(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
     })
   })
 
@@ -208,22 +210,24 @@ describe('User Controller', () => {
       const req = createMockRequest({ body: { name: 'New Name' } })
       const res = createMockResponse()
 
-      await expect(
-        userController.updateMe(req as any, res as Response)
-      ).rejects.toMatchObject({ status: STATUS.UNAUTHORIZED })
+      await expect(userController.updateMe(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.UNAUTHORIZED,
+      })
     })
 
     it('should throw validation error with field', async () => {
-      mockUserService.updateProfile.mockRejectedValue(new ValidationError('Password không đúng', 'password'))
+      mockUserService.updateProfile.mockRejectedValue(
+        new ValidationError('Password không đúng', 'password'),
+      )
       const req = createMockRequest({
         body: { password: 'wrong', new_password: 'new123' },
         jwtDecoded,
       })
       const res = createMockResponse()
 
-      await expect(
-        userController.updateMe(req as any, res as Response)
-      ).rejects.toMatchObject({ status: STATUS.UNPROCESSABLE_ENTITY })
+      await expect(userController.updateMe(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.UNPROCESSABLE_ENTITY,
+      })
     })
   })
 
@@ -244,9 +248,9 @@ describe('User Controller', () => {
       const req = createMockRequest({ params: { user_id: 'user_999' }, jwtDecoded })
       const res = createMockResponse()
 
-      await expect(
-        userController.deleteUser(req as any, res as Response)
-      ).rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
+      await expect(userController.deleteUser(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
     })
   })
 })

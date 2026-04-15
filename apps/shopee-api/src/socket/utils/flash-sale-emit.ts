@@ -1,5 +1,9 @@
 import { SOCKET_CONFIG } from '@constants/socket'
-import { SocketEvent, FlashSaleTickPayload, FlashSaleStockUpdatePayload } from '../../@types/socket.type'
+import {
+  SocketEvent,
+  FlashSaleTickPayload,
+  FlashSaleStockUpdatePayload,
+} from '../../@types/socket.type'
 import { Logger } from '@utils/logger'
 import { getIORequired } from '../socket.init'
 import { getFlashSale, setFlashSaleTimer, endFlashSale } from '../managers/flash-sale.manager'
@@ -71,7 +75,7 @@ export const emitFlashSaleStockUpdate = (
   productId: string,
   currentStock: number,
   sold: number,
-  buyerName?: string
+  buyerName?: string,
 ): void => {
   try {
     const io = getIORequired()
@@ -101,4 +105,3 @@ export const emitFlashSaleStockUpdate = (
     })
   }
 }
-

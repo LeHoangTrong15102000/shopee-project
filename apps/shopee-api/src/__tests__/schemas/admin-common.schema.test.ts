@@ -1,8 +1,14 @@
 /// <reference types="jest" />
 import {
-  periodSchema, dateRangeQuerySchema, adminPaginationQuerySchema,
-  periodDateRangeQuerySchema, limitQuerySchema, sortQuerySchema,
-  searchQuerySchema, getDateRangeFromPeriod, getGroupingForPeriod,
+  periodSchema,
+  dateRangeQuerySchema,
+  adminPaginationQuerySchema,
+  periodDateRangeQuerySchema,
+  limitQuerySchema,
+  sortQuerySchema,
+  searchQuerySchema,
+  getDateRangeFromPeriod,
+  getGroupingForPeriod,
 } from '@schemas/admin-common.schema'
 
 describe('Admin Common Schemas', () => {
@@ -19,7 +25,10 @@ describe('Admin Common Schemas', () => {
 
   describe('dateRangeQuerySchema', () => {
     it('should accept valid date range', () => {
-      expect(dateRangeQuerySchema.safeParse({ start_date: '2024-01-01', end_date: '2024-12-31' }).success).toBe(true)
+      expect(
+        dateRangeQuerySchema.safeParse({ start_date: '2024-01-01', end_date: '2024-12-31' })
+          .success,
+      ).toBe(true)
     })
     it('should accept empty (both optional)', () => {
       expect(dateRangeQuerySchema.safeParse({}).success).toBe(true)
@@ -55,7 +64,10 @@ describe('Admin Common Schemas', () => {
       expect(periodDateRangeQuerySchema.safeParse({ period: '7d' }).success).toBe(true)
     })
     it('should reject start_date after end_date', () => {
-      expect(periodDateRangeQuerySchema.safeParse({ start_date: '2024-12-31', end_date: '2024-01-01' }).success).toBe(false)
+      expect(
+        periodDateRangeQuerySchema.safeParse({ start_date: '2024-12-31', end_date: '2024-01-01' })
+          .success,
+      ).toBe(false)
     })
   })
 

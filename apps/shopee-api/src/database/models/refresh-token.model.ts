@@ -16,7 +16,7 @@ const RefreshTokenSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 // Index compound để query nhanh theo user và thời gian hết hạn
@@ -25,7 +25,4 @@ RefreshTokenSchema.index({ user_id: 1, expiresAt: 1 })
 // TTL index để tự động xóa token hết hạn (MongoDB sẽ tự xóa sau khi expiresAt qua)
 RefreshTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 })
 
-export const RefreshTokenModel = mongoose.model(
-  'refresh_tokens',
-  RefreshTokenSchema
-)
+export const RefreshTokenModel = mongoose.model('refresh_tokens', RefreshTokenSchema)

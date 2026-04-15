@@ -1,57 +1,57 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import { User } from 'src/types/user.type';
-import { PROFILE_FIELDS, isFieldComplete } from './profileCompletion.constants';
-import CircularProgressRing from './components/CircularProgressRing';
-import ProfileFieldCard from './components/ProfileFieldCard';
-import BenefitsPanel from './components/BenefitsPanel';
-import CongratulatoryPanel from './components/CongratulatoryPanel';
-import ProfileCompletionTip from './components/ProfileCompletionTip';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import { User } from 'src/types/user.type'
+import { PROFILE_FIELDS, isFieldComplete } from './profileCompletion.constants'
+import CircularProgressRing from './components/CircularProgressRing'
+import ProfileFieldCard from './components/ProfileFieldCard'
+import BenefitsPanel from './components/BenefitsPanel'
+import CongratulatoryPanel from './components/CongratulatoryPanel'
+import ProfileCompletionTip from './components/ProfileCompletionTip'
 
 interface ProfileCompletionProps {
-  user: User | null;
-  className?: string;
-  compact?: boolean;
+  user: User | null
+  className?: string
+  compact?: boolean
 }
 
 const ProfileCompletion = ({ user, className = '', compact = false }: ProfileCompletionProps) => {
-  const { t } = useTranslation('user');
-  const reducedMotion = useReducedMotion();
+  const { t } = useTranslation('user')
+  const reducedMotion = useReducedMotion()
 
   const { percentage, completedFields, incompleteFields } = (() => {
-    let totalWeight = 0;
-    const completed: (typeof PROFILE_FIELDS)[number][] = [];
-    const incomplete: (typeof PROFILE_FIELDS)[number][] = [];
+    let totalWeight = 0
+    const completed: (typeof PROFILE_FIELDS)[number][] = []
+    const incomplete: (typeof PROFILE_FIELDS)[number][] = []
 
     PROFILE_FIELDS.forEach((field) => {
       if (isFieldComplete(user, field.key)) {
-        totalWeight += field.weight;
-        completed.push(field);
+        totalWeight += field.weight
+        completed.push(field)
       } else {
-        incomplete.push(field);
+        incomplete.push(field)
       }
-    });
+    })
 
     return {
       percentage: totalWeight,
       completedFields: completed,
       incompleteFields: incomplete,
-    };
-  })();
+    }
+  })()
 
   // SVG circle properties
-  const radius = 50;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (percentage / 100) * circumference;
+  const radius = 50
+  const circumference = 2 * Math.PI * radius
+  const strokeDashoffset = circumference - (percentage / 100) * circumference
 
   // Get status color based on percentage - using beautiful gradient for 100%
   const getStatusColor = () => {
-    if (percentage === 100) return { from: '#ee4d2d', to: '#ff6633' }; // Shopee orange gradient
-    if (percentage >= 60) return { from: '#f97316', to: '#ea580c' };
-    return { from: '#f59e0b', to: '#d97706' };
-  };
-  const statusColor = getStatusColor();
+    if (percentage === 100) return { from: '#ee4d2d', to: '#ff6633' } // Shopee orange gradient
+    if (percentage >= 60) return { from: '#f97316', to: '#ea580c' }
+    return { from: '#f59e0b', to: '#d97706' }
+  }
+  const statusColor = getStatusColor()
 
   if (compact) {
     return (
@@ -95,7 +95,7 @@ const ProfileCompletion = ({ user, className = '', compact = false }: ProfileCom
           />
         </div>
       </div>
-    );
+    )
   }
 
   // Full version - Enhanced UI
@@ -172,7 +172,7 @@ const ProfileCompletion = ({ user, className = '', compact = false }: ProfileCom
         {percentage < 100 && <ProfileCompletionTip reducedMotion={reducedMotion} />}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProfileCompletion;
+export default ProfileCompletion

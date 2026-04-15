@@ -1,1 +1,1 @@
-export { default } from './OrderPreview';
+export { default } from './OrderPreview'

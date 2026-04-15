@@ -1,17 +1,17 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { mmkvStorage } from './mmkvStorage';
-import { User } from '@/types/user.type';
+import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
+import { mmkvStorage } from './mmkvStorage'
+import { User } from '@/types/user.type'
 
 interface AuthState {
-  accessToken: string | null;
-  refreshToken: string | null;
-  user: User | null;
-  isAuthenticated: boolean;
+  accessToken: string | null
+  refreshToken: string | null
+  user: User | null
+  isAuthenticated: boolean
 
-  login: (data: { accessToken: string; refreshToken: string; user: User }) => void;
-  logout: () => void;
-  setAccessToken: (token: string) => void;
+  login: (data: { accessToken: string; refreshToken: string; user: User }) => void
+  logout: () => void
+  setAccessToken: (token: string) => void
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -42,9 +42,9 @@ export const useAuthStore = create<AuthState>()(
       onRehydrateStorage: () => (state) => {
         // Derive isAuthenticated from rehydrated token
         if (state) {
-          state.isAuthenticated = !!state.accessToken;
+          state.isAuthenticated = !!state.accessToken
         }
       },
     }
   )
-);
+)

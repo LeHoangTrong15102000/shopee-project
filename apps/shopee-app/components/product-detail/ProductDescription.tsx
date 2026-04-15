@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity } from 'react-native';
-import { AppText } from '@/components/ui';
-import { useColors } from '@/hooks/useColors';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from 'react'
+import { View, TouchableOpacity } from 'react-native'
+import { AppText } from '@/components/ui'
+import { useColors } from '@/hooks/useColors'
+import { useTranslation } from 'react-i18next'
 
 interface ProductDescriptionProps {
-  description: string;
+  description: string
 }
 
 export default function ProductDescription({ description }: ProductDescriptionProps) {
-  const colors = useColors();
-  const { t } = useTranslation();
-  const [expanded, setExpanded] = useState(false);
-  const [needsTruncation, setNeedsTruncation] = useState(false);
+  const colors = useColors()
+  const { t } = useTranslation()
+  const [expanded, setExpanded] = useState(false)
+  const [needsTruncation, setNeedsTruncation] = useState(false)
 
   return (
     <View className="px-4 py-3">
@@ -26,7 +26,7 @@ export default function ProductDescription({ description }: ProductDescriptionPr
         numberOfLines={expanded ? undefined : 4}
         onTextLayout={(e: any) => {
           if (e.nativeEvent.lines.length > 4 && !needsTruncation) {
-            setNeedsTruncation(true);
+            setNeedsTruncation(true)
           }
         }}>
         {description}
@@ -43,5 +43,5 @@ export default function ProductDescription({ description }: ProductDescriptionPr
         </TouchableOpacity>
       )}
     </View>
-  );
+  )
 }

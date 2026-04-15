@@ -1,20 +1,20 @@
-import { motion } from 'framer-motion';
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import { useIsMobile } from 'src/hooks/useIsMobile';
+import { motion } from 'framer-motion'
+import { Link } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import { useIsMobile } from 'src/hooks/useIsMobile'
 import {
   sectionEntrance,
   staggerContainer,
   staggerItem,
   STAGGER_DELAY,
-} from 'src/styles/animations';
+} from 'src/styles/animations'
 
 const Footer = () => {
-  const { t } = useTranslation('nav');
-  const reducedMotion = useReducedMotion();
-  const isMobile = useIsMobile();
-  const disableAnimation = reducedMotion || isMobile;
+  const { t } = useTranslation('nav')
+  const reducedMotion = useReducedMotion()
+  const isMobile = useIsMobile()
+  const disableAnimation = reducedMotion || isMobile
 
   return (
     <footer className="relative overflow-hidden py-12 md:py-16">
@@ -173,7 +173,7 @@ const Footer = () => {
         </motion.div>
       </div>
     </footer>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer

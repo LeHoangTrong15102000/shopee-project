@@ -1,43 +1,43 @@
-import classNames from 'classnames';
-import { Link, createSearchParams } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import path from 'src/constant/path';
-import { sortBy, order as orderConstant } from 'src/constant/product';
-import { useProductQueryStates } from 'src/hooks/nuqs';
-import ViewToggle, { ViewMode } from 'src/components/ViewToggle';
-import Button from 'src/components/Button';
+import classNames from 'classnames'
+import { Link, createSearchParams } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import path from 'src/constant/path'
+import { sortBy, order as orderConstant } from 'src/constant/product'
+import { useProductQueryStates } from 'src/hooks/nuqs'
+import ViewToggle, { ViewMode } from 'src/components/ViewToggle'
+import Button from 'src/components/Button'
 
-import { ProductListConfig } from 'src/types/product.type';
+import { ProductListConfig } from 'src/types/product.type'
 
 interface Props {
-  pageSize: number;
-  viewMode?: ViewMode;
-  onViewChange?: (mode: ViewMode) => void;
+  pageSize: number
+  viewMode?: ViewMode
+  onViewChange?: (mode: ViewMode) => void
 }
 
 const SortProductList = ({ pageSize, viewMode, onViewChange }: Props) => {
-  const { t } = useTranslation('home');
-  const [filters, setFilters] = useProductQueryStates();
-  const page = filters.page;
-  const { sort_by, order } = filters;
+  const { t } = useTranslation('home')
+  const [filters, setFilters] = useProductQueryStates()
+  const page = filters.page
+  const { sort_by, order } = filters
 
   const filtersAsStrings = Object.fromEntries(
     Object.entries(filters)
       .filter(([_, v]) => v != null)
       .map(([k, v]) => [k, String(v)]),
-  ) as Record<string, string>;
+  ) as Record<string, string>
 
   const isActiveSortBy = (sortByValue: Exclude<ProductListConfig['sort_by'], undefined>) => {
-    return sort_by === sortByValue;
-  };
+    return sort_by === sortByValue
+  }
 
   const handleSortNavigate = (sortByValue: Exclude<ProductListConfig['sort_by'], undefined>) => {
-    setFilters({ sort_by: sortByValue, order: null });
-  };
+    setFilters({ sort_by: sortByValue, order: null })
+  }
 
   const handlePriceOrder = (orderValue: Exclude<ProductListConfig['order'], undefined>) => {
-    setFilters({ sort_by: 'price' as const, order: orderValue });
-  };
+    setFilters({ sort_by: 'price' as const, order: orderValue })
+  }
 
   return (
     <div className="bg-gray-300/40 px-3 py-4 dark:bg-slate-700/40">
@@ -232,7 +232,7 @@ const SortProductList = ({ pageSize, viewMode, onViewChange }: Props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SortProductList;
+export default SortProductList

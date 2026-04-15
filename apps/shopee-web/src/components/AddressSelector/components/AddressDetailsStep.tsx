@@ -1,19 +1,19 @@
-import { AnimatePresence, motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { UseFormReturn } from 'react-hook-form';
-import Input from 'src/components/Input';
-import { AddressType } from 'src/types/checkout.type';
-import { ADDRESS_TYPE_OPTIONS, AddressSchemaFormData } from '../addressForm.constants';
+import { AnimatePresence, motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { UseFormReturn } from 'react-hook-form'
+import Input from 'src/components/Input'
+import { AddressType } from 'src/types/checkout.type'
+import { ADDRESS_TYPE_OPTIONS, AddressSchemaFormData } from '../addressForm.constants'
 
 interface AddressDetailsStepProps {
-  form: UseFormReturn<AddressSchemaFormData>;
-  watchedAddressType: 'home' | 'office' | 'other';
-  addressPreview: string;
-  showStreetSuggestions: boolean;
-  filteredStreetSuggestions: string[];
-  onShowStreetSuggestions: (show: boolean) => void;
-  onStreetSelect: (street: string) => void;
-  onTypeSelect: (type: AddressType) => void;
+  form: UseFormReturn<AddressSchemaFormData>
+  watchedAddressType: 'home' | 'office' | 'other'
+  addressPreview: string
+  showStreetSuggestions: boolean
+  filteredStreetSuggestions: string[]
+  onShowStreetSuggestions: (show: boolean) => void
+  onStreetSelect: (street: string) => void
+  onTypeSelect: (type: AddressType) => void
 }
 
 export default function AddressDetailsStep({
@@ -26,11 +26,11 @@ export default function AddressDetailsStep({
   onStreetSelect,
   onTypeSelect,
 }: AddressDetailsStepProps) {
-  const { t } = useTranslation('address');
+  const { t } = useTranslation('address')
   const {
     register,
     formState: { errors },
-  } = form;
+  } = form
 
   return (
     <motion.div
@@ -242,5 +242,5 @@ export default function AddressDetailsStep({
         </div>
       </div>
     </motion.div>
-  );
+  )
 }

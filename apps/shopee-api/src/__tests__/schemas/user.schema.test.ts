@@ -1,5 +1,10 @@
 /// <reference types="jest" />
-import { userIdParamSchema, addUserSchema, updateUserSchema, updateMeSchema } from '@schemas/user.schema'
+import {
+  userIdParamSchema,
+  addUserSchema,
+  updateUserSchema,
+  updateMeSchema,
+} from '@schemas/user.schema'
 
 const VALID_ID = '507f1f77bcf86cd799439011'
 
@@ -49,11 +54,15 @@ describe('addUserSchema', () => {
   })
 
   it('should fail with invalid date_of_birth format', () => {
-    expect(() => addUserSchema.parse({ body: { ...validData.body, date_of_birth: 'invalid-date' } })).toThrow()
+    expect(() =>
+      addUserSchema.parse({ body: { ...validData.body, date_of_birth: 'invalid-date' } }),
+    ).toThrow()
   })
 
   it('should fail when phone is too long', () => {
-    expect(() => addUserSchema.parse({ body: { ...validData.body, phone: '123456789012345678901' } })).toThrow()
+    expect(() =>
+      addUserSchema.parse({ body: { ...validData.body, phone: '123456789012345678901' } }),
+    ).toThrow()
   })
 })
 
@@ -81,7 +90,9 @@ describe('updateMeSchema', () => {
   })
 
   it('should pass with password change fields', () => {
-    expect(() => updateMeSchema.parse({ body: { password: 'oldpass123', new_password: 'newpass123' } })).not.toThrow()
+    expect(() =>
+      updateMeSchema.parse({ body: { password: 'oldpass123', new_password: 'newpass123' } }),
+    ).not.toThrow()
   })
 
   it('should fail with short password', () => {
@@ -102,4 +113,3 @@ describe('userIdParamSchema', () => {
     expect(() => userIdParamSchema.parse({ params: { user_id: 'invalid-id' } })).toThrow()
   })
 })
-

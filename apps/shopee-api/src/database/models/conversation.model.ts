@@ -58,7 +58,7 @@ const MessageSchema = new Schema<IMessage>(
       required: true,
     },
   },
-  { _id: false }
+  { _id: false },
 ) // Không tạo _id riêng cho message
 
 // Schema cho Conversation
@@ -101,7 +101,7 @@ const ConversationSchema = new Schema<IConversation>(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 // Tạo compound indexes
@@ -114,10 +114,7 @@ ConversationSchema.pre('save', function () {
 })
 
 // Export model
-export const ConversationModel = mongoose.model<IConversation>(
-  'conversations',
-  ConversationSchema
-)
+export const ConversationModel = mongoose.model<IConversation>('conversations', ConversationSchema)
 
 // Export interfaces
 export { IConversation, IMessage }

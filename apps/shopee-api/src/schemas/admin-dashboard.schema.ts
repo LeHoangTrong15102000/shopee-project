@@ -62,4 +62,3 @@ export const dashboardTopBuyersSchema = z.object({
     })
     .merge(limitQuerySchema.pick({ limit: true })),
 })
-

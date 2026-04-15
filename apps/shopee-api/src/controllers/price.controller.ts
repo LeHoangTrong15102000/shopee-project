@@ -70,4 +70,3 @@ export const deletePriceAlert = async (req: Req, res: Response) => {
     data: result,
   })
 }
-

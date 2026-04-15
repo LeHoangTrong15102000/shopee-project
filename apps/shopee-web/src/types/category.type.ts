@@ -1,3 +1,3 @@
-import type { Category } from '@shopee/shared-types';
+import type { Category } from '@shopee/shared-types'
 
-export type { Category };
+export type { Category }

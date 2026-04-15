@@ -1,37 +1,37 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router';
-import ComparisonTableDesktop from '../ComparisonTableDesktop';
-import { BestValues } from '../../comparisonTable.constants';
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
+import { BrowserRouter } from 'react-router'
+import ComparisonTableDesktop from '../ComparisonTableDesktop'
+import { BestValues } from '../../comparisonTable.constants'
 
 vi.mock('framer-motion', () => ({
   motion: {
     div: ({ children, ...p }: any) => {
-      const { initial, animate, exit, transition, variants, whileHover, layout, ...rest } = p;
-      return <div {...rest}>{children}</div>;
+      const { initial, animate, exit, transition, variants, whileHover, layout, ...rest } = p
+      return <div {...rest}>{children}</div>
     },
     span: ({ children, ...p }: any) => {
-      const { initial, animate, exit, transition, variants, ...rest } = p;
-      return <span {...rest}>{children}</span>;
+      const { initial, animate, exit, transition, variants, ...rest } = p
+      return <span {...rest}>{children}</span>
     },
   },
   AnimatePresence: ({ children }: any) => <>{children}</>,
-}));
+}))
 
 vi.mock('src/components/Button', () => ({
   default: ({ children, onClick, className, ...props }: any) => {
-    const { animated, variant, ariaLabel, ...rest } = props;
+    const { animated, variant, ariaLabel, ...rest } = props
     return (
       <button onClick={onClick} className={className} aria-label={ariaLabel} {...rest}>
         {children}
       </button>
-    );
+    )
   },
-}));
+}))
 
 vi.mock('src/components/ProductRating', () => ({
   default: ({ rating }: any) => <div data-testid="product-rating">{rating}</div>,
-}));
+}))
 
 const makeProduct = (overrides: Record<string, any> = {}) => ({
   _id: 'p1',
@@ -49,7 +49,7 @@ const makeProduct = (overrides: Record<string, any> = {}) => ({
   createdAt: '',
   updatedAt: '',
   ...overrides,
-});
+})
 
 const product1 = makeProduct({
   _id: 'p1',
@@ -58,7 +58,7 @@ const product1 = makeProduct({
   rating: 4.5,
   sold: 500,
   quantity: 50,
-});
+})
 const product2 = makeProduct({
   _id: 'p2',
   name: 'Sản phẩm B',
@@ -67,7 +67,7 @@ const product2 = makeProduct({
   sold: 300,
   quantity: 30,
   price_before_discount: 150000,
-});
+})
 
 const bestValues: BestValues = {
   bestPrice: 100000,
@@ -76,13 +76,13 @@ const bestValues: BestValues = {
   bestDiscount: 50,
   bestStock: 50,
   recommendedProductId: 'p1',
-};
+}
 
-const wrap = (ui: React.ReactElement) => render(<BrowserRouter>{ui}</BrowserRouter>);
+const wrap = (ui: React.ReactElement) => render(<BrowserRouter>{ui}</BrowserRouter>)
 
 describe('ComparisonTableDesktop', () => {
-  const removeFromCompare = vi.fn();
-  const handleAddToCart = vi.fn();
+  const removeFromCompare = vi.fn()
+  const handleAddToCart = vi.fn()
 
   it('renders table with correct aria-label', () => {
     wrap(
@@ -93,9 +93,9 @@ describe('ComparisonTableDesktop', () => {
         handleAddToCart={handleAddToCart}
         reduceMotion={false}
       />,
-    );
-    expect(screen.getByRole('table')).toBeInTheDocument();
-  });
+    )
+    expect(screen.getByRole('table')).toBeInTheDocument()
+  })
 
   it('renders product images', () => {
     wrap(
@@ -106,10 +106,10 @@ describe('ComparisonTableDesktop', () => {
         handleAddToCart={handleAddToCart}
         reduceMotion={false}
       />,
-    );
-    const images = screen.getAllByRole('img');
-    expect(images.length).toBeGreaterThanOrEqual(2);
-  });
+    )
+    const images = screen.getAllByRole('img')
+    expect(images.length).toBeGreaterThanOrEqual(2)
+  })
 
   it('renders product names as links', () => {
     wrap(
@@ -120,10 +120,10 @@ describe('ComparisonTableDesktop', () => {
         handleAddToCart={handleAddToCart}
         reduceMotion={false}
       />,
-    );
-    expect(screen.getByText('Sản phẩm A')).toBeInTheDocument();
-    expect(screen.getByText('Sản phẩm B')).toBeInTheDocument();
-  });
+    )
+    expect(screen.getByText('Sản phẩm A')).toBeInTheDocument()
+    expect(screen.getByText('Sản phẩm B')).toBeInTheDocument()
+  })
 
   it('renders formatted prices', () => {
     wrap(
@@ -134,10 +134,10 @@ describe('ComparisonTableDesktop', () => {
         handleAddToCart={handleAddToCart}
         reduceMotion={false}
       />,
-    );
-    expect(screen.getAllByText(/100\.000/).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText(/150\.000/).length).toBeGreaterThanOrEqual(1);
-  });
+    )
+    expect(screen.getAllByText(/100\.000/).length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText(/150\.000/).length).toBeGreaterThanOrEqual(1)
+  })
 
   it('highlights best price cell', () => {
     wrap(
@@ -148,11 +148,11 @@ describe('ComparisonTableDesktop', () => {
         handleAddToCart={handleAddToCart}
         reduceMotion={false}
       />,
-    );
-    const cells = screen.getAllByRole('cell');
-    const bestPriceCell = cells.find((c) => c.classList.contains('bg-green-50'));
-    expect(bestPriceCell).toBeTruthy();
-  });
+    )
+    const cells = screen.getAllByRole('cell')
+    const bestPriceCell = cells.find((c) => c.classList.contains('bg-green-50'))
+    expect(bestPriceCell).toBeTruthy()
+  })
 
   it('renders discount percentages', () => {
     wrap(
@@ -163,9 +163,9 @@ describe('ComparisonTableDesktop', () => {
         handleAddToCart={handleAddToCart}
         reduceMotion={false}
       />,
-    );
-    expect(screen.getByText('-50%')).toBeInTheDocument();
-  });
+    )
+    expect(screen.getByText('-50%')).toBeInTheDocument()
+  })
 
   it('renders dash for zero discount', () => {
     wrap(
@@ -176,11 +176,11 @@ describe('ComparisonTableDesktop', () => {
         handleAddToCart={handleAddToCart}
         reduceMotion={false}
       />,
-    );
+    )
     // product2 has price === price_before_discount so discount is 0
-    const dashes = screen.getAllByText('-');
-    expect(dashes.length).toBeGreaterThanOrEqual(1);
-  });
+    const dashes = screen.getAllByText('-')
+    expect(dashes.length).toBeGreaterThanOrEqual(1)
+  })
 
   it('renders rating with ProductRating component', () => {
     wrap(
@@ -191,9 +191,9 @@ describe('ComparisonTableDesktop', () => {
         handleAddToCart={handleAddToCart}
         reduceMotion={false}
       />,
-    );
-    expect(screen.getAllByTestId('product-rating').length).toBe(2);
-  });
+    )
+    expect(screen.getAllByTestId('product-rating').length).toBe(2)
+  })
 
   it('renders sold counts', () => {
     wrap(
@@ -204,10 +204,10 @@ describe('ComparisonTableDesktop', () => {
         handleAddToCart={handleAddToCart}
         reduceMotion={false}
       />,
-    );
-    expect(screen.getByText('500')).toBeInTheDocument();
-    expect(screen.getByText('300')).toBeInTheDocument();
-  });
+    )
+    expect(screen.getByText('500')).toBeInTheDocument()
+    expect(screen.getByText('300')).toBeInTheDocument()
+  })
 
   it('renders category names', () => {
     wrap(
@@ -218,10 +218,10 @@ describe('ComparisonTableDesktop', () => {
         handleAddToCart={handleAddToCart}
         reduceMotion={false}
       />,
-    );
-    const categoryTexts = screen.getAllByText('Điện tử');
-    expect(categoryTexts.length).toBe(2);
-  });
+    )
+    const categoryTexts = screen.getAllByText('Điện tử')
+    expect(categoryTexts.length).toBe(2)
+  })
 
   it('renders recommendation row for recommended product', () => {
     wrap(
@@ -232,10 +232,10 @@ describe('ComparisonTableDesktop', () => {
         handleAddToCart={handleAddToCart}
         reduceMotion={false}
       />,
-    );
-    const rows = screen.getAllByRole('row');
-    expect(rows.length).toBeGreaterThanOrEqual(10);
-  });
+    )
+    const rows = screen.getAllByRole('row')
+    expect(rows.length).toBeGreaterThanOrEqual(10)
+  })
 
   it('calls removeFromCompare when remove button clicked', () => {
     wrap(
@@ -246,12 +246,12 @@ describe('ComparisonTableDesktop', () => {
         handleAddToCart={handleAddToCart}
         reduceMotion={false}
       />,
-    );
-    const removeButtons = screen.getAllByRole('button');
+    )
+    const removeButtons = screen.getAllByRole('button')
     // Header has remove buttons, action row has remove buttons
-    fireEvent.click(removeButtons[0]);
-    expect(removeFromCompare).toHaveBeenCalled();
-  });
+    fireEvent.click(removeButtons[0])
+    expect(removeFromCompare).toHaveBeenCalled()
+  })
 
   it('calls handleAddToCart when add to cart clicked', () => {
     wrap(
@@ -262,15 +262,15 @@ describe('ComparisonTableDesktop', () => {
         handleAddToCart={handleAddToCart}
         reduceMotion={false}
       />,
-    );
-    const buttons = screen.getAllByRole('button');
+    )
+    const buttons = screen.getAllByRole('button')
     // Find add to cart buttons (they contain cart-related text)
-    const addButtons = buttons.filter((b) => b.textContent?.includes('Thêm'));
+    const addButtons = buttons.filter((b) => b.textContent?.includes('Thêm'))
     if (addButtons.length > 0) {
-      fireEvent.click(addButtons[0]);
-      expect(handleAddToCart).toHaveBeenCalledWith(product1);
+      fireEvent.click(addButtons[0])
+      expect(handleAddToCart).toHaveBeenCalledWith(product1)
     }
-  });
+  })
 
   it('renders with reduceMotion=true (static recommendation badge)', () => {
     wrap(
@@ -281,9 +281,9 @@ describe('ComparisonTableDesktop', () => {
         handleAddToCart={handleAddToCart}
         reduceMotion={true}
       />,
-    );
-    expect(screen.getByRole('table')).toBeInTheDocument();
-  });
+    )
+    expect(screen.getByRole('table')).toBeInTheDocument()
+  })
 
   it('renders without bestValues (no recommendation row)', () => {
     wrap(
@@ -294,12 +294,12 @@ describe('ComparisonTableDesktop', () => {
         handleAddToCart={handleAddToCart}
         reduceMotion={false}
       />,
-    );
-    expect(screen.getByRole('table')).toBeInTheDocument();
-  });
+    )
+    expect(screen.getByRole('table')).toBeInTheDocument()
+  })
 
   it('renders category dash when category is null', () => {
-    const noCategory = makeProduct({ _id: 'p3', category: null });
+    const noCategory = makeProduct({ _id: 'p3', category: null })
     wrap(
       <ComparisonTableDesktop
         compareList={[noCategory] as any}
@@ -308,10 +308,10 @@ describe('ComparisonTableDesktop', () => {
         handleAddToCart={handleAddToCart}
         reduceMotion={false}
       />,
-    );
-    const dashes = screen.getAllByText('-');
-    expect(dashes.length).toBeGreaterThanOrEqual(1);
-  });
+    )
+    const dashes = screen.getAllByText('-')
+    expect(dashes.length).toBeGreaterThanOrEqual(1)
+  })
 
   it('renders stock quantities', () => {
     wrap(
@@ -322,10 +322,10 @@ describe('ComparisonTableDesktop', () => {
         handleAddToCart={handleAddToCart}
         reduceMotion={false}
       />,
-    );
-    expect(screen.getByText('50')).toBeInTheDocument();
-    expect(screen.getByText('30')).toBeInTheDocument();
-  });
+    )
+    expect(screen.getByText('50')).toBeInTheDocument()
+    expect(screen.getByText('30')).toBeInTheDocument()
+  })
 
   it('renders original prices with line-through', () => {
     wrap(
@@ -336,7 +336,7 @@ describe('ComparisonTableDesktop', () => {
         handleAddToCart={handleAddToCart}
         reduceMotion={false}
       />,
-    );
-    expect(screen.getByText(/200\.000/)).toBeInTheDocument();
-  });
-});
+    )
+    expect(screen.getByText(/200\.000/)).toBeInTheDocument()
+  })
+})

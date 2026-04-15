@@ -1,12 +1,17 @@
 /// <reference types="jest" />
 import {
-  adminTopSellingSchema, adminTopViewedSchema, adminTopRatedSchema, adminProductByCategorySchema,
+  adminTopSellingSchema,
+  adminTopViewedSchema,
+  adminTopRatedSchema,
+  adminProductByCategorySchema,
 } from '@schemas/admin-product-analytics.schema'
 
 describe('Admin Product Analytics Schemas', () => {
   describe('adminTopSellingSchema', () => {
     it('should accept valid query', () => {
-      expect(adminTopSellingSchema.safeParse({ query: { period: '7d', limit: 5 } }).success).toBe(true)
+      expect(adminTopSellingSchema.safeParse({ query: { period: '7d', limit: 5 } }).success).toBe(
+        true,
+      )
     })
     it('should default period to 30d', () => {
       const r = adminTopSellingSchema.safeParse({ query: {} })
@@ -31,7 +36,9 @@ describe('Admin Product Analytics Schemas', () => {
 
   describe('adminTopRatedSchema', () => {
     it('should accept limit and min_reviews', () => {
-      expect(adminTopRatedSchema.safeParse({ query: { limit: 20, min_reviews: 5 } }).success).toBe(true)
+      expect(adminTopRatedSchema.safeParse({ query: { limit: 20, min_reviews: 5 } }).success).toBe(
+        true,
+      )
     })
     it('should default min_reviews to 1', () => {
       const r = adminTopRatedSchema.safeParse({ query: {} })

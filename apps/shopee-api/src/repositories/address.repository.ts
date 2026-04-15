@@ -21,7 +21,10 @@ export class AddressRepository implements IAddressRepository {
     return AddressModel.find(filter, null, options).lean<IAddressItem[]>()
   }
 
-  async findPaginated(filter: FilterQuery<IAddress>, options: PaginationOptions): Promise<PaginatedResult<IAddressItem>> {
+  async findPaginated(
+    filter: FilterQuery<IAddress>,
+    options: PaginationOptions,
+  ): Promise<PaginatedResult<IAddressItem>> {
     const { page, limit, sort } = options
     const skip = (page - 1) * limit
 
@@ -51,7 +54,10 @@ export class AddressRepository implements IAddressRepository {
     return saved.toObject() as IAddressItem
   }
 
-  async updateById(id: string | Types.ObjectId, data: UpdateAddressDTO): Promise<IAddressItem | null> {
+  async updateById(
+    id: string | Types.ObjectId,
+    data: UpdateAddressDTO,
+  ): Promise<IAddressItem | null> {
     return AddressModel.findByIdAndUpdate(id, data, { new: true }).lean<IAddressItem | null>()
   }
 
@@ -91,14 +97,20 @@ export class AddressRepository implements IAddressRepository {
     }).lean<IAddressItem | null>()
   }
 
-  async findByIdAndUser(addressId: string | Types.ObjectId, userId: string | Types.ObjectId): Promise<IAddressItem | null> {
+  async findByIdAndUser(
+    addressId: string | Types.ObjectId,
+    userId: string | Types.ObjectId,
+  ): Promise<IAddressItem | null> {
     return AddressModel.findOne({
       _id: new Types.ObjectId(addressId.toString()),
       user: new Types.ObjectId(userId.toString()),
     }).lean<IAddressItem | null>()
   }
 
-  async setAsDefault(userId: string | Types.ObjectId, addressId: string | Types.ObjectId): Promise<IAddressItem | null> {
+  async setAsDefault(
+    userId: string | Types.ObjectId,
+    addressId: string | Types.ObjectId,
+  ): Promise<IAddressItem | null> {
     const userObjectId = new Types.ObjectId(userId.toString())
     const addressObjectId = new Types.ObjectId(addressId.toString())
 
@@ -109,14 +121,14 @@ export class AddressRepository implements IAddressRepository {
     return AddressModel.findOneAndUpdate(
       { _id: addressObjectId, user: userObjectId },
       { is_default: true },
-      { new: true }
+      { new: true },
     ).lean<IAddressItem | null>()
   }
 
   async clearDefaultFlags(userId: string | Types.ObjectId): Promise<number> {
     const result = await AddressModel.updateMany(
       { user: new Types.ObjectId(userId.toString()) },
-      { is_default: false }
+      { is_default: false },
     )
     return result.modifiedCount
   }
@@ -125,11 +137,13 @@ export class AddressRepository implements IAddressRepository {
     return AddressModel.countDocuments({ user: new Types.ObjectId(userId.toString()) })
   }
 
-  async deleteByIdAndUser(addressId: string | Types.ObjectId, userId: string | Types.ObjectId): Promise<IAddressItem | null> {
+  async deleteByIdAndUser(
+    addressId: string | Types.ObjectId,
+    userId: string | Types.ObjectId,
+  ): Promise<IAddressItem | null> {
     return AddressModel.findOneAndDelete({
       _id: new Types.ObjectId(addressId.toString()),
       user: new Types.ObjectId(userId.toString()),
     }).lean<IAddressItem | null>()
   }
 }
-

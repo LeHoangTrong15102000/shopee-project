@@ -7,9 +7,9 @@ import {
   UserVoucherListResponse,
   ValidateVoucherResponse,
   VoucherStatus,
-} from 'src/types/voucher.type';
-import { SuccessResponseApi } from 'src/types/utils.type';
-import http from 'src/utils/http';
+} from 'src/types/voucher.type'
+import { SuccessResponseApi } from 'src/types/utils.type'
+import http from 'src/utils/http'
 
 const mockVouchers: Voucher[] = [
   {
@@ -81,17 +81,17 @@ const mockVouchers: Voucher[] = [
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
-];
+]
 
-let savedVoucherIds: string[] = ['v1', 'v2'];
+let savedVoucherIds: string[] = ['v1', 'v2']
 
 const voucherApi = {
   getVouchers: async (params?: VoucherListConfig) => {
     try {
       const response = await http.get<SuccessResponseApi<VoucherListResponse>>('/vouchers', {
         params,
-      });
-      return response;
+      })
+      return response
     } catch {
       return {
         data: {
@@ -101,7 +101,7 @@ const voucherApi = {
             pagination: { page: 1, limit: 10, total: mockVouchers.length, totalPages: 1 },
           },
         },
-      };
+      }
     }
   },
 
@@ -110,13 +110,13 @@ const voucherApi = {
       const response = await http.get<SuccessResponseApi<VoucherListResponse>>(
         '/vouchers/available',
         { params },
-      );
-      return response;
+      )
+      return response
     } catch {
       const allVouchers = mockVouchers.map((v) => ({
         ...v,
         is_collected: savedVoucherIds.includes(v._id),
-      }));
+      }))
       return {
         data: {
           message: 'Lấy danh sách voucher có sẵn thành công',
@@ -125,21 +125,21 @@ const voucherApi = {
             pagination: { page: 1, limit: 10, total: allVouchers.length, totalPages: 1 },
           },
         },
-      };
+      }
     }
   },
 
   getMyVouchers: async (params?: {
-    page?: number;
-    limit?: number;
-    status?: VoucherStatus | 'all';
+    page?: number
+    limit?: number
+    status?: VoucherStatus | 'all'
   }) => {
     try {
       const response = await http.get<SuccessResponseApi<UserVoucherListResponse>>(
         '/vouchers/my-vouchers',
         { params },
-      );
-      return response;
+      )
+      return response
     } catch {
       const userVouchers: UserVoucher[] = mockVouchers
         .filter((v) => savedVoucherIds.includes(v._id))
@@ -147,12 +147,12 @@ const voucherApi = {
           ...v,
           collected_at: new Date().toISOString(),
           status: 'available' as const,
-        }));
+        }))
 
       const filteredVouchers =
         params?.status && params.status !== 'all'
           ? userVouchers.filter((v) => v.status === params.status)
-          : userVouchers;
+          : userVouchers
 
       return {
         data: {
@@ -162,20 +162,20 @@ const voucherApi = {
             pagination: { page: 1, limit: 10, total: filteredVouchers.length, totalPages: 1 },
           },
         },
-      };
+      }
     }
   },
 
   getVoucherByCode: async (code: string) => {
     try {
-      const response = await http.get<SuccessResponseApi<Voucher>>(`/vouchers/code/${code}`);
-      return response;
+      const response = await http.get<SuccessResponseApi<Voucher>>(`/vouchers/code/${code}`)
+      return response
     } catch {
-      const voucher = mockVouchers.find((v) => v.code === code);
+      const voucher = mockVouchers.find((v) => v.code === code)
       if (voucher) {
-        return { data: { message: 'Lấy voucher thành công', data: voucher } };
+        return { data: { message: 'Lấy voucher thành công', data: voucher } }
       }
-      throw new Error('Voucher không tồn tại');
+      throw new Error('Voucher không tồn tại')
     }
   },
 
@@ -183,18 +183,18 @@ const voucherApi = {
     try {
       const response = await http.post<SuccessResponseApi<{ message: string }>>(
         `/vouchers/${voucherId}/collect`,
-      );
-      return response;
+      )
+      return response
     } catch {
       if (!savedVoucherIds.includes(voucherId)) {
-        savedVoucherIds.push(voucherId);
+        savedVoucherIds.push(voucherId)
       }
       return {
         data: {
           message: 'Thu thập voucher thành công',
           data: { message: 'Thu thập voucher thành công' },
         },
-      };
+      }
     }
   },
 
@@ -202,25 +202,25 @@ const voucherApi = {
     try {
       const response = await http.post<SuccessResponseApi<{ message: string }>>(
         `/vouchers/${voucherId}/save`,
-      );
-      return response;
+      )
+      return response
     } catch {
       if (!savedVoucherIds.includes(voucherId)) {
-        savedVoucherIds.push(voucherId);
+        savedVoucherIds.push(voucherId)
       }
       return {
         data: { message: 'Lưu voucher thành công', data: { message: 'Lưu voucher thành công' } },
-      };
+      }
     }
   },
 
   getSavedVouchers: async () => {
     try {
-      const response = await http.get<SuccessResponseApi<Voucher[]>>('/vouchers/saved');
-      return response;
+      const response = await http.get<SuccessResponseApi<Voucher[]>>('/vouchers/saved')
+      return response
     } catch {
-      const savedVouchers = mockVouchers.filter((v) => savedVoucherIds.includes(v._id));
-      return { data: { message: 'Lấy voucher đã lưu thành công', data: savedVouchers } };
+      const savedVouchers = mockVouchers.filter((v) => savedVoucherIds.includes(v._id))
+      return { data: { message: 'Lấy voucher đã lưu thành công', data: savedVouchers } }
     }
   },
 
@@ -229,10 +229,10 @@ const voucherApi = {
       const response = await http.post<SuccessResponseApi<ApplyVoucherResponse>>(
         '/vouchers/apply',
         body,
-      );
-      return response;
+      )
+      return response
     } catch {
-      const voucher = mockVouchers.find((v) => v.code === body.code);
+      const voucher = mockVouchers.find((v) => v.code === body.code)
       if (voucher && body.order_total >= voucher.min_order_value) {
         let discount =
           voucher.discount_type === 'percentage'
@@ -240,7 +240,7 @@ const voucherApi = {
                 (body.order_total * voucher.discount_value) / 100,
                 voucher.max_discount || Infinity,
               )
-            : voucher.discount_value;
+            : voucher.discount_value
         return {
           data: {
             message: 'Áp dụng voucher thành công',
@@ -250,9 +250,9 @@ const voucherApi = {
               final_total: body.order_total - discount,
             },
           },
-        };
+        }
       }
-      throw new Error('Voucher không hợp lệ hoặc chưa đạt giá trị đơn hàng tối thiểu');
+      throw new Error('Voucher không hợp lệ hoặc chưa đạt giá trị đơn hàng tối thiểu')
     }
   },
 
@@ -261,12 +261,12 @@ const voucherApi = {
       const response = await http.post<SuccessResponseApi<ValidateVoucherResponse>>(
         '/vouchers/validate',
         body,
-      );
-      return response;
+      )
+      return response
     } catch {
-      const voucher = mockVouchers.find((v) => v.code === body.code);
+      const voucher = mockVouchers.find((v) => v.code === body.code)
       if (voucher && body.order_total >= voucher.min_order_value) {
-        return { data: { message: 'Voucher hợp lệ', data: { valid: true, voucher } } };
+        return { data: { message: 'Voucher hợp lệ', data: { valid: true, voucher } } }
       }
       return {
         data: {
@@ -276,9 +276,9 @@ const voucherApi = {
             message: 'Voucher không hợp lệ hoặc chưa đạt giá trị đơn hàng tối thiểu',
           },
         },
-      };
+      }
     }
   },
-};
+}
 
-export default voucherApi;
+export default voucherApi

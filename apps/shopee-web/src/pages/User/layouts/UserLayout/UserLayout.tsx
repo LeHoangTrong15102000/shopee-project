@@ -1,5 +1,5 @@
-import UserSideNav from '../../components/UserSideNav';
-import { Outlet } from 'react-router';
+import UserSideNav from '../../components/UserSideNav'
+import { Outlet } from 'react-router'
 
 const UserLayout = () => {
   return (
@@ -17,7 +17,7 @@ const UserLayout = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default UserLayout;
+export default UserLayout

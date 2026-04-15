@@ -1,23 +1,23 @@
-import InventoryAlertBadge from 'src/components/InventoryAlertBadge';
-import ThemeToggle from 'src/components/ThemeToggle';
-import { useTranslation } from 'react-i18next';
-import Popover from '../../Popover';
-import Button from 'src/components/Button';
-import NotificationPopover from './NotificationPopover';
-import { InventoryAlertPayload } from 'src/types/socket.types';
-import { NotificationResponse } from 'src/types/notification.type';
-import { User } from 'src/types/user.type';
+import InventoryAlertBadge from 'src/components/InventoryAlertBadge'
+import ThemeToggle from 'src/components/ThemeToggle'
+import { useTranslation } from 'react-i18next'
+import Popover from '../../Popover'
+import Button from 'src/components/Button'
+import NotificationPopover from './NotificationPopover'
+import { InventoryAlertPayload } from 'src/types/socket.types'
+import { NotificationResponse } from 'src/types/notification.type'
+import { User } from 'src/types/user.type'
 
 interface NavHeaderCompactProps {
-  isAuthenticated: boolean;
-  isAdmin: boolean;
-  inventoryAlerts: InventoryAlertPayload[];
-  inventoryUnreadCount: number;
-  clearInventoryAlerts: () => void;
-  unreadCount: number;
-  handleTranslateLanguage: (lng: 'en' | 'vi') => Promise<void>;
-  notificationsData?: { data: NotificationResponse };
-  profile: User | null;
+  isAuthenticated: boolean
+  isAdmin: boolean
+  inventoryAlerts: InventoryAlertPayload[]
+  inventoryUnreadCount: number
+  clearInventoryAlerts: () => void
+  unreadCount: number
+  handleTranslateLanguage: (lng: 'en' | 'vi') => Promise<void>
+  notificationsData?: { data: NotificationResponse }
+  profile: User | null
 }
 
 const NavHeaderCompact = ({
@@ -29,7 +29,7 @@ const NavHeaderCompact = ({
   unreadCount,
   handleTranslateLanguage,
 }: NavHeaderCompactProps) => {
-  const { t } = useTranslation('nav');
+  const { t } = useTranslation('nav')
   return (
     <div className="flex items-center gap-1 sm:gap-3">
       <ThemeToggle className="" />
@@ -116,7 +116,7 @@ const NavHeaderCompact = ({
         </svg>
       </Popover>
     </div>
-  );
-};
+  )
+}
 
-export default NavHeaderCompact;
+export default NavHeaderCompact

@@ -109,7 +109,11 @@ describe('ConversationRepository', () => {
       const mockSort = jest.fn().mockReturnValue({ skip: mockSkip })
       ;(ConversationModel.find as jest.Mock).mockReturnValue({ sort: mockSort })
       ;(ConversationModel.countDocuments as jest.Mock).mockResolvedValue(1)
-      const result = await repository.findByUser(mockUserId, { status: 'active' }, { page: 1, limit: 10 })
+      const result = await repository.findByUser(
+        mockUserId,
+        { status: 'active' },
+        { page: 1, limit: 10 },
+      )
       expect(result.data).toEqual([mockConversationListItem])
     })
   })
@@ -165,7 +169,12 @@ describe('ConversationRepository', () => {
         toObject: jest.fn().mockReturnValue(mockConversation),
       }
       ;(ConversationModel.findOne as jest.Mock).mockResolvedValue(mockDoc)
-      const newMessage = { role: 'assistant' as const, content: 'Hi', timestamp: new Date(), id: 'msg-2' }
+      const newMessage = {
+        role: 'assistant' as const,
+        content: 'Hi',
+        timestamp: new Date(),
+        id: 'msg-2',
+      }
       const result = await repository.addMessages(mockConversationId, mockUserId, [newMessage])
       expect(mockDoc.save).toHaveBeenCalled()
       expect(result).toEqual(mockConversation)
@@ -186,7 +195,9 @@ describe('ConversationRepository', () => {
         toObject: jest.fn().mockReturnValue({ ...mockConversation, title: 'Updated Title' }),
       }
       ;(ConversationModel.findOne as jest.Mock).mockResolvedValue(mockDoc)
-      const result = await repository.update(mockConversationId, mockUserId, { title: 'Updated Title' })
+      const result = await repository.update(mockConversationId, mockUserId, {
+        title: 'Updated Title',
+      })
       expect(mockDoc.save).toHaveBeenCalled()
       expect(result?.title).toBe('Updated Title')
     })
@@ -227,4 +238,3 @@ describe('ConversationRepository', () => {
     })
   })
 })
-

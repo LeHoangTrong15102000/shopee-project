@@ -5,7 +5,7 @@ import { ErrorHandler } from './response'
 export const signToken = (
   payload: string | object | Buffer,
   secret_key: string,
-  token_life: number | string
+  token_life: number | string,
 ) => {
   return new Promise((resolve, reject) => {
     const options: any = {
@@ -28,7 +28,7 @@ export const verifyToken = (token: string, secret_key: string) => {
             new ErrorHandler(STATUS.UNAUTHORIZED, {
               message: 'Token hết hạn',
               name: 'EXPIRED_TOKEN',
-            })
+            }),
           )
         } else {
           reject(new ErrorHandler(STATUS.UNAUTHORIZED, 'Token không đúng'))

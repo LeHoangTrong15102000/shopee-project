@@ -1,1 +1,1 @@
-export { useReducedMotion } from '@shopee/shared-utils';
+export { useReducedMotion } from '@shopee/shared-utils'

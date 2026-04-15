@@ -1,49 +1,49 @@
-import { useState } from 'react';
-import { type ColumnDef } from '@tanstack/react-table';
-import { format } from 'date-fns';
-import { MoreHorizontal, Plus, Pencil, Trash2, Eye, Download } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { Button } from 'src/components/ui/button';
-import { Avatar, AvatarFallback } from 'src/components/ui/avatar';
-import { Badge } from 'src/components/ui/badge';
+import { useState } from 'react'
+import { type ColumnDef } from '@tanstack/react-table'
+import { format } from 'date-fns'
+import { MoreHorizontal, Plus, Pencil, Trash2, Eye, Download } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { Button } from 'src/components/ui/button'
+import { Avatar, AvatarFallback } from 'src/components/ui/avatar'
+import { Badge } from 'src/components/ui/badge'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from 'src/components/ui/dropdown-menu';
+} from 'src/components/ui/dropdown-menu'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from 'src/components/ui/dialog';
-import { Input } from 'src/components/ui/input';
-import { Label } from 'src/components/ui/label';
-import { DataTable } from 'src/components/shared/DataTable';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
-import { ErrorState } from 'src/components/shared/ErrorState';
-import { useUsers, useCreateUser, useUpdateUser, useDeleteUser } from 'src/hooks/useUsers';
-import { useNavigate } from 'react-router-dom';
-import { exportToCSV } from 'src/utils/csv-export';
-import type { User } from 'src/types';
+} from 'src/components/ui/dialog'
+import { Input } from 'src/components/ui/input'
+import { Label } from 'src/components/ui/label'
+import { DataTable } from 'src/components/shared/DataTable'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { ConfirmDialog } from 'src/components/shared/ConfirmDialog'
+import { ErrorState } from 'src/components/shared/ErrorState'
+import { useUsers, useCreateUser, useUpdateUser, useDeleteUser } from 'src/hooks/useUsers'
+import { useNavigate } from 'react-router-dom'
+import { exportToCSV } from 'src/utils/csv-export'
+import type { User } from 'src/types'
 
 export default function UserListPage() {
-  const { t } = useTranslation('users');
-  const { t: tc } = useTranslation('common');
-  const navigate = useNavigate();
-  const [page, setPage] = useState(0);
-  const [createOpen, setCreateOpen] = useState(false);
-  const [editUser, setEditUser] = useState<User | null>(null);
-  const [deleteUser, setDeleteUser] = useState<User | null>(null);
-  const [form, setForm] = useState({ name: '', email: '', password: '', roles: 'User' });
+  const { t } = useTranslation('users')
+  const { t: tc } = useTranslation('common')
+  const navigate = useNavigate()
+  const [page, setPage] = useState(0)
+  const [createOpen, setCreateOpen] = useState(false)
+  const [editUser, setEditUser] = useState<User | null>(null)
+  const [deleteUser, setDeleteUser] = useState<User | null>(null)
+  const [form, setForm] = useState({ name: '', email: '', password: '', roles: 'User' })
 
-  const { data, isLoading, isError, refetch } = useUsers(page);
-  const createMut = useCreateUser(() => setCreateOpen(false));
-  const updateMut = useUpdateUser(() => setEditUser(null));
-  const deleteMut = useDeleteUser(() => setDeleteUser(null));
+  const { data, isLoading, isError, refetch } = useUsers(page)
+  const createMut = useCreateUser(() => setCreateOpen(false))
+  const updateMut = useUpdateUser(() => setEditUser(null))
+  const deleteMut = useDeleteUser(() => setDeleteUser(null))
 
   const columns: ColumnDef<User>[] = [
     {
@@ -95,13 +95,13 @@ export default function UserListPage() {
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
-                setEditUser(row.original);
+                setEditUser(row.original)
                 setForm({
                   name: row.original.name || '',
                   email: row.original.email,
                   password: '',
                   roles: row.original.roles[0] || 'User',
-                });
+                })
               }}
             >
               <Pencil className="mr-2 size-4" />
@@ -118,7 +118,7 @@ export default function UserListPage() {
         </DropdownMenu>
       ),
     },
-  ];
+  ]
 
   const handleExportCSV = () =>
     exportToCSV(
@@ -134,7 +134,7 @@ export default function UserListPage() {
         { key: 'createdAt', header: t('columns.created') },
       ],
       'users',
-    );
+    )
 
   return (
     <div className="space-y-6">
@@ -150,8 +150,8 @@ export default function UserListPage() {
             <Button
               size="sm"
               onClick={() => {
-                setCreateOpen(true);
-                setForm({ name: '', email: '', password: '', roles: 'User' });
+                setCreateOpen(true)
+                setForm({ name: '', email: '', password: '', roles: 'User' })
               }}
             >
               <Plus className="mr-2 size-4" />
@@ -294,5 +294,5 @@ export default function UserListPage() {
         isLoading={deleteMut.isPending}
       />
     </div>
-  );
+  )
 }

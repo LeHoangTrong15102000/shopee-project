@@ -1,20 +1,20 @@
-import { useNavigate } from 'react-router';
-import { useEffect } from 'react';
-import navigationService, { PATHS } from 'src/services/navigation.service';
+import { useNavigate } from 'react-router'
+import { useEffect } from 'react'
+import navigationService, { PATHS } from 'src/services/navigation.service'
 
 export const useNavigation = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   useEffect(() => {
-    navigationService.init(navigate);
-  }, [navigate]);
+    navigationService.init(navigate)
+  }, [navigate])
 
   return {
     ...navigationService,
     navigate,
     PATHS,
-  };
-};
+  }
+}
 
-export { PATHS };
-export default useNavigation;
+export { PATHS }
+export default useNavigation

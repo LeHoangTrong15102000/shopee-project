@@ -1,38 +1,38 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
-import { type ColumnDef } from '@tanstack/react-table';
-import { format } from 'date-fns';
-import { Eye, Trash2, MoreHorizontal, Star, CheckCircle, Flag } from 'lucide-react';
-import { Button } from 'src/components/ui/button';
-import { Badge } from 'src/components/ui/badge';
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
+import { type ColumnDef } from '@tanstack/react-table'
+import { format } from 'date-fns'
+import { Eye, Trash2, MoreHorizontal, Star, CheckCircle, Flag } from 'lucide-react'
+import { Button } from 'src/components/ui/button'
+import { Badge } from 'src/components/ui/badge'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from 'src/components/ui/dropdown-menu';
-import { DataTable } from 'src/components/shared/DataTable';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { StatCard } from 'src/components/shared/StatCard';
-import { StatusBadge } from 'src/components/shared/StatusBadge';
-import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
-import { ErrorState } from 'src/components/shared/ErrorState';
-import { useReviews, useReviewStats, useDeleteReview } from 'src/hooks/useReviews';
-import { useReviewModerationStore } from 'src/stores/review-moderation.store';
-import type { Review } from 'src/types';
+} from 'src/components/ui/dropdown-menu'
+import { DataTable } from 'src/components/shared/DataTable'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { StatCard } from 'src/components/shared/StatCard'
+import { StatusBadge } from 'src/components/shared/StatusBadge'
+import { ConfirmDialog } from 'src/components/shared/ConfirmDialog'
+import { ErrorState } from 'src/components/shared/ErrorState'
+import { useReviews, useReviewStats, useDeleteReview } from 'src/hooks/useReviews'
+import { useReviewModerationStore } from 'src/stores/review-moderation.store'
+import type { Review } from 'src/types'
 
 export default function ReviewListPage() {
-  const { t } = useTranslation('reviews');
-  const navigate = useNavigate();
-  const [page, setPage] = useState(0);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-  const { getStatus, setStatus } = useReviewModerationStore();
+  const { t } = useTranslation('reviews')
+  const navigate = useNavigate()
+  const [page, setPage] = useState(0)
+  const [deleteId, setDeleteId] = useState<string | null>(null)
+  const { getStatus, setStatus } = useReviewModerationStore()
 
-  const { data, isLoading, isError, refetch } = useReviews(page);
-  const { data: stats } = useReviewStats();
-  const deleteMut = useDeleteReview(() => setDeleteId(null));
+  const { data, isLoading, isError, refetch } = useReviews(page)
+  const { data: stats } = useReviewStats()
+  const deleteMut = useDeleteReview(() => setDeleteId(null))
 
   const columns: ColumnDef<Review>[] = [
     {
@@ -90,8 +90,8 @@ export default function ReviewListPage() {
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
-                setStatus(row.original._id, 'approved');
-                toast.success(t('toast.approved'));
+                setStatus(row.original._id, 'approved')
+                toast.success(t('toast.approved'))
               }}
             >
               <CheckCircle className="mr-2 size-4" />
@@ -99,8 +99,8 @@ export default function ReviewListPage() {
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
-                setStatus(row.original._id, 'flagged');
-                toast.success(t('toast.flagged'));
+                setStatus(row.original._id, 'flagged')
+                toast.success(t('toast.flagged'))
               }}
             >
               <Flag className="mr-2 size-4" />
@@ -117,7 +117,7 @@ export default function ReviewListPage() {
         </DropdownMenu>
       ),
     },
-  ];
+  ]
 
   return (
     <div className="space-y-6">
@@ -158,5 +158,5 @@ export default function ReviewListPage() {
         isLoading={deleteMut.isPending}
       />
     </div>
-  );
+  )
 }

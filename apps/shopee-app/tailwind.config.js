@@ -1,10 +1,10 @@
-import { AppColors } from './config/colors';
+import { AppColors } from './config/colors'
 
 function toKebab(key) {
   return key
     .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
     .replace(/_/g, '-')
-    .toLowerCase();
+    .toLowerCase()
 }
 
 const colorsConfig = Object.fromEntries(
@@ -12,11 +12,11 @@ const colorsConfig = Object.fromEntries(
     toKebab(k),
     `rgb(var(--color-${toKebab(k)}) / <alpha-value>)`,
   ])
-);
+)
 
-export const darkMode = 'class';
-export const content = ['./app/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}'];
-export const presets = [require('nativewind/preset')];
+export const darkMode = 'class'
+export const content = ['./app/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}']
+export const presets = [require('nativewind/preset')]
 export const theme = {
   extend: {
     fontFamily: {
@@ -44,4 +44,4 @@ export const theme = {
     },
     colors: colorsConfig,
   },
-};
+}

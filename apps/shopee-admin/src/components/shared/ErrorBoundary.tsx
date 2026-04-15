@@ -1,29 +1,29 @@
-import { Component, type ErrorInfo, type ReactNode } from 'react';
-import { AlertCircle } from 'lucide-react';
-import { Button } from 'src/components/ui/button';
-import i18n from 'src/i18n/i18n';
+import { Component, type ErrorInfo, type ReactNode } from 'react'
+import { AlertCircle } from 'lucide-react'
+import { Button } from 'src/components/ui/button'
+import i18n from 'src/i18n/i18n'
 
 interface Props {
-  children: ReactNode;
+  children: ReactNode
 }
 
 interface State {
-  hasError: boolean;
-  error: Error | null;
+  hasError: boolean
+  error: Error | null
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
-    super(props);
-    this.state = { hasError: false, error: null };
+    super(props)
+    this.state = { hasError: false, error: null }
   }
 
   static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+    return { hasError: true, error }
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ErrorBoundary caught:', error, errorInfo);
+    console.error('ErrorBoundary caught:', error, errorInfo)
   }
 
   render() {
@@ -42,9 +42,9 @@ export class ErrorBoundary extends Component<Props, State> {
             {i18n.t('errorBoundary.reload', { ns: 'common' })}
           </Button>
         </div>
-      );
+      )
     }
 
-    return this.props.children;
+    return this.props.children
   }
 }

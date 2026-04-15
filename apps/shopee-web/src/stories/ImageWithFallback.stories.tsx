@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
-import ImageWithFallback from 'src/components/ImageWithFallback';
+import type { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
+import ImageWithFallback from 'src/components/ImageWithFallback'
 
 const meta: Meta<typeof ImageWithFallback> = {
   title: 'Components/ImageWithFallback',
@@ -30,10 +30,10 @@ const meta: Meta<typeof ImageWithFallback> = {
   args: {
     onLoadError: fn(),
   },
-};
+}
 
-export default meta;
-type Story = StoryObj<typeof ImageWithFallback>;
+export default meta
+type Story = StoryObj<typeof ImageWithFallback>
 
 export const Default: Story = {
   args: {
@@ -42,7 +42,7 @@ export const Default: Story = {
     width: 300,
     height: 300,
   },
-};
+}
 
 export const WithFallback: Story = {
   args: {
@@ -59,7 +59,7 @@ export const WithFallback: Story = {
       },
     },
   },
-};
+}
 
 export const CustomFallback: Story = {
   args: {
@@ -76,7 +76,7 @@ export const CustomFallback: Story = {
       },
     },
   },
-};
+}
 
 export const WithLoadError: Story = {
   args: {
@@ -102,4 +102,4 @@ export const WithLoadError: Story = {
       </p>
     </div>
   ),
-};
+}

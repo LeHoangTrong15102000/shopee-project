@@ -1,6 +1,6 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import Button from 'src/components/Button';
-import { CardTypeIcon, CardType } from './CardTypeIcons';
+import { motion, AnimatePresence } from 'framer-motion'
+import Button from 'src/components/Button'
+import { CardTypeIcon, CardType } from './CardTypeIcons'
 
 function CardFront({
   cardNumber,
@@ -9,15 +9,15 @@ function CardFront({
   cardType,
   gradient,
 }: {
-  cardNumber: string;
-  cardHolder: string;
-  expiryDate: string;
-  cardType: CardType;
-  gradient: string;
+  cardNumber: string
+  cardHolder: string
+  expiryDate: string
+  cardType: CardType
+  gradient: string
 }) {
-  const displayNumber = cardNumber || '•••• •••• •••• ••••';
-  const displayHolder = cardHolder || 'CARDHOLDER NAME';
-  const displayExpiry = expiryDate || 'MM/YY';
+  const displayNumber = cardNumber || '•••• •••• •••• ••••'
+  const displayHolder = cardHolder || 'CARDHOLDER NAME'
+  const displayExpiry = expiryDate || 'MM/YY'
 
   return (
     <div
@@ -42,7 +42,7 @@ function CardFront({
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 function CardBack({
@@ -50,12 +50,12 @@ function CardBack({
   gradient,
   cardType,
 }: {
-  cvv: string;
-  gradient: string;
-  cardType: CardType;
+  cvv: string
+  gradient: string
+  cardType: CardType
 }) {
-  const cvvLength = cardType === 'amex' ? 4 : 3;
-  const displayCvv = cvv ? cvv.padEnd(cvvLength, '•') : '•'.repeat(cvvLength);
+  const cvvLength = cardType === 'amex' ? 4 : 3
+  const displayCvv = cvv ? cvv.padEnd(cvvLength, '•') : '•'.repeat(cvvLength)
 
   return (
     <div
@@ -80,7 +80,7 @@ function CardBack({
         <div className="h-8 w-12 rounded-sm bg-linear-to-br from-gray-300 to-gray-400" />
       </div>
     </div>
-  );
+  )
 }
 
 export function VisualCardPreview({
@@ -91,12 +91,12 @@ export function VisualCardPreview({
   cvv,
   isFlipped,
 }: {
-  cardNumber: string;
-  cardHolder: string;
-  expiryDate: string;
-  cardType: CardType;
-  cvv: string;
-  isFlipped: boolean;
+  cardNumber: string
+  cardHolder: string
+  expiryDate: string
+  cardType: CardType
+  cvv: string
+  isFlipped: boolean
 }) {
   const gradientMap: Record<CardType, string> = {
     visa: 'from-blue-600 to-blue-800',
@@ -104,8 +104,8 @@ export function VisualCardPreview({
     jcb: 'from-green-500 to-teal-600',
     amex: 'from-blue-400 to-blue-600',
     unknown: 'from-gray-600 to-gray-800',
-  };
-  const gradient = gradientMap[cardType];
+  }
+  const gradient = gradientMap[cardType]
 
   return (
     <div className="h-48 w-full max-w-sm" style={{ perspective: '1000px' }}>
@@ -126,7 +126,7 @@ export function VisualCardPreview({
         <CardBack cvv={cvv} gradient={gradient} cardType={cardType} />
       </motion.div>
     </div>
-  );
+  )
 }
 
 export function CVVTooltip({
@@ -134,12 +134,12 @@ export function CVVTooltip({
   onClose,
   cardType,
 }: {
-  isVisible: boolean;
-  onClose: () => void;
-  cardType: CardType;
+  isVisible: boolean
+  onClose: () => void
+  cardType: CardType
 }) {
-  const cvvLength = cardType === 'amex' ? 4 : 3;
-  const cvvLocation = cardType === 'amex' ? 'mặt trước thẻ' : 'mặt sau thẻ';
+  const cvvLength = cardType === 'amex' ? 4 : 3
+  const cvvLocation = cardType === 'amex' ? 'mặt trước thẻ' : 'mặt sau thẻ'
 
   return (
     <AnimatePresence>
@@ -191,5 +191,5 @@ export function CVVTooltip({
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }

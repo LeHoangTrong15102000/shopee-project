@@ -1,6 +1,11 @@
 import { Request, Response } from 'express'
 import { responseSuccess } from '@utils/response'
-import { checkDatabaseHealth, isDatabaseReady, getConnectionPoolStats, DatabaseHealthStatus } from '@database/database'
+import {
+  checkDatabaseHealth,
+  isDatabaseReady,
+  getConnectionPoolStats,
+  DatabaseHealthStatus,
+} from '@database/database'
 
 /**
  * Health check response interface
@@ -126,4 +131,3 @@ const healthController = {
 }
 
 export default healthController
-

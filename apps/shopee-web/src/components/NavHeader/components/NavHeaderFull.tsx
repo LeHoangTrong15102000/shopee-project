@@ -1,28 +1,28 @@
-import classNames from 'classnames';
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import path from 'src/constant/path';
-import InventoryAlertBadge from 'src/components/InventoryAlertBadge';
-import ThemeToggle from 'src/components/ThemeToggle';
-import Popover from '../../Popover';
-import Button from 'src/components/Button';
-import NotificationPopover from './NotificationPopover';
-import AppDownloadPopover from './AppDownloadPopover';
-import { InventoryAlertPayload } from 'src/types/socket.types';
-import { User } from 'src/types/user.type';
-import { getAvatarUrl } from 'src/utils/utils';
+import classNames from 'classnames'
+import { Link } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import path from 'src/constant/path'
+import InventoryAlertBadge from 'src/components/InventoryAlertBadge'
+import ThemeToggle from 'src/components/ThemeToggle'
+import Popover from '../../Popover'
+import Button from 'src/components/Button'
+import NotificationPopover from './NotificationPopover'
+import AppDownloadPopover from './AppDownloadPopover'
+import { InventoryAlertPayload } from 'src/types/socket.types'
+import { User } from 'src/types/user.type'
+import { getAvatarUrl } from 'src/utils/utils'
 
 interface NavHeaderFullProps {
-  isAuthenticated: boolean;
-  isAdmin: boolean;
-  inventoryAlerts: InventoryAlertPayload[];
-  inventoryUnreadCount: number;
-  clearInventoryAlerts: () => void;
-  unreadCount: number;
-  handleTranslateLanguage: (lng: 'en' | 'vi') => Promise<void>;
-  currentLanguage: string;
-  profile: User | null;
-  handleLogout: () => void;
+  isAuthenticated: boolean
+  isAdmin: boolean
+  inventoryAlerts: InventoryAlertPayload[]
+  inventoryUnreadCount: number
+  clearInventoryAlerts: () => void
+  unreadCount: number
+  handleTranslateLanguage: (lng: 'en' | 'vi') => Promise<void>
+  currentLanguage: string
+  profile: User | null
+  handleLogout: () => void
 }
 
 const NavHeaderFull = ({
@@ -62,11 +62,11 @@ const NavHeaderFull = ({
         {!isAuthenticated && <AuthLinks />}
       </div>
     </div>
-  );
-};
+  )
+}
 
 const AuthenticatedLeftSection = () => {
-  const { t } = useTranslation('nav');
+  const { t } = useTranslation('nav')
   return (
     <div className="hidden items-center justify-center md:flex">
       <Link to="https://banhang.shopee.vn/" className="ml-2 hidden lg:block">
@@ -90,11 +90,11 @@ const AuthenticatedLeftSection = () => {
       </div>
       <SocialLinks />
     </div>
-  );
-};
+  )
+}
 
 const UnauthenticatedLeftSection = () => {
-  const { t } = useTranslation('nav');
+  const { t } = useTranslation('nav')
   return (
     <div className="hidden items-center justify-center md:flex">
       <Link to="https://banhang.shopee.vn/" className="mr-2 ml-2 hidden lg:block">
@@ -124,8 +124,8 @@ const UnauthenticatedLeftSection = () => {
       </div>
       <SocialLinks />
     </div>
-  );
-};
+  )
+}
 
 const SocialLinks = () => (
   <div className="flex hidden items-center justify-center lg:flex">
@@ -160,15 +160,15 @@ const SocialLinks = () => (
       ></div>
     </Link>
   </div>
-);
+)
 
 interface NotificationBellProps {
-  isAuthenticated: boolean;
-  unreadCount: number;
+  isAuthenticated: boolean
+  unreadCount: number
 }
 
 const NotificationBell = ({ isAuthenticated, unreadCount }: NotificationBellProps) => {
-  const { t } = useTranslation('nav');
+  const { t } = useTranslation('nav')
   return (
     <Popover
       as="span"
@@ -202,11 +202,11 @@ const NotificationBell = ({ isAuthenticated, unreadCount }: NotificationBellProp
         {t('header.notification')}
       </span>
     </Popover>
-  );
-};
+  )
+}
 
 const SupportLink = () => {
-  const { t } = useTranslation('nav');
+  const { t } = useTranslation('nav')
   return (
     <Link to={path.login} className="mt-px hidden md:block">
       <div className="mr-3 flex cursor-pointer items-center py-1 hover:text-white/70">
@@ -227,16 +227,16 @@ const SupportLink = () => {
         <span className="mx-1 text-sm capitalize">{t('header.support')}</span>
       </div>
     </Link>
-  );
-};
+  )
+}
 
 interface LanguagePopoverProps {
-  handleTranslateLanguage: (lng: 'en' | 'vi') => Promise<void>;
-  currentLanguage: string;
+  handleTranslateLanguage: (lng: 'en' | 'vi') => Promise<void>
+  currentLanguage: string
 }
 
 const LanguagePopover = ({ handleTranslateLanguage, currentLanguage }: LanguagePopoverProps) => {
-  const { t } = useTranslation('nav');
+  const { t } = useTranslation('nav')
   return (
     <Popover
       as="span"
@@ -293,16 +293,16 @@ const LanguagePopover = ({ handleTranslateLanguage, currentLanguage }: LanguageP
         <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
       </svg>
     </Popover>
-  );
-};
+  )
+}
 
 interface UserMenuProps {
-  profile: User | null;
-  handleLogout: () => void;
+  profile: User | null
+  handleLogout: () => void
 }
 
 const UserMenu = ({ profile, handleLogout }: UserMenuProps) => {
-  const { t } = useTranslation('nav');
+  const { t } = useTranslation('nav')
   return (
     <Popover
       as="span"
@@ -349,11 +349,11 @@ const UserMenu = ({ profile, handleLogout }: UserMenuProps) => {
       </div>
       <span className="hidden max-w-none truncate text-sm md:inline">{profile?.email}</span>
     </Popover>
-  );
-};
+  )
+}
 
 const AuthLinks = () => {
-  const { t } = useTranslation('nav');
+  const { t } = useTranslation('nav')
   return (
     <div className="mt-[1.5px] flex items-center text-xs md:text-sm">
       <Link to={path.register} className="mx-2 capitalize hover:text-white/70 md:mx-3">
@@ -364,7 +364,7 @@ const AuthLinks = () => {
         {t('header.login')}
       </Link>
     </div>
-  );
-};
+  )
+}
 
-export default NavHeaderFull;
+export default NavHeaderFull

@@ -1,23 +1,23 @@
-import { useTranslation } from 'react-i18next';
-import { Area, AreaChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from 'src/components/ui/chart';
-import { EmptyState } from 'src/components/shared/EmptyState';
+import { useTranslation } from 'react-i18next'
+import { Area, AreaChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
+import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from 'src/components/ui/chart'
+import { EmptyState } from 'src/components/shared/EmptyState'
 
 interface RevenueOrderChartsProps {
-  revenue: Array<{ date: string; revenue: number }> | undefined;
-  orderTrend: Array<{ date: string; orders: number }> | undefined;
+  revenue: Array<{ date: string; revenue: number }> | undefined
+  orderTrend: Array<{ date: string; orders: number }> | undefined
 }
 
 export default function RevenueOrderCharts({ revenue, orderTrend }: RevenueOrderChartsProps) {
-  const { t } = useTranslation('dashboard');
+  const { t } = useTranslation('dashboard')
 
   const revenueChartConfig = {
     revenue: { label: t('charts.revenue'), color: 'var(--color-chart-1)' },
-  };
+  }
   const orderChartConfig = {
     orders: { label: t('charts.orderTrend'), color: 'var(--color-chart-2)' },
-  };
+  }
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
@@ -91,5 +91,5 @@ export default function RevenueOrderCharts({ revenue, orderTrend }: RevenueOrder
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

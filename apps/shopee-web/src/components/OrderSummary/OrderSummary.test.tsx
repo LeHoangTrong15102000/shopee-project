@@ -1,8 +1,8 @@
-import { describe, it, expect } from 'vitest';
-import '@testing-library/react';
-import { renderWithProviders } from 'src/utils/testUtils';
-import OrderSummary from './OrderSummary';
-import type { ExtendedPurchase } from 'src/types/purchases.type';
+import { describe, it, expect } from 'vitest'
+import '@testing-library/react'
+import { renderWithProviders } from 'src/utils/testUtils'
+import OrderSummary from './OrderSummary'
+import type { ExtendedPurchase } from 'src/types/purchases.type'
 
 const mockItems: ExtendedPurchase[] = [
   {
@@ -35,29 +35,29 @@ const mockItems: ExtendedPurchase[] = [
     disabled: false,
     isChecked: true,
   } as ExtendedPurchase,
-];
+]
 
 describe('OrderSummary', () => {
   it('displays order items and product names', () => {
-    renderWithProviders(<OrderSummary items={mockItems} shippingMethod={null} />);
+    renderWithProviders(<OrderSummary items={mockItems} shippingMethod={null} />)
 
-    const bodyText = document.body.textContent || '';
-    expect(bodyText.includes('Áo thun nam cotton')).toBeTruthy();
-  });
+    const bodyText = document.body.textContent || ''
+    expect(bodyText.includes('Áo thun nam cotton')).toBeTruthy()
+  })
 
   it('displays price totals with currency symbol', () => {
-    renderWithProviders(<OrderSummary items={mockItems} shippingMethod={null} />);
+    renderWithProviders(<OrderSummary items={mockItems} shippingMethod={null} />)
 
-    const bodyText = document.body.textContent || '';
-    expect(bodyText.includes('₫')).toBeTruthy();
-  });
+    const bodyText = document.body.textContent || ''
+    expect(bodyText.includes('₫')).toBeTruthy()
+  })
 
   it('displays order header with item count', () => {
-    renderWithProviders(<OrderSummary items={mockItems} shippingMethod={null} />);
+    renderWithProviders(<OrderSummary items={mockItems} shippingMethod={null} />)
 
-    const bodyText = document.body.textContent || '';
-    expect(bodyText.includes('Đơn hàng')).toBeTruthy();
-  });
+    const bodyText = document.body.textContent || ''
+    expect(bodyText.includes('Đơn hàng')).toBeTruthy()
+  })
 
   it('shows voucher discount when applied', () => {
     renderWithProviders(
@@ -67,11 +67,11 @@ describe('OrderSummary', () => {
         voucherDiscount={50000}
         voucherCode="SAVE50K"
       />,
-    );
+    )
 
-    const bodyText = document.body.textContent || '';
+    const bodyText = document.body.textContent || ''
     expect(
       bodyText.includes('Voucher') || bodyText.includes('voucher') || bodyText.includes('SAVE50K'),
-    ).toBeTruthy();
-  });
-});
+    ).toBeTruthy()
+  })
+})

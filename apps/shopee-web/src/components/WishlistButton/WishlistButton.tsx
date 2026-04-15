@@ -1,15 +1,15 @@
-import { toast } from 'react-toastify';
-import classNames from 'classnames';
-import { useTranslation } from 'react-i18next';
-import { useOptimisticWishlist } from 'src/hooks/optimistic';
-import { TOAST_MESSAGES } from 'src/hooks/optimistic/shared/constants';
-import Button from 'src/components/Button';
+import { toast } from 'react-toastify'
+import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
+import { useOptimisticWishlist } from 'src/hooks/optimistic'
+import { TOAST_MESSAGES } from 'src/hooks/optimistic/shared/constants'
+import Button from 'src/components/Button'
 
 interface WishlistButtonProps {
-  productId: string;
-  productName?: string;
-  className?: string;
-  size?: 'sm' | 'md' | 'lg';
+  productId: string
+  productName?: string
+  className?: string
+  size?: 'sm' | 'md' | 'lg'
 }
 
 export default function WishlistButton({
@@ -18,46 +18,46 @@ export default function WishlistButton({
   className,
   size = 'md',
 }: WishlistButtonProps) {
-  const { t } = useTranslation('product');
+  const { t } = useTranslation('product')
   const { isInWishlist, isLoading, isAuthenticated, toggleWishlist } =
-    useOptimisticWishlist(productId);
+    useOptimisticWishlist(productId)
 
   const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault()
+    e.stopPropagation()
 
     if (!isAuthenticated) {
-      toast.warning(TOAST_MESSAGES.WISHLIST_LOGIN_REQUIRED);
-      return;
+      toast.warning(TOAST_MESSAGES.WISHLIST_LOGIN_REQUIRED)
+      return
     }
 
-    toggleWishlist();
-  };
+    toggleWishlist()
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleClick(e as unknown as React.MouseEvent);
+      e.preventDefault()
+      handleClick(e as unknown as React.MouseEvent)
     }
-  };
+  }
 
   const sizeClasses = {
     sm: 'w-11 h-11',
     md: 'w-11 h-11',
     lg: 'w-12 h-12',
-  };
+  }
 
   const iconSizeClasses = {
     sm: 'w-4 h-4',
     md: 'w-6 h-6',
     lg: 'w-7 h-7',
-  };
+  }
 
   const ariaLabel = isLoading
     ? t('wishlist.processing')
     : isInWishlist
       ? t('wishlist.removeFromWishlist', { name: productName || t('wishlist.product') })
-      : t('wishlist.addToWishlist', { name: productName || t('wishlist.product') });
+      : t('wishlist.addToWishlist', { name: productName || t('wishlist.product') })
 
   return (
     <Button
@@ -123,5 +123,5 @@ export default function WishlistButton({
         </svg>
       )}
     </Button>
-  );
+  )
 }

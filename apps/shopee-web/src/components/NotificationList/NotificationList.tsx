@@ -1,26 +1,26 @@
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
-import { useOptimisticNotification } from 'src/hooks/optimistic';
-import { useKeyboardNavigation } from 'src/hooks/useKeyboardNavigation';
-import useNotifications from 'src/hooks/useNotifications';
-import { formatTimeAgo } from 'src/utils/utils';
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
+import { useOptimisticNotification } from 'src/hooks/optimistic'
+import { useKeyboardNavigation } from 'src/hooks/useKeyboardNavigation'
+import useNotifications from 'src/hooks/useNotifications'
+import { formatTimeAgo } from 'src/utils/utils'
 
 interface NotificationListProps {
-  className?: string;
+  className?: string
 }
 
 const NotificationList = ({ className }: NotificationListProps) => {
-  const { t } = useTranslation('notification');
-  const { markAsReadMutation, markAllAsReadMutation } = useOptimisticNotification();
-  const { notifications, unreadCount, isLoading } = useNotifications();
+  const { t } = useTranslation('notification')
+  const { markAsReadMutation, markAllAsReadMutation } = useOptimisticNotification()
+  const { notifications, unreadCount, isLoading } = useNotifications()
 
   const handleMarkAsRead = (notificationId: string) => {
-    markAsReadMutation.mutate(notificationId);
-  };
+    markAsReadMutation.mutate(notificationId)
+  }
 
   const handleMarkAllAsRead = () => {
-    markAllAsReadMutation.mutate();
-  };
+    markAllAsReadMutation.mutate()
+  }
 
   const handleNotificationKeyDown = (
     e: React.KeyboardEvent,
@@ -28,28 +28,28 @@ const NotificationList = ({ className }: NotificationListProps) => {
     isRead: boolean,
   ) => {
     if ((e.key === 'Enter' || e.key === ' ') && !isRead && !markAsReadMutation.isPending) {
-      e.preventDefault();
-      handleMarkAsRead(notificationId);
+      e.preventDefault()
+      handleMarkAsRead(notificationId)
     }
-  };
+  }
 
   const { handleKeyDown: handleMarkAllKeyDown } = useKeyboardNavigation({
     onEnter: handleMarkAllAsRead,
     enabled: unreadCount > 0 && !markAllAsReadMutation.isPending,
-  });
+  })
 
   const getNotificationTypeLabel = (type: string) => {
     switch (type) {
       case 'order':
-        return t('types.order');
+        return t('types.order')
       case 'promotion':
-        return t('types.promotion');
+        return t('types.promotion')
       case 'system':
-        return t('types.system');
+        return t('types.system')
       default:
-        return t('types.other');
+        return t('types.other')
     }
-  };
+  }
 
   if (isLoading) {
     return (
@@ -63,7 +63,7 @@ const NotificationList = ({ className }: NotificationListProps) => {
           <div className="text-sm text-gray-500 dark:text-gray-400">{t('loading')}</div>
         </div>
       </div>
-    );
+    )
   }
 
   if (notifications.length === 0) {
@@ -87,7 +87,7 @@ const NotificationList = ({ className }: NotificationListProps) => {
           </span>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -263,7 +263,7 @@ const NotificationList = ({ className }: NotificationListProps) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default NotificationList;
+export default NotificationList

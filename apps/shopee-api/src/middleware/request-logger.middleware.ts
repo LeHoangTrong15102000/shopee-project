@@ -27,12 +27,7 @@ const SENSITIVE_FIELDS = [
 /**
  * Danh sách các paths không cần log chi tiết (health check, static files, etc.)
  */
-const EXCLUDED_PATHS = [
-  '/health',
-  '/favicon.ico',
-  '/api-docs',
-  '/api-docs.json',
-]
+const EXCLUDED_PATHS = ['/health', '/favicon.ico', '/api-docs', '/api-docs.json']
 
 /**
  * Loại bỏ sensitive data từ object
@@ -97,11 +92,7 @@ interface RequestLogData {
  * Log tất cả incoming requests với response time
  * Tự động loại bỏ sensitive data từ logs
  */
-export const requestLoggerMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
+export const requestLoggerMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   // Bỏ qua các paths không cần log
   if (EXCLUDED_PATHS.some((path) => req.path.startsWith(path))) {
     return next()
@@ -170,4 +161,3 @@ export const requestLoggerMiddleware = (
 }
 
 export default requestLoggerMiddleware
-

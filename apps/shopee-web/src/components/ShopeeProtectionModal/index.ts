@@ -1,1 +1,1 @@
-export { default } from './ShopeeProtectionModal';
+export { default } from './ShopeeProtectionModal'

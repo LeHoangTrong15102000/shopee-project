@@ -22,7 +22,9 @@ import { cacheService, CacheKeys } from '@utils/cache.service'
 
 const MAX_SEARCH_HISTORY_PER_USER = 20
 
-export const handleImageProduct = <T extends { image?: string; images?: string[] }>(product: T): T => {
+export const handleImageProduct = <T extends { image?: string; images?: string[] }>(
+  product: T,
+): T => {
   if (product.image !== undefined && product.image !== '') {
     product.image = HOST + `/${ROUTE_IMAGE}/` + product.image
   }
@@ -75,8 +77,12 @@ const getProducts = async (req: Request, res: Response) => {
   } = req.query as ProductQueryParams
 
   // Validate sort_by to match expected type
-  const validSortBy = (SORT_BY as readonly string[]).includes(sort_by as string) ? (sort_by as 'price' | 'sold' | 'view' | 'createdAt') : 'createdAt'
-  const validOrder = (ORDER as readonly string[]).includes(order as string) ? (order as 'asc' | 'desc') : 'desc'
+  const validSortBy = (SORT_BY as readonly string[]).includes(sort_by as string)
+    ? (sort_by as 'price' | 'sold' | 'view' | 'createdAt')
+    : 'createdAt'
+  const validOrder = (ORDER as readonly string[]).includes(order as string)
+    ? (order as 'asc' | 'desc')
+    : 'desc'
 
   const result = await productService.getProducts(
     {
@@ -91,7 +97,7 @@ const getProducts = async (req: Request, res: Response) => {
       sort_by: validSortBy,
       order: validOrder,
     },
-    { page: Number(page), limit: Number(limit) }
+    { page: Number(page), limit: Number(limit) },
   )
 
   const response = {
@@ -153,7 +159,9 @@ const updateProduct = async (req: Req, res: Response) => {
   } = form
 
   // Fetch old product for comparison (price changes, inventory alerts)
-  const oldProduct = await ProductModel.findById(req.params.product_id).select({ price: 1, price_before_discount: 1, quantity: 1, name: 1 }).lean()
+  const oldProduct = await ProductModel.findById(req.params.product_id)
+    .select({ price: 1, price_before_discount: 1, quantity: 1, name: 1 })
+    .lean()
 
   try {
     const updateData = omitBy(
@@ -172,33 +180,30 @@ const updateProduct = async (req: Req, res: Response) => {
         variants,
         skus,
       },
-      (value) => value === undefined || value === ''
+      (value) => value === undefined || value === '',
     )
 
     const result = await productService.updateProduct(req.params.product_id, updateData)
 
     // Emit real-time price update if price changed
     if (oldProduct && result) {
-      const priceChanged = oldProduct.price !== result.price || oldProduct.price_before_discount !== result.price_before_discount
+      const priceChanged =
+        oldProduct.price !== result.price ||
+        oldProduct.price_before_discount !== result.price_before_discount
       if (priceChanged) {
         emitPriceUpdate(
           req.params.product_id,
           oldProduct.price,
           result.price,
           oldProduct.price_before_discount,
-          result.price_before_discount
+          result.price_before_discount,
         )
       }
 
       // Emit inventory alert if quantity is below threshold
       const threshold = SOCKET_CONFIG.INVENTORY.LOW_STOCK_THRESHOLD
       if (result.quantity <= threshold) {
-        emitInventoryAlert(
-          req.params.product_id,
-          result.name,
-          result.quantity,
-          threshold
-        )
+        emitInventoryAlert(req.params.product_id, result.name, result.quantity, threshold)
       }
     }
 
@@ -209,7 +214,10 @@ const updateProduct = async (req: Req, res: Response) => {
     return responseSuccess(res, response)
   } catch (error) {
     if (error instanceof NotFoundError || error instanceof ValidationError) {
-      throw new ErrorHandler(STATUS.NOT_FOUND, (error as Error).message || 'Không tìm thấy sản phẩm')
+      throw new ErrorHandler(
+        STATUS.NOT_FOUND,
+        (error as Error).message || 'Không tìm thấy sản phẩm',
+      )
     }
     throw error
   }
@@ -250,11 +258,11 @@ const searchProduct = async (req: Request, res: Response) => {
   if (!isAdmin(req)) {
     condition = Object.assign(condition, { visible: true })
   }
-  let products = await ProductModel.find(condition)
+  let products = (await ProductModel.find(condition)
     .populate('category')
     .sort({ createdAt: -1 })
     .select({ __v: 0, description: 0 })
-    .lean() as IProduct[]
+    .lean()) as IProduct[]
   products = products.map((product) => handleImageProduct(product))
   const response = {
     message: 'Tìm các sản phẩm thành công',
@@ -325,9 +333,7 @@ const getSearchSuggestions = async (req: Request, res: Response): Promise<void> 
       'đồng hồ thông minh',
     ]
 
-    const suggestions = commonKeywords
-      .filter((keyword) => keyword.includes(query))
-      .slice(0, 8)
+    const suggestions = commonKeywords.filter((keyword) => keyword.includes(query)).slice(0, 8)
 
     // Tìm top 5 sản phẩm phù hợp
     const products = await ProductModel.find({

@@ -187,7 +187,8 @@ export const VALIDATION_MESSAGES = {
   MAX_VALUE: (field: string, max: number) => `${field} phải nhỏ hơn hoặc bằng ${max}`,
   INVALID_OBJECT_ID: 'ID không hợp lệ',
   ARRAY_NOT_EMPTY: (field: string) => `${field} không được rỗng`,
-  INVALID_ENUM: (field: string, values: string[]) => `${field} phải là một trong: ${values.join(', ')}`,
+  INVALID_ENUM: (field: string, values: string[]) =>
+    `${field} phải là một trong: ${values.join(', ')}`,
 } as const
 
 // ==================== CONVERSATION/CHATBOT MESSAGES ====================
@@ -227,4 +228,3 @@ export const SECURITY_MESSAGES = {
   INVALID_CONTENT_TYPE: 'Content-Type không hợp lệ',
   REQUEST_TOO_LARGE: 'Request quá lớn',
 } as const
-

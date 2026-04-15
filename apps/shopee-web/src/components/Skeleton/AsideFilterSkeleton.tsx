@@ -1,8 +1,8 @@
-import { useTranslation } from 'react-i18next';
-import SkeletonBase from './SkeletonBase';
+import { useTranslation } from 'react-i18next'
+import SkeletonBase from './SkeletonBase'
 
 export default function AsideFilterSkeleton() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('common')
   return (
     <div
       className="min-h-[500px] py-4"
@@ -77,5 +77,5 @@ export default function AsideFilterSkeleton() {
       <div className="my-4 h-px bg-gray-300 dark:bg-slate-600"></div>
       <SkeletonBase className="h-9 w-full rounded-xs" />
     </div>
-  );
+  )
 }

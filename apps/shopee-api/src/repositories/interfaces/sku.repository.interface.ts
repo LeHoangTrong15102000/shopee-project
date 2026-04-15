@@ -51,7 +51,10 @@ export interface ISKURepository extends IBaseRepository<ISKU, CreateSKUDTO, Upda
   /**
    * Find a SKU by product and variant_values mapping
    */
-  findByProductAndVariantValues(productId: string | Types.ObjectId, variantValues: Record<string, string>): Promise<ISKU | null>
+  findByProductAndVariantValues(
+    productId: string | Types.ObjectId,
+    variantValues: Record<string, string>,
+  ): Promise<ISKU | null>
 
   /**
    * Atomically decrement stock. Returns null if insufficient stock.
@@ -74,7 +77,7 @@ export interface ISKURepository extends IBaseRepository<ISKU, CreateSKUDTO, Upda
    * On failure, rolls back all previously decremented SKUs and their parent Product.quantity.
    */
   bulkAtomicDecrementStock(
-    items: Array<{ skuId: string | Types.ObjectId; quantity: number }>
+    items: Array<{ skuId: string | Types.ObjectId; quantity: number }>,
   ): Promise<BulkDecrementResult[]>
 
   /**
@@ -82,4 +85,3 @@ export interface ISKURepository extends IBaseRepository<ISKU, CreateSKUDTO, Upda
    */
   findLowStock(threshold: number): Promise<ISKU[]>
 }
-

@@ -1,23 +1,23 @@
-import http from 'src/utils/http';
-import type { SuccessResponse, User, PaginatedData } from 'src/types';
+import http from 'src/utils/http'
+import type { SuccessResponse, User, PaginatedData } from 'src/types'
 
 interface UserListParams {
-  page?: number;
-  limit?: number;
-  search?: string;
+  page?: number
+  limit?: number
+  search?: string
 }
 
 interface CreateUserBody {
-  email: string;
-  password: string;
-  name?: string;
-  roles?: string[];
+  email: string
+  password: string
+  name?: string
+  roles?: string[]
 }
 
 interface UpdateUserBody {
-  name?: string;
-  email?: string;
-  roles?: string[];
+  name?: string
+  email?: string
+  roles?: string[]
 }
 
 const usersApi = {
@@ -33,6 +33,6 @@ const usersApi = {
 
   deleteUser: (userId: string) =>
     http.delete<SuccessResponse<null>>(`admin/users/delete/${userId}`),
-};
+}
 
-export default usersApi;
+export default usersApi

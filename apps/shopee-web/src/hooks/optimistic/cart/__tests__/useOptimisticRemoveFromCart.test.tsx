@@ -1,12 +1,12 @@
-import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import { renderHook, waitFor, act } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React from 'react';
-import { useCartStore } from 'src/stores/cart.store';
-import { useOptimisticRemoveFromCart } from '../useOptimisticRemoveFromCart';
-import { ExtendedPurchase, Purchase } from 'src/types/purchases.type';
-import { Product } from 'src/types/product.type';
-import { QUERY_KEYS } from '../../shared/types';
+import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest'
+import { renderHook, waitFor, act } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import React from 'react'
+import { useCartStore } from 'src/stores/cart.store'
+import { useOptimisticRemoveFromCart } from '../useOptimisticRemoveFromCart'
+import { ExtendedPurchase, Purchase } from 'src/types/purchases.type'
+import { Product } from 'src/types/product.type'
+import { QUERY_KEYS } from '../../shared/types'
 
 vi.mock('src/apis/purchases.api', () => ({
   default: {
@@ -14,7 +14,7 @@ vi.mock('src/apis/purchases.api', () => ({
     updatePurchase: vi.fn(),
     deletePurchase: vi.fn(),
   },
-}));
+}))
 
 vi.mock('react-toastify', () => ({
   toast: {
@@ -23,7 +23,7 @@ vi.mock('react-toastify', () => ({
     info: vi.fn(() => 'toast-id-3'),
     dismiss: vi.fn(),
   },
-}));
+}))
 
 vi.mock('../../useQueryInvalidation', () => ({
   useQueryInvalidation: () => ({
@@ -31,9 +31,9 @@ vi.mock('../../useQueryInvalidation', () => ({
     invalidateProductDetail: vi.fn(),
     invalidatePurchases: vi.fn(),
   }),
-}));
+}))
 
-import purchaseApi from 'src/apis/purchases.api';
+import purchaseApi from 'src/apis/purchases.api'
 
 const createMockProduct = (overrides: Partial<Product> = {}): Product => ({
   _id: 'product-1',
@@ -52,7 +52,7 @@ const createMockProduct = (overrides: Partial<Product> = {}): Product => ({
   createdAt: '2024-01-01T00:00:00.000Z',
   updatedAt: '2024-01-01T00:00:00.000Z',
   ...overrides,
-});
+})
 
 const createMockPurchase = (overrides: Partial<Purchase> = {}): Purchase => ({
   _id: 'purchase-1',
@@ -65,7 +65,7 @@ const createMockPurchase = (overrides: Partial<Purchase> = {}): Purchase => ({
   createdAt: '2024-01-01T00:00:00.000Z',
   updatedAt: '2024-01-01T00:00:00.000Z',
   ...overrides,
-});
+})
 
 const createMockExtendedPurchase = (
   overrides: Partial<ExtendedPurchase> = {},
@@ -74,15 +74,15 @@ const createMockExtendedPurchase = (
   disabled: false,
   isChecked: false,
   ...overrides,
-});
+})
 
-let queryClient: QueryClient;
+let queryClient: QueryClient
 
 const createWrapper = () => {
   return ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
-};
+  )
+}
 
 beforeEach(() => {
   queryClient = new QueryClient({
@@ -90,45 +90,45 @@ beforeEach(() => {
       queries: { retry: false, gcTime: 0 },
       mutations: { retry: false },
     },
-  });
-  useCartStore.setState({ items: [] });
-  vi.clearAllMocks();
-});
+  })
+  useCartStore.setState({ items: [] })
+  vi.clearAllMocks()
+})
 
 afterEach(() => {
-  queryClient.clear();
-  useCartStore.setState({ items: [] });
-});
+  queryClient.clear()
+  useCartStore.setState({ items: [] })
+})
 
 describe('useOptimisticRemoveFromCart', () => {
   describe('Happy Path - Successful mutation with optimistic update', () => {
     test('should remove item optimistically', async () => {
-      const mockProduct = createMockProduct();
+      const mockProduct = createMockProduct()
       const existingPurchase = createMockPurchase({
         _id: 'purchase-1',
         product: mockProduct,
-      });
-      useCartStore.setState({ items: [createMockExtendedPurchase({ ...existingPurchase })] });
+      })
+      useCartStore.setState({ items: [createMockExtendedPurchase({ ...existingPurchase })] })
 
       queryClient.setQueryData(QUERY_KEYS.PURCHASES_IN_CART, {
         data: { data: [existingPurchase] },
-      });
+      })
 
       vi.mocked(purchaseApi.deletePurchase).mockResolvedValue({
         data: { data: { deleted_count: 1 }, message: 'Success' },
-      } as any);
+      } as any)
 
       const { result } = renderHook(() => useOptimisticRemoveFromCart(), {
         wrapper: createWrapper(),
-      });
+      })
 
       await act(async () => {
-        result.current.mutate(['purchase-1']);
-      });
+        result.current.mutate(['purchase-1'])
+      })
 
-      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
-      expect(purchaseApi.deletePurchase).toHaveBeenCalledWith(['purchase-1'], expect.anything());
-    });
-  });
-});
+      expect(purchaseApi.deletePurchase).toHaveBeenCalledWith(['purchase-1'], expect.anything())
+    })
+  })
+})

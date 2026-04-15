@@ -45,5 +45,5 @@ export default function WishlistSkeletonLoader() {
         </div>
       </div>
     </div>
-  );
+  )
 }

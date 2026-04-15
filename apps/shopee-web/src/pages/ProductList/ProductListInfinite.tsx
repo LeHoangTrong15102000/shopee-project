@@ -1,51 +1,51 @@
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useRef } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import { ProductListConfig } from 'src/types/product.type';
-import { RetryError } from 'src/types/utils.type';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useRef } from 'react'
+import { useVirtualizer } from '@tanstack/react-virtual'
+import { ProductListConfig } from 'src/types/product.type'
+import { RetryError } from 'src/types/utils.type'
 
-import categoryApi from 'src/apis/category.api';
-import productApi from 'src/apis/product.api';
+import categoryApi from 'src/apis/category.api'
+import productApi from 'src/apis/product.api'
 
-import ProductListItem from 'src/components/ProductListItem';
-import ProductSkeleton from 'src/components/ProductSkeleton';
-import SearchNoResults from 'src/components/SearchNoResults';
-import AsideFilter from './components/AsideFilter';
-import Product from './components/Product/Product';
-import SortProductList from './components/SortProductList';
+import ProductListItem from 'src/components/ProductListItem'
+import ProductSkeleton from 'src/components/ProductSkeleton'
+import SearchNoResults from 'src/components/SearchNoResults'
+import AsideFilter from './components/AsideFilter'
+import Product from './components/Product/Product'
+import SortProductList from './components/SortProductList'
 
-import SEO from 'src/components/SEO';
-import Breadcrumb from 'src/components/Breadcrumb';
-import Button from 'src/components/Button';
-import path from 'src/constant/path';
-import { normalizeProductQueryKey, useProductQueryStates } from 'src/hooks/nuqs';
-import useInfiniteScroll from 'src/hooks/useInfiniteScroll';
-import { useViewMode } from 'src/hooks/useViewMode';
-import { useTranslation } from 'react-i18next';
+import SEO from 'src/components/SEO'
+import Breadcrumb from 'src/components/Breadcrumb'
+import Button from 'src/components/Button'
+import path from 'src/constant/path'
+import { normalizeProductQueryKey, useProductQueryStates } from 'src/hooks/nuqs'
+import useInfiniteScroll from 'src/hooks/useInfiniteScroll'
+import { useViewMode } from 'src/hooks/useViewMode'
+import { useTranslation } from 'react-i18next'
 
 /**
  * ProductListInfinite - Infinite Scroll version của ProductList
  * Sử dụng useInfiniteQuery từ TanStack Query
  */
 const ProductListInfinite = () => {
-  const { t } = useTranslation('home');
-  const [filters, setFilters] = useProductQueryStates();
+  const { t } = useTranslation('home')
+  const [filters, setFilters] = useProductQueryStates()
 
   // View Mode - Grid/List toggle with localStorage persistence
-  const { viewMode, changeViewMode } = useViewMode();
+  const { viewMode, changeViewMode } = useViewMode()
 
   // Remove page from filters for infinite query (we manage pages internally)
   const infiniteQueryConfig = (() => {
-    const { page, ...rest } = filters;
-    return { ...rest, limit: filters.limit };
-  })();
+    const { page, ...rest } = filters
+    return { ...rest, limit: filters.limit }
+  })()
 
   // Normalized key for cache compatibility
   const normalizedInfiniteKey = (() => {
-    const { page, ...rest } = normalizeProductQueryKey(filters);
-    return rest;
-  })();
+    const { page, ...rest } = normalizeProductQueryKey(filters)
+    return rest
+  })()
 
   /**
    * Infinite Query for Products
@@ -64,27 +64,27 @@ const ProductListInfinite = () => {
       const config = {
         ...infiniteQueryConfig,
         page: pageParam,
-      } as ProductListConfig;
-      return productApi.getProducts(config, { signal });
+      } as ProductListConfig
+      return productApi.getProducts(config, { signal })
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      const { pagination } = lastPage.data.data;
+      const { pagination } = lastPage.data.data
       // Nếu page hiện tại < tổng số page thì còn data
       if (pagination.page < pagination.page_size) {
-        return pagination.page + 1;
+        return pagination.page + 1
       }
-      return undefined; // Không còn page nào
+      return undefined // Không còn page nào
     },
     staleTime: 3 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     retry: (failureCount, error: RetryError) => {
       if (error?.name === 'AbortError' || error?.code === 'ERR_CANCELED') {
-        return false;
+        return false
       }
-      return failureCount < 2;
+      return failureCount < 2
     },
-  });
+  })
 
   /**
    * Query Categories
@@ -93,63 +93,63 @@ const ProductListInfinite = () => {
     queryKey: ['categories'],
     queryFn: ({ signal }) => categoryApi.getCategories({ signal }),
     staleTime: 15 * 60 * 1000,
-  });
+  })
 
   // Flatten all products from all pages
   const allProducts = (() => {
-    if (!productsData?.pages) return [];
-    return productsData.pages.flatMap((page) => page.data.data.products);
-  })();
+    if (!productsData?.pages) return []
+    return productsData.pages.flatMap((page) => page.data.data.products)
+  })()
 
   // Get pagination info from last page
-  const pagination = productsData?.pages[productsData.pages.length - 1]?.data.data.pagination;
+  const pagination = productsData?.pages[productsData.pages.length - 1]?.data.data.pagination
 
   // Infinite scroll hook
   const handleLoadMore = () => {
     if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+      fetchNextPage()
     }
-  };
+  }
 
   const { sentinelRef } = useInfiniteScroll({
     onLoadMore: handleLoadMore,
     isLoading: isFetchingNextPage,
     hasMore: hasNextPage ?? false,
     threshold: 300,
-  });
+  })
 
-  const categories = categoriesData?.data.data || [];
+  const categories = categoriesData?.data.data || []
 
   // Grid columns count for virtualization
-  const gridColumns = 5; // matches xl:grid-cols-5
+  const gridColumns = 5 // matches xl:grid-cols-5
   const gridRows = (() => {
-    const rows: (typeof allProducts)[] = [];
+    const rows: (typeof allProducts)[] = []
     for (let i = 0; i < allProducts.length; i += gridColumns) {
-      rows.push(allProducts.slice(i, i + gridColumns));
+      rows.push(allProducts.slice(i, i + gridColumns))
     }
-    return rows;
-  })();
+    return rows
+  })()
 
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   const gridVirtualizer = useVirtualizer({
     count: gridRows.length,
     getScrollElement: () => scrollContainerRef.current,
     estimateSize: () => 320,
     overscan: 3,
-  });
+  })
 
   const listVirtualizer = useVirtualizer({
     count: allProducts.length,
     getScrollElement: () => scrollContainerRef.current,
     estimateSize: () => 120,
     overscan: 5,
-  });
+  })
 
   // Get current category name for breadcrumb
   const currentCategory = filters.category
     ? categories.find((cat) => cat._id === filters.category)
-    : null;
+    : null
 
   // Build breadcrumb items
   const breadcrumbItems = [
@@ -157,7 +157,7 @@ const ProductListInfinite = () => {
     ...(currentCategory
       ? [{ label: currentCategory.name }]
       : [{ label: t('breadcrumb.allProducts') }]),
-  ];
+  ]
 
   // Initial loading state with skeletons
   if (isLoading) {
@@ -196,7 +196,7 @@ const ProductListInfinite = () => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   // Error state
@@ -219,7 +219,7 @@ const ProductListInfinite = () => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -282,7 +282,7 @@ const ProductListInfinite = () => {
                     }}
                   >
                     {gridVirtualizer.getVirtualItems().map((virtualRow) => {
-                      const rowProducts = gridRows[virtualRow.index];
+                      const rowProducts = gridRows[virtualRow.index]
                       return (
                         <div
                           key={virtualRow.index}
@@ -303,7 +303,7 @@ const ProductListInfinite = () => {
                             </div>
                           ))}
                         </div>
-                      );
+                      )
                     })}
                   </div>
                 ) : (
@@ -315,7 +315,7 @@ const ProductListInfinite = () => {
                     }}
                   >
                     {listVirtualizer.getVirtualItems().map((virtualRow) => {
-                      const product = allProducts[virtualRow.index];
+                      const product = allProducts[virtualRow.index]
                       return (
                         <div
                           key={product._id}
@@ -332,7 +332,7 @@ const ProductListInfinite = () => {
                         >
                           <ProductListItem product={product} />
                         </div>
-                      );
+                      )
                     })}
                   </div>
                 )}
@@ -403,7 +403,7 @@ const ProductListInfinite = () => {
             <SearchNoResults
               searchTerm={filters.name}
               onPopularSearch={(term) => {
-                setFilters({ name: term, page: 1 });
+                setFilters({ name: term, page: 1 })
               }}
             />
           ) : (
@@ -432,7 +432,7 @@ const ProductListInfinite = () => {
           ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProductListInfinite;
+export default ProductListInfinite

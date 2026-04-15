@@ -1,12 +1,12 @@
-import { Product } from 'src/types/product.type';
-import { Purchase, PurchaseListStatus } from 'src/types/purchases.type';
-import { SuccessResponseApi } from 'src/types/utils.type';
-import http from 'src/utils/http';
+import { Product } from 'src/types/product.type'
+import { Purchase, PurchaseListStatus } from 'src/types/purchases.type'
+import { SuccessResponseApi } from 'src/types/utils.type'
+import http from 'src/utils/http'
 
 // Khai báo các api của purchases
 
 const createDate = (daysAgo: number) =>
-  new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000).toISOString();
+  new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000).toISOString()
 
 // Mock Products đa dạng
 const mockProducts: Product[] = [
@@ -288,7 +288,7 @@ const mockProducts: Product[] = [
     createdAt: createDate(9),
     updatedAt: createDate(2),
   },
-];
+]
 
 // Status -1: Trong giỏ hàng (3 đơn)
 const cartPurchases: Purchase[] = [
@@ -325,7 +325,7 @@ const cartPurchases: Purchase[] = [
     createdAt: createDate(0),
     updatedAt: createDate(0),
   },
-];
+]
 
 // Status 1: Chờ xác nhận (3 đơn)
 const waitingConfirmPurchases: Purchase[] = [
@@ -362,7 +362,7 @@ const waitingConfirmPurchases: Purchase[] = [
     createdAt: createDate(0),
     updatedAt: createDate(0),
   },
-];
+]
 
 // Status 2: Chờ lấy hàng (3 đơn)
 const waitingPickupPurchases: Purchase[] = [
@@ -399,7 +399,7 @@ const waitingPickupPurchases: Purchase[] = [
     createdAt: createDate(3),
     updatedAt: createDate(2),
   },
-];
+]
 
 // Status 3: Đang giao (4 đơn)
 const shippingPurchases: Purchase[] = [
@@ -447,7 +447,7 @@ const shippingPurchases: Purchase[] = [
     createdAt: createDate(4),
     updatedAt: createDate(2),
   },
-];
+]
 
 // Status 4: Đã giao/Hoàn thành (5 đơn)
 const deliveredPurchases: Purchase[] = [
@@ -506,7 +506,7 @@ const deliveredPurchases: Purchase[] = [
     createdAt: createDate(12),
     updatedAt: createDate(5),
   },
-];
+]
 
 // Status 5: Đã hủy (2 đơn)
 const cancelledPurchases: Purchase[] = [
@@ -532,7 +532,7 @@ const cancelledPurchases: Purchase[] = [
     createdAt: createDate(8),
     updatedAt: createDate(7),
   },
-];
+]
 
 // Tổng hợp tất cả mock purchases
 const allMockPurchases: Purchase[] = [
@@ -542,18 +542,18 @@ const allMockPurchases: Purchase[] = [
   ...shippingPurchases,
   ...deliveredPurchases,
   ...cancelledPurchases,
-];
+]
 
 // Giữ lại mockPurchases cũ cho backward compatibility
-const mockPurchases = cartPurchases;
+const mockPurchases = cartPurchases
 
 const purchaseApi = {
   // addToCart gửi lên từng sản phẩm - purchase
   addToCart: async (body: { product_id: string; buy_count: number; sku_id?: string }) => {
     try {
-      return await http.post<SuccessResponseApi<Purchase>>('/purchases/add-to-cart', body);
+      return await http.post<SuccessResponseApi<Purchase>>('/purchases/add-to-cart', body)
     } catch (error) {
-      console.warn('⚠️ [addToCart] API not available, using mock data');
+      console.warn('⚠️ [addToCart] API not available, using mock data')
       const mockPurchase: Purchase = {
         _id: `mock-purchase-${Date.now()}`,
         buy_count: body.buy_count,
@@ -564,8 +564,8 @@ const purchaseApi = {
         product: { ...mockProducts[0], _id: body.product_id },
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      };
-      return { data: { message: 'Thêm sản phẩm vào giỏ hàng thành công', data: mockPurchase } };
+      }
+      return { data: { message: 'Thêm sản phẩm vào giỏ hàng thành công', data: mockPurchase } }
     }
   },
   // lấy ra danh sách các status của purchase, getPurchaseList thì trả về array các purchases
@@ -573,62 +573,62 @@ const purchaseApi = {
     try {
       return await http.get<SuccessResponseApi<Purchase[]>>('/purchases', {
         params,
-      });
+      })
     } catch (error) {
-      console.warn('⚠️ [getPurchases] API not available, using mock data');
+      console.warn('⚠️ [getPurchases] API not available, using mock data')
 
-      let filteredPurchases: Purchase[];
+      let filteredPurchases: Purchase[]
 
       if (params.status === 0) {
         // Status 0 (all): trả về tất cả trừ status -1 (giỏ hàng)
-        filteredPurchases = allMockPurchases.filter((p) => p.status !== -1);
+        filteredPurchases = allMockPurchases.filter((p) => p.status !== -1)
       } else {
         // Các status khác: filter theo đúng status
-        filteredPurchases = allMockPurchases.filter((p) => p.status === params.status);
+        filteredPurchases = allMockPurchases.filter((p) => p.status === params.status)
       }
 
-      return { data: { message: 'Lấy danh sách đơn hàng thành công', data: filteredPurchases } };
+      return { data: { message: 'Lấy danh sách đơn hàng thành công', data: filteredPurchases } }
     }
   },
   // buy-product, body là mảng các object
   buyPurchases: async (body: { product_id: string; buy_count: number }[]) => {
     try {
-      return await http.post<SuccessResponseApi<Purchase[]>>('/purchases/buy-products', body);
+      return await http.post<SuccessResponseApi<Purchase[]>>('/purchases/buy-products', body)
     } catch (error) {
-      console.warn('⚠️ [buyPurchases] API not available, using mock data');
+      console.warn('⚠️ [buyPurchases] API not available, using mock data')
       const boughtPurchases = mockPurchases.map((purchase) => ({
         ...purchase,
         status: 1 as const,
-      }));
-      return { data: { message: 'Mua hàng thành công', data: boughtPurchases } };
+      }))
+      return { data: { message: 'Mua hàng thành công', data: boughtPurchases } }
     }
   },
   updatePurchase: async (body: { product_id: string; buy_count: number }) => {
     try {
-      return await http.put<SuccessResponseApi<Purchase>>('/purchases/update-purchase', body);
+      return await http.put<SuccessResponseApi<Purchase>>('/purchases/update-purchase', body)
     } catch (error) {
-      console.warn('⚠️ [updatePurchase] API not available, using mock data');
+      console.warn('⚠️ [updatePurchase] API not available, using mock data')
       const updatedPurchase: Purchase = {
         ...mockPurchases[0],
         buy_count: body.buy_count,
         product: { ...mockPurchases[0].product, _id: body.product_id },
         updatedAt: new Date().toISOString(),
-      };
-      return { data: { message: 'Cập nhật đơn hàng thành công', data: updatedPurchase } };
+      }
+      return { data: { message: 'Cập nhật đơn hàng thành công', data: updatedPurchase } }
     }
   },
   deletePurchase: async (purchaseIds: string[]) => {
     try {
       return await http.delete<SuccessResponseApi<{ deleted_count: number }>>('/purchases', {
         data: purchaseIds, // data nhận vào là một sản phẩm cần xóa hoặc nhiều sản phẩm
-      });
+      })
     } catch (error) {
-      console.warn('⚠️ [deletePurchase] API not available, using mock data');
+      console.warn('⚠️ [deletePurchase] API not available, using mock data')
       return {
         data: { message: 'Xóa đơn hàng thành công', data: { deleted_count: purchaseIds.length } },
-      };
+      }
     }
   },
-};
+}
 
-export default purchaseApi;
+export default purchaseApi

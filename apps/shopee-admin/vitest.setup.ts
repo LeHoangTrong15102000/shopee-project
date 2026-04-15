@@ -36,18 +36,32 @@ global.IntersectionObserver = class IntersectionObserver {
     public callback: IntersectionObserverCallback,
     public options?: IntersectionObserverInit,
   ) {}
-  observe() { return }
-  unobserve() { return }
-  disconnect() { return }
-  takeRecords(): IntersectionObserverEntry[] { return [] }
+  observe() {
+    return
+  }
+  unobserve() {
+    return
+  }
+  disconnect() {
+    return
+  }
+  takeRecords(): IntersectionObserverEntry[] {
+    return []
+  }
 } as unknown as typeof IntersectionObserver
 
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {
   constructor(public callback: ResizeObserverCallback) {}
-  observe() { return }
-  unobserve() { return }
-  disconnect() { return }
+  observe() {
+    return
+  }
+  unobserve() {
+    return
+  }
+  disconnect() {
+    return
+  }
 } as unknown as typeof ResizeObserver
 
 // Mock react-i18next
@@ -86,4 +100,3 @@ afterEach(() => {
   localStorage.clear()
   vi.clearAllMocks()
 })
-

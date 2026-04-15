@@ -1,5 +1,10 @@
 /// <reference types="jest" />
-import { mongoIdSchema, mongoIdParamSchema, paginationQuerySchema, paginationSchema } from '@schemas/common.schema'
+import {
+  mongoIdSchema,
+  mongoIdParamSchema,
+  paginationQuerySchema,
+  paginationSchema,
+} from '@schemas/common.schema'
 
 const VALID_ID = '507f1f77bcf86cd799439011'
 

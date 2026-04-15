@@ -1,12 +1,12 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
-import compression from 'vite-plugin-compression';
-import path from 'path';
+import { defineConfig } from 'vitest/config'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+import compression from 'vite-plugin-compression'
+import path from 'path'
 
 export default defineConfig(({ mode }) => {
-  const isTest = mode === 'test';
+  const isTest = mode === 'test'
 
   const baseConfig = {
     plugins: [
@@ -51,37 +51,37 @@ export default defineConfig(({ mode }) => {
         output: {
           manualChunks(id: string) {
             if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
-              return 'react-vendor';
+              return 'react-vendor'
             }
             if (id.includes('node_modules/react-router')) {
-              return 'router-vendor';
+              return 'router-vendor'
             }
             if (id.includes('node_modules/@tanstack/react-query')) {
-              return 'query-vendor';
+              return 'query-vendor'
             }
             if (id.includes('node_modules/@tanstack/react-table')) {
-              return 'table-vendor';
+              return 'table-vendor'
             }
             if (id.includes('node_modules/@radix-ui/') || id.includes('node_modules/@base-ui/')) {
-              return 'ui-vendor';
+              return 'ui-vendor'
             }
             if (id.includes('node_modules/i18next') || id.includes('node_modules/react-i18next')) {
-              return 'i18n-vendor';
+              return 'i18n-vendor'
             }
             if (id.includes('node_modules/date-fns')) {
-              return 'date-vendor';
+              return 'date-vendor'
             }
             if (id.includes('node_modules/sonner')) {
-              return 'toast-vendor';
+              return 'toast-vendor'
             }
             if (id.includes('node_modules/recharts') || id.includes('node_modules/d3-')) {
-              return 'chart-vendor';
+              return 'chart-vendor'
             }
           },
         },
       },
     },
-  };
+  }
 
   if (isTest) {
     return {
@@ -122,8 +122,8 @@ export default defineConfig(({ mode }) => {
           },
         },
       },
-    };
+    }
   }
 
-  return baseConfig;
-});
+  return baseConfig
+})

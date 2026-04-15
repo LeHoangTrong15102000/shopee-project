@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { MemoryRouter } from 'react-router';
-import React from 'react';
-import OrderList from '../User/pages/OrderList/OrderList';
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { MemoryRouter } from 'react-router'
+import React from 'react'
+import OrderList from '../User/pages/OrderList/OrderList'
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -17,12 +17,12 @@ vi.mock('react-i18next', () => ({
         'order:tabs.cancelled': 'Đã hủy',
         'order:tabs.returned': 'Trả hàng',
         'order:empty': 'Chưa có đơn hàng nào',
-      };
-      return translations[key] || key.split(':')[1] || key;
+      }
+      return translations[key] || key.split(':')[1] || key
     },
     i18n: { language: 'vi', changeLanguage: vi.fn() },
   }),
-}));
+}))
 
 vi.mock('src/apis/order.api', () => ({
   default: {
@@ -43,65 +43,65 @@ vi.mock('src/apis/order.api', () => ({
     ),
     cancelOrder: vi.fn(() => Promise.resolve({ data: { data: {} } })),
   },
-}));
+}))
 
 vi.mock('src/hooks/nuqs/orderSearchParams', () => ({
   useOrderStatus: () => [0, vi.fn()],
-}));
+}))
 
 vi.mock('src/hooks/useIsMobile', () => ({
   useIsMobile: () => false,
-}));
+}))
 
 vi.mock('framer-motion', () => ({
   motion: {
     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   },
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}));
+}))
 
 const createWrapper = () => {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   return ({ children }: { children: React.ReactNode }) =>
     React.createElement(
       QueryClientProvider,
       { client: queryClient },
       React.createElement(MemoryRouter, null, children),
-    );
-};
+    )
+}
 
 describe('OrderList', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    vi.clearAllMocks()
+  })
 
   it('renders order list page', async () => {
-    const Wrapper = createWrapper();
-    const { container } = render(React.createElement(OrderList), { wrapper: Wrapper });
+    const Wrapper = createWrapper()
+    const { container } = render(React.createElement(OrderList), { wrapper: Wrapper })
 
     await waitFor(() => {
-      const tabs = container.querySelectorAll('button');
-      expect(tabs.length).toBeGreaterThan(0);
-    });
-  });
+      const tabs = container.querySelectorAll('button')
+      expect(tabs.length).toBeGreaterThan(0)
+    })
+  })
 
   it('displays all order tabs', async () => {
-    const Wrapper = createWrapper();
-    const { container } = render(React.createElement(OrderList), { wrapper: Wrapper });
+    const Wrapper = createWrapper()
+    const { container } = render(React.createElement(OrderList), { wrapper: Wrapper })
 
     await waitFor(() => {
-      const tabs = container.querySelectorAll('button');
-      expect(tabs.length).toBeGreaterThanOrEqual(6);
-    });
-  });
+      const tabs = container.querySelectorAll('button')
+      expect(tabs.length).toBeGreaterThanOrEqual(6)
+    })
+  })
 
   it('shows empty state when no orders', async () => {
-    const Wrapper = createWrapper();
-    const { container } = render(React.createElement(OrderList), { wrapper: Wrapper });
+    const Wrapper = createWrapper()
+    const { container } = render(React.createElement(OrderList), { wrapper: Wrapper })
 
     await waitFor(() => {
-      const emptyIcon = container.querySelector('.text-6xl');
-      expect(emptyIcon).toBeInTheDocument();
-    });
-  });
-});
+      const emptyIcon = container.querySelector('.text-6xl')
+      expect(emptyIcon).toBeInTheDocument()
+    })
+  })
+})

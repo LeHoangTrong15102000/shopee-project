@@ -113,7 +113,11 @@ describe('UserRepository', () => {
 
       const result = await repository.updateById('507f1f77bcf86cd799439011', { name: 'Updated' })
 
-      expect(UserModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', { name: 'Updated' }, { new: true })
+      expect(UserModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        '507f1f77bcf86cd799439011',
+        { name: 'Updated' },
+        { new: true },
+      )
       expect(result).toEqual(mockUserData)
     })
   })
@@ -214,7 +218,10 @@ describe('UserRepository', () => {
     it('should update user password', async () => {
       ;(UserModel.updateOne as jest.Mock).mockResolvedValue({ modifiedCount: 1 })
 
-      const result = await repository.updatePassword('507f1f77bcf86cd799439011', 'newHashedPassword')
+      const result = await repository.updatePassword(
+        '507f1f77bcf86cd799439011',
+        'newHashedPassword',
+      )
 
       expect(UserModel.updateOne).toHaveBeenCalled()
       expect(result).toBe(true)
@@ -223,7 +230,10 @@ describe('UserRepository', () => {
     it('should return false if password not updated', async () => {
       ;(UserModel.updateOne as jest.Mock).mockResolvedValue({ modifiedCount: 0 })
 
-      const result = await repository.updatePassword('507f1f77bcf86cd799439011', 'newHashedPassword')
+      const result = await repository.updatePassword(
+        '507f1f77bcf86cd799439011',
+        'newHashedPassword',
+      )
 
       expect(result).toBe(false)
     })
@@ -237,7 +247,11 @@ describe('UserRepository', () => {
 
       const result = await repository.updateAvatar('507f1f77bcf86cd799439011', 'new-avatar.jpg')
 
-      expect(UserModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', { avatar: 'new-avatar.jpg' }, { new: true })
+      expect(UserModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        '507f1f77bcf86cd799439011',
+        { avatar: 'new-avatar.jpg' },
+        { new: true },
+      )
       expect(result?.avatar).toBe('new-avatar.jpg')
     })
   })
@@ -272,4 +286,3 @@ describe('UserRepository', () => {
     })
   })
 })
-

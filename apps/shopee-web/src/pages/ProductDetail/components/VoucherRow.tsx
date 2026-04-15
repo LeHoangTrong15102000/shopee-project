@@ -1,9 +1,9 @@
-import { useTranslation } from 'react-i18next';
-import { formatDiscount } from 'src/utils/utils';
-import Popover from 'src/components/Popover';
-import { ChevronRightIcon } from 'src/components/Icons';
-import VoucherPopupContent from './VoucherPopupContent';
-import useVoucherSave from 'src/hooks/useVoucherSave';
+import { useTranslation } from 'react-i18next'
+import { formatDiscount } from 'src/utils/utils'
+import Popover from 'src/components/Popover'
+import { ChevronRightIcon } from 'src/components/Icons'
+import VoucherPopupContent from './VoucherPopupContent'
+import useVoucherSave from 'src/hooks/useVoucherSave'
 
 /**
  * Shopee-style voucher ticket badge with sawtooth left edge.
@@ -21,17 +21,17 @@ const VoucherTicketBadge = ({ label }: { label: string }) => (
   >
     {label}
   </span>
-);
+)
 
 const VoucherRow = () => {
-  const { t } = useTranslation('product');
-  const voucherData = useVoucherSave();
-  const { vouchers, isLoading } = voucherData;
-  const previewVouchers = vouchers.slice(0, 3);
+  const { t } = useTranslation('product')
+  const voucherData = useVoucherSave()
+  const { vouchers, isLoading } = voucherData
+  const previewVouchers = vouchers.slice(0, 3)
 
   const formatVoucherBadge = (voucher: (typeof vouchers)[0]) => {
-    return formatDiscount(voucher.discount_type, voucher.discount_value);
-  };
+    return formatDiscount(voucher.discount_type, voucher.discount_value)
+  }
 
   return (
     <Popover
@@ -68,7 +68,7 @@ const VoucherRow = () => {
         <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-gray-500" />
       </div>
     </Popover>
-  );
-};
+  )
+}
 
-export default VoucherRow;
+export default VoucherRow

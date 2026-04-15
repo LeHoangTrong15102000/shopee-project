@@ -1,13 +1,13 @@
-import { useTranslation } from 'react-i18next';
-import { useProductQueryStates } from 'src/hooks/nuqs';
+import { useTranslation } from 'react-i18next'
+import { useProductQueryStates } from 'src/hooks/nuqs'
 
 const RatingStars = () => {
-  const { t } = useTranslation('product');
-  const [, setFilters] = useProductQueryStates();
+  const { t } = useTranslation('product')
+  const [, setFilters] = useProductQueryStates()
 
   const handleFilterStar = (ratingFilterNumber: number) => {
-    setFilters({ rating_filter: ratingFilterNumber });
-  };
+    setFilters({ rating_filter: ratingFilterNumber })
+  }
 
   return (
     <ul className="my-3">
@@ -21,8 +21,8 @@ const RatingStars = () => {
               onClick={() => handleFilterStar(5 - index)}
               onKeyDown={(e: React.KeyboardEvent) => {
                 if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handleFilterStar(5 - index);
+                  e.preventDefault()
+                  handleFilterStar(5 - index)
                 }
               }}
               tabIndex={0}
@@ -79,7 +79,7 @@ const RatingStars = () => {
                           </g>
                         </g>
                       </svg>
-                    );
+                    )
                   }
                   // Còn không return về ngôi sao màu trắng
                   return (
@@ -104,7 +104,7 @@ const RatingStars = () => {
                         d="M23.226809 28.390899l-1.543364-9.5505903 6.600997-6.8291523-9.116272-1.4059447-4.01304-8.63019038-4.013041 8.63019038-9.116271 1.4059447 6.600997 6.8291523-1.543364 9.5505903 8.071679-4.5038874 8.071679 4.5038874z"
                       />
                     </svg>
-                  );
+                  )
                 })}
               {index !== 0 && (
                 <span className="ml-1 dark:text-gray-300">{t('rating.andAbove')}</span>
@@ -113,7 +113,7 @@ const RatingStars = () => {
           </li>
         ))}
     </ul>
-  );
-};
+  )
+}
 
-export default RatingStars;
+export default RatingStars

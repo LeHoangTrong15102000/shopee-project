@@ -1,6 +1,6 @@
-import { User } from 'src/types/user.type';
-import { SuccessResponseApi } from 'src/types/utils.type';
-import http from 'src/utils/http';
+import { User } from 'src/types/user.type'
+import { SuccessResponseApi } from 'src/types/utils.type'
+import http from 'src/utils/http'
 
 // Khai báo kiểu dữ liệu kế thừa từ thằng User thêm vào 2 trường password và new_password
 export interface BodyUpdateProfile extends Omit<
@@ -8,8 +8,8 @@ export interface BodyUpdateProfile extends Omit<
   '_id' | 'roles' | 'createdAt' | 'updatedAt' | 'email'
 > {
   // Bỏ các các keys ko sử dụng ở trên, thêm 2 trường là password, newPassword
-  password?: string;
-  new_password?: string;
+  password?: string
+  new_password?: string
   // Không có đưa lên confirm_password -> chỉ handle ở dưới client thôi
 }
 
@@ -25,28 +25,28 @@ const mockUser: User = {
   phone: '0901234567',
   createdAt: '2024-01-01T00:00:00.000Z',
   updatedAt: new Date().toISOString(),
-};
+}
 
 export const userApi = {
   getProfile: async () => {
     try {
-      return await http.get<SuccessResponseApi<User>>('/me');
+      return await http.get<SuccessResponseApi<User>>('/me')
     } catch (error) {
-      console.warn('⚠️ [getProfile] API not available, using mock data');
+      console.warn('⚠️ [getProfile] API not available, using mock data')
       return {
         status: 200,
         data: {
           message: 'Lấy thông tin người dùng thành công (mock)',
           data: mockUser,
         },
-      };
+      }
     }
   },
   updateProfile: async (body: BodyUpdateProfile) => {
     try {
-      return await http.put<SuccessResponseApi<User>>('/user', body);
+      return await http.put<SuccessResponseApi<User>>('/user', body)
     } catch (error) {
-      console.warn('⚠️ [updateProfile] API not available, using mock data');
+      console.warn('⚠️ [updateProfile] API not available, using mock data')
       return {
         status: 200,
         data: {
@@ -57,7 +57,7 @@ export const userApi = {
             updatedAt: new Date().toISOString(),
           },
         },
-      };
+      }
     }
   },
   uploadAvatar: async (body: FormData) => {
@@ -67,18 +67,18 @@ export const userApi = {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-      });
+      })
     } catch (error) {
-      console.warn('⚠️ [uploadAvatar] API not available, using mock data');
+      console.warn('⚠️ [uploadAvatar] API not available, using mock data')
       return {
         status: 200,
         data: {
           message: 'Upload ảnh đại diện thành công (mock)',
           data: 'https://picsum.photos/seed/avatar-new/200',
         },
-      };
+      }
     }
   },
-};
+}
 
-export default userApi;
+export default userApi

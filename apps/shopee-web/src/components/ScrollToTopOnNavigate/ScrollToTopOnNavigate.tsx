@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useLocation } from 'react-router';
+import { useEffect } from 'react'
+import { useLocation } from 'react-router'
 
 /**
  * Global component that scrolls to top when pathname changes.
@@ -7,11 +7,11 @@ import { useLocation } from 'react-router';
  * This preserves scroll position for filters/pagination.
  */
 export default function ScrollToTopOnNavigate() {
-  const { pathname } = useLocation();
+  const { pathname } = useLocation()
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [pathname]);
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [pathname])
 
-  return null;
+  return null
 }

@@ -39,9 +39,7 @@ describe('Wishlist Integration', () => {
 
   describe('GET /wishlist', () => {
     it('should return empty list initially', async () => {
-      const res = await supertest(app)
-        .get('/wishlist')
-        .set('Authorization', `Bearer ${authToken}`)
+      const res = await supertest(app).get('/wishlist').set('Authorization', `Bearer ${authToken}`)
 
       expect(res.status).toBeLessThan(400)
       expect(res.body.data).toBeDefined()
@@ -59,9 +57,7 @@ describe('Wishlist Integration', () => {
     })
 
     it('should require authentication (401 without token)', async () => {
-      const res = await supertest(app)
-        .post('/wishlist')
-        .send({ product_id: productId })
+      const res = await supertest(app).post('/wishlist').send({ product_id: productId })
 
       expect(res.status).toBe(401)
     })
@@ -122,4 +118,3 @@ describe('Wishlist Integration', () => {
     })
   })
 })
-

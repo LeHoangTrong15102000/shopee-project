@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react'
 import {
   AccessibilityInfo,
   KeyboardAvoidingView,
@@ -6,56 +6,56 @@ import {
   ScrollView,
   TextInput,
   View,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
-import Animated, { FadeInDown } from 'react-native-reanimated';
-import { useTranslation } from 'react-i18next';
-import { useForm } from '@/hooks/useForm';
-import { signInSchema, SignInFormData } from '@/schemas/auth.schema';
-import { FormField, FormItem, FormMessage } from '@/components/ui/Form';
-import AppInput from '@/components/ui/AppInput';
-import AppButton from '@/components/ui/AppButton';
-import { AppText, Icon } from '@/components/ui';
-import { useToast } from '@/components/ui/ToastProvider';
-import { useAuthStore } from '@/store/authStore';
-import authApi from '@/apis/auth.api';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AppColors, AppSpacing } from '@/config/colors';
+} from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient'
+import { useRouter } from 'expo-router'
+import Animated, { FadeInDown } from 'react-native-reanimated'
+import { useTranslation } from 'react-i18next'
+import { useForm } from '@/hooks/useForm'
+import { signInSchema, SignInFormData } from '@/schemas/auth.schema'
+import { FormField, FormItem, FormMessage } from '@/components/ui/Form'
+import AppInput from '@/components/ui/AppInput'
+import AppButton from '@/components/ui/AppButton'
+import { AppText, Icon } from '@/components/ui'
+import { useToast } from '@/components/ui/ToastProvider'
+import { useAuthStore } from '@/store/authStore'
+import authApi from '@/apis/auth.api'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { AppColors, AppSpacing } from '@/config/colors'
 
 export default function SignInScreen() {
-  const { t } = useTranslation();
-  const router = useRouter();
-  const insets = useSafeAreaInsets();
-  const { showError, showInfo } = useToast();
-  const login = useAuthStore((state) => state.login);
-  const [loading, setLoading] = useState(false);
-  const [reduceMotion, setReduceMotion] = useState(false);
-  const passwordRef = useRef<TextInput>(null);
+  const { t } = useTranslation()
+  const router = useRouter()
+  const insets = useSafeAreaInsets()
+  const { showError, showInfo } = useToast()
+  const login = useAuthStore((state) => state.login)
+  const [loading, setLoading] = useState(false)
+  const [reduceMotion, setReduceMotion] = useState(false)
+  const passwordRef = useRef<TextInput>(null)
 
   useEffect(() => {
-    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
-  }, []);
+    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion)
+  }, [])
 
   const { handleSubmit, control } = useForm<SignInFormData>({
     defaultValues: { email: '', password: '' },
     validationSchema: signInSchema,
-  });
+  })
 
   const onSubmit = handleSubmit(async (data) => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const res = await authApi.loginAccount({ email: data.email, password: data.password });
-      const { access_token, refresh_token, user } = res.data.data;
-      login({ accessToken: access_token, refreshToken: refresh_token, user });
-      router.replace('/(tabs)/home');
+      const res = await authApi.loginAccount({ email: data.email, password: data.password })
+      const { access_token, refresh_token, user } = res.data.data
+      login({ accessToken: access_token, refreshToken: refresh_token, user })
+      router.replace('/(tabs)/home')
     } catch (error: any) {
-      const message = error?.response?.data?.message;
-      showError(t('AUTH_LOGIN_ERROR'), message);
+      const message = error?.response?.data?.message
+      showError(t('AUTH_LOGIN_ERROR'), message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  });
+  })
 
   return (
     <LinearGradient
@@ -197,5 +197,5 @@ export default function SignInScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
     </LinearGradient>
-  );
+  )
 }

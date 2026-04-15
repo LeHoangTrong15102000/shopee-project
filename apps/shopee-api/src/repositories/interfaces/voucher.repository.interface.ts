@@ -34,7 +34,10 @@ export interface VoucherStatusInfo {
 }
 
 export interface IVoucherRepository {
-  findAvailable(pagination: PaginationOptions, filters?: VoucherFilterOptions): Promise<PaginatedResult<IVoucher>>
+  findAvailable(
+    pagination: PaginationOptions,
+    filters?: VoucherFilterOptions,
+  ): Promise<PaginatedResult<IVoucher>>
 
   findByCode(code: string): Promise<IVoucher | null>
 
@@ -45,22 +48,24 @@ export interface IVoucherRepository {
   findSavedByUser(
     userId: string | Types.ObjectId,
     pagination: PaginationOptions,
-    status?: VoucherStatus
+    status?: VoucherStatus,
   ): Promise<PaginatedResult<ISavedVoucher>>
 
   findSavedVoucher(
     userId: string | Types.ObjectId,
-    voucherId: string | Types.ObjectId
+    voucherId: string | Types.ObjectId,
   ): Promise<ISavedVoucher | null>
 
-  saveVoucher(userId: string | Types.ObjectId, voucherId: string | Types.ObjectId): Promise<ISavedVoucher>
+  saveVoucher(
+    userId: string | Types.ObjectId,
+    voucherId: string | Types.ObjectId,
+  ): Promise<ISavedVoucher>
 
   markVoucherUsed(
     userId: string | Types.ObjectId,
     voucherId: string | Types.ObjectId,
-    orderId?: string | Types.ObjectId
+    orderId?: string | Types.ObjectId,
   ): Promise<ISavedVoucher | null>
 
   getCollectedVoucherIds(userId: string | Types.ObjectId): Promise<string[]>
 }
-

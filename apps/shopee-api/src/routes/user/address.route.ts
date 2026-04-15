@@ -9,41 +9,40 @@ export const userAddressRouter = Router()
 userAddressRouter.get(
   '',
   authMiddleware.verifyAccessToken,
-  asyncHandler(addressController.getAddresses)
+  asyncHandler(addressController.getAddresses),
 )
 
 // Get address by ID
 userAddressRouter.get(
   '/:id',
   authMiddleware.verifyAccessToken,
-  asyncHandler(addressController.getAddressById)
+  asyncHandler(addressController.getAddressById),
 )
 
 // Create new address
 userAddressRouter.post(
   '',
   authMiddleware.verifyAccessToken,
-  asyncHandler(addressController.createAddress)
+  asyncHandler(addressController.createAddress),
 )
 
 // Update address
 userAddressRouter.put(
   '/:id',
   authMiddleware.verifyAccessToken,
-  asyncHandler(addressController.updateAddress)
+  asyncHandler(addressController.updateAddress),
 )
 
 // Delete address
 userAddressRouter.delete(
   '/:id',
   authMiddleware.verifyAccessToken,
-  asyncHandler(addressController.deleteAddress)
+  asyncHandler(addressController.deleteAddress),
 )
 
 // Set default address
 userAddressRouter.put(
   '/:id/default',
   authMiddleware.verifyAccessToken,
-  asyncHandler(addressController.setDefaultAddress)
+  asyncHandler(addressController.setDefaultAddress),
 )
-

@@ -1,4 +1,4 @@
-export type CardType = 'visa' | 'mastercard' | 'jcb' | 'amex' | 'unknown';
+export type CardType = 'visa' | 'mastercard' | 'jcb' | 'amex' | 'unknown'
 
 function VisaSvgIcon() {
   return (
@@ -9,7 +9,7 @@ function VisaSvgIcon() {
         fill="#fff"
       />
     </svg>
-  );
+  )
 }
 
 function MastercardSvgIcon() {
@@ -20,7 +20,7 @@ function MastercardSvgIcon() {
       <circle cx="30" cy="16" r="10" fill="#F79E1B" />
       <path d="M24 8.5a10 10 0 0 0 0 15 10 10 0 0 0 0-15z" fill="#FF5F00" />
     </svg>
-  );
+  )
 }
 
 function AmexSvgIcon() {
@@ -32,7 +32,7 @@ function AmexSvgIcon() {
         fill="#fff"
       />
     </svg>
-  );
+  )
 }
 
 function JcbSvgIcon() {
@@ -52,7 +52,7 @@ function JcbSvgIcon() {
         B
       </text>
     </svg>
-  );
+  )
 }
 
 function UnknownCardSvgIcon() {
@@ -63,21 +63,21 @@ function UnknownCardSvgIcon() {
       <rect x="22" y="12" width="20" height="2" rx="1" fill="#9CA3AF" />
       <rect x="22" y="18" width="14" height="2" rx="1" fill="#9CA3AF" />
     </svg>
-  );
+  )
 }
 
 export function CardTypeIcon({ type }: { type: CardType }) {
   switch (type) {
     case 'visa':
-      return <VisaSvgIcon />;
+      return <VisaSvgIcon />
     case 'mastercard':
-      return <MastercardSvgIcon />;
+      return <MastercardSvgIcon />
     case 'amex':
-      return <AmexSvgIcon />;
+      return <AmexSvgIcon />
     case 'jcb':
-      return <JcbSvgIcon />;
+      return <JcbSvgIcon />
     default:
-      return <UnknownCardSvgIcon />;
+      return <UnknownCardSvgIcon />
   }
 }
 
@@ -90,7 +90,7 @@ export function CheckmarkIcon() {
         clipRule="evenodd"
       />
     </svg>
-  );
+  )
 }
 
 export function InfoIcon() {
@@ -106,5 +106,5 @@ export function InfoIcon() {
         clipRule="evenodd"
       />
     </svg>
-  );
+  )
 }

@@ -3,7 +3,9 @@
 jest.mock('../../socket/managers/presence.manager', () => ({
   addUserSocket: jest.fn(),
   removeUserSocket: jest.fn(),
-  getUserPresence: jest.fn().mockReturnValue({ status: 'offline', lastSeen: '2024-01-01T00:00:00.000Z' }),
+  getUserPresence: jest
+    .fn()
+    .mockReturnValue({ status: 'offline', lastSeen: '2024-01-01T00:00:00.000Z' }),
 }))
 
 jest.mock('../../socket/handlers/presence.handler', () => ({
@@ -34,7 +36,11 @@ jest.mock('../../constants/role.enum', () => ({
 }))
 
 import { createMockSocket } from './setup'
-import { addUserSocket, removeUserSocket, getUserPresence } from '../../socket/managers/presence.manager'
+import {
+  addUserSocket,
+  removeUserSocket,
+  getUserPresence,
+} from '../../socket/managers/presence.manager'
 import { broadcastPresenceUpdate } from '../../socket/handlers/presence.handler'
 import {
   handleConnect,
@@ -60,7 +66,9 @@ describe('connection.handler', () => {
     })
 
     it('should join seller room if user is admin', () => {
-      const mockSocket = createMockSocket({ user: { id: 'admin-id', email: 'admin@test.com', roles: ['Admin'] } }) as any
+      const mockSocket = createMockSocket({
+        user: { id: 'admin-id', email: 'admin@test.com', roles: ['Admin'] },
+      }) as any
 
       handleConnect(mockSocket)
 
@@ -90,7 +98,7 @@ describe('connection.handler', () => {
         mockSocket,
         'test-user-id',
         'offline',
-        '2024-01-01T00:00:00.000Z'
+        '2024-01-01T00:00:00.000Z',
       )
     })
 
@@ -142,4 +150,3 @@ describe('connection.handler', () => {
     })
   })
 })
-

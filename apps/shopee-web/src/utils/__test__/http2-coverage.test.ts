@@ -1,22 +1,22 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-let requestInterceptorSuccess: any;
-let requestInterceptorError: any;
-let responseInterceptorSuccess: any;
-let responseInterceptorError: any;
+let requestInterceptorSuccess: any
+let requestInterceptorError: any
+let responseInterceptorSuccess: any
+let responseInterceptorError: any
 
 const mockAxiosInstance = {
   interceptors: {
     request: {
       use: vi.fn((success: any, error: any) => {
-        requestInterceptorSuccess = success;
-        requestInterceptorError = error;
+        requestInterceptorSuccess = success
+        requestInterceptorError = error
       }),
     },
     response: {
       use: vi.fn((success: any, error: any) => {
-        responseInterceptorSuccess = success;
-        responseInterceptorError = error;
+        responseInterceptorSuccess = success
+        responseInterceptorError = error
       }),
     },
   },
@@ -24,17 +24,17 @@ const mockAxiosInstance = {
   post: vi.fn(),
   put: vi.fn(),
   delete: vi.fn(),
-};
+}
 
 vi.mock('axios', () => ({
   default: {
     create: vi.fn(() => mockAxiosInstance),
   },
-}));
+}))
 
 vi.mock('react-toastify', () => ({
   toast: { error: vi.fn() },
-}));
+}))
 
 vi.mock('src/utils/auth', () => ({
   clearLS: vi.fn(),
@@ -43,22 +43,22 @@ vi.mock('src/utils/auth', () => ({
   setAccessTokenToLS: vi.fn(),
   setProfileToLS: vi.fn(),
   setRefreshTokenToLS: vi.fn(),
-}));
+}))
 
 vi.mock('@shopee/shared-utils', () => ({
   isAxiosExpiredTokenError: vi.fn(() => false),
   isAxiosUnauthorizedError: vi.fn(() => false),
-}));
+}))
 
 describe('Http2 class', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    vi.resetModules();
-  });
+    vi.clearAllMocks()
+    vi.resetModules()
+  })
 
   it('creates axios instance with correct config', async () => {
-    const axios = (await import('axios')).default;
-    await import('../http2');
+    const axios = (await import('axios')).default
+    await import('../http2')
     expect(axios.create).toHaveBeenCalledWith(
       expect.objectContaining({
         timeout: 10000,
@@ -66,35 +66,35 @@ describe('Http2 class', () => {
           'Content-Type': 'application/json',
         }),
       }),
-    );
-  });
+    )
+  })
 
   it('request interceptor adds authorization header', async () => {
-    await import('../http2');
-    const config = { headers: {} as any };
-    const result = requestInterceptorSuccess(config);
-    expect(result.headers.authorization).toBe('mock-access-token');
-  });
+    await import('../http2')
+    const config = { headers: {} as any }
+    const result = requestInterceptorSuccess(config)
+    expect(result.headers.authorization).toBe('mock-access-token')
+  })
 
   it('request interceptor returns config without token when no access token', async () => {
-    const auth = await import('src/utils/auth');
-    vi.mocked(auth.getAccessTokenFromLS).mockReturnValue('');
-    vi.resetModules();
-    await import('../http2');
-    const config = { headers: {} as any };
-    const result = requestInterceptorSuccess(config);
-    expect(result).toEqual(config);
-  });
+    const auth = await import('src/utils/auth')
+    vi.mocked(auth.getAccessTokenFromLS).mockReturnValue('')
+    vi.resetModules()
+    await import('../http2')
+    const config = { headers: {} as any }
+    const result = requestInterceptorSuccess(config)
+    expect(result).toEqual(config)
+  })
 
   it('request interceptor error rejects', async () => {
-    await import('../http2');
-    const error = new Error('request error');
-    await expect(requestInterceptorError(error)).rejects.toThrow('request error');
-  });
+    await import('../http2')
+    const error = new Error('request error')
+    await expect(requestInterceptorError(error)).rejects.toThrow('request error')
+  })
 
   it('response interceptor handles login response', async () => {
-    const auth = await import('src/utils/auth');
-    await import('../http2');
+    const auth = await import('src/utils/auth')
+    await import('../http2')
     const response = {
       config: { url: 'login' },
       data: {
@@ -104,16 +104,16 @@ describe('Http2 class', () => {
           user: { name: 'test' },
         },
       },
-    };
-    responseInterceptorSuccess(response);
-    expect(auth.setAccessTokenToLS).toHaveBeenCalledWith('new-access');
-    expect(auth.setRefreshTokenToLS).toHaveBeenCalledWith('new-refresh');
-    expect(auth.setProfileToLS).toHaveBeenCalledWith({ name: 'test' });
-  });
+    }
+    responseInterceptorSuccess(response)
+    expect(auth.setAccessTokenToLS).toHaveBeenCalledWith('new-access')
+    expect(auth.setRefreshTokenToLS).toHaveBeenCalledWith('new-refresh')
+    expect(auth.setProfileToLS).toHaveBeenCalledWith({ name: 'test' })
+  })
 
   it('response interceptor handles register response', async () => {
-    const auth = await import('src/utils/auth');
-    await import('../http2');
+    const auth = await import('src/utils/auth')
+    await import('../http2')
     const response = {
       config: { url: 'register' },
       data: {
@@ -123,56 +123,56 @@ describe('Http2 class', () => {
           user: { name: 'test' },
         },
       },
-    };
-    responseInterceptorSuccess(response);
-    expect(auth.setAccessTokenToLS).toHaveBeenCalledWith('new-access');
-  });
+    }
+    responseInterceptorSuccess(response)
+    expect(auth.setAccessTokenToLS).toHaveBeenCalledWith('new-access')
+  })
 
   it('response interceptor handles logout response', async () => {
-    const auth = await import('src/utils/auth');
-    await import('../http2');
+    const auth = await import('src/utils/auth')
+    await import('../http2')
     const response = {
       config: { url: 'logout' },
       data: {},
-    };
-    responseInterceptorSuccess(response);
-    expect(auth.clearLS).toHaveBeenCalled();
-  });
+    }
+    responseInterceptorSuccess(response)
+    expect(auth.clearLS).toHaveBeenCalled()
+  })
 
   it('response interceptor handles normal response', async () => {
-    await import('../http2');
-    const response = { config: { url: '/api/products' }, data: {} };
-    const result = responseInterceptorSuccess(response);
-    expect(result).toBe(response);
-  });
+    await import('../http2')
+    const response = { config: { url: '/api/products' }, data: {} }
+    const result = responseInterceptorSuccess(response)
+    expect(result).toBe(response)
+  })
 
   it('response interceptor toasts error for non-422/401 errors', async () => {
-    const { toast } = await import('react-toastify');
-    await import('../http2');
+    const { toast } = await import('react-toastify')
+    await import('../http2')
     const error = {
       response: { status: 500, data: { message: 'Server Error' }, config: {} },
       message: 'Error',
-    };
-    await expect(responseInterceptorError(error)).rejects.toBeDefined();
-    expect(toast.error).toHaveBeenCalledWith('Server Error');
-  });
+    }
+    await expect(responseInterceptorError(error)).rejects.toBeDefined()
+    expect(toast.error).toHaveBeenCalledWith('Server Error')
+  })
 
   it('response interceptor does not toast for 422 errors', async () => {
-    const { toast } = await import('react-toastify');
-    await import('../http2');
+    const { toast } = await import('react-toastify')
+    await import('../http2')
     const error = {
       response: { status: 422, data: { message: 'Validation' }, config: {} },
       message: 'Error',
-    };
-    await expect(responseInterceptorError(error)).rejects.toBeDefined();
-    expect(toast.error).not.toHaveBeenCalledWith('Validation');
-  });
+    }
+    await expect(responseInterceptorError(error)).rejects.toBeDefined()
+    expect(toast.error).not.toHaveBeenCalledWith('Validation')
+  })
 
   it('response interceptor handles 401 unauthorized', async () => {
-    const { isAxiosUnauthorizedError } = await import('@shopee/shared-utils');
-    const auth = await import('src/utils/auth');
-    vi.mocked(isAxiosUnauthorizedError).mockReturnValue(true);
-    await import('../http2');
+    const { isAxiosUnauthorizedError } = await import('@shopee/shared-utils')
+    const auth = await import('src/utils/auth')
+    vi.mocked(isAxiosUnauthorizedError).mockReturnValue(true)
+    await import('../http2')
     const error = {
       response: {
         status: 401,
@@ -180,22 +180,22 @@ describe('Http2 class', () => {
         config: { url: '/api/test' },
       },
       message: 'Error',
-    };
-    await expect(responseInterceptorError(error)).rejects.toBeDefined();
-    expect(auth.clearLS).toHaveBeenCalled();
-  });
+    }
+    await expect(responseInterceptorError(error)).rejects.toBeDefined()
+    expect(auth.clearLS).toHaveBeenCalled()
+  })
 
   it('response interceptor handles expired token with refresh', async () => {
     const { isAxiosUnauthorizedError, isAxiosExpiredTokenError } =
-      await import('@shopee/shared-utils');
-    vi.mocked(isAxiosUnauthorizedError).mockReturnValue(true);
-    vi.mocked(isAxiosExpiredTokenError).mockReturnValue(true);
+      await import('@shopee/shared-utils')
+    vi.mocked(isAxiosUnauthorizedError).mockReturnValue(true)
+    vi.mocked(isAxiosExpiredTokenError).mockReturnValue(true)
     mockAxiosInstance.post.mockResolvedValue({
       data: { data: { access_token: 'refreshed-token' } },
-    });
+    })
     // Mock the instance call for retry
-    (mockAxiosInstance as any).__call = vi.fn().mockResolvedValue({ data: 'retried' });
-    await import('../http2');
+    ;(mockAxiosInstance as any).__call = vi.fn().mockResolvedValue({ data: 'retried' })
+    await import('../http2')
     const error = {
       response: {
         status: 401,
@@ -203,12 +203,12 @@ describe('Http2 class', () => {
         config: { url: '/api/test', headers: {} },
       },
       message: 'Error',
-    };
+    }
     // This will attempt refresh token flow
     try {
-      await responseInterceptorError(error);
+      await responseInterceptorError(error)
     } catch {
       // May throw if mock chain isn't complete
     }
-  });
-});
+  })
+})

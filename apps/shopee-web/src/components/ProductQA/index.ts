@@ -1,3 +1,3 @@
-import ProductQA from './ProductQA';
+import ProductQA from './ProductQA'
 
-export default ProductQA;
+export default ProductQA

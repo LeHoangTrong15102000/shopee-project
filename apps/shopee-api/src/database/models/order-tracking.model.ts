@@ -59,7 +59,7 @@ const TrackingEventSchema = new Schema<ITrackingEvent>(
     location: { type: String },
     timestamp: { type: Date, required: true, default: Date.now },
   },
-  { _id: false }
+  { _id: false },
 )
 
 const ShippingAddressSchema = new Schema<IShippingAddress>(
@@ -71,7 +71,7 @@ const ShippingAddressSchema = new Schema<IShippingAddress>(
     district: { type: String, required: true },
     ward: { type: String, required: true },
   },
-  { _id: false }
+  { _id: false },
 )
 
 const OrderTrackingSchema = new Schema<IOrderTracking>(
@@ -123,11 +123,13 @@ const OrderTrackingSchema = new Schema<IOrderTracking>(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 OrderTrackingSchema.index({ user_id: 1, createdAt: -1 })
 OrderTrackingSchema.index({ order_id: 1, user_id: 1 })
 
-export const OrderTrackingModel = mongoose.model<IOrderTracking>('order_trackings', OrderTrackingSchema)
-
+export const OrderTrackingModel = mongoose.model<IOrderTracking>(
+  'order_trackings',
+  OrderTrackingSchema,
+)

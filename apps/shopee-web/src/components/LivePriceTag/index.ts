@@ -1,1 +1,1 @@
-export { default } from './LivePriceTag';
+export { default } from './LivePriceTag'

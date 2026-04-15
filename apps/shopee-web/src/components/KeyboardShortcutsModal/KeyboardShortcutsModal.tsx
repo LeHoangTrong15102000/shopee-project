@@ -1,108 +1,108 @@
-import { useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import { ANIMATION_DURATION, ANIMATION_EASING } from 'src/styles/animations';
-import Button from 'src/components/Button';
+import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import { ANIMATION_DURATION, ANIMATION_EASING } from 'src/styles/animations'
+import Button from 'src/components/Button'
 
 // Display shortcut type that supports both single-key and sequence shortcuts
 interface DisplayShortcut {
-  key: string;
-  keys?: string[]; // For sequence shortcuts display
-  ctrlKey?: boolean;
-  metaKey?: boolean;
-  shiftKey?: boolean;
-  description: string;
-  category: string;
+  key: string
+  keys?: string[] // For sequence shortcuts display
+  ctrlKey?: boolean
+  metaKey?: boolean
+  shiftKey?: boolean
+  description: string
+  category: string
 }
 
 interface KeyboardShortcutsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  shortcuts: DisplayShortcut[];
+  isOpen: boolean
+  onClose: () => void
+  shortcuts: DisplayShortcut[]
 }
 
 const formatKeyDisplay = (shortcut: DisplayShortcut): string[] => {
   // Handle sequence shortcuts
   if (shortcut.keys && shortcut.keys.length > 0) {
     return shortcut.keys.map((k) => {
-      if (k === 'Escape') return 'Esc';
-      if (k === ' ') return 'Space';
-      return k.toUpperCase();
-    });
+      if (k === 'Escape') return 'Esc'
+      if (k === ' ') return 'Space'
+      return k.toUpperCase()
+    })
   }
 
   // Handle single-key shortcuts
-  const keys: string[] = [];
+  const keys: string[] = []
 
   if (shortcut.ctrlKey || shortcut.metaKey) {
-    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-    keys.push(isMac ? '⌘' : 'Ctrl');
+    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0
+    keys.push(isMac ? '⌘' : 'Ctrl')
   }
 
   if (shortcut.shiftKey) {
-    keys.push('Shift');
+    keys.push('Shift')
   }
 
-  let keyDisplay = shortcut.key;
-  if (keyDisplay === 'Escape') keyDisplay = 'Esc';
-  if (keyDisplay === ' ') keyDisplay = 'Space';
+  let keyDisplay = shortcut.key
+  if (keyDisplay === 'Escape') keyDisplay = 'Esc'
+  if (keyDisplay === ' ') keyDisplay = 'Space'
 
-  keys.push(keyDisplay);
-  return keys;
-};
+  keys.push(keyDisplay)
+  return keys
+}
 
 const groupShortcutsByCategory = (
   shortcuts: DisplayShortcut[],
 ): Record<string, DisplayShortcut[]> => {
   return shortcuts.reduce(
     (acc, shortcut) => {
-      const category = shortcut.category;
+      const category = shortcut.category
       if (!acc[category]) {
-        acc[category] = [];
+        acc[category] = []
       }
-      acc[category].push(shortcut);
-      return acc;
+      acc[category].push(shortcut)
+      return acc
     },
     {} as Record<string, DisplayShortcut[]>,
-  );
-};
+  )
+}
 
 const KeyboardShortcutsModal = ({ isOpen, onClose, shortcuts }: KeyboardShortcutsModalProps) => {
-  const { t } = useTranslation('common');
-  const prefersReducedMotion = useReducedMotion();
-  const modalRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation('common')
+  const prefersReducedMotion = useReducedMotion()
+  const modalRef = useRef<HTMLDivElement>(null)
 
   const handleBackdropClick = (event: React.MouseEvent) => {
     if (event.target === event.currentTarget) {
-      onClose();
+      onClose()
     }
-  };
+  }
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isOpen) {
-        onClose();
+        onClose()
       }
-    };
+    }
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
+      document.addEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'hidden'
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = '';
-    };
-  }, [isOpen, onClose]);
+      document.removeEventListener('keydown', handleEscape)
+      document.body.style.overflow = ''
+    }
+  }, [isOpen, onClose])
 
-  const groupedShortcuts = groupShortcutsByCategory(shortcuts);
+  const groupedShortcuts = groupShortcutsByCategory(shortcuts)
 
   const backdropVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1 },
-  };
+  }
 
   const modalVariants = prefersReducedMotion
     ? {
@@ -124,7 +124,7 @@ const KeyboardShortcutsModal = ({ isOpen, onClose, shortcuts }: KeyboardShortcut
           y: -20,
           transition: { duration: ANIMATION_DURATION.fast },
         },
-      };
+      }
 
   return (
     <AnimatePresence>
@@ -214,7 +214,7 @@ const KeyboardShortcutsModal = ({ isOpen, onClose, shortcuts }: KeyboardShortcut
         </motion.div>
       )}
     </AnimatePresence>
-  );
-};
+  )
+}
 
-export default KeyboardShortcutsModal;
+export default KeyboardShortcutsModal

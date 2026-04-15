@@ -84,4 +84,3 @@ export const getWishlistCount = async (req: Request, res: Response) => {
     data: { count },
   })
 }
-

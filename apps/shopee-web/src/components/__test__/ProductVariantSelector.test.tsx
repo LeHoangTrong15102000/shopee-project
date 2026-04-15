@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render } from '@testing-library/react';
-import ProductVariantSelector from '../ProductVariantSelector/ProductVariantSelector';
+import { describe, it, expect, vi } from 'vitest'
+import { render } from '@testing-library/react'
+import ProductVariantSelector from '../ProductVariantSelector/ProductVariantSelector'
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -8,7 +8,7 @@ vi.mock('react-i18next', () => ({
     i18n: { language: 'vi', changeLanguage: vi.fn() },
   }),
   Trans: ({ children }: any) => children,
-}));
+}))
 
 describe('ProductVariantSelector', () => {
   const mockVariants = [
@@ -30,7 +30,7 @@ describe('ProductVariantSelector', () => {
         { value: 'M', name: 'Medium', image: '' },
       ],
     },
-  ];
+  ]
 
   const mockCombinations = [
     {
@@ -49,9 +49,9 @@ describe('ProductVariantSelector', () => {
       quantity: 5,
       sku: 'SKU-BLUE-M',
     },
-  ];
+  ]
 
-  const mockOnSelect = vi.fn();
+  const mockOnSelect = vi.fn()
 
   it('renders variant selector', () => {
     const { container } = render(
@@ -61,10 +61,10 @@ describe('ProductVariantSelector', () => {
         selectedValues={{}}
         onSelect={mockOnSelect}
       />,
-    );
+    )
 
-    expect(container.querySelectorAll('[role="radio"]').length).toBeGreaterThan(0);
-  });
+    expect(container.querySelectorAll('[role="radio"]').length).toBeGreaterThan(0)
+  })
 
   it('displays color options', () => {
     const { container } = render(
@@ -74,11 +74,11 @@ describe('ProductVariantSelector', () => {
         selectedValues={{}}
         onSelect={mockOnSelect}
       />,
-    );
+    )
 
-    const colorButtons = container.querySelectorAll('[role="radio"]');
-    expect(colorButtons.length).toBeGreaterThan(0);
-  });
+    const colorButtons = container.querySelectorAll('[role="radio"]')
+    expect(colorButtons.length).toBeGreaterThan(0)
+  })
 
   it('shows validation error when showValidationError is true', () => {
     render(
@@ -89,9 +89,9 @@ describe('ProductVariantSelector', () => {
         onSelect={mockOnSelect}
         showValidationError={true}
       />,
-    );
+    )
 
-    const errorMessage = document.querySelector('[role="alert"]');
-    expect(errorMessage).toBeInTheDocument();
-  });
-});
+    const errorMessage = document.querySelector('[role="alert"]')
+    expect(errorMessage).toBeInTheDocument()
+  })
+})

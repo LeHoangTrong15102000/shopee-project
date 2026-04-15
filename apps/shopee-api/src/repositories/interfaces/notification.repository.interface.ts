@@ -42,20 +42,27 @@ export interface NotificationFilterOptions {
 /**
  * Notification repository interface
  */
-export interface INotificationRepository extends IBaseRepository<INotificationItem, CreateNotificationDTO, Partial<INotificationItem>> {
+export interface INotificationRepository extends IBaseRepository<
+  INotificationItem,
+  CreateNotificationDTO,
+  Partial<INotificationItem>
+> {
   /**
    * Find user's notifications with filters
    */
   findByUser(
     userId: string | Types.ObjectId,
     filters: NotificationFilterOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<INotificationItem>>
 
   /**
    * Mark notification as read
    */
-  markAsRead(userId: string | Types.ObjectId, notificationId: string | Types.ObjectId): Promise<INotificationItem | null>
+  markAsRead(
+    userId: string | Types.ObjectId,
+    notificationId: string | Types.ObjectId,
+  ): Promise<INotificationItem | null>
 
   /**
    * Mark all user's notifications as read
@@ -77,4 +84,3 @@ export interface INotificationRepository extends IBaseRepository<INotificationIt
    */
   createBulkNotifications(data: CreateNotificationDTO[]): Promise<INotificationItem[]>
 }
-

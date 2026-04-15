@@ -1,5 +1,5 @@
-import { SuccessResponseApi } from 'src/types/utils.type';
-import http from 'src/utils/http';
+import { SuccessResponseApi } from 'src/types/utils.type'
+import http from 'src/utils/http'
 import {
   Conversation,
   ConversationListResponse,
@@ -14,12 +14,12 @@ import {
   ChatMessage,
   ConversationStatus,
   MessageRole,
-} from 'src/types/chatbot.type';
-import config from 'src/constant/config';
-import { getAccessTokenFromLS } from 'src/utils/auth';
+} from 'src/types/chatbot.type'
+import config from 'src/constant/config'
+import { getAccessTokenFromLS } from 'src/utils/auth'
 
 export interface ApiOptions {
-  signal?: AbortSignal;
+  signal?: AbortSignal
 }
 
 // Mock data for fallback when API is not available
@@ -51,7 +51,7 @@ const mockConversations: ConversationSummary[] = [
     createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
   },
-];
+]
 
 const mockMessages: ChatMessage[] = [
   {
@@ -80,7 +80,7 @@ const mockMessages: ChatMessage[] = [
       'Nếu sản phẩm bị lỗi do nhà sản xuất, bạn có thể yêu cầu đổi trả miễn phí trong vòng 30 ngày. Vui lòng chụp ảnh sản phẩm lỗi và liên hệ với người bán qua Shopee Chat để được hỗ trợ nhanh nhất.',
     timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000 + 5000).toISOString(),
   },
-];
+]
 
 const mockConversation: Conversation = {
   _id: 'mock-conv-1',
@@ -91,7 +91,7 @@ const mockConversation: Conversation = {
   lastActivity: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
   createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
   updatedAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-};
+}
 
 const chatbotApi = {
   getConversations: async (params?: GetConversationsParams, options?: ApiOptions) => {
@@ -102,15 +102,15 @@ const chatbotApi = {
           params,
           signal: options?.signal,
         },
-      );
-      return response;
+      )
+      return response
     } catch (error) {
-      console.warn('⚠️ [getConversations] API not available, using mock data');
-      const page = params?.page || 1;
-      const limit = params?.limit || 10;
+      console.warn('⚠️ [getConversations] API not available, using mock data')
+      const page = params?.page || 1
+      const limit = params?.limit || 10
       const filteredConversations = params?.status
         ? mockConversations.filter((c) => c.status === params.status)
-        : mockConversations;
+        : mockConversations
       return {
         data: {
           message: 'Lấy danh sách hội thoại thành công',
@@ -124,7 +124,7 @@ const chatbotApi = {
             },
           } as ConversationListResponse,
         },
-      };
+      }
     }
   },
 
@@ -132,16 +132,16 @@ const chatbotApi = {
     try {
       const response = await http.get<SuccessResponseApi<Conversation>>(`/conversations/${id}`, {
         signal: options?.signal,
-      });
-      return response;
+      })
+      return response
     } catch (error) {
-      console.warn('⚠️ [getConversation] API not available, using mock data');
+      console.warn('⚠️ [getConversation] API not available, using mock data')
       return {
         data: {
           message: 'Lấy chi tiết hội thoại thành công',
           data: { ...mockConversation, _id: id } as Conversation,
         },
-      };
+      }
     }
   },
 
@@ -153,11 +153,11 @@ const chatbotApi = {
         {
           signal: options?.signal,
         },
-      );
-      return response;
+      )
+      return response
     } catch (error) {
-      console.warn('⚠️ [createConversation] API not available, using mock data');
-      const newConversationId = `mock-conv-${Date.now()}`;
+      console.warn('⚠️ [createConversation] API not available, using mock data')
+      const newConversationId = `mock-conv-${Date.now()}`
       const mockResponse: ChatCompletionResponse = {
         conversationId: newConversationId,
         message: {
@@ -167,13 +167,13 @@ const chatbotApi = {
           timestamp: new Date().toISOString(),
         },
         totalMessages: 2,
-      };
+      }
       return {
         data: {
           message: 'Tạo hội thoại thành công',
           data: mockResponse,
         },
-      };
+      }
     }
   },
 
@@ -185,10 +185,10 @@ const chatbotApi = {
         {
           signal: options?.signal,
         },
-      );
-      return response;
+      )
+      return response
     } catch (error) {
-      console.warn('⚠️ [sendMessage] API not available, using mock data');
+      console.warn('⚠️ [sendMessage] API not available, using mock data')
       const mockResponse: ChatCompletionResponse = {
         conversationId,
         message: {
@@ -199,13 +199,13 @@ const chatbotApi = {
           timestamp: new Date().toISOString(),
         },
         totalMessages: mockMessages.length + 2,
-      };
+      }
       return {
         data: {
           message: 'Gửi tin nhắn thành công',
           data: mockResponse,
         },
-      };
+      }
     }
   },
 
@@ -213,22 +213,22 @@ const chatbotApi = {
     try {
       return await http.put<SuccessResponseApi<Conversation>>(`/conversations/${id}`, body, {
         signal: options?.signal,
-      });
+      })
     } catch (error) {
-      console.warn('⚠️ [updateConversation] API not available, using mock data');
+      console.warn('⚠️ [updateConversation] API not available, using mock data')
       const updatedConversation: Conversation = {
         ...mockConversation,
         _id: id,
         title: body.title || mockConversation.title,
         status: body.status || mockConversation.status,
         updatedAt: new Date().toISOString(),
-      };
+      }
       return {
         data: {
           message: 'Cập nhật hội thoại thành công (mock)',
           data: updatedConversation,
         },
-      };
+      }
     }
   },
 
@@ -236,15 +236,15 @@ const chatbotApi = {
     try {
       return await http.delete<SuccessResponseApi<{ message: string }>>(`/conversations/${id}`, {
         signal: options?.signal,
-      });
+      })
     } catch (error) {
-      console.warn('⚠️ [deleteConversation] API not available, using mock data');
+      console.warn('⚠️ [deleteConversation] API not available, using mock data')
       return {
         data: {
           message: 'Xóa hội thoại thành công (mock)',
           data: { message: 'Xóa hội thoại thành công' },
         },
-      };
+      }
     }
   },
 
@@ -256,22 +256,22 @@ const chatbotApi = {
         {
           signal: options?.signal,
         },
-      );
-      return response;
+      )
+      return response
     } catch (error) {
-      console.warn('⚠️ [testChatbot] API not available, using mock data');
+      console.warn('⚠️ [testChatbot] API not available, using mock data')
       const mockResponse: TestChatbotResponse = {
         userMessage: body.message,
         botResponse:
           'Chào bạn! Tôi là trợ lý ảo của Shopee. Hiện tại hệ thống đang bảo trì, vui lòng thử lại sau nhé!',
         timestamp: new Date().toISOString(),
-      };
+      }
       return {
         data: {
           message: 'Test chatbot thành công',
           data: mockResponse,
         },
-      };
+      }
     }
   },
 
@@ -285,26 +285,26 @@ const chatbotApi = {
             authorization: getAccessTokenFromLS(),
           },
         },
-      );
-      return response;
+      )
+      return response
     } catch (error) {
-      console.warn('⚠️ [testChatbotStream] API not available, using mock stream response');
+      console.warn('⚠️ [testChatbotStream] API not available, using mock stream response')
       // Create a mock ReadableStream response
       const mockStreamContent =
-        'Chào bạn! Tôi là trợ lý ảo của Shopee. Hiện tại hệ thống đang bảo trì, vui lòng thử lại sau nhé!';
-      const encoder = new TextEncoder();
+        'Chào bạn! Tôi là trợ lý ảo của Shopee. Hiện tại hệ thống đang bảo trì, vui lòng thử lại sau nhé!'
+      const encoder = new TextEncoder()
       const stream = new ReadableStream({
         start(controller) {
-          controller.enqueue(encoder.encode(mockStreamContent));
-          controller.close();
+          controller.enqueue(encoder.encode(mockStreamContent))
+          controller.close()
         },
-      });
+      })
       return new Response(stream, {
         status: 200,
         headers: { 'Content-Type': 'text/event-stream' },
-      });
+      })
     }
   },
-};
+}
 
-export default chatbotApi;
+export default chatbotApi

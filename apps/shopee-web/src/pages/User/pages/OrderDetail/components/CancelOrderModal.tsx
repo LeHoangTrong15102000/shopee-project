@@ -1,20 +1,20 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
-import { ANIMATION_DURATION } from 'src/styles/animations/motion.config';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
+import { ANIMATION_DURATION } from 'src/styles/animations/motion.config'
 import {
   modalBackdropVariants,
   modalContentVariants,
   reducedMotionVariants,
-} from '../orderDetail.constants';
+} from '../orderDetail.constants'
 
 interface CancelOrderModalProps {
-  cancelReason: string;
-  setCancelReason: (reason: string) => void;
-  onClose: () => void;
-  onConfirm: () => void;
-  isPending: boolean;
-  shouldReduceMotion: boolean | null;
+  cancelReason: string
+  setCancelReason: (reason: string) => void
+  onClose: () => void
+  onConfirm: () => void
+  isPending: boolean
+  shouldReduceMotion: boolean | null
 }
 
 export default function CancelOrderModal({
@@ -25,7 +25,7 @@ export default function CancelOrderModal({
   isPending,
   shouldReduceMotion,
 }: CancelOrderModalProps) {
-  const { t } = useTranslation('order');
+  const { t } = useTranslation('order')
   return (
     <motion.div
       variants={shouldReduceMotion ? reducedMotionVariants : modalBackdropVariants}
@@ -103,5 +103,5 @@ export default function CancelOrderModal({
         </div>
       </motion.div>
     </motion.div>
-  );
+  )
 }

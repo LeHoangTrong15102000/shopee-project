@@ -79,7 +79,7 @@ export function validateStatusTransition(
   currentState: string,
   targetState: string,
   role: 'user' | 'admin',
-  options?: { cancelReason?: string; returnReason?: string }
+  options?: { cancelReason?: string; returnReason?: string },
 ): { valid: boolean; message?: string } {
   // Resolve the event for this target state
   const event = STATUS_TO_EVENT[targetState] as OrderEventType | undefined
@@ -125,7 +125,7 @@ export function validateStatusTransition(
  */
 export function validateReturnDeadline(
   deliveredAt: Date | undefined,
-  role: 'user' | 'admin'
+  role: 'user' | 'admin',
 ): { valid: boolean; message?: string } {
   if (role === 'admin') return { valid: true }
 
@@ -146,4 +146,3 @@ export function validateReturnDeadline(
 
   return { valid: true }
 }
-

@@ -1,26 +1,26 @@
-import React from 'react';
-import { View, Image, Dimensions, TouchableOpacity } from 'react-native';
-import { Star } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
-import { AppText } from '@/components/ui';
-import { useColors } from '@/hooks/useColors';
-import { formatPrice, getDiscountPercent } from '@/utils/price';
-import { Product } from '@/services/product.api';
-import type { ProductDetail } from '@/apis/product-detail.api';
+import React from 'react'
+import { View, Image, Dimensions, TouchableOpacity } from 'react-native'
+import { Star } from 'lucide-react-native'
+import { useRouter } from 'expo-router'
+import { AppText } from '@/components/ui'
+import { useColors } from '@/hooks/useColors'
+import { formatPrice, getDiscountPercent } from '@/utils/price'
+import { Product } from '@/services/product.api'
+import type { ProductDetail } from '@/apis/product-detail.api'
 
-const CARD_GAP = 8;
-const CARD_PADDING = 16;
-const CARD_WIDTH = (Dimensions.get('window').width - CARD_PADDING * 2 - CARD_GAP) / 2;
+const CARD_GAP = 8
+const CARD_PADDING = 16
+const CARD_WIDTH = (Dimensions.get('window').width - CARD_PADDING * 2 - CARD_GAP) / 2
 
 interface ProductCardProps {
-  product: Product | ProductDetail;
+  product: Product | ProductDetail
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const colors = useColors();
-  const router = useRouter();
-  const discount = getDiscountPercent(product.price, product.price_before_discount);
-  const hasDiscount = discount > 0;
+  const colors = useColors()
+  const router = useRouter()
+  const discount = getDiscountPercent(product.price, product.price_before_discount)
+  const hasDiscount = discount > 0
 
   return (
     <TouchableOpacity
@@ -80,7 +80,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         </View>
       </View>
     </TouchableOpacity>
-  );
+  )
 }
 
-export { CARD_WIDTH, CARD_GAP, CARD_PADDING };
+export { CARD_WIDTH, CARD_GAP, CARD_PADDING }

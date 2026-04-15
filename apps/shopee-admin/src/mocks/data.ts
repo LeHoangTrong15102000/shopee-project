@@ -26,17 +26,17 @@ import type {
   ImportStats,
   Review,
   ReviewComment,
-} from 'src/types';
+} from 'src/types'
 
 // ─── Helpers ───────────────────────────────────────────────
-const id = (prefix: string, i: number) => `${prefix}-${String(i).padStart(3, '0')}`;
+const id = (prefix: string, i: number) => `${prefix}-${String(i).padStart(3, '0')}`
 const date = (daysAgo: number) => {
-  const d = new Date();
-  d.setDate(d.getDate() - daysAgo);
-  return d.toISOString();
-};
-const pick = <T>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
-const IMG = 'https://placehold.co';
+  const d = new Date()
+  d.setDate(d.getDate() - daysAgo)
+  return d.toISOString()
+}
+const pick = <T>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)]
+const IMG = 'https://placehold.co'
 
 // ─── Categories ────────────────────────────────────────────
 export const categories: Category[] = [
@@ -50,7 +50,7 @@ export const categories: Category[] = [
   { _id: 'cat-008', name: 'Đồng hồ' },
   { _id: 'cat-009', name: 'Nhà cửa & Đời sống' },
   { _id: 'cat-010', name: 'Sức khỏe & Sắc đẹp' },
-];
+]
 
 // ─── Users ─────────────────────────────────────────────────
 const userNames = [
@@ -74,7 +74,7 @@ const userNames = [
   'Cao Văn Tùng',
   'Lương Thị Uyên',
   'Châu Minh Vũ',
-];
+]
 
 export const users: User[] = userNames.map((name, i) => ({
   _id: id('user', i + 1),
@@ -91,7 +91,7 @@ export const users: User[] = userNames.map((name, i) => ({
   date_of_birth: `199${i % 10}-0${(i % 9) + 1}-${String((i % 28) + 1).padStart(2, '0')}`,
   createdAt: date(365 - i * 15),
   updatedAt: date(i * 3),
-}));
+}))
 
 // ─── Products ──────────────────────────────────────────────
 const productData = [
@@ -120,7 +120,7 @@ const productData = [
   { name: 'Áo sơ mi nam Oxford', cat: 3, price: 380000, sold: 5400, view: 38000 },
   { name: 'Chân váy nữ xếp ly', cat: 4, price: 280000, sold: 4100, view: 35000 },
   { name: 'Giày Converse Chuck 70', cat: 5, price: 1890000, sold: 2800, view: 33000 },
-];
+]
 
 export const products: Product[] = productData.map((p, i) => ({
   _id: id('prod', i + 1),
@@ -138,24 +138,24 @@ export const products: Product[] = productData.map((p, i) => ({
   location: pick(['TP. Hồ Chí Minh', 'Hà Nội', 'Đà Nẵng']),
   createdAt: date(180 - i * 5),
   updatedAt: date(i * 2),
-}));
+}))
 
 // ─── Orders ────────────────────────────────────────────────
-const statuses: OrderStatus[] = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+const statuses: OrderStatus[] = ['pending', 'processing', 'shipped', 'delivered', 'cancelled']
 
 export const orders: Order[] = Array.from({ length: 30 }, (_, i) => {
-  const user = users[i % users.length];
-  const numItems = (i % 3) + 1;
+  const user = users[i % users.length]
+  const numItems = (i % 3) + 1
   const items = Array.from({ length: numItems }, (_, j) => {
-    const prod = products[(i * 3 + j) % products.length];
+    const prod = products[(i * 3 + j) % products.length]
     return {
       product: prod,
       buy_count: (j % 4) + 1,
       price: prod.price,
       price_before_discount: prod.price_before_discount,
-    };
-  });
-  const total = items.reduce((s, it) => s + it.price * it.buy_count, 0);
+    }
+  })
+  const total = items.reduce((s, it) => s + it.price * it.buy_count, 0)
   return {
     _id: id('order', i + 1),
     user,
@@ -167,8 +167,8 @@ export const orders: Order[] = Array.from({ length: 30 }, (_, i) => {
     note: i % 4 === 0 ? 'Giao giờ hành chính' : undefined,
     createdAt: date(60 - i * 2),
     updatedAt: date(i),
-  };
-});
+  }
+})
 
 // ─── Reviews ───────────────────────────────────────────────
 const reviewComments = [
@@ -187,11 +187,11 @@ const reviewComments = [
   'Màu hơi khác ảnh một chút.',
   'Dùng 1 tuần rồi, rất bền.',
   'Đóng gói kỹ, hàng nguyên vẹn.',
-];
+]
 
 export const reviews: Review[] = Array.from({ length: 20 }, (_, i) => {
-  const user = users[i % users.length];
-  const prod = products[i % products.length];
+  const user = users[i % users.length]
+  const prod = products[i % products.length]
   return {
     _id: id('review', i + 1),
     user: { _id: user._id, name: user.name ?? '', email: user.email, avatar: user.avatar },
@@ -203,11 +203,11 @@ export const reviews: Review[] = Array.from({ length: 20 }, (_, i) => {
     comments_count: i % 4,
     createdAt: date(90 - i * 4),
     updatedAt: date(i * 2),
-  };
-});
+  }
+})
 
 export const reviewCommentsData: ReviewComment[] = Array.from({ length: 8 }, (_, i) => {
-  const user = users[(i + 5) % users.length];
+  const user = users[(i + 5) % users.length]
   return {
     _id: id('rc', i + 1),
     user: { _id: user._id, name: user.name ?? '', email: user.email, avatar: user.avatar },
@@ -222,8 +222,8 @@ export const reviewCommentsData: ReviewComment[] = Array.from({ length: 8 }, (_,
     replies_count: 0,
     createdAt: date(80 - i * 5),
     updatedAt: date(i * 3),
-  };
-});
+  }
+})
 
 // ─── Vouchers ──────────────────────────────────────────────
 export const vouchers: Voucher[] = [
@@ -339,7 +339,7 @@ export const vouchers: Voucher[] = [
     createdAt: date(120),
     updatedAt: date(0),
   },
-];
+]
 
 // ─── Notifications ─────────────────────────────────────────
 export const notifications: Notification[] = [
@@ -427,7 +427,7 @@ export const notifications: Notification[] = [
     is_read: false,
     createdAt: date(9),
   },
-];
+]
 
 // ─── Loyalty ───────────────────────────────────────────────
 export const loyaltyRewards: LoyaltyReward[] = [
@@ -476,7 +476,7 @@ export const loyaltyRewards: LoyaltyReward[] = [
     createdAt: date(120),
     updatedAt: date(30),
   },
-];
+]
 
 export const loyaltyTransactions: LoyaltyTransaction[] = Array.from({ length: 15 }, (_, i) => ({
   _id: id('lt', i + 1),
@@ -491,12 +491,12 @@ export const loyaltyTransactions: LoyaltyTransaction[] = Array.from({ length: 15
     'Đổi Free Ship 7 ngày',
   ][i % 5],
   createdAt: date(30 - i * 2),
-}));
+}))
 
 // ─── QA ────────────────────────────────────────────────────
 export const qaQuestions: QAQuestion[] = Array.from({ length: 10 }, (_, i) => {
-  const user = users[i % users.length];
-  const prod = products[i % products.length];
+  const user = users[i % users.length]
+  const prod = products[i % products.length]
   return {
     _id: id('qa', i + 1),
     user: { _id: user._id, name: user.name ?? '', email: user.email, avatar: user.avatar },
@@ -523,8 +523,8 @@ export const qaQuestions: QAQuestion[] = Array.from({ length: 10 }, (_, i) => {
     likes_count: Math.floor(Math.random() * 20),
     createdAt: date(40 - i * 3),
     updatedAt: date(i * 2),
-  };
-});
+  }
+})
 
 // ─── Dashboard ─────────────────────────────────────────────
 export const dashboardOverview: DashboardOverview = {
@@ -536,22 +536,22 @@ export const dashboardOverview: DashboardOverview = {
   orders_change: 8.3,
   users_change: 15.2,
   products_change: -2.1,
-};
+}
 
 export const revenueData: RevenueData[] = Array.from({ length: 30 }, (_, i) => ({
   date: new Date(Date.now() - (29 - i) * 86400000).toISOString().slice(0, 10),
   revenue: 50_000_000 + Math.floor(Math.random() * 100_000_000),
-}));
+}))
 
 export const orderTrendData: OrderTrendData[] = Array.from({ length: 30 }, (_, i) => ({
   date: new Date(Date.now() - (29 - i) * 86400000).toISOString().slice(0, 10),
   orders: 20 + Math.floor(Math.random() * 60),
-}));
+}))
 
 export const userGrowthData: UserGrowthData[] = Array.from({ length: 30 }, (_, i) => ({
   date: new Date(Date.now() - (29 - i) * 86400000).toISOString().slice(0, 10),
   users: 200 + i * 15 + Math.floor(Math.random() * 30),
-}));
+}))
 
 export const topProducts: TopProduct[] = products.slice(0, 10).map((p) => ({
   _id: p._id,
@@ -559,7 +559,7 @@ export const topProducts: TopProduct[] = products.slice(0, 10).map((p) => ({
   image: p.image,
   revenue: p.price * p.sold,
   sold: p.sold,
-}));
+}))
 
 export const topBuyers: TopBuyer[] = users.slice(0, 10).map((u, i) => ({
   _id: u._id,
@@ -568,22 +568,22 @@ export const topBuyers: TopBuyer[] = users.slice(0, 10).map((u, i) => ({
   avatar: u.avatar,
   total_spent: 5_000_000 + (10 - i) * 2_000_000,
   total_orders: 10 + (10 - i) * 3,
-}));
+}))
 
 export const revenueByCategoryData: RevenueByCategoryData[] = categories
   .slice(0, 6)
   .map((c, i, arr) => {
-    const revenue = 100_000_000 + Math.floor(Math.random() * 500_000_000);
+    const revenue = 100_000_000 + Math.floor(Math.random() * 500_000_000)
     const totalRevenue = arr.reduce(
       (sum) => sum + 100_000_000 + Math.floor(Math.random() * 500_000_000),
       0,
-    );
+    )
     return {
       category: c.name,
       revenue,
       percent: Math.round((revenue / totalRevenue) * 100),
-    };
-  });
+    }
+  })
 
 // ─── Analytics ─────────────────────────────────────────────
 export const productAnalytics: ProductAnalytics[] = products.slice(0, 15).map((p) => ({
@@ -594,14 +594,14 @@ export const productAnalytics: ProductAnalytics[] = products.slice(0, 15).map((p
   view: p.view,
   rating: p.rating,
   revenue: p.price * p.sold,
-}));
+}))
 
 export const chatbotAnalytics: ChatbotAnalytics = {
   total_conversations: 12_450,
   total_messages: 87_320,
   avg_messages_per_conversation: 7.01,
   satisfaction_rate: 0.89,
-};
+}
 
 // ─── Import Stats ──────────────────────────────────────────
 export const importStats: ImportStats = {
@@ -612,4 +612,4 @@ export const importStats: ImportStats = {
     { _id: 'Hà Nội', count: 7 },
     { _id: 'Đà Nẵng', count: 3 },
   ],
-};
+}

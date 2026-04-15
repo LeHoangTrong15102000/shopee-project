@@ -1,5 +1,9 @@
 /// <reference types="jest" />
-import { sanitizeMiddleware, sanitizeBodyMiddleware, sanitizeQueryMiddleware } from '@middleware/sanitize.middleware'
+import {
+  sanitizeMiddleware,
+  sanitizeBodyMiddleware,
+  sanitizeQueryMiddleware,
+} from '@middleware/sanitize.middleware'
 import { createMockRequest, createMockResponse, createMockNext } from '../setup'
 
 jest.mock('@utils/sanitize', () => ({
@@ -21,7 +25,11 @@ describe('Sanitize Middleware', () => {
 
   describe('sanitizeMiddleware', () => {
     it('sanitizes body, query, and params, then calls next()', () => {
-      const req = createMockRequest({ body: { $gt: 1, name: 'test' }, query: { $ne: 'x' }, params: { id: '1' } })
+      const req = createMockRequest({
+        body: { $gt: 1, name: 'test' },
+        query: { $ne: 'x' },
+        params: { id: '1' },
+      })
       const res = createMockResponse()
       const next = createMockNext()
 
@@ -46,7 +54,9 @@ describe('Sanitize Middleware', () => {
 
     it('calls next() even on sanitize error', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
-      sanitizeObject.mockImplementationOnce(() => { throw new Error('Sanitize error') })
+      sanitizeObject.mockImplementationOnce(() => {
+        throw new Error('Sanitize error')
+      })
       const req = createMockRequest({ body: { name: 'test' }, query: {}, params: {} })
       const res = createMockResponse()
       const next = createMockNext()
@@ -74,7 +84,9 @@ describe('Sanitize Middleware', () => {
 
     it('calls next() on error', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
-      sanitizeObject.mockImplementationOnce(() => { throw new Error('Sanitize error') })
+      sanitizeObject.mockImplementationOnce(() => {
+        throw new Error('Sanitize error')
+      })
       const req = createMockRequest({ body: { name: 'test' } })
       const res = createMockResponse()
       const next = createMockNext()
@@ -102,7 +114,9 @@ describe('Sanitize Middleware', () => {
 
     it('calls next() on error', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
-      sanitizeObject.mockImplementationOnce(() => { throw new Error('Sanitize error') })
+      sanitizeObject.mockImplementationOnce(() => {
+        throw new Error('Sanitize error')
+      })
       const req = createMockRequest({ query: { search: 'test' } })
       const res = createMockResponse()
       const next = createMockNext()
@@ -115,4 +129,3 @@ describe('Sanitize Middleware', () => {
     })
   })
 })
-

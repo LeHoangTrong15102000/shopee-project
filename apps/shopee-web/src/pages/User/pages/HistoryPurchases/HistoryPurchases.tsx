@@ -1,22 +1,22 @@
-import { useQuery } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Fragment, useState } from 'react';
-import purchaseApi from 'src/apis/purchases.api';
-import { OrderSearchFilter } from 'src/components/OrderSearchFilter';
-import ProductReviewModal from 'src/components/ProductReviewModal';
-import { usePurchaseStatus } from 'src/hooks/nuqs';
-import { useOrderFilter } from 'src/hooks/useOrderFilter';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import { useTranslation } from 'react-i18next';
-import SEO from 'src/components/SEO';
-import { staggerContainer } from 'src/styles/animations';
-import { PurchaseListStatus, Purchase } from 'src/types/purchases.type';
-import { PurchaseTabBar, PurchaseItem } from './components';
+import { useQuery } from '@tanstack/react-query'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Fragment, useState } from 'react'
+import purchaseApi from 'src/apis/purchases.api'
+import { OrderSearchFilter } from 'src/components/OrderSearchFilter'
+import ProductReviewModal from 'src/components/ProductReviewModal'
+import { usePurchaseStatus } from 'src/hooks/nuqs'
+import { useOrderFilter } from 'src/hooks/useOrderFilter'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import { useTranslation } from 'react-i18next'
+import SEO from 'src/components/SEO'
+import { staggerContainer } from 'src/styles/animations'
+import { PurchaseListStatus, Purchase } from 'src/types/purchases.type'
+import { PurchaseTabBar, PurchaseItem } from './components'
 
 const HistoryPurchases = () => {
-  const { t } = useTranslation('user');
-  const [status, setStatus] = usePurchaseStatus(); // nuqs: typed integer, default 0 (all)
-  const reducedMotion = useReducedMotion();
+  const { t } = useTranslation('user')
+  const [status, setStatus] = usePurchaseStatus() // nuqs: typed integer, default 0 (all)
+  const reducedMotion = useReducedMotion()
 
   // Order filter hook - manages all filter state
   const {
@@ -27,55 +27,55 @@ const HistoryPurchases = () => {
     clearAllFilters,
     activeFilterCount,
     filterPurchases,
-  } = useOrderFilter();
+  } = useOrderFilter()
 
   // Review modal state
-  const [selectedPurchase, setSelectedPurchase] = useState<Purchase | null>(null);
-  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [selectedPurchase, setSelectedPurchase] = useState<Purchase | null>(null)
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
 
   // Order tracking expanded state - track which orders have expanded timeline
-  const [expandedOrderIds, setExpandedOrderIds] = useState<Set<string>>(new Set());
+  const [expandedOrderIds, setExpandedOrderIds] = useState<Set<string>>(new Set())
 
   const { data: purchasesInCartData } = useQuery({
     queryKey: ['purchases', { status }],
     queryFn: () => purchaseApi.getPurchases({ status: status as PurchaseListStatus }), // Do thằng status có kiểu là PurListStatus
-  });
+  })
 
-  const purchasesInCart = purchasesInCartData?.data.data; // PurchasesInCart là một cái Purchase[]
+  const purchasesInCart = purchasesInCartData?.data.data // PurchasesInCart là một cái Purchase[]
 
   // Filter purchases based on all filters (search, date range, price range)
   const filteredPurchases = (() => {
-    if (!purchasesInCart) return [];
-    return filterPurchases(purchasesInCart);
-  })();
+    if (!purchasesInCart) return []
+    return filterPurchases(purchasesInCart)
+  })()
 
   // Check if filters are active (for showing different empty state)
-  const hasActiveFilters = activeFilterCount > 0;
+  const hasActiveFilters = activeFilterCount > 0
 
   // Handle review button click
   const handleReviewClick = (purchase: Purchase) => {
-    setSelectedPurchase(purchase);
-    setIsReviewModalOpen(true);
-  };
+    setSelectedPurchase(purchase)
+    setIsReviewModalOpen(true)
+  }
 
   // Close review modal
   const closeReviewModal = () => {
-    setIsReviewModalOpen(false);
-    setSelectedPurchase(null);
-  };
+    setIsReviewModalOpen(false)
+    setSelectedPurchase(null)
+  }
 
   // Toggle order tracking expansion
   const toggleOrderTracking = (orderId: string) => {
     setExpandedOrderIds((prev) => {
-      const newSet = new Set(prev);
+      const newSet = new Set(prev)
       if (newSet.has(orderId)) {
-        newSet.delete(orderId);
+        newSet.delete(orderId)
       } else {
-        newSet.add(orderId);
+        newSet.add(orderId)
       }
-      return newSet;
-    });
-  };
+      return newSet
+    })
+  }
 
   return (
     <Fragment>
@@ -190,7 +190,7 @@ const HistoryPurchases = () => {
         />
       )}
     </Fragment>
-  );
-};
+  )
+}
 
-export default HistoryPurchases;
+export default HistoryPurchases

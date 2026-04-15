@@ -72,11 +72,7 @@ describe('Auth Middleware', () => {
       const res = createMockResponse()
       const next = createMockNext()
 
-      await authMiddleware.verifyAccessToken(
-        req as Request,
-        res as Response,
-        next
-      )
+      await authMiddleware.verifyAccessToken(req as Request, res as Response, next)
 
       // Verify next() được gọi (request được cho phép tiếp tục)
       expect(next).toHaveBeenCalled()
@@ -99,11 +95,7 @@ describe('Auth Middleware', () => {
       const res = createMockResponse()
       const next = createMockNext()
 
-      await authMiddleware.verifyAccessToken(
-        req as Request,
-        res as Response,
-        next
-      )
+      await authMiddleware.verifyAccessToken(req as Request, res as Response, next)
 
       // Verify next() không được gọi
       expect(next).not.toHaveBeenCalled()
@@ -114,7 +106,8 @@ describe('Auth Middleware', () => {
 
     // Test: Từ chối token với chữ ký bị giả mạo
     it('should reject tampered token with invalid signature', async () => {
-      const tamperedToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXJfMTIzIn0.TAMPERED_SIGNATURE'
+      const tamperedToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXJfMTIzIn0.TAMPERED_SIGNATURE'
 
       // Mock verifyToken throw error (chữ ký không hợp lệ)
       ;(verifyToken as jest.Mock).mockRejectedValue(new Error('invalid signature'))
@@ -125,11 +118,7 @@ describe('Auth Middleware', () => {
       const res = createMockResponse()
       const next = createMockNext()
 
-      await authMiddleware.verifyAccessToken(
-        req as Request,
-        res as Response,
-        next
-      )
+      await authMiddleware.verifyAccessToken(req as Request, res as Response, next)
 
       // Verify next() không được gọi
       expect(next).not.toHaveBeenCalled()
@@ -146,11 +135,7 @@ describe('Auth Middleware', () => {
       const res = createMockResponse()
       const next = createMockNext()
 
-      await authMiddleware.verifyAccessToken(
-        req as Request,
-        res as Response,
-        next
-      )
+      await authMiddleware.verifyAccessToken(req as Request, res as Response, next)
 
       // Verify next() không được gọi
       expect(next).not.toHaveBeenCalled()
@@ -159,7 +144,7 @@ describe('Auth Middleware', () => {
       expect(res.send).toHaveBeenCalledWith(
         expect.objectContaining({
           message: 'Token không được gửi',
-        })
+        }),
       )
     })
 
@@ -176,11 +161,7 @@ describe('Auth Middleware', () => {
       const res = createMockResponse()
       const next = createMockNext()
 
-      await authMiddleware.verifyAccessToken(
-        req as Request,
-        res as Response,
-        next
-      )
+      await authMiddleware.verifyAccessToken(req as Request, res as Response, next)
 
       // Verify next() không được gọi
       expect(next).not.toHaveBeenCalled()
@@ -209,11 +190,7 @@ describe('Auth Middleware', () => {
       const res = createMockResponse()
       const next = createMockNext()
 
-      await authMiddleware.verifyAccessTokenOptional(
-        req as Request,
-        res as Response,
-        next
-      )
+      await authMiddleware.verifyAccessTokenOptional(req as Request, res as Response, next)
 
       expect(next).toHaveBeenCalled()
       expect(req.jwtDecoded).toEqual(decodedPayload)
@@ -227,11 +204,7 @@ describe('Auth Middleware', () => {
       const res = createMockResponse()
       const next = createMockNext()
 
-      await authMiddleware.verifyAccessTokenOptional(
-        req as Request,
-        res as Response,
-        next
-      )
+      await authMiddleware.verifyAccessTokenOptional(req as Request, res as Response, next)
 
       expect(next).toHaveBeenCalled()
       expect(req.jwtDecoded).toBeUndefined()
@@ -249,11 +222,7 @@ describe('Auth Middleware', () => {
       const res = createMockResponse()
       const next = createMockNext()
 
-      await authMiddleware.verifyAccessTokenOptional(
-        req as Request,
-        res as Response,
-        next
-      )
+      await authMiddleware.verifyAccessTokenOptional(req as Request, res as Response, next)
 
       expect(next).toHaveBeenCalled()
       expect(req.jwtDecoded).toBeUndefined()

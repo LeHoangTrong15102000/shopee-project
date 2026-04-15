@@ -55,7 +55,7 @@ export const periodDateRangeQuerySchema = z
       }
       return true
     },
-    { message: 'start_date phải trước hoặc bằng end_date' }
+    { message: 'start_date phải trước hoặc bằng end_date' },
   )
 
 export type PeriodDateRangeQuery = z.infer<typeof periodDateRangeQuerySchema>
@@ -150,4 +150,3 @@ export function getGroupingForPeriod(period?: PeriodValue) {
       return { format: '%Y-%m-%d', interval: 'day' as const }
   }
 }
-

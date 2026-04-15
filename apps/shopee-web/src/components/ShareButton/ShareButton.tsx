@@ -1,24 +1,24 @@
-import { useState, useRef, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import { motion, AnimatePresence } from 'framer-motion';
-import classNames from 'classnames';
-import Button from 'src/components/Button';
+import { useState, useRef, useEffect } from 'react'
+import { toast } from 'react-toastify'
+import { motion, AnimatePresence } from 'framer-motion'
+import classNames from 'classnames'
+import Button from 'src/components/Button'
 
 interface ShareButtonProps {
-  url: string;
-  title: string;
-  description?: string;
-  image?: string;
-  className?: string;
+  url: string
+  title: string
+  description?: string
+  image?: string
+  className?: string
 }
 
-type SharePlatform = 'facebook' | 'twitter' | 'whatsapp' | 'telegram' | 'zalo' | 'copy';
+type SharePlatform = 'facebook' | 'twitter' | 'whatsapp' | 'telegram' | 'zalo' | 'copy'
 
 interface ShareOption {
-  id: SharePlatform;
-  name: string;
-  color: string;
-  icon: React.ReactNode;
+  id: SharePlatform
+  name: string
+  color: string
+  icon: React.ReactNode
 }
 
 function ShareButton({
@@ -28,22 +28,22 @@ function ShareButton({
   image: _image = '',
   className,
 }: ShareButtonProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+        setIsOpen(false)
       }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
-  const encodedUrl = encodeURIComponent(url);
-  const encodedTitle = encodeURIComponent(title);
+  const encodedUrl = encodeURIComponent(url)
+  const encodedTitle = encodeURIComponent(title)
 
   const shareOptions: ShareOption[] = [
     {
@@ -111,7 +111,7 @@ function ShareButton({
         </svg>
       ),
     },
-  ];
+  ]
 
   const handleShare = async (platform: SharePlatform) => {
     const shareUrls: Record<SharePlatform, string | (() => Promise<void>)> = {
@@ -121,19 +121,19 @@ function ShareButton({
       telegram: `https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`,
       zalo: `https://sp.zalo.me/share_inline?d=${encodedUrl}`,
       copy: async () => {
-        await navigator.clipboard.writeText(url);
-        toast.success('Đã copy link sản phẩm!', { autoClose: 2000, position: 'top-center' });
+        await navigator.clipboard.writeText(url)
+        toast.success('Đã copy link sản phẩm!', { autoClose: 2000, position: 'top-center' })
       },
-    };
-
-    const action = shareUrls[platform];
-    if (typeof action === 'function') {
-      await action();
-    } else {
-      window.open(action, '_blank', 'width=600,height=400,scrollbars=yes');
     }
-    setIsOpen(false);
-  };
+
+    const action = shareUrls[platform]
+    if (typeof action === 'function') {
+      await action()
+    } else {
+      window.open(action, '_blank', 'width=600,height=400,scrollbars=yes')
+    }
+    setIsOpen(false)
+  }
 
   return (
     <div ref={dropdownRef} className={classNames('relative inline-block', className)}>
@@ -186,7 +186,7 @@ function ShareButton({
         )}
       </AnimatePresence>
     </div>
-  );
+  )
 }
 
-export default ShareButton;
+export default ShareButton

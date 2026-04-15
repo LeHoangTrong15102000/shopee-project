@@ -13,7 +13,7 @@ const PurchaseSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 // Index for querying purchases by user

@@ -1,20 +1,20 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { UseFormReturn } from 'react-hook-form';
-import { District, vietnamProvinces, Ward } from 'src/data/vietnamLocations';
-import { AddressSchemaFormData } from '../addressForm.constants';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { UseFormReturn } from 'react-hook-form'
+import { District, vietnamProvinces, Ward } from 'src/data/vietnamLocations'
+import { AddressSchemaFormData } from '../addressForm.constants'
 
 interface LocationStepProps {
-  form: UseFormReturn<AddressSchemaFormData>;
-  districts: District[];
-  wards: Ward[];
-  isLoadingDistricts: boolean;
-  isLoadingWards: boolean;
-  watchedProvinceId: string;
-  watchedDistrictId: string;
-  onProvinceChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  onDistrictChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  onWardChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  form: UseFormReturn<AddressSchemaFormData>
+  districts: District[]
+  wards: Ward[]
+  isLoadingDistricts: boolean
+  isLoadingWards: boolean
+  watchedProvinceId: string
+  watchedDistrictId: string
+  onProvinceChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
+  onDistrictChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
+  onWardChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
 }
 
 const SelectChevron = () => (
@@ -26,7 +26,7 @@ const SelectChevron = () => (
   >
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
   </svg>
-);
+)
 
 const LoadingSpinner = () => (
   <svg className="h-5 w-5 animate-spin text-orange" fill="none" viewBox="0 0 24 24">
@@ -37,7 +37,7 @@ const LoadingSpinner = () => (
       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
     />
   </svg>
-);
+)
 
 export default function LocationStep({
   form,
@@ -51,12 +51,12 @@ export default function LocationStep({
   onDistrictChange,
   onWardChange,
 }: LocationStepProps) {
-  const { t } = useTranslation('address');
+  const { t } = useTranslation('address')
   const {
     register,
     watch,
     formState: { errors },
-  } = form;
+  } = form
 
   return (
     <motion.div
@@ -180,5 +180,5 @@ export default function LocationStep({
       <input type="hidden" {...register('ward')} />
       <input type="hidden" {...register('wardId')} />
     </motion.div>
-  );
+  )
 }

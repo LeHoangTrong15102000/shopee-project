@@ -1,19 +1,19 @@
-import { motion } from 'framer-motion';
-import { ANIMATION_DURATION } from 'src/styles/animations/motion.config';
-import { Order } from 'src/types/checkout.type';
-import { formatCurrency } from 'src/utils/utils';
-import { reducedMotionVariants, sectionVariants } from '../orderDetail.constants';
+import { motion } from 'framer-motion'
+import { ANIMATION_DURATION } from 'src/styles/animations/motion.config'
+import { Order } from 'src/types/checkout.type'
+import { formatCurrency } from 'src/utils/utils'
+import { reducedMotionVariants, sectionVariants } from '../orderDetail.constants'
 
 interface OrderSummarySectionProps {
-  order: Order;
-  shouldReduceMotion: boolean | null;
+  order: Order
+  shouldReduceMotion: boolean | null
 }
 
 export default function OrderSummarySection({
   order,
   shouldReduceMotion,
 }: OrderSummarySectionProps) {
-  const sectionItemVariants = shouldReduceMotion ? reducedMotionVariants : sectionVariants;
+  const sectionItemVariants = shouldReduceMotion ? reducedMotionVariants : sectionVariants
 
   return (
     <motion.div
@@ -99,5 +99,5 @@ export default function OrderSummarySection({
         </div>
       </div>
     </motion.div>
-  );
+  )
 }

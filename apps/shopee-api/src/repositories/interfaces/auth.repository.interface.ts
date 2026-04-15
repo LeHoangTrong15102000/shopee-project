@@ -60,6 +60,6 @@ export interface IAuthRepository {
   rotateRefreshToken(
     oldToken: string,
     newToken: string,
-    userId: string | Types.ObjectId
+    userId: string | Types.ObjectId,
   ): Promise<IRefreshToken | null>
 }

@@ -1,92 +1,92 @@
-import { useEffect, useRef, useContext } from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useNavigate } from 'react-router';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
-import { AppContext } from 'src/contexts/app.context';
-import { useFocusTrap } from 'src/hooks/useFocusTrap';
-import useInventoryAlerts from 'src/hooks/useInventoryAlerts';
-import { loadLanguage } from 'src/i18n/i18n';
-import authApi from 'src/apis/auth.api';
-import notificationApi from 'src/apis/notification.api';
-import { purchasesStatus } from 'src/constant/purchase';
-import path from 'src/constant/path';
-import { getAvatarUrl } from 'src/utils/utils';
-import { toast } from 'react-toastify';
-import ThemeToggle from 'src/components/ThemeToggle';
-import InventoryAlertBadge from 'src/components/InventoryAlertBadge';
-import Button from 'src/components/Button';
+import { useEffect, useRef, useContext } from 'react'
+import { createPortal } from 'react-dom'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Link, useNavigate } from 'react-router'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import { AppContext } from 'src/contexts/app.context'
+import { useFocusTrap } from 'src/hooks/useFocusTrap'
+import useInventoryAlerts from 'src/hooks/useInventoryAlerts'
+import { loadLanguage } from 'src/i18n/i18n'
+import authApi from 'src/apis/auth.api'
+import notificationApi from 'src/apis/notification.api'
+import { purchasesStatus } from 'src/constant/purchase'
+import path from 'src/constant/path'
+import { getAvatarUrl } from 'src/utils/utils'
+import { toast } from 'react-toastify'
+import ThemeToggle from 'src/components/ThemeToggle'
+import InventoryAlertBadge from 'src/components/InventoryAlertBadge'
+import Button from 'src/components/Button'
 
 interface MobileNavigationDrawerProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen: boolean
+  onClose: () => void
 }
 
 const ITEM =
-  'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors';
-const DIVIDER = 'my-3 h-px bg-gray-200 dark:bg-slate-600';
-const SECTION_TITLE = 'px-3 pb-1 text-xs font-semibold uppercase text-gray-400 dark:text-gray-500';
+  'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors'
+const DIVIDER = 'my-3 h-px bg-gray-200 dark:bg-slate-600'
+const SECTION_TITLE = 'px-3 pb-1 text-xs font-semibold uppercase text-gray-400 dark:text-gray-500'
 
 const MobileNavigationDrawer = ({ isOpen, onClose }: MobileNavigationDrawerProps) => {
-  const { t, i18n } = useTranslation('nav');
-  const { setIsAuthenticated, isAuthenticated, profile, setProfile } = useContext(AppContext);
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
-  const drawerRef = useRef<HTMLDivElement>(null);
+  const { t, i18n } = useTranslation('nav')
+  const { setIsAuthenticated, isAuthenticated, profile, setProfile } = useContext(AppContext)
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
+  const drawerRef = useRef<HTMLDivElement>(null)
 
-  useFocusTrap({ isOpen, containerRef: drawerRef, onClose });
+  useFocusTrap({ isOpen, containerRef: drawerRef, onClose })
 
   useEffect(() => {
-    if (isOpen) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = '';
+    if (isOpen) document.body.style.overflow = 'hidden'
+    else document.body.style.overflow = ''
     return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
 
   const { data: notificationsData } = useQuery({
     queryKey: ['notifications'],
     queryFn: () => notificationApi.getNotifications(),
     enabled: isAuthenticated,
     staleTime: 5 * 60 * 1000,
-  });
-  const unreadCount = notificationsData?.data.data.unreadCount || 0;
+  })
+  const unreadCount = notificationsData?.data.data.unreadCount || 0
 
-  const isAdmin = profile?.roles?.includes('Admin') ?? false;
+  const isAdmin = profile?.roles?.includes('Admin') ?? false
   const {
     alerts: inventoryAlerts,
     unreadCount: inventoryUnreadCount,
     clearAlerts: clearInventoryAlerts,
-  } = useInventoryAlerts();
+  } = useInventoryAlerts()
 
   const logoutMutation = useMutation({
     mutationFn: () => authApi.logoutAccount(),
     onSuccess: () => {
-      setIsAuthenticated(false);
-      setProfile(null);
-      toast.success(t('drawer.logoutSuccess'), { autoClose: 1000 });
+      setIsAuthenticated(false)
+      setProfile(null)
+      toast.success(t('drawer.logoutSuccess'), { autoClose: 1000 })
       queryClient.removeQueries({
         queryKey: ['purchases', { status: purchasesStatus.inCart }],
         exact: true,
-      });
-      onClose();
+      })
+      onClose()
     },
-  });
+  })
 
   const go = (to: string) => {
-    onClose();
-    navigate(to);
-  };
-  const handleLogout = () => logoutMutation.mutate();
+    onClose()
+    navigate(to)
+  }
+  const handleLogout = () => logoutMutation.mutate()
 
   const handleTranslateLanguage = async (lng: 'en' | 'vi') => {
     try {
-      await loadLanguage(lng);
+      await loadLanguage(lng)
     } catch (e) {
-      console.error('Failed to load language:', e);
+      console.error('Failed to load language:', e)
     }
-  };
+  }
 
   const drawerContent = (
     <AnimatePresence>
@@ -454,9 +454,9 @@ const MobileNavigationDrawer = ({ isOpen, onClose }: MobileNavigationDrawerProps
         </>
       )}
     </AnimatePresence>
-  );
+  )
 
-  return createPortal(drawerContent, document.body);
-};
+  return createPortal(drawerContent, document.body)
+}
 
-export default MobileNavigationDrawer;
+export default MobileNavigationDrawer

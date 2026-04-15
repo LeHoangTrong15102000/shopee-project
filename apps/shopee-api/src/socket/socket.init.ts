@@ -7,13 +7,19 @@ import { socketAuthMiddleware } from '@middleware/socket-auth.middleware'
 import { Logger } from '@utils/logger'
 import { registerConnectionHandlers, handleConnect } from './handlers/connection.handler'
 import { registerChatHandlers } from './handlers/chat.handler'
-import { registerNotificationHandlers, sendPendingNotifications } from './handlers/notification.handler'
+import {
+  registerNotificationHandlers,
+  sendPendingNotifications,
+} from './handlers/notification.handler'
 import { registerProductHandlers, joinAdminRoomIfAdmin } from './handlers/product.handler'
 import { registerPresenceHandlers } from './handlers/presence.handler'
 import { registerOrderHandlers } from './handlers/order.handler'
 import { registerFlashSaleHandlers } from './handlers/flash-sale.handler'
 import { registerSellerDashboardHandlers } from './handlers/seller-dashboard.handler'
-import { startPeriodicSellerMetrics, stopPeriodicSellerMetrics } from './utils/seller-metrics.service'
+import {
+  startPeriodicSellerMetrics,
+  stopPeriodicSellerMetrics,
+} from './utils/seller-metrics.service'
 
 // Singleton Socket.io server instance
 let io: SocketIOServer | null = null
@@ -122,4 +128,3 @@ export const shutdownSocket = (): void => {
   }
   Logger.apiInfo('Socket.io server shut down')
 }
-

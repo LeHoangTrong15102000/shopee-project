@@ -1,8 +1,8 @@
-import { useTranslation } from 'react-i18next';
-import SkeletonBase from './SkeletonBase';
+import { useTranslation } from 'react-i18next'
+import SkeletonBase from './SkeletonBase'
 
 export default function ProductCardSkeleton() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('common')
   return (
     <div
       className="min-h-[280px] overflow-hidden rounded-lg bg-white shadow-xs dark:bg-slate-800"
@@ -45,5 +45,5 @@ export default function ProductCardSkeleton() {
         <SkeletonBase className="h-3 w-20" />
       </div>
     </div>
-  );
+  )
 }

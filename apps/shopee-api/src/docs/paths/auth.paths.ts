@@ -9,7 +9,8 @@ export const authPaths = {
     post: {
       tags: ['Auth'],
       summary: 'Đăng ký tài khoản mới',
-      description: 'Tạo tài khoản người dùng mới với email và password. Trả về access token và refresh token.',
+      description:
+        'Tạo tài khoản người dùng mới với email và password. Trả về access token và refresh token.',
       operationId: 'register',
       requestBody: {
         required: true,
@@ -181,7 +182,10 @@ export const authPaths = {
                   data: {
                     type: 'object',
                     properties: {
-                      access_token: { type: 'string', example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
+                      access_token: {
+                        type: 'string',
+                        example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+                      },
                     },
                   },
                 },
@@ -202,4 +206,3 @@ export const authPaths = {
     },
   },
 }
-

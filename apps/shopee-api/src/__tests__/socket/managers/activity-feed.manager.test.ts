@@ -188,4 +188,3 @@ describe('Activity Feed Manager', () => {
     })
   })
 })
-

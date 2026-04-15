@@ -36,7 +36,11 @@ export interface CreateProductDTO {
   price_before_discount: number
   quantity: number
   location?: string
-  variants?: Array<{ type: string; name: string; options: Array<{ name: string; value: string; image?: string }> }>
+  variants?: Array<{
+    type: string
+    name: string
+    options: Array<{ name: string; value: string; image?: string }>
+  }>
 }
 
 /**
@@ -55,20 +59,28 @@ export interface UpdateProductDTO {
   sold?: number
   view?: number
   location?: string
-  variants?: Array<{ type: string; name: string; options: Array<{ name: string; value: string; image?: string }> }>
+  variants?: Array<{
+    type: string
+    name: string
+    options: Array<{ name: string; value: string; image?: string }>
+  }>
 }
 
 /**
  * Product repository interface extending base repository
  */
-export interface IProductRepository extends IBaseRepository<IProduct, CreateProductDTO, UpdateProductDTO> {
+export interface IProductRepository extends IBaseRepository<
+  IProduct,
+  CreateProductDTO,
+  UpdateProductDTO
+> {
   /**
    * Find products with filters, sorting, and pagination
    */
   findProducts(
     filters: ProductFilterOptions,
     sort: ProductSortOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IProduct>>
 
   /**
@@ -76,16 +88,13 @@ export interface IProductRepository extends IBaseRepository<IProduct, CreateProd
    */
   findByCategory(
     categoryId: string | Types.ObjectId,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IProduct>>
 
   /**
    * Search products by name (text search)
    */
-  searchByName(
-    query: string,
-    pagination: PaginationOptions
-  ): Promise<PaginatedResult<IProduct>>
+  searchByName(query: string, pagination: PaginationOptions): Promise<PaginatedResult<IProduct>>
 
   /**
    * Increment product view count
@@ -116,14 +125,18 @@ export interface IProductRepository extends IBaseRepository<IProduct, CreateProd
    * Bulk update products
    */
   bulkUpdate(
-    updates: Array<{ id: string | Types.ObjectId; data: UpdateProductDTO }>
+    updates: Array<{ id: string | Types.ObjectId; data: UpdateProductDTO }>,
   ): Promise<number>
 
   /**
    * Bulk update product stock (quantity and sold) using $inc operations
    */
   bulkUpdateStock(
-    updates: Array<{ product_id: string | Types.ObjectId; quantity_change: number; sold_change: number }>
+    updates: Array<{
+      product_id: string | Types.ObjectId
+      quantity_change: number
+      sold_change: number
+    }>,
   ): Promise<number>
 
   /**
@@ -136,7 +149,7 @@ export interface IProductRepository extends IBaseRepository<IProduct, CreateProd
    */
   findLowStockPaginated(
     threshold: number,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IProduct>>
 
   /**
@@ -144,4 +157,3 @@ export interface IProductRepository extends IBaseRepository<IProduct, CreateProd
    */
   findOutOfStock(pagination: PaginationOptions): Promise<PaginatedResult<IProduct>>
 }
-

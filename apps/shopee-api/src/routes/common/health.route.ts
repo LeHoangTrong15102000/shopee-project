@@ -26,4 +26,3 @@ healthRouter.get('/ready', asyncHandler(healthController.readinessCheck))
 healthRouter.get('/metrics', asyncHandler(healthController.metricsCheck))
 
 export default healthRouter
-

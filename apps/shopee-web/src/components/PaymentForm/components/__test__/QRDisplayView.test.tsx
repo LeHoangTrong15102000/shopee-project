@@ -1,9 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import QRDisplayView from '../QRDisplayView';
-import { WALLETS } from '../WalletCard';
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import QRDisplayView from '../QRDisplayView'
+import { WALLETS } from '../WalletCard'
 
-const momoWallet = WALLETS[0];
+const momoWallet = WALLETS[0]
 
 describe('QRDisplayView', () => {
   it('renders QR scan title', () => {
@@ -16,9 +16,9 @@ describe('QRDisplayView', () => {
         onOpenApp={vi.fn()}
         onCancel={vi.fn()}
       />,
-    );
-    expect(screen.getByText('Quét mã QR để thanh toán')).toBeInTheDocument();
-  });
+    )
+    expect(screen.getByText('Quét mã QR để thanh toán')).toBeInTheDocument()
+  })
 
   it('renders wallet name in description', () => {
     render(
@@ -30,9 +30,9 @@ describe('QRDisplayView', () => {
         onOpenApp={vi.fn()}
         onCancel={vi.fn()}
       />,
-    );
-    expect(screen.getAllByText(/MoMo/).length).toBeGreaterThan(0);
-  });
+    )
+    expect(screen.getAllByText(/MoMo/).length).toBeGreaterThan(0)
+  })
 
   it('renders cancel button', () => {
     render(
@@ -44,12 +44,12 @@ describe('QRDisplayView', () => {
         onOpenApp={vi.fn()}
         onCancel={vi.fn()}
       />,
-    );
-    expect(screen.getByText('Hủy thanh toán')).toBeInTheDocument();
-  });
+    )
+    expect(screen.getByText('Hủy thanh toán')).toBeInTheDocument()
+  })
 
   it('calls onCancel when cancel clicked', () => {
-    const onCancel = vi.fn();
+    const onCancel = vi.fn()
     render(
       <QRDisplayView
         wallet={momoWallet}
@@ -59,10 +59,10 @@ describe('QRDisplayView', () => {
         onOpenApp={vi.fn()}
         onCancel={onCancel}
       />,
-    );
-    screen.getByText('Hủy thanh toán').click();
-    expect(onCancel).toHaveBeenCalled();
-  });
+    )
+    screen.getByText('Hủy thanh toán').click()
+    expect(onCancel).toHaveBeenCalled()
+  })
 
   it('shows open app button on mobile', () => {
     render(
@@ -74,9 +74,9 @@ describe('QRDisplayView', () => {
         onOpenApp={vi.fn()}
         onCancel={vi.fn()}
       />,
-    );
-    expect(screen.getAllByText(/Mở ứng dụng MoMo/).length).toBeGreaterThan(0);
-  });
+    )
+    expect(screen.getAllByText(/Mở ứng dụng MoMo/).length).toBeGreaterThan(0)
+  })
 
   it('does not show open app button on desktop', () => {
     render(
@@ -88,9 +88,9 @@ describe('QRDisplayView', () => {
         onOpenApp={vi.fn()}
         onCancel={vi.fn()}
       />,
-    );
-    expect(screen.queryByText(/Mở ứng dụng MoMo/)).not.toBeInTheDocument();
-  });
+    )
+    expect(screen.queryByText(/Mở ứng dụng MoMo/)).not.toBeInTheDocument()
+  })
 
   it('shows desktop instruction on desktop', () => {
     render(
@@ -102,9 +102,9 @@ describe('QRDisplayView', () => {
         onOpenApp={vi.fn()}
         onCancel={vi.fn()}
       />,
-    );
-    expect(screen.getByText(/Quét mã QR bằng ứng dụng MoMo trên điện thoại/)).toBeInTheDocument();
-  });
+    )
+    expect(screen.getByText(/Quét mã QR bằng ứng dụng MoMo trên điện thoại/)).toBeInTheDocument()
+  })
 
   it('shows mobile instruction on mobile', () => {
     render(
@@ -116,9 +116,9 @@ describe('QRDisplayView', () => {
         onOpenApp={vi.fn()}
         onCancel={vi.fn()}
       />,
-    );
-    expect(screen.getByText(/Nhấn nút "Mở ứng dụng MoMo"/)).toBeInTheDocument();
-  });
+    )
+    expect(screen.getByText(/Nhấn nút "Mở ứng dụng MoMo"/)).toBeInTheDocument()
+  })
 
   it('disables open app button when expired', () => {
     render(
@@ -130,14 +130,14 @@ describe('QRDisplayView', () => {
         onOpenApp={vi.fn()}
         onCancel={vi.fn()}
       />,
-    );
-    const btns = screen.getAllByText(/Mở ứng dụng MoMo/);
-    const btn = btns[0].closest('button');
-    expect(btn).toBeDisabled();
-  });
+    )
+    const btns = screen.getAllByText(/Mở ứng dụng MoMo/)
+    const btn = btns[0].closest('button')
+    expect(btn).toBeDisabled()
+  })
 
   it('renders with zalopay wallet', () => {
-    const zalopay = WALLETS[1];
+    const zalopay = WALLETS[1]
     render(
       <QRDisplayView
         wallet={zalopay}
@@ -147,12 +147,12 @@ describe('QRDisplayView', () => {
         onOpenApp={vi.fn()}
         onCancel={vi.fn()}
       />,
-    );
-    expect(screen.getAllByText(/ZaloPay/).length).toBeGreaterThan(0);
-  });
+    )
+    expect(screen.getAllByText(/ZaloPay/).length).toBeGreaterThan(0)
+  })
 
   it('renders with vnpay wallet', () => {
-    const vnpay = WALLETS[2];
+    const vnpay = WALLETS[2]
     render(
       <QRDisplayView
         wallet={vnpay}
@@ -162,7 +162,7 @@ describe('QRDisplayView', () => {
         onOpenApp={vi.fn()}
         onCancel={vi.fn()}
       />,
-    );
-    expect(screen.getAllByText(/VNPay/).length).toBeGreaterThan(0);
-  });
-});
+    )
+    expect(screen.getAllByText(/VNPay/).length).toBeGreaterThan(0)
+  })
+})

@@ -1,72 +1,72 @@
-import React from 'react';
-import { TouchableOpacity, View } from 'react-native';
-import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { useColors } from '@/hooks/useColors.ts';
-import { Home, Store, Radio, Bell, User } from 'lucide-react-native';
-import { AppText } from '@/components/ui';
-import { useTranslation } from 'react-i18next';
+import React from 'react'
+import { TouchableOpacity, View } from 'react-native'
+import { BottomTabBarProps } from '@react-navigation/bottom-tabs'
+import { useColors } from '@/hooks/useColors.ts'
+import { Home, Store, Radio, Bell, User } from 'lucide-react-native'
+import { AppText } from '@/components/ui'
+import { useTranslation } from 'react-i18next'
 
 interface TabIconProps {
-  name: string;
-  color: string;
-  size: number;
+  name: string
+  color: string
+  size: number
 }
 
 const TabIcon: React.FC<TabIconProps> = ({ name, color, size }) => {
   switch (name) {
     case 'home':
-      return <Home size={size} color={color} />;
+      return <Home size={size} color={color} />
     case 'mall':
-      return <Store size={size} color={color} />;
+      return <Store size={size} color={color} />
     case 'live':
-      return <Radio size={size} color={color} />;
+      return <Radio size={size} color={color} />
     case 'notifications':
-      return <Bell size={size} color={color} />;
+      return <Bell size={size} color={color} />
     case 'account':
-      return <User size={size} color={color} />;
+      return <User size={size} color={color} />
     default:
-      return <Home size={size} color={color} />;
+      return <Home size={size} color={color} />
   }
-};
+}
 
 const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
-  const colors = useColors();
-  const { t } = useTranslation();
+  const colors = useColors()
+  const { t } = useTranslation()
 
   return (
     <View className="pb-safe-offset-0 flex-row border-t border-neutrals900 bg-background py-2">
       {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key];
+        const { options } = descriptors[route.key]
         const label =
           options.tabBarLabel !== undefined
             ? options.tabBarLabel
             : options.title !== undefined
               ? options.title
-              : route.name;
+              : route.name
 
-        const isFocused = state.index === index;
+        const isFocused = state.index === index
 
         const onPress = () => {
           const event = navigation.emit({
             type: 'tabPress',
             target: route.key,
             canPreventDefault: true,
-          });
+          })
 
           if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name, route.params);
+            navigation.navigate(route.name, route.params)
           }
-        };
+        }
 
         const onLongPress = () => {
           navigation.emit({
             type: 'tabLongPress',
             target: route.key,
-          });
-        };
+          })
+        }
 
-        const iconColor = isFocused ? colors.primary : colors.neutrals400;
-        const labelColor = isFocused ? colors.primary : colors.neutrals400;
+        const iconColor = isFocused ? colors.primary : colors.neutrals400
+        const labelColor = isFocused ? colors.primary : colors.neutrals400
 
         return (
           <TouchableOpacity
@@ -101,10 +101,10 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
               {t(label as string)}
             </AppText>
           </TouchableOpacity>
-        );
+        )
       })}
     </View>
-  );
-};
+  )
+}
 
-export default CustomTabBar;
+export default CustomTabBar

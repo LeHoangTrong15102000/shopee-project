@@ -1,13 +1,13 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
 
 interface EmptyStateProps {
-  onAddNew: () => void;
+  onAddNew: () => void
 }
 
 const EmptyState = ({ onAddNew }: EmptyStateProps) => {
-  const { t } = useTranslation('address');
+  const { t } = useTranslation('address')
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -122,7 +122,7 @@ const EmptyState = ({ onAddNew }: EmptyStateProps) => {
         </Button>
       </motion.div>
     </motion.div>
-  );
-};
+  )
+}
 
-export default EmptyState;
+export default EmptyState

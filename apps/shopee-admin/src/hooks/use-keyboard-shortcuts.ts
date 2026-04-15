@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ROUTES } from 'src/constants/routes';
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { ROUTES } from 'src/constants/routes'
 
 const SHORTCUT_ROUTES = [
   ROUTES.DASHBOARD, // Alt+1 → Dashboard
@@ -12,31 +12,31 @@ const SHORTCUT_ROUTES = [
   ROUTES.REVIEWS, // Alt+7 → Reviews
   ROUTES.LOYALTY, // Alt+8 → Loyalty
   ROUTES.INVENTORY, // Alt+9 → Inventory
-];
+]
 
 export function useKeyboardShortcuts() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if (!e.altKey) return;
+      if (!e.altKey) return
 
-      const target = e.target as HTMLElement;
-      const tag = target.tagName.toLowerCase();
+      const target = e.target as HTMLElement
+      const tag = target.tagName.toLowerCase()
       if (tag === 'input' || tag === 'textarea' || tag === 'select' || target.isContentEditable) {
-        return;
+        return
       }
 
-      const num = parseInt(e.key, 10);
+      const num = parseInt(e.key, 10)
       if (num >= 1 && num <= 9) {
-        e.preventDefault();
-        navigate(SHORTCUT_ROUTES[num - 1]);
+        e.preventDefault()
+        navigate(SHORTCUT_ROUTES[num - 1])
       }
     }
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [navigate]);
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [navigate])
 }
 
-export { SHORTCUT_ROUTES };
+export { SHORTCUT_ROUTES }

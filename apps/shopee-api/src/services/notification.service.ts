@@ -6,7 +6,10 @@ import {
   NotificationFilterOptions,
   NotificationType,
 } from '@repositories/interfaces/notification.repository.interface'
-import { PaginatedResult, PaginationOptions } from '@repositories/interfaces/base.repository.interface'
+import {
+  PaginatedResult,
+  PaginationOptions,
+} from '@repositories/interfaces/base.repository.interface'
 import { BaseService, NotFoundError, ValidationError } from './base.service'
 
 export class NotificationService extends BaseService {
@@ -17,13 +20,17 @@ export class NotificationService extends BaseService {
   async getNotifications(
     userId: string,
     filters: NotificationFilterOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<INotificationItem>> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')
     }
 
-    return this.notificationRepository.findByUser(userId, filters, this.normalizePagination(pagination))
+    return this.notificationRepository.findByUser(
+      userId,
+      filters,
+      this.normalizePagination(pagination),
+    )
   }
 
   async markAsRead(userId: string, notificationId: string): Promise<INotificationItem> {
@@ -62,7 +69,7 @@ export class NotificationService extends BaseService {
     title: string,
     content: string,
     type: NotificationType = 'other',
-    link?: string
+    link?: string,
   ): Promise<INotificationItem> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')
@@ -111,7 +118,7 @@ export class NotificationService extends BaseService {
 
   async getAdminNotifications(
     filters: NotificationFilterOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<INotificationItem>> {
     const filter: Record<string, unknown> = {}
     if (filters.type) filter.type = filters.type
@@ -123,7 +130,7 @@ export class NotificationService extends BaseService {
     userIds: string[],
     title: string,
     content: string,
-    type: NotificationType
+    type: NotificationType,
   ): Promise<INotificationItem[]> {
     if (userIds.length === 0) return []
 
@@ -137,4 +144,3 @@ export class NotificationService extends BaseService {
     return this.notificationRepository.createBulkNotifications(dtos)
   }
 }
-

@@ -37,7 +37,7 @@ userCheckoutRouter.post(
   '/summary',
   validate(checkoutSummarySchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(checkoutController.getCheckoutSummary)
+  asyncHandler(checkoutController.getCheckoutSummary),
 )
 
 // Create order from checkout
@@ -45,6 +45,5 @@ userCheckoutRouter.post(
   '/create-order',
   validate(createOrderSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(checkoutController.createCheckoutOrder)
+  asyncHandler(checkoutController.createCheckoutOrder),
 )
-

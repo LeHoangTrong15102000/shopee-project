@@ -1,15 +1,15 @@
-import classNames from 'classnames';
-import { useTranslation } from 'react-i18next';
+import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
 
 interface ComparisonSummaryProps {
-  comparisonSummary: { text: string; productName: string; color: string }[] | null;
+  comparisonSummary: { text: string; productName: string; color: string }[] | null
 }
 
 export default function ComparisonSummary({ comparisonSummary }: ComparisonSummaryProps) {
-  const { t } = useTranslation('compare');
+  const { t } = useTranslation('compare')
 
   if (!comparisonSummary || comparisonSummary.length === 0) {
-    return null;
+    return null
   }
 
   return (
@@ -25,5 +25,5 @@ export default function ComparisonSummary({ comparisonSummary }: ComparisonSumma
         </span>
       ))}
     </div>
-  );
+  )
 }

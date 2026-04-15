@@ -38,7 +38,7 @@ export const createRateLimiter = (socket: Socket): ((callback: () => void) => vo
       Logger.apiWarn(`Rate limit exceeded for socket ${socketId}, user ${socket.user?.id}`)
       const payload: SocketErrorPayload = {
         code: SOCKET_ERRORS.RATE_LIMITED,
-        message: 'Too many requests. Please slow down.'
+        message: 'Too many requests. Please slow down.',
       }
       socket.emit(SocketEvent.RATE_LIMITED, payload)
       return
@@ -145,7 +145,7 @@ export const handleError = (socket: Socket, error: Error): void => {
 
   const payload: SocketErrorPayload = {
     code: SOCKET_ERRORS.INTERNAL_ERROR,
-    message: 'An unexpected error occurred'
+    message: 'An unexpected error occurred',
   }
   socket.emit(SocketEvent.ERROR, payload)
 }
@@ -163,4 +163,3 @@ export const registerConnectionHandlers = (socket: Socket): void => {
     handleError(socket, error)
   })
 }
-

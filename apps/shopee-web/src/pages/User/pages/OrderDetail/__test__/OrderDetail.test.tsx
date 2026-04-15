@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import OrderDetail from '../OrderDetail';
-import React from 'react';
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import OrderDetail from '../OrderDetail'
+import React from 'react'
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -24,12 +24,12 @@ vi.mock('react-i18next', () => ({
         'payment:method.bankTransfer': 'Chuyển khoản ngân hàng',
         'payment:method.eWallet': 'Ví điện tử',
         'payment:method.creditCard': 'Thẻ tín dụng',
-      };
-      return translations[key] || key;
+      }
+      return translations[key] || key
     },
     i18n: { language: 'vi' },
   }),
-}));
+}))
 
 vi.mock('framer-motion', () => ({
   motion: {
@@ -38,7 +38,7 @@ vi.mock('framer-motion', () => ({
   },
   AnimatePresence: ({ children }: any) => <>{children}</>,
   useReducedMotion: () => false,
-}));
+}))
 
 vi.mock('react-router', () => ({
   useNavigate: () => vi.fn(),
@@ -48,7 +48,7 @@ vi.mock('react-router', () => ({
       {children}
     </a>
   ),
-}));
+}))
 
 const defaultOrderDetailReturn = {
   order: {
@@ -89,13 +89,13 @@ const defaultOrderDetailReturn = {
   returnMutation: { isPending: false, mutate: vi.fn() },
   handleCancelOrder: vi.fn(),
   handleReturnOrder: vi.fn(),
-};
+}
 
-let mockUseOrderDetailReturn: any = { ...defaultOrderDetailReturn };
+let mockUseOrderDetailReturn: any = { ...defaultOrderDetailReturn }
 
 vi.mock('../useOrderDetail', () => ({
   useOrderDetail: () => mockUseOrderDetailReturn,
-}));
+}))
 
 vi.mock('../orderDetail.constants', () => ({
   formatDate: (d: string) => d,
@@ -111,72 +111,72 @@ vi.mock('../orderDetail.constants', () => ({
   reducedMotionVariants: {},
   sectionVariants: {},
   statusBadgeVariants: {},
-}));
+}))
 
-vi.mock('../components/CancelOrderModal', () => ({ default: () => null }));
+vi.mock('../components/CancelOrderModal', () => ({ default: () => null }))
 vi.mock('../components/OrderActionButtons', () => ({
   default: () => <div data-testid="action-buttons" />,
-}));
+}))
 vi.mock('../components/OrderDetailItems', () => ({
   default: () => <div data-testid="order-items" />,
-}));
+}))
 vi.mock('../components/OrderSummarySection', () => ({
   default: () => <div data-testid="order-summary" />,
-}));
+}))
 vi.mock('../components/OrderTimeline', () => ({
   default: () => <div data-testid="order-timeline" />,
-}));
-vi.mock('../components/ReturnOrderModal', () => ({ default: () => null }));
-vi.mock('src/components/SEO', () => ({ default: () => <div data-testid="seo" /> }));
+}))
+vi.mock('../components/ReturnOrderModal', () => ({ default: () => null }))
+vi.mock('src/components/SEO', () => ({ default: () => <div data-testid="seo" /> }))
 
 describe('OrderDetail', () => {
-  let queryClient: QueryClient;
+  let queryClient: QueryClient
   const wrapper = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
+  )
 
   beforeEach(() => {
-    queryClient = new QueryClient();
-    vi.clearAllMocks();
-    mockUseOrderDetailReturn = { ...defaultOrderDetailReturn };
-  });
+    queryClient = new QueryClient()
+    vi.clearAllMocks()
+    mockUseOrderDetailReturn = { ...defaultOrderDetailReturn }
+  })
 
   it('should render order details', () => {
-    render(<OrderDetail />, { wrapper });
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
-    expect(screen.getByText('0123456789')).toBeInTheDocument();
-  });
+    render(<OrderDetail />, { wrapper })
+    expect(screen.getByText('John Doe')).toBeInTheDocument()
+    expect(screen.getByText('0123456789')).toBeInTheDocument()
+  })
 
   it('should render shipping address', () => {
-    render(<OrderDetail />, { wrapper });
-    expect(screen.getByText(/123 Test St/)).toBeInTheDocument();
-  });
+    render(<OrderDetail />, { wrapper })
+    expect(screen.getByText(/123 Test St/)).toBeInTheDocument()
+  })
 
   it('should render payment method', () => {
-    render(<OrderDetail />, { wrapper });
-    expect(screen.getByText('Thanh toán khi nhận hàng')).toBeInTheDocument();
-  });
+    render(<OrderDetail />, { wrapper })
+    expect(screen.getByText('Thanh toán khi nhận hàng')).toBeInTheDocument()
+  })
 
   it('should render shipping method', () => {
-    render(<OrderDetail />, { wrapper });
-    expect(screen.getByText('Express')).toBeInTheDocument();
-  });
+    render(<OrderDetail />, { wrapper })
+    expect(screen.getByText('Express')).toBeInTheDocument()
+  })
 
   it('should render back button', () => {
-    render(<OrderDetail />, { wrapper });
-    expect(screen.getByText('Quay lại')).toBeInTheDocument();
-  });
+    render(<OrderDetail />, { wrapper })
+    expect(screen.getByText('Quay lại')).toBeInTheDocument()
+  })
 
   it('should show loading state', () => {
-    mockUseOrderDetailReturn = { ...defaultOrderDetailReturn, isLoading: true };
-    render(<OrderDetail />, { wrapper });
-    const spinner = document.querySelector('.animate-spin');
-    expect(spinner).toBeInTheDocument();
-  });
+    mockUseOrderDetailReturn = { ...defaultOrderDetailReturn, isLoading: true }
+    render(<OrderDetail />, { wrapper })
+    const spinner = document.querySelector('.animate-spin')
+    expect(spinner).toBeInTheDocument()
+  })
 
   it('should show not found message when order is null', () => {
-    mockUseOrderDetailReturn = { ...defaultOrderDetailReturn, order: null };
-    render(<OrderDetail />, { wrapper });
-    expect(screen.getByText('Không tìm thấy đơn hàng')).toBeInTheDocument();
-  });
-});
+    mockUseOrderDetailReturn = { ...defaultOrderDetailReturn, order: null }
+    render(<OrderDetail />, { wrapper })
+    expect(screen.getByText('Không tìm thấy đơn hàng')).toBeInTheDocument()
+  })
+})

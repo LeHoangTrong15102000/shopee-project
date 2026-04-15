@@ -48,11 +48,7 @@ describe('async-handler', () => {
 
   describe('asyncHandlers', () => {
     it('should wrap array of handlers and return array of same length', () => {
-      const handlers = [
-        async () => {},
-        async () => {},
-        async () => {},
-      ]
+      const handlers = [async () => {}, async () => {}, async () => {}]
 
       const wrapped = asyncHandlers(handlers)
 
@@ -82,17 +78,23 @@ describe('async-handler', () => {
       handler(req as Request, res as Response, next as NextFunction)
       await new Promise((r) => setTimeout(r, 50))
 
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({
-        message: 'Request timeout after 10ms',
-      }))
+      expect(next).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'Request timeout after 10ms',
+        }),
+      )
     })
   })
 
   describe('asyncHandlerWithRetry', () => {
     it('should not call next with error when handler succeeds first try', async () => {
-      const handler = asyncHandlerWithRetry(async (_req, res) => {
-        res.json({ success: true })
-      }, 3, 1)
+      const handler = asyncHandlerWithRetry(
+        async (_req, res) => {
+          res.json({ success: true })
+        },
+        3,
+        1,
+      )
 
       await handler(req as Request, res as Response, next as NextFunction)
 
@@ -101,14 +103,19 @@ describe('async-handler', () => {
     })
 
     it('should succeed after retry when first attempt fails', async () => {
-      const mockFn = jest.fn()
+      const mockFn = jest
+        .fn()
         .mockRejectedValueOnce(new Error('First fail'))
         .mockResolvedValueOnce(undefined)
 
-      const handler = asyncHandlerWithRetry(async (_req, res) => {
-        await mockFn()
-        res.json({ success: true })
-      }, 3, 1)
+      const handler = asyncHandlerWithRetry(
+        async (_req, res) => {
+          await mockFn()
+          res.json({ success: true })
+        },
+        3,
+        1,
+      )
 
       await handler(req as Request, res as Response, next as NextFunction)
 
@@ -120,9 +127,13 @@ describe('async-handler', () => {
       const lastError = new Error('Final error')
       const mockFn = jest.fn().mockRejectedValue(lastError)
 
-      const handler = asyncHandlerWithRetry(async () => {
-        await mockFn()
-      }, 2, 1)
+      const handler = asyncHandlerWithRetry(
+        async () => {
+          await mockFn()
+        },
+        2,
+        1,
+      )
 
       await handler(req as Request, res as Response, next as NextFunction)
 
@@ -149,4 +160,3 @@ describe('async-handler', () => {
     })
   })
 })
-

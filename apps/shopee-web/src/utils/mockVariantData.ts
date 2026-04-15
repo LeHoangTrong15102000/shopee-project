@@ -17,8 +17,8 @@
  */
 
 // TODO: Remove mock data once API returns real variant data
-import { ProductVariant } from 'src/types/variant.type';
-import { ProductSKU } from 'src/types/product.type';
+import { ProductVariant } from 'src/types/variant.type'
+import { ProductSKU } from 'src/types/product.type'
 
 // Categories that should have size variants (clothing, shoes, etc.)
 const CLOTHING_CATEGORIES = [
@@ -34,7 +34,7 @@ const CLOTHING_CATEGORIES = [
   'dress',
   'shoes',
   'fashion',
-];
+]
 
 // Categories that are electronics (phones, tablets, etc.) - only color, no size
 const ELECTRONICS_CATEGORIES = [
@@ -46,7 +46,7 @@ const ELECTRONICS_CATEGORIES = [
   'computer',
   'điện tử',
   'electronic',
-];
+]
 
 const mockColorVariant: ProductVariant = {
   _id: 'mock-color-variant',
@@ -58,7 +58,7 @@ const mockColorVariant: ProductVariant = {
     { name: 'Đen', value: 'black' },
     { name: 'Trắng', value: 'white' },
   ],
-};
+}
 
 const mockSizeVariant: ProductVariant = {
   _id: 'mock-size-variant',
@@ -70,27 +70,27 @@ const mockSizeVariant: ProductVariant = {
     { name: 'L', value: 'L' },
     { name: 'XL', value: 'XL' },
   ],
-};
+}
 
-const colors = ['red', 'blue', 'black', 'white'];
-const sizes = ['S', 'M', 'L', 'XL'];
+const colors = ['red', 'blue', 'black', 'white']
+const sizes = ['S', 'M', 'L', 'XL']
 
-type ProductCategory = 'clothing' | 'electronics' | 'other';
+type ProductCategory = 'clothing' | 'electronics' | 'other'
 
 function detectCategory(categoryName: string, productName: string): ProductCategory {
-  const searchText = `${categoryName} ${productName}`.toLowerCase();
+  const searchText = `${categoryName} ${productName}`.toLowerCase()
 
   // Check for clothing keywords
   if (CLOTHING_CATEGORIES.some((keyword) => searchText.includes(keyword))) {
-    return 'clothing';
+    return 'clothing'
   }
 
   // Check for electronics keywords
   if (ELECTRONICS_CATEGORIES.some((keyword) => searchText.includes(keyword))) {
-    return 'electronics';
+    return 'electronics'
   }
 
-  return 'other';
+  return 'other'
 }
 
 function generateColorOnlySKUs(basePrice: number): ProductSKU[] {
@@ -100,27 +100,27 @@ function generateColorOnlySKUs(basePrice: number): ProductSKU[] {
     price: basePrice,
     stock: Math.floor(Math.random() * 50) + 5,
     variant_values: { color },
-  }));
+  }))
 }
 
 function generateColorAndSizeSKUs(basePrice: number): ProductSKU[] {
-  const skus: ProductSKU[] = [];
-  let idx = 0;
+  const skus: ProductSKU[] = []
+  let idx = 0
   for (const color of colors) {
     for (const size of sizes) {
-      const priceModifier = size === 'XL' ? 50000 : size === 'L' ? 30000 : 0;
-      const stock = Math.floor(Math.random() * 50) + 5;
+      const priceModifier = size === 'XL' ? 50000 : size === 'L' ? 30000 : 0
+      const stock = Math.floor(Math.random() * 50) + 5
       skus.push({
         _id: `mock-sku-${idx}`,
         value: `${color}-${size}`,
         price: basePrice + priceModifier,
         stock,
         variant_values: { color, size },
-      });
-      idx++;
+      })
+      idx++
     }
   }
-  return skus;
+  return skus
 }
 
 /**
@@ -132,14 +132,14 @@ function generateColorAndSizeSKUs(basePrice: number): ProductSKU[] {
  * TODO: Remove once API returns real variant data
  */
 export function getMockVariants(categoryName: string, productName: string = ''): ProductVariant[] {
-  const category = detectCategory(categoryName, productName);
+  const category = detectCategory(categoryName, productName)
 
   if (category === 'clothing') {
-    return [mockColorVariant, mockSizeVariant];
+    return [mockColorVariant, mockSizeVariant]
   }
 
   // Electronics and other categories: color only
-  return [mockColorVariant];
+  return [mockColorVariant]
 }
 
 /**
@@ -151,12 +151,12 @@ export function getMockSKUs(
   categoryName: string,
   productName: string = '',
 ): ProductSKU[] {
-  const category = detectCategory(categoryName, productName);
+  const category = detectCategory(categoryName, productName)
 
   if (category === 'clothing') {
-    return generateColorAndSizeSKUs(basePrice);
+    return generateColorAndSizeSKUs(basePrice)
   }
 
   // Electronics and other categories: color only
-  return generateColorOnlySKUs(basePrice);
+  return generateColorOnlySKUs(basePrice)
 }

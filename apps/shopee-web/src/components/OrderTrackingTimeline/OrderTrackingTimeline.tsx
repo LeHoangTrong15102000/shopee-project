@@ -1,14 +1,14 @@
-import classNames from 'classnames';
-import { useTranslation } from 'react-i18next';
-import { OrderStatus, getStatusLabel } from 'src/config/orderStatus';
-import { OrderTracking, getCarrierDisplayName } from 'src/types/orderTracking.type';
+import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
+import { OrderStatus, getStatusLabel } from 'src/config/orderStatus'
+import { OrderTracking, getCarrierDisplayName } from 'src/types/orderTracking.type'
 
 interface OrderTrackingTimelineProps {
-  tracking: OrderTracking;
-  className?: string;
+  tracking: OrderTracking
+  className?: string
 }
 
-const STATUS_ORDER: OrderStatus[] = ['pending', 'confirmed', 'processing', 'shipping', 'delivered'];
+const STATUS_ORDER: OrderStatus[] = ['pending', 'confirmed', 'processing', 'shipping', 'delivered']
 
 // Unique SVG icon per status
 function StatusIcon({ status, className }: { status: string; className?: string }) {
@@ -28,7 +28,7 @@ function StatusIcon({ status, className }: { status: string; className?: string 
             d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-      );
+      )
     case 'confirmed':
       return (
         <svg
@@ -44,7 +44,7 @@ function StatusIcon({ status, className }: { status: string; className?: string 
             d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-      );
+      )
     case 'processing':
       return (
         <svg
@@ -60,7 +60,7 @@ function StatusIcon({ status, className }: { status: string; className?: string 
             d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"
           />
         </svg>
-      );
+      )
     case 'shipping':
       return (
         <svg
@@ -76,7 +76,7 @@ function StatusIcon({ status, className }: { status: string; className?: string 
             d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"
           />
         </svg>
-      );
+      )
     case 'delivered':
       return (
         <svg
@@ -92,7 +92,7 @@ function StatusIcon({ status, className }: { status: string; className?: string 
             d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
           />
         </svg>
-      );
+      )
     case 'cancelled':
       return (
         <svg className={className} fill="currentColor" viewBox="0 0 20 20">
@@ -102,7 +102,7 @@ function StatusIcon({ status, className }: { status: string; className?: string 
             clipRule="evenodd"
           />
         </svg>
-      );
+      )
     case 'returned':
       return (
         <svg
@@ -118,7 +118,7 @@ function StatusIcon({ status, className }: { status: string; className?: string 
             d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"
           />
         </svg>
-      );
+      )
     default:
       return (
         <svg className={className} fill="currentColor" viewBox="0 0 20 20">
@@ -128,41 +128,41 @@ function StatusIcon({ status, className }: { status: string; className?: string 
             clipRule="evenodd"
           />
         </svg>
-      );
+      )
   }
 }
 
 function formatDateTime(timestamp: string, locale: string): string {
-  const date = new Date(timestamp);
+  const date = new Date(timestamp)
   return date.toLocaleString(locale, {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-  });
+  })
 }
 
 function getStatusIndex(status: OrderStatus): number {
-  return STATUS_ORDER.indexOf(status);
+  return STATUS_ORDER.indexOf(status)
 }
 
 export default function OrderTrackingTimeline({ tracking, className }: OrderTrackingTimelineProps) {
-  const { t, i18n } = useTranslation('order');
-  const currentStatusIndex = getStatusIndex(tracking.status);
-  const isCancelled = tracking.status === 'cancelled';
-  const isReturned = tracking.status === 'returned';
+  const { t, i18n } = useTranslation('order')
+  const currentStatusIndex = getStatusIndex(tracking.status)
+  const isCancelled = tracking.status === 'cancelled'
+  const isReturned = tracking.status === 'returned'
 
   // Filter timeline: only show events up to and including the current status
   const visibleTimeline = tracking.timeline.filter((event) => {
-    const eventIndex = getStatusIndex(event.status as OrderStatus);
+    const eventIndex = getStatusIndex(event.status as OrderStatus)
     // Always show cancelled/returned events if that's the current status
     if (event.status === 'cancelled' || event.status === 'returned') {
-      return isCancelled || isReturned;
+      return isCancelled || isReturned
     }
     // Only show events whose status index <= current status index
-    return eventIndex <= currentStatusIndex;
-  });
+    return eventIndex <= currentStatusIndex
+  })
 
   return (
     <div
@@ -247,11 +247,11 @@ export default function OrderTrackingTimeline({ tracking, className }: OrderTrac
 
         <div className="relative">
           {visibleTimeline.map((event, index) => {
-            const isLast = index === visibleTimeline.length - 1;
-            const isCurrent = event.status === tracking.status;
-            const eventStatusIndex = getStatusIndex(event.status as OrderStatus);
-            const isPassed = eventStatusIndex < currentStatusIndex;
-            const isError = event.status === 'cancelled' || event.status === 'returned';
+            const isLast = index === visibleTimeline.length - 1
+            const isCurrent = event.status === tracking.status
+            const eventStatusIndex = getStatusIndex(event.status as OrderStatus)
+            const isPassed = eventStatusIndex < currentStatusIndex
+            const isError = event.status === 'cancelled' || event.status === 'returned'
 
             return (
               <div key={`${event.timestamp}-${index}`} className="relative flex gap-3 md:gap-4">
@@ -331,7 +331,7 @@ export default function OrderTrackingTimeline({ tracking, className }: OrderTrac
                   </p>
                 </div>
               </div>
-            );
+            )
           })}
         </div>
       </div>
@@ -343,5 +343,5 @@ export default function OrderTrackingTimeline({ tracking, className }: OrderTrac
         </p>
       </div>
     </div>
-  );
+  )
 }

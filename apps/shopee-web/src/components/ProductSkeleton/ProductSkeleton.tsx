@@ -30,7 +30,7 @@ const ProductSkeleton = () => {
         <div className="h-3 w-24 animate-pulse rounded-sm bg-gray-200 dark:bg-slate-700" />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProductSkeleton;
+export default ProductSkeleton

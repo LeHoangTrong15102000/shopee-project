@@ -1,22 +1,22 @@
-import React, { useEffect } from 'react';
-import { Pressable, View } from 'react-native';
+import React, { useEffect } from 'react'
+import { Pressable, View } from 'react-native'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   interpolateColor,
-} from 'react-native-reanimated';
-import { cn } from '@/utils';
-import { cva } from 'class-variance-authority';
+} from 'react-native-reanimated'
+import { cn } from '@/utils'
+import { cva } from 'class-variance-authority'
 
 interface SwitchProps {
-  value: boolean;
-  onValueChange: (value: boolean) => void;
-  disabled?: boolean;
-  size?: 'sm' | 'md' | 'lg';
-  className?: string;
-  trackClassName?: string;
-  thumbClassName?: string;
+  value: boolean
+  onValueChange: (value: boolean) => void
+  disabled?: boolean
+  size?: 'sm' | 'md' | 'lg'
+  className?: string
+  trackClassName?: string
+  thumbClassName?: string
 }
 
 const switchVariants = cva('relative rounded-full border-2 border-transparent', {
@@ -35,7 +35,7 @@ const switchVariants = cva('relative rounded-full border-2 border-transparent', 
     size: 'md',
     disabled: false,
   },
-});
+})
 
 const thumbVariants = cva('absolute rounded-full bg-white shadow-sm', {
   variants: {
@@ -48,7 +48,7 @@ const thumbVariants = cva('absolute rounded-full bg-white shadow-sm', {
   defaultVariants: {
     size: 'md',
   },
-});
+})
 
 export default function Switch({
   value,
@@ -59,30 +59,30 @@ export default function Switch({
   trackClassName,
   thumbClassName,
 }: SwitchProps) {
-  const translateX = useSharedValue(value ? 1 : 0);
-  const scale = useSharedValue(1);
+  const translateX = useSharedValue(value ? 1 : 0)
+  const scale = useSharedValue(1)
 
   useEffect(() => {
     translateX.value = withSpring(value ? 1 : 0, {
       damping: 15,
       stiffness: 150,
-    });
-  }, [value, translateX]);
+    })
+  }, [value, translateX])
 
   const trackAnimatedStyle = useAnimatedStyle(() => {
     const backgroundColor = interpolateColor(
       translateX.value,
       [0, 1],
       ['rgb(113, 113, 122)', 'rgb(232, 90, 90)'] // neutrals500 to primary
-    );
+    )
 
     return {
       backgroundColor,
-    };
-  });
+    }
+  })
 
   const thumbAnimatedStyle = useAnimatedStyle(() => {
-    const maxTranslateX = size === 'sm' ? 16 : size === 'md' ? 20 : 24;
+    const maxTranslateX = size === 'sm' ? 16 : size === 'md' ? 20 : 24
 
     return {
       transform: [
@@ -93,18 +93,18 @@ export default function Switch({
           scale: scale.value,
         },
       ],
-    };
-  });
+    }
+  })
 
   const handlePress = () => {
-    if (disabled) return;
+    if (disabled) return
 
     scale.value = withSpring(0.95, { damping: 15, stiffness: 300 }, () => {
-      scale.value = withSpring(1, { damping: 15, stiffness: 300 });
-    });
+      scale.value = withSpring(1, { damping: 15, stiffness: 300 })
+    })
 
-    onValueChange(!value);
-  };
+    onValueChange(!value)
+  }
 
   return (
     <Pressable
@@ -120,5 +120,5 @@ export default function Switch({
         />
       </Animated.View>
     </Pressable>
-  );
+  )
 }

@@ -2,4 +2,4 @@ export {
   default,
   KeyboardShortcutsProvider,
   useKeyboardShortcutsContext,
-} from './KeyboardShortcutsProvider';
+} from './KeyboardShortcutsProvider'

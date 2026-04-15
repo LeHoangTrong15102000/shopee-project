@@ -1,13 +1,32 @@
 import { Types } from 'mongoose'
-import { IOrderRepository, CreateOrderDTO, OrderFilterOptions } from '@repositories/interfaces/order.repository.interface'
+import {
+  IOrderRepository,
+  CreateOrderDTO,
+  OrderFilterOptions,
+} from '@repositories/interfaces/order.repository.interface'
 import { IProductRepository } from '@repositories/interfaces/product.repository.interface'
 import { IAddressRepository } from '@repositories/interfaces/address.repository.interface'
 import { IPurchaseRepository } from '@repositories/interfaces/purchase.repository.interface'
 import { ISKURepository } from '@repositories/interfaces/sku.repository.interface'
-import { IProductSkuSnapshotRepository, CreateProductSkuSnapshotDTO } from '@repositories/interfaces/product-sku-snapshot.repository.interface'
-import { PaginatedResult, PaginationOptions } from '@repositories/interfaces/base.repository.interface'
+import {
+  IProductSkuSnapshotRepository,
+  CreateProductSkuSnapshotDTO,
+} from '@repositories/interfaces/product-sku-snapshot.repository.interface'
+import {
+  PaginatedResult,
+  PaginationOptions,
+} from '@repositories/interfaces/base.repository.interface'
 import { BaseService, NotFoundError, ValidationError, BusinessError } from './base.service'
-import { IOrder, ORDER_STATUS, OrderStatusType, PAYMENT_METHOD, PaymentMethodType, IOrderItem, IShippingAddress, IShippingMethod } from '@database/models/order.model'
+import {
+  IOrder,
+  ORDER_STATUS,
+  OrderStatusType,
+  PAYMENT_METHOD,
+  PaymentMethodType,
+  IOrderItem,
+  IShippingAddress,
+  IShippingMethod,
+} from '@database/models/order.model'
 import { OrderModel } from '@database/models/order.model'
 import { IOrderTracking } from '@database/models/order-tracking.model'
 import { STATUS_PURCHASE } from '@constants/purchase'
@@ -22,10 +41,38 @@ const SHIPPING_METHODS = [
 ]
 
 const PAYMENT_METHODS = [
-  { id: PAYMENT_METHOD.COD, type: PAYMENT_METHOD.COD, name: 'Thanh toán khi nhận hàng (COD)', description: 'Thanh toán bằng tiền mặt khi nhận hàng', icon: '💵', is_available: true },
-  { id: PAYMENT_METHOD.BANK_TRANSFER, type: PAYMENT_METHOD.BANK_TRANSFER, name: 'Chuyển khoản ngân hàng', description: 'Chuyển khoản qua tài khoản ngân hàng', icon: '🏦', is_available: true },
-  { id: PAYMENT_METHOD.E_WALLET, type: PAYMENT_METHOD.E_WALLET, name: 'Ví điện tử', description: 'Thanh toán qua MoMo, ZaloPay, VNPay', icon: '📱', is_available: true },
-  { id: PAYMENT_METHOD.CREDIT_CARD, type: PAYMENT_METHOD.CREDIT_CARD, name: 'Thẻ tín dụng/Ghi nợ', description: 'Visa, Mastercard, JCB', icon: '💳', is_available: true },
+  {
+    id: PAYMENT_METHOD.COD,
+    type: PAYMENT_METHOD.COD,
+    name: 'Thanh toán khi nhận hàng (COD)',
+    description: 'Thanh toán bằng tiền mặt khi nhận hàng',
+    icon: '💵',
+    is_available: true,
+  },
+  {
+    id: PAYMENT_METHOD.BANK_TRANSFER,
+    type: PAYMENT_METHOD.BANK_TRANSFER,
+    name: 'Chuyển khoản ngân hàng',
+    description: 'Chuyển khoản qua tài khoản ngân hàng',
+    icon: '🏦',
+    is_available: true,
+  },
+  {
+    id: PAYMENT_METHOD.E_WALLET,
+    type: PAYMENT_METHOD.E_WALLET,
+    name: 'Ví điện tử',
+    description: 'Thanh toán qua MoMo, ZaloPay, VNPay',
+    icon: '📱',
+    is_available: true,
+  },
+  {
+    id: PAYMENT_METHOD.CREDIT_CARD,
+    type: PAYMENT_METHOD.CREDIT_CARD,
+    name: 'Thẻ tín dụng/Ghi nợ',
+    description: 'Visa, Mastercard, JCB',
+    icon: '💳',
+    is_available: true,
+  },
 ]
 
 export interface CreateOrderInput {
@@ -46,7 +93,7 @@ export class OrderService extends BaseService {
     private readonly addressRepository: IAddressRepository,
     private readonly purchaseRepository: IPurchaseRepository,
     private readonly skuRepository?: ISKURepository,
-    private readonly productSkuSnapshotRepository?: IProductSkuSnapshotRepository
+    private readonly productSkuSnapshotRepository?: IProductSkuSnapshotRepository,
   ) {
     super()
   }
@@ -73,7 +120,13 @@ export class OrderService extends BaseService {
     let subtotal = 0
 
     // Collect all SKU items for bulk atomic decrement
-    const skuItems: Array<{ skuId: string; quantity: number; productName: string; skuValue: string; skuStock: number }> = []
+    const skuItems: Array<{
+      skuId: string
+      quantity: number
+      productName: string
+      skuValue: string
+      skuStock: number
+    }> = []
 
     for (const item of input.items) {
       const product = await this.productRepository.findById(item.product_id)
@@ -136,7 +189,7 @@ export class OrderService extends BaseService {
     if (skuItems.length > 0 && this.skuRepository) {
       try {
         await this.skuRepository.bulkAtomicDecrementStock(
-          skuItems.map((s) => ({ skuId: s.skuId, quantity: s.quantity }))
+          skuItems.map((s) => ({ skuId: s.skuId, quantity: s.quantity })),
         )
       } catch (err) {
         if (err instanceof BusinessError) {
@@ -144,7 +197,7 @@ export class OrderService extends BaseService {
           const failingSku = skuItems.find((s) => err.message.includes(s.skuId))
           if (failingSku) {
             throw new BusinessError(
-              `Sản phẩm ${failingSku.productName} - ${failingSku.skuValue} không đủ số lượng (còn ${failingSku.skuStock}, cần ${failingSku.quantity})`
+              `Sản phẩm ${failingSku.productName} - ${failingSku.skuValue} không đủ số lượng (còn ${failingSku.skuStock}, cần ${failingSku.quantity})`,
             )
           }
         }
@@ -210,14 +263,20 @@ export class OrderService extends BaseService {
         try {
           await this.productRepository.incrementSold(productId, soldCount)
         } catch (err) {
-          console.error(`[Product.sold Sync Failed] Product ${productId}: ${err instanceof Error ? err.message : 'Unknown error'}`)
+          console.error(
+            `[Product.sold Sync Failed] Product ${productId}: ${err instanceof Error ? err.message : 'Unknown error'}`,
+          )
         }
       }
     }
 
     // Clear cart items
     for (const item of input.items) {
-      await this.purchaseRepository.deleteByUserAndProduct(userId, item.product_id, STATUS_PURCHASE.IN_CART)
+      await this.purchaseRepository.deleteByUserAndProduct(
+        userId,
+        item.product_id,
+        STATUS_PURCHASE.IN_CART,
+      )
     }
 
     return order
@@ -226,12 +285,12 @@ export class OrderService extends BaseService {
   async getOrders(
     userId: string,
     status: OrderStatusType | 'all' | undefined,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IOrder>> {
     if (!this.isValidObjectId(userId)) throw new ValidationError('Invalid user ID format')
     return this.orderRepository.findByUser(
       { user_id: userId, status: status || 'all' },
-      this.normalizePagination(pagination)
+      this.normalizePagination(pagination),
     )
   }
 
@@ -251,7 +310,9 @@ export class OrderService extends BaseService {
     const order = await this.orderRepository.findByIdAndUser(orderId, userId)
     if (!order) throw new NotFoundError('Order', orderId)
 
-    const validation = validateStatusTransition(order.status, ORDER_STATUS.CANCELLED, 'user', { cancelReason: reason })
+    const validation = validateStatusTransition(order.status, ORDER_STATUS.CANCELLED, 'user', {
+      cancelReason: reason,
+    })
     if (!validation.valid) {
       throw new BusinessError(validation.message!)
     }
@@ -297,7 +358,9 @@ export class OrderService extends BaseService {
     const order = await this.orderRepository.findByIdAndUser(orderId, userId)
     if (!order) throw new NotFoundError('Order', orderId)
 
-    const validation = validateStatusTransition(order.status, ORDER_STATUS.RETURNED, 'user', { returnReason: reason })
+    const validation = validateStatusTransition(order.status, ORDER_STATUS.RETURNED, 'user', {
+      returnReason: reason,
+    })
     if (!validation.valid) {
       throw new BusinessError(validation.message!)
     }
@@ -323,7 +386,7 @@ export class OrderService extends BaseService {
   async adminUpdateStatus(
     orderId: string,
     targetStatus: OrderStatusType,
-    options?: { reason?: string }
+    options?: { reason?: string },
   ): Promise<IOrder> {
     if (!this.isValidObjectId(orderId)) throw new ValidationError('Invalid order ID format')
 
@@ -370,7 +433,11 @@ export class OrderService extends BaseService {
       await this.restoreOrderStock(order.items)
     }
 
-    const updatedOrder = await this.orderRepository.updateStatus(orderId, targetStatus, additionalData)
+    const updatedOrder = await this.orderRepository.updateStatus(
+      orderId,
+      targetStatus,
+      additionalData,
+    )
 
     emitOrderStatusUpdate(orderId, order.status, targetStatus)
 
@@ -413,19 +480,19 @@ export class OrderService extends BaseService {
       start_date?: string
       end_date?: string
     },
-    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' }
+    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' },
   ) {
     return (this.orderRepository as any).findAllWithFilters(filters, pagination)
   }
 
   // ─── Admin: Bulk Update Status ─────────────────────────────────
 
-  async adminBulkUpdateStatus(
-    orderIds: string[],
-    targetStatus: OrderStatusType,
-    reason?: string
-  ) {
-    const results = { success: 0, failed: 0, errors: [] as Array<{ order_id: string; message: string }> }
+  async adminBulkUpdateStatus(orderIds: string[], targetStatus: OrderStatusType, reason?: string) {
+    const results = {
+      success: 0,
+      failed: 0,
+      errors: [] as Array<{ order_id: string; message: string }>,
+    }
 
     for (const orderId of orderIds) {
       try {
@@ -443,9 +510,7 @@ export class OrderService extends BaseService {
   // ─── Admin: Count by Status ────────────────────────────────────
 
   async adminGetOrderCountByStatus() {
-    const counts = await OrderModel.aggregate([
-      { $group: { _id: '$status', count: { $sum: 1 } } },
-    ])
+    const counts = await OrderModel.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }])
 
     const total = await OrderModel.countDocuments()
 
@@ -466,7 +531,11 @@ export class OrderService extends BaseService {
    * Legacy items: uses bulkUpdateStock with $inc for atomic updates.
    */
   private async restoreOrderStock(items: IOrderItem[]): Promise<void> {
-    const legacyUpdates: Array<{ product_id: string; quantity_change: number; sold_change: number }> = []
+    const legacyUpdates: Array<{
+      product_id: string
+      quantity_change: number
+      sold_change: number
+    }> = []
     const skuSoldByProduct = new Map<string, number>()
 
     for (const item of items) {
@@ -498,9 +567,10 @@ export class OrderService extends BaseService {
       try {
         await this.productRepository.incrementSold(productId, -soldCount)
       } catch (err) {
-        console.error(`[Product.sold Sync Failed] Product ${productId}: ${err instanceof Error ? err.message : 'Unknown error'}`)
+        console.error(
+          `[Product.sold Sync Failed] Product ${productId}: ${err instanceof Error ? err.message : 'Unknown error'}`,
+        )
       }
     }
   }
 }
-

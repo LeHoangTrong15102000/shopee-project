@@ -36,7 +36,7 @@ const SearchHistorySchema = new Schema<ISearchHistory>(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 // Compound unique index: user + keyword
@@ -47,8 +47,7 @@ SearchHistorySchema.index({ user: 1, lastSearched: -1 })
 
 export const SearchHistoryModel = mongoose.model<ISearchHistory>(
   'search_histories',
-  SearchHistorySchema
+  SearchHistorySchema,
 )
 
 export { ISearchHistory }
-

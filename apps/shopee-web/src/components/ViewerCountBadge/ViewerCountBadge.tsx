@@ -1,11 +1,11 @@
-import classNames from 'classnames';
-import { useTranslation } from 'react-i18next';
-import { EyeIcon, FireIcon } from 'src/components/Icons';
+import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
+import { EyeIcon, FireIcon } from 'src/components/Icons'
 
 interface ViewerCountBadgeProps {
-  viewerCount: number;
-  isPopular: boolean;
-  className?: string;
+  viewerCount: number
+  isPopular: boolean
+  className?: string
 }
 
 export default function ViewerCountBadge({
@@ -13,10 +13,10 @@ export default function ViewerCountBadge({
   isPopular,
   className,
 }: ViewerCountBadgeProps) {
-  const { t } = useTranslation('product');
+  const { t } = useTranslation('product')
 
   if (viewerCount <= 1) {
-    return null;
+    return null
   }
 
   return (
@@ -39,5 +39,5 @@ export default function ViewerCountBadge({
         <span>{t('viewer.watching', { count: viewerCount })}</span>
       )}
     </div>
-  );
+  )
 }

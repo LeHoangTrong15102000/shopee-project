@@ -49,7 +49,10 @@ describe('Address Integration', () => {
     })
 
     it('should return all addresses', async () => {
-      await supertest(app).post('/addresses').set('Authorization', `Bearer ${authToken}`).send(validAddress)
+      await supertest(app)
+        .post('/addresses')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(validAddress)
       const res = await supertest(app).get('/addresses').set('Authorization', `Bearer ${authToken}`)
       expect(res.status).toBeLessThan(400)
       expect(res.body.data.addresses.length).toBe(1)
@@ -63,16 +66,23 @@ describe('Address Integration', () => {
 
   describe('GET /addresses/:id', () => {
     it('should get specific address', async () => {
-      const createRes = await supertest(app).post('/addresses').set('Authorization', `Bearer ${authToken}`).send(validAddress)
+      const createRes = await supertest(app)
+        .post('/addresses')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(validAddress)
       const addressId = createRes.body.data._id
-      const res = await supertest(app).get(`/addresses/${addressId}`).set('Authorization', `Bearer ${authToken}`)
+      const res = await supertest(app)
+        .get(`/addresses/${addressId}`)
+        .set('Authorization', `Bearer ${authToken}`)
       expect(res.status).toBeLessThan(400)
       expect(res.body.data._id).toBe(addressId)
     })
 
     it('should fail with non-existent ID', async () => {
       const fakeId = new mongoose.Types.ObjectId().toString()
-      const res = await supertest(app).get(`/addresses/${fakeId}`).set('Authorization', `Bearer ${authToken}`)
+      const res = await supertest(app)
+        .get(`/addresses/${fakeId}`)
+        .set('Authorization', `Bearer ${authToken}`)
       expect(res.status).toBeGreaterThanOrEqual(400)
     })
 
@@ -85,16 +95,25 @@ describe('Address Integration', () => {
 
   describe('PUT /addresses/:id', () => {
     it('should update address fields', async () => {
-      const createRes = await supertest(app).post('/addresses').set('Authorization', `Bearer ${authToken}`).send(validAddress)
+      const createRes = await supertest(app)
+        .post('/addresses')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(validAddress)
       const addressId = createRes.body.data._id
-      const res = await supertest(app).put(`/addresses/${addressId}`).set('Authorization', `Bearer ${authToken}`).send({ ...validAddress, full_name: 'Jane Doe' })
+      const res = await supertest(app)
+        .put(`/addresses/${addressId}`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ ...validAddress, full_name: 'Jane Doe' })
       expect(res.status).toBeLessThan(400)
       expect(res.body.data.full_name).toBe('Jane Doe')
     })
 
     it('should fail with non-existent ID', async () => {
       const fakeId = new mongoose.Types.ObjectId().toString()
-      const res = await supertest(app).put(`/addresses/${fakeId}`).set('Authorization', `Bearer ${authToken}`).send(validAddress)
+      const res = await supertest(app)
+        .put(`/addresses/${fakeId}`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(validAddress)
       expect(res.status).toBeGreaterThanOrEqual(400)
     })
 
@@ -107,16 +126,32 @@ describe('Address Integration', () => {
 
   describe('DELETE /addresses/:id', () => {
     it('should delete non-default address', async () => {
-      await supertest(app).post('/addresses').set('Authorization', `Bearer ${authToken}`).send(validAddress)
-      const second = await supertest(app).post('/addresses').set('Authorization', `Bearer ${authToken}`).send({ ...validAddress, full_name: 'Second' })
-      const res = await supertest(app).delete(`/addresses/${second.body.data._id}`).set('Authorization', `Bearer ${authToken}`)
+      await supertest(app)
+        .post('/addresses')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(validAddress)
+      const second = await supertest(app)
+        .post('/addresses')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ ...validAddress, full_name: 'Second' })
+      const res = await supertest(app)
+        .delete(`/addresses/${second.body.data._id}`)
+        .set('Authorization', `Bearer ${authToken}`)
       expect(res.status).toBeLessThan(400)
     })
 
     it('should fail to delete default when others exist', async () => {
-      const first = await supertest(app).post('/addresses').set('Authorization', `Bearer ${authToken}`).send(validAddress)
-      await supertest(app).post('/addresses').set('Authorization', `Bearer ${authToken}`).send({ ...validAddress, full_name: 'Second' })
-      const res = await supertest(app).delete(`/addresses/${first.body.data._id}`).set('Authorization', `Bearer ${authToken}`)
+      const first = await supertest(app)
+        .post('/addresses')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(validAddress)
+      await supertest(app)
+        .post('/addresses')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ ...validAddress, full_name: 'Second' })
+      const res = await supertest(app)
+        .delete(`/addresses/${first.body.data._id}`)
+        .set('Authorization', `Bearer ${authToken}`)
       expect(res.status).toBeGreaterThanOrEqual(400)
     })
 
@@ -129,18 +164,27 @@ describe('Address Integration', () => {
 
   describe('PUT /addresses/:id/default', () => {
     it('should set default address', async () => {
-      await supertest(app).post('/addresses').set('Authorization', `Bearer ${authToken}`).send(validAddress)
-      const second = await supertest(app).post('/addresses').set('Authorization', `Bearer ${authToken}`).send({ ...validAddress, full_name: 'Second' })
-      const res = await supertest(app).put(`/addresses/${second.body.data._id}/default`).set('Authorization', `Bearer ${authToken}`)
+      await supertest(app)
+        .post('/addresses')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(validAddress)
+      const second = await supertest(app)
+        .post('/addresses')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ ...validAddress, full_name: 'Second' })
+      const res = await supertest(app)
+        .put(`/addresses/${second.body.data._id}/default`)
+        .set('Authorization', `Bearer ${authToken}`)
       expect(res.status).toBeLessThan(400)
       expect(res.body.data.is_default).toBe(true)
     })
 
     it('should fail with non-existent ID', async () => {
       const fakeId = new mongoose.Types.ObjectId().toString()
-      const res = await supertest(app).put(`/addresses/${fakeId}/default`).set('Authorization', `Bearer ${authToken}`)
+      const res = await supertest(app)
+        .put(`/addresses/${fakeId}/default`)
+        .set('Authorization', `Bearer ${authToken}`)
       expect(res.status).toBeGreaterThanOrEqual(400)
     })
   })
 })
-

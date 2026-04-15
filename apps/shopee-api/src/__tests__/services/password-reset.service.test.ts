@@ -106,7 +106,7 @@ describe('PasswordResetService', () => {
       })
 
       await expect(service.resetPassword('invalid_token', 'newPassword123')).rejects.toThrow(
-        new BusinessError('Token không hợp lệ')
+        new BusinessError('Token không hợp lệ'),
       )
     })
 
@@ -124,7 +124,7 @@ describe('PasswordResetService', () => {
       })
 
       await expect(service.resetPassword(token, 'newPassword123')).rejects.toThrow(
-        new BusinessError('Token đã hết hạn. Vui lòng yêu cầu đặt lại mật khẩu mới')
+        new BusinessError('Token đã hết hạn. Vui lòng yêu cầu đặt lại mật khẩu mới'),
       )
       expect(PasswordResetModel.deleteOne).toHaveBeenCalledWith({ _id: resetRecord._id })
     })
@@ -144,7 +144,7 @@ describe('PasswordResetService', () => {
       mockUserRepo.findByEmail.mockResolvedValue(null)
 
       await expect(service.resetPassword(token, 'newPassword123')).rejects.toThrow(
-        new BusinessError('Token không hợp lệ')
+        new BusinessError('Token không hợp lệ'),
       )
     })
   })

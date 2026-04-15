@@ -16,7 +16,7 @@ import { PaginatedResult, PaginationOptions } from './interfaces/base.repository
 export class ReviewRepository implements IReviewRepository {
   async findByProduct(
     filters: ReviewFilterOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IReviewItem>> {
     const { page, limit } = pagination
     const skip = (page - 1) * limit
@@ -48,7 +48,9 @@ export class ReviewRepository implements IReviewRepository {
   }
 
   async findById(reviewId: string | Types.ObjectId): Promise<IReviewItem | null> {
-    return ReviewModel.findById(reviewId).populate('user', 'name email avatar').lean<IReviewItem | null>()
+    return ReviewModel.findById(reviewId)
+      .populate('user', 'name email avatar')
+      .lean<IReviewItem | null>()
   }
 
   async findByPurchase(purchaseId: string | Types.ObjectId): Promise<IReviewItem | null> {
@@ -96,19 +98,25 @@ export class ReviewRepository implements IReviewRepository {
     }
   }
 
-  async findUserLike(userId: string | Types.ObjectId, reviewId: string | Types.ObjectId): Promise<boolean> {
+  async findUserLike(
+    userId: string | Types.ObjectId,
+    reviewId: string | Types.ObjectId,
+  ): Promise<boolean> {
     const like = await ReviewLikeModel.findOne({ user: userId, review: reviewId })
     return !!like
   }
 
-  async findUserLikes(userId: string | Types.ObjectId, reviewIds: (string | Types.ObjectId)[]): Promise<Set<string>> {
+  async findUserLikes(
+    userId: string | Types.ObjectId,
+    reviewIds: (string | Types.ObjectId)[],
+  ): Promise<Set<string>> {
     const likes = await ReviewLikeModel.find({ user: userId, review: { $in: reviewIds } })
     return new Set(likes.map((l) => l.review.toString()))
   }
 
   async toggleLike(
     userId: string | Types.ObjectId,
-    reviewId: string | Types.ObjectId
+    reviewId: string | Types.ObjectId,
   ): Promise<{ is_liked: boolean; helpful_count: number }> {
     const existingLike = await ReviewLikeModel.findOne({ user: userId, review: reviewId })
 
@@ -128,7 +136,7 @@ export class ReviewRepository implements IReviewRepository {
 
   async findCommentsByReview(
     reviewId: string | Types.ObjectId,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IReviewCommentItem>> {
     const { page, limit } = pagination
     const skip = (page - 1) * limit
@@ -155,11 +163,16 @@ export class ReviewRepository implements IReviewRepository {
     const flatComments: IReviewCommentItem[] = []
     for (const root of rootComments) {
       flatComments.push(root)
-      const replies = allReplies.filter((r) => r.parent_comment?.toString() === root._id?.toString())
+      const replies = allReplies.filter(
+        (r) => r.parent_comment?.toString() === root._id?.toString(),
+      )
       flatComments.push(...replies)
     }
 
-    const total = await ReviewCommentModel.countDocuments({ review: reviewId, parent_comment: null })
+    const total = await ReviewCommentModel.countDocuments({
+      review: reviewId,
+      parent_comment: null,
+    })
     return {
       data: flatComments,
       pagination: { page, limit, page_size: Math.ceil(total / limit) || 1, total },
@@ -188,7 +201,7 @@ export class ReviewRepository implements IReviewRepository {
 
   async findAllWithFilters(
     filters: { rating?: number; product_id?: string; user_id?: string; search?: string },
-    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' }
+    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' },
   ): Promise<PaginatedResult<IReviewItem>> {
     const { page, limit, sort_by = 'createdAt', order = 'desc' } = pagination
     const skip = (page - 1) * limit
@@ -234,8 +247,12 @@ export class ReviewRepository implements IReviewRepository {
       ReviewModel.countDocuments(),
       ReviewModel.aggregate([{ $group: { _id: '$rating', count: { $sum: 1 } } }]),
       ReviewModel.aggregate([{ $group: { _id: null, avg: { $avg: '$rating' } } }]),
-      ReviewModel.countDocuments({ createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) } }),
-      ReviewModel.countDocuments({ createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } }),
+      ReviewModel.countDocuments({
+        createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) },
+      }),
+      ReviewModel.countDocuments({
+        createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+      }),
     ])
 
     const breakdown: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
@@ -250,4 +267,3 @@ export class ReviewRepository implements IReviewRepository {
     }
   }
 }
-

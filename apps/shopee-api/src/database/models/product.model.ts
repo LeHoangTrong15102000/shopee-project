@@ -30,7 +30,7 @@ const ProductSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 // Text index for full-text search on product name

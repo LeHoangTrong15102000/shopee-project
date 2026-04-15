@@ -1,4 +1,4 @@
-import { createMockDashboardOverview } from 'src/test-utils/factories';
+import { createMockDashboardOverview } from 'src/test-utils/factories'
 import type {
   DashboardOverview,
   RevenueData,
@@ -6,9 +6,9 @@ import type {
   UserGrowthData,
   TopProduct,
   TopBuyer,
-} from 'src/types';
+} from 'src/types'
 
-export const mockDashboardOverview: DashboardOverview = createMockDashboardOverview();
+export const mockDashboardOverview: DashboardOverview = createMockDashboardOverview()
 
 export const mockRevenueData: RevenueData[] = [
   { date: '2024-01-01', revenue: 50000000 },
@@ -16,7 +16,7 @@ export const mockRevenueData: RevenueData[] = [
   { date: '2024-01-03', revenue: 45000000 },
   { date: '2024-01-04', revenue: 80000000 },
   { date: '2024-01-05', revenue: 72000000 },
-];
+]
 
 export const mockOrderTrends: OrderTrendData[] = [
   { date: '2024-01-01', orders: 120 },
@@ -24,7 +24,7 @@ export const mockOrderTrends: OrderTrendData[] = [
   { date: '2024-01-03', orders: 100 },
   { date: '2024-01-04', orders: 180 },
   { date: '2024-01-05', orders: 160 },
-];
+]
 
 export const mockUserGrowth: UserGrowthData[] = [
   { date: '2024-01-01', users: 50 },
@@ -32,7 +32,7 @@ export const mockUserGrowth: UserGrowthData[] = [
   { date: '2024-01-03', users: 40 },
   { date: '2024-01-04', users: 80 },
   { date: '2024-01-05', users: 70 },
-];
+]
 
 export const mockTopProducts: TopProduct[] = [
   {
@@ -56,7 +56,7 @@ export const mockTopProducts: TopProduct[] = [
     revenue: 100000000,
     sold: 20,
   },
-];
+]
 
 export const mockTopBuyers: TopBuyer[] = [
   {
@@ -80,4 +80,4 @@ export const mockTopBuyers: TopBuyer[] = [
     total_spent: 20000000,
     total_orders: 8,
   },
-];
+]

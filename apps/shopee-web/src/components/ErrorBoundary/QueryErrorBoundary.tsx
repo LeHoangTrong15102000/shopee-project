@@ -1,18 +1,18 @@
-import { useQueryErrorResetBoundary } from '@tanstack/react-query';
-import { Component, ErrorInfo, ReactNode } from 'react';
-import ErrorFallback from './ErrorFallback';
+import { useQueryErrorResetBoundary } from '@tanstack/react-query'
+import { Component, ErrorInfo, ReactNode } from 'react'
+import ErrorFallback from './ErrorFallback'
 
 interface QueryErrorBoundaryProps {
-  children: ReactNode;
-  fallback?: ReactNode;
-  onReset?: () => void;
-  title?: string;
-  message?: string;
+  children: ReactNode
+  fallback?: ReactNode
+  onReset?: () => void
+  title?: string
+  message?: string
 }
 
 interface QueryErrorBoundaryState {
-  hasError: boolean;
-  error: Error | null;
+  hasError: boolean
+  error: Error | null
 }
 
 class QueryErrorBoundaryInner extends Component<
@@ -22,26 +22,26 @@ class QueryErrorBoundaryInner extends Component<
   public state: QueryErrorBoundaryState = {
     hasError: false,
     error: null,
-  };
+  }
 
   public static getDerivedStateFromError(error: Error): QueryErrorBoundaryState {
-    return { hasError: true, error };
+    return { hasError: true, error }
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('QueryErrorBoundary caught error:', error, errorInfo);
+    console.error('QueryErrorBoundary caught error:', error, errorInfo)
   }
 
   public resetErrorBoundary = () => {
-    this.props.resetBoundary();
-    this.props.onReset?.();
-    this.setState({ hasError: false, error: null });
-  };
+    this.props.resetBoundary()
+    this.props.onReset?.()
+    this.setState({ hasError: false, error: null })
+  }
 
   public render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
-        return this.props.fallback;
+        return this.props.fallback
       }
 
       return (
@@ -51,10 +51,10 @@ class QueryErrorBoundaryInner extends Component<
           title={this.props.title}
           message={this.props.message}
         />
-      );
+      )
     }
 
-    return this.props.children;
+    return this.props.children
   }
 }
 
@@ -65,7 +65,7 @@ export default function QueryErrorBoundary({
   title,
   message,
 }: QueryErrorBoundaryProps) {
-  const { reset } = useQueryErrorResetBoundary();
+  const { reset } = useQueryErrorResetBoundary()
 
   return (
     <QueryErrorBoundaryInner
@@ -77,5 +77,5 @@ export default function QueryErrorBoundary({
     >
       {children}
     </QueryErrorBoundaryInner>
-  );
+  )
 }

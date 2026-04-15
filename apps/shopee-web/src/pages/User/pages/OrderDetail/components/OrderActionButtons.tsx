@@ -1,15 +1,15 @@
-import { motion } from 'framer-motion';
-import Button from 'src/components/Button';
-import { ANIMATION_DURATION } from 'src/styles/animations/motion.config';
-import { reducedMotionVariants, sectionVariants } from '../orderDetail.constants';
+import { motion } from 'framer-motion'
+import Button from 'src/components/Button'
+import { ANIMATION_DURATION } from 'src/styles/animations/motion.config'
+import { reducedMotionVariants, sectionVariants } from '../orderDetail.constants'
 
 interface OrderActionButtonsProps {
-  canCancel: boolean;
-  canReturn: boolean;
-  isReturnExpired: boolean;
-  shouldReduceMotion: boolean | null;
-  onShowCancelModal: () => void;
-  onShowReturnModal: () => void;
+  canCancel: boolean
+  canReturn: boolean
+  isReturnExpired: boolean
+  shouldReduceMotion: boolean | null
+  onShowCancelModal: () => void
+  onShowReturnModal: () => void
 }
 
 export default function OrderActionButtons({
@@ -20,9 +20,9 @@ export default function OrderActionButtons({
   onShowCancelModal,
   onShowReturnModal,
 }: OrderActionButtonsProps) {
-  if (!canCancel && !canReturn && !isReturnExpired) return null;
+  if (!canCancel && !canReturn && !isReturnExpired) return null
 
-  const sectionItemVariants = shouldReduceMotion ? reducedMotionVariants : sectionVariants;
+  const sectionItemVariants = shouldReduceMotion ? reducedMotionVariants : sectionVariants
 
   return (
     <motion.div
@@ -63,5 +63,5 @@ export default function OrderActionButtons({
         </motion.div>
       )}
     </motion.div>
-  );
+  )
 }

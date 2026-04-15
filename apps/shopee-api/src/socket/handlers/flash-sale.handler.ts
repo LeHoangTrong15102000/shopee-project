@@ -65,4 +65,3 @@ export const registerFlashSaleHandlers = (socket: Socket): void => {
     }
   })
 }
-

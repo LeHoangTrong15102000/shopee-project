@@ -1,8 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Home from '../Home';
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { BrowserRouter } from 'react-router'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import Home from '../Home'
 
 vi.mock('framer-motion', () => ({
   motion: {
@@ -18,28 +18,28 @@ vi.mock('framer-motion', () => ({
         viewport,
         layout,
         ...rest
-      } = p;
-      return <div {...rest}>{children}</div>;
+      } = p
+      return <div {...rest}>{children}</div>
     },
   },
-}));
+}))
 
 vi.mock('src/components/HeroBanner', () => ({
   default: () => <div data-testid="hero-banner">banner</div>,
-}));
+}))
 
 vi.mock('src/components/FlashSale', () => ({
   FlashSaleTimer: () => <div data-testid="flash-sale-timer">timer</div>,
-}));
+}))
 
 vi.mock('src/components/OptimizedImage', () => ({
   default: ({ src, alt, ...props }: any) => <img src={src} alt={alt} />,
-}));
+}))
 
 vi.mock('src/components/SEO', () => ({
   default: () => null,
   SITE_URL: 'https://shopee.vn',
-}));
+}))
 
 vi.mock('src/apis/category.api', () => ({
   default: {
@@ -52,7 +52,7 @@ vi.mock('src/apis/category.api', () => ({
       },
     }),
   },
-}));
+}))
 
 vi.mock('src/apis/product.api', () => ({
   default: {
@@ -74,7 +74,7 @@ vi.mock('src/apis/product.api', () => ({
       },
     }),
   },
-}));
+}))
 
 vi.mock('src/hooks/useFlashSale', () => ({
   default: () => ({
@@ -84,52 +84,52 @@ vi.mock('src/hooks/useFlashSale', () => ({
     isEnded: false,
     isConnectedToServer: true,
   }),
-}));
+}))
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
-  });
+  })
   return ({ children }: { children: React.ReactNode }) => (
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </BrowserRouter>
-  );
-};
+  )
+}
 
 describe('Home', () => {
   it('renders hero banner', () => {
-    render(<Home />, { wrapper: createWrapper() });
-    expect(screen.getByTestId('hero-banner')).toBeInTheDocument();
-  });
+    render(<Home />, { wrapper: createWrapper() })
+    expect(screen.getByTestId('hero-banner')).toBeInTheDocument()
+  })
 
   it('renders flash sale timer', () => {
-    render(<Home />, { wrapper: createWrapper() });
-    expect(screen.getByTestId('flash-sale-timer')).toBeInTheDocument();
-  });
+    render(<Home />, { wrapper: createWrapper() })
+    expect(screen.getByTestId('flash-sale-timer')).toBeInTheDocument()
+  })
 
   it('renders FLASH SALE heading', () => {
-    render(<Home />, { wrapper: createWrapper() });
-    expect(screen.getByText('FLASH SALE')).toBeInTheDocument();
-  });
+    render(<Home />, { wrapper: createWrapper() })
+    expect(screen.getByText('FLASH SALE')).toBeInTheDocument()
+  })
 
   it('renders category section heading', async () => {
-    render(<Home />, { wrapper: createWrapper() });
+    render(<Home />, { wrapper: createWrapper() })
     // Category title from Vietnamese translations
-    const headings = screen.getAllByRole('heading');
-    expect(headings.length).toBeGreaterThanOrEqual(1);
-  });
+    const headings = screen.getAllByRole('heading')
+    expect(headings.length).toBeGreaterThanOrEqual(1)
+  })
 
   it('renders view all links', () => {
-    render(<Home />, { wrapper: createWrapper() });
-    const links = screen.getAllByRole('link');
-    expect(links.length).toBeGreaterThanOrEqual(1);
-  });
+    render(<Home />, { wrapper: createWrapper() })
+    const links = screen.getAllByRole('link')
+    expect(links.length).toBeGreaterThanOrEqual(1)
+  })
 
   it('renders CTA section', () => {
-    render(<Home />, { wrapper: createWrapper() });
+    render(<Home />, { wrapper: createWrapper() })
     // CTA section has a link with arrow icon
-    const svgs = document.querySelectorAll('svg');
-    expect(svgs.length).toBeGreaterThanOrEqual(1);
-  });
-});
+    const svgs = document.querySelectorAll('svg')
+    expect(svgs.length).toBeGreaterThanOrEqual(1)
+  })
+})

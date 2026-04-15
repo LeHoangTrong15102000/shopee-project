@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { BrowserRouter } from 'react-router';
-import Button from 'src/components/Button';
+import type { Meta, StoryObj } from '@storybook/react'
+import { BrowserRouter } from 'react-router'
+import Button from 'src/components/Button'
 
 const meta: Meta<typeof Button> = {
   title: 'Shopee/Button',
@@ -32,22 +32,22 @@ const meta: Meta<typeof Button> = {
       description: 'Render as button or link',
     },
   },
-};
+}
 
-export default meta;
-type Story = StoryObj<typeof Button>;
+export default meta
+type Story = StoryObj<typeof Button>
 
 const primaryClassName =
-  'bg-[#ee4d2d] text-white px-4 py-2 rounded-sm hover:bg-[#d73211] flex items-center';
+  'bg-[#ee4d2d] text-white px-4 py-2 rounded-sm hover:bg-[#d73211] flex items-center'
 const secondaryClassName =
-  'bg-gray-200 text-gray-800 px-4 py-2 rounded-sm hover:bg-gray-300 flex items-center';
+  'bg-gray-200 text-gray-800 px-4 py-2 rounded-sm hover:bg-gray-300 flex items-center'
 
 export const Default: Story = {
   args: {
     children: 'Button',
     className: primaryClassName,
   },
-};
+}
 
 export const Loading: Story = {
   args: {
@@ -55,7 +55,7 @@ export const Loading: Story = {
     className: primaryClassName,
     isLoading: true,
   },
-};
+}
 
 export const Disabled: Story = {
   args: {
@@ -63,7 +63,7 @@ export const Disabled: Story = {
     className: `${primaryClassName} opacity-50`,
     disabled: true,
   },
-};
+}
 
 export const AsLink: Story = {
   args: {
@@ -79,21 +79,21 @@ export const AsLink: Story = {
       </BrowserRouter>
     ),
   ],
-};
+}
 
 export const Primary: Story = {
   args: {
     children: 'Primary Button',
     className: primaryClassName,
   },
-};
+}
 
 export const Secondary: Story = {
   args: {
     children: 'Secondary Button',
     className: secondaryClassName,
   },
-};
+}
 
 export const WithIcon: Story = {
   args: {
@@ -118,4 +118,4 @@ export const WithIcon: Story = {
       </>
     ),
   },
-};
+}

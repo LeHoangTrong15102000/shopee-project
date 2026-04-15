@@ -1,26 +1,26 @@
-import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
+import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import { motion } from 'framer-motion'
 
 // ---- EWallet-style CountdownTimer ----
-const QR_EXPIRATION_SECONDS = 300;
+const QR_EXPIRATION_SECONDS = 300
 
 const formatTimeSimple = (seconds: number): string => {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-};
+  const mins = Math.floor(seconds / 60)
+  const secs = seconds % 60
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+}
 
 export function EWalletCountdownTimer({
   seconds,
   isExpired,
 }: {
-  seconds: number;
-  isExpired: boolean;
+  seconds: number
+  isExpired: boolean
 }) {
-  const { t } = useTranslation('payment');
-  const progressPercent = (seconds / QR_EXPIRATION_SECONDS) * 100;
-  const isWarning = seconds <= 60;
+  const { t } = useTranslation('payment')
+  const progressPercent = (seconds / QR_EXPIRATION_SECONDS) * 100
+  const isWarning = seconds <= 60
 
   return (
     <div className="flex flex-col items-center gap-2">
@@ -40,39 +40,39 @@ export function EWalletCountdownTimer({
           : t('countdown.remaining', { time: formatTimeSimple(seconds) })}
       </span>
     </div>
-  );
+  )
 }
 
 // ---- BankTransfer-style CountdownTimer ----
-const PAYMENT_DEADLINE_SECONDS = 24 * 60 * 60;
-const WARNING_THRESHOLD_SECONDS = 60 * 60;
+const PAYMENT_DEADLINE_SECONDS = 24 * 60 * 60
+const WARNING_THRESHOLD_SECONDS = 60 * 60
 
 const formatTimeParts = (seconds: number): { hours: number; minutes: number; secs: number } => {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
-  return { hours, minutes, secs };
-};
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const secs = seconds % 60
+  return { hours, minutes, secs }
+}
 
 export function BankTransferCountdownTimer({
   seconds,
   onExpired,
 }: {
-  seconds: number;
-  onExpired: () => void;
+  seconds: number
+  onExpired: () => void
 }) {
-  const { t } = useTranslation('payment');
-  const isWarning = seconds <= WARNING_THRESHOLD_SECONDS && seconds > 0;
-  const isExpired = seconds <= 0;
-  const { hours, minutes, secs } = formatTimeParts(Math.max(0, seconds));
+  const { t } = useTranslation('payment')
+  const isWarning = seconds <= WARNING_THRESHOLD_SECONDS && seconds > 0
+  const isExpired = seconds <= 0
+  const { hours, minutes, secs } = formatTimeParts(Math.max(0, seconds))
 
   useEffect(() => {
     if (isExpired) {
-      onExpired();
+      onExpired()
     }
-  }, [isExpired, onExpired]);
+  }, [isExpired, onExpired])
 
-  const progressPercent = (seconds / PAYMENT_DEADLINE_SECONDS) * 100;
+  const progressPercent = (seconds / PAYMENT_DEADLINE_SECONDS) * 100
 
   return (
     <motion.div
@@ -164,5 +164,5 @@ export function BankTransferCountdownTimer({
         </motion.p>
       )}
     </motion.div>
-  );
+  )
 }

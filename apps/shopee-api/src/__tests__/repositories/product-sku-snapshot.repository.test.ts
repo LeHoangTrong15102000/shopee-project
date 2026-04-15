@@ -12,7 +12,7 @@ jest.mock('@database/models/product-sku-snapshot.model', () => {
       {
         insertMany: jest.fn(),
         find: jest.fn(),
-      }
+      },
     ),
   }
 })
@@ -40,7 +40,7 @@ describe('ProductSkuSnapshotRepository', () => {
     it('should create multiple snapshots', async () => {
       const mockData = [{ product: 'p1' }, { product: 'p2' }]
       ;(ProductSkuSnapshotModel.insertMany as jest.Mock).mockResolvedValue(
-        mockData.map(d => ({ toObject: () => d }))
+        mockData.map((d) => ({ toObject: () => d })),
       )
       const result = await repo.createMany(mockData as any)
       expect(result).toHaveLength(2)

@@ -1,15 +1,15 @@
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
 
 interface AddressFormFooterProps {
-  currentStep: number;
-  isLoading: boolean;
-  canProceedToNext: boolean;
-  isEditing: boolean;
-  onBack: () => void;
-  onNext: () => void;
-  onClose: () => void;
-  onSubmit: () => void;
+  currentStep: number
+  isLoading: boolean
+  canProceedToNext: boolean
+  isEditing: boolean
+  onBack: () => void
+  onNext: () => void
+  onClose: () => void
+  onSubmit: () => void
 }
 
 export default function AddressFormFooter({
@@ -22,7 +22,7 @@ export default function AddressFormFooter({
   onClose,
   onSubmit,
 }: AddressFormFooterProps) {
-  const { t } = useTranslation('address');
+  const { t } = useTranslation('address')
 
   return (
     <div className="flex items-center justify-between border-t border-gray-100 bg-linear-to-b from-white to-gray-50 px-6 py-4 dark:border-slate-700 dark:from-slate-800 dark:to-slate-800/50">
@@ -92,5 +92,5 @@ export default function AddressFormFooter({
         )}
       </div>
     </div>
-  );
+  )
 }

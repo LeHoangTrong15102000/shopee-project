@@ -1,20 +1,20 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from 'src/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from 'src/components/ui/card';
-import { Input } from 'src/components/ui/input';
-import { Label } from 'src/components/ui/label';
-import { Button } from 'src/components/ui/button';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { LoadingState } from 'src/components/shared/LoadingState';
-import { ErrorState } from 'src/components/shared/ErrorState';
-import { useAuthStore } from 'src/stores/auth.store';
-import settingsApi from 'src/apis/settings.api';
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from 'src/components/ui/tabs'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from 'src/components/ui/card'
+import { Input } from 'src/components/ui/input'
+import { Label } from 'src/components/ui/label'
+import { Button } from 'src/components/ui/button'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { LoadingState } from 'src/components/shared/LoadingState'
+import { ErrorState } from 'src/components/shared/ErrorState'
+import { useAuthStore } from 'src/stores/auth.store'
+import settingsApi from 'src/apis/settings.api'
 
 // --- Profile Tab ---
 
@@ -24,8 +24,8 @@ const profileSchema = z.object({
   address: z.string().optional(),
   avatar: z.string().url('Must be a valid URL').optional().or(z.literal('')),
   date_of_birth: z.string().optional(),
-});
-type ProfileForm = z.infer<typeof profileSchema>;
+})
+type ProfileForm = z.infer<typeof profileSchema>
 
 // --- Password Tab ---
 
@@ -38,16 +38,16 @@ const passwordSchema = z
   .refine((d) => d.new_password === d.confirm_password, {
     message: 'Passwords do not match',
     path: ['confirm_password'],
-  });
-type PasswordForm = z.infer<typeof passwordSchema>;
+  })
+type PasswordForm = z.infer<typeof passwordSchema>
 
 // --- Component ---
 
 export default function SettingsPage() {
-  const { t } = useTranslation('settings');
-  const [activeTab, setActiveTab] = useState<string>('profile');
-  const { user, setUser } = useAuthStore();
-  const qc = useQueryClient();
+  const { t } = useTranslation('settings')
+  const [activeTab, setActiveTab] = useState<string>('profile')
+  const { user, setUser } = useAuthStore()
+  const qc = useQueryClient()
 
   const {
     data: profile,
@@ -57,7 +57,7 @@ export default function SettingsPage() {
   } = useQuery({
     queryKey: ['profile'],
     queryFn: () => settingsApi.getProfile().then((r) => r.data.data),
-  });
+  })
   const profileForm = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
     values: {
@@ -67,12 +67,12 @@ export default function SettingsPage() {
       avatar: profile?.avatar ?? '',
       date_of_birth: profile?.date_of_birth ? profile.date_of_birth.slice(0, 10) : '',
     },
-  });
+  })
 
   const passwordForm = useForm<PasswordForm>({
     resolver: zodResolver(passwordSchema),
     defaultValues: { password: '', new_password: '', confirm_password: '' },
-  });
+  })
 
   const updateProfile = useMutation({
     mutationFn: (data: ProfileForm) =>
@@ -84,25 +84,25 @@ export default function SettingsPage() {
         date_of_birth: data.date_of_birth || undefined,
       }),
     onSuccess: (res) => {
-      toast.success(t('toast.profileUpdated'));
-      setUser(res.data.data);
-      qc.invalidateQueries({ queryKey: ['profile'] });
+      toast.success(t('toast.profileUpdated'))
+      setUser(res.data.data)
+      qc.invalidateQueries({ queryKey: ['profile'] })
     },
     onError: () => toast.error(t('toast.profileError')),
-  });
+  })
 
   const changePassword = useMutation({
     mutationFn: (data: PasswordForm) =>
       settingsApi.updateProfile({ password: data.password, new_password: data.new_password }),
     onSuccess: () => {
-      toast.success(t('toast.passwordChanged'));
-      passwordForm.reset();
+      toast.success(t('toast.passwordChanged'))
+      passwordForm.reset()
     },
     onError: () => toast.error(t('toast.passwordError')),
-  });
+  })
 
-  if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message={t('error')} onRetry={refetch} />;
+  if (isLoading) return <LoadingState />
+  if (isError) return <ErrorState message={t('error')} onRetry={refetch} />
   return (
     <div className="space-y-6">
       <PageHeader title={t('title')} description={t('description')} />
@@ -267,5 +267,5 @@ export default function SettingsPage() {
         </TabsContent>
       </Tabs>
     </div>
-  );
+  )
 }

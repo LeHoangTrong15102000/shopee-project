@@ -1,14 +1,14 @@
-import classNames from 'classnames';
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { formatCurrency } from 'src/utils/utils';
+import classNames from 'classnames'
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { formatCurrency } from 'src/utils/utils'
 
 interface OrderStatusTrackerProps {
-  currentStatus: string | null;
-  isSubscribed: boolean;
-  className?: string;
-  orderTotal?: number;
-  stepTimestamps?: Record<string, string>;
+  currentStatus: string | null
+  isSubscribed: boolean
+  className?: string
+  orderTotal?: number
+  stepTimestamps?: Record<string, string>
 }
 
 const StepIcon = ({
@@ -16,11 +16,11 @@ const StepIcon = ({
   className,
   isActive,
 }: {
-  type: string;
-  className?: string;
-  isActive?: boolean;
+  type: string
+  className?: string
+  isActive?: boolean
 }) => {
-  const sw = isActive ? 2 : 1.5;
+  const sw = isActive ? 2 : 1.5
   const icons: Record<string, React.ReactNode> = {
     pending: (
       // Clipboard/order icon - Đơn Hàng Đã Đặt
@@ -102,9 +102,9 @@ const StepIcon = ({
         />
       </svg>
     ),
-  };
-  return <>{icons[type] || null}</>;
-};
+  }
+  return <>{icons[type] || null}</>
+}
 
 const ORDER_STEPS = [
   { key: 'pending', labelKey: 'tracker.orderPlaced' },
@@ -112,18 +112,18 @@ const ORDER_STEPS = [
   { key: 'processing', labelKey: 'tracker.shipping' },
   { key: 'shipping', labelKey: 'tracker.pendingDelivery' },
   { key: 'delivered', labelKey: 'tracker.review' },
-];
+]
 
 const formatLastUpdate = (lastUpdate: string | null): string => {
-  if (!lastUpdate) return '';
-  const date = new Date(lastUpdate);
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  return `${hours}:${minutes} ${day}-${month}-${year}`;
-};
+  if (!lastUpdate) return ''
+  const date = new Date(lastUpdate)
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const year = date.getFullYear()
+  return `${hours}:${minutes} ${day}-${month}-${year}`
+}
 
 export default function OrderStatusTracker({
   currentStatus,
@@ -132,15 +132,15 @@ export default function OrderStatusTracker({
   orderTotal,
   stepTimestamps,
 }: OrderStatusTrackerProps) {
-  const { t } = useTranslation('order');
-  const isCancelled = currentStatus === 'cancelled';
-  const isReturned = currentStatus === 'returned';
-  const isSpecialStatus = isCancelled || isReturned;
+  const { t } = useTranslation('order')
+  const isCancelled = currentStatus === 'cancelled'
+  const isReturned = currentStatus === 'returned'
+  const isSpecialStatus = isCancelled || isReturned
 
   const currentStepIndex = (() => {
-    if (!currentStatus || isSpecialStatus) return -1;
-    return ORDER_STEPS.findIndex((step) => step.key === currentStatus);
-  })();
+    if (!currentStatus || isSpecialStatus) return -1
+    return ORDER_STEPS.findIndex((step) => step.key === currentStatus)
+  })()
 
   return (
     <div
@@ -281,9 +281,9 @@ export default function OrderStatusTracker({
           {/* Steps */}
           <div className="relative flex justify-between">
             {ORDER_STEPS.map((step, index) => {
-              const isCompleted = index < currentStepIndex;
-              const isCurrent = index === currentStepIndex;
-              const isFuture = index > currentStepIndex;
+              const isCompleted = index < currentStepIndex
+              const isCurrent = index === currentStepIndex
+              const isFuture = index > currentStepIndex
 
               return (
                 <div key={step.key} className="flex flex-1 flex-col items-center">
@@ -327,11 +327,11 @@ export default function OrderStatusTracker({
                     </span>
                   )}
                 </div>
-              );
+              )
             })}
           </div>
         </div>
       )}
     </div>
-  );
+  )
 }

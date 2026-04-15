@@ -112,9 +112,7 @@ describe('Order Integration', () => {
 
   describe('GET /orders', () => {
     it('should return empty orders list initially', async () => {
-      const res = await supertest(app)
-        .get('/orders')
-        .set('Authorization', `Bearer ${authToken}`)
+      const res = await supertest(app).get('/orders').set('Authorization', `Bearer ${authToken}`)
       expect(res.status).toBeLessThan(400)
       expect(res.body.data).toBeDefined()
     })
@@ -130,9 +128,7 @@ describe('Order Integration', () => {
           payment_method: 'cod',
         })
 
-      const res = await supertest(app)
-        .get('/orders')
-        .set('Authorization', `Bearer ${authToken}`)
+      const res = await supertest(app).get('/orders').set('Authorization', `Bearer ${authToken}`)
       expect(res.status).toBeLessThan(400)
     })
 

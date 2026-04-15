@@ -10,11 +10,7 @@ import { sanitizeObject } from '@utils/sanitize'
  * Middleware chính để sanitize tất cả input từ request
  * Xử lý body, query params và route params
  */
-export const sanitizeMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
+export const sanitizeMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   try {
     // Sanitize request body (POST, PUT, PATCH data)
     if (req.body && typeof req.body === 'object') {
@@ -51,11 +47,7 @@ export const sanitizeMiddleware = (
  * Middleware sanitize chỉ cho body
  * Dùng khi chỉ cần sanitize body mà không cần query/params
  */
-export const sanitizeBodyMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
+export const sanitizeBodyMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   try {
     if (req.body && typeof req.body === 'object') {
       req.body = sanitizeObject(req.body)
@@ -71,11 +63,7 @@ export const sanitizeBodyMiddleware = (
  * Middleware sanitize chỉ cho query params
  * Dùng cho các GET requests cần bảo vệ query string
  */
-export const sanitizeQueryMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
+export const sanitizeQueryMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   try {
     if (req.query && typeof req.query === 'object') {
       const sanitizedQuery = sanitizeObject(req.query)
@@ -91,4 +79,3 @@ export const sanitizeQueryMiddleware = (
 }
 
 export default sanitizeMiddleware
-

@@ -10,30 +10,30 @@ const commonRoutes = {
   routes: [
     {
       path: '',
-      route: commonUserRouter
+      route: commonUserRouter,
     },
     {
       path: '',
-      route: commonAuthRouter
+      route: commonAuthRouter,
     },
     {
       path: '',
-      route: healthRouter
+      route: healthRouter,
     },
     {
       path: 'products',
-      route: commonProductRouter
+      route: commonProductRouter,
     },
 
     {
       path: 'categories',
-      route: commonCategoryRouter
+      route: commonCategoryRouter,
     },
     {
       path: 'qa',
-      route: qaRouter
-    }
-  ]
+      route: qaRouter,
+    },
+  ],
 }
 
 export default commonRoutes

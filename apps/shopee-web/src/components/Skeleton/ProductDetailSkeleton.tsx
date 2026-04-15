@@ -1,8 +1,8 @@
-import { useTranslation } from 'react-i18next';
-import SkeletonBase from './SkeletonBase';
+import { useTranslation } from 'react-i18next'
+import SkeletonBase from './SkeletonBase'
 
 export default function ProductDetailSkeleton() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('common')
   return (
     <div
       className="min-h-[800px] bg-gray-200 py-6 dark:bg-slate-900"
@@ -109,5 +109,5 @@ export default function ProductDetailSkeleton() {
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -18,15 +18,12 @@ interface PayloadToken {
 const verifyAccessToken = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   const access_token = req.headers.authorization?.replace('Bearer ', '')
   if (access_token) {
     try {
-      const decoded = (await verifyToken(
-        access_token,
-        config.SECRET_KEY
-      )) as PayloadToken
+      const decoded = (await verifyToken(access_token, config.SECRET_KEY)) as PayloadToken
       req.jwtDecoded = decoded
       // Pure JWT verification — no database lookup needed
       return next()
@@ -35,24 +32,18 @@ const verifyAccessToken = async (
       return
     }
   }
-  responseError(
-    res,
-    new ErrorHandler(STATUS.UNAUTHORIZED, 'Token không được gửi')
-  )
+  responseError(res, new ErrorHandler(STATUS.UNAUTHORIZED, 'Token không được gửi'))
 }
 
 const verifyRefreshToken = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   const refresh_token = req.body.refresh_token
   if (refresh_token) {
     try {
-      const decoded = (await verifyToken(
-        refresh_token,
-        config.SECRET_KEY
-      )) as PayloadToken
+      const decoded = (await verifyToken(refresh_token, config.SECRET_KEY)) as PayloadToken
       req.jwtDecoded = decoded
       const refreshTokenDB = await RefreshTokenModel.findOne({
         token: refresh_token,
@@ -61,34 +52,25 @@ const verifyRefreshToken = async (
       if (refreshTokenDB) {
         return next()
       }
-      responseError(
-        res,
-        new ErrorHandler(STATUS.UNAUTHORIZED, 'Không tồn tại token')
-      )
+      responseError(res, new ErrorHandler(STATUS.UNAUTHORIZED, 'Không tồn tại token'))
       return
     } catch (error) {
       responseError(res, error as ErrorHandler | Error)
       return
     }
   }
-  responseError(
-    res,
-    new ErrorHandler(STATUS.UNAUTHORIZED, 'Token không được gửi')
-  )
+  responseError(res, new ErrorHandler(STATUS.UNAUTHORIZED, 'Token không được gửi'))
 }
 
 const verifyAccessTokenOptional = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   const access_token = req.headers.authorization?.replace('Bearer ', '')
   if (access_token) {
     try {
-      const decoded = (await verifyToken(
-        access_token,
-        config.SECRET_KEY
-      )) as PayloadToken
+      const decoded = (await verifyToken(access_token, config.SECRET_KEY)) as PayloadToken
       req.jwtDecoded = decoded
       // Pure JWT verification — no database lookup needed
       return next()
@@ -103,19 +85,12 @@ const verifyAccessTokenOptional = async (
   return next()
 }
 
-const verifyAdmin = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+const verifyAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const userDB: any = await UserModel.findById(req.jwtDecoded.id).lean()
   if (userDB && userDB.roles.includes(ROLE.ADMIN)) {
     return next()
   }
-  responseError(
-    res,
-    new ErrorHandler(STATUS.FORBIDDEN, 'Không có quyền truy cập')
-  )
+  responseError(res, new ErrorHandler(STATUS.FORBIDDEN, 'Không có quyền truy cập'))
 }
 
 const authMiddleware = {

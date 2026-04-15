@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
-import BannerSlide from './BannerSlide';
-import BannerIndicators from './BannerIndicators';
-import { BannerSlide as BannerSlideType } from './types';
+import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
+import BannerSlide from './BannerSlide'
+import BannerIndicators from './BannerIndicators'
+import { BannerSlide as BannerSlideType } from './types'
 
 // Mock data cho banner slides
 const bannerSlides: BannerSlideType[] = [
@@ -39,48 +39,48 @@ const bannerSlides: BannerSlideType[] = [
     link: '/shopee-mall',
     backgroundColor: '#d73527',
   },
-];
+]
 
 const HeroBanner = () => {
-  const { t } = useTranslation('home');
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isAutoPlay, setIsAutoPlay] = useState(true);
+  const { t } = useTranslation('home')
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [isAutoPlay, setIsAutoPlay] = useState(true)
 
   const translatedSlides = bannerSlides.map((slide) => ({
     ...slide,
     subtitle: t(slide.subtitle, { defaultValue: slide.subtitle }),
-  }));
+  }))
 
   // Auto play banner
   useEffect(() => {
-    if (!isAutoPlay) return;
+    if (!isAutoPlay) return
 
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % translatedSlides.length);
-    }, 5000);
+      setCurrentSlide((prev) => (prev + 1) % translatedSlides.length)
+    }, 5000)
 
-    return () => clearInterval(interval);
-  }, [isAutoPlay]);
+    return () => clearInterval(interval)
+  }, [isAutoPlay])
 
   const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-  };
+    setCurrentSlide(index)
+  }
 
   const goToPrevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + translatedSlides.length) % translatedSlides.length);
-  };
+    setCurrentSlide((prev) => (prev - 1 + translatedSlides.length) % translatedSlides.length)
+  }
 
   const goToNextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % translatedSlides.length);
-  };
+    setCurrentSlide((prev) => (prev + 1) % translatedSlides.length)
+  }
 
   const handleMouseEnter = () => {
-    setIsAutoPlay(false);
-  };
+    setIsAutoPlay(false)
+  }
 
   const handleMouseLeave = () => {
-    setIsAutoPlay(true);
-  };
+    setIsAutoPlay(true)
+  }
 
   return (
     <div
@@ -138,7 +138,7 @@ const HeroBanner = () => {
         onSlideChange={goToSlide}
       />
     </div>
-  );
-};
+  )
+}
 
-export default HeroBanner;
+export default HeroBanner

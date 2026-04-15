@@ -1,19 +1,19 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from 'react-toastify';
-import classNames from 'classnames';
-import orderApi from 'src/apis/order.api';
-import { OrderStatus, Order } from 'src/types/checkout.type';
-import OrderCard from 'src/components/OrderCard';
-import LiveOrderTracker from 'src/components/LiveOrderTracker';
-import Button from 'src/components/Button';
-import { useOrderStatus } from 'src/hooks/nuqs/orderSearchParams';
-import { ordersStatus, orderStatusFromNumber, orderStatusToNumber } from 'src/constant/order';
-import { useIsMobile } from 'src/hooks/useIsMobile';
-import SEO from 'src/components/SEO';
-import Pagination from 'src/components/Pagination';
-import { useTranslation } from 'react-i18next';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { toast } from 'react-toastify'
+import classNames from 'classnames'
+import orderApi from 'src/apis/order.api'
+import { OrderStatus, Order } from 'src/types/checkout.type'
+import OrderCard from 'src/components/OrderCard'
+import LiveOrderTracker from 'src/components/LiveOrderTracker'
+import Button from 'src/components/Button'
+import { useOrderStatus } from 'src/hooks/nuqs/orderSearchParams'
+import { ordersStatus, orderStatusFromNumber, orderStatusToNumber } from 'src/constant/order'
+import { useIsMobile } from 'src/hooks/useIsMobile'
+import SEO from 'src/components/SEO'
+import Pagination from 'src/components/Pagination'
+import { useTranslation } from 'react-i18next'
 
 const orderTabKeys = [
   'tabs.all',
@@ -23,7 +23,7 @@ const orderTabKeys = [
   'tabs.delivered',
   'tabs.cancelled',
   'tabs.returned',
-] as const;
+] as const
 
 const orderTabStatuses = [
   ordersStatus.all,
@@ -33,38 +33,38 @@ const orderTabStatuses = [
   ordersStatus.delivered,
   ordersStatus.cancelled,
   ordersStatus.returned,
-];
+]
 
 export default function OrderList() {
-  const { t } = useTranslation('order');
-  const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useOrderStatus(); // nuqs: syncs numeric status with URL query param ?status=0,1,2,...
-  const [page, setPage] = useState(1);
-  const [expandedOrderIds, setExpandedOrderIds] = useState<Set<string>>(new Set());
-  const [cancelOrderId, setCancelOrderId] = useState<string | null>(null);
-  const [cancelReason, setCancelReason] = useState('');
-  const [showCancelModal, setShowCancelModal] = useState(false);
-  const isMobile = useIsMobile();
+  const { t } = useTranslation('order')
+  const queryClient = useQueryClient()
+  const [activeTab, setActiveTab] = useOrderStatus() // nuqs: syncs numeric status with URL query param ?status=0,1,2,...
+  const [page, setPage] = useState(1)
+  const [expandedOrderIds, setExpandedOrderIds] = useState<Set<string>>(new Set())
+  const [cancelOrderId, setCancelOrderId] = useState<string | null>(null)
+  const [cancelReason, setCancelReason] = useState('')
+  const [showCancelModal, setShowCancelModal] = useState(false)
+  const isMobile = useIsMobile()
 
   const toggleOrderTracking = (orderId: string) => {
     setExpandedOrderIds((prev) => {
-      const newSet = new Set(prev);
+      const newSet = new Set(prev)
       if (newSet.has(orderId)) {
-        newSet.delete(orderId);
+        newSet.delete(orderId)
       } else {
-        newSet.add(orderId);
+        newSet.add(orderId)
       }
-      return newSet;
-    });
-  };
+      return newSet
+    })
+  }
 
   // Check if order can be tracked (pending, confirmed, or shipping)
   const isTrackableOrder = (status: OrderStatus) => {
-    return ['pending', 'confirmed', 'shipping'].includes(status);
-  };
+    return ['pending', 'confirmed', 'shipping'].includes(status)
+  }
 
   // Convert numeric tab to string status for API call
-  const activeStatusString = orderStatusFromNumber(activeTab);
+  const activeStatusString = orderStatusFromNumber(activeTab)
 
   const { data: ordersData, isLoading } = useQuery({
     queryKey: ['orders', { status: activeTab, page }],
@@ -74,49 +74,49 @@ export default function OrderList() {
         page,
         limit: 10,
       }),
-  });
+  })
 
   const cancelMutation = useMutation({
     mutationFn: ({ orderId, reason }: { orderId: string; reason: string }) =>
       orderApi.cancelOrder(orderId, reason),
     onSuccess: () => {
-      toast.success(t('cancel.success'));
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
-      handleCloseModal();
+      toast.success(t('cancel.success'))
+      queryClient.invalidateQueries({ queryKey: ['orders'] })
+      handleCloseModal()
     },
     onError: () => {
-      toast.error(t('cancel.error'));
+      toast.error(t('cancel.error'))
     },
-  });
+  })
 
-  const orders = ordersData?.data.data.orders || [];
-  const pagination = ordersData?.data.data.pagination;
+  const orders = ordersData?.data.data.orders || []
+  const pagination = ordersData?.data.data.pagination
 
   const handleCancelOrder = (orderId: string) => {
-    setCancelOrderId(orderId);
-    setShowCancelModal(true);
-  };
+    setCancelOrderId(orderId)
+    setShowCancelModal(true)
+  }
 
   const handleConfirmCancel = () => {
     if (cancelOrderId) {
-      cancelMutation.mutate({ orderId: cancelOrderId, reason: cancelReason });
+      cancelMutation.mutate({ orderId: cancelOrderId, reason: cancelReason })
     }
-  };
+  }
 
   const handleCloseModal = () => {
-    setShowCancelModal(false);
-    setCancelOrderId(null);
-    setCancelReason('');
-  };
+    setShowCancelModal(false)
+    setCancelOrderId(null)
+    setCancelReason('')
+  }
 
   const handleReorder = (_order: Order) => {
-    toast.info(t('reorder.developing'));
-  };
+    toast.info(t('reorder.developing'))
+  }
 
   const handleTabChange = (status: number) => {
-    setActiveTab(status);
-    setPage(1);
-  };
+    setActiveTab(status)
+    setPage(1)
+  }
 
   return (
     <div className="space-y-4">
@@ -281,5 +281,5 @@ export default function OrderList() {
         )}
       </AnimatePresence>
     </div>
-  );
+  )
 }

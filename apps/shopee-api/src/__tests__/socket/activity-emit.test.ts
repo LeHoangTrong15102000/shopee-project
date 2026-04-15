@@ -71,7 +71,7 @@ describe('Activity Emit Utils', () => {
           type,
           message,
           timestamp: expect.any(String),
-        })
+        }),
       )
       expect(mockIO.to).toHaveBeenCalledWith(`${ROOM_PREFIX_PRODUCT}${productId}`)
       expect(mockEmit).toHaveBeenCalledWith(
@@ -81,7 +81,7 @@ describe('Activity Emit Utils', () => {
           type,
           message,
           timestamp: expect.any(String),
-        })
+        }),
       )
     })
 
@@ -120,8 +120,18 @@ describe('Activity Emit Utils', () => {
       await setupMock()
       const { getRecentActivities } = await import('../../socket/managers/activity-feed.manager')
       const mockActivities = [
-        { product_id: 'prod-1', type: 'purchase', message: 'Bought', timestamp: '2024-01-01T00:00:00.000Z' },
-        { product_id: 'prod-1', type: 'review', message: 'Reviewed', timestamp: '2024-01-01T00:01:00.000Z' },
+        {
+          product_id: 'prod-1',
+          type: 'purchase',
+          message: 'Bought',
+          timestamp: '2024-01-01T00:00:00.000Z',
+        },
+        {
+          product_id: 'prod-1',
+          type: 'review',
+          message: 'Reviewed',
+          timestamp: '2024-01-01T00:01:00.000Z',
+        },
       ]
       ;(getRecentActivities as jest.Mock).mockReturnValue(mockActivities)
       const { emitActivityBuffer } = await import('../../socket/utils/activity-emit')
@@ -141,7 +151,7 @@ describe('Activity Emit Utils', () => {
             expect.objectContaining({ product_id: 'prod-1', type: 'purchase', message: 'Bought' }),
             expect.objectContaining({ product_id: 'prod-1', type: 'review', message: 'Reviewed' }),
           ]),
-        })
+        }),
       )
     })
 
@@ -171,4 +181,3 @@ describe('Activity Emit Utils', () => {
     })
   })
 })
-

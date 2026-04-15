@@ -66,4 +66,3 @@ describe('Loyalty Integration', () => {
     })
   })
 })
-

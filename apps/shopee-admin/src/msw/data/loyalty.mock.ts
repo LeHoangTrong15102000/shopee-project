@@ -1,5 +1,5 @@
-import { createMockLoyaltyReward, createMockLoyaltyTransaction } from 'src/test-utils/factories';
-import type { LoyaltyReward, LoyaltyTransaction } from 'src/types';
+import { createMockLoyaltyReward, createMockLoyaltyTransaction } from 'src/test-utils/factories'
+import type { LoyaltyReward, LoyaltyTransaction } from 'src/types'
 
 export const mockRewards: LoyaltyReward[] = [
   createMockLoyaltyReward({ _id: 'reward-1', name: 'Giảm 50k', points_required: 500 }),
@@ -10,7 +10,7 @@ export const mockRewards: LoyaltyReward[] = [
     points_required: 200,
     is_active: false,
   }),
-];
+]
 
 export const mockTransactions: LoyaltyTransaction[] = [
   createMockLoyaltyTransaction({ _id: 'tx-1', type: 'earn', points: 100, description: 'Mua hàng' }),
@@ -26,7 +26,7 @@ export const mockTransactions: LoyaltyTransaction[] = [
     points: 50,
     description: 'Admin điều chỉnh',
   }),
-];
+]
 
 export const mockLoyaltyStats = {
   total_users: 1200,
@@ -34,4 +34,4 @@ export const mockLoyaltyStats = {
   total_points_redeemed: 150000,
   total_rewards: 3,
   active_rewards: 2,
-};
+}

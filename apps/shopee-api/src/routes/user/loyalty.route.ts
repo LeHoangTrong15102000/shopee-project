@@ -17,7 +17,7 @@ userLoyaltyRouter.get(
   '/points',
   validate(getPointsSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(loyaltyController.getPoints)
+  asyncHandler(loyaltyController.getPoints),
 )
 
 // Lấy lịch sử giao dịch điểm
@@ -25,7 +25,7 @@ userLoyaltyRouter.get(
   '/transactions',
   validate(getTransactionsSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(loyaltyController.getTransactions)
+  asyncHandler(loyaltyController.getTransactions),
 )
 
 // Lấy danh sách phần thưởng có thể đổi
@@ -33,7 +33,7 @@ userLoyaltyRouter.get(
   '/rewards',
   validate(getRewardsSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(loyaltyController.getRewards)
+  asyncHandler(loyaltyController.getRewards),
 )
 
 // Đổi điểm lấy phần thưởng
@@ -41,6 +41,5 @@ userLoyaltyRouter.post(
   '/redeem/:rewardId',
   validate(redeemPointsSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(loyaltyController.redeemPoints)
+  asyncHandler(loyaltyController.redeemPoints),
 )
-

@@ -1,18 +1,18 @@
-import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
-import { TrendingUp, TrendingDown } from 'lucide-react';
-import { cn } from 'src/lib/utils';
+import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
+import { TrendingUp, TrendingDown } from 'lucide-react'
+import { cn } from 'src/lib/utils'
 
 interface StatCardProps {
-  label: string;
-  value: string | number;
-  trend?: number;
-  formatter?: (value: string | number) => string;
-  icon?: React.ReactNode;
-  className?: string;
+  label: string
+  value: string | number
+  trend?: number
+  formatter?: (value: string | number) => string
+  icon?: React.ReactNode
+  className?: string
 }
 
 export function StatCard({ label, value, trend, formatter, icon, className }: StatCardProps) {
-  const displayValue = formatter ? formatter(value) : value;
+  const displayValue = formatter ? formatter(value) : value
 
   return (
     <Card className={cn('', className)}>
@@ -38,5 +38,5 @@ export function StatCard({ label, value, trend, formatter, icon, className }: St
         )}
       </CardContent>
     </Card>
-  );
+  )
 }

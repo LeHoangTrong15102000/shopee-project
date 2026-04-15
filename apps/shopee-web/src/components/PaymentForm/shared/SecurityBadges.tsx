@@ -7,7 +7,7 @@ function ShieldIcon() {
         clipRule="evenodd"
       />
     </svg>
-  );
+  )
 }
 
 function LockIcon() {
@@ -19,7 +19,7 @@ function LockIcon() {
         clipRule="evenodd"
       />
     </svg>
-  );
+  )
 }
 
 function SecurityBadges() {
@@ -34,7 +34,7 @@ function SecurityBadges() {
         <span className="font-medium">SSL Secured</span>
       </div>
     </div>
-  );
+  )
 }
 
-export default SecurityBadges;
+export default SecurityBadges

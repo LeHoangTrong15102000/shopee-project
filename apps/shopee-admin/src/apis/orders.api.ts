@@ -1,24 +1,24 @@
-import http from 'src/utils/http';
-import type { SuccessResponse, Order, OrderStatus } from 'src/types';
+import http from 'src/utils/http'
+import type { SuccessResponse, Order, OrderStatus } from 'src/types'
 
 interface OrderListParams {
-  page?: number;
-  limit?: number;
-  status?: OrderStatus;
-  sort_by?: string;
-  order?: string;
-  search?: string;
-  user_id?: string;
+  page?: number
+  limit?: number
+  status?: OrderStatus
+  sort_by?: string
+  order?: string
+  search?: string
+  user_id?: string
 }
 
 interface OrderListResponse {
-  orders: Order[];
-  pagination: { page: number; limit: number; total: number; totalPages: number };
+  orders: Order[]
+  pagination: { page: number; limit: number; total: number; totalPages: number }
 }
 
 interface OrderCountByStatus {
-  _id: OrderStatus;
-  count: number;
+  _id: OrderStatus
+  count: number
 }
 
 const ordersApi = {
@@ -35,6 +35,6 @@ const ordersApi = {
 
   bulkUpdateStatus: (body: { order_ids: string[]; status: OrderStatus }) =>
     http.put<SuccessResponse<{ modifiedCount: number }>>('admin/orders/bulk-status', body),
-};
+}
 
-export default ordersApi;
+export default ordersApi

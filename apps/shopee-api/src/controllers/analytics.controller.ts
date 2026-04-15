@@ -262,9 +262,7 @@ export const getHealthCheck = async (req: Request, res: Response): Promise<void>
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       memory: process.memoryUsage(),
-      anthropicApiStatus: process.env.ANTHROPIC_API_KEY
-        ? 'configured'
-        : 'missing',
+      anthropicApiStatus: process.env.ANTHROPIC_API_KEY ? 'configured' : 'missing',
       databaseStatus: 'connected', // Sẽ check thực tế MongoDB connection
       services: {
         chatbot: 'operational',

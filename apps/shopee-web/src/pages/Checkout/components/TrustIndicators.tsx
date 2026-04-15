@@ -1,7 +1,7 @@
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next'
 
 export const SecurityBadge = () => {
-  const { t } = useTranslation('payment');
+  const { t } = useTranslation('payment')
   return (
     <div className="mt-4 flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-gray-50 p-2.5 transition-all dark:border-slate-600 dark:bg-slate-700/50">
       <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-green-500">
@@ -23,8 +23,8 @@ export const SecurityBadge = () => {
         {t('secureBadge')}
       </span>
     </div>
-  );
-};
+  )
+}
 
 export const PaymentIcons = () => (
   <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
@@ -47,10 +47,10 @@ export const PaymentIcons = () => (
       <span className="text-xs font-bold text-blue-700 dark:text-blue-200">VNPay</span>
     </div>
   </div>
-);
+)
 
 export const TrustIndicators = () => {
-  const { t } = useTranslation('checkout');
+  const { t } = useTranslation('checkout')
   return (
     <div className="mt-4 grid grid-cols-3 gap-2 border-t border-gray-100 pt-4 dark:border-slate-700">
       <div className="flex flex-col items-center gap-1.5 rounded-lg bg-linear-to-b from-blue-50 to-white p-2 dark:from-blue-900/30 dark:to-slate-800">
@@ -107,5 +107,5 @@ export const TrustIndicators = () => {
         </span>
       </div>
     </div>
-  );
-};
+  )
+}

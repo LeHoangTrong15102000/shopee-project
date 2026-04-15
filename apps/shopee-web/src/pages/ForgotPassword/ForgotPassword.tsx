@@ -1,32 +1,32 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
-import { useState } from 'react';
-import SEO from 'src/components/SEO';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
-import { toast } from 'react-toastify';
-import passwordResetApi from 'src/apis/password-reset.api';
-import Button from 'src/components/Button';
-import Input from 'src/components/Input';
-import path from 'src/constant/path';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import i18n from 'src/i18n/i18n';
-import { STAGGER_DELAY, staggerContainer, staggerItem } from 'src/styles/animations';
-import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
+import { motion } from 'framer-motion'
+import { useState } from 'react'
+import SEO from 'src/components/SEO'
+import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
+import { toast } from 'react-toastify'
+import passwordResetApi from 'src/apis/password-reset.api'
+import Button from 'src/components/Button'
+import Input from 'src/components/Input'
+import path from 'src/constant/path'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import i18n from 'src/i18n/i18n'
+import { STAGGER_DELAY, staggerContainer, staggerItem } from 'src/styles/animations'
+import { z } from 'zod'
 
 const forgotPasswordSchema = z.object({
   email: z.string().email(i18n.t('validation:forgotPassword.emailInvalid')),
-});
+})
 
-type FormData = z.infer<typeof forgotPasswordSchema>;
+type FormData = z.infer<typeof forgotPasswordSchema>
 
 const ForgotPassword = () => {
-  const { t } = useTranslation('auth');
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const reducedMotion = useReducedMotion();
-  const containerVariants = staggerContainer(STAGGER_DELAY.normal);
+  const { t } = useTranslation('auth')
+  const [isSubmitted, setIsSubmitted] = useState(false)
+  const reducedMotion = useReducedMotion()
+  const containerVariants = staggerContainer(STAGGER_DELAY.normal)
 
   const {
     register,
@@ -36,25 +36,25 @@ const ForgotPassword = () => {
   } = useForm<FormData>({
     mode: 'onTouched',
     resolver: zodResolver(forgotPasswordSchema),
-  });
+  })
 
-  const watchEmail = watch('email', '');
+  const watchEmail = watch('email', '')
 
   const forgotPasswordMutation = useMutation({
     mutationFn: (body: FormData) => passwordResetApi.forgotPassword(body.email),
-  });
+  })
 
   const onSubmit = handleSubmit((data) => {
     forgotPasswordMutation.mutate(data, {
       onSuccess: () => {
-        setIsSubmitted(true);
-        toast.success(t('forgotPassword.toast.success'), { autoClose: 3000 });
+        setIsSubmitted(true)
+        toast.success(t('forgotPassword.toast.success'), { autoClose: 3000 })
       },
       onError: () => {
-        toast.error(t('forgotPassword.toast.error'), { autoClose: 2000 });
+        toast.error(t('forgotPassword.toast.error'), { autoClose: 2000 })
       },
-    });
-  });
+    })
+  })
 
   return (
     <div className="relative bg-orange">
@@ -165,7 +165,7 @@ const ForgotPassword = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ForgotPassword;
+export default ForgotPassword

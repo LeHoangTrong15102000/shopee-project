@@ -26,7 +26,7 @@ export const getConversations = async (req: Request, res: Response): Promise<voi
   const result = await conversationService.getConversations(
     userId,
     { status },
-    { page: Number(page), limit: Number(limit) }
+    { page: Number(page), limit: Number(limit) },
   )
 
   res.status(200).json({
@@ -67,7 +67,11 @@ export const createConversation = async (req: Request, res: Response): Promise<v
   const userId = req.jwtDecoded.id
   const { message, title }: CreateConversationBody = req.body
 
-  const { conversation, aiMessage } = await conversationService.createConversation(userId, message, title)
+  const { conversation, aiMessage } = await conversationService.createConversation(
+    userId,
+    message,
+    title,
+  )
 
   res.status(201).json({
     message: 'Tạo cuộc trò chuyện thành công',
@@ -88,7 +92,11 @@ export const sendMessage = async (req: Request, res: Response): Promise<void> =>
   const conversationId = req.params.id as string
   const { message }: SendMessageBody = req.body
 
-  const { conversation, aiMessage } = await conversationService.sendMessage(userId, conversationId, message)
+  const { conversation, aiMessage } = await conversationService.sendMessage(
+    userId,
+    conversationId,
+    message,
+  )
 
   res.status(200).json({
     message: 'Gửi tin nhắn thành công',
@@ -109,7 +117,10 @@ export const updateConversation = async (req: Request, res: Response): Promise<v
   const conversationId = req.params.id as string
   const { title, status }: UpdateConversationBody = req.body
 
-  const conversation = await conversationService.updateConversation(userId, conversationId, { title, status })
+  const conversation = await conversationService.updateConversation(userId, conversationId, {
+    title,
+    status,
+  })
 
   res.status(200).json({
     message: 'Cập nhật cuộc trò chuyện thành công',
@@ -181,7 +192,7 @@ export const testChatbotStream = async (req: Request, res: Response): Promise<vo
         type: 'start',
         message: 'Bắt đầu streaming...',
         userMessage: message,
-      })}\n\n`
+      })}\n\n`,
     )
 
     let fullResponse = ''
@@ -194,7 +205,7 @@ export const testChatbotStream = async (req: Request, res: Response): Promise<vo
           type: 'chunk',
           content: chunk,
           fullContent: fullResponse,
-        })}\n\n`
+        })}\n\n`,
       )
     }
 
@@ -206,7 +217,7 @@ export const testChatbotStream = async (req: Request, res: Response): Promise<vo
           message: 'Streaming hoàn tất',
           fullResponse,
           timestamp: new Date().toISOString(),
-        })}\n\n`
+        })}\n\n`,
       )
       res.end()
     }
@@ -218,19 +229,13 @@ export const testChatbotStream = async (req: Request, res: Response): Promise<vo
           type: 'error',
           message: error,
           fallback: 'Xin lỗi, có lỗi xảy ra. Vui lòng thử lại sau.',
-        })}\n\n`
+        })}\n\n`,
       )
       res.end()
     }
 
     // Start streaming
-    await chatBotService.generateStreamingResponse(
-      [],
-      message,
-      onChunk,
-      onComplete,
-      onError
-    )
+    await chatBotService.generateStreamingResponse([], message, onChunk, onComplete, onError)
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     console.error('Error in streaming test:', error)

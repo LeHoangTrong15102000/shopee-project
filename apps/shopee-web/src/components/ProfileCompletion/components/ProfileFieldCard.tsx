@@ -1,28 +1,28 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
-import path from 'src/constant/path';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
+import path from 'src/constant/path'
 import {
   PROFILE_FIELDS,
   ProfileIcons,
   ShimmerEffect,
   FloatingParticle,
-} from '../profileCompletion.constants';
+} from '../profileCompletion.constants'
 
 interface ProfileFieldCardProps {
-  completedFields: (typeof PROFILE_FIELDS)[number][];
-  reducedMotion: boolean;
+  completedFields: (typeof PROFILE_FIELDS)[number][]
+  reducedMotion: boolean
 }
 
 const ProfileFieldCard = ({ completedFields, reducedMotion }: ProfileFieldCardProps) => {
-  const { t } = useTranslation('user');
+  const { t } = useTranslation('user')
 
   return (
     <div className="w-full grow">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-2">
         {PROFILE_FIELDS.map((field, index) => {
-          const isComplete = completedFields.some((f) => f.key === field.key);
-          const IconComponent = ProfileIcons[field.key];
+          const isComplete = completedFields.some((f) => f.key === field.key)
+          const IconComponent = ProfileIcons[field.key]
           return (
             <motion.div
               key={field.key}
@@ -123,11 +123,11 @@ const ProfileFieldCard = ({ completedFields, reducedMotion }: ProfileFieldCardPr
                 </Link>
               )}
             </motion.div>
-          );
+          )
         })}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProfileFieldCard;
+export default ProfileFieldCard

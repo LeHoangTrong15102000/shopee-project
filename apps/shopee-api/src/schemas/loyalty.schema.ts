@@ -24,20 +24,22 @@ export const getPointsSchema = z.object({})
  * Validates query params for listing point transactions
  */
 export const getTransactionsSchema = z.object({
-  query: z.object({
-    page: z.coerce
-      .number()
-      .int('Page phải là số nguyên dương')
-      .min(1, 'Page phải là số nguyên dương')
-      .optional(),
-    limit: z.coerce
-      .number()
-      .int('Limit phải từ 1 đến 50')
-      .min(1, 'Limit phải từ 1 đến 50')
-      .max(50, 'Limit phải từ 1 đến 50')
-      .optional(),
-    type: transactionTypeEnum.optional(),
-  }).passthrough(),
+  query: z
+    .object({
+      page: z.coerce
+        .number()
+        .int('Page phải là số nguyên dương')
+        .min(1, 'Page phải là số nguyên dương')
+        .optional(),
+      limit: z.coerce
+        .number()
+        .int('Limit phải từ 1 đến 50')
+        .min(1, 'Limit phải từ 1 đến 50')
+        .max(50, 'Limit phải từ 1 đến 50')
+        .optional(),
+      type: transactionTypeEnum.optional(),
+    })
+    .passthrough(),
 })
 
 /**
@@ -45,20 +47,22 @@ export const getTransactionsSchema = z.object({
  * Validates query params for listing available rewards
  */
 export const getRewardsSchema = z.object({
-  query: z.object({
-    page: z.coerce
-      .number()
-      .int('Page phải là số nguyên dương')
-      .min(1, 'Page phải là số nguyên dương')
-      .optional(),
-    limit: z.coerce
-      .number()
-      .int('Limit phải từ 1 đến 50')
-      .min(1, 'Limit phải từ 1 đến 50')
-      .max(50, 'Limit phải từ 1 đến 50')
-      .optional(),
-    reward_type: rewardTypeEnum.optional(),
-  }).passthrough(),
+  query: z
+    .object({
+      page: z.coerce
+        .number()
+        .int('Page phải là số nguyên dương')
+        .min(1, 'Page phải là số nguyên dương')
+        .optional(),
+      limit: z.coerce
+        .number()
+        .int('Limit phải từ 1 đến 50')
+        .min(1, 'Limit phải từ 1 đến 50')
+        .max(50, 'Limit phải từ 1 đến 50')
+        .optional(),
+      reward_type: rewardTypeEnum.optional(),
+    })
+    .passthrough(),
 })
 
 /**
@@ -76,4 +80,3 @@ export const redeemPointsSchema = z.object({
 // Type exports
 export type GetTransactionsQuery = z.infer<typeof getTransactionsSchema>['query']
 export type GetRewardsQuery = z.infer<typeof getRewardsSchema>['query']
-

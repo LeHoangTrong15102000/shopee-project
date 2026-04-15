@@ -10,7 +10,10 @@ import {
   CONVERSATION_STATUS,
 } from '@repositories/interfaces/conversation.repository.interface'
 import type { ConversationStatus } from '@repositories/interfaces/conversation.repository.interface'
-import { PaginatedResult, PaginationOptions } from '@repositories/interfaces/base.repository.interface'
+import {
+  PaginatedResult,
+  PaginationOptions,
+} from '@repositories/interfaces/base.repository.interface'
 import { BaseService, NotFoundError, ValidationError, BusinessError } from './base.service'
 import { chatBotService } from '@utils/chatbot.service'
 
@@ -22,12 +25,16 @@ export class ConversationService extends BaseService {
   async getConversations(
     userId: string,
     filters: ConversationFilterOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IConversationListItem>> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')
     }
-    return this.conversationRepository.findByUser(userId, filters, this.normalizePagination(pagination))
+    return this.conversationRepository.findByUser(
+      userId,
+      filters,
+      this.normalizePagination(pagination),
+    )
   }
 
   async getConversation(userId: string, conversationId: string): Promise<IConversationItem> {
@@ -48,7 +55,7 @@ export class ConversationService extends BaseService {
   async createConversation(
     userId: string,
     message: string,
-    title?: string
+    title?: string,
   ): Promise<{ conversation: IConversationItem; aiMessage: IMessageItem }> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')
@@ -87,7 +94,7 @@ export class ConversationService extends BaseService {
   async sendMessage(
     userId: string,
     conversationId: string,
-    message: string
+    message: string,
   ): Promise<{ conversation: IConversationItem; aiMessage: IMessageItem }> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')
@@ -122,14 +129,17 @@ export class ConversationService extends BaseService {
       timestamp: new Date(),
     }
 
-    const conversation = await this.conversationRepository.addMessages(conversationId, userId, [userMessage, aiMessage])
+    const conversation = await this.conversationRepository.addMessages(conversationId, userId, [
+      userMessage,
+      aiMessage,
+    ])
     return { conversation: conversation!, aiMessage }
   }
 
   async updateConversation(
     userId: string,
     conversationId: string,
-    data: { title?: string; status?: ConversationStatus }
+    data: { title?: string; status?: ConversationStatus },
   ): Promise<IConversationItem> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')
@@ -166,4 +176,3 @@ export class ConversationService extends BaseService {
     return chatBotService.generateResponse([], message)
   }
 }
-

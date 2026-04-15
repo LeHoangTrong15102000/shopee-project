@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 vi.mock('src/utils/http', () => ({
   default: {
@@ -8,87 +8,87 @@ vi.mock('src/utils/http', () => ({
     delete: vi.fn(),
     patch: vi.fn(),
   },
-}));
+}))
 
-import http from 'src/utils/http';
-import checkoutApi from '../checkout.api';
+import http from 'src/utils/http'
+import checkoutApi from '../checkout.api'
 
 describe('Checkout API', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    vi.clearAllMocks()
+  })
 
   describe('getShippingMethods', () => {
     it('should call http.get on success', async () => {
-      const mockResponse = { data: { message: 'ok', data: [] } };
-      vi.mocked(http.get).mockResolvedValue(mockResponse as any);
-      const result = await checkoutApi.getShippingMethods();
-      expect(http.get).toHaveBeenCalled();
-      expect(result).toEqual(mockResponse);
-    });
+      const mockResponse = { data: { message: 'ok', data: [] } }
+      vi.mocked(http.get).mockResolvedValue(mockResponse as any)
+      const result = await checkoutApi.getShippingMethods()
+      expect(http.get).toHaveBeenCalled()
+      expect(result).toEqual(mockResponse)
+    })
 
     it('should return fallback data on error', async () => {
-      vi.mocked(http.get).mockRejectedValue(new Error('Network error'));
-      const result = await checkoutApi.getShippingMethods();
-      expect(result.data.message).toEqual(expect.any(String));
-    });
-  });
+      vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
+      const result = await checkoutApi.getShippingMethods()
+      expect(result.data.message).toEqual(expect.any(String))
+    })
+  })
 
   describe('getPaymentMethods', () => {
     it('should call http.get on success', async () => {
-      const mockResponse = { data: { message: 'ok', data: [] } };
-      vi.mocked(http.get).mockResolvedValue(mockResponse as any);
-      const result = await checkoutApi.getPaymentMethods();
-      expect(http.get).toHaveBeenCalled();
-      expect(result).toEqual(mockResponse);
-    });
+      const mockResponse = { data: { message: 'ok', data: [] } }
+      vi.mocked(http.get).mockResolvedValue(mockResponse as any)
+      const result = await checkoutApi.getPaymentMethods()
+      expect(http.get).toHaveBeenCalled()
+      expect(result).toEqual(mockResponse)
+    })
 
     it('should return fallback data on error', async () => {
-      vi.mocked(http.get).mockRejectedValue(new Error('Network error'));
-      const result = await checkoutApi.getPaymentMethods();
-      expect(result.data.message).toEqual(expect.any(String));
-    });
-  });
+      vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
+      const result = await checkoutApi.getPaymentMethods()
+      expect(result.data.message).toEqual(expect.any(String))
+    })
+  })
 
   describe('calculateSummary', () => {
     it('should call http.post on success', async () => {
-      const mockResponse = { data: { message: 'ok', data: { total: 100 } } };
-      vi.mocked(http.post).mockResolvedValue(mockResponse as any);
-      const result = await checkoutApi.calculateSummary({ purchaseIds: ['1'] });
-      expect(http.post).toHaveBeenCalled();
-      expect(result).toEqual(mockResponse);
-    });
+      const mockResponse = { data: { message: 'ok', data: { total: 100 } } }
+      vi.mocked(http.post).mockResolvedValue(mockResponse as any)
+      const result = await checkoutApi.calculateSummary({ purchaseIds: ['1'] })
+      expect(http.post).toHaveBeenCalled()
+      expect(result).toEqual(mockResponse)
+    })
 
     it('should return fallback data on error', async () => {
-      vi.mocked(http.post).mockRejectedValue(new Error('Network error'));
-      const result = await checkoutApi.calculateSummary({ purchaseIds: ['1'] });
-      expect(result.data.message).toEqual(expect.any(String));
-    });
-  });
+      vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
+      const result = await checkoutApi.calculateSummary({ purchaseIds: ['1'] })
+      expect(result.data.message).toEqual(expect.any(String))
+    })
+  })
 
   describe('createOrder', () => {
     it('should call http.post on success', async () => {
-      const mockResponse = { data: { message: 'ok', data: { _id: '1' } } };
-      vi.mocked(http.post).mockResolvedValue(mockResponse as any);
+      const mockResponse = { data: { message: 'ok', data: { _id: '1' } } }
+      vi.mocked(http.post).mockResolvedValue(mockResponse as any)
       const result = await checkoutApi.createOrder({
         purchaseIds: ['1'],
         shippingAddressId: '1',
         shippingMethodId: '1',
         paymentMethod: 'cod',
-      });
-      expect(http.post).toHaveBeenCalled();
-      expect(result).toEqual(mockResponse);
-    });
+      })
+      expect(http.post).toHaveBeenCalled()
+      expect(result).toEqual(mockResponse)
+    })
 
     it('should return fallback data on error', async () => {
-      vi.mocked(http.post).mockRejectedValue(new Error('Network error'));
+      vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
       const result = await checkoutApi.createOrder({
         purchaseIds: ['1'],
         shippingAddressId: '1',
         shippingMethodId: '1',
         paymentMethod: 'cod',
-      });
-      expect(result.data.message).toEqual(expect.any(String));
-    });
-  });
-});
+      })
+      expect(result.data.message).toEqual(expect.any(String))
+    })
+  })
+})

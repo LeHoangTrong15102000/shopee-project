@@ -1,23 +1,23 @@
-import { Fragment } from 'react';
-import { useNavigate } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import ProductRating from 'src/components/ProductRating';
-import OptimizedImage from 'src/components/OptimizedImage';
-import WishlistButton from 'src/components/WishlistButton';
-import path from 'src/constant/path';
-import { Product as ProductType } from 'src/types/product.type';
-import { formatCurrency, formatNumberToSocialStyle, generateNameId } from 'src/utils/utils';
-import { scrollManager } from 'src/hooks/useScrollRestoration';
-import { useHoverPrefetch } from 'src/hooks/useHoverPrefetch';
-import NotFound from 'src/pages/NotFound';
+import { Fragment } from 'react'
+import { useNavigate } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import ProductRating from 'src/components/ProductRating'
+import OptimizedImage from 'src/components/OptimizedImage'
+import WishlistButton from 'src/components/WishlistButton'
+import path from 'src/constant/path'
+import { Product as ProductType } from 'src/types/product.type'
+import { formatCurrency, formatNumberToSocialStyle, generateNameId } from 'src/utils/utils'
+import { scrollManager } from 'src/hooks/useScrollRestoration'
+import { useHoverPrefetch } from 'src/hooks/useHoverPrefetch'
+import NotFound from 'src/pages/NotFound'
 
 interface Props {
-  product: ProductType;
+  product: ProductType
 }
 
 const Product = ({ product }: Props) => {
-  const navigate = useNavigate();
-  const { t } = useTranslation(['home', 'product']);
+  const navigate = useNavigate()
+  const { t } = useTranslation(['home', 'product'])
 
   // Hover prefetching với optimal strategy
   const {
@@ -28,18 +28,18 @@ const Product = ({ product }: Props) => {
     delay: 300, // 300ms delay cho balance tốt
     strategy: 'delayed', // Sử dụng delayed strategy
     enabled: true,
-  });
+  })
 
   const handleProductClick = () => {
     // Trigger prefetch nếu chưa prefetch
-    handlePrefetchClick();
+    handlePrefetchClick()
 
     // Lưu vị trí scroll hiện tại trước khi navigate
-    scrollManager.savePosition(window.location.pathname, window.location.search, window.scrollY);
+    scrollManager.savePosition(window.location.pathname, window.location.search, window.scrollY)
 
     // Navigate đến product detail
-    navigate(`${path.home}${generateNameId({ name: product.name, id: product._id })}`);
-  };
+    navigate(`${path.home}${generateNameId({ name: product.name, id: product._id })}`)
+  }
 
   return (
     // Khi nhấn vào thì truyền lên cái _id của sản phẩm
@@ -52,8 +52,8 @@ const Product = ({ product }: Props) => {
           onClick={handleProductClick}
           onKeyDown={(e: React.KeyboardEvent) => {
             if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              handleProductClick();
+              e.preventDefault()
+              handleProductClick()
             }
           }}
           onMouseEnter={handleMouseEnter}
@@ -134,7 +134,7 @@ const Product = ({ product }: Props) => {
         <NotFound />
       )}
     </Fragment>
-  );
-};
+  )
+}
 
-export default Product;
+export default Product

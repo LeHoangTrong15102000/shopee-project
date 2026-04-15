@@ -62,8 +62,14 @@ describe('product.handler', () => {
 
       registerProductHandlers(mockSocket)
 
-      expect(mockSocket.on).toHaveBeenCalledWith(SocketEvent.SUBSCRIBE_PRODUCT, expect.any(Function))
-      expect(mockSocket.on).toHaveBeenCalledWith(SocketEvent.UNSUBSCRIBE_PRODUCT, expect.any(Function))
+      expect(mockSocket.on).toHaveBeenCalledWith(
+        SocketEvent.SUBSCRIBE_PRODUCT,
+        expect.any(Function),
+      )
+      expect(mockSocket.on).toHaveBeenCalledWith(
+        SocketEvent.UNSUBSCRIBE_PRODUCT,
+        expect.any(Function),
+      )
     })
   })
 
@@ -72,7 +78,9 @@ describe('product.handler', () => {
       const mockSocket = createMockSocket() as any
 
       registerProductHandlers(mockSocket)
-      const subscribeHandler = mockSocket.on.mock.calls.find((c: any) => c[0] === SocketEvent.SUBSCRIBE_PRODUCT)[1]
+      const subscribeHandler = mockSocket.on.mock.calls.find(
+        (c: any) => c[0] === SocketEvent.SUBSCRIBE_PRODUCT,
+      )[1]
       subscribeHandler({ product_id: 'prod-123' })
 
       expect(mockSocket.join).toHaveBeenCalledWith('product:prod-123')
@@ -83,10 +91,15 @@ describe('product.handler', () => {
       const mockSocket = createMockSocket() as any
 
       registerProductHandlers(mockSocket)
-      const subscribeHandler = mockSocket.on.mock.calls.find((c: any) => c[0] === SocketEvent.SUBSCRIBE_PRODUCT)[1]
+      const subscribeHandler = mockSocket.on.mock.calls.find(
+        (c: any) => c[0] === SocketEvent.SUBSCRIBE_PRODUCT,
+      )[1]
       subscribeHandler({})
 
-      expect(mockSocket.emit).toHaveBeenCalledWith(SocketEvent.ERROR, expect.objectContaining({ code: 'INVALID_PAYLOAD' }))
+      expect(mockSocket.emit).toHaveBeenCalledWith(
+        SocketEvent.ERROR,
+        expect.objectContaining({ code: 'INVALID_PAYLOAD' }),
+      )
       expect(mockSocket.join).not.toHaveBeenCalled()
     })
   })
@@ -96,7 +109,9 @@ describe('product.handler', () => {
       const mockSocket = createMockSocket() as any
 
       registerProductHandlers(mockSocket)
-      const unsubscribeHandler = mockSocket.on.mock.calls.find((c: any) => c[0] === SocketEvent.UNSUBSCRIBE_PRODUCT)[1]
+      const unsubscribeHandler = mockSocket.on.mock.calls.find(
+        (c: any) => c[0] === SocketEvent.UNSUBSCRIBE_PRODUCT,
+      )[1]
       unsubscribeHandler({ product_id: 'prod-123' })
 
       expect(mockSocket.leave).toHaveBeenCalledWith('product:prod-123')
@@ -106,7 +121,9 @@ describe('product.handler', () => {
       const mockSocket = createMockSocket() as any
 
       registerProductHandlers(mockSocket)
-      const unsubscribeHandler = mockSocket.on.mock.calls.find((c: any) => c[0] === SocketEvent.UNSUBSCRIBE_PRODUCT)[1]
+      const unsubscribeHandler = mockSocket.on.mock.calls.find(
+        (c: any) => c[0] === SocketEvent.UNSUBSCRIBE_PRODUCT,
+      )[1]
       unsubscribeHandler({})
 
       expect(mockSocket.leave).not.toHaveBeenCalled()
@@ -115,7 +132,9 @@ describe('product.handler', () => {
 
   describe('joinAdminRoomIfAdmin', () => {
     it('should join admin room when user has Admin role', () => {
-      const mockSocket = createMockSocket({ user: { id: 'admin-id', email: 'admin@test.com', roles: ['Admin'] } }) as any
+      const mockSocket = createMockSocket({
+        user: { id: 'admin-id', email: 'admin@test.com', roles: ['Admin'] },
+      }) as any
 
       joinAdminRoomIfAdmin(mockSocket)
 
@@ -123,7 +142,9 @@ describe('product.handler', () => {
     })
 
     it('should not join admin room when user is not admin', () => {
-      const mockSocket = createMockSocket({ user: { id: 'user-id', email: 'user@test.com', roles: ['User'] } }) as any
+      const mockSocket = createMockSocket({
+        user: { id: 'user-id', email: 'user@test.com', roles: ['User'] },
+      }) as any
 
       joinAdminRoomIfAdmin(mockSocket)
 
@@ -131,7 +152,9 @@ describe('product.handler', () => {
     })
 
     it('should not join admin room when user has no roles', () => {
-      const mockSocket = createMockSocket({ user: { id: 'user-id', email: 'user@test.com', roles: [] } }) as any
+      const mockSocket = createMockSocket({
+        user: { id: 'user-id', email: 'user@test.com', roles: [] },
+      }) as any
 
       joinAdminRoomIfAdmin(mockSocket)
 
@@ -139,4 +162,3 @@ describe('product.handler', () => {
     })
   })
 })
-

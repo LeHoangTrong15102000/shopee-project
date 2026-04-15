@@ -1,18 +1,18 @@
-import { motion } from 'framer-motion';
-import { ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
+import { motion } from 'framer-motion'
+import { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
 
 interface EmptyStateProps {
-  icon?: ReactNode;
-  title: string;
-  description?: string;
+  icon?: ReactNode
+  title: string
+  description?: string
   action?: {
-    label: string;
-    onClick: () => void;
-  };
-  className?: string;
+    label: string
+    onClick: () => void
+  }
+  className?: string
 }
 
 const Sparkle = ({ delay, x, y }: { delay: number; x: number; y: number }) => (
@@ -30,7 +30,7 @@ const Sparkle = ({ delay, x, y }: { delay: number; x: number; y: number }) => (
       ease: 'easeInOut',
     }}
   />
-);
+)
 
 const DefaultEmptyIcon = () => (
   <svg
@@ -46,7 +46,7 @@ const DefaultEmptyIcon = () => (
       d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
     />
   </svg>
-);
+)
 
 const sparklePositions = [
   { x: -8, y: 10, delay: 0 },
@@ -54,7 +54,7 @@ const sparklePositions = [
   { x: 75, y: 60, delay: 1 },
   { x: -5, y: 65, delay: 1.5 },
   { x: 35, y: -5, delay: 0.8 },
-];
+]
 
 export default function EmptyState({
   icon,
@@ -63,7 +63,7 @@ export default function EmptyState({
   action,
   className = '',
 }: EmptyStateProps) {
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = useReducedMotion()
 
   if (reducedMotion) {
     return (
@@ -88,7 +88,7 @@ export default function EmptyState({
           </Button>
         )}
       </div>
-    );
+    )
   }
 
   return (
@@ -168,11 +168,11 @@ export default function EmptyState({
         </motion.div>
       )}
     </motion.div>
-  );
+  )
 }
 
 export const EmptyCart = ({ onShopNow }: { onShopNow?: () => void }) => {
-  const { t } = useTranslation('cart');
+  const { t } = useTranslation('cart')
   return (
     <EmptyState
       icon={
@@ -194,17 +194,17 @@ export const EmptyCart = ({ onShopNow }: { onShopNow?: () => void }) => {
       description={t('empty.description')}
       action={onShopNow ? { label: t('empty.shopNow'), onClick: onShopNow } : undefined}
     />
-  );
-};
+  )
+}
 
 export const EmptySearch = ({
   searchTerm,
   onClear,
 }: {
-  searchTerm?: string;
-  onClear?: () => void;
+  searchTerm?: string
+  onClear?: () => void
 }) => {
-  const { t } = useTranslation('home');
+  const { t } = useTranslation('home')
   return (
     <EmptyState
       icon={
@@ -228,11 +228,11 @@ export const EmptySearch = ({
       }
       action={onClear ? { label: t('search.clearFilters'), onClick: onClear } : undefined}
     />
-  );
-};
+  )
+}
 
 export const EmptyWishlist = ({ onExplore }: { onExplore?: () => void }) => {
-  const { t } = useTranslation('product');
+  const { t } = useTranslation('product')
   return (
     <EmptyState
       icon={
@@ -254,11 +254,11 @@ export const EmptyWishlist = ({ onExplore }: { onExplore?: () => void }) => {
       description={t('wishlist.emptyDescription')}
       action={onExplore ? { label: t('wishlist.exploreNow'), onClick: onExplore } : undefined}
     />
-  );
-};
+  )
+}
 
 export const EmptyOrders = ({ onShopNow }: { onShopNow?: () => void }) => {
-  const { t } = useTranslation('user');
+  const { t } = useTranslation('user')
   return (
     <EmptyState
       icon={
@@ -280,5 +280,5 @@ export const EmptyOrders = ({ onShopNow }: { onShopNow?: () => void }) => {
       description={t('orders.emptyDescription')}
       action={onShopNow ? { label: t('orders.shopNow'), onClick: onShopNow } : undefined}
     />
-  );
-};
+  )
+}

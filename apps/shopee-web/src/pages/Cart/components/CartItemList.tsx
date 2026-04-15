@@ -1,31 +1,31 @@
-import { AnimatePresence, motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
-import Button from 'src/components/Button';
-import ImageWithFallback from 'src/components/ImageWithFallback';
-import QuantityController from 'src/components/QuantityController';
-import { InlineStockAlert } from 'src/components/RealTimeStockAlert';
-import ShopeeCheckbox from 'src/components/ShopeeCheckbox';
-import StockBadge from 'src/components/StockBadge';
-import { useIsMobile } from 'src/hooks/useIsMobile';
-import { Purchase } from 'src/types/purchases.type';
-import { ExtendedPurchase, InlineStockAlertState } from '../types';
+import { AnimatePresence, motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
+import Button from 'src/components/Button'
+import ImageWithFallback from 'src/components/ImageWithFallback'
+import QuantityController from 'src/components/QuantityController'
+import { InlineStockAlert } from 'src/components/RealTimeStockAlert'
+import ShopeeCheckbox from 'src/components/ShopeeCheckbox'
+import StockBadge from 'src/components/StockBadge'
+import { useIsMobile } from 'src/hooks/useIsMobile'
+import { Purchase } from 'src/types/purchases.type'
+import { ExtendedPurchase, InlineStockAlertState } from '../types'
 
 interface CartItemListProps {
-  extendedPurchases: ExtendedPurchase[];
-  purchasesInCart: Purchase[] | undefined;
-  isAllChecked: boolean;
-  inlineAlerts: Map<string, InlineStockAlertState>;
-  handleChecked: (purchaseIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleCheckedAll: () => void;
-  handleQuantity: (purchaseIndex: number, value: number, enabled: boolean) => void;
-  handleTypeQuantity: (purchaseIndex: number) => (value: number) => void;
-  handleDelete: (purchaseIndex: number) => () => void;
-  handleSaveForLater: (purchaseIndex: number) => () => void;
-  handleDismissInlineAlert: (productId: string) => void;
-  path: { home: string };
-  formatCurrency: (value: number) => string;
-  generateNameId: (params: { name: string; id: string }) => string;
+  extendedPurchases: ExtendedPurchase[]
+  purchasesInCart: Purchase[] | undefined
+  isAllChecked: boolean
+  inlineAlerts: Map<string, InlineStockAlertState>
+  handleChecked: (purchaseIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => void
+  handleCheckedAll: () => void
+  handleQuantity: (purchaseIndex: number, value: number, enabled: boolean) => void
+  handleTypeQuantity: (purchaseIndex: number) => (value: number) => void
+  handleDelete: (purchaseIndex: number) => () => void
+  handleSaveForLater: (purchaseIndex: number) => () => void
+  handleDismissInlineAlert: (productId: string) => void
+  path: { home: string }
+  formatCurrency: (value: number) => string
+  generateNameId: (params: { name: string; id: string }) => string
 }
 
 const CartItemList = ({
@@ -44,8 +44,8 @@ const CartItemList = ({
   formatCurrency,
   generateNameId,
 }: CartItemListProps) => {
-  const { t } = useTranslation('cart');
-  const isMobile = useIsMobile();
+  const { t } = useTranslation('cart')
+  const isMobile = useIsMobile()
 
   return (
     <div className="overflow-auto">
@@ -89,7 +89,7 @@ const CartItemList = ({
                         onChange={(checked) => {
                           handleChecked(index)({
                             target: { checked },
-                          } as React.ChangeEvent<HTMLInputElement>);
+                          } as React.ChangeEvent<HTMLInputElement>)
                         }}
                         size="md"
                       />
@@ -263,7 +263,7 @@ const CartItemList = ({
                       onChange={(checked) => {
                         handleChecked(index)({
                           target: { checked },
-                        } as React.ChangeEvent<HTMLInputElement>);
+                        } as React.ChangeEvent<HTMLInputElement>)
                       }}
                       size="md"
                     />
@@ -423,7 +423,7 @@ const CartItemList = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CartItemList;
+export default CartItemList

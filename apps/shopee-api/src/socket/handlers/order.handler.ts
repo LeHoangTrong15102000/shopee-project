@@ -65,4 +65,3 @@ export const registerOrderHandlers = (socket: Socket): void => {
     }
   })
 }
-

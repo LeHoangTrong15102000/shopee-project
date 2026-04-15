@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import AddressDetailsStep from '../AddressSelector/components/AddressDetailsStep';
-import { UseFormReturn } from 'react-hook-form';
-import { AddressSchemaFormData } from '../AddressSelector/addressForm.constants';
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import AddressDetailsStep from '../AddressSelector/components/AddressDetailsStep'
+import { UseFormReturn } from 'react-hook-form'
+import { AddressSchemaFormData } from '../AddressSelector/addressForm.constants'
 
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
@@ -14,7 +14,7 @@ vi.mock('framer-motion', () => ({
     ),
   },
   AnimatePresence: ({ children }: any) => <>{children}</>,
-}));
+}))
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
@@ -38,11 +38,11 @@ vi.mock('react-i18next', () => ({
         'details.viewOnMap': 'View on Map',
         'details.comingSoon': 'Coming Soon',
         'details.pinLocation': 'Pin Location',
-      };
-      return translations[key] || key;
+      }
+      return translations[key] || key
     },
   }),
-}));
+}))
 
 // Mock Input component
 vi.mock('src/components/Input', () => ({
@@ -57,18 +57,18 @@ vi.mock('src/components/Input', () => ({
       {errorMessage && <p className={classNameError}>{errorMessage}</p>}
     </div>
   ),
-}));
+}))
 
 describe('AddressDetailsStep', () => {
-  let mockForm: UseFormReturn<AddressSchemaFormData>;
-  let mockOnShowStreetSuggestions: (show: boolean) => void;
-  let mockOnStreetSelect: (street: string) => void;
-  let mockOnTypeSelect: (type: 'home' | 'office' | 'other') => void;
+  let mockForm: UseFormReturn<AddressSchemaFormData>
+  let mockOnShowStreetSuggestions: (show: boolean) => void
+  let mockOnStreetSelect: (street: string) => void
+  let mockOnTypeSelect: (type: 'home' | 'office' | 'other') => void
 
   beforeEach(() => {
-    mockOnShowStreetSuggestions = vi.fn();
-    mockOnStreetSelect = vi.fn();
-    mockOnTypeSelect = vi.fn();
+    mockOnShowStreetSuggestions = vi.fn()
+    mockOnStreetSelect = vi.fn()
+    mockOnTypeSelect = vi.fn()
 
     // Create mock form object
     mockForm = {
@@ -104,8 +104,8 @@ describe('AddressDetailsStep', () => {
       trigger: vi.fn(),
       control: {} as any,
       unregister: vi.fn(),
-    } as unknown as UseFormReturn<AddressSchemaFormData>;
-  });
+    } as unknown as UseFormReturn<AddressSchemaFormData>
+  })
 
   const getDefaultProps = () => ({
     form: mockForm,
@@ -116,244 +116,244 @@ describe('AddressDetailsStep', () => {
     onShowStreetSuggestions: mockOnShowStreetSuggestions,
     onStreetSelect: mockOnStreetSelect,
     onTypeSelect: mockOnTypeSelect,
-  });
+  })
 
   it('renders street input field', () => {
-    render(<AddressDetailsStep {...getDefaultProps()} />);
+    render(<AddressDetailsStep {...getDefaultProps()} />)
 
-    const streetInput = screen.getByPlaceholderText('Enter street address');
-    expect(streetInput).toBeInTheDocument();
-    expect(screen.getByText('Street Address')).toBeInTheDocument();
-    expect(screen.getByText('*')).toBeInTheDocument(); // Required indicator
-  });
+    const streetInput = screen.getByPlaceholderText('Enter street address')
+    expect(streetInput).toBeInTheDocument()
+    expect(screen.getByText('Street Address')).toBeInTheDocument()
+    expect(screen.getByText('*')).toBeInTheDocument() // Required indicator
+  })
 
   it('shows street suggestions when showStreetSuggestions is true and suggestions exist', () => {
-    const suggestions = ['123 Main Street', '456 Oak Avenue', '789 Pine Road'];
+    const suggestions = ['123 Main Street', '456 Oak Avenue', '789 Pine Road']
     render(
       <AddressDetailsStep
         {...getDefaultProps()}
         showStreetSuggestions={true}
         filteredStreetSuggestions={suggestions}
       />,
-    );
+    )
 
-    expect(screen.getByText('Suggestions')).toBeInTheDocument();
+    expect(screen.getByText('Suggestions')).toBeInTheDocument()
     suggestions.forEach((suggestion) => {
-      expect(screen.getByText(suggestion)).toBeInTheDocument();
-    });
-  });
+      expect(screen.getByText(suggestion)).toBeInTheDocument()
+    })
+  })
 
   it('hides suggestions when showStreetSuggestions is false', () => {
-    const suggestions = ['123 Main Street', '456 Oak Avenue'];
+    const suggestions = ['123 Main Street', '456 Oak Avenue']
     render(
       <AddressDetailsStep
         {...getDefaultProps()}
         showStreetSuggestions={false}
         filteredStreetSuggestions={suggestions}
       />,
-    );
+    )
 
-    expect(screen.queryByText('Suggestions')).not.toBeInTheDocument();
+    expect(screen.queryByText('Suggestions')).not.toBeInTheDocument()
     suggestions.forEach((suggestion) => {
-      expect(screen.queryByText(suggestion)).not.toBeInTheDocument();
-    });
-  });
+      expect(screen.queryByText(suggestion)).not.toBeInTheDocument()
+    })
+  })
 
   it('calls onStreetSelect when a suggestion is clicked', () => {
-    const suggestions = ['123 Main Street', '456 Oak Avenue'];
+    const suggestions = ['123 Main Street', '456 Oak Avenue']
     render(
       <AddressDetailsStep
         {...getDefaultProps()}
         showStreetSuggestions={true}
         filteredStreetSuggestions={suggestions}
       />,
-    );
+    )
 
-    const firstSuggestion = screen.getByText('123 Main Street');
-    fireEvent.click(firstSuggestion);
+    const firstSuggestion = screen.getByText('123 Main Street')
+    fireEvent.click(firstSuggestion)
 
-    expect(mockOnStreetSelect).toHaveBeenCalledWith('123 Main Street');
-    expect(mockOnStreetSelect).toHaveBeenCalledTimes(1);
-  });
+    expect(mockOnStreetSelect).toHaveBeenCalledWith('123 Main Street')
+    expect(mockOnStreetSelect).toHaveBeenCalledTimes(1)
+  })
 
   it('shows error message when street has errors', () => {
-    const errorMessage = 'Street address is required';
+    const errorMessage = 'Street address is required'
     mockForm.formState.errors = {
       street: { message: errorMessage, type: 'required' },
-    };
+    }
 
-    render(<AddressDetailsStep {...getDefaultProps()} />);
+    render(<AddressDetailsStep {...getDefaultProps()} />)
 
-    expect(screen.getByText(errorMessage)).toBeInTheDocument();
-  });
+    expect(screen.getByText(errorMessage)).toBeInTheDocument()
+  })
 
   it('shows address preview when addressPreview is provided', () => {
-    const addressPreview = '123 Main Street, District 1, Ho Chi Minh City';
-    render(<AddressDetailsStep {...getDefaultProps()} addressPreview={addressPreview} />);
+    const addressPreview = '123 Main Street, District 1, Ho Chi Minh City'
+    render(<AddressDetailsStep {...getDefaultProps()} addressPreview={addressPreview} />)
 
-    expect(screen.getByText('Full Address')).toBeInTheDocument();
-    expect(screen.getByText(addressPreview)).toBeInTheDocument();
-  });
+    expect(screen.getByText('Full Address')).toBeInTheDocument()
+    expect(screen.getByText(addressPreview)).toBeInTheDocument()
+  })
 
   it('renders address type options (home, office, other)', () => {
-    render(<AddressDetailsStep {...getDefaultProps()} />);
+    render(<AddressDetailsStep {...getDefaultProps()} />)
 
-    expect(screen.getByText('Address Type')).toBeInTheDocument();
-    expect(screen.getByText('Home')).toBeInTheDocument();
-    expect(screen.getByText('Office')).toBeInTheDocument();
-    expect(screen.getByText('Other')).toBeInTheDocument();
-  });
+    expect(screen.getByText('Address Type')).toBeInTheDocument()
+    expect(screen.getByText('Home')).toBeInTheDocument()
+    expect(screen.getByText('Office')).toBeInTheDocument()
+    expect(screen.getByText('Other')).toBeInTheDocument()
+  })
 
   it('highlights selected address type', () => {
-    render(<AddressDetailsStep {...getDefaultProps()} watchedAddressType="office" />);
+    render(<AddressDetailsStep {...getDefaultProps()} watchedAddressType="office" />)
 
-    const homeButton = screen.getByText('Home').closest('button');
-    const officeButton = screen.getByText('Office').closest('button');
-    const otherButton = screen.getByText('Other').closest('button');
+    const homeButton = screen.getByText('Home').closest('button')
+    const officeButton = screen.getByText('Office').closest('button')
+    const otherButton = screen.getByText('Other').closest('button')
 
-    expect(officeButton).toHaveClass('border-orange', 'bg-orange/5', 'text-orange');
-    expect(homeButton).not.toHaveClass('border-orange');
-    expect(otherButton).not.toHaveClass('border-orange');
-  });
+    expect(officeButton).toHaveClass('border-orange', 'bg-orange/5', 'text-orange')
+    expect(homeButton).not.toHaveClass('border-orange')
+    expect(otherButton).not.toHaveClass('border-orange')
+  })
 
   it('shows custom label input when type is "other"', () => {
-    render(<AddressDetailsStep {...getDefaultProps()} watchedAddressType="other" />);
+    render(<AddressDetailsStep {...getDefaultProps()} watchedAddressType="other" />)
 
-    expect(screen.getByText('Custom Label')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('e.g., Warehouse, Store')).toBeInTheDocument();
-    expect(screen.getByTestId('input-label')).toBeInTheDocument();
-  });
+    expect(screen.getByText('Custom Label')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('e.g., Warehouse, Store')).toBeInTheDocument()
+    expect(screen.getByTestId('input-label')).toBeInTheDocument()
+  })
 
   it('calls onTypeSelect when type button is clicked', () => {
-    render(<AddressDetailsStep {...getDefaultProps()} />);
+    render(<AddressDetailsStep {...getDefaultProps()} />)
 
-    const officeButton = screen.getByText('Office').closest('button');
-    fireEvent.click(officeButton!);
+    const officeButton = screen.getByText('Office').closest('button')
+    fireEvent.click(officeButton!)
 
-    expect(mockOnTypeSelect).toHaveBeenCalledWith('office');
-    expect(mockOnTypeSelect).toHaveBeenCalledTimes(1);
-  });
+    expect(mockOnTypeSelect).toHaveBeenCalledWith('office')
+    expect(mockOnTypeSelect).toHaveBeenCalledTimes(1)
+  })
 
   it('calls onShowStreetSuggestions(true) when street input is focused', () => {
-    render(<AddressDetailsStep {...getDefaultProps()} />);
+    render(<AddressDetailsStep {...getDefaultProps()} />)
 
-    const streetInput = screen.getByPlaceholderText('Enter street address');
-    fireEvent.focus(streetInput);
+    const streetInput = screen.getByPlaceholderText('Enter street address')
+    fireEvent.focus(streetInput)
 
-    expect(mockOnShowStreetSuggestions).toHaveBeenCalledWith(true);
-  });
+    expect(mockOnShowStreetSuggestions).toHaveBeenCalledWith(true)
+  })
 
   it('calls onShowStreetSuggestions(false) when street input is blurred', async () => {
-    render(<AddressDetailsStep {...getDefaultProps()} />);
+    render(<AddressDetailsStep {...getDefaultProps()} />)
 
-    const streetInput = screen.getByPlaceholderText('Enter street address');
-    fireEvent.blur(streetInput);
+    const streetInput = screen.getByPlaceholderText('Enter street address')
+    fireEvent.blur(streetInput)
 
     // Wait for the setTimeout delay (200ms)
     await waitFor(
       () => {
-        expect(mockOnShowStreetSuggestions).toHaveBeenCalledWith(false);
+        expect(mockOnShowStreetSuggestions).toHaveBeenCalledWith(false)
       },
       { timeout: 300 },
-    );
-  });
+    )
+  })
 
   it('does not show custom label input when type is not "other"', () => {
-    render(<AddressDetailsStep {...getDefaultProps()} watchedAddressType="home" />);
+    render(<AddressDetailsStep {...getDefaultProps()} watchedAddressType="home" />)
 
-    expect(screen.queryByText('Custom Label')).not.toBeInTheDocument();
-    expect(screen.queryByPlaceholderText('e.g., Warehouse, Store')).not.toBeInTheDocument();
-  });
+    expect(screen.queryByText('Custom Label')).not.toBeInTheDocument()
+    expect(screen.queryByPlaceholderText('e.g., Warehouse, Store')).not.toBeInTheDocument()
+  })
 
   it('renders default address checkbox', () => {
-    render(<AddressDetailsStep {...getDefaultProps()} />);
+    render(<AddressDetailsStep {...getDefaultProps()} />)
 
-    expect(screen.getByText('Set as default address')).toBeInTheDocument();
-    expect(screen.getByText('Use this address for future orders')).toBeInTheDocument();
-    expect(screen.getByRole('checkbox')).toBeInTheDocument();
-  });
+    expect(screen.getByText('Set as default address')).toBeInTheDocument()
+    expect(screen.getByText('Use this address for future orders')).toBeInTheDocument()
+    expect(screen.getByRole('checkbox')).toBeInTheDocument()
+  })
 
   it('renders map preview placeholder', () => {
-    render(<AddressDetailsStep {...getDefaultProps()} />);
+    render(<AddressDetailsStep {...getDefaultProps()} />)
 
-    expect(screen.getByText('View on Map')).toBeInTheDocument();
-    expect(screen.getByText('Coming Soon')).toBeInTheDocument();
-    expect(screen.getByText('Pin Location')).toBeInTheDocument();
-  });
+    expect(screen.getByText('View on Map')).toBeInTheDocument()
+    expect(screen.getByText('Coming Soon')).toBeInTheDocument()
+    expect(screen.getByText('Pin Location')).toBeInTheDocument()
+  })
 
   it('applies error styling to street input when there is an error', () => {
     mockForm.formState.errors = {
       street: { message: 'Street is required', type: 'required' },
-    };
+    }
 
-    render(<AddressDetailsStep {...getDefaultProps()} />);
+    render(<AddressDetailsStep {...getDefaultProps()} />)
 
-    const streetInput = screen.getByPlaceholderText('Enter street address');
-    expect(streetInput).toHaveClass('border-red-300');
-  });
+    const streetInput = screen.getByPlaceholderText('Enter street address')
+    expect(streetInput).toHaveClass('border-red-300')
+  })
 
   it('does not show address preview when addressPreview is empty', () => {
-    render(<AddressDetailsStep {...getDefaultProps()} addressPreview="" />);
+    render(<AddressDetailsStep {...getDefaultProps()} addressPreview="" />)
 
-    expect(screen.queryByText('Full Address')).not.toBeInTheDocument();
-  });
+    expect(screen.queryByText('Full Address')).not.toBeInTheDocument()
+  })
 
   it('renders multiple suggestions correctly', () => {
-    const suggestions = ['Street A', 'Street B', 'Street C', 'Street D'];
+    const suggestions = ['Street A', 'Street B', 'Street C', 'Street D']
     render(
       <AddressDetailsStep
         {...getDefaultProps()}
         showStreetSuggestions={true}
         filteredStreetSuggestions={suggestions}
       />,
-    );
+    )
 
     suggestions.forEach((suggestion) => {
-      expect(screen.getByText(suggestion)).toBeInTheDocument();
-    });
-  });
+      expect(screen.getByText(suggestion)).toBeInTheDocument()
+    })
+  })
 
   it('calls onTypeSelect with correct value for each address type', () => {
-    render(<AddressDetailsStep {...getDefaultProps()} />);
+    render(<AddressDetailsStep {...getDefaultProps()} />)
 
-    const homeButton = screen.getByText('Home').closest('button');
-    const officeButton = screen.getByText('Office').closest('button');
-    const otherButton = screen.getByText('Other').closest('button');
+    const homeButton = screen.getByText('Home').closest('button')
+    const officeButton = screen.getByText('Office').closest('button')
+    const otherButton = screen.getByText('Other').closest('button')
 
-    fireEvent.click(homeButton!);
-    expect(mockOnTypeSelect).toHaveBeenCalledWith('home');
+    fireEvent.click(homeButton!)
+    expect(mockOnTypeSelect).toHaveBeenCalledWith('home')
 
-    fireEvent.click(officeButton!);
-    expect(mockOnTypeSelect).toHaveBeenCalledWith('office');
+    fireEvent.click(officeButton!)
+    expect(mockOnTypeSelect).toHaveBeenCalledWith('office')
 
-    fireEvent.click(otherButton!);
-    expect(mockOnTypeSelect).toHaveBeenCalledWith('other');
+    fireEvent.click(otherButton!)
+    expect(mockOnTypeSelect).toHaveBeenCalledWith('other')
 
-    expect(mockOnTypeSelect).toHaveBeenCalledTimes(3);
-  });
+    expect(mockOnTypeSelect).toHaveBeenCalledTimes(3)
+  })
 
   it('shows error message for custom label when type is "other" and has error', () => {
-    const labelError = 'Label is too long';
+    const labelError = 'Label is too long'
     mockForm.formState.errors = {
       label: { message: labelError, type: 'maxLength' },
-    };
+    }
 
-    render(<AddressDetailsStep {...getDefaultProps()} watchedAddressType="other" />);
+    render(<AddressDetailsStep {...getDefaultProps()} watchedAddressType="other" />)
 
-    expect(screen.getByText(labelError)).toBeInTheDocument();
-  });
+    expect(screen.getByText(labelError)).toBeInTheDocument()
+  })
 
   it('registers all form fields correctly', () => {
-    render(<AddressDetailsStep {...getDefaultProps()} />);
+    render(<AddressDetailsStep {...getDefaultProps()} />)
 
-    expect(mockForm.register).toHaveBeenCalledWith('street');
-    expect(mockForm.register).toHaveBeenCalledWith('addressType');
-    expect(mockForm.register).toHaveBeenCalledWith('isDefault');
-  });
+    expect(mockForm.register).toHaveBeenCalledWith('street')
+    expect(mockForm.register).toHaveBeenCalledWith('addressType')
+    expect(mockForm.register).toHaveBeenCalledWith('isDefault')
+  })
 
   it('registers label field when address type is "other"', () => {
-    render(<AddressDetailsStep {...getDefaultProps()} watchedAddressType="other" />);
+    render(<AddressDetailsStep {...getDefaultProps()} watchedAddressType="other" />)
 
-    expect(mockForm.register).toHaveBeenCalledWith('label');
-  });
-});
+    expect(mockForm.register).toHaveBeenCalledWith('label')
+  })
+})

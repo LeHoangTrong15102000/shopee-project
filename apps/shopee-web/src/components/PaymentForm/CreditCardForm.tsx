@@ -1,26 +1,26 @@
-import { memo } from 'react';
-import { UseFormRegister, FieldErrors, UseFormWatch } from 'react-hook-form';
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import Input from 'src/components/Input';
-import Button from 'src/components/Button';
-import { CardTypeIcon, CheckmarkIcon, InfoIcon } from './components/CardTypeIcons';
-import { VisualCardPreview, CVVTooltip } from './components/VisualCardPreview';
-import SecurityBadges from './shared/SecurityBadges';
-import { useCardValidation, shakeAnimation } from './useCardValidation';
+import { memo } from 'react'
+import { UseFormRegister, FieldErrors, UseFormWatch } from 'react-hook-form'
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import Input from 'src/components/Input'
+import Button from 'src/components/Button'
+import { CardTypeIcon, CheckmarkIcon, InfoIcon } from './components/CardTypeIcons'
+import { VisualCardPreview, CVVTooltip } from './components/VisualCardPreview'
+import SecurityBadges from './shared/SecurityBadges'
+import { useCardValidation, shakeAnimation } from './useCardValidation'
 
 export interface PaymentFormData {
-  cardNumber: string;
-  cardHolder: string;
-  expiryDate: string;
-  cvv: string;
-  saveCard?: boolean;
+  cardNumber: string
+  cardHolder: string
+  expiryDate: string
+  cvv: string
+  saveCard?: boolean
 }
 
 interface CreditCardFormProps {
-  register: UseFormRegister<PaymentFormData>;
-  errors: FieldErrors<PaymentFormData>;
-  watch: UseFormWatch<PaymentFormData>;
+  register: UseFormRegister<PaymentFormData>
+  errors: FieldErrors<PaymentFormData>
+  watch: UseFormWatch<PaymentFormData>
 }
 
 const CreditCardForm = memo(function CreditCardForm({
@@ -28,11 +28,11 @@ const CreditCardForm = memo(function CreditCardForm({
   errors,
   watch,
 }: CreditCardFormProps) {
-  const { t } = useTranslation('payment');
-  const cardNumber = watch('cardNumber') || '';
-  const cardHolder = watch('cardHolder') || '';
-  const expiryDate = watch('expiryDate') || '';
-  const cvv = watch('cvv') || '';
+  const { t } = useTranslation('payment')
+  const cardNumber = watch('cardNumber') || ''
+  const cardHolder = watch('cardHolder') || ''
+  const expiryDate = watch('expiryDate') || ''
+  const cvv = watch('cvv') || ''
 
   const {
     cardType,
@@ -48,7 +48,7 @@ const CreditCardForm = memo(function CreditCardForm({
     handleExpiryBlur,
     toggleCvvTooltip,
     closeCvvTooltip,
-  } = useCardValidation(cardNumber, expiryDate, cvv);
+  } = useCardValidation(cardNumber, expiryDate, cvv)
 
   return (
     <div className="space-y-4 md:space-y-6">
@@ -206,7 +206,7 @@ const CreditCardForm = memo(function CreditCardForm({
 
       <SecurityBadges />
     </div>
-  );
-});
+  )
+})
 
-export default CreditCardForm;
+export default CreditCardForm

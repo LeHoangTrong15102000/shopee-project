@@ -1,33 +1,33 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import classNames from 'classnames';
-import { motion } from 'framer-motion';
-import omit from 'lodash/omit';
-import { useContext } from 'react';
-import SEO from 'src/components/SEO';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router';
-import { toast } from 'react-toastify';
-import authApi from 'src/apis/auth.api';
-import Button from 'src/components/Button';
-import Input from 'src/components/Input';
-import PasswordStrengthMeter from 'src/components/PasswordStrengthMeter';
-import path from 'src/constant/path';
-import { AppContext } from 'src/contexts/app.context';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import { STAGGER_DELAY, staggerContainer, staggerItem } from 'src/styles/animations';
-import { ErrorResponseApi } from 'src/types/utils.type';
-import { RegisterSchema, registerSchema } from 'src/utils/rules';
-import { isAxiosUnprocessableEntityError } from 'src/utils/utils';
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
+import classNames from 'classnames'
+import { motion } from 'framer-motion'
+import omit from 'lodash/omit'
+import { useContext } from 'react'
+import SEO from 'src/components/SEO'
+import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+import { Link, useNavigate } from 'react-router'
+import { toast } from 'react-toastify'
+import authApi from 'src/apis/auth.api'
+import Button from 'src/components/Button'
+import Input from 'src/components/Input'
+import PasswordStrengthMeter from 'src/components/PasswordStrengthMeter'
+import path from 'src/constant/path'
+import { AppContext } from 'src/contexts/app.context'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import { STAGGER_DELAY, staggerContainer, staggerItem } from 'src/styles/animations'
+import { ErrorResponseApi } from 'src/types/utils.type'
+import { RegisterSchema, registerSchema } from 'src/utils/rules'
+import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 
-type FormData = RegisterSchema;
+type FormData = RegisterSchema
 // co ra sau thì ra chứ t vẫn đứng ở đây mà thôi có gì mà đâu mà phải sợ
 
 const Register = () => {
-  const { t } = useTranslation('auth');
-  const { setIsAuthenticated, setProfile } = useContext(AppContext);
-  const navigate = useNavigate();
+  const { t } = useTranslation('auth')
+  const { setIsAuthenticated, setProfile } = useContext(AppContext)
+  const navigate = useNavigate()
   const {
     register, // Dùng register để cung cấp thông tin cho react-hook-form, {...register('truyền cho nó 1 cái name chính là key của chúng ta')}
     handleSubmit,
@@ -37,36 +37,36 @@ const Register = () => {
   } = useForm<FormData>({
     mode: 'onTouched',
     resolver: zodResolver(registerSchema),
-  }); // return cho chúng ta một cái object, truyền genericType chung cho useForm
+  }) // return cho chúng ta một cái object, truyền genericType chung cho useForm
   // Tạo một cái rules handle việc validate form
 
-  const watchEmail = watch('email', '');
-  const watchPassword = watch('password', '');
-  const watchConfirmPassword = watch('confirm_password', '');
+  const watchEmail = watch('email', '')
+  const watchPassword = watch('password', '')
+  const watchConfirmPassword = watch('confirm_password', '')
 
-  const reducedMotion = useReducedMotion();
-  const containerVariants = staggerContainer(STAGGER_DELAY.normal);
+  const reducedMotion = useReducedMotion()
+  const containerVariants = staggerContainer(STAGGER_DELAY.normal)
 
   const registerAccountMutation = useMutation({
     mutationFn: (body: Omit<FormData, 'confirm_password'>) => authApi.registerAccount(body),
     onSuccess: (_) => {
-      toast.success(t('register.success'), { autoClose: 1000 });
+      toast.success(t('register.success'), { autoClose: 1000 })
     },
     onError: () => {
-      toast.error(t('register.error'), { autoClose: 1000 });
+      toast.error(t('register.error'), { autoClose: 1000 })
     },
-  });
+  })
 
   // func handleSubmit nó sẽ không chạy khi mà cái formState chúng ta không đúng
   const onSubmit = handleSubmit((data) => {
     // confirm_password chỉ thực hiện validate ở FE mà thôi còn lên trên server thì không cần
-    const body = omit(data, ['confirm_password']);
+    const body = omit(data, ['confirm_password'])
     registerAccountMutation.mutate(body as Omit<FormData, 'confirm_password'>, {
       onSuccess: (data) => {
         // console.log(data)
-        setIsAuthenticated(true);
-        setProfile(data.data.data.user);
-        navigate('/');
+        setIsAuthenticated(true)
+        setProfile(data.data.data.user)
+        navigate('/')
       },
       onError: (error) => {
         // console.log('error', error)
@@ -76,15 +76,15 @@ const Register = () => {
           )
         ) {
           // Lấy lỗi và set vào RHF setError
-          const formError = error.response?.data.data;
+          const formError = error.response?.data.data
           if (formError) {
             Object.keys(formError).forEach((key) => {
               // Ép kiểu cho key luôn
               setError(key as keyof Omit<FormData, 'confirm_password'>, {
                 message: formError[key as keyof Omit<FormData, 'confirm_password'>],
                 type: 'Server',
-              });
-            });
+              })
+            })
           }
           // if (formError?.email) {
           //   setError('email', {
@@ -100,8 +100,8 @@ const Register = () => {
           // }
         }
       },
-    });
-  });
+    })
+  })
 
   return (
     <div className="relative bg-orange">
@@ -234,7 +234,7 @@ const Register = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Register;
+export default Register

@@ -1,18 +1,18 @@
-import classNames from 'classnames';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
-import useSellerDashboard from 'src/hooks/useSellerDashboard';
-import { formatVNDCurrency as formatCurrency } from '@shopee/shared-utils';
+import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
+import useSellerDashboard from 'src/hooks/useSellerDashboard'
+import { formatVNDCurrency as formatCurrency } from '@shopee/shared-utils'
 
 interface SellerDashboardPanelProps {
-  className?: string;
+  className?: string
 }
 
 export default function SellerDashboardPanel({ className }: SellerDashboardPanelProps) {
-  const { t } = useTranslation('user');
-  const { metrics, orderNotifications, qaNotifications, isActive } = useSellerDashboard();
+  const { t } = useTranslation('user')
+  const { metrics, orderNotifications, qaNotifications, isActive } = useSellerDashboard()
   if (!isActive) {
-    return null;
+    return null
   }
 
   return (
@@ -103,5 +103,5 @@ export default function SellerDashboardPanel({ className }: SellerDashboardPanel
         </div>
       )}
     </div>
-  );
+  )
 }

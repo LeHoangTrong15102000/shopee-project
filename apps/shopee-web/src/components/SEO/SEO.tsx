@@ -1,19 +1,19 @@
-import { Helmet } from 'react-helmet-async';
-import config from 'src/constant/config';
+import { Helmet } from 'react-helmet-async'
+import config from 'src/constant/config'
 
-const SITE_URL = config.siteUrl;
+const SITE_URL = config.siteUrl
 
 interface SEOProps {
-  title?: string;
-  description?: string;
-  image?: string;
-  url?: string;
-  type?: string;
-  keywords?: string;
-  noindex?: boolean;
-  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
-  locale?: string;
-  alternateLocales?: string[];
+  title?: string
+  description?: string
+  image?: string
+  url?: string
+  type?: string
+  keywords?: string
+  noindex?: boolean
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[]
+  locale?: string
+  alternateLocales?: string[]
 }
 
 export default function SEO({
@@ -28,15 +28,15 @@ export default function SEO({
   locale,
   alternateLocales,
 }: SEOProps) {
-  const currentUrl = url || (typeof window !== 'undefined' ? window.location.href : '');
-  const fullTitle = title.includes('Shopee Clone') ? title : `${title} | Shopee Clone`;
-  const effectiveKeywords = keywords ?? 'mua sắm online, shopee, thương mại điện tử';
+  const currentUrl = url || (typeof window !== 'undefined' ? window.location.href : '')
+  const fullTitle = title.includes('Shopee Clone') ? title : `${title} | Shopee Clone`
+  const effectiveKeywords = keywords ?? 'mua sắm online, shopee, thương mại điện tử'
 
   // Normalize JSON-LD to array
-  const jsonLdItems = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+  const jsonLdItems = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : []
 
   // Build hreflang base URL (strip query params from current URL)
-  const hreflangBase = currentUrl.split('?')[0];
+  const hreflangBase = currentUrl.split('?')[0]
 
   return (
     <Helmet>
@@ -83,7 +83,7 @@ export default function SEO({
         </script>
       ))}
     </Helmet>
-  );
+  )
 }
 
-export { SITE_URL };
+export { SITE_URL }

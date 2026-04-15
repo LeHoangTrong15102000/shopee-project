@@ -54,7 +54,10 @@ describe('Password Reset Controller', () => {
     const req = createMockRequest({ body: { token: 'valid-token', password: 'newPass123' } })
     const res = createMockResponse()
     await resetPassword(req as Request, res as Response)
-    expect(container.services.passwordReset.resetPassword).toHaveBeenCalledWith('valid-token', 'newPass123')
+    expect(container.services.passwordReset.resetPassword).toHaveBeenCalledWith(
+      'valid-token',
+      'newPass123',
+    )
     expect(res.status).toHaveBeenCalledWith(200)
     expect(res.json).toHaveBeenCalledWith({ message: 'Password reset' })
   })

@@ -13,7 +13,7 @@ import { PaginatedResult, PaginationOptions } from './interfaces/base.repository
 export class QARepository implements IQARepository {
   async findQuestionsByProduct(
     filters: QuestionFilterOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IQuestionItem>> {
     const { page, limit } = pagination
     const skip = (page - 1) * limit
@@ -60,7 +60,10 @@ export class QARepository implements IQARepository {
     return saved.toObject() as IQuestionItem
   }
 
-  async addAnswer(questionId: string | Types.ObjectId, data: CreateAnswerDTO): Promise<IAnswerItem> {
+  async addAnswer(
+    questionId: string | Types.ObjectId,
+    data: CreateAnswerDTO,
+  ): Promise<IAnswerItem> {
     const newAnswer = {
       _id: new Types.ObjectId(),
       user_id: new Types.ObjectId(data.user_id.toString()),
@@ -79,7 +82,7 @@ export class QARepository implements IQARepository {
 
   async findAnswerById(
     questionId: string | Types.ObjectId,
-    answerId: string | Types.ObjectId
+    answerId: string | Types.ObjectId,
   ): Promise<IAnswerItem | null> {
     const question = await QuestionModel.findById(questionId).lean<IQuestionItem | null>()
     if (!question) return null
@@ -88,7 +91,7 @@ export class QARepository implements IQARepository {
 
   async toggleQuestionLike(
     questionId: string | Types.ObjectId,
-    userId: string | Types.ObjectId
+    userId: string | Types.ObjectId,
   ): Promise<{ is_liked: boolean; likes_count: number }> {
     const question = await QuestionModel.findById(questionId)
     if (!question) throw new Error('Question not found')
@@ -113,7 +116,7 @@ export class QARepository implements IQARepository {
   async toggleAnswerLike(
     questionId: string | Types.ObjectId,
     answerId: string | Types.ObjectId,
-    userId: string | Types.ObjectId
+    userId: string | Types.ObjectId,
   ): Promise<{ is_liked: boolean; likes_count: number }> {
     const question = await QuestionModel.findById(questionId)
     if (!question) throw new Error('Question not found')
@@ -147,7 +150,7 @@ export class QARepository implements IQARepository {
 
   async findQuestionsWithFilters(
     filters: { product_id?: string; unanswered?: string; start_date?: string; end_date?: string },
-    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' }
+    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' },
   ): Promise<PaginatedResult<IQuestionItem>> {
     const { page, limit, sort_by = 'createdAt', order = 'desc' } = pagination
     const skip = (page - 1) * limit
@@ -164,11 +167,7 @@ export class QARepository implements IQARepository {
     const sortObj: Record<string, 1 | -1> = { [sort_by]: order === 'asc' ? 1 : -1 }
 
     const [data, total] = await Promise.all([
-      QuestionModel.find(query)
-        .sort(sortObj)
-        .skip(skip)
-        .limit(limit)
-        .lean<IQuestionItem[]>(),
+      QuestionModel.find(query).sort(sortObj).skip(skip).limit(limit).lean<IQuestionItem[]>(),
       QuestionModel.countDocuments(query),
     ])
 
@@ -194,10 +193,20 @@ export class QARepository implements IQARepository {
       QuestionModel.countDocuments({ answers: { $size: 0 } }),
       QuestionModel.aggregate([
         { $project: { answer_count: { $size: '$answers' } } },
-        { $group: { _id: null, total_answers: { $sum: '$answer_count' }, avg: { $avg: '$answer_count' } } },
+        {
+          $group: {
+            _id: null,
+            total_answers: { $sum: '$answer_count' },
+            avg: { $avg: '$answer_count' },
+          },
+        },
       ]),
-      QuestionModel.countDocuments({ createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) } }),
-      QuestionModel.countDocuments({ createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } }),
+      QuestionModel.countDocuments({
+        createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) },
+      }),
+      QuestionModel.countDocuments({
+        createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+      }),
     ])
 
     return {
@@ -210,4 +219,3 @@ export class QARepository implements IQARepository {
     }
   }
 }
-

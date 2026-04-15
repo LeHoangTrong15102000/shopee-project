@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import ShippingMethodModal from '../ShippingMethodModal';
-import { renderWithProviders } from 'src/utils/testUtils';
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import ShippingMethodModal from '../ShippingMethodModal'
+import { renderWithProviders } from 'src/utils/testUtils'
 
 vi.mock('src/apis/checkout.api', () => ({
   default: {
@@ -48,144 +48,144 @@ vi.mock('src/apis/checkout.api', () => ({
       },
     }),
   },
-}));
+}))
 
 describe('ShippingMethodModal (Task 4.8)', () => {
-  const onClose = vi.fn();
-  const user = userEvent.setup();
+  const onClose = vi.fn()
+  const user = userEvent.setup()
 
   beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    vi.clearAllMocks()
+  })
 
   it('renders modal with title when open', async () => {
-    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
+    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      expect(screen.getByText('Thông tin về phí vận chuyển')).toBeInTheDocument();
-    });
-  });
+      expect(screen.getByText('Thông tin về phí vận chuyển')).toBeInTheDocument()
+    })
+  })
 
   it('does not render when closed', () => {
-    renderWithProviders(<ShippingMethodModal isOpen={false} onClose={onClose} />);
-    expect(screen.queryByText('Thông tin về phí vận chuyển')).not.toBeInTheDocument();
-  });
+    renderWithProviders(<ShippingMethodModal isOpen={false} onClose={onClose} />)
+    expect(screen.queryByText('Thông tin về phí vận chuyển')).not.toBeInTheDocument()
+  })
 
   it('shows loading skeletons initially', () => {
-    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
-    const skeletons = document.querySelectorAll('.animate-pulse');
-    expect(skeletons.length).toBeGreaterThan(0);
-  });
+    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />)
+    const skeletons = document.querySelectorAll('.animate-pulse')
+    expect(skeletons.length).toBeGreaterThan(0)
+  })
 
   it('calls onClose when close button clicked', async () => {
-    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
+    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      expect(screen.getByText('Thông tin về phí vận chuyển')).toBeInTheDocument();
-    });
-    const closeBtn = screen.getByLabelText('Đóng');
-    await user.click(closeBtn);
-    expect(onClose).toHaveBeenCalled();
-  });
+      expect(screen.getByText('Thông tin về phí vận chuyển')).toBeInTheDocument()
+    })
+    const closeBtn = screen.getByLabelText('Đóng')
+    await user.click(closeBtn)
+    expect(onClose).toHaveBeenCalled()
+  })
 
   it('has accessible dialog structure', async () => {
-    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
+    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      expect(screen.getByRole('dialog')).toBeInTheDocument();
-    });
-    expect(screen.getByRole('dialog')).toHaveAttribute('aria-modal', 'true');
-  });
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+    expect(screen.getByRole('dialog')).toHaveAttribute('aria-modal', 'true')
+  })
 
   it('has responsive width classes', async () => {
-    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
+    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      expect(screen.getByRole('dialog')).toBeInTheDocument();
-    });
-    const dialog = screen.getByRole('dialog');
-    expect(dialog.classList.contains('w-full')).toBe(true);
-    expect(dialog.classList.contains('max-w-[520px]')).toBe(true);
-  });
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+    const dialog = screen.getByRole('dialog')
+    expect(dialog.classList.contains('w-full')).toBe(true)
+    expect(dialog.classList.contains('max-w-[520px]')).toBe(true)
+  })
 
   it('displays shipping methods after loading', async () => {
-    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
+    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      expect(screen.getByText('Hỏa Tốc')).toBeInTheDocument();
-    });
-    expect(screen.getByText('Nhanh')).toBeInTheDocument();
-    expect(screen.getByText('Tiết Kiệm')).toBeInTheDocument();
-  });
+      expect(screen.getByText('Hỏa Tốc')).toBeInTheDocument()
+    })
+    expect(screen.getByText('Nhanh')).toBeInTheDocument()
+    expect(screen.getByText('Tiết Kiệm')).toBeInTheDocument()
+  })
 
   it('shows delivery address section', async () => {
     renderWithProviders(
       <ShippingMethodModal isOpen={true} onClose={onClose} location="Phường Linh Trung, Thủ Đức" />,
-    );
+    )
     await waitFor(() => {
-      expect(screen.getByText(/Vận chuyển tới/)).toBeInTheDocument();
-    });
-    expect(screen.getByText('Phường Linh Trung, Thủ Đức')).toBeInTheDocument();
-  });
+      expect(screen.getByText(/Vận chuyển tới/)).toBeInTheDocument()
+    })
+    expect(screen.getByText('Phường Linh Trung, Thủ Đức')).toBeInTheDocument()
+  })
 
   it('shows instant delivery badge with hours', async () => {
-    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
+    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      expect(screen.getByText('4 Giờ')).toBeInTheDocument();
-    });
-  });
+      expect(screen.getByText('4 Giờ')).toBeInTheDocument()
+    })
+  })
 
   it('shows free text instead of 0đ', async () => {
-    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
+    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      const freeTexts = screen.getAllByText('Miễn phí');
-      expect(freeTexts.length).toBeGreaterThan(0);
-    });
-  });
+      const freeTexts = screen.getAllByText('Miễn phí')
+      expect(freeTexts.length).toBeGreaterThan(0)
+    })
+  })
 
   it('shows method details for instant delivery', async () => {
-    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
+    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
       expect(
         screen.getByText('Tặng Voucher ₫20.000 nếu đơn giao sau thời gian trên'),
-      ).toBeInTheDocument();
-    });
-  });
+      ).toBeInTheDocument()
+    })
+  })
 
   it('shows understood button and calls onClose', async () => {
-    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
+    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      expect(screen.getByText('Đã Hiểu')).toBeInTheDocument();
-    });
-    await user.click(screen.getByText('Đã Hiểu'));
-    expect(onClose).toHaveBeenCalled();
-  });
-});
+      expect(screen.getByText('Đã Hiểu')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('Đã Hiểu'))
+    expect(onClose).toHaveBeenCalled()
+  })
+})
 
 describe('ShippingMethodModal - Error & Empty States', () => {
-  const onClose = vi.fn();
+  const onClose = vi.fn()
 
   beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    vi.clearAllMocks()
+  })
 
   it('displays error state with retry on API failure', async () => {
-    const checkoutApi = (await import('src/apis/checkout.api')).default;
-    (checkoutApi.getShippingMethods as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+    const checkoutApi = (await import('src/apis/checkout.api')).default
+    ;(checkoutApi.getShippingMethods as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
       new Error('Network error'),
-    );
-    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
+    )
+    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
       expect(
         screen.getByText('Không thể tải phương thức vận chuyển. Vui lòng thử lại.'),
-      ).toBeInTheDocument();
-    });
-    expect(screen.getByText('Thử lại')).toBeInTheDocument();
-  });
+      ).toBeInTheDocument()
+    })
+    expect(screen.getByText('Thử lại')).toBeInTheDocument()
+  })
 
   it('displays empty state when no methods available', async () => {
-    const checkoutApi = (await import('src/apis/checkout.api')).default;
-    (checkoutApi.getShippingMethods as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+    const checkoutApi = (await import('src/apis/checkout.api')).default
+    ;(checkoutApi.getShippingMethods as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       data: { data: [] },
-    });
-    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />);
+    })
+    renderWithProviders(<ShippingMethodModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      expect(screen.getByText('Không có phương thức vận chuyển khả dụng')).toBeInTheDocument();
-    });
-  });
-});
+      expect(screen.getByText('Không có phương thức vận chuyển khả dụng')).toBeInTheDocument()
+    })
+  })
+})

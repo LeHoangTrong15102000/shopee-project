@@ -21,7 +21,9 @@ jest.mock('@utils/cache.service', () => ({
 jest.mock('fs', () => ({ unlink: jest.fn((path, cb) => cb(null)) }))
 jest.mock('@utils/helper', () => ({ HOST: 'http://localhost:4000' }))
 jest.mock('@constants/config', () => ({
-  FOLDERS: { PRODUCT: 'product' }, FOLDER_UPLOAD: 'upload', ROUTE_IMAGE: 'images',
+  FOLDERS: { PRODUCT: 'product' },
+  FOLDER_UPLOAD: 'upload',
+  ROUTE_IMAGE: 'images',
 }))
 
 describe('ProductService - Variants', () => {
@@ -31,9 +33,17 @@ describe('ProductService - Variants', () => {
   const productId = new Types.ObjectId()
 
   const baseProduct = {
-    _id: productId, name: 'Test', price: 100, price_before_discount: 120,
-    quantity: 10, sold: 0, view: 0, image: 'test.jpg', images: [],
-    rating: 0, category: new Types.ObjectId(),
+    _id: productId,
+    name: 'Test',
+    price: 100,
+    price_before_discount: 120,
+    quantity: 10,
+    sold: 0,
+    view: 0,
+    image: 'test.jpg',
+    images: [],
+    rating: 0,
+    category: new Types.ObjectId(),
   }
 
   beforeEach(() => {
@@ -41,35 +51,76 @@ describe('ProductService - Variants', () => {
       create: jest.fn().mockResolvedValue({ ...baseProduct }),
       findById: jest.fn().mockResolvedValue({ ...baseProduct }),
       updateById: jest.fn().mockResolvedValue({ ...baseProduct }),
-      find: jest.fn(), findOne: jest.fn(), findPaginated: jest.fn(),
-      deleteById: jest.fn(), deleteMany: jest.fn(), count: jest.fn(),
-      exists: jest.fn(), updateMany: jest.fn(),
-      findProducts: jest.fn(), findByCategory: jest.fn(), searchByName: jest.fn(),
-      incrementView: jest.fn(), incrementSold: jest.fn(), decrementQuantity: jest.fn(),
-      findLowStock: jest.fn(), bulkUpdate: jest.fn(), bulkUpdateStock: jest.fn(),
+      find: jest.fn(),
+      findOne: jest.fn(),
+      findPaginated: jest.fn(),
+      deleteById: jest.fn(),
+      deleteMany: jest.fn(),
+      count: jest.fn(),
+      exists: jest.fn(),
+      updateMany: jest.fn(),
+      findProducts: jest.fn(),
+      findByCategory: jest.fn(),
+      searchByName: jest.fn(),
+      incrementView: jest.fn(),
+      incrementSold: jest.fn(),
+      decrementQuantity: jest.fn(),
+      findLowStock: jest.fn(),
+      bulkUpdate: jest.fn(),
+      bulkUpdateStock: jest.fn(),
       updateRating: jest.fn(),
     } as any
     mockSKURepo = {
-      create: jest.fn().mockImplementation((data) => Promise.resolve({ _id: new Types.ObjectId(), ...data })),
+      create: jest
+        .fn()
+        .mockImplementation((data) => Promise.resolve({ _id: new Types.ObjectId(), ...data })),
       findByProduct: jest.fn().mockResolvedValue([]),
       deleteMany: jest.fn().mockResolvedValue(0),
-      findById: jest.fn(), findOne: jest.fn(), find: jest.fn(),
-      findPaginated: jest.fn(), updateById: jest.fn(), updateMany: jest.fn(),
-      deleteById: jest.fn(), count: jest.fn(), exists: jest.fn(),
-      findByProductAndValue: jest.fn(), findByProductAndVariantValues: jest.fn(),
-      atomicDecrementStock: jest.fn(), atomicIncrementStock: jest.fn(),
-      bulkAtomicDecrementStock: jest.fn(), findLowStock: jest.fn(),
+      findById: jest.fn(),
+      findOne: jest.fn(),
+      find: jest.fn(),
+      findPaginated: jest.fn(),
+      updateById: jest.fn(),
+      updateMany: jest.fn(),
+      deleteById: jest.fn(),
+      count: jest.fn(),
+      exists: jest.fn(),
+      findByProductAndValue: jest.fn(),
+      findByProductAndVariantValues: jest.fn(),
+      atomicDecrementStock: jest.fn(),
+      atomicIncrementStock: jest.fn(),
+      bulkAtomicDecrementStock: jest.fn(),
+      findLowStock: jest.fn(),
     } as any
     service = new ProductService(mockProductRepo, mockSKURepo)
   })
 
   it('creates product with variants and auto-generates SKUs', async () => {
     const result = await service.createProduct({
-      name: 'Test', image: 'img.jpg', images: [], price: 100,
-      price_before_discount: 120, quantity: 10, category: 'cat1',
+      name: 'Test',
+      image: 'img.jpg',
+      images: [],
+      price: 100,
+      price_before_discount: 120,
+      quantity: 10,
+      category: 'cat1',
       variants: [
-        { type: 'color', name: 'Màu', options: [{ name: 'Red', value: 'red' }, { name: 'Blue', value: 'blue' }] },
-        { type: 'size', name: 'Size', options: [{ name: 'S', value: 's' }, { name: 'M', value: 'm' }] },
+        {
+          type: 'color',
+          name: 'Màu',
+          options: [
+            { name: 'Red', value: 'red' },
+            { name: 'Blue', value: 'blue' },
+          ],
+        },
+        {
+          type: 'size',
+          name: 'Size',
+          options: [
+            { name: 'S', value: 's' },
+            { name: 'M', value: 'm' },
+          ],
+        },
       ],
     })
     expect(mockSKURepo.create).toHaveBeenCalledTimes(4)
@@ -78,8 +129,13 @@ describe('ProductService - Variants', () => {
 
   it('creates product without variants (backward compatible)', async () => {
     const result = await service.createProduct({
-      name: 'Test', image: 'img.jpg', images: [], price: 100,
-      price_before_discount: 120, quantity: 10, category: 'cat1',
+      name: 'Test',
+      image: 'img.jpg',
+      images: [],
+      price: 100,
+      price_before_discount: 120,
+      quantity: 10,
+      category: 'cat1',
     })
     expect(mockSKURepo.create).not.toHaveBeenCalled()
     expect(result.skus).toBeUndefined()
@@ -89,8 +145,13 @@ describe('ProductService - Variants', () => {
   // This test verifies the service accepts the data (validation happens before service)
   it('accepts variants with different types', async () => {
     const result = await service.createProduct({
-      name: 'Test', image: 'img.jpg', images: [], price: 100,
-      price_before_discount: 120, quantity: 10, category: 'cat1',
+      name: 'Test',
+      image: 'img.jpg',
+      images: [],
+      price: 100,
+      price_before_discount: 120,
+      quantity: 10,
+      category: 'cat1',
       variants: [
         { type: 'color', name: 'Màu', options: [{ name: 'Red', value: 'red' }] },
         { type: 'size', name: 'Size', options: [{ name: 'S', value: 's' }] },
@@ -103,15 +164,32 @@ describe('ProductService - Variants', () => {
   // This test verifies the service processes the data (validation happens before service)
   it('processes variants with unique options', async () => {
     const result = await service.createProduct({
-      name: 'Test', image: 'img.jpg', images: [], price: 100,
-      price_before_discount: 120, quantity: 10, category: 'cat1',
-      variants: [{ type: 'color', name: 'Màu', options: [{ name: 'Red', value: 'red' }, { name: 'Blue', value: 'blue' }] }],
+      name: 'Test',
+      image: 'img.jpg',
+      images: [],
+      price: 100,
+      price_before_discount: 120,
+      quantity: 10,
+      category: 'cat1',
+      variants: [
+        {
+          type: 'color',
+          name: 'Màu',
+          options: [
+            { name: 'Red', value: 'red' },
+            { name: 'Blue', value: 'blue' },
+          ],
+        },
+      ],
     })
     expect(result.skus).toHaveLength(2)
   })
 
   it('updates product and regenerates SKUs when variants change', async () => {
-    mockProductRepo.updateById.mockResolvedValue({ ...baseProduct, variants: [{ type: 'color', name: 'Màu', options: [{ name: 'Red', value: 'red' }] }] } as any)
+    mockProductRepo.updateById.mockResolvedValue({
+      ...baseProduct,
+      variants: [{ type: 'color', name: 'Màu', options: [{ name: 'Red', value: 'red' }] }],
+    } as any)
     const result = await service.updateProduct(productId.toString(), {
       variants: [{ type: 'color', name: 'Màu', options: [{ name: 'Red', value: 'red' }] }],
     })
@@ -135,9 +213,17 @@ describe('ProductService - Concurrent Variant Updates (Task 15.12)', () => {
   const productId = new Types.ObjectId()
 
   const baseProduct = {
-    _id: productId, name: 'Test', price: 100, price_before_discount: 120,
-    quantity: 10, sold: 0, view: 0, image: 'test.jpg', images: [],
-    rating: 0, category: new Types.ObjectId(),
+    _id: productId,
+    name: 'Test',
+    price: 100,
+    price_before_discount: 120,
+    quantity: 10,
+    sold: 0,
+    view: 0,
+    image: 'test.jpg',
+    images: [],
+    rating: 0,
+    category: new Types.ObjectId(),
     variants: [{ type: 'color', name: 'Màu', options: [{ name: 'Red', value: 'red' }] }],
   }
 
@@ -146,27 +232,57 @@ describe('ProductService - Concurrent Variant Updates (Task 15.12)', () => {
       create: jest.fn().mockResolvedValue({ ...baseProduct }),
       findById: jest.fn().mockResolvedValue({ ...baseProduct }),
       updateById: jest.fn().mockResolvedValue({ ...baseProduct }),
-      find: jest.fn(), findOne: jest.fn(), findPaginated: jest.fn(),
-      deleteById: jest.fn(), deleteMany: jest.fn(), count: jest.fn(),
-      exists: jest.fn(), updateMany: jest.fn(),
-      findProducts: jest.fn(), findByCategory: jest.fn(), searchByName: jest.fn(),
-      incrementView: jest.fn(), incrementSold: jest.fn(), decrementQuantity: jest.fn(),
-      findLowStock: jest.fn(), bulkUpdate: jest.fn(), bulkUpdateStock: jest.fn(),
+      find: jest.fn(),
+      findOne: jest.fn(),
+      findPaginated: jest.fn(),
+      deleteById: jest.fn(),
+      deleteMany: jest.fn(),
+      count: jest.fn(),
+      exists: jest.fn(),
+      updateMany: jest.fn(),
+      findProducts: jest.fn(),
+      findByCategory: jest.fn(),
+      searchByName: jest.fn(),
+      incrementView: jest.fn(),
+      incrementSold: jest.fn(),
+      decrementQuantity: jest.fn(),
+      findLowStock: jest.fn(),
+      bulkUpdate: jest.fn(),
+      bulkUpdateStock: jest.fn(),
       updateRating: jest.fn(),
     } as any
     mockSKURepo = {
-      create: jest.fn().mockImplementation((data) => Promise.resolve({ _id: new Types.ObjectId(), ...data })),
-      findByProduct: jest.fn().mockResolvedValue([
-        { _id: new Types.ObjectId(), value: 'RED', price: 100, stock: 10, variant_values: { color: 'red' }, product: productId },
-      ]),
+      create: jest
+        .fn()
+        .mockImplementation((data) => Promise.resolve({ _id: new Types.ObjectId(), ...data })),
+      findByProduct: jest
+        .fn()
+        .mockResolvedValue([
+          {
+            _id: new Types.ObjectId(),
+            value: 'RED',
+            price: 100,
+            stock: 10,
+            variant_values: { color: 'red' },
+            product: productId,
+          },
+        ]),
       deleteMany: jest.fn().mockResolvedValue(1),
-      findById: jest.fn(), findOne: jest.fn(), find: jest.fn(),
-      findPaginated: jest.fn(), updateById: jest.fn().mockImplementation((id, data) => Promise.resolve({ _id: id, ...data })),
+      findById: jest.fn(),
+      findOne: jest.fn(),
+      find: jest.fn(),
+      findPaginated: jest.fn(),
+      updateById: jest.fn().mockImplementation((id, data) => Promise.resolve({ _id: id, ...data })),
       updateMany: jest.fn(),
-      deleteById: jest.fn(), count: jest.fn(), exists: jest.fn(),
-      findByProductAndValue: jest.fn(), findByProductAndVariantValues: jest.fn(),
-      atomicDecrementStock: jest.fn(), atomicIncrementStock: jest.fn(),
-      bulkAtomicDecrementStock: jest.fn(), findLowStock: jest.fn(),
+      deleteById: jest.fn(),
+      count: jest.fn(),
+      exists: jest.fn(),
+      findByProductAndValue: jest.fn(),
+      findByProductAndVariantValues: jest.fn(),
+      atomicDecrementStock: jest.fn(),
+      atomicIncrementStock: jest.fn(),
+      bulkAtomicDecrementStock: jest.fn(),
+      findLowStock: jest.fn(),
     } as any
     service = new ProductService(mockProductRepo, mockSKURepo)
   })
@@ -174,19 +290,44 @@ describe('ProductService - Concurrent Variant Updates (Task 15.12)', () => {
   it('handles concurrent variant updates without data corruption', async () => {
     // Simulate two concurrent updates to the same product
     const update1 = service.updateProduct(productId.toString(), {
-      variants: [{ type: 'color', name: 'Màu', options: [{ name: 'Red', value: 'red' }, { name: 'Blue', value: 'blue' }] }],
+      variants: [
+        {
+          type: 'color',
+          name: 'Màu',
+          options: [
+            { name: 'Red', value: 'red' },
+            { name: 'Blue', value: 'blue' },
+          ],
+        },
+      ],
     })
     const update2 = service.updateProduct(productId.toString(), {
-      variants: [{ type: 'size', name: 'Size', options: [{ name: 'S', value: 's' }, { name: 'M', value: 'm' }] }],
+      variants: [
+        {
+          type: 'size',
+          name: 'Size',
+          options: [
+            { name: 'S', value: 's' },
+            { name: 'M', value: 'm' },
+          ],
+        },
+      ],
     })
 
     // Both should complete without throwing
     const results = await Promise.allSettled([update1, update2])
-    expect(results.every(r => r.status === 'fulfilled')).toBe(true)
+    expect(results.every((r) => r.status === 'fulfilled')).toBe(true)
   })
 
   it('maintains data integrity when updating SKU stock concurrently', async () => {
-    const existingSku = { _id: new Types.ObjectId(), value: 'RED', price: 100, stock: 10, variant_values: { color: 'red' }, product: productId }
+    const existingSku = {
+      _id: new Types.ObjectId(),
+      value: 'RED',
+      price: 100,
+      stock: 10,
+      variant_values: { color: 'red' },
+      product: productId,
+    }
     mockSKURepo.findByProduct.mockResolvedValue([existingSku])
 
     // Simulate concurrent SKU updates
@@ -198,13 +339,20 @@ describe('ProductService - Concurrent Variant Updates (Task 15.12)', () => {
     })
 
     const results = await Promise.allSettled([update1, update2])
-    expect(results.every(r => r.status === 'fulfilled')).toBe(true)
+    expect(results.every((r) => r.status === 'fulfilled')).toBe(true)
     // updateById should be called for each update
     expect(mockSKURepo.updateById).toHaveBeenCalled()
   })
 
   it('handles race condition when adding new SKU while another update is in progress', async () => {
-    const existingSku = { _id: new Types.ObjectId(), value: 'RED', price: 100, stock: 10, variant_values: { color: 'red' }, product: productId }
+    const existingSku = {
+      _id: new Types.ObjectId(),
+      value: 'RED',
+      price: 100,
+      stock: 10,
+      variant_values: { color: 'red' },
+      product: productId,
+    }
     mockSKURepo.findByProduct.mockResolvedValue([existingSku])
 
     // First update adds a new SKU
@@ -220,11 +368,18 @@ describe('ProductService - Concurrent Variant Updates (Task 15.12)', () => {
     })
 
     const results = await Promise.allSettled([update1, update2])
-    expect(results.every(r => r.status === 'fulfilled')).toBe(true)
+    expect(results.every((r) => r.status === 'fulfilled')).toBe(true)
   })
 
   it('soft-deletes removed SKUs instead of hard delete to prevent data loss', async () => {
-    const existingSku = { _id: new Types.ObjectId(), value: 'RED', price: 100, stock: 10, variant_values: { color: 'red' }, product: productId }
+    const existingSku = {
+      _id: new Types.ObjectId(),
+      value: 'RED',
+      price: 100,
+      stock: 10,
+      variant_values: { color: 'red' },
+      product: productId,
+    }
     mockSKURepo.findByProduct.mockResolvedValue([existingSku])
 
     // Update with empty SKU list (removing RED)
@@ -235,8 +390,7 @@ describe('ProductService - Concurrent Variant Updates (Task 15.12)', () => {
     // Should soft-delete by setting stock to 0, not hard delete
     expect(mockSKURepo.updateById).toHaveBeenCalledWith(
       existingSku._id.toString(),
-      expect.objectContaining({ stock: 0 })
+      expect.objectContaining({ stock: 0 }),
     )
   })
 })
-

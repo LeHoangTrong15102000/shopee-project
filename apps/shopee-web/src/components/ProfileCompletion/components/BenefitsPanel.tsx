@@ -1,8 +1,8 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
 interface BenefitsPanelProps {
-  reducedMotion: boolean;
+  reducedMotion: boolean
 }
 
 const BENEFITS = [
@@ -69,10 +69,10 @@ const BENEFITS = [
     titleKey: 'profileCompletion.benefits.shipping.title',
     descKey: 'profileCompletion.benefits.shipping.desc',
   },
-];
+]
 
 const BenefitsPanel = ({ reducedMotion }: BenefitsPanelProps) => {
-  const { t } = useTranslation('user');
+  const { t } = useTranslation('user')
 
   return (
     <motion.div
@@ -116,7 +116,7 @@ const BenefitsPanel = ({ reducedMotion }: BenefitsPanelProps) => {
         </motion.div>
       ))}
     </motion.div>
-  );
-};
+  )
+}
 
-export default BenefitsPanel;
+export default BenefitsPanel

@@ -79,7 +79,11 @@ describe('UserService', () => {
       mockUserRepository.emailExists.mockResolvedValue(true)
 
       await expect(
-        userService.createUser({ email: 'existing@example.com', password: 'password123', roles: ['User'] })
+        userService.createUser({
+          email: 'existing@example.com',
+          password: 'password123',
+          roles: ['User'],
+        }),
       ).rejects.toThrow(ConflictError)
     })
   })
@@ -137,7 +141,9 @@ describe('UserService', () => {
     it('should throw NotFoundError when user not found', async () => {
       mockUserRepository.updateById.mockResolvedValue(null)
 
-      await expect(userService.updateUser(validObjectId, { name: 'Updated' })).rejects.toThrow(NotFoundError)
+      await expect(userService.updateUser(validObjectId, { name: 'Updated' })).rejects.toThrow(
+        NotFoundError,
+      )
     })
   })
 
@@ -163,7 +169,10 @@ describe('UserService', () => {
       ;(compareValue as jest.Mock).mockReturnValue(false)
 
       await expect(
-        userService.updateProfile(validObjectId, { password: 'wrongpassword', new_password: 'newpassword' })
+        userService.updateProfile(validObjectId, {
+          password: 'wrongpassword',
+          new_password: 'newpassword',
+        }),
       ).rejects.toThrow(ValidationError)
     })
   })
@@ -210,7 +219,10 @@ describe('UserService', () => {
 
   describe('updateAvatar', () => {
     it('should update avatar successfully', async () => {
-      mockUserRepository.updateAvatar.mockResolvedValue({ ...mockUser, avatar: 'new-avatar.jpg' } as any)
+      mockUserRepository.updateAvatar.mockResolvedValue({
+        ...mockUser,
+        avatar: 'new-avatar.jpg',
+      } as any)
 
       const result = await userService.updateAvatar(validObjectId, 'new-avatar.jpg')
 
@@ -221,11 +233,15 @@ describe('UserService', () => {
     it('should throw NotFoundError when user not found', async () => {
       mockUserRepository.updateAvatar.mockResolvedValue(null)
 
-      await expect(userService.updateAvatar(validObjectId, 'avatar.jpg')).rejects.toThrow(NotFoundError)
+      await expect(userService.updateAvatar(validObjectId, 'avatar.jpg')).rejects.toThrow(
+        NotFoundError,
+      )
     })
 
     it('should throw ValidationError for invalid ObjectId', async () => {
-      await expect(userService.updateAvatar('invalid-id', 'avatar.jpg')).rejects.toThrow(ValidationError)
+      await expect(userService.updateAvatar('invalid-id', 'avatar.jpg')).rejects.toThrow(
+        ValidationError,
+      )
     })
   })
 
@@ -289,7 +305,7 @@ describe('UserService', () => {
       ;(compareValue as jest.Mock).mockReturnValue(true)
 
       await expect(
-        userService.updateProfile(validObjectId, { password: 'oldpassword' })
+        userService.updateProfile(validObjectId, { password: 'oldpassword' }),
       ).rejects.toThrow(ValidationError)
     })
 
@@ -305,7 +321,9 @@ describe('UserService', () => {
 
   describe('updateUser edge cases', () => {
     it('should throw ValidationError for invalid ObjectId', async () => {
-      await expect(userService.updateUser('invalid-id', { name: 'Updated' })).rejects.toThrow(ValidationError)
+      await expect(userService.updateUser('invalid-id', { name: 'Updated' })).rejects.toThrow(
+        ValidationError,
+      )
     })
   })
 
@@ -321,4 +339,3 @@ describe('UserService', () => {
     })
   })
 })
-

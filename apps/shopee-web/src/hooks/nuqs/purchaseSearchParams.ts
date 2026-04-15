@@ -1,7 +1,7 @@
-import { parseAsInteger, useQueryState } from 'nuqs';
+import { parseAsInteger, useQueryState } from 'nuqs'
 
-export const purchaseStatusParser = parseAsInteger.withDefault(0);
+export const purchaseStatusParser = parseAsInteger.withDefault(0)
 
 export function usePurchaseStatus() {
-  return useQueryState('status', purchaseStatusParser);
+  return useQueryState('status', purchaseStatusParser)
 }

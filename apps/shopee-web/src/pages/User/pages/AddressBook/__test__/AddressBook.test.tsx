@@ -1,18 +1,18 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import AddressBook from '../AddressBook';
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import AddressBook from '../AddressBook'
 
 vi.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: any) => <>{children}</>,
   motion: {
     div: ({ children, ...props }: any) => {
-      const { initial, animate, exit, transition, variants, whileHover, layout, ...rest } = props;
-      return <div {...rest}>{children}</div>;
+      const { initial, animate, exit, transition, variants, whileHover, layout, ...rest } = props
+      return <div {...rest}>{children}</div>
     },
   },
-}));
+}))
 
-vi.mock('src/components/SEO', () => ({ default: () => null }));
+vi.mock('src/components/SEO', () => ({ default: () => null }))
 vi.mock('src/i18n/i18n', () => ({
   default: {
     t: (k: string) => {
@@ -20,21 +20,21 @@ vi.mock('src/i18n/i18n', () => ({
         'address:type.home': 'Nhà riêng',
         'address:type.office': 'Văn phòng',
         'address:type.other': 'Khác',
-      };
-      return map[k] || k;
+      }
+      return map[k] || k
     },
   },
-}));
+}))
 vi.mock('src/components/Button', () => ({
   default: ({ children, onClick, className, ...props }: any) => {
-    const { animated, variant, ariaLabel, ...rest } = props;
+    const { animated, variant, ariaLabel, ...rest } = props
     return (
       <button onClick={onClick} className={className} {...rest}>
         {children}
       </button>
-    );
+    )
   },
-}));
+}))
 
 vi.mock('src/components/AddressSelector/AddressForm', () => ({
   default: ({ address, onClose, onSuccess }: any) => (
@@ -43,7 +43,7 @@ vi.mock('src/components/AddressSelector/AddressForm', () => ({
       <button onClick={onClose}>close-form</button>
     </div>
   ),
-}));
+}))
 
 vi.mock('../components/AddressCard', () => ({
   default: ({ address, isDefault, onEdit, onDelete, onSetDefault }: any) => (
@@ -55,11 +55,11 @@ vi.mock('../components/AddressCard', () => ({
       <button onClick={() => onSetDefault(address._id)}>set-default</button>
     </div>
   ),
-}));
+}))
 
 vi.mock('../components/AddressBookToolbar', () => ({
   default: (props: any) => <div data-testid="toolbar">toolbar</div>,
-}));
+}))
 
 vi.mock('../components/DeleteConfirmModal', () => ({
   default: ({ onConfirm, onCancel, title }: any) => (
@@ -69,7 +69,7 @@ vi.mock('../components/DeleteConfirmModal', () => ({
       <button onClick={onCancel}>cancel</button>
     </div>
   ),
-}));
+}))
 
 vi.mock('../components/EmptyState', () => ({
   default: ({ onAddNew }: any) => (
@@ -77,7 +77,7 @@ vi.mock('../components/EmptyState', () => ({
       <button onClick={onAddNew}>add</button>
     </div>
   ),
-}));
+}))
 
 vi.mock('../components/NoResultsState', () => ({
   default: ({ searchQuery, onClear }: any) => (
@@ -85,7 +85,7 @@ vi.mock('../components/NoResultsState', () => ({
       <button onClick={onClear}>clear</button>
     </div>
   ),
-}));
+}))
 
 vi.mock('../components/SortableAddressCard', () => ({
   default: ({ address, isDragging }: any) => (
@@ -94,18 +94,18 @@ vi.mock('../components/SortableAddressCard', () => ({
       {isDragging && ' dragging'}
     </div>
   ),
-}));
+}))
 
 vi.mock('@dnd-kit/core', () => ({
   DndContext: ({ children }: any) => <div data-testid="dnd-context">{children}</div>,
   DragOverlay: ({ children }: any) => <div data-testid="drag-overlay">{children}</div>,
   MeasuringStrategy: { Always: 'always' },
-}));
-vi.mock('@dnd-kit/modifiers', () => ({ restrictToWindowEdges: {} }));
+}))
+vi.mock('@dnd-kit/modifiers', () => ({ restrictToWindowEdges: {} }))
 vi.mock('@dnd-kit/sortable', () => ({
   SortableContext: ({ children }: any) => <>{children}</>,
   rectSortingStrategy: {},
-}));
+}))
 
 const mockAddr = (
   id: string,
@@ -122,7 +122,7 @@ const mockAddr = (
   province: 'HCMC',
   isDefault,
   type,
-});
+})
 
 const defaultHook = {
   showForm: false,
@@ -163,25 +163,25 @@ const defaultHook = {
   handleDragStart: vi.fn(),
   handleDragEnd: vi.fn(),
   handleDragCancel: vi.fn(),
-};
+}
 
-let hookReturn = { ...defaultHook };
+let hookReturn = { ...defaultHook }
 
 vi.mock('../useAddressBook', () => ({
   useAddressBook: () => hookReturn,
-}));
+}))
 
 beforeEach(() => {
-  hookReturn = { ...defaultHook, selectedIds: new Set<string>() };
-  vi.clearAllMocks();
-});
+  hookReturn = { ...defaultHook, selectedIds: new Set<string>() }
+  vi.clearAllMocks()
+})
 
 describe('AddressBook', () => {
   it('shows loading spinner when isLoading', () => {
-    hookReturn = { ...defaultHook, isLoading: true, selectedIds: new Set() };
-    const { container } = render(<AddressBook />);
-    expect(container.querySelector('.animate-spin')).not.toBeNull();
-  });
+    hookReturn = { ...defaultHook, isLoading: true, selectedIds: new Set() }
+    const { container } = render(<AddressBook />)
+    expect(container.querySelector('.animate-spin')).not.toBeNull()
+  })
 
   it('renders empty state when no addresses', () => {
     hookReturn = {
@@ -191,22 +191,22 @@ describe('AddressBook', () => {
       defaultAddress: null as any,
       otherAddresses: [],
       selectedIds: new Set(),
-    };
-    render(<AddressBook />);
-    expect(screen.getByTestId('empty-state')).toBeInTheDocument();
-  });
+    }
+    render(<AddressBook />)
+    expect(screen.getByTestId('empty-state')).toBeInTheDocument()
+  })
 
   it('renders no results state when filtered is empty but raw has items', () => {
-    hookReturn = { ...defaultHook, filteredAddresses: [], selectedIds: new Set() };
-    render(<AddressBook />);
-    expect(screen.getByTestId('no-results')).toBeInTheDocument();
-  });
+    hookReturn = { ...defaultHook, filteredAddresses: [], selectedIds: new Set() }
+    render(<AddressBook />)
+    expect(screen.getByTestId('no-results')).toBeInTheDocument()
+  })
 
   it('renders toolbar when addresses exist', () => {
-    hookReturn = { ...defaultHook, selectedIds: new Set() };
-    render(<AddressBook />);
-    expect(screen.getByTestId('toolbar')).toBeInTheDocument();
-  });
+    hookReturn = { ...defaultHook, selectedIds: new Set() }
+    render(<AddressBook />)
+    expect(screen.getByTestId('toolbar')).toBeInTheDocument()
+  })
 
   it('does not render toolbar when no addresses', () => {
     hookReturn = {
@@ -216,41 +216,41 @@ describe('AddressBook', () => {
       defaultAddress: null as any,
       otherAddresses: [],
       selectedIds: new Set(),
-    };
-    render(<AddressBook />);
-    expect(screen.queryByTestId('toolbar')).not.toBeInTheDocument();
-  });
+    }
+    render(<AddressBook />)
+    expect(screen.queryByTestId('toolbar')).not.toBeInTheDocument()
+  })
 
   it('renders default address card', () => {
-    hookReturn = { ...defaultHook, selectedIds: new Set() };
-    render(<AddressBook />);
-    expect(screen.getByTestId('address-card-1')).toBeInTheDocument();
-    expect(screen.getByText('default')).toBeInTheDocument();
-  });
+    hookReturn = { ...defaultHook, selectedIds: new Set() }
+    render(<AddressBook />)
+    expect(screen.getByTestId('address-card-1')).toBeInTheDocument()
+    expect(screen.getByText('default')).toBeInTheDocument()
+  })
 
   it('renders other addresses as sortable cards', () => {
-    hookReturn = { ...defaultHook, selectedIds: new Set() };
-    render(<AddressBook />);
-    expect(screen.getByTestId('sortable-card-2')).toBeInTheDocument();
-  });
+    hookReturn = { ...defaultHook, selectedIds: new Set() }
+    render(<AddressBook />)
+    expect(screen.getByTestId('sortable-card-2')).toBeInTheDocument()
+  })
 
   it('renders add new button', () => {
-    hookReturn = { ...defaultHook, selectedIds: new Set() };
-    render(<AddressBook />);
-    expect(screen.getByText('Thêm địa chỉ mới')).toBeInTheDocument();
-  });
+    hookReturn = { ...defaultHook, selectedIds: new Set() }
+    render(<AddressBook />)
+    expect(screen.getByText('Thêm địa chỉ mới')).toBeInTheDocument()
+  })
 
   it('renders select multiple button when addresses exist', () => {
-    hookReturn = { ...defaultHook, selectedIds: new Set() };
-    render(<AddressBook />);
-    expect(screen.getByText('Chọn nhiều')).toBeInTheDocument();
-  });
+    hookReturn = { ...defaultHook, selectedIds: new Set() }
+    render(<AddressBook />)
+    expect(screen.getByText('Chọn nhiều')).toBeInTheDocument()
+  })
 
   it('renders cancel select when in selection mode', () => {
-    hookReturn = { ...defaultHook, isSelectionMode: true, selectedIds: new Set() };
-    render(<AddressBook />);
-    expect(screen.getByText('Hủy chọn')).toBeInTheDocument();
-  });
+    hookReturn = { ...defaultHook, isSelectionMode: true, selectedIds: new Set() }
+    render(<AddressBook />)
+    expect(screen.getByText('Hủy chọn')).toBeInTheDocument()
+  })
 
   it('does not render select button when no addresses', () => {
     hookReturn = {
@@ -260,17 +260,17 @@ describe('AddressBook', () => {
       defaultAddress: null as any,
       otherAddresses: [],
       selectedIds: new Set(),
-    };
-    render(<AddressBook />);
-    expect(screen.queryByText('Chọn nhiều')).not.toBeInTheDocument();
-  });
+    }
+    render(<AddressBook />)
+    expect(screen.queryByText('Chọn nhiều')).not.toBeInTheDocument()
+  })
 
   it('renders address form when showForm is true', () => {
-    hookReturn = { ...defaultHook, showForm: true, selectedIds: new Set() };
-    render(<AddressBook />);
-    expect(screen.getByTestId('address-form')).toBeInTheDocument();
-    expect(screen.getByText('new')).toBeInTheDocument();
-  });
+    hookReturn = { ...defaultHook, showForm: true, selectedIds: new Set() }
+    render(<AddressBook />)
+    expect(screen.getByTestId('address-form')).toBeInTheDocument()
+    expect(screen.getByText('new')).toBeInTheDocument()
+  })
 
   it('renders address form with editing address', () => {
     hookReturn = {
@@ -278,84 +278,84 @@ describe('AddressBook', () => {
       showForm: true,
       editingAddress: mockAddr('1', 'Home') as any,
       selectedIds: new Set(),
-    };
-    render(<AddressBook />);
-    expect(screen.getByText('editing')).toBeInTheDocument();
-  });
+    }
+    render(<AddressBook />)
+    expect(screen.getByText('editing')).toBeInTheDocument()
+  })
 
   it('does not render address form when showForm is false', () => {
-    hookReturn = { ...defaultHook, selectedIds: new Set() };
-    render(<AddressBook />);
-    expect(screen.queryByTestId('address-form')).not.toBeInTheDocument();
-  });
+    hookReturn = { ...defaultHook, selectedIds: new Set() }
+    render(<AddressBook />)
+    expect(screen.queryByTestId('address-form')).not.toBeInTheDocument()
+  })
 
   it('renders delete modal when deletingAddressId is set', () => {
-    hookReturn = { ...defaultHook, deletingAddressId: '1', selectedIds: new Set() };
-    render(<AddressBook />);
-    expect(screen.getAllByTestId('delete-modal').length).toBeGreaterThanOrEqual(1);
-  });
+    hookReturn = { ...defaultHook, deletingAddressId: '1', selectedIds: new Set() }
+    render(<AddressBook />)
+    expect(screen.getAllByTestId('delete-modal').length).toBeGreaterThanOrEqual(1)
+  })
 
   it('does not render delete modal when deletingAddressId is null', () => {
-    hookReturn = { ...defaultHook, selectedIds: new Set() };
-    render(<AddressBook />);
-    expect(screen.queryByTestId('delete-modal')).not.toBeInTheDocument();
-  });
+    hookReturn = { ...defaultHook, selectedIds: new Set() }
+    render(<AddressBook />)
+    expect(screen.queryByTestId('delete-modal')).not.toBeInTheDocument()
+  })
 
   it('renders bulk delete modal when showBulkDeleteConfirm is true', () => {
-    hookReturn = { ...defaultHook, showBulkDeleteConfirm: true, selectedIds: new Set(['1', '2']) };
-    render(<AddressBook />);
-    expect(screen.getAllByTestId('delete-modal').length).toBeGreaterThanOrEqual(1);
-  });
+    hookReturn = { ...defaultHook, showBulkDeleteConfirm: true, selectedIds: new Set(['1', '2']) }
+    render(<AddressBook />)
+    expect(screen.getAllByTestId('delete-modal').length).toBeGreaterThanOrEqual(1)
+  })
 
   it('renders default address section header', () => {
-    hookReturn = { ...defaultHook, selectedIds: new Set() };
-    render(<AddressBook />);
-    expect(screen.getByText('Địa chỉ mặc định')).toBeInTheDocument();
-  });
+    hookReturn = { ...defaultHook, selectedIds: new Set() }
+    render(<AddressBook />)
+    expect(screen.getByText('Địa chỉ mặc định')).toBeInTheDocument()
+  })
 
   it('renders other addresses section header with count', () => {
-    hookReturn = { ...defaultHook, selectedIds: new Set() };
-    render(<AddressBook />);
-    expect(screen.getByText(/Địa chỉ khác/)).toBeInTheDocument();
-  });
+    hookReturn = { ...defaultHook, selectedIds: new Set() }
+    render(<AddressBook />)
+    expect(screen.getByText(/Địa chỉ khác/)).toBeInTheDocument()
+  })
 
   it('shows drag to reorder hint when not in selection mode', () => {
-    hookReturn = { ...defaultHook, selectedIds: new Set() };
-    render(<AddressBook />);
-    expect(screen.getByText('Kéo thả để sắp xếp')).toBeInTheDocument();
-  });
+    hookReturn = { ...defaultHook, selectedIds: new Set() }
+    render(<AddressBook />)
+    expect(screen.getByText('Kéo thả để sắp xếp')).toBeInTheDocument()
+  })
 
   it('hides drag to reorder hint in selection mode', () => {
-    hookReturn = { ...defaultHook, isSelectionMode: true, selectedIds: new Set() };
-    render(<AddressBook />);
-    expect(screen.queryByText('Kéo thả để sắp xếp')).not.toBeInTheDocument();
-  });
+    hookReturn = { ...defaultHook, isSelectionMode: true, selectedIds: new Set() }
+    render(<AddressBook />)
+    expect(screen.queryByText('Kéo thả để sắp xếp')).not.toBeInTheDocument()
+  })
 
   it('does not render other addresses section when otherAddresses is empty', () => {
-    hookReturn = { ...defaultHook, otherAddresses: [], selectedIds: new Set() };
-    render(<AddressBook />);
-    expect(screen.queryByText(/Địa chỉ khác/)).not.toBeInTheDocument();
-  });
+    hookReturn = { ...defaultHook, otherAddresses: [], selectedIds: new Set() }
+    render(<AddressBook />)
+    expect(screen.queryByText(/Địa chỉ khác/)).not.toBeInTheDocument()
+  })
 
   it('does not render default address section when defaultAddress is null', () => {
-    hookReturn = { ...defaultHook, defaultAddress: null as any, selectedIds: new Set() };
-    render(<AddressBook />);
-    expect(screen.queryByText('Địa chỉ mặc định')).not.toBeInTheDocument();
-  });
+    hookReturn = { ...defaultHook, defaultAddress: null as any, selectedIds: new Set() }
+    render(<AddressBook />)
+    expect(screen.queryByText('Địa chỉ mặc định')).not.toBeInTheDocument()
+  })
 
   it('renders drag overlay with active address', () => {
     hookReturn = {
       ...defaultHook,
       activeAddress: mockAddr('2', 'Office') as any,
       selectedIds: new Set(),
-    };
-    render(<AddressBook />);
-    expect(screen.getByTestId('drag-overlay')).toBeInTheDocument();
-  });
+    }
+    render(<AddressBook />)
+    expect(screen.getByTestId('drag-overlay')).toBeInTheDocument()
+  })
 
   it('renders subtitle with address count', () => {
-    hookReturn = { ...defaultHook, selectedIds: new Set() };
-    render(<AddressBook />);
-    expect(screen.getByText(/Quản lý địa chỉ giao hàng/)).toBeInTheDocument();
-  });
-});
+    hookReturn = { ...defaultHook, selectedIds: new Set() }
+    render(<AddressBook />)
+    expect(screen.getByText(/Quản lý địa chỉ giao hàng/)).toBeInTheDocument()
+  })
+})

@@ -1,12 +1,12 @@
-import React from 'react';
-import { View, Dimensions } from 'react-native';
-import { SkeletonLoader } from '@/components/ui';
-import { CARD_WIDTH } from './ProductCard';
+import React from 'react'
+import { View, Dimensions } from 'react-native'
+import { SkeletonLoader } from '@/components/ui'
+import { CARD_WIDTH } from './ProductCard'
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_WIDTH = Dimensions.get('window').width
 
 export function BannerSkeleton() {
-  return <SkeletonLoader width={SCREEN_WIDTH} height={SCREEN_WIDTH * 0.45} borderRadius={0} />;
+  return <SkeletonLoader width={SCREEN_WIDTH} height={SCREEN_WIDTH * 0.45} borderRadius={0} />
 }
 
 export function CategorySkeleton() {
@@ -16,7 +16,7 @@ export function CategorySkeleton() {
         <SkeletonLoader key={i} width={72} height={32} borderRadius={16} />
       ))}
     </View>
-  );
+  )
 }
 
 export function ProductCardSkeleton() {
@@ -29,5 +29,5 @@ export function ProductCardSkeleton() {
         <SkeletonLoader width={60} height={12} borderRadius={4} />
       </View>
     </View>
-  );
+  )
 }

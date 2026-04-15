@@ -1,6 +1,6 @@
-import { http, HttpResponse } from 'msw';
-import config from 'src/constant/config';
-import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum';
+import { http, HttpResponse } from 'msw'
+import config from 'src/constant/config'
+import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum'
 
 const sampleProduct = {
   _id: '60afb2426ef5b902180aacb9',
@@ -23,7 +23,7 @@ const sampleProduct = {
   description: 'Điện thoại OPPO A12 chính hãng',
   createdAt: '2021-05-27T14:52:50.392Z',
   updatedAt: '2022-12-19T15:19:53.312Z',
-};
+}
 
 const samplePurchases = [
   {
@@ -55,7 +55,7 @@ const samplePurchases = [
     createdAt: '2024-01-12T11:00:00.000Z',
     updatedAt: '2024-01-12T11:00:00.000Z',
   },
-];
+]
 
 const shippingMethods = [
   {
@@ -124,7 +124,7 @@ const shippingMethods = [
     type: 'pickup',
     details: [{ text: 'Free shipping for orders over ₫0', type: 'free_threshold' }],
   },
-];
+]
 
 const paymentMethods = [
   {
@@ -143,13 +143,13 @@ const paymentMethods = [
     name: 'Credit/Debit Card',
     description: 'Visa, Mastercard, JCB',
   },
-];
+]
 
 // Success handlers
 export const addToCartRequest = http.post(
   `${config.baseUrl}purchases/add-to-cart`,
   async ({ request }) => {
-    const body = (await request.json()) as { product_id: string; buy_count: number };
+    const body = (await request.json()) as { product_id: string; buy_count: number }
     const newPurchase = {
       _id: `purchase_${Date.now()}`,
       buy_count: body.buy_count,
@@ -160,50 +160,50 @@ export const addToCartRequest = http.post(
       product: sampleProduct,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    };
+    }
     return HttpResponse.json(
       { message: 'Thêm sản phẩm vào giỏ hàng thành công', data: newPurchase },
       { status: HTTP_STATUS_CODE.Ok },
-    );
+    )
   },
-);
+)
 
 export const getPurchasesRequest = http.get(`${config.baseUrl}purchases`, () => {
   return HttpResponse.json(
     { message: 'Lấy đơn mua thành công', data: samplePurchases },
     { status: HTTP_STATUS_CODE.Ok },
-  );
-});
+  )
+})
 
 export const updatePurchaseRequest = http.put(
   `${config.baseUrl}purchases/update-purchase`,
   async ({ request }) => {
-    const body = (await request.json()) as { product_id: string; buy_count: number };
+    const body = (await request.json()) as { product_id: string; buy_count: number }
     const updatedPurchase = {
       ...samplePurchases[0],
       buy_count: body.buy_count,
       updatedAt: new Date().toISOString(),
-    };
+    }
     return HttpResponse.json(
       { message: 'Cập nhật đơn thành công', data: updatedPurchase },
       { status: HTTP_STATUS_CODE.Ok },
-    );
+    )
   },
-);
+)
 
 export const deletePurchasesRequest = http.delete(`${config.baseUrl}purchases`, () => {
   return HttpResponse.json(
     { message: 'Xoá đơn thành công', data: { deleted_count: 1 } },
     { status: HTTP_STATUS_CODE.Ok },
-  );
-});
+  )
+})
 
 export const createOrderRequest = http.post(`${config.baseUrl}orders`, async ({ request }) => {
   const body = (await request.json()) as {
-    purchase_ids: string[];
-    shipping_method: string;
-    payment_method: string;
-  };
+    purchase_ids: string[]
+    shipping_method: string
+    payment_method: string
+  }
   const order = {
     _id: `order_${Date.now()}`,
     purchases: samplePurchases.filter((p) => body.purchase_ids?.includes(p._id)),
@@ -212,34 +212,34 @@ export const createOrderRequest = http.post(`${config.baseUrl}orders`, async ({ 
     status: 1,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-  };
+  }
   return HttpResponse.json(
     { message: 'Đặt hàng thành công', data: order },
     { status: HTTP_STATUS_CODE.Created },
-  );
-});
+  )
+})
 
 export const getShippingMethodsRequest = http.get(`${config.baseUrl}shipping/methods`, () => {
   return HttpResponse.json(
     { message: 'Lấy phương thức vận chuyển thành công', data: shippingMethods },
     { status: HTTP_STATUS_CODE.Ok },
-  );
-});
+  )
+})
 
 export const getPaymentMethodsRequest = http.get(`${config.baseUrl}payment/methods`, () => {
   return HttpResponse.json(
     { message: 'Lấy phương thức thanh toán thành công', data: paymentMethods },
     { status: HTTP_STATUS_CODE.Ok },
-  );
-});
+  )
+})
 
 // Error handlers for testing error scenarios
 export const addToCartErrorHandler = http.post(`${config.baseUrl}purchases/add-to-cart`, () => {
   return HttpResponse.json(
     { message: 'Lỗi khi thêm sản phẩm vào giỏ hàng', data: { error: 'Internal Server Error' } },
     { status: HTTP_STATUS_CODE.InternalServerError },
-  );
-});
+  )
+})
 
 export const updatePurchaseErrorHandler = http.put(
   `${config.baseUrl}purchases/update-purchase`,
@@ -247,23 +247,23 @@ export const updatePurchaseErrorHandler = http.put(
     return HttpResponse.json(
       { message: 'Lỗi khi cập nhật đơn hàng', data: { error: 'Internal Server Error' } },
       { status: HTTP_STATUS_CODE.InternalServerError },
-    );
+    )
   },
-);
+)
 
 export const deletePurchaseErrorHandler = http.delete(`${config.baseUrl}purchases`, () => {
   return HttpResponse.json(
     { message: 'Lỗi khi xoá đơn hàng', data: { error: 'Internal Server Error' } },
     { status: HTTP_STATUS_CODE.InternalServerError },
-  );
-});
+  )
+})
 
 export const createOrderErrorHandler = http.post(`${config.baseUrl}orders`, () => {
   return HttpResponse.json(
     { message: 'Lỗi khi đặt hàng', data: { error: 'Internal Server Error' } },
     { status: HTTP_STATUS_CODE.InternalServerError },
-  );
-});
+  )
+})
 
 const cartRequests = [
   addToCartRequest,
@@ -273,6 +273,6 @@ const cartRequests = [
   createOrderRequest,
   getShippingMethodsRequest,
   getPaymentMethodsRequest,
-];
+]
 
-export default cartRequests;
+export default cartRequests

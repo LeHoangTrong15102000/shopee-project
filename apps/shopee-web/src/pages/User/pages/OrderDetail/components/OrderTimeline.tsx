@@ -1,16 +1,16 @@
-import { motion } from 'framer-motion';
-import OrderStatusTracker from 'src/components/OrderStatusTracker';
-import OrderTrackingTimeline from 'src/components/OrderTrackingTimeline';
-import { reducedMotionVariants, sectionVariants } from '../orderDetail.constants';
+import { motion } from 'framer-motion'
+import OrderStatusTracker from 'src/components/OrderStatusTracker'
+import OrderTrackingTimeline from 'src/components/OrderTrackingTimeline'
+import { reducedMotionVariants, sectionVariants } from '../orderDetail.constants'
 
 interface OrderTimelineProps {
-  tracking: any;
-  currentStatus: string | null;
-  isSubscribed: boolean;
-  orderStatus: string;
-  orderTotal: number;
-  stepTimestamps: Record<string, string>;
-  shouldReduceMotion: boolean | null;
+  tracking: any
+  currentStatus: string | null
+  isSubscribed: boolean
+  orderStatus: string
+  orderTotal: number
+  stepTimestamps: Record<string, string>
+  shouldReduceMotion: boolean | null
 }
 
 export default function OrderTimeline({
@@ -22,7 +22,7 @@ export default function OrderTimeline({
   stepTimestamps,
   shouldReduceMotion,
 }: OrderTimelineProps) {
-  const sectionItemVariants = shouldReduceMotion ? reducedMotionVariants : sectionVariants;
+  const sectionItemVariants = shouldReduceMotion ? reducedMotionVariants : sectionVariants
 
   return (
     <>
@@ -45,5 +45,5 @@ export default function OrderTimeline({
         />
       </motion.div>
     </>
-  );
+  )
 }

@@ -1,12 +1,12 @@
-import { Category } from 'src/types/category.type';
-import { SuccessResponseApi } from 'src/types/utils.type';
-import http from 'src/utils/http';
+import { Category } from 'src/types/category.type'
+import { SuccessResponseApi } from 'src/types/utils.type'
+import http from 'src/utils/http'
 
-const URL = '/categories';
+const URL = '/categories'
 
 // Interface cho API options với AbortSignal
 export interface ApiOptions {
-  signal?: AbortSignal;
+  signal?: AbortSignal
 }
 
 // Mock data for fallback when API is not available
@@ -21,25 +21,25 @@ const mockCategories: Category[] = [
   { _id: 'cat-8', name: 'Thiết bị gia dụng' },
   { _id: 'cat-9', name: 'Thể thao & Du lịch' },
   { _id: 'cat-10', name: 'Ô tô & Xe máy & Xe đạp' },
-];
+]
 
 const categoryApi = {
   getCategories: async (options?: ApiOptions) => {
     try {
       return await http.get<SuccessResponseApi<Category[]>>(URL, {
         signal: options?.signal,
-      });
+      })
     } catch (error) {
-      console.warn('⚠️ [getCategories] API not available, using mock data');
+      console.warn('⚠️ [getCategories] API not available, using mock data')
       return {
         status: 200,
         data: {
           message: 'Get categories list successfully (mock)',
           data: mockCategories,
         },
-      };
+      }
     }
   },
-};
+}
 
-export default categoryApi;
+export default categoryApi

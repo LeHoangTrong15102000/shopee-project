@@ -2,7 +2,7 @@
 // Expo SDK 54 lazily polyfills these globals, but the lazy require can fail in jest
 const expoGlobals = {
   __ExpoImportMetaRegistry: { url: null },
-};
+}
 
 for (const [key, value] of Object.entries(expoGlobals)) {
   if (typeof globalThis[key] === 'undefined') {
@@ -10,13 +10,13 @@ for (const [key, value] of Object.entries(expoGlobals)) {
       value,
       writable: true,
       configurable: true,
-    });
+    })
   }
 }
 
 // Ensure structuredClone exists (Node 17+ has it natively, but expo tries to polyfill it)
 if (typeof globalThis.structuredClone === 'undefined') {
-  globalThis.structuredClone = (val) => JSON.parse(JSON.stringify(val));
+  globalThis.structuredClone = (val) => JSON.parse(JSON.stringify(val))
 }
 
 // Mock NativeWind cssInterop
@@ -26,12 +26,12 @@ jest.mock('nativewind', () => {
     remapProps: jest.fn(),
     styled: (component) => component,
     colorScheme: { get: jest.fn(() => 'light'), set: jest.fn() },
-  };
-});
+  }
+})
 
 // Mock react-native-gesture-handler
 jest.mock('react-native-gesture-handler', () => {
-  const View = require('react-native').View;
+  const View = require('react-native').View
   return {
     GestureHandlerRootView: View,
     Swipeable: View,
@@ -68,12 +68,12 @@ jest.mock('react-native-gesture-handler', () => {
       })),
     },
     GestureDetector: View,
-  };
-});
+  }
+})
 
 // Mock react-native-reanimated
 jest.mock('react-native-reanimated', () => {
-  const RN = require('react-native');
+  const RN = require('react-native')
   const mockDefault = {
     call: jest.fn(),
     createAnimatedComponent: (component) => component,
@@ -84,8 +84,8 @@ jest.mock('react-native-reanimated', () => {
     Image: RN.Image,
     ScrollView: RN.ScrollView,
     FlatList: RN.FlatList,
-  };
-  const easingFn = jest.fn((val) => val);
+  }
+  const easingFn = jest.fn((val) => val)
   return {
     __esModule: true,
     default: mockDefault,
@@ -121,12 +121,12 @@ jest.mock('react-native-reanimated', () => {
     Image: RN.Image,
     ScrollView: RN.ScrollView,
     FlatList: RN.FlatList,
-  };
-});
+  }
+})
 
 // Mock @gorhom/bottom-sheet
 jest.mock('@gorhom/bottom-sheet', () => {
-  const mockReactBS = require('react');
+  const mockReactBS = require('react')
   return {
     __esModule: true,
     default: mockReactBS.forwardRef((props, ref) =>
@@ -146,8 +146,8 @@ jest.mock('@gorhom/bottom-sheet', () => {
       snapToIndex: jest.fn(),
     })),
     useBottomSheetModal: jest.fn(() => ({ dismiss: jest.fn(), present: jest.fn() })),
-  };
-});
+  }
+})
 
 // Mock Expo Router
 jest.mock('expo-router', () => ({
@@ -163,27 +163,27 @@ jest.mock('expo-router', () => ({
   Tabs: {
     Screen: 'Tabs.Screen',
   },
-}));
+}))
 
 // Mock lucide-react-native icons
 jest.mock('lucide-react-native', () => {
-  const mockReact = require('react');
+  const mockReact = require('react')
   const mockCreateIcon = (name) => {
     const MockIcon = (props) =>
-      mockReact.createElement('View', { ...props, testID: `icon-${name}` });
-    MockIcon.displayName = name;
-    return MockIcon;
-  };
+      mockReact.createElement('View', { ...props, testID: `icon-${name}` })
+    MockIcon.displayName = name
+    return MockIcon
+  }
   return new Proxy(
     {},
     {
       get: (_, prop) => {
-        if (prop === '__esModule') return true;
-        return mockCreateIcon(prop);
+        if (prop === '__esModule') return true
+        return mockCreateIcon(prop)
       },
     }
-  );
-});
+  )
+})
 
 // Mock expo-localization
 jest.mock('expo-localization', () => ({
@@ -193,7 +193,7 @@ jest.mock('expo-localization', () => ({
   locales: ['en-US'],
   timezone: 'America/New_York',
   isRTL: false,
-}));
+}))
 
 // Mock react-native-mmkv
 jest.mock('react-native-mmkv', () => ({
@@ -204,7 +204,7 @@ jest.mock('react-native-mmkv', () => ({
     contains: jest.fn(() => false),
     getAllKeys: jest.fn(() => []),
   })),
-}));
+}))
 
 // Mock expo-haptics
 jest.mock('expo-haptics', () => ({
@@ -213,18 +213,18 @@ jest.mock('expo-haptics', () => ({
   selectionAsync: jest.fn(),
   ImpactFeedbackStyle: { Light: 'light', Medium: 'medium', Heavy: 'heavy' },
   NotificationFeedbackType: { Success: 'success', Warning: 'warning', Error: 'error' },
-}));
+}))
 
 // Mock react-native safe area
 jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
   SafeAreaProvider: ({ children }) => children,
   SafeAreaView: ({ children }) => children,
-}));
+}))
 
 // Silence console warnings in tests
-const originalWarn = console.warn;
+const originalWarn = console.warn
 console.warn = (...args) => {
-  if (typeof args[0] === 'string' && args[0].includes('Reanimated')) return;
-  originalWarn(...args);
-};
+  if (typeof args[0] === 'string' && args[0].includes('Reanimated')) return
+  originalWarn(...args)
+}

@@ -3,11 +3,6 @@ import type {
   ProductVariantOption,
   ProductVariantCombination,
   ProductWithVariants,
-} from '@shopee/shared-types';
+} from '@shopee/shared-types'
 
-export type {
-  ProductVariant,
-  ProductVariantOption,
-  ProductVariantCombination,
-  ProductWithVariants,
-};
+export type { ProductVariant, ProductVariantOption, ProductVariantCombination, ProductWithVariants }

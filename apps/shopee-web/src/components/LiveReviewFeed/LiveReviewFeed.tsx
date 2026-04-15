@@ -1,21 +1,21 @@
-import classNames from 'classnames';
-import { useTranslation } from 'react-i18next';
+import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
 
 interface LatestReview {
-  name: string;
-  rating: number;
+  name: string
+  rating: number
 }
 
 interface LiveReviewFeedProps {
-  newReviewCount: number;
-  latestReview?: LatestReview;
-  onViewReviews?: () => void;
-  className?: string;
+  newReviewCount: number
+  latestReview?: LatestReview
+  onViewReviews?: () => void
+  className?: string
 }
 
 const renderStars = (rating: number) => {
-  return '★'.repeat(rating) + '☆'.repeat(5 - rating);
-};
+  return '★'.repeat(rating) + '☆'.repeat(5 - rating)
+}
 
 export default function LiveReviewFeed({
   newReviewCount,
@@ -23,10 +23,10 @@ export default function LiveReviewFeed({
   onViewReviews,
   className,
 }: LiveReviewFeedProps) {
-  const { t } = useTranslation('product');
+  const { t } = useTranslation('product')
 
   if (newReviewCount <= 0) {
-    return null;
+    return null
   }
 
   return (
@@ -57,5 +57,5 @@ export default function LiveReviewFeed({
         {t('reviews.clickToView')} ↓
       </span>
     </div>
-  );
+  )
 }

@@ -16,12 +16,14 @@ const ProductSkuSnapshotSchema = new Schema(
   },
   {
     timestamps: false,
-  }
+  },
 )
 
 ProductSkuSnapshotSchema.index({ order: 1 })
 ProductSkuSnapshotSchema.index({ sku: 1 })
 ProductSkuSnapshotSchema.index({ product: 1 })
 
-export const ProductSkuSnapshotModel = mongoose.model('product_sku_snapshots', ProductSkuSnapshotSchema)
-
+export const ProductSkuSnapshotModel = mongoose.model(
+  'product_sku_snapshots',
+  ProductSkuSnapshotSchema,
+)

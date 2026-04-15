@@ -1,14 +1,14 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
-import path from 'src/constant/path';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
+import path from 'src/constant/path'
 
 interface ProfileCompletionTipProps {
-  reducedMotion: boolean;
+  reducedMotion: boolean
 }
 
 const ProfileCompletionTip = ({ reducedMotion }: ProfileCompletionTipProps) => {
-  const { t } = useTranslation('user');
+  const { t } = useTranslation('user')
 
   return (
     <motion.div
@@ -66,7 +66,7 @@ const ProfileCompletionTip = ({ reducedMotion }: ProfileCompletionTipProps) => {
         </svg>
       </Link>
     </motion.div>
-  );
-};
+  )
+}
 
-export default ProfileCompletionTip;
+export default ProfileCompletionTip

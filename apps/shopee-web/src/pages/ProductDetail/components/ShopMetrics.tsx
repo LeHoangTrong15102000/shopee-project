@@ -1,11 +1,11 @@
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next'
 
 interface ShopMetricsProps {
-  rating: number;
+  rating: number
 }
 
 const ShopMetrics = ({ rating }: ShopMetricsProps) => {
-  const { t } = useTranslation('product');
+  const { t } = useTranslation('product')
 
   // TODO: Replace hardcoded metrics with real shop API data when available
   const metrics = [
@@ -15,7 +15,7 @@ const ShopMetrics = ({ rating }: ShopMetricsProps) => {
     { label: t('shop.responseTime'), value: t('shop.withinHours') },
     { label: t('shop.joined'), value: t('shop.joinedYears', { count: 3 }) },
     { label: t('shop.followers'), value: '12.5k' },
-  ];
+  ]
 
   return (
     <section className="grid grid-cols-2 gap-x-8 gap-y-3" aria-label={t('shop.statistics')}>
@@ -26,7 +26,7 @@ const ShopMetrics = ({ rating }: ShopMetricsProps) => {
         </div>
       ))}
     </section>
-  );
-};
+  )
+}
 
-export default ShopMetrics;
+export default ShopMetrics

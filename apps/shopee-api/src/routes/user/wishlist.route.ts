@@ -17,14 +17,14 @@ userWishlistRouter.get(
   '',
   validate(getWishlistSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(wishlistController.getWishlist)
+  asyncHandler(wishlistController.getWishlist),
 )
 
 // Lấy số lượng sản phẩm trong wishlist
 userWishlistRouter.get(
   '/count',
   authMiddleware.verifyAccessToken,
-  asyncHandler(wishlistController.getWishlistCount)
+  asyncHandler(wishlistController.getWishlistCount),
 )
 
 // Kiểm tra sản phẩm có trong wishlist không
@@ -32,7 +32,7 @@ userWishlistRouter.get(
   '/check/:product_id',
   validate(checkInWishlistSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(wishlistController.checkInWishlist)
+  asyncHandler(wishlistController.checkInWishlist),
 )
 
 // Thêm sản phẩm vào wishlist
@@ -40,14 +40,14 @@ userWishlistRouter.post(
   '',
   validate(addToWishlistSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(wishlistController.addToWishlist)
+  asyncHandler(wishlistController.addToWishlist),
 )
 
 // Xóa toàn bộ wishlist
 userWishlistRouter.delete(
   '',
   authMiddleware.verifyAccessToken,
-  asyncHandler(wishlistController.clearWishlist)
+  asyncHandler(wishlistController.clearWishlist),
 )
 
 // Xóa sản phẩm khỏi wishlist
@@ -55,6 +55,5 @@ userWishlistRouter.delete(
   '/:product_id',
   validate(removeFromWishlistSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(wishlistController.removeFromWishlist)
+  asyncHandler(wishlistController.removeFromWishlist),
 )
-

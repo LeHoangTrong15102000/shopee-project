@@ -1,18 +1,18 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import OrderPreview from '../OrderPreview';
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
+import OrderPreview from '../OrderPreview'
 
 vi.mock('framer-motion', () => ({
   motion: { div: 'div', p: 'p' },
-}));
+}))
 
 vi.mock('src/hooks/useReducedMotion', () => ({
   useReducedMotion: () => false,
-}));
+}))
 
 vi.mock('src/components/ImageWithFallback', () => ({
   default: ({ src, alt }: any) => <img src={src} alt={alt} />,
-}));
+}))
 
 vi.mock('src/components/Button', () => ({
   default: ({ children, onClick, disabled, isLoading, className }: any) => (
@@ -20,12 +20,12 @@ vi.mock('src/components/Button', () => ({
       {isLoading ? 'Đang xử lý...' : children}
     </button>
   ),
-}));
+}))
 
 vi.mock('src/components/Icons', () => ({
   ShippingIcon: ({ type }: any) => <div data-testid="shipping-icon">{type}</div>,
   PaymentIcon: ({ type }: any) => <div data-testid="payment-icon">{type}</div>,
-}));
+}))
 
 const mockItems = [
   {
@@ -60,7 +60,7 @@ const mockItems = [
     disabled: false,
     isChecked: true,
   },
-];
+]
 
 const mockAddress = {
   _id: 'addr-1',
@@ -74,7 +74,7 @@ const mockAddress = {
   isDefault: true,
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-01-01T00:00:00Z',
-};
+}
 
 const mockShippingMethod = {
   _id: 'ship-1',
@@ -83,7 +83,7 @@ const mockShippingMethod = {
   price: 30000,
   estimatedDays: '2-3 days',
   icon: 'express',
-};
+}
 
 describe('OrderPreview', () => {
   const defaultProps = {
@@ -94,56 +94,56 @@ describe('OrderPreview', () => {
     onPlaceOrder: vi.fn(),
     onBack: vi.fn(),
     isPlacingOrder: false,
-  };
+  }
 
   beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    vi.clearAllMocks()
+  })
 
   it('should render shipping address', () => {
-    render(<OrderPreview {...defaultProps} />);
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
-  });
+    render(<OrderPreview {...defaultProps} />)
+    expect(screen.getByText('John Doe')).toBeInTheDocument()
+  })
 
   it('should render product items', () => {
-    render(<OrderPreview {...defaultProps} />);
-    expect(screen.getByText('Test Product 1')).toBeInTheDocument();
-  });
+    render(<OrderPreview {...defaultProps} />)
+    expect(screen.getByText('Test Product 1')).toBeInTheDocument()
+  })
 
   it('should call onBack when back button clicked', () => {
-    const onBack = vi.fn();
-    render(<OrderPreview {...defaultProps} onBack={onBack} />);
-    const backButton = screen.getByText('Quay lại');
-    fireEvent.click(backButton);
-    expect(onBack).toHaveBeenCalledTimes(1);
-  });
+    const onBack = vi.fn()
+    render(<OrderPreview {...defaultProps} onBack={onBack} />)
+    const backButton = screen.getByText('Quay lại')
+    fireEvent.click(backButton)
+    expect(onBack).toHaveBeenCalledTimes(1)
+  })
 
   it('should call onPlaceOrder when place order button clicked', () => {
-    const onPlaceOrder = vi.fn();
-    render(<OrderPreview {...defaultProps} onPlaceOrder={onPlaceOrder} />);
-    const placeOrderButton = screen.getByText('Đặt hàng');
-    fireEvent.click(placeOrderButton);
-    expect(onPlaceOrder).toHaveBeenCalledTimes(1);
-  });
+    const onPlaceOrder = vi.fn()
+    render(<OrderPreview {...defaultProps} onPlaceOrder={onPlaceOrder} />)
+    const placeOrderButton = screen.getByText('Đặt hàng')
+    fireEvent.click(placeOrderButton)
+    expect(onPlaceOrder).toHaveBeenCalledTimes(1)
+  })
 
   it('should disable place order button when placing order', () => {
-    render(<OrderPreview {...defaultProps} isPlacingOrder={true} />);
-    const placeOrderButton = screen.getByText('Đang xử lý...');
-    expect(placeOrderButton).toBeDisabled();
-  });
+    render(<OrderPreview {...defaultProps} isPlacingOrder={true} />)
+    const placeOrderButton = screen.getByText('Đang xử lý...')
+    expect(placeOrderButton).toBeDisabled()
+  })
 
   it('should show message when no address selected', () => {
-    render(<OrderPreview {...defaultProps} selectedAddress={null} />);
-    expect(screen.getByText('Chưa chọn địa chỉ giao hàng')).toBeInTheDocument();
-  });
+    render(<OrderPreview {...defaultProps} selectedAddress={null} />)
+    expect(screen.getByText('Chưa chọn địa chỉ giao hàng')).toBeInTheDocument()
+  })
 
   it('should render note when provided', () => {
-    render(<OrderPreview {...defaultProps} note="Please deliver in the morning" />);
-    expect(screen.getByText('Please deliver in the morning')).toBeInTheDocument();
-  });
+    render(<OrderPreview {...defaultProps} note="Please deliver in the morning" />)
+    expect(screen.getByText('Please deliver in the morning')).toBeInTheDocument()
+  })
 
   it('should display voucher discount when provided', () => {
-    render(<OrderPreview {...defaultProps} voucherCode="SAVE10" voucherDiscount={20000} />);
-    expect(screen.getByText(/SAVE10/)).toBeInTheDocument();
-  });
-});
+    render(<OrderPreview {...defaultProps} voucherCode="SAVE10" voucherDiscount={20000} />)
+    expect(screen.getByText(/SAVE10/)).toBeInTheDocument()
+  })
+})

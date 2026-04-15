@@ -1,24 +1,24 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
-import QuantityController from 'src/components/QuantityController';
-import Button from 'src/components/Button';
-import { Product as ProductType, ProductSKU } from 'src/types/product.type';
-import { useOptimisticAddToCart } from 'src/hooks/optimistic';
-import path from 'src/constant/path';
-import { staggerItem } from 'src/styles/animations';
-import { useCartItems } from 'src/stores/cart.store';
-import { getProductQuantityInCart } from 'src/utils/cart.utils';
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+import QuantityController from 'src/components/QuantityController'
+import Button from 'src/components/Button'
+import { Product as ProductType, ProductSKU } from 'src/types/product.type'
+import { useOptimisticAddToCart } from 'src/hooks/optimistic'
+import path from 'src/constant/path'
+import { staggerItem } from 'src/styles/animations'
+import { useCartItems } from 'src/stores/cart.store'
+import { getProductQuantityInCart } from 'src/utils/cart.utils'
 
 interface ProductActionsProps {
-  product: ProductType;
-  isAuthenticated: boolean;
-  reducedMotion: boolean;
-  selectedSKU?: ProductSKU | null;
-  hasVariants?: boolean;
-  onVariantValidationError?: () => void;
+  product: ProductType
+  isAuthenticated: boolean
+  reducedMotion: boolean
+  selectedSKU?: ProductSKU | null
+  hasVariants?: boolean
+  onVariantValidationError?: () => void
 }
 
 const CartIcon = () => (
@@ -62,7 +62,7 @@ const CartIcon = () => (
       />
     </g>
   </svg>
-);
+)
 
 const ProductActions = ({
   product,
@@ -72,98 +72,98 @@ const ProductActions = ({
   hasVariants,
   onVariantValidationError,
 }: ProductActionsProps) => {
-  const { t } = useTranslation('product');
-  const navigate = useNavigate();
-  const [buyCount, setBuyCount] = useState(1);
-  const addToCartMutation = useOptimisticAddToCart();
-  const cartItems = useCartItems();
+  const { t } = useTranslation('product')
+  const navigate = useNavigate()
+  const [buyCount, setBuyCount] = useState(1)
+  const addToCartMutation = useOptimisticAddToCart()
+  const cartItems = useCartItems()
 
-  const effectiveStock = selectedSKU?.stock ?? product.quantity;
-  const existingQuantity = getProductQuantityInCart(product._id, cartItems);
-  const availableToAdd = Math.max(effectiveStock - existingQuantity, 0);
-  const isOutOfStock = hasVariants && selectedSKU != null && selectedSKU.stock === 0;
-  const needsVariantSelection = hasVariants && !selectedSKU;
+  const effectiveStock = selectedSKU?.stock ?? product.quantity
+  const existingQuantity = getProductQuantityInCart(product._id, cartItems)
+  const availableToAdd = Math.max(effectiveStock - existingQuantity, 0)
+  const isOutOfStock = hasVariants && selectedSKU != null && selectedSKU.stock === 0
+  const needsVariantSelection = hasVariants && !selectedSKU
 
   const handleBuyCount = (value: number) => {
-    setBuyCount(value);
-  };
+    setBuyCount(value)
+  }
 
   const validateCartQuantity = (quantity: number): boolean => {
-    const totalQuantity = existingQuantity + quantity;
+    const totalQuantity = existingQuantity + quantity
     if (totalQuantity > effectiveStock) {
       if (availableToAdd <= 0) {
         toast.error(t('cart.validationErrorFull', { existing: existingQuantity }), {
           autoClose: 3000,
           position: 'top-center',
-        });
+        })
       } else {
         toast.error(
           t('cart.validationError', { existing: existingQuantity, remaining: availableToAdd }),
           { autoClose: 3000, position: 'top-center' },
-        );
+        )
       }
-      return false;
+      return false
     }
-    return true;
-  };
+    return true
+  }
 
   const validateVariantSelection = (): boolean => {
     if (needsVariantSelection) {
       toast.error(t('variant.selectAll'), {
         autoClose: 3000,
         position: 'top-center',
-      });
-      onVariantValidationError?.();
-      return false;
+      })
+      onVariantValidationError?.()
+      return false
     }
     if (isOutOfStock) {
       toast.error(t('variant.outOfStock'), {
         autoClose: 3000,
         position: 'top-center',
-      });
-      return false;
+      })
+      return false
     }
-    return true;
-  };
+    return true
+  }
 
   const addToCart = () => {
-    if (!product) return;
-    if (hasVariants && !validateVariantSelection()) return;
-    if (!validateCartQuantity(buyCount)) return;
+    if (!product) return
+    if (hasVariants && !validateVariantSelection()) return
+    if (!validateCartQuantity(buyCount)) return
 
     addToCartMutation.mutate({
       product_id: product._id,
       buy_count: buyCount,
       ...(selectedSKU?._id ? { sku_id: selectedSKU._id } : {}),
-    });
-  };
+    })
+  }
 
   const handleBuyNow = async () => {
-    if (!product) return;
-    if (hasVariants && !validateVariantSelection()) return;
-    if (!validateCartQuantity(buyCount)) return;
+    if (!product) return
+    if (hasVariants && !validateVariantSelection()) return
+    if (!validateCartQuantity(buyCount)) return
 
     try {
       const res = await addToCartMutation.mutateAsync({
         product_id: product._id,
         buy_count: buyCount,
         ...(selectedSKU?._id ? { sku_id: selectedSKU._id } : {}),
-      });
+      })
 
-      const purchase = res.data.data;
+      const purchase = res.data.data
       navigate(path.cart, {
         state: {
           purchaseId: purchase._id,
         },
-      });
+      })
     } catch (error) {
-      console.error('Buy now error:', error);
+      console.error('Buy now error:', error)
       toast.error(t('actions.buyNowError'), {
         autoClose: 2000,
         position: 'top-center',
-      });
+      })
     }
-  };
+  }
 
   const handleLoginRedirect = () => {
     navigate(path.login, {
@@ -171,10 +171,10 @@ const ProductActions = ({
         purchaseId: product._id,
         purchaseName: product.name,
       },
-    });
-  };
+    })
+  }
 
-  const isButtonDisabled = addToCartMutation.isPending || isOutOfStock;
+  const isButtonDisabled = addToCartMutation.isPending || isOutOfStock
 
   return (
     <>
@@ -236,7 +236,7 @@ const ProductActions = ({
         </div>
       </motion.div>
     </>
-  );
-};
+  )
+}
 
-export default ProductActions;
+export default ProductActions

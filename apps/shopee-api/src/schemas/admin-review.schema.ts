@@ -1,6 +1,10 @@
 import { z } from 'zod'
 import { mongoIdSchema } from './common.schema'
-import { adminPaginationQuerySchema, sortQuerySchema, searchQuerySchema } from './admin-common.schema'
+import {
+  adminPaginationQuerySchema,
+  sortQuerySchema,
+  searchQuerySchema,
+} from './admin-common.schema'
 
 // ─── Admin Review List Query ─────────────────────────────────────
 
@@ -28,4 +32,3 @@ export const adminReviewIdSchema = z.object({
 export const adminCommentIdSchema = z.object({
   params: z.object({ id: mongoIdSchema }),
 })
-

@@ -1,14 +1,14 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import SEO from 'src/components/SEO';
-import { useCheckout } from './useCheckout';
-import { CheckoutProgressStepper } from './components/CheckoutProgressStepper';
-import { CheckoutFormSections } from './components/CheckoutFormSections';
-import { CheckoutSidebar } from './components/CheckoutSidebar';
-import OrderPreview from 'src/components/OrderPreview';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import SEO from 'src/components/SEO'
+import { useCheckout } from './useCheckout'
+import { CheckoutProgressStepper } from './components/CheckoutProgressStepper'
+import { CheckoutFormSections } from './components/CheckoutFormSections'
+import { CheckoutSidebar } from './components/CheckoutSidebar'
+import OrderPreview from 'src/components/OrderPreview'
 
 const Checkout = () => {
-  const { t } = useTranslation('checkout');
+  const { t } = useTranslation('checkout')
   const {
     selectedAddress,
     selectedShippingMethod,
@@ -34,10 +34,10 @@ const Checkout = () => {
     handleBackToStep3,
     handleGoToReview,
     handlePlaceOrder,
-  } = useCheckout();
+  } = useCheckout()
 
   if (checkedItems.length === 0) {
-    return null;
+    return null
   }
 
   return (
@@ -135,7 +135,7 @@ const Checkout = () => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Checkout;
+export default Checkout

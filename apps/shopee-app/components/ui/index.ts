@@ -1,19 +1,19 @@
-export { default as AppButton } from './AppButton';
-export { default as AppInput } from './AppInput';
-export { default as Avatar } from './Avatar';
-export { default as Badge } from './Badge';
-export { default as Checkbox } from './Checkbox';
-export { default as Chip } from './Chip';
-export { default as EmptyState } from './EmptyState';
-export { default as Icon } from './Icon';
-export { default as InlineError } from './InlineError';
-export { default as MenuList } from './MenuList';
-export { default as ProgressBar } from './ProgressBar';
-export { default as Select } from './Select';
-export { default as SkeletonLoader } from './SkeletonLoader';
-export { default as Slider } from './Slider';
-export { default as Switch } from './Switch';
-export { default as AppText } from './AppText';
+export { default as AppButton } from './AppButton'
+export { default as AppInput } from './AppInput'
+export { default as Avatar } from './Avatar'
+export { default as Badge } from './Badge'
+export { default as Checkbox } from './Checkbox'
+export { default as Chip } from './Chip'
+export { default as EmptyState } from './EmptyState'
+export { default as Icon } from './Icon'
+export { default as InlineError } from './InlineError'
+export { default as MenuList } from './MenuList'
+export { default as ProgressBar } from './ProgressBar'
+export { default as Select } from './Select'
+export { default as SkeletonLoader } from './SkeletonLoader'
+export { default as Slider } from './Slider'
+export { default as Switch } from './Switch'
+export { default as AppText } from './AppText'
 
 export {
   Form,
@@ -23,9 +23,9 @@ export {
   FormControl,
   FormDescription,
   FormMessage,
-} from './Form';
+} from './Form'
 
-export type { SelectOption } from './Select';
+export type { SelectOption } from './Select'
 export type {
   FormProps,
   FormFieldProps,
@@ -34,4 +34,4 @@ export type {
   FormControlProps,
   FormDescriptionProps,
   FormMessageProps,
-} from './Form';
+} from './Form'

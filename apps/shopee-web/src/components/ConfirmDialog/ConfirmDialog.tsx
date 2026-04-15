@@ -1,19 +1,19 @@
-import { useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import Button from 'src/components/Button';
+import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import Button from 'src/components/Button'
 
 interface ConfirmDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  title: string;
-  message: string;
-  confirmText?: string;
-  cancelText?: string;
-  variant?: 'danger' | 'warning' | 'info';
-  isLoading?: boolean;
+  isOpen: boolean
+  onClose: () => void
+  onConfirm: () => void
+  title: string
+  message: string
+  confirmText?: string
+  cancelText?: string
+  variant?: 'danger' | 'warning' | 'info'
+  isLoading?: boolean
 }
 
 const variantConfig = {
@@ -29,7 +29,7 @@ const variantConfig = {
     iconColor: 'text-blue-500',
     buttonClass: 'bg-orange hover:bg-[#d73211] text-white',
   },
-};
+}
 
 // SVG Icons for each variant
 const DangerIcon = () => (
@@ -40,7 +40,7 @@ const DangerIcon = () => (
       d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
     />
   </svg>
-);
+)
 
 const WarningIcon = () => (
   <svg className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -50,7 +50,7 @@ const WarningIcon = () => (
       d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
     />
   </svg>
-);
+)
 
 const InfoIcon = () => (
   <svg className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -60,7 +60,7 @@ const InfoIcon = () => (
       d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
     />
   </svg>
-);
+)
 
 const ConfirmDialog = ({
   isOpen,
@@ -73,54 +73,54 @@ const ConfirmDialog = ({
   variant = 'danger',
   isLoading = false,
 }: ConfirmDialogProps) => {
-  const { t } = useTranslation('common');
-  const reducedMotion = useReducedMotion();
-  const cancelButtonRef = useRef<HTMLButtonElement>(null);
-  const config = variantConfig[variant];
+  const { t } = useTranslation('common')
+  const reducedMotion = useReducedMotion()
+  const cancelButtonRef = useRef<HTMLButtonElement>(null)
+  const config = variantConfig[variant]
 
-  const resolvedConfirmText = confirmText || t('confirm.defaultConfirm');
-  const resolvedCancelText = cancelText || t('confirm.defaultCancel');
+  const resolvedConfirmText = confirmText || t('confirm.defaultConfirm')
+  const resolvedCancelText = cancelText || t('confirm.defaultCancel')
 
   // Body scroll lock
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden'
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = ''
     }
     return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
 
   // Auto-focus cancel button when dialog opens
   useEffect(() => {
     if (isOpen && cancelButtonRef.current) {
-      cancelButtonRef.current.focus();
+      cancelButtonRef.current.focus()
     }
-  }, [isOpen]);
+  }, [isOpen])
 
   // Escape key handler
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isOpen && !isLoading) {
-        onClose();
+        onClose()
       }
-    };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, isLoading, onClose]);
+    }
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isOpen, isLoading, onClose])
 
   const renderIcon = () => {
     switch (variant) {
       case 'danger':
-        return <DangerIcon />;
+        return <DangerIcon />
       case 'warning':
-        return <WarningIcon />;
+        return <WarningIcon />
       case 'info':
-        return <InfoIcon />;
+        return <InfoIcon />
     }
-  };
+  }
 
   const animationProps = reducedMotion
     ? { initial: false }
@@ -129,7 +129,7 @@ const ConfirmDialog = ({
         animate: { opacity: 1, scale: 1 },
         exit: { opacity: 0, scale: 0.95 },
         transition: { duration: 0.2 },
-      };
+      }
 
   const backdropAnimationProps = reducedMotion
     ? { initial: false }
@@ -138,7 +138,7 @@ const ConfirmDialog = ({
         animate: { opacity: 0.5 },
         exit: { opacity: 0 },
         transition: { duration: 0.2 },
-      };
+      }
 
   return (
     <AnimatePresence>
@@ -210,7 +210,7 @@ const ConfirmDialog = ({
         </>
       )}
     </AnimatePresence>
-  );
-};
+  )
+}
 
-export default ConfirmDialog;
+export default ConfirmDialog

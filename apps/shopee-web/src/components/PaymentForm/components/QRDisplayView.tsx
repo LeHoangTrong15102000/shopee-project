@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion';
-import Button from 'src/components/Button';
-import { WalletInfo, WalletLogo, formatCurrency } from './WalletCard';
-import { EWalletCountdownTimer } from '../shared/CountdownTimer';
+import { motion } from 'framer-motion'
+import Button from 'src/components/Button'
+import { WalletInfo, WalletLogo, formatCurrency } from './WalletCard'
+import { EWalletCountdownTimer } from '../shared/CountdownTimer'
 
 function QRCodePlaceholder({ walletName }: { walletName: string }) {
   return (
@@ -20,10 +20,10 @@ function QRCodePlaceholder({ walletName }: { walletName: string }) {
           <rect x="20" y="160" width="20" height="20" />
           {Array.from({ length: 15 }, (_, i) =>
             Array.from({ length: 15 }, (_, j) => {
-              const x = 55 + j * 6;
-              const y = 55 + i * 6;
-              const show = (i + j) % 3 !== 0 && Math.random() > 0.3;
-              return show ? <rect key={`${i}-${j}`} x={x} y={y} width="5" height="5" /> : null;
+              const x = 55 + j * 6
+              const y = 55 + i * 6
+              const show = (i + j) % 3 !== 0 && Math.random() > 0.3
+              return show ? <rect key={`${i}-${j}`} x={x} y={y} width="5" height="5" /> : null
             }),
           )}
         </g>
@@ -34,7 +34,7 @@ function QRCodePlaceholder({ walletName }: { walletName: string }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 function QRDisplayView({
@@ -45,14 +45,14 @@ function QRDisplayView({
   onOpenApp,
   onCancel,
 }: {
-  wallet: WalletInfo;
-  amount: number;
-  timeRemaining: number;
-  isMobile: boolean;
-  onOpenApp: () => void;
-  onCancel: () => void;
+  wallet: WalletInfo
+  amount: number
+  timeRemaining: number
+  isMobile: boolean
+  onOpenApp: () => void
+  onCancel: () => void
 }) {
-  const isExpired = timeRemaining <= 0;
+  const isExpired = timeRemaining <= 0
 
   return (
     <motion.div
@@ -122,7 +122,7 @@ function QRDisplayView({
           : `Quét mã QR bằng ứng dụng ${wallet.name} trên điện thoại của bạn`}
       </p>
     </motion.div>
-  );
+  )
 }
 
-export default QRDisplayView;
+export default QRDisplayView

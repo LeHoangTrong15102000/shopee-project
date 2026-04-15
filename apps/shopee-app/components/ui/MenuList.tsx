@@ -1,18 +1,18 @@
-import { JSX } from 'react';
-import { Pressable, Text, View } from 'react-native';
-import { ChevronRight } from 'lucide-react-native';
-import Icon from '@/components/ui/Icon.tsx';
-import AppText from '@/components/ui/AppText.tsx';
+import { JSX } from 'react'
+import { Pressable, Text, View } from 'react-native'
+import { ChevronRight } from 'lucide-react-native'
+import Icon from '@/components/ui/Icon.tsx'
+import AppText from '@/components/ui/AppText.tsx'
 
 interface MenuListItem {
-  title: string;
-  value?: string | React.ReactNode;
-  icon: () => JSX.Element;
-  onPress?: () => void;
+  title: string
+  value?: string | React.ReactNode
+  icon: () => JSX.Element
+  onPress?: () => void
 }
 
 interface MenuListProps {
-  data: MenuListItem[];
+  data: MenuListItem[]
 }
 
 export default function MenuList(props: MenuListProps) {
@@ -44,5 +44,5 @@ export default function MenuList(props: MenuListProps) {
         </Pressable>
       ))}
     </View>
-  );
+  )
 }

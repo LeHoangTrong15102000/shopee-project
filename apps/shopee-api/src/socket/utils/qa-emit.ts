@@ -1,5 +1,10 @@
 import { SOCKET_CONFIG } from '@constants/socket'
-import { SocketEvent, NewQuestionPayload, NewAnswerPayload, QuestionLikedPayload } from '../../@types/socket.type'
+import {
+  SocketEvent,
+  NewQuestionPayload,
+  NewAnswerPayload,
+  QuestionLikedPayload,
+} from '../../@types/socket.type'
 import { Logger } from '@utils/logger'
 import { getIORequired } from '../socket.init'
 
@@ -12,7 +17,7 @@ import { getIORequired } from '../socket.init'
 export const emitNewQuestion = (
   productId: string,
   question: NewQuestionPayload['question'],
-  excludeSocketId?: string
+  excludeSocketId?: string,
 ): void => {
   try {
     const io = getIORequired()
@@ -51,7 +56,7 @@ export const emitNewQuestion = (
 export const emitNewAnswer = (
   productId: string,
   questionId: string,
-  answer: NewAnswerPayload['answer']
+  answer: NewAnswerPayload['answer'],
 ): void => {
   try {
     const io = getIORequired()
@@ -88,7 +93,7 @@ export const emitNewAnswer = (
 export const emitQuestionLiked = (
   productId: string,
   questionId: string,
-  likesCount: number
+  likesCount: number,
 ): void => {
   try {
     const io = getIORequired()
@@ -116,4 +121,3 @@ export const emitQuestionLiked = (
     })
   }
 }
-

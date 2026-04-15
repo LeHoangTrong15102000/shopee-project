@@ -78,7 +78,7 @@ export interface IQARepository {
   // Questions
   findQuestionsByProduct(
     filters: QuestionFilterOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IQuestionItem>>
 
   findQuestionById(questionId: string | Types.ObjectId): Promise<IQuestionItem | null>
@@ -90,22 +90,21 @@ export interface IQARepository {
 
   findAnswerById(
     questionId: string | Types.ObjectId,
-    answerId: string | Types.ObjectId
+    answerId: string | Types.ObjectId,
   ): Promise<IAnswerItem | null>
 
   // Voting
   toggleQuestionLike(
     questionId: string | Types.ObjectId,
-    userId: string | Types.ObjectId
+    userId: string | Types.ObjectId,
   ): Promise<{ is_liked: boolean; likes_count: number }>
 
   toggleAnswerLike(
     questionId: string | Types.ObjectId,
     answerId: string | Types.ObjectId,
-    userId: string | Types.ObjectId
+    userId: string | Types.ObjectId,
   ): Promise<{ is_liked: boolean; likes_count: number }>
 
   // Stats
   countUnansweredQuestions(): Promise<number>
 }
-

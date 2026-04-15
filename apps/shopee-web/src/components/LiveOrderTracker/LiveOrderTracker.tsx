@@ -1,23 +1,23 @@
-import { useQuery } from '@tanstack/react-query';
-import classNames from 'classnames';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
-import orderTrackingApi from 'src/apis/orderTracking.api';
-import OrderTimeline from 'src/components/OrderTimeline';
-import { orderStatusFromNumber } from 'src/constant/order';
-import { purchasesStatus } from 'src/constant/purchase';
-import useOrderTracking from 'src/hooks/useOrderTracking';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import { ANIMATION_DURATION, STAGGER_DELAY } from 'src/styles/animations';
+import { useQuery } from '@tanstack/react-query'
+import classNames from 'classnames'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+import orderTrackingApi from 'src/apis/orderTracking.api'
+import OrderTimeline from 'src/components/OrderTimeline'
+import { orderStatusFromNumber } from 'src/constant/order'
+import { purchasesStatus } from 'src/constant/purchase'
+import useOrderTracking from 'src/hooks/useOrderTracking'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import { ANIMATION_DURATION, STAGGER_DELAY } from 'src/styles/animations'
 
 interface LiveOrderTrackerProps {
-  orderId: string;
-  initialStatus: number;
-  className?: string;
-  trackingNumber?: string;
-  carrier?: string;
+  orderId: string
+  initialStatus: number
+  className?: string
+  trackingNumber?: string
+  carrier?: string
 }
 
 // Map from socket status strings to purchasesStatus numbers
@@ -29,7 +29,7 @@ const STATUS_MAP: Record<string, number> = {
   delivered: purchasesStatus.delivered,
   cancelled: purchasesStatus.cancelled,
   returned: purchasesStatus.cancelled,
-};
+}
 
 // Status labels keys for toast notifications
 const STATUS_LABEL_KEYS: Record<number, string> = {
@@ -38,7 +38,7 @@ const STATUS_LABEL_KEYS: Record<number, string> = {
   [purchasesStatus.inProgress]: 'status.inProgress',
   [purchasesStatus.delivered]: 'status.delivered',
   [purchasesStatus.cancelled]: 'status.cancelled',
-};
+}
 
 // Container animation variants
 const containerVariants = {
@@ -47,12 +47,12 @@ const containerVariants = {
     opacity: 1,
     transition: { staggerChildren: STAGGER_DELAY.normal, delayChildren: 0.1 },
   },
-};
+}
 
 const itemVariants = {
   hidden: { opacity: 0, y: 10 },
   visible: { opacity: 1, y: 0, transition: { duration: ANIMATION_DURATION.normal } },
-};
+}
 
 export default function LiveOrderTracker({
   orderId,
@@ -61,10 +61,10 @@ export default function LiveOrderTracker({
   trackingNumber = 'VN2024SHOP001',
   carrier,
 }: LiveOrderTrackerProps) {
-  const { t, i18n } = useTranslation('order');
-  const resolvedCarrier = carrier || t('carrier.ghn');
-  const reducedMotion = useReducedMotion();
-  const [currentStatus, setCurrentStatus] = useState(initialStatus);
+  const { t, i18n } = useTranslation('order')
+  const resolvedCarrier = carrier || t('carrier.ghn')
+  const reducedMotion = useReducedMotion()
+  const [currentStatus, setCurrentStatus] = useState(initialStatus)
 
   // Use the existing order tracking hook for real-time updates
   const {
@@ -72,76 +72,76 @@ export default function LiveOrderTracker({
     lastUpdate,
     isSubscribed,
     statusHistory,
-  } = useOrderTracking(orderId);
+  } = useOrderTracking(orderId)
 
   // Convert numeric initialStatus to string status for API call
-  const statusString = orderStatusFromNumber(initialStatus) || 'pending';
+  const statusString = orderStatusFromNumber(initialStatus) || 'pending'
 
   // Fetch initial tracking data from API
   const { data: trackingData } = useQuery({
     queryKey: ['orderTracking', orderId, statusString],
     queryFn: () => orderTrackingApi.getTracking({ order_id: orderId, status: statusString }),
     enabled: !!orderId,
-  });
+  })
 
   // Build timestamps from tracking API timeline + websocket statusHistory
   const timestamps = (() => {
-    const result: Record<number, string> = {};
+    const result: Record<number, string> = {}
     // From tracking API timeline
-    const timeline = trackingData?.data?.data?.timeline;
+    const timeline = trackingData?.data?.data?.timeline
     if (timeline) {
       for (const event of timeline) {
-        const mappedStatus = STATUS_MAP[event.status];
+        const mappedStatus = STATUS_MAP[event.status]
         if (mappedStatus !== undefined) {
-          result[mappedStatus] = event.timestamp;
+          result[mappedStatus] = event.timestamp
         }
       }
     }
     // Override/add from real-time websocket statusHistory
     for (const entry of statusHistory) {
-      const mappedStatus = STATUS_MAP[entry.status];
+      const mappedStatus = STATUS_MAP[entry.status]
       if (mappedStatus !== undefined) {
-        result[mappedStatus] = entry.updated_at;
+        result[mappedStatus] = entry.updated_at
       }
     }
-    return result;
-  })();
+    return result
+  })()
 
   // Handle real-time status updates from socket (for currentStatus and toast notifications)
   useEffect(() => {
     if (socketStatus) {
-      const mappedStatus = STATUS_MAP[socketStatus];
+      const mappedStatus = STATUS_MAP[socketStatus]
       if (mappedStatus !== undefined && mappedStatus !== currentStatus) {
-        setCurrentStatus(mappedStatus);
+        setCurrentStatus(mappedStatus)
 
         // Show toast notification for status change
-        const statusLabelKey = STATUS_LABEL_KEYS[mappedStatus] || 'status.update';
-        const statusLabel = t(statusLabelKey as never);
+        const statusLabelKey = STATUS_LABEL_KEYS[mappedStatus] || 'status.update'
+        const statusLabel = t(statusLabelKey as never)
         if (mappedStatus === purchasesStatus.delivered) {
-          toast.success(t('toast.orderDelivered', { status: statusLabel }), { autoClose: 5000 });
+          toast.success(t('toast.orderDelivered', { status: statusLabel }), { autoClose: 5000 })
         } else if (mappedStatus === purchasesStatus.cancelled) {
-          toast.warning(t('toast.orderCancelled', { status: statusLabel }), { autoClose: 5000 });
+          toast.warning(t('toast.orderCancelled', { status: statusLabel }), { autoClose: 5000 })
         } else {
-          toast.info(t('toast.orderUpdate', { status: statusLabel }), { autoClose: 4000 });
+          toast.info(t('toast.orderUpdate', { status: statusLabel }), { autoClose: 4000 })
         }
       }
     }
-  }, [socketStatus, currentStatus, t]);
+  }, [socketStatus, currentStatus, t])
 
   // Calculate estimated delivery time (mock: 2-3 days from now for in-progress orders)
   const getEstimatedDelivery = () => {
     if (currentStatus === purchasesStatus.inProgress) {
-      const now = new Date();
-      const minDate = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
-      const maxDate = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
-      return `${minDate.toLocaleDateString(i18n.language)} - ${maxDate.toLocaleDateString(i18n.language)}`;
+      const now = new Date()
+      const minDate = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000)
+      const maxDate = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000)
+      return `${minDate.toLocaleDateString(i18n.language)} - ${maxDate.toLocaleDateString(i18n.language)}`
     }
-    return null;
-  };
+    return null
+  }
 
-  const estimatedDelivery = getEstimatedDelivery();
-  const isDelivered = currentStatus === purchasesStatus.delivered;
-  const isCancelled = currentStatus === purchasesStatus.cancelled;
+  const estimatedDelivery = getEstimatedDelivery()
+  const isDelivered = currentStatus === purchasesStatus.delivered
+  const isCancelled = currentStatus === purchasesStatus.cancelled
 
   return (
     <motion.div
@@ -330,5 +330,5 @@ export default function LiveOrderTracker({
         )}
       </div>
     </motion.div>
-  );
+  )
 }

@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
-import { waitFor } from '@testing-library/react';
-import { renderWithProviders } from 'src/utils/testUtils';
-import AddressSelector from './AddressSelector';
+import { describe, it, expect, vi } from 'vitest'
+import { waitFor } from '@testing-library/react'
+import { renderWithProviders } from 'src/utils/testUtils'
+import AddressSelector from './AddressSelector'
 
 // Mock address API
 vi.mock('src/apis/address.api', () => ({
@@ -39,40 +39,40 @@ vi.mock('src/apis/address.api', () => ({
     setDefaultAddress: vi.fn().mockResolvedValue({ data: { message: 'OK' } }),
     deleteAddress: vi.fn().mockResolvedValue({ data: { message: 'OK' } }),
   },
-}));
+}))
 
 describe('AddressSelector', () => {
-  const mockOnSelect = vi.fn();
+  const mockOnSelect = vi.fn()
 
   it('renders address list from API', async () => {
-    renderWithProviders(<AddressSelector selectedAddressId="addr-1" onSelect={mockOnSelect} />);
+    renderWithProviders(<AddressSelector selectedAddressId="addr-1" onSelect={mockOnSelect} />)
 
     await waitFor(() => {
-      const bodyText = document.body.textContent || '';
+      const bodyText = document.body.textContent || ''
       expect(
         bodyText.includes('Lê Lợi') ||
           bodyText.includes('Hồ Chí Minh') ||
           bodyText.includes('Nguyễn Văn A'),
-      ).toBeTruthy();
-    });
-  });
+      ).toBeTruthy()
+    })
+  })
 
   it('renders add new address button', async () => {
-    renderWithProviders(<AddressSelector selectedAddressId={null} onSelect={mockOnSelect} />);
+    renderWithProviders(<AddressSelector selectedAddressId={null} onSelect={mockOnSelect} />)
 
     await waitFor(() => {
-      const bodyText = document.body.textContent || '';
-      expect(bodyText.includes('Thêm') || bodyText.includes('thêm')).toBeTruthy();
-    });
-  });
+      const bodyText = document.body.textContent || ''
+      expect(bodyText.includes('Thêm') || bodyText.includes('thêm')).toBeTruthy()
+    })
+  })
 
   it('highlights selected address', async () => {
-    renderWithProviders(<AddressSelector selectedAddressId="addr-1" onSelect={mockOnSelect} />);
+    renderWithProviders(<AddressSelector selectedAddressId="addr-1" onSelect={mockOnSelect} />)
 
     await waitFor(() => {
       // At least one address should be rendered with aria-pressed
-      const allButtons = document.querySelectorAll('[role="button"]');
-      expect(allButtons.length).toBeGreaterThan(0);
-    });
-  });
-});
+      const allButtons = document.querySelectorAll('[role="button"]')
+      expect(allButtons.length).toBeGreaterThan(0)
+    })
+  })
+})

@@ -3,7 +3,10 @@ import {
   IWishlistRepository,
   IWishlistItem,
 } from '@repositories/interfaces/wishlist.repository.interface'
-import { PaginatedResult, PaginationOptions } from '@repositories/interfaces/base.repository.interface'
+import {
+  PaginatedResult,
+  PaginationOptions,
+} from '@repositories/interfaces/base.repository.interface'
 import { BaseService, NotFoundError, ValidationError } from './base.service'
 import { HOST } from '@utils/helper'
 import { ROUTE_IMAGE } from '@constants/config'
@@ -22,7 +25,7 @@ export class WishlistService extends BaseService {
     }
     if (product.images !== undefined && product.images.length !== 0) {
       product.images = product.images.map((image: string) =>
-        image !== '' ? HOST + `/${ROUTE_IMAGE}/` + image : ''
+        image !== '' ? HOST + `/${ROUTE_IMAGE}/` + image : '',
       )
     }
     return product
@@ -32,18 +35,24 @@ export class WishlistService extends BaseService {
    * Transform wishlist items with product images
    */
   private transformWishlistItems(items: IWishlistItem[]): IWishlistItem[] {
-    return items.map(item => ({
+    return items.map((item) => ({
       ...item,
       product: item.product ? this.handleImageProduct(item.product) : null,
     }))
   }
 
-  async getWishlist(userId: string, pagination: PaginationOptions): Promise<PaginatedResult<IWishlistItem>> {
+  async getWishlist(
+    userId: string,
+    pagination: PaginationOptions,
+  ): Promise<PaginatedResult<IWishlistItem>> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')
     }
 
-    const result = await this.wishlistRepository.findByUser(userId, this.normalizePagination(pagination))
+    const result = await this.wishlistRepository.findByUser(
+      userId,
+      this.normalizePagination(pagination),
+    )
     result.data = this.transformWishlistItems(result.data)
     return result
   }
@@ -57,7 +66,7 @@ export class WishlistService extends BaseService {
     }
 
     const item = await this.wishlistRepository.addToWishlist(userId, productId)
-    
+
     // Fetch with populated product
     const populated = await this.wishlistRepository.findById(item._id!)
     if (populated && populated.product) {
@@ -112,7 +121,7 @@ export class WishlistService extends BaseService {
       throw new ValidationError('Invalid user ID format')
     }
 
-    const invalidIds = productIds.filter(id => !this.isValidObjectId(id))
+    const invalidIds = productIds.filter((id) => !this.isValidObjectId(id))
     if (invalidIds.length > 0) {
       throw new ValidationError('Invalid product ID format')
     }
@@ -120,4 +129,3 @@ export class WishlistService extends BaseService {
     return this.wishlistRepository.checkProducts(userId, productIds)
   }
 }
-

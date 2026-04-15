@@ -6,16 +6,16 @@ export {
   useOptimisticAddToCart,
   useOptimisticUpdateQuantity,
   useOptimisticRemoveFromCart,
-} from './cart';
+} from './cart'
 
 // Review-related optimistic hooks
-export { useOptimisticReviewLike } from './review';
+export { useOptimisticReviewLike } from './review'
 
 // Wishlist-related optimistic hooks
-export { useOptimisticWishlist } from './wishlist';
+export { useOptimisticWishlist } from './wishlist'
 
 // Notification-related optimistic hooks
-export { useOptimisticNotification } from './notification';
+export { useOptimisticNotification } from './notification'
 
 // Shared utilities and types (optional exports for advanced usage)
 export type {
@@ -30,7 +30,7 @@ export type {
   MarkAllAsReadContext,
   OptimisticContext,
   ToastConfig,
-} from './shared/types';
+} from './shared/types'
 
 export {
   findProductInCache,
@@ -42,6 +42,6 @@ export {
   showInfoToast,
   logOptimisticError,
   TOAST_CONFIG,
-} from './shared/utils';
+} from './shared/utils'
 
-export { TOAST_MESSAGES, TEMP_ID_PREFIX, DEFAULT_USER_PLACEHOLDER } from './shared/constants';
+export { TOAST_MESSAGES, TEMP_ID_PREFIX, DEFAULT_USER_PLACEHOLDER } from './shared/constants'

@@ -19,7 +19,11 @@ export interface UpdateCategoryDTO {
 /**
  * Category repository interface extending base repository
  */
-export interface ICategoryRepository extends IBaseRepository<ICategory, CreateCategoryDTO, UpdateCategoryDTO> {
+export interface ICategoryRepository extends IBaseRepository<
+  ICategory,
+  CreateCategoryDTO,
+  UpdateCategoryDTO
+> {
   /**
    * Find category by name
    */
@@ -45,4 +49,3 @@ export interface ICategoryRepository extends IBaseRepository<ICategory, CreateCa
    */
   searchByName(query: string): Promise<ICategory[]>
 }
-

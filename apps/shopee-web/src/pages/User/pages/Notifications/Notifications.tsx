@@ -1,19 +1,19 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useOptimisticNotification } from 'src/hooks/optimistic';
-import { formatTimeAgo } from 'src/utils/utils';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import { useIsMobile } from 'src/hooks/useIsMobile';
-import { Notification, NotificationType } from 'src/types/notification.type';
-import useNotifications from 'src/hooks/useNotifications';
-import useNotificationSound from 'src/hooks/useNotificationSound';
-import SEO from 'src/components/SEO';
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
+import { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useOptimisticNotification } from 'src/hooks/optimistic'
+import { formatTimeAgo } from 'src/utils/utils'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import { useIsMobile } from 'src/hooks/useIsMobile'
+import { Notification, NotificationType } from 'src/types/notification.type'
+import useNotifications from 'src/hooks/useNotifications'
+import useNotificationSound from 'src/hooks/useNotificationSound'
+import SEO from 'src/components/SEO'
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
 
-type FilterTab = 'all' | 'order' | 'promotion' | 'system' | 'other';
+type FilterTab = 'all' | 'order' | 'promotion' | 'system' | 'other'
 
-const FILTER_TAB_KEYS: FilterTab[] = ['all', 'order', 'promotion', 'system', 'other'];
+const FILTER_TAB_KEYS: FilterTab[] = ['all', 'order', 'promotion', 'system', 'other']
 
 // Group notification types for filtering
 const TYPE_GROUPS: Record<FilterTab, NotificationType[]> = {
@@ -22,15 +22,15 @@ const TYPE_GROUPS: Record<FilterTab, NotificationType[]> = {
   promotion: ['promotion'],
   system: ['system'],
   other: ['other'],
-};
+}
 
 const Notifications = () => {
-  const { t } = useTranslation('notification');
-  const [activeTab, setActiveTab] = useState<FilterTab>('all');
-  const { markAsReadMutation, markAllAsReadMutation } = useOptimisticNotification();
-  const reducedMotion = useReducedMotion();
-  const isMobile = useIsMobile();
-  const listRef = useRef<HTMLUListElement>(null);
+  const { t } = useTranslation('notification')
+  const [activeTab, setActiveTab] = useState<FilterTab>('all')
+  const { markAsReadMutation, markAllAsReadMutation } = useOptimisticNotification()
+  const reducedMotion = useReducedMotion()
+  const isMobile = useIsMobile()
+  const listRef = useRef<HTMLUListElement>(null)
 
   // Unified notifications hook (REST + socket merged)
   const {
@@ -38,19 +38,19 @@ const Notifications = () => {
     unreadCount,
     isConnected,
     isLoading,
-  } = useNotifications();
+  } = useNotifications()
 
   // Sound notification hook
-  const { isMuted, toggleMute, playNotificationSound } = useNotificationSound();
+  const { isMuted, toggleMute, playNotificationSound } = useNotificationSound()
 
   // Track new notification IDs for highlight animation
-  const [newNotificationIds, setNewNotificationIds] = useState<Set<string>>(new Set());
-  const prevNotificationCountRef = useRef(allNotifications.length);
+  const [newNotificationIds, setNewNotificationIds] = useState<Set<string>>(new Set())
+  const prevNotificationCountRef = useRef(allNotifications.length)
 
   // Track if user has scrolled down (to show "new notification" banner)
-  const [showNewBanner, setShowNewBanner] = useState(false);
-  const [newBannerCount, setNewBannerCount] = useState(0);
-  const bannerTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [showNewBanner, setShowNewBanner] = useState(false)
+  const [newBannerCount, setNewBannerCount] = useState(0)
+  const bannerTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Handle new notifications (detect when count increases)
   useEffect(() => {
@@ -58,75 +58,75 @@ const Notifications = () => {
       allNotifications.length > prevNotificationCountRef.current &&
       prevNotificationCountRef.current > 0
     ) {
-      const latestNotification = allNotifications[0];
+      const latestNotification = allNotifications[0]
 
       // Add to highlight set
-      setNewNotificationIds((prev) => new Set([...prev, latestNotification._id]));
+      setNewNotificationIds((prev) => new Set([...prev, latestNotification._id]))
 
       // Play sound
-      playNotificationSound();
+      playNotificationSound()
 
       // Check if user is scrolled down
       if (listRef.current && listRef.current.scrollTop > 100) {
-        setShowNewBanner(true);
-        setNewBannerCount((prev) => prev + 1);
+        setShowNewBanner(true)
+        setNewBannerCount((prev) => prev + 1)
 
         // Auto-dismiss banner after 5 seconds
         if (bannerTimeoutRef.current) {
-          clearTimeout(bannerTimeoutRef.current);
+          clearTimeout(bannerTimeoutRef.current)
         }
         bannerTimeoutRef.current = setTimeout(() => {
-          setShowNewBanner(false);
-          setNewBannerCount(0);
-        }, 5000);
+          setShowNewBanner(false)
+          setNewBannerCount(0)
+        }, 5000)
       }
 
       // Remove highlight after 2 seconds
       setTimeout(() => {
         setNewNotificationIds((prev) => {
-          const newSet = new Set(prev);
-          newSet.delete(latestNotification._id);
-          return newSet;
-        });
-      }, 2000);
+          const newSet = new Set(prev)
+          newSet.delete(latestNotification._id)
+          return newSet
+        })
+      }, 2000)
     }
-    prevNotificationCountRef.current = allNotifications.length;
-  }, [allNotifications, playNotificationSound]);
+    prevNotificationCountRef.current = allNotifications.length
+  }, [allNotifications, playNotificationSound])
 
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
       if (bannerTimeoutRef.current) {
-        clearTimeout(bannerTimeoutRef.current);
+        clearTimeout(bannerTimeoutRef.current)
       }
-    };
-  }, []);
+    }
+  }, [])
 
   // Handle banner click - scroll to top
   const handleBannerClick = () => {
     if (listRef.current) {
-      listRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      listRef.current.scrollTo({ top: 0, behavior: 'smooth' })
     }
-    setShowNewBanner(false);
-    setNewBannerCount(0);
-  };
+    setShowNewBanner(false)
+    setNewBannerCount(0)
+  }
 
   // Filter notifications based on active tab
   const filteredNotifications =
     activeTab === 'all'
       ? allNotifications
-      : allNotifications.filter((n) => TYPE_GROUPS[activeTab].includes(n.type));
+      : allNotifications.filter((n) => TYPE_GROUPS[activeTab].includes(n.type))
 
   const handleMarkAsRead = (notificationId: string) => {
-    markAsReadMutation.mutate(notificationId);
-  };
+    markAsReadMutation.mutate(notificationId)
+  }
 
   const handleMarkAllAsRead = () => {
-    markAllAsReadMutation.mutate();
-  };
+    markAllAsReadMutation.mutate()
+  }
 
   const getNotificationIcon = (type: Notification['type']) => {
-    const iconClasses = 'h-5 w-5';
+    const iconClasses = 'h-5 w-5'
     switch (type) {
       case 'order':
         return (
@@ -139,7 +139,7 @@ const Notifications = () => {
               <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
             </svg>
           </div>
-        );
+        )
       case 'promotion':
         return (
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
@@ -151,7 +151,7 @@ const Notifications = () => {
               />
             </svg>
           </div>
-        );
+        )
       case 'system':
         return (
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
@@ -163,7 +163,7 @@ const Notifications = () => {
               />
             </svg>
           </div>
-        );
+        )
       default:
         return (
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
@@ -175,9 +175,9 @@ const Notifications = () => {
               />
             </svg>
           </div>
-        );
+        )
     }
-  };
+  }
 
   // Animation variants for stagger effect
   const containerVariants = isMobile
@@ -188,12 +188,12 @@ const Notifications = () => {
           opacity: 1,
           transition: { staggerChildren: 0.05 },
         },
-      };
+      }
 
   const itemVariants = {
     hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
-  };
+  }
 
   // Loading skeleton
   if (isLoading) {
@@ -224,7 +224,7 @@ const Notifications = () => {
           ))}
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -389,7 +389,7 @@ const Notifications = () => {
             animate={isMobile ? undefined : 'visible'}
           >
             {filteredNotifications.map((notification) => {
-              const isNewNotification = newNotificationIds.has(notification._id);
+              const isNewNotification = newNotificationIds.has(notification._id)
 
               return (
                 <motion.li
@@ -446,13 +446,13 @@ const Notifications = () => {
                     </p>
                   </div>
                 </motion.li>
-              );
+              )
             })}
           </motion.ul>
         </div>
       )}
     </motion.div>
-  );
-};
+  )
+}
 
-export default Notifications;
+export default Notifications

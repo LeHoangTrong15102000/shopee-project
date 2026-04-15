@@ -1,35 +1,35 @@
-import { useNavigate } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import ProductRating from 'src/components/ProductRating';
-import OptimizedImage from 'src/components/OptimizedImage';
-import WishlistButton from 'src/components/WishlistButton';
-import path from 'src/constant/path';
-import { Product } from 'src/types/product.type';
-import { formatCurrency, formatNumberToSocialStyle, generateNameId } from 'src/utils/utils';
-import { scrollManager } from 'src/hooks/useScrollRestoration';
+import { useNavigate } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import ProductRating from 'src/components/ProductRating'
+import OptimizedImage from 'src/components/OptimizedImage'
+import WishlistButton from 'src/components/WishlistButton'
+import path from 'src/constant/path'
+import { Product } from 'src/types/product.type'
+import { formatCurrency, formatNumberToSocialStyle, generateNameId } from 'src/utils/utils'
+import { scrollManager } from 'src/hooks/useScrollRestoration'
 
 interface ProductListItemProps {
-  product: Product;
+  product: Product
 }
 
 const ProductListItem = ({ product }: ProductListItemProps) => {
-  const { t } = useTranslation('product');
-  const navigate = useNavigate();
+  const { t } = useTranslation('product')
+  const navigate = useNavigate()
 
   const handleProductClick = () => {
     // Lưu vị trí scroll hiện tại trước khi navigate
-    scrollManager.savePosition(window.location.pathname, window.location.search, window.scrollY);
+    scrollManager.savePosition(window.location.pathname, window.location.search, window.scrollY)
 
     // Navigate đến product detail
-    navigate(`${path.home}${generateNameId({ name: product.name, id: product._id })}`);
-  };
+    navigate(`${path.home}${generateNameId({ name: product.name, id: product._id })}`)
+  }
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      handleProductClick();
+      event.preventDefault()
+      handleProductClick()
     }
-  };
+  }
 
   return (
     <div
@@ -130,7 +130,7 @@ const ProductListItem = ({ product }: ProductListItemProps) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProductListItem;
+export default ProductListItem

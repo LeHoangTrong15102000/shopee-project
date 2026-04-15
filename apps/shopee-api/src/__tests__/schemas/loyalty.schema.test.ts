@@ -1,5 +1,10 @@
 /// <reference types="jest" />
-import { getPointsSchema, getTransactionsSchema, getRewardsSchema, redeemPointsSchema } from '@schemas/loyalty.schema'
+import {
+  getPointsSchema,
+  getTransactionsSchema,
+  getRewardsSchema,
+  redeemPointsSchema,
+} from '@schemas/loyalty.schema'
 
 const VALID_ID = '507f1f77bcf86cd799439011'
 
@@ -73,4 +78,3 @@ describe('redeemPointsSchema', () => {
     expect(result.success).toBe(false)
   })
 })
-

@@ -64,7 +64,6 @@ describe('Emit Utils', () => {
         new_price_before_discount: 100,
       })
     })
-
   })
 
   describe('order-emit', () => {
@@ -74,14 +73,36 @@ describe('Emit Utils', () => {
       const { getIORequired } = await import('../../socket/socket.init')
       ;(getIORequired as jest.Mock).mockReturnValue(mockIO)
 
-      jest.mock('@database/models/notification.model', () => ({ NotificationModel: { create: jest.fn() } }))
-      jest.mock('@database/models/purchase.model', () => ({
-        PurchaseModel: { findById: jest.fn().mockReturnValue({ select: jest.fn().mockReturnValue({ lean: jest.fn() }) }), find: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue([]) }), countDocuments: jest.fn().mockResolvedValue(0) },
+      jest.mock('@database/models/notification.model', () => ({
+        NotificationModel: { create: jest.fn() },
       }))
-      jest.mock('@database/models/user.model', () => ({ UserModel: { find: jest.fn().mockReturnValue({ select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue([]) }) }) } }))
-      jest.mock('@database/models/question.model', () => ({ QuestionModel: { countDocuments: jest.fn().mockResolvedValue(0) } }))
-      jest.mock('../../socket/managers/presence.manager', () => ({ getOnlineUserCount: jest.fn().mockReturnValue(0) }))
-      jest.mock('../../socket/handlers/notification.handler', () => ({ pushNotification: jest.fn() }))
+      jest.mock('@database/models/purchase.model', () => ({
+        PurchaseModel: {
+          findById: jest
+            .fn()
+            .mockReturnValue({ select: jest.fn().mockReturnValue({ lean: jest.fn() }) }),
+          find: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue([]) }),
+          countDocuments: jest.fn().mockResolvedValue(0),
+        },
+      }))
+      jest.mock('@database/models/user.model', () => ({
+        UserModel: {
+          find: jest
+            .fn()
+            .mockReturnValue({
+              select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue([]) }),
+            }),
+        },
+      }))
+      jest.mock('@database/models/question.model', () => ({
+        QuestionModel: { countDocuments: jest.fn().mockResolvedValue(0) },
+      }))
+      jest.mock('../../socket/managers/presence.manager', () => ({
+        getOnlineUserCount: jest.fn().mockReturnValue(0),
+      }))
+      jest.mock('../../socket/handlers/notification.handler', () => ({
+        pushNotification: jest.fn(),
+      }))
 
       const { emitOrderStatusUpdate } = await import('../../socket/utils/order-emit')
 
@@ -96,7 +117,7 @@ describe('Emit Utils', () => {
           old_status: 'pending',
           new_status: 'confirmed',
           message: 'Order confirmed',
-        })
+        }),
       )
     })
   })
@@ -159,4 +180,3 @@ describe('Emit Utils', () => {
     })
   })
 })
-

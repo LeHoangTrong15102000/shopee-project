@@ -1,17 +1,17 @@
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import { RecentlyViewedProduct } from 'src/hooks/useRecentlyViewed';
-import { formatCurrency, generateNameId } from 'src/utils/utils';
-import path from 'src/constant/path';
-import ProductRating from 'src/components/ProductRating';
-import Button from 'src/components/Button';
+import { Link } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import { RecentlyViewedProduct } from 'src/hooks/useRecentlyViewed'
+import { formatCurrency, generateNameId } from 'src/utils/utils'
+import path from 'src/constant/path'
+import ProductRating from 'src/components/ProductRating'
+import Button from 'src/components/Button'
 
 interface RecentlyViewedProps {
-  products: RecentlyViewedProduct[];
-  maxItems?: number;
-  className?: string;
-  onRemove?: (productId: string) => void;
-  onClearAll?: () => void;
+  products: RecentlyViewedProduct[]
+  maxItems?: number
+  className?: string
+  onRemove?: (productId: string) => void
+  onClearAll?: () => void
 }
 
 function RecentlyViewed({
@@ -21,11 +21,11 @@ function RecentlyViewed({
   onRemove,
   onClearAll,
 }: RecentlyViewedProps) {
-  const { t } = useTranslation('cart');
-  const displayProducts = products.slice(0, maxItems);
+  const { t } = useTranslation('cart')
+  const displayProducts = products.slice(0, maxItems)
 
   if (displayProducts.length === 0) {
-    return null;
+    return null
   }
 
   return (
@@ -79,21 +79,21 @@ function RecentlyViewed({
         ))}
       </div>
     </section>
-  );
+  )
 }
 
 interface ProductCardProps {
-  product: RecentlyViewedProduct;
-  onRemove?: (productId: string) => void;
+  product: RecentlyViewedProduct
+  onRemove?: (productId: string) => void
 }
 
 const ProductCard = function ProductCard({ product, onRemove }: ProductCardProps) {
-  const { t } = useTranslation('cart');
+  const { t } = useTranslation('cart')
   const handleRemove = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onRemove?.(product._id);
-  };
+    e.preventDefault()
+    e.stopPropagation()
+    onRemove?.(product._id)
+  }
 
   return (
     <article className="group relative overflow-hidden rounded-xs border border-gray-100 bg-white transition-shadow hover:shadow-md dark:border-slate-600 dark:bg-slate-800">
@@ -163,7 +163,7 @@ const ProductCard = function ProductCard({ product, onRemove }: ProductCardProps
         </div>
       </Link>
     </article>
-  );
-};
+  )
+}
 
-export default RecentlyViewed;
+export default RecentlyViewed

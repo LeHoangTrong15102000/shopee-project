@@ -16,10 +16,7 @@ export const createConversationSchema = z.object({
       .string()
       .min(1, 'Tin nhắn không được để trống')
       .max(10000, 'Tin nhắn phải từ 1 đến 10000 ký tự'),
-    title: z
-      .string()
-      .max(200, 'Tiêu đề không được quá 200 ký tự')
-      .optional(),
+    title: z.string().max(200, 'Tiêu đề không được quá 200 ký tự').optional(),
   }),
 })
 
@@ -42,10 +39,7 @@ export const sendMessageSchema = z.object({
  */
 export const updateConversationSchema = z.object({
   body: z.object({
-    title: z
-      .string()
-      .max(200, 'Tiêu đề không được quá 200 ký tự')
-      .optional(),
+    title: z.string().max(200, 'Tiêu đề không được quá 200 ký tự').optional(),
     status: conversationStatusEnum.optional(),
   }),
 })
@@ -55,20 +49,22 @@ export const updateConversationSchema = z.object({
  * Validates query params for listing conversations
  */
 export const getConversationsSchema = z.object({
-  query: z.object({
-    page: z.coerce
-      .number()
-      .int('Trang phải là số nguyên dương')
-      .min(1, 'Trang phải là số nguyên dương')
-      .optional(),
-    limit: z.coerce
-      .number()
-      .int('Limit phải từ 1 đến 100')
-      .min(1, 'Limit phải từ 1 đến 100')
-      .max(100, 'Limit phải từ 1 đến 100')
-      .optional(),
-    status: conversationStatusEnum.optional(),
-  }).passthrough(),
+  query: z
+    .object({
+      page: z.coerce
+        .number()
+        .int('Trang phải là số nguyên dương')
+        .min(1, 'Trang phải là số nguyên dương')
+        .optional(),
+      limit: z.coerce
+        .number()
+        .int('Limit phải từ 1 đến 100')
+        .min(1, 'Limit phải từ 1 đến 100')
+        .max(100, 'Limit phải từ 1 đến 100')
+        .optional(),
+      status: conversationStatusEnum.optional(),
+    })
+    .passthrough(),
 })
 
 /**
@@ -102,4 +98,3 @@ export type SendMessageInput = z.infer<typeof sendMessageSchema>['body']
 export type UpdateConversationInput = z.infer<typeof updateConversationSchema>['body']
 export type GetConversationsQuery = z.infer<typeof getConversationsSchema>['query']
 export type TestChatbotInput = z.infer<typeof testChatbotSchema>['body']
-

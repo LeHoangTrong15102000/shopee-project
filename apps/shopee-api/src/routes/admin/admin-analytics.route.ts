@@ -13,7 +13,7 @@ adminAnalyticsRouter.get(
   '/chatbot-overview',
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
-  asyncHandler(analyticsController.getChatbotOverview)
+  asyncHandler(analyticsController.getChatbotOverview),
 )
 
 /**
@@ -24,16 +24,13 @@ adminAnalyticsRouter.get(
   '/chatbot-performance',
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
-  asyncHandler(analyticsController.getChatbotPerformance)
+  asyncHandler(analyticsController.getChatbotPerformance),
 )
 
 /**
  * Health check endpoint - không cần auth để monitoring systems sử dụng
  * GET /admin/analytics/health
  */
-adminAnalyticsRouter.get(
-  '/health',
-  asyncHandler(analyticsController.getHealthCheck)
-)
+adminAnalyticsRouter.get('/health', asyncHandler(analyticsController.getHealthCheck))
 
 export default adminAnalyticsRouter

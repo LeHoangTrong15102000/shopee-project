@@ -71,7 +71,14 @@ const loyaltyService = new LoyaltyService(loyaltyRepository)
 const qaService = new QAService(qaRepository, productRepository, userRepository)
 const conversationService = new ConversationService(conversationRepository)
 const reviewService = new ReviewService(reviewRepository, purchaseRepository, productRepository)
-const orderService = new OrderService(orderRepository, productRepository, addressRepository, purchaseRepository, skuRepository, productSkuSnapshotRepository)
+const orderService = new OrderService(
+  orderRepository,
+  productRepository,
+  addressRepository,
+  purchaseRepository,
+  skuRepository,
+  productSkuSnapshotRepository,
+)
 const voucherService = new VoucherService(voucherRepository)
 const checkinService = new CheckInService()
 const passwordResetService = new PasswordResetService(userRepository, authRepository)
@@ -142,4 +149,3 @@ export {
   skuRepository,
   productSkuSnapshotRepository,
 }
-

@@ -1,21 +1,21 @@
-import classNames from 'classnames';
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
+import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
 
 interface LiveQAAnswer {
-  question_id: string;
+  question_id: string
   answer: {
-    user_name: string;
-    answer: string;
-    is_seller: boolean;
-  };
+    user_name: string
+    answer: string
+    is_seller: boolean
+  }
 }
 
 interface LiveQASectionProps {
-  newQuestionCount: number;
-  newAnswers: LiveQAAnswer[];
-  onViewQuestions?: () => void;
-  className?: string;
+  newQuestionCount: number
+  newAnswers: LiveQAAnswer[]
+  onViewQuestions?: () => void
+  className?: string
 }
 
 export default function LiveQASection({
@@ -24,10 +24,10 @@ export default function LiveQASection({
   onViewQuestions,
   className,
 }: LiveQASectionProps) {
-  const { t } = useTranslation('product');
+  const { t } = useTranslation('product')
 
   if (newQuestionCount <= 0 && newAnswers.length === 0) {
-    return null;
+    return null
   }
 
   return (
@@ -84,5 +84,5 @@ export default function LiveQASection({
         </div>
       )}
     </div>
-  );
+  )
 }

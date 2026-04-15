@@ -1,8 +1,21 @@
 import { z } from 'zod'
 import { mongoIdSchema } from './common.schema'
-import { adminPaginationQuerySchema, sortQuerySchema, searchQuerySchema, dateRangeQuerySchema } from './admin-common.schema'
+import {
+  adminPaginationQuerySchema,
+  sortQuerySchema,
+  searchQuerySchema,
+  dateRangeQuerySchema,
+} from './admin-common.schema'
 
-const ORDER_STATUSES = ['pending', 'confirmed', 'processing', 'shipping', 'delivered', 'cancelled', 'returned'] as const
+const ORDER_STATUSES = [
+  'pending',
+  'confirmed',
+  'processing',
+  'shipping',
+  'delivered',
+  'cancelled',
+  'returned',
+] as const
 const PAYMENT_METHODS = ['cod', 'bank_transfer', 'e_wallet', 'credit_card'] as const
 
 // ─── Admin Order List Query ──────────────────────────────────────
@@ -35,4 +48,3 @@ export const adminBulkUpdateStatusSchema = z.object({
 })
 
 export type AdminBulkUpdateStatusBody = z.infer<typeof adminBulkUpdateStatusSchema>['body']
-

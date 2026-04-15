@@ -1,9 +1,9 @@
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Moon, Sun, LogOut, Settings, Check } from 'lucide-react';
-import { Button } from 'src/components/ui/button';
-import { SidebarTrigger } from 'src/components/ui/sidebar';
-import { Separator } from 'src/components/ui/separator';
+import { useNavigate, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { Moon, Sun, LogOut, Settings, Check } from 'lucide-react'
+import { Button } from 'src/components/ui/button'
+import { SidebarTrigger } from 'src/components/ui/sidebar'
+import { Separator } from 'src/components/ui/separator'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,25 +11,25 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from 'src/components/ui/breadcrumb';
+} from 'src/components/ui/breadcrumb'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from 'src/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from 'src/components/ui/avatar';
-import { useAuthStore } from 'src/stores/auth.store';
-import { useThemeStore } from 'src/stores/theme.store';
-import { locales, changeLanguage } from 'src/i18n/i18n';
+} from 'src/components/ui/dropdown-menu'
+import { Avatar, AvatarFallback } from 'src/components/ui/avatar'
+import { useAuthStore } from 'src/stores/auth.store'
+import { useThemeStore } from 'src/stores/theme.store'
+import { locales, changeLanguage } from 'src/i18n/i18n'
 
 function FlagIcon({ children }: { children: React.ReactNode }) {
   return (
     <span className="inline-flex h-[18px] w-[27px] shrink-0 items-center justify-center overflow-hidden rounded-sm">
       {children}
     </span>
-  );
+  )
 }
 
 function FlagGB() {
@@ -48,7 +48,7 @@ function FlagGB() {
         </g>
       </svg>
     </FlagIcon>
-  );
+  )
 }
 
 function FlagVN() {
@@ -62,13 +62,13 @@ function FlagVN() {
         />
       </svg>
     </FlagIcon>
-  );
+  )
 }
 
 const languageFlags: Record<string, React.ComponentType> = {
   en: FlagGB,
   vi: FlagVN,
-};
+}
 
 const routeLabelKeys: Record<string, string> = {
   '': 'menu.overview',
@@ -86,30 +86,30 @@ const routeLabelKeys: Record<string, string> = {
   import: 'menu.import',
   settings: 'menu.settings',
   'activity-log': 'menu.activityLog',
-};
+}
 
 export function AppHeader() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { t, i18n } = useTranslation('layout');
-  const { user, logout } = useAuthStore();
-  const { theme, toggleTheme } = useThemeStore();
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { t, i18n } = useTranslation('layout')
+  const { user, logout } = useAuthStore()
+  const { theme, toggleTheme } = useThemeStore()
 
-  const segments = location.pathname.split('/').filter(Boolean);
+  const segments = location.pathname.split('/').filter(Boolean)
 
   const handleLogout = () => {
-    logout();
-    navigate('/login', { replace: true });
-  };
+    logout()
+    navigate('/login', { replace: true })
+  }
 
   const getRouteLabel = (seg: string) => {
-    const key = routeLabelKeys[seg];
-    return key ? t(key) : seg;
-  };
+    const key = routeLabelKeys[seg]
+    return key ? t(key) : seg
+  }
 
   const initials = user?.name
     ? user.name.slice(0, 2).toUpperCase()
-    : (user?.email?.slice(0, 2).toUpperCase() ?? 'AD');
+    : (user?.email?.slice(0, 2).toUpperCase() ?? 'AD')
 
   return (
     <header className="flex h-14 items-center gap-2 border-b px-4">
@@ -161,8 +161,8 @@ export function AppHeader() {
             }
           >
             {(() => {
-              const CurrentFlag = languageFlags[i18n.language];
-              return CurrentFlag ? <CurrentFlag /> : <span className="h-[18px] w-[27px]" />;
+              const CurrentFlag = languageFlags[i18n.language]
+              return CurrentFlag ? <CurrentFlag /> : <span className="h-[18px] w-[27px]" />
             })()}
             <span className="hidden sm:inline text-xs">
               {locales[i18n.language as keyof typeof locales] ?? i18n.language}
@@ -170,14 +170,14 @@ export function AppHeader() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-[160px]">
             {(Object.entries(locales) as [string, string][]).map(([code, label]) => {
-              const Flag = languageFlags[code];
+              const Flag = languageFlags[code]
               return (
                 <DropdownMenuItem key={code} onClick={() => changeLanguage(code)} className="gap-2">
                   {Flag && <Flag />}
                   <span className="flex-1">{label}</span>
                   {i18n.language === code && <Check className="size-4 shrink-0" />}
                 </DropdownMenuItem>
-              );
+              )
             })}
           </DropdownMenuContent>
         </DropdownMenu>
@@ -205,5 +205,5 @@ export function AppHeader() {
         </DropdownMenu>
       </div>
     </header>
-  );
+  )
 }

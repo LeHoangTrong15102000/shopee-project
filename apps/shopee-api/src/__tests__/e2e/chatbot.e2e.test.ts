@@ -135,8 +135,7 @@ describe('Chatbot Flow E2E', () => {
     })
 
     it('should require auth to list conversations', async () => {
-      const listRes = await supertest(app)
-        .get('/conversations')
+      const listRes = await supertest(app).get('/conversations')
       expect(listRes.status).toBe(401)
     })
 
@@ -179,4 +178,3 @@ describe('Chatbot Flow E2E', () => {
     })
   })
 })
-

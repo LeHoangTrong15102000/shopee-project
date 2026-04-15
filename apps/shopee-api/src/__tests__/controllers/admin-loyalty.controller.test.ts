@@ -79,7 +79,7 @@ describe('Admin Loyalty Controller', () => {
           limit: 10,
           sort_by: 'created_at',
           order: 'desc',
-        }
+        },
       )
       expect(res.status).toHaveBeenCalledWith(200)
       expect(res.send).toHaveBeenCalled()
@@ -114,7 +114,7 @@ describe('Admin Loyalty Controller', () => {
       const res = createMockResponse()
 
       ;(loyaltyService.adminCreateReward as jest.Mock).mockRejectedValue(
-        new ValidationError('Name is required')
+        new ValidationError('Name is required'),
       )
 
       await expect(adminCreateReward(req as Request, res as Response)).rejects.toThrow()
@@ -147,7 +147,7 @@ describe('Admin Loyalty Controller', () => {
       const res = createMockResponse()
 
       ;(loyaltyService.adminUpdateReward as jest.Mock).mockRejectedValue(
-        new NotFoundError('Reward not found')
+        new NotFoundError('Reward not found'),
       )
 
       await expect(adminUpdateReward(req as Request, res as Response)).rejects.toThrow()
@@ -177,7 +177,7 @@ describe('Admin Loyalty Controller', () => {
       const res = createMockResponse()
 
       ;(loyaltyService.adminDeleteReward as jest.Mock).mockRejectedValue(
-        new NotFoundError('Reward not found')
+        new NotFoundError('Reward not found'),
       )
 
       await expect(adminDeleteReward(req as Request, res as Response)).rejects.toThrow()
@@ -208,7 +208,7 @@ describe('Admin Loyalty Controller', () => {
       const res = createMockResponse()
 
       ;(loyaltyService.adminToggleReward as jest.Mock).mockRejectedValue(
-        new BusinessError('Cannot toggle reward')
+        new BusinessError('Cannot toggle reward'),
       )
 
       await expect(adminToggleReward(req as Request, res as Response)).rejects.toThrow()
@@ -248,7 +248,7 @@ describe('Admin Loyalty Controller', () => {
       const res = createMockResponse()
 
       ;(loyaltyService.adminAdjustPoints as jest.Mock).mockRejectedValue(
-        new ValidationError('Invalid adjustment type')
+        new ValidationError('Invalid adjustment type'),
       )
 
       await expect(adminAdjustPoints(req as Request, res as Response)).rejects.toThrow()
@@ -287,7 +287,7 @@ describe('Admin Loyalty Controller', () => {
           limit: 20,
           sort_by: 'created_at',
           order: 'desc',
-        }
+        },
       )
       expect(res.status).toHaveBeenCalledWith(200)
       expect(res.send).toHaveBeenCalled()

@@ -42,14 +42,10 @@ describe('Shopping Flow E2E', () => {
       const email = `shopper-${Date.now()}@test.com`
       const password = 'Shopper123456'
 
-      const registerRes = await supertest(app)
-        .post('/register')
-        .send({ email, password })
+      const registerRes = await supertest(app).post('/register').send({ email, password })
       expect(registerRes.status).toBeLessThan(400)
 
-      const loginRes = await supertest(app)
-        .post('/login')
-        .send({ email, password })
+      const loginRes = await supertest(app).post('/login').send({ email, password })
       expect(loginRes.status).toBe(200)
       expect(loginRes.body.data).toHaveProperty('access_token')
       expect(loginRes.body.data).toHaveProperty('refresh_token')
@@ -59,9 +55,7 @@ describe('Shopping Flow E2E', () => {
     })
 
     it('should get paginated product list', async () => {
-      const productsRes = await supertest(app)
-        .get('/products')
-        .query({ page: 1, limit: 10 })
+      const productsRes = await supertest(app).get('/products').query({ page: 1, limit: 10 })
       expect(productsRes.status).toBe(200)
       expect(productsRes.body.data).toHaveProperty('products')
       expect(Array.isArray(productsRes.body.data.products)).toBe(true)
@@ -69,8 +63,7 @@ describe('Shopping Flow E2E', () => {
     })
 
     it('should get product detail by id', async () => {
-      const productRes = await supertest(app)
-        .get(`/products/${productId}`)
+      const productRes = await supertest(app).get(`/products/${productId}`)
       expect(productRes.status).toBe(200)
       expect(productRes.body.data.name).toBe('Test Laptop')
       expect(productRes.body.data.price).toBe(1000000)
@@ -125,17 +118,14 @@ describe('Shopping Flow E2E', () => {
 
   describe('Product filtering', () => {
     it('should filter products by category', async () => {
-      const productsRes = await supertest(app)
-        .get('/products')
-        .query({ category: categoryId })
+      const productsRes = await supertest(app).get('/products').query({ category: categoryId })
       expect(productsRes.status).toBe(200)
       expect(productsRes.body.data.products.length).toBeGreaterThan(0)
     })
 
     it('should return 404 for non-existent product', async () => {
       const fakeId = '507f1f77bcf86cd799439011'
-      const productRes = await supertest(app)
-        .get(`/products/${fakeId}`)
+      const productRes = await supertest(app).get(`/products/${fakeId}`)
       expect(productRes.status).toBeGreaterThanOrEqual(400)
     })
   })
@@ -162,4 +152,3 @@ describe('Shopping Flow E2E', () => {
     })
   })
 })
-

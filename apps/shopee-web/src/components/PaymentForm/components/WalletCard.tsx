@@ -1,18 +1,18 @@
-import { motion } from 'framer-motion';
-import Button from 'src/components/Button';
-import { formatVNDCurrency } from '@shopee/shared-utils';
+import { motion } from 'framer-motion'
+import Button from 'src/components/Button'
+import { formatVNDCurrency } from '@shopee/shared-utils'
 
-export type WalletType = 'momo' | 'zalopay' | 'vnpay';
+export type WalletType = 'momo' | 'zalopay' | 'vnpay'
 
 export interface WalletInfo {
-  id: WalletType;
-  name: string;
-  color: string;
-  bgColor: string;
-  borderColor: string;
-  balance: number;
-  isLinked: boolean;
-  deepLink: string;
+  id: WalletType
+  name: string
+  color: string
+  bgColor: string
+  borderColor: string
+  balance: number
+  isLinked: boolean
+  deepLink: string
 }
 
 export const WALLETS: WalletInfo[] = [
@@ -46,24 +46,24 @@ export const WALLETS: WalletInfo[] = [
     isLinked: false,
     deepLink: 'vnpay://payment',
   },
-];
+]
 
-export const formatCurrency = formatVNDCurrency;
+export const formatCurrency = formatVNDCurrency
 
 export function WalletLogo({ wallet }: { wallet: WalletType }) {
   const logoConfig: Record<WalletType, { gradient: string; text: string }> = {
     momo: { gradient: 'from-pink-500 to-pink-600', text: 'M' },
     zalopay: { gradient: 'from-blue-500 to-blue-600', text: 'Z' },
     vnpay: { gradient: 'from-red-500 to-blue-600', text: 'V' },
-  };
-  const config = logoConfig[wallet];
+  }
+  const config = logoConfig[wallet]
   return (
     <div
       className={`flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br ${config.gradient} shadow-lg`}
     >
       <span className="text-xl font-bold text-white">{config.text}</span>
     </div>
-  );
+  )
 }
 
 function LinkedBadge({ isLinked }: { isLinked: boolean }) {
@@ -77,7 +77,7 @@ function LinkedBadge({ isLinked }: { isLinked: boolean }) {
     >
       {isLinked ? 'Đã liên kết' : 'Chưa liên kết'}
     </span>
-  );
+  )
 }
 
 function WalletCard({
@@ -85,9 +85,9 @@ function WalletCard({
   isSelected,
   onSelect,
 }: {
-  wallet: WalletInfo;
-  isSelected: boolean;
-  onSelect: () => void;
+  wallet: WalletInfo
+  isSelected: boolean
+  onSelect: () => void
 }) {
   return (
     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
@@ -136,7 +136,7 @@ function WalletCard({
         </div>
       </Button>
     </motion.div>
-  );
+  )
 }
 
-export default WalletCard;
+export default WalletCard

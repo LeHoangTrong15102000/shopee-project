@@ -1,26 +1,26 @@
-import React, { useRef } from 'react';
-import { TouchableOpacity } from 'react-native';
-import { Heart } from 'lucide-react-native';
-import { useColors } from '@/hooks/useColors';
-import { useTranslation } from 'react-i18next';
+import React, { useRef } from 'react'
+import { TouchableOpacity } from 'react-native'
+import { Heart } from 'lucide-react-native'
+import { useColors } from '@/hooks/useColors'
+import { useTranslation } from 'react-i18next'
 
 interface WishlistButtonProps {
-  inWishlist: boolean;
-  onToggle: () => void;
-  loading?: boolean;
+  inWishlist: boolean
+  onToggle: () => void
+  loading?: boolean
 }
 
 export default function WishlistButton({ inWishlist, onToggle, loading }: WishlistButtonProps) {
-  const colors = useColors();
-  const { t } = useTranslation();
-  const lastTapRef = useRef(0);
+  const colors = useColors()
+  const { t } = useTranslation()
+  const lastTapRef = useRef(0)
 
   const handlePress = () => {
-    const now = Date.now();
-    if (now - lastTapRef.current < 300) return;
-    lastTapRef.current = now;
-    onToggle();
-  };
+    const now = Date.now()
+    if (now - lastTapRef.current < 300) return
+    lastTapRef.current = now
+    onToggle()
+  }
 
   return (
     <TouchableOpacity
@@ -37,5 +37,5 @@ export default function WishlistButton({ inWishlist, onToggle, loading }: Wishli
         fill={inWishlist ? colors.primary : 'transparent'}
       />
     </TouchableOpacity>
-  );
+  )
 }

@@ -14,10 +14,25 @@ const adminProductAnalyticsRouter = Router()
 
 adminProductAnalyticsRouter.use(authMiddleware.verifyAccessToken, authMiddleware.verifyAdmin)
 
-adminProductAnalyticsRouter.get('/top-selling', validate(adminTopSellingSchema), asyncHandler(ctrl.adminGetTopSelling))
-adminProductAnalyticsRouter.get('/top-viewed', validate(adminTopViewedSchema), asyncHandler(ctrl.adminGetTopViewed))
-adminProductAnalyticsRouter.get('/top-rated', validate(adminTopRatedSchema), asyncHandler(ctrl.adminGetTopRated))
-adminProductAnalyticsRouter.get('/by-category', validate(adminProductByCategorySchema), asyncHandler(ctrl.adminGetStatsByCategory))
+adminProductAnalyticsRouter.get(
+  '/top-selling',
+  validate(adminTopSellingSchema),
+  asyncHandler(ctrl.adminGetTopSelling),
+)
+adminProductAnalyticsRouter.get(
+  '/top-viewed',
+  validate(adminTopViewedSchema),
+  asyncHandler(ctrl.adminGetTopViewed),
+)
+adminProductAnalyticsRouter.get(
+  '/top-rated',
+  validate(adminTopRatedSchema),
+  asyncHandler(ctrl.adminGetTopRated),
+)
+adminProductAnalyticsRouter.get(
+  '/by-category',
+  validate(adminProductByCategorySchema),
+  asyncHandler(ctrl.adminGetStatsByCategory),
+)
 
 export default adminProductAnalyticsRouter
-

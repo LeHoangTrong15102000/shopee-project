@@ -1,10 +1,10 @@
-import { Link } from 'react-router';
-import Button from 'src/components/Button';
-import type { BannerSlide as BannerSlideType } from './types';
+import { Link } from 'react-router'
+import Button from 'src/components/Button'
+import type { BannerSlide as BannerSlideType } from './types'
 
 interface Props {
-  slide: BannerSlideType;
-  isActive: boolean;
+  slide: BannerSlideType
+  isActive: boolean
 }
 
 const BannerSlide = ({ slide, isActive }: Props) => {
@@ -54,7 +54,7 @@ const BannerSlide = ({ slide, isActive }: Props) => {
       <div className="absolute top-4 right-4 h-16 w-16 rounded-full bg-white/10 blur-xs"></div>
       <div className="absolute right-8 bottom-8 h-24 w-24 rounded-full bg-white/5 blur-md"></div>
     </Link>
-  );
-};
+  )
+}
 
-export default BannerSlide;
+export default BannerSlide

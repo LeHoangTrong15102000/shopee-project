@@ -66,7 +66,7 @@ describe('Admin QA Controller', () => {
           start_date: '2024-01-01',
           end_date: '2024-12-31',
         },
-        { page: 2, limit: 15, sort_by: 'created_at', order: 'desc' }
+        { page: 2, limit: 15, sort_by: 'created_at', order: 'desc' },
       )
       expect(res.status).toHaveBeenCalledWith(200)
       expect(res.send).toHaveBeenCalledWith({
@@ -85,8 +85,13 @@ describe('Admin QA Controller', () => {
       await adminGetQuestions(req as Request, res as Response)
 
       expect(qaService.adminGetQuestions).toHaveBeenCalledWith(
-        { product_id: undefined, unanswered: undefined, start_date: undefined, end_date: undefined },
-        { page: 1, limit: 20, sort_by: undefined, order: undefined }
+        {
+          product_id: undefined,
+          unanswered: undefined,
+          start_date: undefined,
+          end_date: undefined,
+        },
+        { page: 1, limit: 20, sort_by: undefined, order: undefined },
       )
       expect(res.status).toHaveBeenCalledWith(200)
     })
@@ -115,7 +120,7 @@ describe('Admin QA Controller', () => {
       const res = createMockResponse()
 
       ;(qaService.adminDeleteQuestion as jest.Mock).mockRejectedValue(
-        new NotFoundError('Question not found')
+        new NotFoundError('Question not found'),
       )
 
       await expect(adminDeleteQuestion(req as any, res as Response)).rejects.toThrow()
@@ -145,7 +150,7 @@ describe('Admin QA Controller', () => {
       const res = createMockResponse()
 
       ;(qaService.adminDeleteAnswer as jest.Mock).mockRejectedValue(
-        new ValidationError('Invalid answer')
+        new ValidationError('Invalid answer'),
       )
 
       await expect(adminDeleteAnswer(req as any, res as Response)).rejects.toThrow()

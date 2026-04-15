@@ -12,7 +12,8 @@ import { PaginatedResult, PaginationOptions } from './interfaces/base.repository
 
 // Optimized field selections for populate
 const USER_SELECT_FIELDS = '_id name email avatar'
-const PRODUCT_SELECT_FIELDS = '_id name image images price price_before_discount quantity sold rating category createdAt updatedAt'
+const PRODUCT_SELECT_FIELDS =
+  '_id name image images price price_before_discount quantity sold rating category createdAt updatedAt'
 
 export class PurchaseRepository implements IPurchaseRepository {
   async findById(id: string | Types.ObjectId): Promise<IPurchase | null> {
@@ -38,7 +39,7 @@ export class PurchaseRepository implements IPurchaseRepository {
 
   async findPaginated(
     filter: FilterQuery<IPurchase>,
-    options: PaginationOptions
+    options: PaginationOptions,
   ): Promise<PaginatedResult<IPurchase>> {
     const { page, limit, sort } = options
     const skip = (page - 1) * limit
@@ -71,7 +72,10 @@ export class PurchaseRepository implements IPurchaseRepository {
     return saved.toObject() as IPurchase
   }
 
-  async updateById(id: string | Types.ObjectId, data: UpdatePurchaseDTO): Promise<IPurchase | null> {
+  async updateById(
+    id: string | Types.ObjectId,
+    data: UpdatePurchaseDTO,
+  ): Promise<IPurchase | null> {
     return PurchaseModel.findByIdAndUpdate(id, data, { new: true })
       .populate({ path: 'user', select: USER_SELECT_FIELDS })
       .populate({ path: 'product', select: PRODUCT_SELECT_FIELDS })
@@ -104,7 +108,7 @@ export class PurchaseRepository implements IPurchaseRepository {
   async findByUser(
     userId: string | Types.ObjectId,
     status?: PurchaseStatus,
-    pagination?: PaginationOptions
+    pagination?: PaginationOptions,
   ): Promise<IPurchase[]> {
     const filter: FilterQuery<IPurchase> = { user: new Types.ObjectId(userId.toString()) }
     if (status !== undefined && status !== PurchaseStatus.ALL) {
@@ -130,7 +134,7 @@ export class PurchaseRepository implements IPurchaseRepository {
     buyCount: number,
     price: number,
     priceBeforeDiscount: number,
-    skuId?: string | Types.ObjectId
+    skuId?: string | Types.ObjectId,
   ): Promise<IPurchase> {
     const existing = await this.findCartItem(userId, productId)
     if (existing) {
@@ -159,7 +163,7 @@ export class PurchaseRepository implements IPurchaseRepository {
     purchaseId: string | Types.ObjectId,
     buyCount: number,
     skuId?: string | Types.ObjectId,
-    price?: number
+    price?: number,
   ): Promise<IPurchase | null> {
     const updateData: UpdatePurchaseDTO = { buy_count: buyCount }
     if (skuId) {
@@ -183,16 +187,25 @@ export class PurchaseRepository implements IPurchaseRepository {
     })
   }
 
-  async updateStatus(purchaseId: string | Types.ObjectId, status: PurchaseStatus): Promise<IPurchase | null> {
+  async updateStatus(
+    purchaseId: string | Types.ObjectId,
+    status: PurchaseStatus,
+  ): Promise<IPurchase | null> {
     return this.updateById(purchaseId, { status })
   }
 
-  async bulkUpdateStatus(purchaseIds: Array<string | Types.ObjectId>, status: PurchaseStatus): Promise<number> {
+  async bulkUpdateStatus(
+    purchaseIds: Array<string | Types.ObjectId>,
+    status: PurchaseStatus,
+  ): Promise<number> {
     const ids = purchaseIds.map((id) => new Types.ObjectId(id.toString()))
     return this.updateMany({ _id: { $in: ids } }, { status })
   }
 
-  async findByStatus(status: PurchaseStatus, pagination: PaginationOptions): Promise<PaginatedResult<IPurchase>> {
+  async findByStatus(
+    status: PurchaseStatus,
+    pagination: PaginationOptions,
+  ): Promise<PaginatedResult<IPurchase>> {
     return this.findPaginated({ status }, pagination)
   }
 
@@ -229,7 +242,10 @@ export class PurchaseRepository implements IPurchaseRepository {
     }
   }
 
-  async findCartItem(userId: string | Types.ObjectId, productId: string | Types.ObjectId): Promise<IPurchase | null> {
+  async findCartItem(
+    userId: string | Types.ObjectId,
+    productId: string | Types.ObjectId,
+  ): Promise<IPurchase | null> {
     return this.findOne({
       user: new Types.ObjectId(userId.toString()),
       product: new Types.ObjectId(productId.toString()),
@@ -237,7 +253,10 @@ export class PurchaseRepository implements IPurchaseRepository {
     })
   }
 
-  async findByIdAndUser(purchaseId: string | Types.ObjectId, userId: string | Types.ObjectId): Promise<IPurchase | null> {
+  async findByIdAndUser(
+    purchaseId: string | Types.ObjectId,
+    userId: string | Types.ObjectId,
+  ): Promise<IPurchase | null> {
     return this.findOne({
       _id: new Types.ObjectId(purchaseId.toString()),
       user: new Types.ObjectId(userId.toString()),
@@ -247,7 +266,7 @@ export class PurchaseRepository implements IPurchaseRepository {
   async deleteByUserAndProduct(
     userId: string | Types.ObjectId,
     productId: string | Types.ObjectId,
-    status: PurchaseStatus
+    status: PurchaseStatus,
   ): Promise<number> {
     return this.deleteMany({
       user: new Types.ObjectId(userId.toString()),

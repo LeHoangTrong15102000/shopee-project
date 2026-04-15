@@ -1,12 +1,12 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
 interface CongratulatoryPanelProps {
-  reducedMotion: boolean;
+  reducedMotion: boolean
 }
 
 const CongratulatoryPanel = ({ reducedMotion }: CongratulatoryPanelProps) => {
-  const { t } = useTranslation('user');
+  const { t } = useTranslation('user')
 
   return (
     <motion.div
@@ -50,7 +50,7 @@ const CongratulatoryPanel = ({ reducedMotion }: CongratulatoryPanelProps) => {
         </span>
       </div>
     </motion.div>
-  );
-};
+  )
+}
 
-export default CongratulatoryPanel;
+export default CongratulatoryPanel

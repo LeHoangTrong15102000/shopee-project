@@ -33,15 +33,13 @@ describe('Loyalty and Voucher Flow E2E', () => {
 
   describe('Voucher listing', () => {
     it('should get available vouchers', async () => {
-      const vouchersRes = await supertest(app)
-        .get('/vouchers')
+      const vouchersRes = await supertest(app).get('/vouchers')
       expect(vouchersRes.status).toBe(200)
       expect(vouchersRes.body.data).toBeDefined()
     })
 
     it('should get voucher by code', async () => {
-      const voucherRes = await supertest(app)
-        .get(`/vouchers/code/${voucherCode}`)
+      const voucherRes = await supertest(app).get(`/vouchers/code/${voucherCode}`)
       expect(voucherRes.status).toBe(200)
       expect(voucherRes.body.data.voucher.code).toBe(voucherCode)
     })
@@ -58,8 +56,7 @@ describe('Loyalty and Voucher Flow E2E', () => {
     })
 
     it('should require authentication to collect voucher', async () => {
-      const collectRes = await supertest(app)
-        .post(`/vouchers/${voucherId}/collect`)
+      const collectRes = await supertest(app).post(`/vouchers/${voucherId}/collect`)
       expect(collectRes.status).toBe(401)
     })
 
@@ -172,4 +169,3 @@ describe('Loyalty and Voucher Flow E2E', () => {
     })
   })
 })
-

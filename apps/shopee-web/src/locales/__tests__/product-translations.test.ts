@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import viProductJson from 'src/locales/vi/product.json';
-import enProductJson from 'src/locales/en/product.json';
+import { describe, it, expect } from 'vitest'
+import viProductJson from 'src/locales/vi/product.json'
+import enProductJson from 'src/locales/en/product.json'
 
 describe('i18n Translations (Task 8.7)', () => {
   const requiredKeys = [
@@ -63,52 +63,52 @@ describe('i18n Translations (Task 8.7)', () => {
     'protection.freeShippingPolicy.coverage',
     // Modal
     'modal.close',
-  ];
+  ]
 
   // Helper to get nested value from flat key
   const getNestedValue = (obj: Record<string, unknown>, key: string): unknown => {
-    return (obj as Record<string, unknown>)[key];
-  };
+    return (obj as Record<string, unknown>)[key]
+  }
 
   describe('Vietnamese translations', () => {
     it.each(requiredKeys)('has key "%s"', (key) => {
-      const value = getNestedValue(viProductJson, key);
-      expect(value).toBeDefined();
-      expect(typeof value).toBe('string');
-      expect((value as string).length).toBeGreaterThan(0);
-    });
+      const value = getNestedValue(viProductJson, key)
+      expect(value).toBeDefined()
+      expect(typeof value).toBe('string')
+      expect((value as string).length).toBeGreaterThan(0)
+    })
 
     it('cart validation error has interpolation placeholders', () => {
-      const val = viProductJson['cart.validationError'] as string;
-      expect(val).toContain('{{existing}}');
-      expect(val).toContain('{{remaining}}');
-    });
+      const val = viProductJson['cart.validationError'] as string
+      expect(val).toContain('{{existing}}')
+      expect(val).toContain('{{remaining}}')
+    })
 
     it('cart validation full error has interpolation placeholder', () => {
-      const val = viProductJson['cart.validationErrorFull'] as string;
-      expect(val).toContain('{{existing}}');
-    });
-  });
+      const val = viProductJson['cart.validationErrorFull'] as string
+      expect(val).toContain('{{existing}}')
+    })
+  })
 
   describe('English translations', () => {
     it.each(requiredKeys)('has key "%s"', (key) => {
-      const value = getNestedValue(enProductJson, key);
-      expect(value).toBeDefined();
-      expect(typeof value).toBe('string');
-      expect((value as string).length).toBeGreaterThan(0);
-    });
+      const value = getNestedValue(enProductJson, key)
+      expect(value).toBeDefined()
+      expect(typeof value).toBe('string')
+      expect((value as string).length).toBeGreaterThan(0)
+    })
 
     it('cart validation error has interpolation placeholders', () => {
-      const val = enProductJson['cart.validationError'] as string;
-      expect(val).toContain('{{existing}}');
-      expect(val).toContain('{{remaining}}');
-    });
+      const val = enProductJson['cart.validationError'] as string
+      expect(val).toContain('{{existing}}')
+      expect(val).toContain('{{remaining}}')
+    })
 
     it('all Vietnamese keys have English counterparts', () => {
-      const viKeys = Object.keys(viProductJson);
-      const enKeys = Object.keys(enProductJson);
-      const missingInEn = viKeys.filter((k) => !enKeys.includes(k));
-      expect(missingInEn).toEqual([]);
-    });
-  });
-});
+      const viKeys = Object.keys(viProductJson)
+      const enKeys = Object.keys(enProductJson)
+      const missingInEn = viKeys.filter((k) => !enKeys.includes(k))
+      expect(missingInEn).toEqual([])
+    })
+  })
+})

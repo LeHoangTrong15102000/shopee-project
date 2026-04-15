@@ -1,9 +1,9 @@
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import AddressCard, { AddressCardProps } from './AddressCard';
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import AddressCard, { AddressCardProps } from './AddressCard'
 
 export interface SortableAddressCardProps extends AddressCardProps {
-  isDragging?: boolean;
+  isDragging?: boolean
 }
 
 const SortableAddressCard = ({ isDragging, ...props }: SortableAddressCardProps) => {
@@ -21,16 +21,16 @@ const SortableAddressCard = ({ isDragging, ...props }: SortableAddressCardProps)
       duration: 250,
       easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
     },
-  });
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging || isSorting ? 0.4 : 1,
     zIndex: isDragging || isSorting ? 50 : 'auto',
-  };
+  }
 
-  const ringClass = isDragging || isSorting ? 'ring-2 ring-orange/30 ring-offset-2' : '';
+  const ringClass = isDragging || isSorting ? 'ring-2 ring-orange/30 ring-offset-2' : ''
 
   return (
     <div
@@ -41,7 +41,7 @@ const SortableAddressCard = ({ isDragging, ...props }: SortableAddressCardProps)
     >
       <AddressCard {...props} />
     </div>
-  );
-};
+  )
+}
 
-export default SortableAddressCard;
+export default SortableAddressCard

@@ -18,7 +18,11 @@ export const addUserSocket = (userId: string, socketId: string): void => {
     presenceMap.set(userId, entry)
   }
   entry.socketIds.add(socketId)
-  Logger.apiInfo('Presence: user socket added', { userId, socketId, totalSockets: entry.socketIds.size })
+  Logger.apiInfo('Presence: user socket added', {
+    userId,
+    socketId,
+    totalSockets: entry.socketIds.size,
+  })
 }
 
 /**
@@ -32,11 +36,18 @@ export const removeUserSocket = (userId: string, socketId: string): boolean => {
 
   if (entry.socketIds.size === 0) {
     entry.lastSeen = new Date()
-    Logger.apiInfo('Presence: user went offline', { userId, lastSeen: entry.lastSeen.toISOString() })
+    Logger.apiInfo('Presence: user went offline', {
+      userId,
+      lastSeen: entry.lastSeen.toISOString(),
+    })
     return true
   }
 
-  Logger.apiInfo('Presence: user socket removed (still online)', { userId, socketId, remainingSockets: entry.socketIds.size })
+  Logger.apiInfo('Presence: user socket removed (still online)', {
+    userId,
+    socketId,
+    remainingSockets: entry.socketIds.size,
+  })
   return false
 }
 
@@ -51,7 +62,9 @@ export const isUserOnline = (userId: string): boolean => {
 /**
  * Get a user's presence status and last seen time
  */
-export const getUserPresence = (userId: string): { status: 'online' | 'offline'; lastSeen: string | null } => {
+export const getUserPresence = (
+  userId: string,
+): { status: 'online' | 'offline'; lastSeen: string | null } => {
   const entry = presenceMap.get(userId)
   if (!entry) {
     return { status: 'offline', lastSeen: null }
@@ -72,4 +85,3 @@ export const getOnlineUserCount = (): number => {
   }
   return count
 }
-

@@ -19,7 +19,11 @@ const UserSchema = {
       description: 'Vai trò của user',
       example: ['User'],
     },
-    avatar: { type: 'string', description: 'URL avatar', example: 'https://example.com/avatar.jpg' },
+    avatar: {
+      type: 'string',
+      description: 'URL avatar',
+      example: 'https://example.com/avatar.jpg',
+    },
     createdAt: { type: 'string', format: 'date-time', description: 'Thời gian tạo' },
     updatedAt: { type: 'string', format: 'date-time', description: 'Thời gian cập nhật' },
   },
@@ -79,7 +83,8 @@ const PurchaseSchema = {
     price_before_discount: { type: 'number', description: 'Giá gốc', example: 200000 },
     status: {
       type: 'integer',
-      description: 'Trạng thái: -1=Giỏ hàng, 1=Chờ xác nhận, 2=Chờ lấy hàng, 3=Đang giao, 4=Đã giao, 5=Đã hủy',
+      description:
+        'Trạng thái: -1=Giỏ hàng, 1=Chờ xác nhận, 2=Chờ lấy hàng, 3=Đang giao, 4=Đã giao, 5=Đã hủy',
       enum: [-1, 1, 2, 3, 4, 5],
       example: 1,
     },
@@ -148,8 +153,18 @@ const RegisterRequestSchema = {
   type: 'object',
   required: ['email', 'password'],
   properties: {
-    email: { type: 'string', format: 'email', description: 'Email đăng ký', example: 'user@example.com' },
-    password: { type: 'string', minLength: 6, description: 'Mật khẩu (tối thiểu 6 ký tự)', example: 'password123' },
+    email: {
+      type: 'string',
+      format: 'email',
+      description: 'Email đăng ký',
+      example: 'user@example.com',
+    },
+    password: {
+      type: 'string',
+      minLength: 6,
+      description: 'Mật khẩu (tối thiểu 6 ký tự)',
+      example: 'password123',
+    },
   },
 }
 
@@ -158,7 +173,12 @@ const LoginRequestSchema = {
   type: 'object',
   required: ['email', 'password'],
   properties: {
-    email: { type: 'string', format: 'email', description: 'Email đăng nhập', example: 'user@example.com' },
+    email: {
+      type: 'string',
+      format: 'email',
+      description: 'Email đăng nhập',
+      example: 'user@example.com',
+    },
     password: { type: 'string', description: 'Mật khẩu', example: 'password123' },
   },
 }
@@ -211,7 +231,10 @@ const AuthResponseSchema = {
         access_token: { type: 'string', description: 'Access token (có prefix Bearer)' },
         expires: { type: 'integer', description: 'Thời gian hết hạn access token (giây)' },
         refresh_token: { type: 'string', description: 'Refresh token' },
-        expires_refresh_token: { type: 'integer', description: 'Thời gian hết hạn refresh token (giây)' },
+        expires_refresh_token: {
+          type: 'integer',
+          description: 'Thời gian hết hạn refresh token (giây)',
+        },
         user: { $ref: '#/components/schemas/User' },
       },
     },
@@ -293,4 +316,3 @@ export const swaggerSchemas = {
   ValidationError: ValidationErrorSchema,
   UnauthorizedError: UnauthorizedErrorSchema,
 }
-

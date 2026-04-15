@@ -1,6 +1,6 @@
-import { useLocation, Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useRef, useEffect, useCallback, type ComponentType } from 'react';
+import { useLocation, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { useRef, useEffect, useCallback, type ComponentType } from 'react'
 import {
   LayoutDashboard,
   Users,
@@ -17,8 +17,8 @@ import {
   Upload,
   Settings,
   FileText,
-} from 'lucide-react';
-import { ROUTES } from 'src/constants/routes';
+} from 'lucide-react'
+import { ROUTES } from 'src/constants/routes'
 import {
   Sidebar,
   SidebarContent,
@@ -30,9 +30,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuBadge,
-} from 'src/components/ui/sidebar';
-import { useNotificationUnreadCount } from 'src/hooks/useNotifications';
-import { SHORTCUT_ROUTES } from 'src/hooks/use-keyboard-shortcuts';
+} from 'src/components/ui/sidebar'
+import { useNotificationUnreadCount } from 'src/hooks/useNotifications'
+import { SHORTCUT_ROUTES } from 'src/hooks/use-keyboard-shortcuts'
 
 const navSections = [
   {
@@ -68,7 +68,7 @@ const navSections = [
       { titleKey: 'menu.activityLog', href: ROUTES.ACTIVITY_LOG, icon: FileText },
     ],
   },
-];
+]
 
 const routePrefetchMap: Record<string, () => Promise<unknown>> = {
   [ROUTES.DASHBOARD]: () => import('src/pages/Dashboard/DashboardPage'),
@@ -86,12 +86,12 @@ const routePrefetchMap: Record<string, () => Promise<unknown>> = {
   [ROUTES.IMPORT]: () => import('src/pages/Import/ImportPage'),
   [ROUTES.SETTINGS]: () => import('src/pages/Settings/SettingsPage'),
   [ROUTES.ACTIVITY_LOG]: () => import('src/pages/ActivityLog/ActivityLogPage'),
-};
+}
 
-const prefetchedRoutes = new Set<string>();
+const prefetchedRoutes = new Set<string>()
 
-const BRAND_COLOR = 'oklch(0.642 0.203 33)';
-const STROKE_DRAW_DURATION = 800;
+const BRAND_COLOR = 'oklch(0.642 0.203 33)'
+const STROKE_DRAW_DURATION = 800
 
 type StrokableElement =
   | SVGPathElement
@@ -100,10 +100,10 @@ type StrokableElement =
   | SVGRectElement
   | SVGEllipseElement
   | SVGPolylineElement
-  | SVGPolygonElement;
+  | SVGPolygonElement
 
 function isStrokable(el: SVGElement): el is StrokableElement {
-  return 'getTotalLength' in el && typeof (el as StrokableElement).getTotalLength === 'function';
+  return 'getTotalLength' in el && typeof (el as StrokableElement).getTotalLength === 'function'
 }
 
 function AnimatedIcon({
@@ -111,89 +111,89 @@ function AnimatedIcon({
   isActive,
   className,
 }: {
-  icon: ComponentType<{ className?: string; ref?: React.Ref<SVGSVGElement> }>;
-  isActive: boolean;
-  className?: string;
+  icon: ComponentType<{ className?: string; ref?: React.Ref<SVGSVGElement> }>
+  isActive: boolean
+  className?: string
 }) {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const hasAnimated = useRef(false);
+  const svgRef = useRef<SVGSVGElement>(null)
+  const hasAnimated = useRef(false)
 
   const animate = useCallback(() => {
-    const svg = svgRef.current;
-    if (!svg) return;
+    const svg = svgRef.current
+    if (!svg) return
 
     const children = svg.querySelectorAll<SVGElement>(
       'path, line, circle, rect, ellipse, polyline, polygon',
-    );
-    if (children.length === 0) return;
+    )
+    if (children.length === 0) return
 
     children.forEach((child) => {
-      if (!isStrokable(child)) return;
-      const length = child.getTotalLength();
+      if (!isStrokable(child)) return
+      const length = child.getTotalLength()
 
-      child.style.stroke = BRAND_COLOR;
-      child.style.strokeDasharray = `${length}`;
-      child.style.strokeDashoffset = `${length}`;
-      child.style.transition = 'none';
+      child.style.stroke = BRAND_COLOR
+      child.style.strokeDasharray = `${length}`
+      child.style.strokeDashoffset = `${length}`
+      child.style.transition = 'none'
 
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          child.style.transition = `stroke-dashoffset ${STROKE_DRAW_DURATION}ms ease-out`;
-          child.style.strokeDashoffset = '0';
-        });
-      });
-    });
+          child.style.transition = `stroke-dashoffset ${STROKE_DRAW_DURATION}ms ease-out`
+          child.style.strokeDashoffset = '0'
+        })
+      })
+    })
 
-    hasAnimated.current = true;
-  }, []);
+    hasAnimated.current = true
+  }, [])
 
   useEffect(() => {
     if (isActive && !hasAnimated.current) {
-      const frame = requestAnimationFrame(animate);
-      return () => cancelAnimationFrame(frame);
+      const frame = requestAnimationFrame(animate)
+      return () => cancelAnimationFrame(frame)
     }
     if (!isActive) {
-      hasAnimated.current = false;
-      const svg = svgRef.current;
+      hasAnimated.current = false
+      const svg = svgRef.current
       if (svg) {
         const children = svg.querySelectorAll<SVGElement>(
           'path, line, circle, rect, ellipse, polyline, polygon',
-        );
+        )
         children.forEach((child) => {
-          child.style.stroke = '';
-          child.style.strokeDasharray = '';
-          child.style.strokeDashoffset = '';
-          child.style.transition = '';
-        });
+          child.style.stroke = ''
+          child.style.strokeDasharray = ''
+          child.style.strokeDashoffset = ''
+          child.style.transition = ''
+        })
       }
     }
-  }, [isActive, animate]);
+  }, [isActive, animate])
 
-  return <Icon ref={svgRef} className={className} />;
+  return <Icon ref={svgRef} className={className} />
 }
 
 export function AppSidebar() {
-  const location = useLocation();
-  const { t } = useTranslation('layout');
-  const { data: unreadCount } = useNotificationUnreadCount();
-  const prefetchTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const location = useLocation()
+  const { t } = useTranslation('layout')
+  const { data: unreadCount } = useNotificationUnreadCount()
+  const prefetchTimerRef = useRef<ReturnType<typeof setTimeout>>(null)
 
   const handlePrefetch = (href: string) => {
-    if (prefetchedRoutes.has(href) || !routePrefetchMap[href]) return;
+    if (prefetchedRoutes.has(href) || !routePrefetchMap[href]) return
     prefetchTimerRef.current = setTimeout(() => {
-      prefetchedRoutes.add(href);
+      prefetchedRoutes.add(href)
       routePrefetchMap[href]().catch(() => {
-        prefetchedRoutes.delete(href);
-      });
-    }, 200);
-  };
+        prefetchedRoutes.delete(href)
+      })
+    }, 200)
+  }
 
   const cancelPrefetch = () => {
     if (prefetchTimerRef.current) {
-      clearTimeout(prefetchTimerRef.current);
-      prefetchTimerRef.current = null;
+      clearTimeout(prefetchTimerRef.current)
+      prefetchTimerRef.current = null
     }
-  };
+  }
 
   return (
     <Sidebar collapsible="icon">
@@ -212,13 +212,13 @@ export function AppSidebar() {
               <SidebarGroupContent>
                 <SidebarMenu>
                   {section.items.map((item) => {
-                    const title = t(item.titleKey);
+                    const title = t(item.titleKey)
                     const isActive =
                       item.href === ROUTES.DASHBOARD
                         ? location.pathname === ROUTES.DASHBOARD
-                        : location.pathname.startsWith(item.href);
-                    const idx = (SHORTCUT_ROUTES as readonly string[]).indexOf(item.href);
-                    const hint = idx !== -1 ? `⌥${idx + 1}` : null;
+                        : location.pathname.startsWith(item.href)
+                    const idx = (SHORTCUT_ROUTES as readonly string[]).indexOf(item.href)
+                    const hint = idx !== -1 ? `⌥${idx + 1}` : null
                     return (
                       <SidebarMenuItem
                         key={item.href}
@@ -242,7 +242,7 @@ export function AppSidebar() {
                           !!unreadCount &&
                           unreadCount > 0 && <SidebarMenuBadge>{unreadCount}</SidebarMenuBadge>}
                       </SidebarMenuItem>
-                    );
+                    )
                   })}
                 </SidebarMenu>
               </SidebarGroupContent>
@@ -251,5 +251,5 @@ export function AppSidebar() {
         </nav>
       </SidebarContent>
     </Sidebar>
-  );
+  )
 }

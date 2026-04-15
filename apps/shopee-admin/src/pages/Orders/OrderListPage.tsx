@@ -1,36 +1,36 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { type ColumnDef } from '@tanstack/react-table';
-import { format } from 'date-fns';
-import { Eye, MoreHorizontal, Download, Filter, X } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { Button } from 'src/components/ui/button';
-import { Checkbox } from 'src/components/ui/checkbox';
-import { Input } from 'src/components/ui/input';
-import { Label } from 'src/components/ui/label';
-import { Tabs, TabsList, TabsTrigger } from 'src/components/ui/tabs';
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { type ColumnDef } from '@tanstack/react-table'
+import { format } from 'date-fns'
+import { Eye, MoreHorizontal, Download, Filter, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { Button } from 'src/components/ui/button'
+import { Checkbox } from 'src/components/ui/checkbox'
+import { Input } from 'src/components/ui/input'
+import { Label } from 'src/components/ui/label'
+import { Tabs, TabsList, TabsTrigger } from 'src/components/ui/tabs'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from 'src/components/ui/dropdown-menu';
+} from 'src/components/ui/dropdown-menu'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/components/ui/select';
-import { DataTable } from 'src/components/shared/DataTable';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { StatusBadge } from 'src/components/shared/StatusBadge';
-import { ErrorState } from 'src/components/shared/ErrorState';
-import { useOrders, useBulkUpdateOrderStatus, useOrderCountByStatus } from 'src/hooks/useOrders';
-import { Badge } from 'src/components/ui/badge';
-import { formatCurrency } from 'src/utils/format';
-import type { Order, OrderStatus } from 'src/types';
-import { exportToCSV } from 'src/utils/csv-export';
+} from 'src/components/ui/select'
+import { DataTable } from 'src/components/shared/DataTable'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { StatusBadge } from 'src/components/shared/StatusBadge'
+import { ErrorState } from 'src/components/shared/ErrorState'
+import { useOrders, useBulkUpdateOrderStatus, useOrderCountByStatus } from 'src/hooks/useOrders'
+import { Badge } from 'src/components/ui/badge'
+import { formatCurrency } from 'src/utils/format'
+import type { Order, OrderStatus } from 'src/types'
+import { exportToCSV } from 'src/utils/csv-export'
 
 const statuses: (OrderStatus | 'all')[] = [
   'all',
@@ -39,31 +39,31 @@ const statuses: (OrderStatus | 'all')[] = [
   'shipped',
   'delivered',
   'cancelled',
-];
+]
 
 export default function OrderListPage() {
-  const { t } = useTranslation('orders');
-  const { t: tc } = useTranslation('common');
-  const navigate = useNavigate();
-  const [page, setPage] = useState(0);
-  const [status, setStatus] = useState<OrderStatus | 'all'>('all');
-  const [selected, setSelected] = useState<Order[]>([]);
-  const [bulkStatus, setBulkStatus] = useState<OrderStatus | ''>('');
-  const [filtersOpen, setFiltersOpen] = useState(false);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('');
+  const { t } = useTranslation('orders')
+  const { t: tc } = useTranslation('common')
+  const navigate = useNavigate()
+  const [page, setPage] = useState(0)
+  const [status, setStatus] = useState<OrderStatus | 'all'>('all')
+  const [selected, setSelected] = useState<Order[]>([])
+  const [bulkStatus, setBulkStatus] = useState<OrderStatus | ''>('')
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
+  const [paymentMethod, setPaymentMethod] = useState('')
 
-  const { data, isLoading, isError, refetch } = useOrders(page, status);
-  const { data: countData } = useOrderCountByStatus();
+  const { data, isLoading, isError, refetch } = useOrders(page, status)
+  const { data: countData } = useOrderCountByStatus()
 
-  const countMap = new Map(countData?.map((c) => [c._id, c.count]) ?? []);
-  const totalCount = countData?.reduce((sum, c) => sum + c.count, 0) ?? 0;
+  const countMap = new Map(countData?.map((c) => [c._id, c.count]) ?? [])
+  const totalCount = countData?.reduce((sum, c) => sum + c.count, 0) ?? 0
 
   const bulkMut = useBulkUpdateOrderStatus(() => {
-    setSelected([]);
-    setBulkStatus('');
-  });
+    setSelected([])
+    setBulkStatus('')
+  })
 
   const columns: ColumnDef<Order>[] = [
     {
@@ -93,8 +93,8 @@ export default function OrderListPage() {
       accessorKey: 'user',
       header: t('columns.customer'),
       cell: ({ row }) => {
-        const u = row.original.user;
-        return typeof u === 'object' ? u.name || u.email : u;
+        const u = row.original.user
+        return typeof u === 'object' ? u.name || u.email : u
       },
     },
     {
@@ -136,7 +136,7 @@ export default function OrderListPage() {
         </DropdownMenu>
       ),
     },
-  ];
+  ]
 
   const handleExportCSV = () =>
     exportToCSV(
@@ -147,8 +147,8 @@ export default function OrderListPage() {
           key: 'user',
           header: t('columns.customer'),
           accessor: (r) => {
-            const u = r.user as any;
-            return typeof u === 'object' ? u?.name || u?.email : String(u);
+            const u = r.user as any
+            return typeof u === 'object' ? u?.name || u?.email : String(u)
           },
         },
         { key: 'total_price', header: t('columns.total') },
@@ -156,25 +156,25 @@ export default function OrderListPage() {
         { key: 'createdAt', header: t('columns.date') },
       ],
       'orders',
-    );
+    )
 
   const filteredOrders = (data?.orders ?? []).filter((o) => {
-    if (startDate && new Date(o.createdAt) < new Date(startDate)) return false;
-    if (endDate && new Date(o.createdAt) > new Date(endDate + 'T23:59:59')) return false;
-    if (paymentMethod && o.payment_method !== paymentMethod) return false;
-    return true;
-  });
+    if (startDate && new Date(o.createdAt) < new Date(startDate)) return false
+    if (endDate && new Date(o.createdAt) > new Date(endDate + 'T23:59:59')) return false
+    if (paymentMethod && o.payment_method !== paymentMethod) return false
+    return true
+  })
 
   const handleClearFilters = () => {
-    setStartDate('');
-    setEndDate('');
-    setPaymentMethod('');
-  };
+    setStartDate('')
+    setEndDate('')
+    setPaymentMethod('')
+  }
 
   const handleStatusChange = (v: string) => {
-    setStatus(v as OrderStatus | 'all');
-    setPage(0);
-  };
+    setStatus(v as OrderStatus | 'all')
+    setPage(0)
+  }
 
   return (
     <div className="space-y-6">
@@ -236,7 +236,7 @@ export default function OrderListPage() {
       <Tabs value={status} onValueChange={handleStatusChange}>
         <TabsList className="w-full justify-start overflow-x-auto flex-nowrap scroll-p-1">
           {statuses.map((s) => {
-            const count = s === 'all' ? totalCount : (countMap.get(s) ?? 0);
+            const count = s === 'all' ? totalCount : (countMap.get(s) ?? 0)
             return (
               <TabsTrigger key={s} value={s} className="capitalize gap-1.5">
                 {t(`status.${s}`)}
@@ -246,7 +246,7 @@ export default function OrderListPage() {
                   </Badge>
                 )}
               </TabsTrigger>
-            );
+            )
           })}
         </TabsList>
       </Tabs>
@@ -299,5 +299,5 @@ export default function OrderListPage() {
         }
       />
     </div>
-  );
+  )
 }

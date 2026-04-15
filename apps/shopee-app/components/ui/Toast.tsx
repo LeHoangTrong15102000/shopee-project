@@ -1,30 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { AccessibilityInfo, Pressable, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react'
+import { AccessibilityInfo, Pressable, TouchableOpacity, View } from 'react-native'
 import Animated, {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
-} from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AppText, Icon } from '@/components/ui';
-import { useColors } from '@/hooks/useColors';
-import { cn } from '@/utils';
+} from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { AppText, Icon } from '@/components/ui'
+import { useColors } from '@/hooks/useColors'
+import { cn } from '@/utils'
 
-export type ToastType = 'success' | 'error' | 'warning' | 'info';
+export type ToastType = 'success' | 'error' | 'warning' | 'info'
 
 export interface ToastProps {
-  id: string;
-  type: ToastType;
-  title: string;
-  message?: string;
-  duration?: number;
-  onDismiss: (id: string) => void;
-  position?: 'top' | 'bottom';
-  index?: number;
-  closable?: boolean;
-  onPress?: () => void;
+  id: string
+  type: ToastType
+  title: string
+  message?: string
+  duration?: number
+  onDismiss: (id: string) => void
+  position?: 'top' | 'bottom'
+  index?: number
+  closable?: boolean
+  onPress?: () => void
 }
 
 const Toast: React.FC<ToastProps> = ({
@@ -39,136 +39,136 @@ const Toast: React.FC<ToastProps> = ({
   closable = true,
   onPress,
 }) => {
-  const colors = useColors();
-  const insets = useSafeAreaInsets();
+  const colors = useColors()
+  const insets = useSafeAreaInsets()
 
-  const translateY = useSharedValue(position === 'top' ? -100 : 100);
-  const opacity = useSharedValue(0);
+  const translateY = useSharedValue(position === 'top' ? -100 : 100)
+  const opacity = useSharedValue(0)
 
-  const baseOffset = 16;
-  const stackOffset = index * 80;
+  const baseOffset = 16
+  const stackOffset = index * 80
   const initialPosition =
     position === 'top'
       ? insets.top + baseOffset + stackOffset
-      : insets.bottom + baseOffset + stackOffset;
+      : insets.bottom + baseOffset + stackOffset
 
-  const positionY = useSharedValue(initialPosition);
+  const positionY = useSharedValue(initialPosition)
 
   // Local state for text content to enable smooth updates
-  const [currentTitle, setCurrentTitle] = useState(title);
-  const [currentMessage, setCurrentMessage] = useState(message);
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const [currentTitle, setCurrentTitle] = useState(title)
+  const [currentMessage, setCurrentMessage] = useState(message)
+  const [reduceMotion, setReduceMotion] = useState(false)
 
   useEffect(() => {
-    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
-  }, []);
+    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion)
+  }, [])
 
   const getIconName = () => {
     switch (type) {
       case 'success':
-        return 'CircleCheck';
+        return 'CircleCheck'
       case 'error':
-        return 'CircleX';
+        return 'CircleX'
       case 'warning':
-        return 'TriangleAlert';
+        return 'TriangleAlert'
       case 'info':
       default:
-        return 'Info';
+        return 'Info'
     }
-  };
+  }
 
   const getIconColor = () => {
     switch (type) {
       case 'success':
-        return 'text-success';
+        return 'text-success'
       case 'error':
-        return 'text-error';
+        return 'text-error'
       case 'warning':
-        return 'text-warning';
+        return 'text-warning'
       case 'info':
       default:
-        return 'text-primary';
+        return 'text-primary'
     }
-  };
+  }
 
   const animatedStyle = useAnimatedStyle(() => {
     const style: any = {
       transform: [{ translateY: translateY.value }],
       opacity: opacity.value,
-    };
-
-    if (position === 'top') {
-      style.top = positionY.value;
-    } else {
-      style.bottom = positionY.value;
     }
 
-    return style;
-  });
+    if (position === 'top') {
+      style.top = positionY.value
+    } else {
+      style.bottom = positionY.value
+    }
+
+    return style
+  })
 
   const handleDismiss = () => {
     if (reduceMotion) {
-      onDismiss(id);
-      return;
+      onDismiss(id)
+      return
     }
-    translateY.value = withTiming(position === 'top' ? -100 : 100, { duration: 300 });
+    translateY.value = withTiming(position === 'top' ? -100 : 100, { duration: 300 })
     opacity.value = withTiming(0, { duration: 300 }, () => {
-      runOnJS(onDismiss)(id);
-    });
-  };
+      runOnJS(onDismiss)(id)
+    })
+  }
 
   useEffect(() => {
     // Enter animation
     if (reduceMotion) {
-      translateY.value = 0;
-      opacity.value = 1;
+      translateY.value = 0
+      opacity.value = 1
     } else {
       translateY.value = withSpring(0, {
         damping: 15,
         stiffness: 150,
-      });
-      opacity.value = withTiming(1, { duration: 300 });
+      })
+      opacity.value = withTiming(1, { duration: 300 })
     }
 
     // Auto dismiss - only if duration is greater than 0
     if (duration && duration > 0) {
       const timer = setTimeout(() => {
-        handleDismiss();
-      }, duration);
+        handleDismiss()
+      }, duration)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, []);
+  }, [])
 
   // Animate position changes when index changes
   useEffect(() => {
-    const baseOffset = 16;
-    const stackOffset = index * 80;
+    const baseOffset = 16
+    const stackOffset = index * 80
     const newPosition =
       position === 'top'
         ? insets.top + baseOffset + stackOffset
-        : insets.bottom + baseOffset + stackOffset;
+        : insets.bottom + baseOffset + stackOffset
 
     if (reduceMotion) {
-      positionY.value = newPosition;
+      positionY.value = newPosition
     } else {
       positionY.value = withSpring(newPosition, {
         damping: 15,
         stiffness: 150,
-      });
+      })
     }
-  }, [index, position, insets]);
+  }, [index, position, insets])
 
   // Update text content when props change
   useEffect(() => {
-    setCurrentTitle(title);
-  }, [title]);
+    setCurrentTitle(title)
+  }, [title])
 
   useEffect(() => {
-    setCurrentMessage(message);
-  }, [message]);
+    setCurrentMessage(message)
+  }, [message])
 
-  const ToastContainer = onPress ? Pressable : View;
+  const ToastContainer = onPress ? Pressable : View
 
   return (
     <Animated.View
@@ -222,7 +222,7 @@ const Toast: React.FC<ToastProps> = ({
         )}
       </ToastContainer>
     </Animated.View>
-  );
-};
+  )
+}
 
-export default Toast;
+export default Toast

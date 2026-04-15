@@ -80,7 +80,7 @@ export interface IReviewRepository {
   // Reviews
   findByProduct(
     filters: ReviewFilterOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IReviewItem>>
 
   findById(reviewId: string | Types.ObjectId): Promise<IReviewItem | null>
@@ -94,18 +94,23 @@ export interface IReviewRepository {
   // Likes
   findUserLike(userId: string | Types.ObjectId, reviewId: string | Types.ObjectId): Promise<boolean>
 
-  findUserLikes(userId: string | Types.ObjectId, reviewIds: (string | Types.ObjectId)[]): Promise<Set<string>>
+  findUserLikes(
+    userId: string | Types.ObjectId,
+    reviewIds: (string | Types.ObjectId)[],
+  ): Promise<Set<string>>
 
-  toggleLike(userId: string | Types.ObjectId, reviewId: string | Types.ObjectId): Promise<{ is_liked: boolean; helpful_count: number }>
+  toggleLike(
+    userId: string | Types.ObjectId,
+    reviewId: string | Types.ObjectId,
+  ): Promise<{ is_liked: boolean; helpful_count: number }>
 
   // Comments
   findCommentsByReview(
     reviewId: string | Types.ObjectId,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IReviewCommentItem>>
 
   findCommentById(commentId: string | Types.ObjectId): Promise<IReviewCommentItem | null>
 
   createComment(data: CreateReviewCommentDTO): Promise<IReviewCommentItem>
 }
-

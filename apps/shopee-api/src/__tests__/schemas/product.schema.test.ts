@@ -1,5 +1,12 @@
 /// <reference types="jest" />
-import { addProductSchema, updateProductSchema, getProductsSchema, getAllProductsSchema, getPagesSchema, productIdParamSchema } from '@schemas/product.schema'
+import {
+  addProductSchema,
+  updateProductSchema,
+  getProductsSchema,
+  getAllProductsSchema,
+  getPagesSchema,
+  productIdParamSchema,
+} from '@schemas/product.schema'
 
 const VALID_ID = '507f1f77bcf86cd799439011'
 
@@ -128,4 +135,3 @@ describe('productIdParamSchema', () => {
     expect(result.success).toBe(false)
   })
 })
-

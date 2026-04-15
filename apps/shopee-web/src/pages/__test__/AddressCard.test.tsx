@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import AddressCard from '../User/pages/AddressBook/components/AddressCard';
-import { Address, AddressType } from 'src/types/checkout.type';
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
+import AddressCard from '../User/pages/AddressBook/components/AddressCard'
+import { Address, AddressType } from 'src/types/checkout.type'
 
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
@@ -12,7 +12,7 @@ vi.mock('framer-motion', () => ({
       </div>
     ),
   },
-}));
+}))
 
 // Mock Button component
 vi.mock('src/components/Button', () => ({
@@ -21,7 +21,7 @@ vi.mock('src/components/Button', () => ({
       {children}
     </button>
   ),
-}));
+}))
 
 // Mock ShopeeCheckbox component
 vi.mock('src/components/ShopeeCheckbox', () => ({
@@ -34,7 +34,7 @@ vi.mock('src/components/ShopeeCheckbox', () => ({
       data-testid="shopee-checkbox"
     />
   ),
-}));
+}))
 
 describe('AddressCard', () => {
   const mockAddress: Address = {
@@ -51,11 +51,11 @@ describe('AddressCard', () => {
     label: '',
     createdAt: '2024-01-01',
     updatedAt: '2024-01-01',
-  };
+  }
 
   const mockFormatAddress = vi.fn((address: Address) => {
-    return `${address.street}, ${address.ward}, ${address.district}, ${address.province}`;
-  });
+    return `${address.street}, ${address.ward}, ${address.district}, ${address.province}`
+  })
 
   const mockGetAddressTypeInfo = vi.fn((type?: AddressType) => {
     const typeMap = {
@@ -74,9 +74,9 @@ describe('AddressCard', () => {
         icon: <svg data-testid="other-icon" />,
         color: 'gray',
       },
-    };
-    return typeMap[type || 'home'];
-  });
+    }
+    return typeMap[type || 'home']
+  })
 
   const defaultProps = {
     address: mockAddress,
@@ -86,34 +86,34 @@ describe('AddressCard', () => {
     onSetDefault: vi.fn(),
     formatAddress: mockFormatAddress,
     getAddressTypeInfo: mockGetAddressTypeInfo,
-  };
+  }
 
   beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    vi.clearAllMocks()
+  })
 
   it('renders address info (name, phone, formatted address)', () => {
-    render(<AddressCard {...defaultProps} />);
+    render(<AddressCard {...defaultProps} />)
 
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
-    expect(screen.getByText('0123456789')).toBeInTheDocument();
-    expect(screen.getByText('123 Main St, Ward 1, District 1, Ho Chi Minh')).toBeInTheDocument();
-    expect(mockFormatAddress).toHaveBeenCalledWith(mockAddress);
-  });
+    expect(screen.getByText('John Doe')).toBeInTheDocument()
+    expect(screen.getByText('0123456789')).toBeInTheDocument()
+    expect(screen.getByText('123 Main St, Ward 1, District 1, Ho Chi Minh')).toBeInTheDocument()
+    expect(mockFormatAddress).toHaveBeenCalledWith(mockAddress)
+  })
 
   it('shows default badge when isDefault is true', () => {
-    render(<AddressCard {...defaultProps} isDefault={true} />);
+    render(<AddressCard {...defaultProps} isDefault={true} />)
 
-    expect(screen.getByText('Mặc định')).toBeInTheDocument();
-    expect(screen.getByText('Địa chỉ giao hàng')).toBeInTheDocument();
-  });
+    expect(screen.getByText('Mặc định')).toBeInTheDocument()
+    expect(screen.getByText('Địa chỉ giao hàng')).toBeInTheDocument()
+  })
 
   it('does not show default badge when isDefault is false', () => {
-    render(<AddressCard {...defaultProps} isDefault={false} />);
+    render(<AddressCard {...defaultProps} isDefault={false} />)
 
-    expect(screen.queryByText('Mặc định')).not.toBeInTheDocument();
-    expect(screen.queryByText('Địa chỉ giao hàng')).not.toBeInTheDocument();
-  });
+    expect(screen.queryByText('Mặc định')).not.toBeInTheDocument()
+    expect(screen.queryByText('Địa chỉ giao hàng')).not.toBeInTheDocument()
+  })
 
   it('shows checkbox in selection mode when not default', () => {
     render(
@@ -123,85 +123,85 @@ describe('AddressCard', () => {
         isSelected={false}
         onToggleSelect={vi.fn()}
       />,
-    );
+    )
 
-    const checkbox = screen.getByTestId('shopee-checkbox');
-    expect(checkbox).toBeInTheDocument();
-    expect(checkbox).toHaveAttribute('data-size', 'sm');
-  });
+    const checkbox = screen.getByTestId('shopee-checkbox')
+    expect(checkbox).toBeInTheDocument()
+    expect(checkbox).toHaveAttribute('data-size', 'sm')
+  })
 
   it('hides checkbox when not in selection mode', () => {
-    render(<AddressCard {...defaultProps} isSelectionMode={false} />);
+    render(<AddressCard {...defaultProps} isSelectionMode={false} />)
 
-    expect(screen.queryByTestId('shopee-checkbox')).not.toBeInTheDocument();
-  });
+    expect(screen.queryByTestId('shopee-checkbox')).not.toBeInTheDocument()
+  })
 
   it('shows drag handle when not in selection mode and not default', () => {
     const { container } = render(
       <AddressCard {...defaultProps} isSelectionMode={false} isDefault={false} />,
-    );
+    )
 
     // Drag handle is an SVG with specific viewBox
-    const dragHandle = container.querySelector('svg[viewBox="0 0 20 20"]');
-    expect(dragHandle).toBeInTheDocument();
-  });
+    const dragHandle = container.querySelector('svg[viewBox="0 0 20 20"]')
+    expect(dragHandle).toBeInTheDocument()
+  })
 
   it('calls onEdit when edit button clicked', () => {
-    const onEdit = vi.fn();
-    render(<AddressCard {...defaultProps} onEdit={onEdit} />);
+    const onEdit = vi.fn()
+    render(<AddressCard {...defaultProps} onEdit={onEdit} />)
 
-    const editButton = screen.getByText('Sửa').closest('button');
-    fireEvent.click(editButton!);
+    const editButton = screen.getByText('Sửa').closest('button')
+    fireEvent.click(editButton!)
 
-    expect(onEdit).toHaveBeenCalledWith(mockAddress);
-    expect(onEdit).toHaveBeenCalledTimes(1);
-  });
+    expect(onEdit).toHaveBeenCalledWith(mockAddress)
+    expect(onEdit).toHaveBeenCalledTimes(1)
+  })
 
   it('calls onDelete when delete button clicked', () => {
-    const onDelete = vi.fn();
-    render(<AddressCard {...defaultProps} onDelete={onDelete} isDefault={false} />);
+    const onDelete = vi.fn()
+    render(<AddressCard {...defaultProps} onDelete={onDelete} isDefault={false} />)
 
-    const deleteButton = screen.getByText('Xóa').closest('button');
-    fireEvent.click(deleteButton!);
+    const deleteButton = screen.getByText('Xóa').closest('button')
+    fireEvent.click(deleteButton!)
 
-    expect(onDelete).toHaveBeenCalledWith('addr-123');
-    expect(onDelete).toHaveBeenCalledTimes(1);
-  });
+    expect(onDelete).toHaveBeenCalledWith('addr-123')
+    expect(onDelete).toHaveBeenCalledTimes(1)
+  })
 
   it('calls onSetDefault when set default button clicked', () => {
-    const onSetDefault = vi.fn();
-    render(<AddressCard {...defaultProps} onSetDefault={onSetDefault} isDefault={false} />);
+    const onSetDefault = vi.fn()
+    render(<AddressCard {...defaultProps} onSetDefault={onSetDefault} isDefault={false} />)
 
-    const setDefaultButton = screen.getByText('Đặt mặc định').closest('button');
-    fireEvent.click(setDefaultButton!);
+    const setDefaultButton = screen.getByText('Đặt mặc định').closest('button')
+    fireEvent.click(setDefaultButton!)
 
-    expect(onSetDefault).toHaveBeenCalledWith('addr-123');
-    expect(onSetDefault).toHaveBeenCalledTimes(1);
-  });
+    expect(onSetDefault).toHaveBeenCalledWith('addr-123')
+    expect(onSetDefault).toHaveBeenCalledTimes(1)
+  })
 
   it('hides delete/set-default buttons for default address', () => {
-    render(<AddressCard {...defaultProps} isDefault={true} />);
+    render(<AddressCard {...defaultProps} isDefault={true} />)
 
-    expect(screen.queryByText('Xóa')).not.toBeInTheDocument();
-    expect(screen.queryByText('Đặt mặc định')).not.toBeInTheDocument();
+    expect(screen.queryByText('Xóa')).not.toBeInTheDocument()
+    expect(screen.queryByText('Đặt mặc định')).not.toBeInTheDocument()
     // Edit button should still be visible
-    expect(screen.getByText('Sửa')).toBeInTheDocument();
-  });
+    expect(screen.getByText('Sửa')).toBeInTheDocument()
+  })
 
   it('shows custom label for "other" address type with label', () => {
     const addressWithCustomLabel: Address = {
       ...mockAddress,
       addressType: 'other' as AddressType,
       label: 'My Custom Place',
-    };
+    }
 
-    render(<AddressCard {...defaultProps} address={addressWithCustomLabel} />);
+    render(<AddressCard {...defaultProps} address={addressWithCustomLabel} />)
 
-    expect(screen.getByText('My Custom Place')).toBeInTheDocument();
-  });
+    expect(screen.getByText('My Custom Place')).toBeInTheDocument()
+  })
 
   it('calls onToggleSelect when checkbox clicked', () => {
-    const onToggleSelect = vi.fn();
+    const onToggleSelect = vi.fn()
     render(
       <AddressCard
         {...defaultProps}
@@ -209,14 +209,14 @@ describe('AddressCard', () => {
         isSelected={false}
         onToggleSelect={onToggleSelect}
       />,
-    );
+    )
 
-    const checkbox = screen.getByTestId('shopee-checkbox');
-    fireEvent.click(checkbox);
+    const checkbox = screen.getByTestId('shopee-checkbox')
+    fireEvent.click(checkbox)
 
-    expect(onToggleSelect).toHaveBeenCalledWith('addr-123');
-    expect(onToggleSelect).toHaveBeenCalledTimes(1);
-  });
+    expect(onToggleSelect).toHaveBeenCalledWith('addr-123')
+    expect(onToggleSelect).toHaveBeenCalledTimes(1)
+  })
 
   it('selected styling when isSelected is true', () => {
     const { container } = render(
@@ -226,40 +226,40 @@ describe('AddressCard', () => {
         isSelected={true}
         onToggleSelect={vi.fn()}
       />,
-    );
+    )
 
-    const card = container.firstChild as HTMLElement;
-    expect(card.className).toContain('border-orange');
-    expect(card.className).toContain('bg-orange/5');
-    expect(card.className).toContain('ring-2');
-  });
+    const card = container.firstChild as HTMLElement
+    expect(card.className).toContain('border-orange')
+    expect(card.className).toContain('bg-orange/5')
+    expect(card.className).toContain('ring-2')
+  })
 
   it('address type icon and color rendering', () => {
     // Test home type (blue)
-    const { rerender } = render(<AddressCard {...defaultProps} />);
-    expect(screen.getAllByTestId('home-icon').length).toBeGreaterThan(0);
-    expect(mockGetAddressTypeInfo).toHaveBeenCalledWith('home');
+    const { rerender } = render(<AddressCard {...defaultProps} />)
+    expect(screen.getAllByTestId('home-icon').length).toBeGreaterThan(0)
+    expect(mockGetAddressTypeInfo).toHaveBeenCalledWith('home')
 
     // Test office type (purple)
-    const officeAddress = { ...mockAddress, addressType: 'office' as AddressType };
-    rerender(<AddressCard {...defaultProps} address={officeAddress} />);
-    expect(screen.getAllByTestId('office-icon').length).toBeGreaterThan(0);
-    expect(mockGetAddressTypeInfo).toHaveBeenCalledWith('office');
+    const officeAddress = { ...mockAddress, addressType: 'office' as AddressType }
+    rerender(<AddressCard {...defaultProps} address={officeAddress} />)
+    expect(screen.getAllByTestId('office-icon').length).toBeGreaterThan(0)
+    expect(mockGetAddressTypeInfo).toHaveBeenCalledWith('office')
 
     // Test other type (gray)
-    const otherAddress = { ...mockAddress, addressType: 'other' as AddressType };
-    rerender(<AddressCard {...defaultProps} address={otherAddress} />);
-    expect(screen.getAllByTestId('other-icon').length).toBeGreaterThan(0);
-    expect(mockGetAddressTypeInfo).toHaveBeenCalledWith('other');
-  });
+    const otherAddress = { ...mockAddress, addressType: 'other' as AddressType }
+    rerender(<AddressCard {...defaultProps} address={otherAddress} />)
+    expect(screen.getAllByTestId('other-icon').length).toBeGreaterThan(0)
+    expect(mockGetAddressTypeInfo).toHaveBeenCalledWith('other')
+  })
 
   it('hides action buttons in selection mode', () => {
-    render(<AddressCard {...defaultProps} isSelectionMode={true} onToggleSelect={vi.fn()} />);
+    render(<AddressCard {...defaultProps} isSelectionMode={true} onToggleSelect={vi.fn()} />)
 
-    expect(screen.queryByText('Sửa')).not.toBeInTheDocument();
-    expect(screen.queryByText('Xóa')).not.toBeInTheDocument();
-    expect(screen.queryByText('Đặt mặc định')).not.toBeInTheDocument();
-  });
+    expect(screen.queryByText('Sửa')).not.toBeInTheDocument()
+    expect(screen.queryByText('Xóa')).not.toBeInTheDocument()
+    expect(screen.queryByText('Đặt mặc định')).not.toBeInTheDocument()
+  })
 
   it('does not show checkbox for default address in selection mode', () => {
     render(
@@ -269,10 +269,10 @@ describe('AddressCard', () => {
         isSelectionMode={true}
         onToggleSelect={vi.fn()}
       />,
-    );
+    )
 
-    expect(screen.queryByTestId('shopee-checkbox')).not.toBeInTheDocument();
-  });
+    expect(screen.queryByTestId('shopee-checkbox')).not.toBeInTheDocument()
+  })
 
   it('checkbox is checked when isSelected is true', () => {
     render(
@@ -282,11 +282,11 @@ describe('AddressCard', () => {
         isSelected={true}
         onToggleSelect={vi.fn()}
       />,
-    );
+    )
 
-    const checkbox = screen.getByTestId('shopee-checkbox') as HTMLInputElement;
-    expect(checkbox.checked).toBe(true);
-  });
+    const checkbox = screen.getByTestId('shopee-checkbox') as HTMLInputElement
+    expect(checkbox.checked).toBe(true)
+  })
 
   it('checkbox is unchecked when isSelected is false', () => {
     render(
@@ -296,9 +296,9 @@ describe('AddressCard', () => {
         isSelected={false}
         onToggleSelect={vi.fn()}
       />,
-    );
+    )
 
-    const checkbox = screen.getByTestId('shopee-checkbox') as HTMLInputElement;
-    expect(checkbox.checked).toBe(false);
-  });
-});
+    const checkbox = screen.getByTestId('shopee-checkbox') as HTMLInputElement
+    expect(checkbox.checked).toBe(false)
+  })
+})

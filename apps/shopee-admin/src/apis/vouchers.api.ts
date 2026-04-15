@@ -1,36 +1,36 @@
-import http from 'src/utils/http';
-import type { SuccessResponse, Voucher, VoucherUsage, DiscountType } from 'src/types';
+import http from 'src/utils/http'
+import type { SuccessResponse, Voucher, VoucherUsage, DiscountType } from 'src/types'
 
 interface VoucherListParams {
-  page?: number;
-  limit?: number;
-  is_active?: boolean;
-  discount_type?: DiscountType;
-  sort_by?: string;
-  order?: string;
-  search?: string;
+  page?: number
+  limit?: number
+  is_active?: boolean
+  discount_type?: DiscountType
+  sort_by?: string
+  order?: string
+  search?: string
 }
 
 interface VoucherListResponse {
-  vouchers: Voucher[];
-  pagination: { page: number; limit: number; total: number; totalPages: number };
+  vouchers: Voucher[]
+  pagination: { page: number; limit: number; total: number; totalPages: number }
 }
 
 interface VoucherStats {
-  total: number;
-  active: number;
-  inactive: number;
-  total_usage: number;
+  total: number
+  active: number
+  inactive: number
+  total_usage: number
 }
 
 interface CreateVoucherBody {
-  code: string;
-  discount_type: DiscountType;
-  discount_value: number;
-  min_order_value?: number;
-  usage_limit?: number;
-  start_date: string;
-  end_date: string;
+  code: string
+  discount_type: DiscountType
+  discount_value: number
+  min_order_value?: number
+  usage_limit?: number
+  start_date: string
+  end_date: string
 }
 
 const vouchersApi = {
@@ -42,8 +42,8 @@ const vouchersApi = {
   getVoucherUsage: (id: string, params?: { page?: number; limit?: number }) =>
     http.get<
       SuccessResponse<{
-        usage: VoucherUsage[];
-        pagination: { page: number; limit: number; total: number };
+        usage: VoucherUsage[]
+        pagination: { page: number; limit: number; total: number }
       }>
     >(`admin/vouchers/${id}/usage`, { params }),
 
@@ -56,6 +56,6 @@ const vouchersApi = {
     http.put<SuccessResponse<Voucher>>(`admin/vouchers/${id}`, body),
 
   deleteVoucher: (id: string) => http.delete<SuccessResponse<null>>(`admin/vouchers/${id}`),
-};
+}
 
-export default vouchersApi;
+export default vouchersApi

@@ -58,7 +58,7 @@ const MessageSchema = new Schema<IMessage>(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 // Indexes for efficient queries
@@ -66,4 +66,3 @@ MessageSchema.index({ chat: 1, createdAt: -1 })
 MessageSchema.index({ chat: 1, sender: 1 })
 
 export const MessageModel = mongoose.model<IMessage>('messages', MessageSchema)
-

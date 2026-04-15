@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
-import OptimizedImage from 'src/components/OptimizedImage';
+import type { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
+import OptimizedImage from 'src/components/OptimizedImage'
 
 const meta: Meta<typeof OptimizedImage> = {
   title: 'Components/OptimizedImage',
@@ -29,10 +29,10 @@ const meta: Meta<typeof OptimizedImage> = {
     onLoad: fn(),
     onError: fn(),
   },
-};
+}
 
-export default meta;
-type Story = StoryObj<typeof OptimizedImage>;
+export default meta
+type Story = StoryObj<typeof OptimizedImage>
 
 export const Default: Story = {
   args: {
@@ -41,7 +41,7 @@ export const Default: Story = {
     width: 400,
     height: 400,
   },
-};
+}
 
 export const WithAspectRatio: Story = {
   args: {
@@ -76,7 +76,7 @@ export const WithAspectRatio: Story = {
       </div>
     </div>
   ),
-};
+}
 
 export const WithSkeleton: Story = {
   args: {
@@ -86,7 +86,7 @@ export const WithSkeleton: Story = {
     aspectRatio: '1:1',
     containerClassName: 'w-[300px]',
   },
-};
+}
 
 export const WithFallback: Story = {
   args: {
@@ -96,7 +96,7 @@ export const WithFallback: Story = {
     width: 200,
     height: 200,
   },
-};
+}
 
 export const LazyLoading: Story = {
   args: {
@@ -122,7 +122,7 @@ export const LazyLoading: Story = {
       </div>
     </div>
   ),
-};
+}
 
 export const ObjectFitVariants: Story = {
   args: {
@@ -171,4 +171,4 @@ export const ObjectFitVariants: Story = {
       </div>
     </div>
   ),
-};
+}

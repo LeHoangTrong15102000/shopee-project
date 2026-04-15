@@ -1,15 +1,15 @@
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import { OrderStatus } from 'src/config/orderStatus';
-import { ANIMATION_DURATION } from 'src/styles/animations/motion.config';
-import CancelOrderModal from './components/CancelOrderModal';
-import OrderActionButtons from './components/OrderActionButtons';
-import OrderDetailItems from './components/OrderDetailItems';
-import OrderSummarySection from './components/OrderSummarySection';
-import OrderTimeline from './components/OrderTimeline';
-import ReturnOrderModal from './components/ReturnOrderModal';
-import SEO from 'src/components/SEO';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { Link } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import { OrderStatus } from 'src/config/orderStatus'
+import { ANIMATION_DURATION } from 'src/styles/animations/motion.config'
+import CancelOrderModal from './components/CancelOrderModal'
+import OrderActionButtons from './components/OrderActionButtons'
+import OrderDetailItems from './components/OrderDetailItems'
+import OrderSummarySection from './components/OrderSummarySection'
+import OrderTimeline from './components/OrderTimeline'
+import ReturnOrderModal from './components/ReturnOrderModal'
+import SEO from 'src/components/SEO'
 import {
   formatDate,
   getStatusDisplay,
@@ -18,11 +18,11 @@ import {
   reducedMotionVariants,
   sectionVariants,
   statusBadgeVariants,
-} from './orderDetail.constants';
-import { useOrderDetail } from './useOrderDetail';
+} from './orderDetail.constants'
+import { useOrderDetail } from './useOrderDetail'
 
 export default function OrderDetail() {
-  const { t, i18n } = useTranslation(['order', 'payment']);
+  const { t, i18n } = useTranslation(['order', 'payment'])
   const {
     order,
     tracking,
@@ -45,16 +45,16 @@ export default function OrderDetail() {
     returnMutation,
     handleCancelOrder,
     handleReturnOrder,
-  } = useOrderDetail();
+  } = useOrderDetail()
 
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion()
 
   if (isLoading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange border-t-transparent" />
       </div>
-    );
+    )
   }
 
   if (!order) {
@@ -65,20 +65,20 @@ export default function OrderDetail() {
           {t('detail.backToOrders')}
         </Link>
       </div>
-    );
+    )
   }
 
-  const status = getStatusDisplay(order.status as OrderStatus);
-  const canCancel = ['pending', 'confirmed'].includes(order.status);
-  const isDelivered = order.status === 'delivered';
+  const status = getStatusDisplay(order.status as OrderStatus)
+  const canCancel = ['pending', 'confirmed'].includes(order.status)
+  const isDelivered = order.status === 'delivered'
   const deliveredDaysAgo = isDelivered
     ? Math.floor((Date.now() - new Date(order.updatedAt).getTime()) / (1000 * 60 * 60 * 24))
-    : 0;
-  const canReturn = isDelivered && deliveredDaysAgo <= 7;
-  const isReturnExpired = isDelivered && deliveredDaysAgo > 7;
+    : 0
+  const canReturn = isDelivered && deliveredDaysAgo <= 7
+  const isReturnExpired = isDelivered && deliveredDaysAgo > 7
 
-  const containerVariants = shouldReduceMotion ? reducedMotionVariants : pageContainerVariants;
-  const sectionItemVariants = shouldReduceMotion ? reducedMotionVariants : sectionVariants;
+  const containerVariants = shouldReduceMotion ? reducedMotionVariants : pageContainerVariants
+  const sectionItemVariants = shouldReduceMotion ? reducedMotionVariants : sectionVariants
 
   return (
     <motion.div
@@ -380,14 +380,14 @@ export default function OrderDetail() {
           <ReturnOrderModal
             returnReason={returnReason}
             setReturnReason={(val) => {
-              setReturnReason(val);
-              if (val.trim()) setReturnReasonError('');
+              setReturnReason(val)
+              if (val.trim()) setReturnReasonError('')
             }}
             returnReasonError={returnReasonError}
             onClose={() => {
-              setShowReturnModal(false);
-              setReturnReason('');
-              setReturnReasonError('');
+              setShowReturnModal(false)
+              setReturnReason('')
+              setReturnReasonError('')
             }}
             onConfirm={handleReturnOrder}
             isPending={returnMutation.isPending}
@@ -396,5 +396,5 @@ export default function OrderDetail() {
         )}
       </AnimatePresence>
     </motion.div>
-  );
+  )
 }

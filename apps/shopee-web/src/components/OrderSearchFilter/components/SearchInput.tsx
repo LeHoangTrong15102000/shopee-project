@@ -1,10 +1,10 @@
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
 
 interface SearchInputProps {
-  inputValue: string;
-  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onClearSearch: () => void;
+  inputValue: string
+  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onClearSearch: () => void
 }
 
 export default function SearchInput({
@@ -12,7 +12,7 @@ export default function SearchInput({
   onInputChange,
   onClearSearch,
 }: SearchInputProps) {
-  const { t } = useTranslation('order');
+  const { t } = useTranslation('order')
   return (
     <div className="relative flex-1">
       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -63,5 +63,5 @@ export default function SearchInput({
         </Button>
       )}
     </div>
-  );
+  )
 }

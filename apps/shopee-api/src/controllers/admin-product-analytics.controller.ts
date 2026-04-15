@@ -27,4 +27,3 @@ export const adminGetStatsByCategory = async (_req: Request, res: Response) => {
   const data = await dashboardService.getStatsByCategory()
   return responseSuccess(res, { message: 'Lấy thống kê theo danh mục thành công', data })
 }
-

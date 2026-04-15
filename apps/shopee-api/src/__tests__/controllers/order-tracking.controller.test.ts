@@ -65,7 +65,10 @@ describe('Order Tracking Controller', () => {
 
       expect(mockOrderService.getTracking).toHaveBeenCalledWith('user-123', 'order-123')
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Lấy thông tin tracking thành công', data: mockTracking })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Lấy thông tin tracking thành công',
+        data: mockTracking,
+      })
     })
 
     it('should return 400 when order_id is missing', async () => {
@@ -88,7 +91,9 @@ describe('Order Tracking Controller', () => {
       await getTracking(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(404)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Không tìm thấy thông tin tracking cho đơn hàng này' })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Không tìm thấy thông tin tracking cho đơn hàng này',
+      })
     })
 
     it('should return 400 when ValidationError is thrown', async () => {
@@ -147,7 +152,10 @@ describe('Order Tracking Controller', () => {
 
       expect(mockOrderService.getTrackingByNumber).toHaveBeenCalledWith('TRK123')
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Lấy thông tin tracking thành công', data: mockTracking })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Lấy thông tin tracking thành công',
+        data: mockTracking,
+      })
     })
 
     it('should return 404 when NotFoundError is thrown', async () => {
@@ -163,7 +171,9 @@ describe('Order Tracking Controller', () => {
     })
 
     it('should return 400 when ValidationError is thrown', async () => {
-      mockOrderService.getTrackingByNumber.mockRejectedValue(new ValidationError('Invalid tracking number'))
+      mockOrderService.getTrackingByNumber.mockRejectedValue(
+        new ValidationError('Invalid tracking number'),
+      )
 
       const req = createMockRequest({ params: { trackingNumber: 'TRK123' } })
       const res = createMockResponse()
@@ -187,4 +197,3 @@ describe('Order Tracking Controller', () => {
     })
   })
 })
-

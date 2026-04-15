@@ -1,19 +1,19 @@
-import { UserTypingPayload } from 'src/types/socket.types';
+import { UserTypingPayload } from 'src/types/socket.types'
 
 interface TypingIndicatorProps {
-  typingUsers: UserTypingPayload[];
+  typingUsers: UserTypingPayload[]
 }
 
 export default function TypingIndicator({ typingUsers }: TypingIndicatorProps) {
-  if (typingUsers.length === 0) return null;
+  if (typingUsers.length === 0) return null
 
   const getTypingText = () => {
     if (typingUsers.length === 1) {
-      return `${typingUsers[0].user_name} đang nhập`;
+      return `${typingUsers[0].user_name} đang nhập`
     }
-    const names = typingUsers.map((user) => user.user_name).join(', ');
-    return `${names} đang nhập`;
-  };
+    const names = typingUsers.map((user) => user.user_name).join(', ')
+    return `${names} đang nhập`
+  }
 
   return (
     <div className="flex items-center gap-2 px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
@@ -33,5 +33,5 @@ export default function TypingIndicator({ typingUsers }: TypingIndicatorProps) {
         />
       </span>
     </div>
-  );
+  )
 }

@@ -10,10 +10,7 @@ import { cacheService, CacheKeys, CacheTTL } from '@utils/cache.service'
  * @param keyGenerator - Hàm tạo cache key từ request
  * @param ttlSeconds - Thời gian sống của cache (giây)
  */
-export const cacheResponse = (
-  keyGenerator: (req: Request) => string,
-  ttlSeconds: number
-) => {
+export const cacheResponse = (keyGenerator: (req: Request) => string, ttlSeconds: number) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     // Chỉ cache GET requests
     if (req.method !== 'GET') {
@@ -92,10 +89,7 @@ export const invalidateCategoriesCache = () => {
  * Dùng khi thay đổi category có thể ảnh hưởng đến products
  */
 export const invalidateProductsAndCategoriesCache = () => {
-  return invalidateCache(
-    CacheKeys.productsPattern(),
-    CacheKeys.categoriesPattern()
-  )
+  return invalidateCache(CacheKeys.productsPattern(), CacheKeys.categoriesPattern())
 }
 
 // Pre-configured cache middlewares cho các routes phổ biến
@@ -105,7 +99,7 @@ export const invalidateProductsAndCategoriesCache = () => {
  */
 export const cacheProductsList = cacheResponse(
   (req: Request) => CacheKeys.productsList(req.query as any),
-  CacheTTL.PRODUCTS_LIST
+  CacheTTL.PRODUCTS_LIST,
 )
 
 /**
@@ -113,7 +107,7 @@ export const cacheProductsList = cacheResponse(
  */
 export const cacheProductDetail = cacheResponse(
   (req: Request) => CacheKeys.productDetail(req.params.product_id as string),
-  CacheTTL.PRODUCT_DETAIL
+  CacheTTL.PRODUCT_DETAIL,
 )
 
 /**
@@ -121,7 +115,7 @@ export const cacheProductDetail = cacheResponse(
  */
 export const cacheCategoriesList = cacheResponse(
   (req: Request) => CacheKeys.categoriesList(req.query.exclude as string),
-  CacheTTL.CATEGORIES_LIST
+  CacheTTL.CATEGORIES_LIST,
 )
 
 export default {
@@ -134,4 +128,3 @@ export default {
   cacheProductDetail,
   cacheCategoriesList,
 }
-

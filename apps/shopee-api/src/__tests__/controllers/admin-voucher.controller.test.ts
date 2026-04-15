@@ -16,8 +16,14 @@ jest.mock('../../container', () => ({
 
 import { voucherService } from '../../container'
 import {
-  adminGetVouchers, adminGetVoucherById, adminCreateVoucher, adminUpdateVoucher,
-  adminDeleteVoucher, adminToggleVoucher, adminGetVoucherUsage, adminGetVoucherStats,
+  adminGetVouchers,
+  adminGetVoucherById,
+  adminCreateVoucher,
+  adminUpdateVoucher,
+  adminDeleteVoucher,
+  adminToggleVoucher,
+  adminGetVoucherUsage,
+  adminGetVoucherStats,
 } from '../../controllers/admin-voucher.controller'
 import { ValidationError, NotFoundError } from '@services/base.service'
 
@@ -43,13 +49,22 @@ describe('Admin Voucher Controller', () => {
   it('adminGetVouchers with filters', async () => {
     ;(mockVoucherService.adminGetVouchers as jest.Mock).mockResolvedValue({ data: [] })
     const req = createMockRequest({
-      query: { page: '2', limit: '10', is_active: 'true', discount_type: 'percentage', status: 'active', search: 'test', sort_by: 'created_at', order: 'desc' },
+      query: {
+        page: '2',
+        limit: '10',
+        is_active: 'true',
+        discount_type: 'percentage',
+        status: 'active',
+        search: 'test',
+        sort_by: 'created_at',
+        order: 'desc',
+      },
     })
     const res = createMockResponse()
     await adminGetVouchers(req as Request, res as Response)
     expect(mockVoucherService.adminGetVouchers).toHaveBeenCalledWith(
       { is_active: 'true', discount_type: 'percentage', status: 'active', search: 'test' },
-      { page: 2, limit: 10, sort_by: 'created_at', order: 'desc' }
+      { page: 2, limit: 10, sort_by: 'created_at', order: 'desc' },
     )
     expect(res.status).toHaveBeenCalledWith(200)
   })

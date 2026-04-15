@@ -1,32 +1,32 @@
-import { useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { PaymentMethod, PaymentMethodType } from 'src/types/checkout.type';
-import checkoutApi from 'src/apis/checkout.api';
-import { PaymentIcon } from 'src/components/Icons';
-import Button from 'src/components/Button';
+import { useQuery } from '@tanstack/react-query'
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { PaymentMethod, PaymentMethodType } from 'src/types/checkout.type'
+import checkoutApi from 'src/apis/checkout.api'
+import { PaymentIcon } from 'src/components/Icons'
+import Button from 'src/components/Button'
 
 interface PaymentMethodSelectorProps {
-  selectedMethodType: PaymentMethodType | null;
-  onSelect: (method: PaymentMethod) => void;
+  selectedMethodType: PaymentMethodType | null
+  onSelect: (method: PaymentMethod) => void
 }
 
 function PaymentMethodSelector({ selectedMethodType, onSelect }: PaymentMethodSelectorProps) {
-  const { t } = useTranslation('payment');
+  const { t } = useTranslation('payment')
   const { data: methodsData, isLoading } = useQuery({
     queryKey: ['payment-methods'],
     queryFn: async () => {
-      const res = await checkoutApi.getPaymentMethods();
-      return res.data.data;
+      const res = await checkoutApi.getPaymentMethods()
+      return res.data.data
     },
-  });
+  })
 
-  const methods = methodsData || [];
+  const methods = methodsData || []
 
   // Helper function to convert snake_case to camelCase for translation keys
   const toCamelCase = (str: string) => {
-    return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-  };
+    return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
+  }
 
   if (isLoading) {
     return (
@@ -35,7 +35,7 @@ function PaymentMethodSelector({ selectedMethodType, onSelect }: PaymentMethodSe
           <div key={i} className="h-16 rounded-lg bg-gray-200 dark:bg-slate-700" />
         ))}
       </div>
-    );
+    )
   }
 
   return (
@@ -155,7 +155,7 @@ function PaymentMethodSelector({ selectedMethodType, onSelect }: PaymentMethodSe
         </motion.div>
       )}
     </div>
-  );
+  )
 }
 
-export default PaymentMethodSelector;
+export default PaymentMethodSelector

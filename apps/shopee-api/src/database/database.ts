@@ -65,7 +65,9 @@ export const connectMongoDB = async (): Promise<void> => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : String(err)
       console.log(error(`MongoDB connection attempt ${connectionAttempts} failed: ${errorMessage}`))
-      Logger.dbError(`MongoDB connection attempt ${connectionAttempts} failed`, { error: errorMessage })
+      Logger.dbError(`MongoDB connection attempt ${connectionAttempts} failed`, {
+        error: errorMessage,
+      })
 
       if (connectionAttempts < DB_CONFIG.maxRetries && !isShuttingDown) {
         console.log(reconnecting(`Retrying in ${DB_CONFIG.retryDelayMs / 1000} seconds...`))
@@ -125,7 +127,9 @@ const reconnectMongoDB = async (): Promise<void> => {
   try {
     await connectMongoDB()
   } catch (err) {
-    Logger.dbError('MongoDB reconnection failed', { error: err instanceof Error ? err.message : String(err) })
+    Logger.dbError('MongoDB reconnection failed', {
+      error: err instanceof Error ? err.message : String(err),
+    })
   }
 }
 
@@ -141,11 +145,15 @@ export const gracefulShutdown = async (signal: string): Promise<void> => {
 
   try {
     await mongoose.connection.close()
-    console.log(termination('Mongoose default connection is disconnected due to application termination'))
+    console.log(
+      termination('Mongoose default connection is disconnected due to application termination'),
+    )
     Logger.dbInfo('MongoDB connection closed successfully')
     process.exit(0)
   } catch (err) {
-    Logger.dbError('Error during graceful shutdown', { error: err instanceof Error ? err.message : String(err) })
+    Logger.dbError('Error during graceful shutdown', {
+      error: err instanceof Error ? err.message : String(err),
+    })
     process.exit(1)
   }
 }

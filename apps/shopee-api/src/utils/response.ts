@@ -46,12 +46,7 @@ export class ErrorHandler extends Error {
   isOperational: boolean
   code?: ErrorCode
 
-  constructor(
-    status: number,
-    error: string | ErrorThrow,
-    isOperational = true,
-    code?: ErrorCode
-  ) {
+  constructor(status: number, error: string | ErrorThrow, isOperational = true, code?: ErrorCode) {
     super(typeof error === 'string' ? error : COMMON_MESSAGES.ERROR)
     this.status = status
     this.error = error
@@ -135,7 +130,11 @@ export class ErrorHandler extends Error {
   /**
    * Tạo error từ error code
    */
-  static fromCode(code: ErrorCode, message: string, status: number = STATUS.BAD_REQUEST): ErrorHandler {
+  static fromCode(
+    code: ErrorCode,
+    message: string,
+    status: number = STATUS.BAD_REQUEST,
+  ): ErrorHandler {
     return new ErrorHandler(status, message, true, code)
   }
 }

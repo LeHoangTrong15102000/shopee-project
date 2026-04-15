@@ -85,7 +85,9 @@ describe('ApiResponse', () => {
     it('sends 403', () => {
       ApiResponse.forbidden(res as Response)
       expect(res.status).toHaveBeenCalledWith(STATUS.FORBIDDEN)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Bạn không có quyền thực hiện hành động này' })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Bạn không có quyền thực hiện hành động này',
+      })
     })
   })
 
@@ -109,4 +111,3 @@ describe('ApiResponse', () => {
     })
   })
 })
-

@@ -1,9 +1,9 @@
-import classNames from 'classnames';
-import { differenceInDays, parseISO } from 'date-fns';
-import { useTranslation } from 'react-i18next';
-import { Voucher } from 'src/types/voucher.type';
-import { formatCurrency, formatDate, formatDiscount } from 'src/utils/utils';
-import Button from 'src/components/Button';
+import classNames from 'classnames'
+import { differenceInDays, parseISO } from 'date-fns'
+import { useTranslation } from 'react-i18next'
+import { Voucher } from 'src/types/voucher.type'
+import { formatCurrency, formatDate, formatDiscount } from 'src/utils/utils'
+import Button from 'src/components/Button'
 
 interface VoucherCardProps {
   voucher: Pick<
@@ -18,32 +18,32 @@ interface VoucherCardProps {
     | 'max_discount'
     | 'end_date'
     | 'is_active'
-  >;
-  isSaved?: boolean;
-  onSave?: (voucherId: string) => void;
-  onApply?: (code: string) => void;
-  isLoading?: boolean;
+  >
+  isSaved?: boolean
+  onSave?: (voucherId: string) => void
+  onApply?: (code: string) => void
+  isLoading?: boolean
 }
 
-type VoucherStatus = 'active' | 'expired' | 'saved';
+type VoucherStatus = 'active' | 'expired' | 'saved'
 
 const getVoucherStatus = (
   voucher: VoucherCardProps['voucher'],
   isSaved?: boolean,
 ): VoucherStatus => {
   if (!voucher.is_active || new Date(voucher.end_date) < new Date()) {
-    return 'expired';
+    return 'expired'
   }
   if (isSaved) {
-    return 'saved';
+    return 'saved'
   }
-  return 'active';
-};
+  return 'active'
+}
 
 const getDaysRemaining = (dateString: string): number => {
-  const endDate = parseISO(dateString);
-  return differenceInDays(endDate, new Date());
-};
+  const endDate = parseISO(dateString)
+  return differenceInDays(endDate, new Date())
+}
 
 function VoucherCard({
   voucher,
@@ -52,42 +52,42 @@ function VoucherCard({
   onApply,
   isLoading = false,
 }: VoucherCardProps) {
-  const { t } = useTranslation('product');
-  const status = getVoucherStatus(voucher, isSaved);
+  const { t } = useTranslation('product')
+  const status = getVoucherStatus(voucher, isSaved)
 
-  const daysRemaining = getDaysRemaining(voucher.end_date);
+  const daysRemaining = getDaysRemaining(voucher.end_date)
 
-  const isExpired = status === 'expired';
+  const isExpired = status === 'expired'
 
-  const discountDisplay = formatDiscount(voucher.discount_type, voucher.discount_value);
+  const discountDisplay = formatDiscount(voucher.discount_type, voucher.discount_value)
 
   const handleButtonClick = () => {
-    if (isLoading || isExpired) return;
+    if (isLoading || isExpired) return
 
     if (isSaved && onApply) {
-      onApply(voucher.code);
+      onApply(voucher.code)
     } else if (!isSaved && onSave) {
-      onSave(voucher._id);
+      onSave(voucher._id)
     }
-  };
+  }
 
-  const isSavedWithoutApply = isSaved && !onApply;
+  const isSavedWithoutApply = isSaved && !onApply
   const buttonText = isLoading
     ? t('voucher.processing')
     : isSavedWithoutApply
       ? t('voucher.saved')
       : isSaved
         ? t('voucher.apply')
-        : t('voucher.save');
+        : t('voucher.save')
 
   const buttonAriaLabel = (() => {
-    if (isExpired) return t('voucher.ariaExpired', { name: voucher.name });
-    if (isLoading) return t('voucher.ariaProcessing');
-    if (isSavedWithoutApply) return t('voucher.ariaSaved', { name: voucher.name });
+    if (isExpired) return t('voucher.ariaExpired', { name: voucher.name })
+    if (isLoading) return t('voucher.ariaProcessing')
+    if (isSavedWithoutApply) return t('voucher.ariaSaved', { name: voucher.name })
     return isSaved
       ? t('voucher.ariaApply', { name: voucher.name, discount: discountDisplay })
-      : t('voucher.ariaSave', { name: voucher.name, discount: discountDisplay });
-  })();
+      : t('voucher.ariaSave', { name: voucher.name, discount: discountDisplay })
+  })()
 
   return (
     <div
@@ -188,7 +188,7 @@ function VoucherCard({
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default VoucherCard;
+export default VoucherCard

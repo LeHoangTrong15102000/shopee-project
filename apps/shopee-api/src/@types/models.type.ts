@@ -33,7 +33,11 @@ export interface IProduct {
   sold: number
   view: number
   location?: string
-  variants?: Array<{ type: string; name: string; options: Array<{ name: string; value: string; image?: string }> }>
+  variants?: Array<{
+    type: string
+    name: string
+    options: Array<{ name: string; value: string; image?: string }>
+  }>
   createdAt?: Date
   updatedAt?: Date
 }
@@ -84,4 +88,3 @@ export interface IPayloadToken {
   roles: string[]
   created_at: string
 }
-

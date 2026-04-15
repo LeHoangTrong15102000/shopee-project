@@ -1,10 +1,10 @@
-import Button from 'src/components/Button';
-import type { BannerSlide } from './types';
+import Button from 'src/components/Button'
+import type { BannerSlide } from './types'
 
 interface Props {
-  slides: BannerSlide[];
-  currentSlide: number;
-  onSlideChange: (index: number) => void;
+  slides: BannerSlide[]
+  currentSlide: number
+  onSlideChange: (index: number) => void
 }
 
 const BannerIndicators = ({ slides, currentSlide, onSlideChange }: Props) => {
@@ -26,7 +26,7 @@ const BannerIndicators = ({ slides, currentSlide, onSlideChange }: Props) => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default BannerIndicators;
+export default BannerIndicators

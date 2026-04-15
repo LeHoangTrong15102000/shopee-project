@@ -1,19 +1,19 @@
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient } from '@tanstack/react-query'
 
 // Smart retry: skip retry for client errors (401, 403, 404, 422)
-const NON_RETRYABLE_STATUS = new Set([401, 403, 404, 422]);
+const NON_RETRYABLE_STATUS = new Set([401, 403, 404, 422])
 
 function shouldRetry(failureCount: number, error: unknown): boolean {
-  if (failureCount >= 2) return false;
+  if (failureCount >= 2) return false
 
   // Check HTTP status from common error shapes
   const status =
     (error as { status?: number })?.status ??
-    (error as { response?: { status?: number } })?.response?.status;
+    (error as { response?: { status?: number } })?.response?.status
 
-  if (status && NON_RETRYABLE_STATUS.has(status)) return false;
+  if (status && NON_RETRYABLE_STATUS.has(status)) return false
 
-  return true;
+  return true
 }
 
 export const queryClient = new QueryClient({
@@ -32,4 +32,4 @@ export const queryClient = new QueryClient({
       networkMode: 'online',
     },
   },
-});
+})

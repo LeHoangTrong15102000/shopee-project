@@ -32,8 +32,10 @@ const PasswordResetSchema = new Schema<IPasswordReset>(
       createdAt: 'created_at',
       updatedAt: 'updated_at',
     },
-  }
+  },
 )
 
-export const PasswordResetModel = mongoose.model<IPasswordReset>('password_resets', PasswordResetSchema)
-
+export const PasswordResetModel = mongoose.model<IPasswordReset>(
+  'password_resets',
+  PasswordResetSchema,
+)

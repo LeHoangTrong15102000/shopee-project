@@ -9,12 +9,11 @@ export const userOrderTrackingRouter = Router()
 userOrderTrackingRouter.get(
   '',
   authMiddleware.verifyAccessToken,
-  asyncHandler(orderTrackingController.getTracking)
+  asyncHandler(orderTrackingController.getTracking),
 )
 
 // Lấy tracking theo số tracking (public)
 userOrderTrackingRouter.get(
   '/:trackingNumber',
-  asyncHandler(orderTrackingController.getTrackingByNumber)
+  asyncHandler(orderTrackingController.getTrackingByNumber),
 )
-

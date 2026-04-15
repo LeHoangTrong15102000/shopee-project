@@ -1,23 +1,23 @@
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import Popover from 'src/components/Popover';
-import NotificationItem from './NotificationItem';
-import NotificationBadge from './NotificationBadge';
-import useNotifications from 'src/hooks/useNotifications';
-import path from 'src/constant/path';
-import Button from 'src/components/Button';
+import { Link } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import Popover from 'src/components/Popover'
+import NotificationItem from './NotificationItem'
+import NotificationBadge from './NotificationBadge'
+import useNotifications from 'src/hooks/useNotifications'
+import path from 'src/constant/path'
+import Button from 'src/components/Button'
 
 const NotificationDropdown = () => {
-  const { t } = useTranslation('notification');
-  const { notifications, unreadCount, markAsRead, clearAll, isConnected } = useNotifications();
+  const { t } = useTranslation('notification')
+  const { notifications, unreadCount, markAsRead, clearAll, isConnected } = useNotifications()
 
   const handleMarkAsRead = (id: string) => {
-    markAsRead(id);
-  };
+    markAsRead(id)
+  }
 
   const handleClearAll = () => {
-    clearAll();
-  };
+    clearAll()
+  }
 
   const renderNotifications = () => (
     <div className="relative max-w-[min(400px,calc(100vw-2rem))] rounded-xs border border-gray-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
@@ -87,7 +87,7 @@ const NotificationDropdown = () => {
         </div>
       )}
     </div>
-  );
+  )
 
   return (
     <Popover className="relative" renderPopover={renderNotifications()} placement="bottom-end">
@@ -113,7 +113,7 @@ const NotificationDropdown = () => {
         <NotificationBadge count={unreadCount} />
       </Button>
     </Popover>
-  );
-};
+  )
+}
 
-export default NotificationDropdown;
+export default NotificationDropdown

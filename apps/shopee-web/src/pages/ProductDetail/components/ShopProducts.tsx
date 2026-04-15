@@ -1,20 +1,20 @@
-import { useRef } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
-import productApi from 'src/apis/product.api';
-import Product from 'src/pages/ProductList/components/Product';
-import { ProductListConfig } from 'src/types/product.type';
-import { RetryError } from 'src/types/utils.type';
+import { useRef } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import productApi from 'src/apis/product.api'
+import Product from 'src/pages/ProductList/components/Product'
+import { ProductListConfig } from 'src/types/product.type'
+import { RetryError } from 'src/types/utils.type'
 
 interface ShopProductsProps {
-  categoryId: string;
+  categoryId: string
 }
 
 const ShopProducts = ({ categoryId }: ShopProductsProps) => {
-  const { t } = useTranslation('product');
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation('product')
+  const scrollRef = useRef<HTMLDivElement>(null)
 
-  const queryConfig: ProductListConfig = { limit: '10', page: '1', category: categoryId };
+  const queryConfig: ProductListConfig = { limit: '10', page: '1', category: categoryId }
 
   const { data: productsData, isLoading } = useQuery({
     queryKey: ['shopProducts', queryConfig],
@@ -22,19 +22,19 @@ const ShopProducts = ({ categoryId }: ShopProductsProps) => {
     enabled: Boolean(categoryId),
     staleTime: 3 * 60 * 1000,
     retry: (failureCount, error: RetryError) => {
-      if (error?.name === 'AbortError' || error?.code === 'ERR_CANCELED') return false;
-      return failureCount < 1;
+      if (error?.name === 'AbortError' || error?.code === 'ERR_CANCELED') return false
+      return failureCount < 1
     },
-  });
+  })
 
   const scroll = (direction: 'left' | 'right') => {
-    if (!scrollRef.current) return;
-    const amount = scrollRef.current.clientWidth * 0.6;
+    if (!scrollRef.current) return
+    const amount = scrollRef.current.clientWidth * 0.6
     const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches
       ? ('auto' as const)
-      : ('smooth' as const);
-    scrollRef.current.scrollBy({ left: direction === 'left' ? -amount : amount, behavior });
-  };
+      : ('smooth' as const)
+    scrollRef.current.scrollBy({ left: direction === 'left' ? -amount : amount, behavior })
+  }
 
   if (isLoading) {
     return (
@@ -59,10 +59,10 @@ const ShopProducts = ({ categoryId }: ShopProductsProps) => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
-  if (!productsData?.data?.data?.products?.length) return null;
+  if (!productsData?.data?.data?.products?.length) return null
 
   return (
     <div className="mt-4">
@@ -131,7 +131,7 @@ const ShopProducts = ({ categoryId }: ShopProductsProps) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ShopProducts;
+export default ShopProducts

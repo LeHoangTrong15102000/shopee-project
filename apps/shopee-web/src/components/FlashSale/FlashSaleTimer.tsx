@@ -1,20 +1,20 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
 interface FlashSaleProduct {
-  product_id: string;
-  current_stock: number;
-  sold: number;
+  product_id: string
+  current_stock: number
+  sold: number
 }
 
 interface Props {
-  endTime?: Date;
-  className?: string;
-  serverRemainingSeconds?: number;
-  isServerSynced?: boolean;
-  products?: FlashSaleProduct[];
-  isEnded?: boolean;
+  endTime?: Date
+  className?: string
+  serverRemainingSeconds?: number
+  isServerSynced?: boolean
+  products?: FlashSaleProduct[]
+  isEnded?: boolean
 }
 
 const FlipDigit = ({ value }: { value: string }) => (
@@ -30,7 +30,7 @@ const FlipDigit = ({ value }: { value: string }) => (
       {value}
     </motion.span>
   </AnimatePresence>
-);
+)
 
 const FlashSaleTimer = ({
   endTime,
@@ -40,66 +40,66 @@ const FlashSaleTimer = ({
   products,
   isEnded = false,
 }: Props) => {
-  const { t } = useTranslation('home');
+  const { t } = useTranslation('home')
   const [timeLeft, setTimeLeft] = useState({
     hours: 0,
     minutes: 0,
     seconds: 0,
-  });
+  })
 
   useEffect(() => {
     if (isEnded) {
-      setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-      return;
+      setTimeLeft({ hours: 0, minutes: 0, seconds: 0 })
+      return
     }
 
     if (isServerSynced && serverRemainingSeconds !== undefined) {
       const calculateFromServer = () => {
         if (serverRemainingSeconds <= 0) {
-          setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-          return;
+          setTimeLeft({ hours: 0, minutes: 0, seconds: 0 })
+          return
         }
 
         setTimeLeft({
           hours: Math.floor(serverRemainingSeconds / 3600),
           minutes: Math.floor((serverRemainingSeconds % 3600) / 60),
           seconds: Math.floor(serverRemainingSeconds % 60),
-        });
-      };
+        })
+      }
 
-      calculateFromServer();
-      return;
+      calculateFromServer()
+      return
     }
 
     if (!endTime) {
-      setTimeLeft({ hours: 2, minutes: 15, seconds: 30 });
-      return;
+      setTimeLeft({ hours: 2, minutes: 15, seconds: 30 })
+      return
     }
 
     const calculateTimeLeft = () => {
-      const difference = endTime.getTime() - new Date().getTime();
+      const difference = endTime.getTime() - new Date().getTime()
 
       if (difference > 0) {
         setTimeLeft({
           hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
           minutes: Math.floor((difference / 1000 / 60) % 60),
           seconds: Math.floor((difference / 1000) % 60),
-        });
+        })
       } else {
-        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 })
       }
-    };
+    }
 
-    calculateTimeLeft();
-    const timer = setInterval(calculateTimeLeft, 1000);
+    calculateTimeLeft()
+    const timer = setInterval(calculateTimeLeft, 1000)
 
-    return () => clearInterval(timer);
-  }, [endTime, serverRemainingSeconds, isServerSynced, isEnded]);
+    return () => clearInterval(timer)
+  }, [endTime, serverRemainingSeconds, isServerSynced, isEnded])
 
-  const formatNumber = (num: number) => num.toString().padStart(2, '0');
+  const formatNumber = (num: number) => num.toString().padStart(2, '0')
 
-  const totalSold = products?.reduce((sum, p) => sum + p.sold, 0) ?? 0;
-  const totalStock = products?.reduce((sum, p) => sum + p.current_stock, 0) ?? 0;
+  const totalSold = products?.reduce((sum, p) => sum + p.sold, 0) ?? 0
+  const totalStock = products?.reduce((sum, p) => sum + p.current_stock, 0) ?? 0
 
   if (isEnded) {
     return (
@@ -108,7 +108,7 @@ const FlashSaleTimer = ({
       >
         <span className="text-sm font-medium">{t('flashSale.ended')}</span>
       </div>
-    );
+    )
   }
 
   return (
@@ -141,7 +141,7 @@ const FlashSaleTimer = ({
         </span>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default FlashSaleTimer;
+export default FlashSaleTimer

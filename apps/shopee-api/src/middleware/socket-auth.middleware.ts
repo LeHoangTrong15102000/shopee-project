@@ -19,7 +19,7 @@ declare module 'socket.io' {
  */
 export const socketAuthMiddleware = async (
   socket: Socket,
-  next: (err?: ExtendedError) => void
+  next: (err?: ExtendedError) => void,
 ): Promise<void> => {
   try {
     const token = socket.handshake.auth?.token as string
@@ -66,4 +66,3 @@ export const socketAuthMiddleware = async (
     next(new Error(errorCode))
   }
 }
-

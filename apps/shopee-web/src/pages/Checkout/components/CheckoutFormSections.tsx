@@ -1,11 +1,11 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { Address, ShippingMethod, PaymentMethodType } from 'src/types/checkout.type';
-import AddressSelector from 'src/components/AddressSelector';
-import ShippingMethodSelector from 'src/components/ShippingMethodSelector';
-import PaymentMethodSelector from 'src/components/PaymentMethodSelector';
-import Button from 'src/components/Button';
-import { SecurityBadge } from './TrustIndicators';
+import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { Address, ShippingMethod, PaymentMethodType } from 'src/types/checkout.type'
+import AddressSelector from 'src/components/AddressSelector'
+import ShippingMethodSelector from 'src/components/ShippingMethodSelector'
+import PaymentMethodSelector from 'src/components/PaymentMethodSelector'
+import Button from 'src/components/Button'
+import { SecurityBadge } from './TrustIndicators'
 
 const SectionHeader = ({ number, title }: { number: number; title: string }) => (
   <div className="mb-4 flex items-center gap-3">
@@ -14,26 +14,26 @@ const SectionHeader = ({ number, title }: { number: number; title: string }) => 
     </div>
     <h2 className="text-base font-semibold text-gray-800 md:text-lg dark:text-gray-100">{title}</h2>
   </div>
-);
+)
 
 const sectionClass =
-  'rounded-xl border border-gray-100/50 bg-linear-to-br from-white to-gray-50/50 p-4 shadow-md transition-shadow hover:shadow-lg md:p-6 dark:border-slate-700 dark:from-slate-800 dark:to-slate-800 dark:shadow-slate-900/50';
+  'rounded-xl border border-gray-100/50 bg-linear-to-br from-white to-gray-50/50 p-4 shadow-md transition-shadow hover:shadow-lg md:p-6 dark:border-slate-700 dark:from-slate-800 dark:to-slate-800 dark:shadow-slate-900/50'
 
 interface CheckoutFormSectionsProps {
-  selectedAddress: Address | null;
-  selectedShippingMethod: ShippingMethod | null;
-  selectedPaymentMethod: PaymentMethodType | null;
-  voucherCode: string;
-  voucherDiscount: number;
-  coinsUsed: number;
-  note: string;
-  onAddressSelect: (address: Address) => void;
-  onShippingSelect: (method: ShippingMethod) => void;
-  onPaymentSelect: (method: { type: PaymentMethodType }) => void;
-  onApplyVoucher: () => void;
-  onVoucherCodeChange: (code: string) => void;
-  onCoinsChange: (coins: number) => void;
-  onNoteChange: (note: string) => void;
+  selectedAddress: Address | null
+  selectedShippingMethod: ShippingMethod | null
+  selectedPaymentMethod: PaymentMethodType | null
+  voucherCode: string
+  voucherDiscount: number
+  coinsUsed: number
+  note: string
+  onAddressSelect: (address: Address) => void
+  onShippingSelect: (method: ShippingMethod) => void
+  onPaymentSelect: (method: { type: PaymentMethodType }) => void
+  onApplyVoucher: () => void
+  onVoucherCodeChange: (code: string) => void
+  onCoinsChange: (coins: number) => void
+  onNoteChange: (note: string) => void
 }
 
 export const CheckoutFormSections = ({
@@ -52,7 +52,7 @@ export const CheckoutFormSections = ({
   onCoinsChange,
   onNoteChange,
 }: CheckoutFormSectionsProps) => {
-  const { t } = useTranslation('checkout');
+  const { t } = useTranslation('checkout')
   return (
     <div className="space-y-4 md:space-y-6 lg:col-span-2">
       {/* Address Section */}
@@ -173,5 +173,5 @@ export const CheckoutFormSections = ({
         />
       </motion.div>
     </div>
-  );
-};
+  )
+}

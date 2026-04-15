@@ -46,4 +46,3 @@ export const paginationSchema = z.object({
 
 // Type exports for use in controllers
 export type PaginationQuery = z.infer<typeof paginationQuerySchema>
-

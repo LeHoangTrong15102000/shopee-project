@@ -12,30 +12,35 @@ const handleError = (error: any) => {
 
 export const adminGetLowStock = async (req: Request, res: Response) => {
   const { page, limit, threshold } = req.query as any
-  const data = await productService.getLowStockProducts(
-    Number(threshold) || 10,
-    { page: Number(page) || 1, limit: Number(limit) || 20 }
-  )
+  const data = await productService.getLowStockProducts(Number(threshold) || 10, {
+    page: Number(page) || 1,
+    limit: Number(limit) || 20,
+  })
   return responseSuccess(res, { message: 'Lấy danh sách sản phẩm sắp hết hàng thành công', data })
 }
 
 export const adminGetOutOfStock = async (req: Request, res: Response) => {
   const { page, limit } = req.query as any
-  const data = await productService.getOutOfStockProducts(
-    { page: Number(page) || 1, limit: Number(limit) || 20 }
-  )
+  const data = await productService.getOutOfStockProducts({
+    page: Number(page) || 1,
+    limit: Number(limit) || 20,
+  })
   return responseSuccess(res, { message: 'Lấy danh sách sản phẩm hết hàng thành công', data })
 }
 
 export const adminUpdateStock = async (req: Request, res: Response) => {
   try {
-    const data = await productService.updateStock(req.params.product_id as string, req.body.quantity)
+    const data = await productService.updateStock(
+      req.params.product_id as string,
+      req.body.quantity,
+    )
     return responseSuccess(res, { message: 'Cập nhật tồn kho thành công', data })
-  } catch (error) { handleError(error) }
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 export const adminBulkUpdateStock = async (req: Request, res: Response) => {
   const data = await productService.bulkUpdateStock(req.body.items)
   return responseSuccess(res, { message: 'Cập nhật tồn kho hàng loạt thành công', data })
 }
-

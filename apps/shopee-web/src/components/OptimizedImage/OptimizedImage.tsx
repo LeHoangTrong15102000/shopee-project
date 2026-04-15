@@ -1,31 +1,31 @@
-import { useState, useRef, useEffect } from 'react';
-import classNames from 'classnames';
+import { useState, useRef, useEffect } from 'react'
+import classNames from 'classnames'
 
 const DEFAULT_FALLBACK =
-  'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNFNUU3RUIiLz48cGF0aCBkPSJNMTAwIDcwQzg4LjUgNzAgNzkgNzkuNSA3OSA5MUM3OSAxMDIuNSA4OC41IDExMiAxMDAgMTEyQzExMS41IDExMiAxMjEgMTAyLjUgMTIxIDkxQzEyMSA3OS41IDExMS41IDcwIDEwMCA3MFpNMTAwIDEwNEM5Mi44IDEwNCA4NyA5OC4yIDg3IDkxQzg3IDgzLjggOTIuOCA3OCAxMDAgNzhDMTA3LjIgNzggMTEzIDgzLjggMTEzIDkxQzExMyA5OC4yIDEwNy4yIDEwNCAxMDAgMTA0WiIgZmlsbD0iIzlDQTNBRiIvPjxwYXRoIGQ9Ik0xNDAgMTMwSDYwQzU1LjYgMTMwIDUyIDEyNi40IDUyIDEyMlY3OEM1MiA3My42IDU1LjYgNzAgNjAgNzBIMTQwQzE0NC40IDcwIDE0OCA3My42IDE0OCA3OFYxMjJDMTQ4IDEyNi40IDE0NC40IDEzMCAxNDAgMTMwWk02MCA3OFYxMjJIMTQwVjc4SDYwWiIgZmlsbD0iIzlDQTNBRiIvPjwvc3ZnPg==';
+  'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNFNUU3RUIiLz48cGF0aCBkPSJNMTAwIDcwQzg4LjUgNzAgNzkgNzkuNSA3OSA5MUM3OSAxMDIuNSA4OC41IDExMiAxMDAgMTEyQzExMS41IDExMiAxMjEgMTAyLjUgMTIxIDkxQzEyMSA3OS41IDExMS41IDcwIDEwMCA3MFpNMTAwIDEwNEM5Mi44IDEwNCA4NyA5OC4yIDg3IDkxQzg3IDgzLjggOTIuOCA3OCAxMDAgNzhDMTA3LjIgNzggMTEzIDgzLjggMTEzIDkxQzExMyA5OC4yIDEwNy4yIDEwNCAxMDAgMTA0WiIgZmlsbD0iIzlDQTNBRiIvPjxwYXRoIGQ9Ik0xNDAgMTMwSDYwQzU1LjYgMTMwIDUyIDEyNi40IDUyIDEyMlY3OEM1MiA3My42IDU1LjYgNzAgNjAgNzBIMTQwQzE0NC40IDcwIDE0OCA3My42IDE0OCA3OFYxMjJDMTQ4IDEyNi40IDE0NC40IDEzMCAxNDAgMTMwWk02MCA3OFYxMjJIMTQwVjc4SDYwWiIgZmlsbD0iIzlDQTNBRiIvPjwvc3ZnPg=='
 
 export interface OptimizedImageProps {
-  src: string;
-  alt: string;
-  className?: string;
-  containerClassName?: string;
-  fallbackSrc?: string;
-  aspectRatio?: '1:1' | '16:9' | '4:3' | '3:2' | 'auto';
-  loading?: 'lazy' | 'eager';
-  showSkeleton?: boolean;
-  objectFit?: 'cover' | 'contain' | 'fill' | 'none';
-  blurPlaceholder?: boolean;
-  onLoad?: () => void;
-  onError?: () => void;
-  width?: number | string;
-  height?: number | string;
-  sizes?: string;
-  srcSet?: string;
-  webpSrc?: string;
-  avifSrc?: string;
+  src: string
+  alt: string
+  className?: string
+  containerClassName?: string
+  fallbackSrc?: string
+  aspectRatio?: '1:1' | '16:9' | '4:3' | '3:2' | 'auto'
+  loading?: 'lazy' | 'eager'
+  showSkeleton?: boolean
+  objectFit?: 'cover' | 'contain' | 'fill' | 'none'
+  blurPlaceholder?: boolean
+  onLoad?: () => void
+  onError?: () => void
+  width?: number | string
+  height?: number | string
+  sizes?: string
+  srcSet?: string
+  webpSrc?: string
+  avifSrc?: string
 }
 
-type ImageState = 'loading' | 'loaded' | 'error';
+type ImageState = 'loading' | 'loaded' | 'error'
 
 const ASPECT_RATIO_CLASSES: Record<string, string> = {
   '1:1': 'pt-[100%]',
@@ -33,14 +33,14 @@ const ASPECT_RATIO_CLASSES: Record<string, string> = {
   '4:3': 'pt-[75%]',
   '3:2': 'pt-[66.67%]',
   auto: '',
-};
+}
 
 const OBJECT_FIT_CLASSES: Record<string, string> = {
   cover: 'object-cover',
   contain: 'object-contain',
   fill: 'object-fill',
   none: 'object-none',
-};
+}
 
 export default function OptimizedImage({
   src,
@@ -62,45 +62,45 @@ export default function OptimizedImage({
   webpSrc,
   avifSrc,
 }: OptimizedImageProps) {
-  const [imageState, setImageState] = useState<ImageState>('loading');
-  const [currentSrc, setCurrentSrc] = useState(src);
-  const hasTriedFallback = useRef(false);
+  const [imageState, setImageState] = useState<ImageState>('loading')
+  const [currentSrc, setCurrentSrc] = useState(src)
+  const hasTriedFallback = useRef(false)
 
   useEffect(() => {
-    hasTriedFallback.current = false;
-    setCurrentSrc(src);
+    hasTriedFallback.current = false
+    setCurrentSrc(src)
 
     // Check if image is already cached/loaded in browser
     if (src) {
-      const img = new Image();
-      img.src = src;
+      const img = new Image()
+      img.src = src
       if (img.complete && img.naturalWidth > 0) {
         // Image is already cached, skip loading state
-        setImageState('loaded');
-        return;
+        setImageState('loaded')
+        return
       }
     }
 
-    setImageState('loading');
-  }, [src]);
+    setImageState('loading')
+  }, [src])
 
   const handleLoad = () => {
-    setImageState('loaded');
-    onLoad?.();
-  };
+    setImageState('loaded')
+    onLoad?.()
+  }
 
   const handleError = () => {
     if (!hasTriedFallback.current && currentSrc !== fallbackSrc) {
-      hasTriedFallback.current = true;
-      setCurrentSrc(fallbackSrc);
+      hasTriedFallback.current = true
+      setCurrentSrc(fallbackSrc)
     } else {
-      setImageState('error');
-      onError?.();
+      setImageState('error')
+      onError?.()
     }
-  };
+  }
 
-  const isLoading = imageState === 'loading';
-  const isLoaded = imageState === 'loaded';
+  const isLoading = imageState === 'loading'
+  const isLoaded = imageState === 'loaded'
 
   const imageClasses = classNames(
     OBJECT_FIT_CLASSES[objectFit],
@@ -109,7 +109,7 @@ export default function OptimizedImage({
       'opacity-0': isLoading && blurPlaceholder,
       'opacity-100': isLoaded || !blurPlaceholder,
     },
-  );
+  )
 
   const renderSkeleton = () =>
     showSkeleton && isLoading ? (
@@ -117,9 +117,9 @@ export default function OptimizedImage({
         className="absolute inset-0 animate-pulse rounded-sm bg-gray-200 dark:bg-slate-700"
         aria-hidden="true"
       />
-    ) : null;
+    ) : null
 
-  const usePicture = !!(webpSrc || avifSrc);
+  const usePicture = !!(webpSrc || avifSrc)
 
   const renderImage = (additionalClasses = '') => {
     const imgElement = (
@@ -135,9 +135,9 @@ export default function OptimizedImage({
         srcSet={srcSet}
         className={classNames(imageClasses, additionalClasses, className)}
       />
-    );
+    )
 
-    if (!usePicture) return imgElement;
+    if (!usePicture) return imgElement
 
     return (
       <picture>
@@ -145,8 +145,8 @@ export default function OptimizedImage({
         {webpSrc && <source srcSet={webpSrc} type="image/webp" />}
         {imgElement}
       </picture>
-    );
-  };
+    )
+  }
 
   if (aspectRatio === 'auto') {
     return (
@@ -154,7 +154,7 @@ export default function OptimizedImage({
         {renderSkeleton()}
         {renderImage()}
       </div>
-    );
+    )
   }
 
   return (
@@ -168,5 +168,5 @@ export default function OptimizedImage({
       {renderSkeleton()}
       {renderImage('absolute top-0 left-0 h-full w-full')}
     </div>
-  );
+  )
 }

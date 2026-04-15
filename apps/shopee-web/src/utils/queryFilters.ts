@@ -1,6 +1,6 @@
-import type { Query } from '@tanstack/react-query';
-import { ProductListConfig } from 'src/types/product.type';
-import { PurchaseListStatus } from 'src/types/purchases.type';
+import type { Query } from '@tanstack/react-query'
+import { ProductListConfig } from 'src/types/product.type'
+import { PurchaseListStatus } from 'src/types/purchases.type'
 
 /**
  * QueryFilters - Centralized query key management cho TanStack Query
@@ -90,7 +90,7 @@ export const QueryFilters = {
     unread: () => ({ queryKey: ['notifications', 'unread'] }),
     count: () => ({ queryKey: ['notifications', 'count'] }),
   },
-};
+}
 
 /**
  * Predicate functions cho advanced filtering
@@ -98,59 +98,59 @@ export const QueryFilters = {
 export const QueryPredicates = {
   // Predicate để match products theo category
   productsByCategory: (categoryId: string) => (query: Query) => {
-    const [entity, type, filters] = query.queryKey as [string, string, Record<string, unknown>];
-    return entity === 'products' && type === 'list' && filters?.category === categoryId;
+    const [entity, type, filters] = query.queryKey as [string, string, Record<string, unknown>]
+    return entity === 'products' && type === 'list' && filters?.category === categoryId
   },
 
   // Predicate để match products theo price range
   productsByPriceRange: (minPrice: number, maxPrice: number) => (query: Query) => {
-    const [entity, type, filters] = query.queryKey as [string, string, Record<string, unknown>];
-    if (entity !== 'products' || type !== 'list') return false;
+    const [entity, type, filters] = query.queryKey as [string, string, Record<string, unknown>]
+    if (entity !== 'products' || type !== 'list') return false
 
-    const filterPriceMin = filters?.price_min ? Number(filters.price_min) : 0;
-    const filterPriceMax = filters?.price_max ? Number(filters.price_max) : Infinity;
+    const filterPriceMin = filters?.price_min ? Number(filters.price_min) : 0
+    const filterPriceMax = filters?.price_max ? Number(filters.price_max) : Infinity
 
-    return filterPriceMin >= minPrice && filterPriceMax <= maxPrice;
+    return filterPriceMin >= minPrice && filterPriceMax <= maxPrice
   },
 
   // Predicate để match user-specific data
   userSpecificData: () => (query: Query) => {
-    const [entity, type] = query.queryKey;
+    const [entity, type] = query.queryKey
     return (
       entity === 'user' ||
       entity === 'purchases' ||
       entity === 'notifications' ||
       (entity === 'products' && (type === 'recommendations' || type === 'personalized')) ||
       (entity === 'reviews' && type === 'user')
-    );
+    )
   },
 
   // Predicate để match queries có thể outdated sau product update
   affectedByProductUpdate: (productId: string) => (query: Query) => {
-    const [entity, type, param] = query.queryKey;
+    const [entity, type, param] = query.queryKey
 
     // Product detail cụ thể
     if (entity === 'products' && type === 'detail' && param === productId) {
-      return true;
+      return true
     }
 
     // Product lists (có thể chứa product đã update)
     if (entity === 'products' && type === 'list') {
-      return true;
+      return true
     }
 
     // Search results (có thể chứa product đã update)
     if (entity === 'products' && type === 'search') {
-      return true;
+      return true
     }
 
     // Trending, recommendations có thể bị ảnh hưởng
     if (entity === 'products' && (type === 'trending' || type === 'recommendations')) {
-      return true;
+      return true
     }
 
-    return false;
+    return false
   },
-};
+}
 
-export default QueryFilters;
+export default QueryFilters

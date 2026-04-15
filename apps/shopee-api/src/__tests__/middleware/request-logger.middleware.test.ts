@@ -66,7 +66,7 @@ describe('Request Logger Middleware', () => {
         'GET',
         '/api/products',
         undefined,
-        expect.objectContaining({ ip: '127.0.0.1' })
+        expect.objectContaining({ ip: '127.0.0.1' }),
       )
       expect(next).toHaveBeenCalled()
     })
@@ -84,7 +84,7 @@ describe('Request Logger Middleware', () => {
         'GET',
         '/api/products',
         'user123',
-        expect.any(Object)
+        expect.any(Object),
       )
     })
   })
@@ -228,7 +228,7 @@ describe('Request Logger Middleware', () => {
       res.end()
 
       expect(Logger.apiInfo).toHaveBeenCalledWith(
-        expect.stringContaining('GET /api/products - 200')
+        expect.stringContaining('GET /api/products - 200'),
       )
     })
 
@@ -240,9 +240,7 @@ describe('Request Logger Middleware', () => {
       requestLoggerMiddleware(req as Request, res as Response, next)
       res.end()
 
-      expect(Logger.apiInfo).toHaveBeenCalledWith(
-        expect.stringMatching(/\(\d+ms\)/)
-      )
+      expect(Logger.apiInfo).toHaveBeenCalledWith(expect.stringMatching(/\(\d+ms\)/))
     })
   })
 
@@ -258,7 +256,7 @@ describe('Request Logger Middleware', () => {
 
       expect(Logger.apiError).toHaveBeenCalledWith(
         expect.stringContaining('400'),
-        expect.any(Object)
+        expect.any(Object),
       )
     })
 
@@ -273,7 +271,7 @@ describe('Request Logger Middleware', () => {
 
       expect(Logger.apiError).toHaveBeenCalledWith(
         expect.stringContaining('500'),
-        expect.any(Object)
+        expect.any(Object),
       )
     })
 
@@ -291,4 +289,3 @@ describe('Request Logger Middleware', () => {
     })
   })
 })
-

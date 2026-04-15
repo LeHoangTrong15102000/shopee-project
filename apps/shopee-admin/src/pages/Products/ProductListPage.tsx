@@ -1,63 +1,63 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { type ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal, Plus, Eye, Pencil, Trash2, Download, Filter, X } from 'lucide-react';
-import { Button } from 'src/components/ui/button';
-import { Badge } from 'src/components/ui/badge';
-import { Checkbox } from 'src/components/ui/checkbox';
-import { Input } from 'src/components/ui/input';
-import { Label } from 'src/components/ui/label';
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { type ColumnDef } from '@tanstack/react-table'
+import { MoreHorizontal, Plus, Eye, Pencil, Trash2, Download, Filter, X } from 'lucide-react'
+import { Button } from 'src/components/ui/button'
+import { Badge } from 'src/components/ui/badge'
+import { Checkbox } from 'src/components/ui/checkbox'
+import { Input } from 'src/components/ui/input'
+import { Label } from 'src/components/ui/label'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/components/ui/select';
+} from 'src/components/ui/select'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from 'src/components/ui/dropdown-menu';
-import { DataTable } from 'src/components/shared/DataTable';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
-import { ErrorState } from 'src/components/shared/ErrorState';
-import { useProducts, useDeleteProduct, useDeleteManyProducts } from 'src/hooks/useProducts';
-import { useCategories } from 'src/hooks/useCategories';
-import { formatCurrency } from 'src/utils/format';
-import { exportToCSV } from 'src/utils/csv-export';
-import type { Product } from 'src/types';
+} from 'src/components/ui/dropdown-menu'
+import { DataTable } from 'src/components/shared/DataTable'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { ConfirmDialog } from 'src/components/shared/ConfirmDialog'
+import { ErrorState } from 'src/components/shared/ErrorState'
+import { useProducts, useDeleteProduct, useDeleteManyProducts } from 'src/hooks/useProducts'
+import { useCategories } from 'src/hooks/useCategories'
+import { formatCurrency } from 'src/utils/format'
+import { exportToCSV } from 'src/utils/csv-export'
+import type { Product } from 'src/types'
 
 export default function ProductListPage() {
-  const { t } = useTranslation('products');
-  const { t: tc } = useTranslation('common');
-  const navigate = useNavigate();
-  const [page, setPage] = useState(0);
-  const [selected, setSelected] = useState<Product[]>([]);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
-  const [filtersOpen, setFiltersOpen] = useState(false);
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
-  const [stockFilter, setStockFilter] = useState('');
+  const { t } = useTranslation('products')
+  const { t: tc } = useTranslation('common')
+  const navigate = useNavigate()
+  const [page, setPage] = useState(0)
+  const [selected, setSelected] = useState<Product[]>([])
+  const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false)
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [categoryFilter, setCategoryFilter] = useState('')
+  const [minPrice, setMinPrice] = useState('')
+  const [maxPrice, setMaxPrice] = useState('')
+  const [stockFilter, setStockFilter] = useState('')
 
   const filters = {
     ...(categoryFilter && { category: categoryFilter }),
-  };
+  }
   const { data, isLoading, isError, refetch } = useProducts(
     page,
     Object.keys(filters).length ? filters : undefined,
-  );
-  const { data: categories } = useCategories();
-  const deleteMut = useDeleteProduct(() => setDeleteId(null));
+  )
+  const { data: categories } = useCategories()
+  const deleteMut = useDeleteProduct(() => setDeleteId(null))
   const bulkDeleteMut = useDeleteManyProducts(() => {
-    setBulkDeleteOpen(false);
-    setSelected([]);
-  });
+    setBulkDeleteOpen(false)
+    setSelected([])
+  })
 
   const columns: ColumnDef<Product>[] = [
     {
@@ -108,8 +108,8 @@ export default function ProductListPage() {
       accessorKey: 'category',
       header: t('columns.category'),
       cell: ({ row }) => {
-        const c = row.original.category;
-        return typeof c === 'object' ? c.name : c;
+        const c = row.original.category
+        return typeof c === 'object' ? c.name : c
       },
     },
     {
@@ -147,7 +147,7 @@ export default function ProductListPage() {
         </DropdownMenu>
       ),
     },
-  ];
+  ]
 
   const handleExportCSV = () =>
     exportToCSV(
@@ -166,24 +166,24 @@ export default function ProductListPage() {
         },
       ],
       'products',
-    );
+    )
 
   const filteredProducts = (data?.products ?? []).filter((p) => {
-    if (minPrice && p.price < Number(minPrice)) return false;
-    if (maxPrice && p.price > Number(maxPrice)) return false;
-    if (stockFilter === 'in_stock' && p.quantity <= 0) return false;
-    if (stockFilter === 'low_stock' && (p.quantity <= 0 || p.quantity >= 10)) return false;
-    if (stockFilter === 'out_of_stock' && p.quantity > 0) return false;
-    return true;
-  });
+    if (minPrice && p.price < Number(minPrice)) return false
+    if (maxPrice && p.price > Number(maxPrice)) return false
+    if (stockFilter === 'in_stock' && p.quantity <= 0) return false
+    if (stockFilter === 'low_stock' && (p.quantity <= 0 || p.quantity >= 10)) return false
+    if (stockFilter === 'out_of_stock' && p.quantity > 0) return false
+    return true
+  })
 
   const handleClearFilters = () => {
-    setCategoryFilter('');
-    setMinPrice('');
-    setMaxPrice('');
-    setStockFilter('');
-    setPage(0);
-  };
+    setCategoryFilter('')
+    setMinPrice('')
+    setMaxPrice('')
+    setStockFilter('')
+    setPage(0)
+  }
 
   return (
     <div className="space-y-6">
@@ -222,8 +222,8 @@ export default function ProductListPage() {
               value={categoryFilter}
               onValueChange={(v) => {
                 if (v) {
-                  setCategoryFilter(v);
-                  setPage(0);
+                  setCategoryFilter(v)
+                  setPage(0)
                 }
               }}
             >
@@ -314,5 +314,5 @@ export default function ProductListPage() {
         isLoading={bulkDeleteMut.isPending}
       />
     </div>
-  );
+  )
 }

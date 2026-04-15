@@ -3,9 +3,9 @@ import {
   PointsTransaction,
   PointsReward,
   RedeemPointsResponse,
-} from 'src/types/loyalty.type';
-import { SuccessResponseApi } from 'src/types/utils.type';
-import http from 'src/utils/http';
+} from 'src/types/loyalty.type'
+import { SuccessResponseApi } from 'src/types/utils.type'
+import http from 'src/utils/http'
 
 // Mock data for fallback when API is not available
 const mockLoyaltyPoints: LoyaltyPoints = {
@@ -16,7 +16,7 @@ const mockLoyaltyPoints: LoyaltyPoints = {
     points: 2000,
     expire_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
   },
-};
+}
 
 const mockTransactions: PointsTransaction[] = [
   {
@@ -56,7 +56,7 @@ const mockTransactions: PointsTransaction[] = [
     description: 'Điểm hết hạn tháng 1/2024',
     createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
   },
-];
+]
 
 const mockRewards: PointsReward[] = [
   {
@@ -92,23 +92,23 @@ const mockRewards: PointsReward[] = [
     quantity_available: 20,
     is_active: true,
   },
-];
+]
 
 // API functions
 const loyaltyApi = {
   // Lấy thông tin điểm của user
   getPoints: async () => {
     try {
-      const response = await http.get<SuccessResponseApi<LoyaltyPoints>>('/loyalty/points');
-      return response;
+      const response = await http.get<SuccessResponseApi<LoyaltyPoints>>('/loyalty/points')
+      return response
     } catch (error) {
-      console.warn('⚠️ [getPoints] API not available, using mock data');
+      console.warn('⚠️ [getPoints] API not available, using mock data')
       return {
         data: {
           message: 'Lấy thông tin điểm thành công',
           data: mockLoyaltyPoints,
         },
-      };
+      }
     }
   },
 
@@ -117,13 +117,13 @@ const loyaltyApi = {
     try {
       const response = await http.get<
         SuccessResponseApi<{
-          transactions: PointsTransaction[];
-          pagination: { page: number; limit: number; total: number; total_pages: number };
+          transactions: PointsTransaction[]
+          pagination: { page: number; limit: number; total: number; total_pages: number }
         }>
-      >('/loyalty/transactions', { params });
-      return response;
+      >('/loyalty/transactions', { params })
+      return response
     } catch (error) {
-      console.warn('⚠️ [getTransactions] API not available, using mock data');
+      console.warn('⚠️ [getTransactions] API not available, using mock data')
       return {
         data: {
           message: 'Lấy lịch sử giao dịch thành công',
@@ -137,23 +137,23 @@ const loyaltyApi = {
             },
           },
         },
-      };
+      }
     }
   },
 
   // Lấy danh sách phần thưởng có thể đổi
   getRewards: async () => {
     try {
-      const response = await http.get<SuccessResponseApi<PointsReward[]>>('/loyalty/rewards');
-      return response;
+      const response = await http.get<SuccessResponseApi<PointsReward[]>>('/loyalty/rewards')
+      return response
     } catch (error) {
-      console.warn('⚠️ [getRewards] API not available, using mock data');
+      console.warn('⚠️ [getRewards] API not available, using mock data')
       return {
         data: {
           message: 'Lấy danh sách phần thưởng thành công',
           data: mockRewards,
         },
-      };
+      }
     }
   },
 
@@ -162,10 +162,10 @@ const loyaltyApi = {
     try {
       const response = await http.post<SuccessResponseApi<RedeemPointsResponse>>(
         `/loyalty/redeem/${rewardId}`,
-      );
-      return response;
+      )
+      return response
     } catch (error) {
-      console.warn('⚠️ [redeemPoints] API not available, using mock data');
+      console.warn('⚠️ [redeemPoints] API not available, using mock data')
       return {
         data: {
           message: 'Đổi điểm thành công (mock)',
@@ -176,9 +176,9 @@ const loyaltyApi = {
             reward: mockRewards[0],
           } as RedeemPointsResponse,
         },
-      };
+      }
     }
   },
-};
+}
 
-export default loyaltyApi;
+export default loyaltyApi

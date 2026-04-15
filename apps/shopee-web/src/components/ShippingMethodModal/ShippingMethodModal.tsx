@@ -1,27 +1,27 @@
-import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
-import BaseModal from 'src/components/BaseModal/BaseModal';
-import checkoutApi from 'src/apis/checkout.api';
-import { formatCurrency } from 'src/utils/utils';
-import { getShopeeDeliveryRange } from 'src/utils/date';
-import { ShippingMethod } from 'src/types/checkout.type';
+import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
+import BaseModal from 'src/components/BaseModal/BaseModal'
+import checkoutApi from 'src/apis/checkout.api'
+import { formatCurrency } from 'src/utils/utils'
+import { getShopeeDeliveryRange } from 'src/utils/date'
+import { ShippingMethod } from 'src/types/checkout.type'
 
 // Shopee official truck icon URL - only for instant delivery
 const SHOPEE_TRUCK_ICON_URL =
-  'https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/productdetailspage/6b56a09bbc0bcca75e85.svg';
+  'https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/productdetailspage/6b56a09bbc0bcca75e85.svg'
 
 // Shopee teal color for free shipping text
-const SHOPEE_TEAL = '#219787';
+const SHOPEE_TEAL = '#219787'
 
 interface ShippingMethodModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  location?: string;
+  isOpen: boolean
+  onClose: () => void
+  location?: string
 }
 
 const ShippingMethodModal = ({ isOpen, onClose, location }: ShippingMethodModalProps) => {
-  const { t } = useTranslation('shipping');
-  const { t: tProduct } = useTranslation('product');
+  const { t } = useTranslation('shipping')
+  const { t: tProduct } = useTranslation('product')
 
   const {
     data: methodsData,
@@ -31,14 +31,14 @@ const ShippingMethodModal = ({ isOpen, onClose, location }: ShippingMethodModalP
   } = useQuery({
     queryKey: ['shipping-methods'],
     queryFn: async () => {
-      const res = await checkoutApi.getShippingMethods();
-      return res.data.data;
+      const res = await checkoutApi.getShippingMethods()
+      return res.data.data
     },
     enabled: isOpen,
-  });
+  })
 
-  const methods = methodsData || [];
-  const hasMethods = !isLoading && !isError && methods.length > 0;
+  const methods = methodsData || []
+  const hasMethods = !isLoading && !isError && methods.length > 0
 
   // Render delivery time badge for instant delivery - Shopee style
   // SVG gốc Shopee: 43x22px, đã có nền teal + truck icon tích hợp sẵn
@@ -54,10 +54,10 @@ const ShippingMethodModal = ({ isOpen, onClose, location }: ShippingMethodModalP
             {method.deliveryHours} Giờ
           </span>
         </span>
-      );
+      )
     }
-    return null;
-  };
+    return null
+  }
 
   // PLACEHOLDER_MODAL_CONTENT
   return (
@@ -151,9 +151,9 @@ const ShippingMethodModal = ({ isOpen, onClose, location }: ShippingMethodModalP
         {hasMethods && (
           <ul className="divide-y divide-gray-100 dark:divide-slate-700" role="list">
             {methods.map((method) => {
-              const deliveryRange = getShopeeDeliveryRange(method.estimatedDays);
-              const isInstant = method.type === 'instant';
-              const isPickup = method.type === 'pickup';
+              const deliveryRange = getShopeeDeliveryRange(method.estimatedDays)
+              const isInstant = method.type === 'instant'
+              const isPickup = method.type === 'pickup'
 
               return (
                 <li key={method._id} className="py-4 first:pt-0 last:pb-0" role="listitem">
@@ -206,7 +206,7 @@ const ShippingMethodModal = ({ isOpen, onClose, location }: ShippingMethodModalP
                     </ul>
                   )}
                 </li>
-              );
+              )
             })}
           </ul>
         )}
@@ -222,7 +222,7 @@ const ShippingMethodModal = ({ isOpen, onClose, location }: ShippingMethodModalP
         </button>
       </div>
     </BaseModal>
-  );
-};
+  )
+}
 
-export default ShippingMethodModal;
+export default ShippingMethodModal

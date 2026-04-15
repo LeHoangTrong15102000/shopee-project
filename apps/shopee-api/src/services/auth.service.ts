@@ -34,14 +34,14 @@ export interface AuthResult {
 export class AuthService extends BaseService {
   constructor(
     private readonly authRepository: IAuthRepository,
-    private readonly userRepository: IUserRepository
+    private readonly userRepository: IUserRepository,
   ) {
     super()
   }
 
   private async generateTokens(
     payload: IPayloadToken,
-    tokenConfig: TokenConfig
+    tokenConfig: TokenConfig,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const [accessToken, refreshToken] = await Promise.all([
       signToken(payload, config.SECRET_KEY, tokenConfig.expireAccessToken),
@@ -130,7 +130,7 @@ export class AuthService extends BaseService {
     }
 
     // Generate new stateless access token — no database storage
-    const accessToken = await signToken(payload, config.SECRET_KEY, expireAccessToken) as string
+    const accessToken = (await signToken(payload, config.SECRET_KEY, expireAccessToken)) as string
 
     return { access_token: 'Bearer ' + accessToken }
   }

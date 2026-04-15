@@ -1,18 +1,18 @@
-import classNames from 'classnames';
-import { motion } from 'framer-motion';
-import { useContext } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Link, NavLink } from 'react-router';
-import path from 'src/constant/path';
-import MobileAccountNav from 'src/components/MobileAccountNav';
-import { AppContext } from 'src/contexts/app.context';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import { getAvatarUrl } from 'src/utils/utils';
+import classNames from 'classnames'
+import { motion } from 'framer-motion'
+import { useContext } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Link, NavLink } from 'react-router'
+import path from 'src/constant/path'
+import MobileAccountNav from 'src/components/MobileAccountNav'
+import { AppContext } from 'src/contexts/app.context'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import { getAvatarUrl } from 'src/utils/utils'
 
 const UserSideNav = () => {
-  const { t } = useTranslation('user');
-  const { profile } = useContext(AppContext);
-  const reducedMotion = useReducedMotion();
+  const { t } = useTranslation('user')
+  const { profile } = useContext(AppContext)
+  const reducedMotion = useReducedMotion()
 
   return (
     <div>
@@ -465,7 +465,7 @@ const UserSideNav = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default UserSideNav;
+export default UserSideNav

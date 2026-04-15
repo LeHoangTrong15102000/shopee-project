@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import Button from 'src/components/Button';
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { motion } from 'framer-motion'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import Button from 'src/components/Button'
 
 interface ErrorFallbackProps {
-  error?: Error | null;
-  resetErrorBoundary?: () => void;
-  title?: string;
-  message?: string;
-  showRetry?: boolean;
-  retryText?: string;
-  className?: string;
+  error?: Error | null
+  resetErrorBoundary?: () => void
+  title?: string
+  message?: string
+  showRetry?: boolean
+  retryText?: string
+  className?: string
 }
 
 export default function ErrorFallback({
@@ -23,25 +23,25 @@ export default function ErrorFallback({
   retryText,
   className = '',
 }: ErrorFallbackProps) {
-  const { t } = useTranslation('common');
-  const [isRetrying, setIsRetrying] = useState(false);
-  const isDevelopment = import.meta.env.DEV;
-  const reducedMotion = useReducedMotion();
+  const { t } = useTranslation('common')
+  const [isRetrying, setIsRetrying] = useState(false)
+  const isDevelopment = import.meta.env.DEV
+  const reducedMotion = useReducedMotion()
 
-  const resolvedTitle = title ?? t('error.title');
-  const resolvedMessage = message ?? t('error.loadingFailed');
-  const resolvedRetryText = retryText ?? t('error.retry');
+  const resolvedTitle = title ?? t('error.title')
+  const resolvedMessage = message ?? t('error.loadingFailed')
+  const resolvedRetryText = retryText ?? t('error.retry')
 
   const handleRetry = async () => {
-    if (!resetErrorBoundary) return;
+    if (!resetErrorBoundary) return
 
-    setIsRetrying(true);
+    setIsRetrying(true)
     try {
-      await resetErrorBoundary();
+      await resetErrorBoundary()
     } finally {
-      setTimeout(() => setIsRetrying(false), 500);
+      setTimeout(() => setIsRetrying(false), 500)
     }
-  };
+  }
 
   return (
     <motion.div
@@ -160,5 +160,5 @@ export default function ErrorFallback({
         </Button>
       )}
     </motion.div>
-  );
+  )
 }

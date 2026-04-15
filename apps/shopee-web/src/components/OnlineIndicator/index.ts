@@ -1,1 +1,1 @@
-export { default } from './OnlineIndicator';
+export { default } from './OnlineIndicator'

@@ -77,9 +77,7 @@ export const maskIP = (ip: string): string => {
  * @param password - Password cần kiểm tra
  * @returns Object chứa kết quả validation và thông báo lỗi
  */
-export const isValidPassword = (
-  password: string
-): { isValid: boolean; errors: string[] } => {
+export const isValidPassword = (password: string): { isValid: boolean; errors: string[] } => {
   const errors: string[] = []
 
   if (!password || typeof password !== 'string') {
@@ -133,10 +131,7 @@ export const isValidPassword = (
  * @param password - Password cần kiểm tra
  * @param minLength - Độ dài tối thiểu (mặc định 6)
  */
-export const isValidPasswordSimple = (
-  password: string,
-  minLength: number = 6
-): boolean => {
+export const isValidPasswordSimple = (password: string, minLength: number = 6): boolean => {
   if (!password || typeof password !== 'string') {
     return false
   }
@@ -167,4 +162,3 @@ export const sanitizeInput = (input: string): string => {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#x27;')
 }
-

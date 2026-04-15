@@ -1,35 +1,35 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { colorScheme } from 'nativewind';
-import { LanguageCode } from '@/config/i18n';
-import * as Localization from 'expo-localization';
-import { mmkvStorage } from './mmkvStorage';
+import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
+import { colorScheme } from 'nativewind'
+import { LanguageCode } from '@/config/i18n'
+import * as Localization from 'expo-localization'
+import { mmkvStorage } from './mmkvStorage'
 
 // Types
-export type Theme = 'light' | 'dark';
+export type Theme = 'light' | 'dark'
 
 export interface Insets {
-  left: number;
-  top: number;
-  right: number;
-  bottom: number;
+  left: number
+  top: number
+  right: number
+  bottom: number
 }
 
 interface AppState {
   // State
-  theme: Theme;
-  language: LanguageCode;
-  insets: Insets;
-  isFirstLaunch: boolean;
-  isLoading: boolean;
+  theme: Theme
+  language: LanguageCode
+  insets: Insets
+  isFirstLaunch: boolean
+  isLoading: boolean
 
   // Actions
-  setTheme: (theme: Theme) => void;
-  toggleTheme: () => void;
-  setLanguage: (language: LanguageCode) => void;
-  setInsets: (insets: Insets) => void;
-  setIsFirstLaunch: (value: boolean) => void;
-  setIsLoading: (value: boolean) => void;
+  setTheme: (theme: Theme) => void
+  toggleTheme: () => void
+  setLanguage: (language: LanguageCode) => void
+  setInsets: (insets: Insets) => void
+  setIsFirstLaunch: (value: boolean) => void
+  setIsLoading: (value: boolean) => void
 }
 
 export const useAppStore = create<AppState>()(
@@ -44,14 +44,14 @@ export const useAppStore = create<AppState>()(
 
       // Actions
       setTheme: (theme) => {
-        colorScheme.set(theme);
-        set({ theme });
+        colorScheme.set(theme)
+        set({ theme })
       },
       toggleTheme: () =>
         set((state) => {
-          const newTheme = state.theme === 'light' ? 'dark' : 'light';
-          colorScheme.set(newTheme);
-          return { theme: newTheme };
+          const newTheme = state.theme === 'light' ? 'dark' : 'light'
+          colorScheme.set(newTheme)
+          return { theme: newTheme }
         }),
       setLanguage: (language) => set({ language }),
       setInsets: (insets) => set({ insets }),
@@ -71,9 +71,9 @@ export const useAppStore = create<AppState>()(
       // Sync theme with nativewind after rehydration
       onRehydrateStorage: () => (state) => {
         if (state?.theme) {
-          colorScheme.set(state.theme);
+          colorScheme.set(state.theme)
         }
       },
     }
   )
-);
+)

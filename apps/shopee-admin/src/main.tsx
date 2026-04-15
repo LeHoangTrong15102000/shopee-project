@@ -1,12 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { RouterProvider } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from 'src/components/ui/sonner';
-import { useWebVitals } from '@shopee/shared-utils';
-import './i18n/i18n';
-import { router } from './router';
-import './index.css';
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { RouterProvider } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Toaster } from 'src/components/ui/sonner'
+import { useWebVitals } from '@shopee/shared-utils'
+import './i18n/i18n'
+import { router } from './router'
+import './index.css'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,16 +17,16 @@ const queryClient = new QueryClient({
       gcTime: 10 * 60 * 1000,
     },
   },
-});
+})
 
 function WebVitalsTracker() {
-  useWebVitals();
-  return null;
+  useWebVitals()
+  return null
 }
 
 async function enableMocking() {
-  const { worker } = await import('./mocks/browser');
-  return worker.start({ onUnhandledRequest: 'bypass' });
+  const { worker } = await import('./mocks/browser')
+  return worker.start({ onUnhandledRequest: 'bypass' })
 }
 
 enableMocking().then(() => {
@@ -38,5 +38,5 @@ enableMocking().then(() => {
         <WebVitalsTracker />
       </QueryClientProvider>
     </React.StrictMode>,
-  );
-});
+  )
+})

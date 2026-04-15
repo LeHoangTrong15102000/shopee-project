@@ -37,7 +37,9 @@ describe('Order Emit Utils', () => {
     }
     const { getIORequired } = await import('../../socket/socket.init')
     if (throwError) {
-      ;(getIORequired as jest.Mock).mockImplementation(() => { throw new Error('IO not initialized') })
+      ;(getIORequired as jest.Mock).mockImplementation(() => {
+        throw new Error('IO not initialized')
+      })
     } else {
       ;(getIORequired as jest.Mock).mockReturnValue(mockIO)
     }
@@ -49,7 +51,9 @@ describe('Order Emit Utils', () => {
     it('should emit order status update to room', async () => {
       await setupMock()
       const { PurchaseModel } = await import('@database/models/purchase.model')
-      ;(PurchaseModel.findById as jest.Mock).mockReturnValue({ select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue({ user: 'user1' }) }) })
+      ;(PurchaseModel.findById as jest.Mock).mockReturnValue({
+        select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue({ user: 'user1' }) }),
+      })
       const { emitOrderStatusUpdate } = await import('../../socket/utils/order-emit')
       emitOrderStatusUpdate('order1', 'pending', 'confirmed', 'Order confirmed')
       expect(mockIO.to).toHaveBeenCalled()
@@ -67,9 +71,19 @@ describe('Order Emit Utils', () => {
     it('should emit to admin users', async () => {
       await setupMock()
       const { UserModel } = await import('@database/models/user.model')
-      ;(UserModel.find as jest.Mock).mockReturnValue({ select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue([{ _id: 'admin1' }]) }) })
+      ;(UserModel.find as jest.Mock).mockReturnValue({
+        select: jest
+          .fn()
+          .mockReturnValue({ lean: jest.fn().mockResolvedValue([{ _id: 'admin1' }]) }),
+      })
       const { emitAdminNewOrderNotification } = await import('../../socket/utils/order-emit')
-      emitAdminNewOrderNotification({ order_id: 'o1', buyer_name: 'John', items_count: 2, total_amount: 100000, created_at: new Date().toISOString() })
+      emitAdminNewOrderNotification({
+        order_id: 'o1',
+        buyer_name: 'John',
+        items_count: 2,
+        total_amount: 100000,
+        created_at: new Date().toISOString(),
+      })
       // Flush microtask queue so fire-and-forget async completes
       await new Promise(process.nextTick)
       expect(mockIO.to).toHaveBeenCalled()

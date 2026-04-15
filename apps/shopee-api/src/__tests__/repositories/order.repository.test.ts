@@ -58,7 +58,10 @@ describe('OrderRepository', () => {
       ;(OrderModel.find as jest.Mock).mockReturnValue({ populate: mockPopulate })
       ;(OrderModel.countDocuments as jest.Mock).mockResolvedValue(1)
 
-      const result = await repository.findByUser({ user_id: '507f1f77bcf86cd799439012' }, { page: 1, limit: 10 })
+      const result = await repository.findByUser(
+        { user_id: '507f1f77bcf86cd799439012' },
+        { page: 1, limit: 10 },
+      )
 
       expect(OrderModel.find).toHaveBeenCalledWith({ user: '507f1f77bcf86cd799439012' })
       expect(result.data).toEqual([mockOrderData])
@@ -74,9 +77,15 @@ describe('OrderRepository', () => {
       ;(OrderModel.find as jest.Mock).mockReturnValue({ populate: mockPopulate })
       ;(OrderModel.countDocuments as jest.Mock).mockResolvedValue(1)
 
-      await repository.findByUser({ user_id: '507f1f77bcf86cd799439012', status: 'pending' }, { page: 1, limit: 10 })
+      await repository.findByUser(
+        { user_id: '507f1f77bcf86cd799439012', status: 'pending' },
+        { page: 1, limit: 10 },
+      )
 
-      expect(OrderModel.find).toHaveBeenCalledWith({ user: '507f1f77bcf86cd799439012', status: 'pending' })
+      expect(OrderModel.find).toHaveBeenCalledWith({
+        user: '507f1f77bcf86cd799439012',
+        status: 'pending',
+      })
     })
   })
 
@@ -100,9 +109,15 @@ describe('OrderRepository', () => {
       const mockPopulate = jest.fn().mockReturnValue({ lean: mockLean })
       ;(OrderModel.findOne as jest.Mock).mockReturnValue({ populate: mockPopulate })
 
-      const result = await repository.findByIdAndUser('507f1f77bcf86cd799439011', '507f1f77bcf86cd799439012')
+      const result = await repository.findByIdAndUser(
+        '507f1f77bcf86cd799439011',
+        '507f1f77bcf86cd799439012',
+      )
 
-      expect(OrderModel.findOne).toHaveBeenCalledWith({ _id: '507f1f77bcf86cd799439011', user: '507f1f77bcf86cd799439012' })
+      expect(OrderModel.findOne).toHaveBeenCalledWith({
+        _id: '507f1f77bcf86cd799439011',
+        user: '507f1f77bcf86cd799439012',
+      })
       expect(result).toEqual(mockOrderData)
     })
   })
@@ -114,7 +129,11 @@ describe('OrderRepository', () => {
       ;(OrderModel.create as jest.Mock).mockResolvedValue({ _id: '507f1f77bcf86cd799439011' })
       ;(OrderModel.findById as jest.Mock).mockReturnValue({ populate: mockPopulate })
 
-      const result = await repository.create({ user: '507f1f77bcf86cd799439012', items: [], total_amount: 200 } as any)
+      const result = await repository.create({
+        user: '507f1f77bcf86cd799439012',
+        items: [],
+        total_amount: 200,
+      } as any)
 
       expect(OrderModel.create).toHaveBeenCalled()
       expect(result).toEqual(mockOrderData)
@@ -129,7 +148,11 @@ describe('OrderRepository', () => {
 
       const result = await repository.updateStatus('507f1f77bcf86cd799439011', 'shipped' as any)
 
-      expect(OrderModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', { status: 'shipped' }, { new: true })
+      expect(OrderModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        '507f1f77bcf86cd799439011',
+        { status: 'shipped' },
+        { new: true },
+      )
       expect(result?.status).toBe('shipped')
     })
   })
@@ -139,9 +162,15 @@ describe('OrderRepository', () => {
       const mockLean = jest.fn().mockResolvedValue(mockTrackingData)
       ;(OrderTrackingModel.findOne as jest.Mock).mockReturnValue({ lean: mockLean })
 
-      const result = await repository.findTrackingByOrderAndUser('507f1f77bcf86cd799439011', '507f1f77bcf86cd799439012')
+      const result = await repository.findTrackingByOrderAndUser(
+        '507f1f77bcf86cd799439011',
+        '507f1f77bcf86cd799439012',
+      )
 
-      expect(OrderTrackingModel.findOne).toHaveBeenCalledWith({ order_id: '507f1f77bcf86cd799439011', user_id: '507f1f77bcf86cd799439012' })
+      expect(OrderTrackingModel.findOne).toHaveBeenCalledWith({
+        order_id: '507f1f77bcf86cd799439011',
+        user_id: '507f1f77bcf86cd799439012',
+      })
       expect(result).toEqual(mockTrackingData)
     })
   })
@@ -160,4 +189,3 @@ describe('OrderRepository', () => {
     })
   })
 })
-

@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import { User } from 'src/types/user.type';
+import { motion } from 'framer-motion'
+import { User } from 'src/types/user.type'
 
 // Shimmer effect component for incomplete fields
 export const ShimmerEffect = () => (
@@ -9,13 +9,13 @@ export const ShimmerEffect = () => (
     transition={{ duration: 2, repeat: Infinity, repeatDelay: 3, ease: 'linear' }}
     aria-hidden="true"
   />
-);
+)
 
 // Floating particles for visual interest
 export interface FloatingParticleProps {
-  delay: number;
-  size: number;
-  color: string;
+  delay: number
+  size: number
+  color: string
 }
 
 export const FloatingParticle = ({ delay, size, color }: FloatingParticleProps) => (
@@ -37,14 +37,14 @@ export const FloatingParticle = ({ delay, size, color }: FloatingParticleProps) 
     }}
     aria-hidden="true"
   />
-);
+)
 
 // Golden shimmer sparkle component for 100% completion
 export interface GoldenSparkleProps {
-  delay: number;
-  x: number;
-  y: number;
-  size?: number;
+  delay: number
+  x: number
+  y: number
+  size?: number
 }
 
 export const GoldenSparkle = ({ delay, x, y, size = 6 }: GoldenSparkleProps) => (
@@ -64,7 +64,7 @@ export const GoldenSparkle = ({ delay, x, y, size = 6 }: GoldenSparkleProps) => 
     }}
     aria-hidden="true"
   />
-);
+)
 
 // SVG Icons for profile fields
 export const ProfileIcons = {
@@ -154,7 +154,7 @@ export const ProfileIcons = {
       />
     </svg>
   ),
-};
+}
 
 export const PROFILE_FIELDS = [
   { key: 'name', weight: 20 },
@@ -162,17 +162,17 @@ export const PROFILE_FIELDS = [
   { key: 'phone', weight: 20 },
   { key: 'address', weight: 20 },
   { key: 'date_of_birth', weight: 20 },
-] as const;
+] as const
 
-export type ProfileFieldKey = (typeof PROFILE_FIELDS)[number]['key'];
+export type ProfileFieldKey = (typeof PROFILE_FIELDS)[number]['key']
 
 export const isFieldComplete = (user: User | null, key: ProfileFieldKey): boolean => {
-  if (!user) return false;
-  const value = user[key];
-  if (value === undefined || value === null || value === '') return false;
+  if (!user) return false
+  const value = user[key]
+  if (value === undefined || value === null || value === '') return false
   if (key === 'date_of_birth') {
-    const date = new Date(value);
-    return !isNaN(date.getTime());
+    const date = new Date(value)
+    return !isNaN(date.getTime())
   }
-  return true;
-};
+  return true
+}

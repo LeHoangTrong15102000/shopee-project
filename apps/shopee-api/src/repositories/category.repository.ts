@@ -24,7 +24,7 @@ export class CategoryRepository implements ICategoryRepository {
 
   async findPaginated(
     filter: FilterQuery<ICategory>,
-    options: PaginationOptions
+    options: PaginationOptions,
   ): Promise<PaginatedResult<ICategory>> {
     const { page, limit, sort } = options
     const skip = (page - 1) * limit
@@ -55,7 +55,10 @@ export class CategoryRepository implements ICategoryRepository {
     return saved.toObject() as ICategory
   }
 
-  async updateById(id: string | Types.ObjectId, data: UpdateCategoryDTO): Promise<ICategory | null> {
+  async updateById(
+    id: string | Types.ObjectId,
+    data: UpdateCategoryDTO,
+  ): Promise<ICategory | null> {
     return CategoryModel.findByIdAndUpdate(id, data, { new: true }).lean<ICategory | null>()
   }
 
@@ -126,4 +129,3 @@ export class CategoryRepository implements ICategoryRepository {
     return CategoryModel.find({ name: regex }).sort({ name: 1 }).lean<ICategory[]>()
   }
 }
-

@@ -11,7 +11,7 @@ import { PaginatedResult, PaginationOptions } from './interfaces/base.repository
 export class OrderRepository implements IOrderRepository {
   async findByUser(
     filters: OrderFilterOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IOrder>> {
     const { page, limit } = pagination
     const skip = (page - 1) * limit
@@ -41,32 +41,40 @@ export class OrderRepository implements IOrderRepository {
     return OrderModel.findById(orderId).populate('items.product').lean<IOrder | null>()
   }
 
-  async findByIdAndUser(orderId: string | Types.ObjectId, userId: string | Types.ObjectId): Promise<IOrder | null> {
-    return OrderModel.findOne({ _id: orderId, user: userId }).populate('items.product').lean<IOrder | null>()
+  async findByIdAndUser(
+    orderId: string | Types.ObjectId,
+    userId: string | Types.ObjectId,
+  ): Promise<IOrder | null> {
+    return OrderModel.findOne({ _id: orderId, user: userId })
+      .populate('items.product')
+      .lean<IOrder | null>()
   }
 
   async create(data: CreateOrderDTO): Promise<IOrder> {
     const order = await OrderModel.create(data)
-    return OrderModel.findById(order._id).populate('items.product').lean<IOrder>() as Promise<IOrder>
+    return OrderModel.findById(order._id)
+      .populate('items.product')
+      .lean<IOrder>() as Promise<IOrder>
   }
 
   async updateStatus(
     orderId: string | Types.ObjectId,
     status: OrderStatusType,
-    additionalData?: Partial<IOrder>
+    additionalData?: Partial<IOrder>,
   ): Promise<IOrder | null> {
-    return OrderModel.findByIdAndUpdate(
-      orderId,
-      { status, ...additionalData },
-      { new: true }
-    ).populate('items.product').lean<IOrder | null>()
+    return OrderModel.findByIdAndUpdate(orderId, { status, ...additionalData }, { new: true })
+      .populate('items.product')
+      .lean<IOrder | null>()
   }
 
   async findTrackingByOrderAndUser(
     orderId: string | Types.ObjectId,
-    userId: string | Types.ObjectId
+    userId: string | Types.ObjectId,
   ): Promise<IOrderTracking | null> {
-    return OrderTrackingModel.findOne({ order_id: orderId, user_id: userId }).lean<IOrderTracking | null>()
+    return OrderTrackingModel.findOne({
+      order_id: orderId,
+      user_id: userId,
+    }).lean<IOrderTracking | null>()
   }
 
   async findTrackingByNumber(trackingNumber: string): Promise<IOrderTracking | null> {
@@ -84,7 +92,7 @@ export class OrderRepository implements IOrderRepository {
       start_date?: string
       end_date?: string
     },
-    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' }
+    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' },
   ): Promise<PaginatedResult<IOrder>> {
     const { page, limit, sort_by = 'createdAt', order = 'desc' } = pagination
     const skip = (page - 1) * limit
@@ -119,10 +127,7 @@ export class OrderRepository implements IOrderRepository {
         { $unwind: { path: '$user_info', preserveNullAndEmptyArrays: true } },
         {
           $match: {
-            $or: [
-              { 'user_info.name': searchRegex },
-              { 'user_info.email': searchRegex },
-            ],
+            $or: [{ 'user_info.name': searchRegex }, { 'user_info.email': searchRegex }],
           },
         },
       ]
@@ -155,9 +160,6 @@ export class OrderRepository implements IOrderRepository {
   }
 
   async countByStatus(): Promise<Array<{ _id: string; count: number }>> {
-    return OrderModel.aggregate([
-      { $group: { _id: '$status', count: { $sum: 1 } } },
-    ])
+    return OrderModel.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }])
   }
 }
-

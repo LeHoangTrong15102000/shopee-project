@@ -1,31 +1,31 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import React, { useCallback, useEffect, useState } from 'react'
+import { Text, View } from 'react-native'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
   Extrapolation,
   interpolate,
   useAnimatedStyle,
   useSharedValue,
-} from 'react-native-reanimated';
-import { runOnJS } from 'react-native-worklets';
-import { cn } from '@/utils';
-import { cva } from 'class-variance-authority';
+} from 'react-native-reanimated'
+import { runOnJS } from 'react-native-worklets'
+import { cn } from '@/utils'
+import { cva } from 'class-variance-authority'
 
 interface SliderProps {
-  value?: number;
-  onValueChange?: (value: number) => void;
-  minimumValue?: number;
-  maximumValue?: number;
-  step?: number;
-  disabled?: boolean;
-  showValue?: boolean;
-  size?: 'sm' | 'md' | 'lg';
-  className?: string;
-  trackClassName?: string;
-  thumbClassName?: string;
-  fillClassName?: string;
-  label?: string;
-  labelClassName?: string;
+  value?: number
+  onValueChange?: (value: number) => void
+  minimumValue?: number
+  maximumValue?: number
+  step?: number
+  disabled?: boolean
+  showValue?: boolean
+  size?: 'sm' | 'md' | 'lg'
+  className?: string
+  trackClassName?: string
+  thumbClassName?: string
+  fillClassName?: string
+  label?: string
+  labelClassName?: string
 }
 
 const sliderVariants = cva('relative justify-center', {
@@ -44,7 +44,7 @@ const sliderVariants = cva('relative justify-center', {
     size: 'md',
     disabled: false,
   },
-});
+})
 
 const trackVariants = cva('absolute w-full rounded-full bg-neutrals800', {
   variants: {
@@ -57,7 +57,7 @@ const trackVariants = cva('absolute w-full rounded-full bg-neutrals800', {
   defaultVariants: {
     size: 'md',
   },
-});
+})
 
 const fillVariants = cva('absolute rounded-full bg-primary', {
   variants: {
@@ -70,7 +70,7 @@ const fillVariants = cva('absolute rounded-full bg-primary', {
   defaultVariants: {
     size: 'md',
   },
-});
+})
 
 const thumbVariants = cva('absolute bg-white border-2 border-primary rounded-full shadow-lg', {
   variants: {
@@ -83,7 +83,7 @@ const thumbVariants = cva('absolute bg-white border-2 border-primary rounded-ful
   defaultVariants: {
     size: 'md',
   },
-});
+})
 
 export default function Slider({
   value,
@@ -101,62 +101,62 @@ export default function Slider({
   label,
   labelClassName,
 }: SliderProps) {
-  const [sliderValue, setSliderValue] = useState<number>(value ?? 0);
-  const scale = useSharedValue(1);
-  const sliderWidth = useSharedValue(0);
+  const [sliderValue, setSliderValue] = useState<number>(value ?? 0)
+  const scale = useSharedValue(1)
+  const sliderWidth = useSharedValue(0)
 
   const updateValue = useCallback(
     (newValue: number) => {
-      const clampedValue = Math.max(minimumValue, Math.min(maximumValue, newValue));
-      const steppedValue = Math.round(clampedValue / step) * step;
-      onValueChange?.(steppedValue);
-      setSliderValue(steppedValue);
+      const clampedValue = Math.max(minimumValue, Math.min(maximumValue, newValue))
+      const steppedValue = Math.round(clampedValue / step) * step
+      onValueChange?.(steppedValue)
+      setSliderValue(steppedValue)
     },
     [minimumValue, maximumValue, step, onValueChange]
-  );
+  )
 
   const pan = Gesture.Pan()
     .onBegin(() => {
-      scale.value = 1.2;
+      scale.value = 1.2
     })
     .onChange((event) => {
-      const progress = event.x / sliderWidth.value;
-      const clampedProgress = Math.max(0, Math.min(1, progress));
+      const progress = event.x / sliderWidth.value
+      const clampedProgress = Math.max(0, Math.min(1, progress))
 
-      const newValue = minimumValue + clampedProgress * (maximumValue - minimumValue);
-      runOnJS(updateValue)(newValue);
+      const newValue = minimumValue + clampedProgress * (maximumValue - minimumValue)
+      runOnJS(updateValue)(newValue)
     })
     .onFinalize(() => {
-      scale.value = 1;
+      scale.value = 1
     })
-    .enabled(!disabled);
+    .enabled(!disabled)
 
   const thumbAnimatedStyle = useAnimatedStyle(() => {
-    const thumbSize = size === 'sm' ? 16 : size === 'md' ? 20 : 24;
-    const progress = (sliderValue - minimumValue) / (maximumValue - minimumValue);
+    const thumbSize = size === 'sm' ? 16 : size === 'md' ? 20 : 24
+    const progress = (sliderValue - minimumValue) / (maximumValue - minimumValue)
 
     const translateValue = interpolate(
       progress,
       [0, 1],
       [0, sliderWidth.value - thumbSize],
       Extrapolation.CLAMP
-    );
+    )
 
     return {
       transform: [{ translateX: translateValue }, { scale: scale.value }],
-    };
-  });
+    }
+  })
 
   const fillAnimatedStyle = useAnimatedStyle(() => {
-    const progress = (sliderValue - minimumValue) / (maximumValue - minimumValue);
+    const progress = (sliderValue - minimumValue) / (maximumValue - minimumValue)
     return {
       width: `${progress * 100}%`,
-    };
-  });
+    }
+  })
 
   useEffect(() => {
-    setSliderValue(value ?? 0);
-  }, [value]);
+    setSliderValue(value ?? 0)
+  }, [value])
 
   return (
     <View className={cn('w-full', className)}>
@@ -170,7 +170,7 @@ export default function Slider({
             className={cn(sliderVariants({ size, disabled }))}
             style={{ flex: 1 }}
             onLayout={(event) => {
-              sliderWidth.value = event.nativeEvent.layout.width;
+              sliderWidth.value = event.nativeEvent.layout.width
             }}>
             <View className={cn(trackVariants({ size }), trackClassName)} />
 
@@ -193,5 +193,5 @@ export default function Slider({
         )}
       </View>
     </View>
-  );
+  )
 }

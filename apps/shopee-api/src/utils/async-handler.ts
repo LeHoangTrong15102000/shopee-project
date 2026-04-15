@@ -22,11 +22,7 @@ import { Request, Response, NextFunction, RequestHandler } from 'express'
  * })
  */
 
-type AsyncRequestHandler = (
-  req: Request<any>,
-  res: Response,
-  next: NextFunction
-) => Promise<any>
+type AsyncRequestHandler = (req: Request<any>, res: Response, next: NextFunction) => Promise<any>
 
 export const asyncHandler = (fn: AsyncRequestHandler): RequestHandler => {
   return (req: Request, res: Response, next: NextFunction): void => {
@@ -64,7 +60,7 @@ export const asyncHandlers = (handlers: AsyncRequestHandler[]): RequestHandler[]
  */
 export const asyncHandlerWithTimeout = (
   fn: AsyncRequestHandler,
-  timeoutMs: number = 30000
+  timeoutMs: number = 30000,
 ): RequestHandler => {
   return (req: Request, res: Response, next: NextFunction): void => {
     const timeoutPromise = new Promise<never>((_, reject) => {
@@ -94,7 +90,7 @@ export const asyncHandlerWithTimeout = (
 export const asyncHandlerWithRetry = (
   fn: AsyncRequestHandler,
   maxRetries: number = 3,
-  delayMs: number = 1000
+  delayMs: number = 1000,
 ): RequestHandler => {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     let lastError: Error | null = null
@@ -140,7 +136,7 @@ export const asyncHandlerWithRetry = (
  */
 export const asyncHandlerWithErrorTransform = (
   fn: AsyncRequestHandler,
-  errorTransformer: (error: Error) => Error
+  errorTransformer: (error: Error) => Error,
 ): RequestHandler => {
   return (req: Request, res: Response, next: NextFunction): void => {
     Promise.resolve(fn(req, res, next)).catch((error) => {
@@ -150,4 +146,3 @@ export const asyncHandlerWithErrorTransform = (
 }
 
 export default asyncHandler
-

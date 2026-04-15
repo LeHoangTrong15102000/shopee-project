@@ -1,13 +1,13 @@
-import React from 'react';
-import { View, Pressable } from 'react-native';
-import { Search, ShoppingCart } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { AppText } from '@/components/ui';
+import React from 'react'
+import { View, Pressable } from 'react-native'
+import { Search, ShoppingCart } from 'lucide-react-native'
+import { useRouter } from 'expo-router'
+import { useTranslation } from 'react-i18next'
+import { AppText } from '@/components/ui'
 
 export default function SearchHeader() {
-  const router = useRouter();
-  const { t } = useTranslation();
+  const router = useRouter()
+  const { t } = useTranslation()
 
   return (
     <View className="pt-safe-offset-3 flex-row items-center gap-3 bg-primary px-4 pb-3">
@@ -28,5 +28,5 @@ export default function SearchHeader() {
         <ShoppingCart size={24} color="#FFFFFF" />
       </Pressable>
     </View>
-  );
+  )
 }

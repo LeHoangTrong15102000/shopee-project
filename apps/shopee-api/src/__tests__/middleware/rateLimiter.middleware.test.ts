@@ -211,9 +211,7 @@ describe('rateLimiter.middleware', () => {
       middleware(req, res, next)
       middleware(req, res, next)
 
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({ message: customMessage })
-      )
+      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ message: customMessage }))
     })
   })
 
@@ -252,8 +250,7 @@ describe('rateLimiter.middleware', () => {
     }
 
     it('removes expired entries and keeps active ones', () => {
-      const { createChatbotRateLimit, cleanupExpiredRateLimits, getRateLimitStats } =
-        getModule()
+      const { createChatbotRateLimit, cleanupExpiredRateLimits, getRateLimitStats } = getModule()
       const middleware = createChatbotRateLimit({ windowMs: 60000, maxRequests: 10 })
       const req1 = createMockReq({ ip: '1.1.1.1' })
       const req2 = createMockReq({ ip: '2.2.2.2' })

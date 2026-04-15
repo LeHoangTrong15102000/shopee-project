@@ -1,5 +1,5 @@
-import { SuccessResponseApi } from 'src/types/utils.type';
-import http from 'src/utils/http';
+import { SuccessResponseApi } from 'src/types/utils.type'
+import http from 'src/utils/http'
 import {
   WishlistResponse,
   WishlistCheckResponse,
@@ -7,10 +7,10 @@ import {
   WishlistClearResponse,
   AddToWishlistBody,
   WishlistItem,
-} from 'src/types/wishlist.type';
+} from 'src/types/wishlist.type'
 
 export interface ApiOptions {
-  signal?: AbortSignal;
+  signal?: AbortSignal
 }
 
 // Helper to create mock product
@@ -46,7 +46,7 @@ const _mp = (
     updatedAt: new Date().toISOString(),
   },
   addedAt: new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000).toISOString(),
-});
+})
 
 // Mock data for fallback when API is not available
 const mockWishlistItems: WishlistItem[] = [
@@ -144,7 +144,7 @@ const mockWishlistItems: WishlistItem[] = [
   _mp(26, 'Máy sấy tóc ion âm 2200W', 385000, 580000, 'c6', 'Làm đẹp', 3100, 4.6, 100, 0),
   _mp(27, 'Đồng hồ thể thao nam chống nước', 490000, 790000, 'c7', 'Thể thao', 1400, 4.5, 55, 8),
   _mp(28, 'Bộ đồ chơi xếp hình gỗ cho bé', 145000, 230000, 'c9', 'Đồ chơi', 2200, 4.7, 200, 5),
-];
+]
 
 const wishlistApi = {
   getWishlist: async (params?: { page?: number; limit?: number }, options?: ApiOptions) => {
@@ -152,10 +152,10 @@ const wishlistApi = {
       const response = await http.get<SuccessResponseApi<WishlistResponse>>('/wishlist', {
         params,
         signal: options?.signal,
-      });
-      return response;
+      })
+      return response
     } catch (error) {
-      console.warn('⚠️ [getWishlist] API not available, using mock data');
+      console.warn('⚠️ [getWishlist] API not available, using mock data')
       return {
         data: {
           message: 'Lấy danh sách yêu thích thành công',
@@ -169,7 +169,7 @@ const wishlistApi = {
             },
           } as WishlistResponse,
         },
-      };
+      }
     }
   },
 
@@ -177,16 +177,16 @@ const wishlistApi = {
     try {
       const response = await http.post<SuccessResponseApi<WishlistItem>>('/wishlist', body, {
         signal: options?.signal,
-      });
-      return response;
+      })
+      return response
     } catch (error) {
-      console.warn('⚠️ [addToWishlist] API not available, using mock data');
+      console.warn('⚠️ [addToWishlist] API not available, using mock data')
       return {
         data: {
           message: 'Thêm vào danh sách yêu thích thành công',
           data: mockWishlistItems[0],
         },
-      };
+      }
     }
   },
 
@@ -197,16 +197,16 @@ const wishlistApi = {
         {
           signal: options?.signal,
         },
-      );
-      return response;
+      )
+      return response
     } catch (error) {
-      console.warn('⚠️ [removeFromWishlist] API not available, using mock data');
+      console.warn('⚠️ [removeFromWishlist] API not available, using mock data')
       return {
         data: {
           message: 'Xóa khỏi danh sách yêu thích thành công',
           data: { message: 'Xóa khỏi danh sách yêu thích thành công' },
         },
-      };
+      }
     }
   },
 
@@ -217,16 +217,16 @@ const wishlistApi = {
         {
           signal: options?.signal,
         },
-      );
-      return response;
+      )
+      return response
     } catch (error) {
-      console.warn('⚠️ [checkInWishlist] API not available, using mock data');
+      console.warn('⚠️ [checkInWishlist] API not available, using mock data')
       return {
         data: {
           message: 'Kiểm tra danh sách yêu thích thành công',
           data: { in_wishlist: true } as WishlistCheckResponse,
         },
-      };
+      }
     }
   },
 
@@ -234,16 +234,16 @@ const wishlistApi = {
     try {
       const response = await http.delete<SuccessResponseApi<WishlistClearResponse>>('/wishlist', {
         signal: options?.signal,
-      });
-      return response;
+      })
+      return response
     } catch (error) {
-      console.warn('⚠️ [clearWishlist] API not available, using mock data');
+      console.warn('⚠️ [clearWishlist] API not available, using mock data')
       return {
         data: {
           message: 'Xóa toàn bộ danh sách yêu thích thành công',
           data: { deleted_count: mockWishlistItems.length } as WishlistClearResponse,
         },
-      };
+      }
     }
   },
 
@@ -254,18 +254,18 @@ const wishlistApi = {
         {
           signal: options?.signal,
         },
-      );
-      return response;
+      )
+      return response
     } catch (error) {
-      console.warn('⚠️ [getWishlistCount] API not available, using mock data');
+      console.warn('⚠️ [getWishlistCount] API not available, using mock data')
       return {
         data: {
           message: 'Lấy số lượng yêu thích thành công',
           data: { count: mockWishlistItems.length } as WishlistCountResponse,
         },
-      };
+      }
     }
   },
-};
+}
 
-export default wishlistApi;
+export default wishlistApi

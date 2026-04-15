@@ -1,23 +1,23 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { chipVariants } from '../orderSearchFilter.constants';
-import { formatCurrency } from 'src/utils/utils';
-import Button from 'src/components/Button';
+import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { chipVariants } from '../orderSearchFilter.constants'
+import { formatCurrency } from 'src/utils/utils'
+import Button from 'src/components/Button'
 
 interface ActiveFilterChipsProps {
-  reducedMotion: boolean;
-  totalResults?: number;
-  searchQuery: string;
-  dateRange: { from: string; to: string } | null;
-  priceRange: { min: number; max: number } | null;
-  hasSearchFilter: boolean;
-  hasDateFilter: boolean;
-  hasPriceFilter: boolean;
-  hasAnyFilter: boolean;
-  onClearSearch: () => void;
-  onClearDateRange: () => void;
-  onClearPriceRange: () => void;
-  onClearAllFilters: () => void;
+  reducedMotion: boolean
+  totalResults?: number
+  searchQuery: string
+  dateRange: { from: string; to: string } | null
+  priceRange: { min: number; max: number } | null
+  hasSearchFilter: boolean
+  hasDateFilter: boolean
+  hasPriceFilter: boolean
+  hasAnyFilter: boolean
+  onClearSearch: () => void
+  onClearDateRange: () => void
+  onClearPriceRange: () => void
+  onClearAllFilters: () => void
 }
 
 export default function ActiveFilterChips({
@@ -35,7 +35,7 @@ export default function ActiveFilterChips({
   onClearPriceRange,
   onClearAllFilters,
 }: ActiveFilterChipsProps) {
-  const { t } = useTranslation(['common', 'order']);
+  const { t } = useTranslation(['common', 'order'])
   return (
     <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
       <div className="flex flex-wrap items-center gap-2">
@@ -193,5 +193,5 @@ export default function ActiveFilterChips({
         </Button>
       )}
     </div>
-  );
+  )
 }

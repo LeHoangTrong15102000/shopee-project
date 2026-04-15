@@ -15,7 +15,10 @@ jest.mock('../../socket/managers/presence.manager', () => ({
 import { Socket } from 'socket.io'
 import { SocketEvent } from '../../@types/socket.type'
 import { SOCKET_ERRORS } from '@constants/socket'
-import { registerPresenceHandlers, broadcastPresenceUpdate } from '../../socket/handlers/presence.handler'
+import {
+  registerPresenceHandlers,
+  broadcastPresenceUpdate,
+} from '../../socket/handlers/presence.handler'
 import { getUserPresence } from '../../socket/managers/presence.manager'
 
 describe('Presence Handler', () => {
@@ -156,4 +159,3 @@ describe('Presence Handler', () => {
     })
   })
 })
-

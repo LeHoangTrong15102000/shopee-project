@@ -18,7 +18,7 @@ adminNotificationRouter.get(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   validate(adminGetNotificationsSchema),
-  asyncHandler(notificationController.adminGetNotifications)
+  asyncHandler(notificationController.adminGetNotifications),
 )
 
 // Create targeted notification (admin)
@@ -27,7 +27,7 @@ adminNotificationRouter.post(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   validate(adminCreateNotificationSchema),
-  asyncHandler(notificationController.adminCreateNotification)
+  asyncHandler(notificationController.adminCreateNotification),
 )
 
 // Broadcast notification to all users (admin)
@@ -36,7 +36,7 @@ adminNotificationRouter.post(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   validate(adminBroadcastNotificationSchema),
-  asyncHandler(notificationController.adminBroadcastNotification)
+  asyncHandler(notificationController.adminBroadcastNotification),
 )
 
 // Delete notification (admin)
@@ -45,8 +45,7 @@ adminNotificationRouter.delete(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   validate(adminDeleteNotificationSchema),
-  asyncHandler(notificationController.adminDeleteNotification)
+  asyncHandler(notificationController.adminDeleteNotification),
 )
 
 export default adminNotificationRouter
-

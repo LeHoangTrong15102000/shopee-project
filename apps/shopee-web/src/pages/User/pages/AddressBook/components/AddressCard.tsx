@@ -1,24 +1,24 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
-import ShopeeCheckbox from 'src/components/ShopeeCheckbox';
-import { Address, AddressType } from 'src/types/checkout.type';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
+import ShopeeCheckbox from 'src/components/ShopeeCheckbox'
+import { Address, AddressType } from 'src/types/checkout.type'
 
 export interface AddressCardProps {
-  address: Address;
-  isDefault?: boolean;
-  onEdit: (address: Address) => void;
-  onDelete: (id: string) => void;
-  onSetDefault: (id: string) => void;
-  formatAddress: (address: Address) => string;
+  address: Address
+  isDefault?: boolean
+  onEdit: (address: Address) => void
+  onDelete: (id: string) => void
+  onSetDefault: (id: string) => void
+  formatAddress: (address: Address) => string
   getAddressTypeInfo: (type?: AddressType) => {
-    label: string;
-    icon: React.ReactNode;
-    color: string;
-  };
-  isSelectionMode?: boolean;
-  isSelected?: boolean;
-  onToggleSelect?: (id: string) => void;
+    label: string
+    icon: React.ReactNode
+    color: string
+  }
+  isSelectionMode?: boolean
+  isSelected?: boolean
+  onToggleSelect?: (id: string) => void
 }
 
 const AddressCard = ({
@@ -33,10 +33,10 @@ const AddressCard = ({
   isSelected,
   onToggleSelect,
 }: AddressCardProps) => {
-  const { t } = useTranslation('address');
-  const typeInfo = getAddressTypeInfo(address.addressType);
+  const { t } = useTranslation('address')
+  const typeInfo = getAddressTypeInfo(address.addressType)
   const displayLabel =
-    address.addressType === 'other' && address.label ? address.label : typeInfo.label;
+    address.addressType === 'other' && address.label ? address.label : typeInfo.label
 
   const colorClasses: Record<string, { bg: string; text: string; border: string }> = {
     blue: {
@@ -54,8 +54,8 @@ const AddressCard = ({
       text: 'text-gray-700 dark:text-gray-300',
       border: 'border-gray-200 dark:border-slate-600',
     },
-  };
-  const typeColors = colorClasses[typeInfo.color] || colorClasses.gray;
+  }
+  const typeColors = colorClasses[typeInfo.color] || colorClasses.gray
 
   return (
     <motion.div
@@ -254,7 +254,7 @@ const AddressCard = ({
         </div>
       )}
     </motion.div>
-  );
-};
+  )
+}
 
-export default AddressCard;
+export default AddressCard

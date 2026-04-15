@@ -14,11 +14,11 @@ import type {
   ImportStats,
   ProductAnalytics,
   ChatbotAnalytics,
-} from 'src/types';
+} from 'src/types'
 
-let counter = 0;
+let counter = 0
 function uid() {
-  return `mock-${++counter}-${Math.random().toString(36).slice(2, 8)}`;
+  return `mock-${++counter}-${Math.random().toString(36).slice(2, 8)}`
 }
 
 export function createMockCategory(overrides: Partial<Category> = {}): Category {
@@ -26,7 +26,7 @@ export function createMockCategory(overrides: Partial<Category> = {}): Category 
     _id: uid(),
     name: 'Điện thoại',
     ...overrides,
-  };
+  }
 }
 
 export function createMockProduct(overrides: Partial<Product> = {}): Product {
@@ -46,13 +46,13 @@ export function createMockProduct(overrides: Partial<Product> = {}): Product {
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
     ...overrides,
-  };
+  }
 }
 
 export function createMockProducts(count: number): Product[] {
   return Array.from({ length: count }, (_, i) =>
     createMockProduct({ _id: `product-${i + 1}`, name: `Product ${i + 1}` }),
-  );
+  )
 }
 
 export function createMockUser(overrides: Partial<User> = {}): User {
@@ -68,7 +68,7 @@ export function createMockUser(overrides: Partial<User> = {}): User {
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
     ...overrides,
-  };
+  }
 }
 
 export function createMockOrder(overrides: Partial<Order> = {}): Order {
@@ -77,7 +77,7 @@ export function createMockOrder(overrides: Partial<Order> = {}): Order {
     buy_count: 1,
     price: 29990000,
     price_before_discount: 34990000,
-  };
+  }
   return {
     _id: uid(),
     user: createMockUser(),
@@ -90,7 +90,7 @@ export function createMockOrder(overrides: Partial<Order> = {}): Order {
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
     ...overrides,
-  };
+  }
 }
 
 export function createMockNotification(overrides: Partial<Notification> = {}): Notification {
@@ -102,7 +102,7 @@ export function createMockNotification(overrides: Partial<Notification> = {}): N
     is_read: false,
     createdAt: '2024-01-01T00:00:00.000Z',
     ...overrides,
-  };
+  }
 }
 
 export function createMockReview(overrides: Partial<Review> = {}): Review {
@@ -117,7 +117,7 @@ export function createMockReview(overrides: Partial<Review> = {}): Review {
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
     ...overrides,
-  };
+  }
 }
 
 export function createMockVoucher(overrides: Partial<Voucher> = {}): Voucher {
@@ -135,7 +135,7 @@ export function createMockVoucher(overrides: Partial<Voucher> = {}): Voucher {
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
     ...overrides,
-  };
+  }
 }
 
 export function createMockDashboardOverview(
@@ -151,7 +151,7 @@ export function createMockDashboardOverview(
     users_change: 15.2,
     products_change: 3.1,
     ...overrides,
-  };
+  }
 }
 
 export function createMockLoyaltyReward(overrides: Partial<LoyaltyReward> = {}): LoyaltyReward {
@@ -164,7 +164,7 @@ export function createMockLoyaltyReward(overrides: Partial<LoyaltyReward> = {}):
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
     ...overrides,
-  };
+  }
 }
 
 export function createMockLoyaltyTransaction(
@@ -178,7 +178,7 @@ export function createMockLoyaltyTransaction(
     description: 'Mua hàng',
     createdAt: '2024-01-01T00:00:00.000Z',
     ...overrides,
-  };
+  }
 }
 
 export function createMockQAQuestion(overrides: Partial<QAQuestion> = {}): QAQuestion {
@@ -194,7 +194,7 @@ export function createMockQAQuestion(overrides: Partial<QAQuestion> = {}): QAQue
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
     ...overrides,
-  };
+  }
 }
 
 export function createMockImportStats(overrides: Partial<ImportStats> = {}): ImportStats {
@@ -206,7 +206,7 @@ export function createMockImportStats(overrides: Partial<ImportStats> = {}): Imp
       { _id: 'TP.HCM', count: 60 },
     ],
     ...overrides,
-  };
+  }
 }
 
 export function createMockProductAnalytics(
@@ -221,7 +221,7 @@ export function createMockProductAnalytics(
     rating: 4.5,
     revenue: 1499500000,
     ...overrides,
-  };
+  }
 }
 
 export function createMockChatbotAnalytics(
@@ -233,5 +233,5 @@ export function createMockChatbotAnalytics(
     avg_messages_per_conversation: 5,
     satisfaction_rate: 0.85,
     ...overrides,
-  };
+  }
 }

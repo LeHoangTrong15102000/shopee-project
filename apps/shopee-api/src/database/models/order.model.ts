@@ -81,7 +81,7 @@ const OrderItemSchema = new Schema<IOrderItem>(
     price_before_discount: { type: Number, required: true },
     sku: { type: mongoose.SchemaTypes.ObjectId, ref: 'skus' },
   },
-  { _id: false }
+  { _id: false },
 )
 
 const ShippingAddressSchema = new Schema<IShippingAddress>(
@@ -93,7 +93,7 @@ const ShippingAddressSchema = new Schema<IShippingAddress>(
     ward: { type: String, required: true },
     street: { type: String, required: true },
   },
-  { _id: false }
+  { _id: false },
 )
 
 const OrderSchema = new Schema<IOrder>(
@@ -136,7 +136,7 @@ const OrderSchema = new Schema<IOrder>(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 OrderSchema.index({ user: 1, status: 1 })

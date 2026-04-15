@@ -1,26 +1,26 @@
-import SEO from 'src/components/SEO';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
-import ComparisonTable from 'src/components/ComparisonTable';
-import RecentlyViewed from 'src/components/RecentlyViewed';
-import { useProductComparison } from 'src/hooks/useProductComparison';
-import { useRecentlyViewed } from 'src/hooks/useRecentlyViewed';
-import { useOptimisticAddToCart } from 'src/hooks/optimistic';
-import { Product } from 'src/types/product.type';
-import path from 'src/constant/path';
+import SEO from 'src/components/SEO'
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
+import ComparisonTable from 'src/components/ComparisonTable'
+import RecentlyViewed from 'src/components/RecentlyViewed'
+import { useProductComparison } from 'src/hooks/useProductComparison'
+import { useRecentlyViewed } from 'src/hooks/useRecentlyViewed'
+import { useOptimisticAddToCart } from 'src/hooks/optimistic'
+import { Product } from 'src/types/product.type'
+import path from 'src/constant/path'
 
 const Compare = () => {
-  const { t } = useTranslation('compare');
-  const { compareList } = useProductComparison();
-  const { recentlyViewed, removeProduct, clearAll } = useRecentlyViewed();
-  const addToCartMutation = useOptimisticAddToCart();
+  const { t } = useTranslation('compare')
+  const { compareList } = useProductComparison()
+  const { recentlyViewed, removeProduct, clearAll } = useRecentlyViewed()
+  const addToCartMutation = useOptimisticAddToCart()
 
   const handleAddToCart = (product: Product) => {
     addToCartMutation.mutate({
       product_id: product._id,
       buy_count: 1,
-    });
-  };
+    })
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 py-4 sm:py-6 dark:bg-slate-900">
@@ -70,7 +70,7 @@ const Compare = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Compare;
+export default Compare

@@ -3,10 +3,10 @@ export const sortBy = {
   view: 'view',
   sold: 'sold',
   price: 'price',
-} as const;
+} as const
 
 // tránh trường hợp sortBy.createdAt = 'updatedAt' -> bị thay đổi giá trị
 export const order = {
   asc: 'asc',
   desc: 'desc',
-} as const;
+} as const

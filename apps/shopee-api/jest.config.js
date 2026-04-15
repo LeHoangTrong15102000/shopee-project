@@ -31,12 +31,7 @@ const sharedConfig = {
 
 module.exports = {
   // Coverage configuration (applies when running with --coverage)
-  collectCoverageFrom: [
-    'src/**/*.ts',
-    '!src/**/*.d.ts',
-    '!src/__tests__/**',
-    '!src/index.ts',
-  ],
+  collectCoverageFrom: ['src/**/*.ts', '!src/**/*.d.ts', '!src/__tests__/**', '!src/index.ts'],
 
   projects: [
     // Unit tests — existing tests + new schema/repository/middleware tests
@@ -81,4 +76,3 @@ module.exports = {
     },
   ],
 }
-

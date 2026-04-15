@@ -1,8 +1,8 @@
-import React from 'react';
-import { render, type RenderOptions } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { MemoryRouter, type MemoryRouterProps } from 'react-router-dom';
-import userEvent from '@testing-library/user-event';
+import React from 'react'
+import { render, type RenderOptions } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { MemoryRouter, type MemoryRouterProps } from 'react-router-dom'
+import userEvent from '@testing-library/user-event'
 
 export function createTestQueryClient() {
   return new QueryClient({
@@ -17,19 +17,19 @@ export function createTestQueryClient() {
         gcTime: 0,
       },
     },
-  });
+  })
 }
 
 export function createQueryWrapper() {
-  const queryClient = createTestQueryClient();
+  const queryClient = createTestQueryClient()
   return function QueryWrapper({ children }: { children: React.ReactNode }) {
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
-  };
+    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  }
 }
 
 interface RenderWithProvidersOptions extends Omit<RenderOptions, 'wrapper'> {
-  initialEntries?: MemoryRouterProps['initialEntries'];
-  queryClient?: QueryClient;
+  initialEntries?: MemoryRouterProps['initialEntries']
+  queryClient?: QueryClient
 }
 
 export function renderWithProviders(
@@ -40,18 +40,18 @@ export function renderWithProviders(
     initialEntries = ['/'],
     queryClient = createTestQueryClient(),
     ...renderOptions
-  } = options;
+  } = options
 
   function Wrapper({ children }: { children: React.ReactNode }) {
     return (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
       </QueryClientProvider>
-    );
+    )
   }
 
   return {
     ...render(ui, { wrapper: Wrapper, ...renderOptions }),
     user: userEvent.setup(),
-  };
+  }
 }

@@ -25,11 +25,18 @@ export class SKURepository implements ISKURepository {
     return SKUModel.find(filter, null, options).lean<ISKU[]>()
   }
 
-  async findPaginated(filter: FilterQuery<ISKU>, options: PaginationOptions): Promise<PaginatedResult<ISKU>> {
+  async findPaginated(
+    filter: FilterQuery<ISKU>,
+    options: PaginationOptions,
+  ): Promise<PaginatedResult<ISKU>> {
     const { page, limit, sort } = options
     const skip = (page - 1) * limit
     const [data, total] = await Promise.all([
-      SKUModel.find(filter).sort(sort || { createdAt: -1 }).skip(skip).limit(limit).lean<ISKU[]>(),
+      SKUModel.find(filter)
+        .sort(sort || { createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean<ISKU[]>(),
       SKUModel.countDocuments(filter),
     ])
     return { data, pagination: { page, limit, page_size: Math.ceil(total / limit) || 1, total } }
@@ -71,11 +78,17 @@ export class SKURepository implements ISKURepository {
     return SKUModel.find({ product: productId }).lean<ISKU[]>()
   }
 
-  async findByProductAndValue(productId: string | Types.ObjectId, value: string): Promise<ISKU | null> {
+  async findByProductAndValue(
+    productId: string | Types.ObjectId,
+    value: string,
+  ): Promise<ISKU | null> {
     return SKUModel.findOne({ product: productId, value }).lean<ISKU | null>()
   }
 
-  async findByProductAndVariantValues(productId: string | Types.ObjectId, variantValues: Record<string, string>): Promise<ISKU | null> {
+  async findByProductAndVariantValues(
+    productId: string | Types.ObjectId,
+    variantValues: Record<string, string>,
+  ): Promise<ISKU | null> {
     const filter: FilterQuery<ISKU> = { product: productId }
     for (const [key, val] of Object.entries(variantValues)) {
       filter[`variant_values.${key}`] = val
@@ -83,24 +96,30 @@ export class SKURepository implements ISKURepository {
     return SKUModel.findOne(filter).lean<ISKU | null>()
   }
 
-  async atomicDecrementStock(skuId: string | Types.ObjectId, quantity: number): Promise<ISKU | null> {
+  async atomicDecrementStock(
+    skuId: string | Types.ObjectId,
+    quantity: number,
+  ): Promise<ISKU | null> {
     const sku = await SKUModel.findOneAndUpdate(
       { _id: skuId, stock: { $gte: quantity } },
       { $inc: { stock: -quantity } },
-      { new: true }
+      { new: true },
     ).lean<ISKU | null>()
 
     if (sku && this.productRepository) {
       // Sync parent Product.quantity
-      const productId = typeof sku.product === 'object' && '_id' in sku.product
-        ? (sku.product as any)._id
-        : sku.product
+      const productId =
+        typeof sku.product === 'object' && '_id' in sku.product
+          ? (sku.product as any)._id
+          : sku.product
       try {
         await this.productRepository.decrementQuantity(productId, quantity)
       } catch (err) {
         // Compensate: restore SKU stock if Product update fails
         await SKUModel.findByIdAndUpdate(skuId, { $inc: { stock: quantity } })
-        console.error(`[SKU-Product Sync Failed] Product ${productId}: ${err instanceof Error ? err.message : 'Unknown error'}`)
+        console.error(
+          `[SKU-Product Sync Failed] Product ${productId}: ${err instanceof Error ? err.message : 'Unknown error'}`,
+        )
         throw new BusinessError(`Lỗi đồng bộ tồn kho sản phẩm`)
       }
     }
@@ -108,24 +127,30 @@ export class SKURepository implements ISKURepository {
     return sku
   }
 
-  async atomicIncrementStock(skuId: string | Types.ObjectId, quantity: number): Promise<ISKU | null> {
+  async atomicIncrementStock(
+    skuId: string | Types.ObjectId,
+    quantity: number,
+  ): Promise<ISKU | null> {
     const sku = await SKUModel.findByIdAndUpdate(
       skuId,
       { $inc: { stock: quantity } },
-      { new: true }
+      { new: true },
     ).lean<ISKU | null>()
 
     if (sku && this.productRepository) {
       // Sync parent Product.quantity
-      const productId = typeof sku.product === 'object' && '_id' in sku.product
-        ? (sku.product as any)._id
-        : sku.product
+      const productId =
+        typeof sku.product === 'object' && '_id' in sku.product
+          ? (sku.product as any)._id
+          : sku.product
       try {
         await this.productRepository.incrementQuantity(productId, quantity)
       } catch (err) {
         // Compensate: restore SKU stock if Product update fails
         await SKUModel.findByIdAndUpdate(skuId, { $inc: { stock: -quantity } })
-        console.error(`[SKU-Product Sync Failed] Product ${productId}: ${err instanceof Error ? err.message : 'Unknown error'}`)
+        console.error(
+          `[SKU-Product Sync Failed] Product ${productId}: ${err instanceof Error ? err.message : 'Unknown error'}`,
+        )
         throw new BusinessError(`Lỗi đồng bộ tồn kho sản phẩm`)
       }
     }
@@ -134,7 +159,7 @@ export class SKURepository implements ISKURepository {
   }
 
   async bulkAtomicDecrementStock(
-    items: Array<{ skuId: string | Types.ObjectId; quantity: number }>
+    items: Array<{ skuId: string | Types.ObjectId; quantity: number }>,
   ): Promise<BulkDecrementResult[]> {
     const results: BulkDecrementResult[] = []
 
@@ -146,7 +171,8 @@ export class SKURepository implements ISKURepository {
             const qty = items.find((i) => i.skuId === prev.skuId)!.quantity
             await this.atomicIncrementStock(prev.skuId, qty)
           } catch (rollbackErr) {
-            const errMsg = rollbackErr instanceof Error ? rollbackErr.message : 'Unknown rollback error'
+            const errMsg =
+              rollbackErr instanceof Error ? rollbackErr.message : 'Unknown rollback error'
             rollbackErrors.push({ skuId: prev.skuId, error: errMsg })
             console.error(`[SKU Rollback Failed] SKU ${prev.skuId}: ${errMsg}`)
           }
@@ -162,9 +188,10 @@ export class SKURepository implements ISKURepository {
         if (!sku) {
           // Insufficient stock — rollback all previously successful decrements
           const rollbackErrors = await rollbackSuccessful()
-          const errorDetail = rollbackErrors.length > 0
-            ? ` (rollback errors: ${rollbackErrors.map(e => `${e.skuId}: ${e.error}`).join(', ')})`
-            : ''
+          const errorDetail =
+            rollbackErrors.length > 0
+              ? ` (rollback errors: ${rollbackErrors.map((e) => `${e.skuId}: ${e.error}`).join(', ')})`
+              : ''
           throw new BusinessError(`SKU ${item.skuId} không đủ tồn kho${errorDetail}`)
         }
       } catch (err) {
@@ -185,7 +212,8 @@ export class SKURepository implements ISKURepository {
   }
 
   async findLowStock(threshold: number): Promise<ISKU[]> {
-    return SKUModel.find({ stock: { $lte: threshold } }).populate('product').lean<ISKU[]>()
+    return SKUModel.find({ stock: { $lte: threshold } })
+      .populate('product')
+      .lean<ISKU[]>()
   }
 }
-

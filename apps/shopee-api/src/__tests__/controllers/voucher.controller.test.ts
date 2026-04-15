@@ -2,9 +2,24 @@
 import { Request, Response } from 'express'
 
 jest.mock('../../services/base.service', () => {
-  class ValidationError extends Error { constructor(m: string) { super(m); this.name = 'ValidationError' } }
-  class NotFoundError extends Error { constructor(m: string) { super(m); this.name = 'NotFoundError' } }
-  class BusinessError extends Error { constructor(m: string) { super(m); this.name = 'BusinessError' } }
+  class ValidationError extends Error {
+    constructor(m: string) {
+      super(m)
+      this.name = 'ValidationError'
+    }
+  }
+  class NotFoundError extends Error {
+    constructor(m: string) {
+      super(m)
+      this.name = 'NotFoundError'
+    }
+  }
+  class BusinessError extends Error {
+    constructor(m: string) {
+      super(m)
+      this.name = 'BusinessError'
+    }
+  }
   return { ValidationError, NotFoundError, BusinessError }
 })
 
@@ -41,7 +56,12 @@ const createMockRequest = (options: any = {}): any => ({
   params: options.params || {},
   query: options.query || {},
   headers: options.headers || {},
-  jwtDecoded: options.jwtDecoded || { id: 'user123', email: 'test@test.com', roles: ['User'], created_at: '2024-01-01' },
+  jwtDecoded: options.jwtDecoded || {
+    id: 'user123',
+    email: 'test@test.com',
+    roles: ['User'],
+    created_at: '2024-01-01',
+  },
 })
 
 const createMockResponse = (): Partial<Response> => {
@@ -83,7 +103,11 @@ describe('Voucher Controller', () => {
 
       await getVouchers(req as any, res as Response)
 
-      expect(mockVoucherService.getAvailableVouchers).toHaveBeenCalledWith({ page: 1, limit: 10 }, undefined, undefined)
+      expect(mockVoucherService.getAvailableVouchers).toHaveBeenCalledWith(
+        { page: 1, limit: 10 },
+        undefined,
+        undefined,
+      )
       expect(res.status).toHaveBeenCalledWith(200)
       expect(res.json).toHaveBeenCalledWith({
         message: 'Lấy danh sách voucher thành công',
@@ -96,7 +120,9 @@ describe('Voucher Controller', () => {
 
     it('should handle custom pagination and discount_type filter', async () => {
       mockVoucherService.getAvailableVouchers.mockResolvedValue(mockPaginationResult as any)
-      const req = createMockRequest({ query: { page: '2', limit: '20', discount_type: 'percentage' } })
+      const req = createMockRequest({
+        query: { page: '2', limit: '20', discount_type: 'percentage' },
+      })
       const res = createMockResponse()
 
       await getVouchers(req as any, res as Response)
@@ -104,7 +130,7 @@ describe('Voucher Controller', () => {
       expect(mockVoucherService.getAvailableVouchers).toHaveBeenCalledWith(
         { page: 2, limit: 20 },
         undefined,
-        { discount_type: 'percentage' }
+        { discount_type: 'percentage' },
       )
     })
 
@@ -159,7 +185,12 @@ describe('Voucher Controller', () => {
     it('should apply voucher successfully', async () => {
       mockVoucherService.applyVoucher.mockResolvedValue(mockApplyResult as any)
       const req = createMockRequest({
-        body: { code: 'DISCOUNT10', order_value: 100000, product_ids: ['p1'], category_ids: ['c1'] },
+        body: {
+          code: 'DISCOUNT10',
+          order_value: 100000,
+          product_ids: ['p1'],
+          category_ids: ['c1'],
+        },
       })
       const res = createMockResponse()
 
@@ -205,7 +236,9 @@ describe('Voucher Controller', () => {
     })
 
     it('should return 400 on BusinessError', async () => {
-      mockVoucherService.applyVoucher.mockRejectedValue(new BusinessError('Voucher đã hết lượt sử dụng'))
+      mockVoucherService.applyVoucher.mockRejectedValue(
+        new BusinessError('Voucher đã hết lượt sử dụng'),
+      )
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_value: 100000 } })
       const res = createMockResponse()
 
@@ -216,7 +249,9 @@ describe('Voucher Controller', () => {
     })
 
     it('should return 400 on ValidationError', async () => {
-      mockVoucherService.applyVoucher.mockRejectedValue(new ValidationError('Giá trị đơn hàng không đủ'))
+      mockVoucherService.applyVoucher.mockRejectedValue(
+        new ValidationError('Giá trị đơn hàng không đủ'),
+      )
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_value: 1000 } })
       const res = createMockResponse()
 
@@ -308,7 +343,10 @@ describe('Voucher Controller', () => {
 
       await getSavedVouchers(req as any, res as Response)
 
-      expect(mockVoucherService.getSavedVouchers).toHaveBeenCalledWith('user123', { page: 1, limit: 10 })
+      expect(mockVoucherService.getSavedVouchers).toHaveBeenCalledWith('user123', {
+        page: 1,
+        limit: 10,
+      })
       expect(res.status).toHaveBeenCalledWith(200)
       expect(res.json).toHaveBeenCalledWith({
         message: 'Lấy danh sách voucher đã lưu thành công',
@@ -326,11 +364,16 @@ describe('Voucher Controller', () => {
 
       await getSavedVouchers(req as any, res as Response)
 
-      expect(mockVoucherService.getSavedVouchers).toHaveBeenCalledWith('user123', { page: 2, limit: 20 })
+      expect(mockVoucherService.getSavedVouchers).toHaveBeenCalledWith('user123', {
+        page: 2,
+        limit: 20,
+      })
     })
 
     it('should return 400 on ValidationError', async () => {
-      mockVoucherService.getSavedVouchers.mockRejectedValue(new ValidationError('Invalid pagination'))
+      mockVoucherService.getSavedVouchers.mockRejectedValue(
+        new ValidationError('Invalid pagination'),
+      )
       const req = createMockRequest({ query: { page: '-1' } })
       const res = createMockResponse()
 
@@ -357,7 +400,11 @@ describe('Voucher Controller', () => {
 
       await getAvailableVouchers(req as any, res as Response)
 
-      expect(mockVoucherService.getAvailableVouchers).toHaveBeenCalledWith({ page: 1, limit: 10 }, 'user123', undefined)
+      expect(mockVoucherService.getAvailableVouchers).toHaveBeenCalledWith(
+        { page: 1, limit: 10 },
+        'user123',
+        undefined,
+      )
       expect(res.status).toHaveBeenCalledWith(200)
       expect(res.json).toHaveBeenCalledWith({
         message: 'Lấy danh sách voucher khả dụng thành công',
@@ -378,7 +425,7 @@ describe('Voucher Controller', () => {
       expect(mockVoucherService.getAvailableVouchers).toHaveBeenCalledWith(
         { page: 2, limit: 20 },
         'user123',
-        { discount_type: 'fixed' }
+        { discount_type: 'fixed' },
       )
     })
 
@@ -387,7 +434,9 @@ describe('Voucher Controller', () => {
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await expect(getAvailableVouchers(req as any, res as Response)).rejects.toThrow('Service error')
+      await expect(getAvailableVouchers(req as any, res as Response)).rejects.toThrow(
+        'Service error',
+      )
     })
   })
 
@@ -404,7 +453,11 @@ describe('Voucher Controller', () => {
 
       await getMyVouchers(req as any, res as Response)
 
-      expect(mockVoucherService.getSavedVouchers).toHaveBeenCalledWith('user123', { page: 1, limit: 10 }, undefined)
+      expect(mockVoucherService.getSavedVouchers).toHaveBeenCalledWith(
+        'user123',
+        { page: 1, limit: 10 },
+        undefined,
+      )
       expect(res.status).toHaveBeenCalledWith(200)
       expect(res.json).toHaveBeenCalledWith({
         message: 'Lấy danh sách voucher của tôi thành công',
@@ -422,7 +475,11 @@ describe('Voucher Controller', () => {
 
       await getMyVouchers(req as any, res as Response)
 
-      expect(mockVoucherService.getSavedVouchers).toHaveBeenCalledWith('user123', { page: 2, limit: 20 }, 'available')
+      expect(mockVoucherService.getSavedVouchers).toHaveBeenCalledWith(
+        'user123',
+        { page: 2, limit: 20 },
+        'available',
+      )
     })
 
     it('should return 400 on ValidationError', async () => {
@@ -446,7 +503,11 @@ describe('Voucher Controller', () => {
   })
 
   describe('collectVoucher', () => {
-    const mockCollectResult = { user_id: 'user123', voucher_id: 'voucher123', collected_at: new Date() }
+    const mockCollectResult = {
+      user_id: 'user123',
+      voucher_id: 'voucher123',
+      collected_at: new Date(),
+    }
 
     it('should collect voucher successfully', async () => {
       mockVoucherService.collectVoucher.mockResolvedValue(mockCollectResult as any)
@@ -475,7 +536,9 @@ describe('Voucher Controller', () => {
     })
 
     it('should return 400 on BusinessError', async () => {
-      mockVoucherService.collectVoucher.mockRejectedValue(new BusinessError('Voucher đã được thu thập'))
+      mockVoucherService.collectVoucher.mockRejectedValue(
+        new BusinessError('Voucher đã được thu thập'),
+      )
       const req = createMockRequest({ params: { id: 'voucher123' } })
       const res = createMockResponse()
 
@@ -515,7 +578,11 @@ describe('Voucher Controller', () => {
 
       await validateVoucher(req as any, res as Response)
 
-      expect(mockVoucherService.validateVoucher).toHaveBeenCalledWith('user123', 'DISCOUNT10', 100000)
+      expect(mockVoucherService.validateVoucher).toHaveBeenCalledWith(
+        'user123',
+        'DISCOUNT10',
+        100000,
+      )
       expect(res.status).toHaveBeenCalledWith(200)
       expect(res.json).toHaveBeenCalledWith({
         message: 'Voucher hợp lệ',
@@ -552,7 +619,9 @@ describe('Voucher Controller', () => {
     })
 
     it('should return 400 with is_valid: false on ValidationError', async () => {
-      mockVoucherService.validateVoucher.mockRejectedValue(new ValidationError('Giá trị đơn hàng không đủ'))
+      mockVoucherService.validateVoucher.mockRejectedValue(
+        new ValidationError('Giá trị đơn hàng không đủ'),
+      )
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_total: 1000 } })
       const res = createMockResponse()
 

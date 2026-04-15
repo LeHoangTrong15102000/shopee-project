@@ -95,7 +95,7 @@ describe('AuthService', () => {
 
       const result = await authService.register(
         { email: 'test@example.com', password: 'password123' },
-        tokenConfig
+        tokenConfig,
       )
 
       expect(mockUserRepository.emailExists).toHaveBeenCalledWith('test@example.com')
@@ -109,7 +109,10 @@ describe('AuthService', () => {
       mockUserRepository.emailExists.mockResolvedValue(true)
 
       await expect(
-        authService.register({ email: 'existing@example.com', password: 'password123' }, tokenConfig)
+        authService.register(
+          { email: 'existing@example.com', password: 'password123' },
+          tokenConfig,
+        ),
       ).rejects.toThrow(ConflictError)
     })
   })
@@ -122,7 +125,7 @@ describe('AuthService', () => {
 
       const result = await authService.login(
         { email: 'test@example.com', password: 'password123' },
-        tokenConfig
+        tokenConfig,
       )
 
       expect(mockAuthRepository.createRefreshToken).toHaveBeenCalled()
@@ -135,7 +138,7 @@ describe('AuthService', () => {
       ;(compareValue as jest.Mock).mockReturnValue(false)
 
       await expect(
-        authService.login({ email: 'test@example.com', password: 'wrongpassword' }, tokenConfig)
+        authService.login({ email: 'test@example.com', password: 'wrongpassword' }, tokenConfig),
       ).rejects.toThrow(ValidationError)
     })
 
@@ -143,7 +146,10 @@ describe('AuthService', () => {
       mockUserRepository.findByEmailWithPassword.mockResolvedValue(null)
 
       await expect(
-        authService.login({ email: 'nonexistent@example.com', password: 'password123' }, tokenConfig)
+        authService.login(
+          { email: 'nonexistent@example.com', password: 'password123' },
+          tokenConfig,
+        ),
       ).rejects.toThrow(ValidationError)
     })
   })
@@ -171,7 +177,9 @@ describe('AuthService', () => {
     it('should throw UnauthorizedError if user not found', async () => {
       mockUserRepository.findById.mockResolvedValue(null)
 
-      await expect(authService.refreshToken(validObjectId.toString(), 900)).rejects.toThrow(UnauthorizedError)
+      await expect(authService.refreshToken(validObjectId.toString(), 900)).rejects.toThrow(
+        UnauthorizedError,
+      )
     })
   })
 

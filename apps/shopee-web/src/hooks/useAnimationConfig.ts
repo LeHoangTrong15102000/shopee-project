@@ -1,12 +1,12 @@
-import { Variants } from 'framer-motion';
-import { useReducedMotion } from './useReducedMotion';
+import { Variants } from 'framer-motion'
+import { useReducedMotion } from './useReducedMotion'
 
 interface AnimationConfig {
-  initial: string | boolean;
-  animate: string;
-  exit?: string;
-  variants?: Variants;
-  transition?: Record<string, unknown>;
+  initial: string | boolean
+  animate: string
+  exit?: string
+  variants?: Variants
+  transition?: Record<string, unknown>
 }
 
 // Returns animation config that respects reduced motion preference
@@ -14,7 +14,7 @@ export function useAnimationConfig(
   variants: Variants,
   options?: { exitVariant?: string },
 ): AnimationConfig {
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = useReducedMotion()
 
   if (reducedMotion) {
     return {
@@ -28,7 +28,7 @@ export function useAnimationConfig(
         ...Object.fromEntries(Object.keys(variants).map((key) => [key, {}])),
       },
       transition: { duration: 0 },
-    };
+    }
   }
 
   return {
@@ -36,11 +36,11 @@ export function useAnimationConfig(
     animate: 'visible',
     exit: options?.exitVariant || 'exit',
     variants,
-  };
+  }
 }
 
 // Simple boolean check for inline animations
 export function useCanAnimate(): boolean {
-  const reducedMotion = useReducedMotion();
-  return !reducedMotion;
+  const reducedMotion = useReducedMotion()
+  return !reducedMotion
 }

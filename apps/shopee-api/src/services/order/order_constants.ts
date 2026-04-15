@@ -58,4 +58,3 @@ export const ROLE_PERMISSIONS: Record<'user' | 'admin', OrderEventType[]> = {
  * Return deadline in days
  */
 export const RETURN_DEADLINE_DAYS = 7
-

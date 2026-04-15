@@ -22,8 +22,13 @@ jest.mock('@services/admin-dashboard.service', () => ({
 }))
 
 import {
-  getOverview, getRevenue, getRevenueByCategory, getRevenueByProduct,
-  getOrderTrend, getUserGrowth, getTopBuyers,
+  getOverview,
+  getRevenue,
+  getRevenueByCategory,
+  getRevenueByProduct,
+  getOrderTrend,
+  getUserGrowth,
+  getTopBuyers,
 } from '../../controllers/admin-dashboard.controller'
 
 const createMockRequest = (options: any = {}): Partial<Request> => ({
@@ -52,7 +57,9 @@ describe('AdminDashboardController', () => {
   })
   it('getRevenue passes query params', async () => {
     mockGetRevenue.mockResolvedValue({ revenue: 50000 })
-    const req = createMockRequest({ query: { period: 'monthly', start_date: '2026-01-01', end_date: '2026-03-01' } })
+    const req = createMockRequest({
+      query: { period: 'monthly', start_date: '2026-01-01', end_date: '2026-03-01' },
+    })
     const res = createMockResponse()
     await getRevenue(req as Request, res as Response)
     expect(mockGetRevenue).toHaveBeenCalledWith('monthly', '2026-01-01', '2026-03-01')
@@ -80,21 +87,30 @@ describe('AdminDashboardController', () => {
   it('getOrderTrend passes period', async () => {
     mockGetOrderTrend.mockResolvedValue([])
     const res = createMockResponse()
-    await getOrderTrend(createMockRequest({ query: { period: 'weekly' } }) as Request, res as Response)
+    await getOrderTrend(
+      createMockRequest({ query: { period: 'weekly' } }) as Request,
+      res as Response,
+    )
     expect(mockGetOrderTrend).toHaveBeenCalledWith('weekly')
   })
 
   it('getUserGrowth passes period', async () => {
     mockGetUserGrowth.mockResolvedValue([])
     const res = createMockResponse()
-    await getUserGrowth(createMockRequest({ query: { period: 'monthly' } }) as Request, res as Response)
+    await getUserGrowth(
+      createMockRequest({ query: { period: 'monthly' } }) as Request,
+      res as Response,
+    )
     expect(mockGetUserGrowth).toHaveBeenCalledWith('monthly')
   })
 
   it('getTopBuyers uses Number(limit) with default 10', async () => {
     mockGetTopBuyers.mockResolvedValue([])
     const res = createMockResponse()
-    await getTopBuyers(createMockRequest({ query: { period: 'yearly' } }) as Request, res as Response)
+    await getTopBuyers(
+      createMockRequest({ query: { period: 'yearly' } }) as Request,
+      res as Response,
+    )
     expect(mockGetTopBuyers).toHaveBeenCalledWith('yearly', 10)
   })
 })

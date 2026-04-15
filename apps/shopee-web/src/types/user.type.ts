@@ -1,5 +1,5 @@
-import type { User } from '@shopee/shared-types';
+import type { User } from '@shopee/shared-types'
 
-type Role = 'User' | 'Admin';
+type Role = 'User' | 'Admin'
 
-export type { User, Role };
+export type { User, Role }

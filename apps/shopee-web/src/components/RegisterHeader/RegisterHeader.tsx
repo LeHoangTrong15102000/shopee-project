@@ -1,9 +1,9 @@
-import { useTranslation } from 'react-i18next';
-import { Link, useMatch } from 'react-router';
+import { useTranslation } from 'react-i18next'
+import { Link, useMatch } from 'react-router'
 
 const RegisterHeader = () => {
-  const { t } = useTranslation('auth');
-  const isRegister = Boolean(useMatch('/register'));
+  const { t } = useTranslation('auth')
+  const isRegister = Boolean(useMatch('/register'))
   return (
     <header className="bg-white py-2 md:py-5 dark:bg-slate-800">
       {/* container -> max-w-7xl mx-auto px-4 */}
@@ -32,7 +32,7 @@ const RegisterHeader = () => {
         </Link>
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default RegisterHeader;
+export default RegisterHeader

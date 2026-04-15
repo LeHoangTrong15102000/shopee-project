@@ -56,7 +56,7 @@ const AddressSchema = new Schema<IAddress>(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 AddressSchema.index({ user: 1, is_default: 1 })
@@ -64,4 +64,3 @@ AddressSchema.index({ user: 1, is_default: 1 })
 export const AddressModel = mongoose.model<IAddress>('addresses', AddressSchema)
 
 export { IAddress }
-

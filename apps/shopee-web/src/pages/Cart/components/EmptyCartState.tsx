@@ -1,17 +1,17 @@
-import { Link } from 'react-router';
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
-import SaveForLaterSection from 'src/components/SaveForLaterSection';
-import { SavedItem } from 'src/hooks/useSaveForLater';
+import { Link } from 'react-router'
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
+import SaveForLaterSection from 'src/components/SaveForLaterSection'
+import { SavedItem } from 'src/hooks/useSaveForLater'
 
 interface EmptyCartStateProps {
-  savedItems: SavedItem[];
-  handleMoveToCart: (item: SavedItem) => void;
-  removeFromSaved: (productId: string) => void;
-  handleClearSaved: () => void;
-  noproduct: string;
-  path: { home: string };
+  savedItems: SavedItem[]
+  handleMoveToCart: (item: SavedItem) => void
+  removeFromSaved: (productId: string) => void
+  handleClearSaved: () => void
+  noproduct: string
+  path: { home: string }
 }
 
 const Sparkle = ({ delay, x, y }: { delay: number; x: number; y: number }) => (
@@ -29,7 +29,7 @@ const Sparkle = ({ delay, x, y }: { delay: number; x: number; y: number }) => (
       ease: 'easeInOut',
     }}
   />
-);
+)
 
 const EmptyCartState = ({
   savedItems,
@@ -39,7 +39,7 @@ const EmptyCartState = ({
   noproduct,
   path,
 }: EmptyCartStateProps) => {
-  const { t } = useTranslation('cart');
+  const { t } = useTranslation('cart')
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
@@ -113,7 +113,7 @@ const EmptyCartState = ({
         </div>
       )}
     </motion.div>
-  );
-};
+  )
+}
 
-export default EmptyCartState;
+export default EmptyCartState

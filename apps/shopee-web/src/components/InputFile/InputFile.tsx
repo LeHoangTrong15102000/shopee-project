@@ -1,14 +1,14 @@
-import React, { Fragment, useRef } from 'react';
-import config from 'src/constant/config';
-import { toast } from 'react-toastify';
-import Button from 'src/components/Button';
+import React, { Fragment, useRef } from 'react'
+import config from 'src/constant/config'
+import { toast } from 'react-toastify'
+import Button from 'src/components/Button'
 
 interface Props {
-  onChange?: (file?: File) => void;
+  onChange?: (file?: File) => void
 }
 
 const InputFile = ({ onChange }: Props) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // const [file, setFile] = useState<File>()
   // const previewImage = useMemo(() => {
@@ -18,13 +18,13 @@ const InputFile = ({ onChange }: Props) => {
 
   // Khai báo function handleUpload để control upload file ảnh
   const handleUpload = () => {
-    fileInputRef.current?.click();
-  };
+    fileInputRef.current?.click()
+  }
 
   // Xử lý file khi upload ảnh
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // lấy file
-    const fileFromLocal = event.target.files?.[0];
+    const fileFromLocal = event.target.files?.[0]
     // Nếu như mà vượt quá kích thước và không có type là `image` thì sẽ toast nó lên
     if (
       fileFromLocal &&
@@ -33,11 +33,11 @@ const InputFile = ({ onChange }: Props) => {
       toast.error('Dung lượng file hoặc định dạng không đúng quy định', {
         autoClose: 1000,
         position: 'top-center',
-      });
+      })
     } else {
-      onChange && onChange(fileFromLocal); // Cái fileFromLocal giá trị có thể là Undefined
+      onChange && onChange(fileFromLocal) // Cái fileFromLocal giá trị có thể là Undefined
     }
-  };
+  }
 
   return (
     <Fragment>
@@ -48,7 +48,7 @@ const InputFile = ({ onChange }: Props) => {
         ref={fileInputRef}
         onChange={onFileChange}
         onClick={(event) => {
-          (event.target as HTMLInputElement).value = '';
+          ;(event.target as HTMLInputElement).value = ''
         }}
       />
       <Button
@@ -60,7 +60,7 @@ const InputFile = ({ onChange }: Props) => {
         chọn ảnh
       </Button>
     </Fragment>
-  );
-};
+  )
+}
 
-export default InputFile;
+export default InputFile

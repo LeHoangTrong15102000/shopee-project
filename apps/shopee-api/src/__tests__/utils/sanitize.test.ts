@@ -4,11 +4,7 @@
  */
 
 /// <reference types="jest" />
-import {
-  sanitizeString,
-  sanitizeObject,
-  sanitizeMongoQuery,
-} from '@utils/sanitize'
+import { sanitizeString, sanitizeObject, sanitizeMongoQuery } from '@utils/sanitize'
 
 describe('Sanitize Utilities', () => {
   describe('sanitizeString', () => {
@@ -123,9 +119,7 @@ describe('Sanitize Utilities', () => {
         query: '$where: function() { return true; }',
       }
       const result = sanitizeObject(input) as Record<string, unknown>
-      expect(result.query).toBe(
-        '&#36;where: function() &#123; return true; &#125;'
-      )
+      expect(result.query).toBe('&#36;where: function() &#123; return true; &#125;')
     })
   })
 
@@ -197,4 +191,3 @@ describe('Sanitize Utilities', () => {
     })
   })
 })
-

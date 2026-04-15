@@ -1,13 +1,13 @@
-import { motion } from 'framer-motion';
-import React from 'react';
-import { useTheme } from 'src/hooks/useTheme';
+import { motion } from 'framer-motion'
+import React from 'react'
+import { useTheme } from 'src/hooks/useTheme'
 
 interface ShopeeCheckboxProps {
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-  size?: 'sm' | 'md' | 'lg';
-  className?: string;
-  disabled?: boolean;
+  checked: boolean
+  onChange: (checked: boolean) => void
+  size?: 'sm' | 'md' | 'lg'
+  className?: string
+  disabled?: boolean
 }
 
 const ShopeeCheckbox: React.FC<ShopeeCheckboxProps> = ({
@@ -17,14 +17,14 @@ const ShopeeCheckbox: React.FC<ShopeeCheckboxProps> = ({
   className = '',
   disabled = false,
 }) => {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === 'dark';
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === 'dark'
 
   const sizeClasses = {
     sm: 'w-5 h-5',
     md: 'w-6 h-6',
     lg: 'w-7 h-7',
-  };
+  }
 
   // Variants cho background box animation - theme aware
   const boxVariants = {
@@ -48,7 +48,7 @@ const ShopeeCheckbox: React.FC<ShopeeCheckboxProps> = ({
         scale: { duration: 0.25, ease: [0.34, 1.56, 0.64, 1], times: [0, 0.5, 1] },
       },
     },
-  };
+  }
 
   // Variants cho stroke animation của checkmark
   const checkmarkVariants = {
@@ -84,17 +84,17 @@ const ShopeeCheckbox: React.FC<ShopeeCheckboxProps> = ({
         },
       },
     },
-  };
+  }
 
   return (
     <div
       className={`relative transition-transform duration-100 select-none hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange active:scale-[0.98] ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} ${className}`}
       onClick={() => !disabled && onChange?.(!checked)}
       onKeyDown={(e) => {
-        if (disabled) return;
+        if (disabled) return
         if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onChange?.(!checked);
+          e.preventDefault()
+          onChange?.(!checked)
         }
       }}
       tabIndex={disabled ? -1 : 0}
@@ -142,7 +142,7 @@ const ShopeeCheckbox: React.FC<ShopeeCheckboxProps> = ({
         </motion.div>
       </motion.div>
     </div>
-  );
-};
+  )
+}
 
-export default ShopeeCheckbox;
+export default ShopeeCheckbox

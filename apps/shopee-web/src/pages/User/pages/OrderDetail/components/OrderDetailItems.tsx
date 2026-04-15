@@ -1,26 +1,26 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
-import ImageWithFallback from 'src/components/ImageWithFallback';
-import { ANIMATION_DURATION } from 'src/styles/animations/motion.config';
-import { Order } from 'src/types/checkout.type';
-import { formatCurrency } from 'src/utils/utils';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
+import ImageWithFallback from 'src/components/ImageWithFallback'
+import { ANIMATION_DURATION } from 'src/styles/animations/motion.config'
+import { Order } from 'src/types/checkout.type'
+import { formatCurrency } from 'src/utils/utils'
 import {
   itemsContainerVariants,
   orderItemVariants,
   reducedMotionVariants,
   sectionVariants,
-} from '../orderDetail.constants';
+} from '../orderDetail.constants'
 
 interface OrderDetailItemsProps {
-  order: Order;
-  shouldReduceMotion: boolean | null;
+  order: Order
+  shouldReduceMotion: boolean | null
 }
 
 export default function OrderDetailItems({ order, shouldReduceMotion }: OrderDetailItemsProps) {
-  const { t } = useTranslation('order');
-  const containerVariants = shouldReduceMotion ? reducedMotionVariants : itemsContainerVariants;
-  const itemVariants = shouldReduceMotion ? reducedMotionVariants : orderItemVariants;
+  const { t } = useTranslation('order')
+  const containerVariants = shouldReduceMotion ? reducedMotionVariants : itemsContainerVariants
+  const itemVariants = shouldReduceMotion ? reducedMotionVariants : orderItemVariants
 
   return (
     <motion.div
@@ -124,5 +124,5 @@ export default function OrderDetailItems({ order, shouldReduceMotion }: OrderDet
         ))}
       </motion.div>
     </motion.div>
-  );
+  )
 }

@@ -22,7 +22,11 @@ jest.mock('../../middleware/rateLimiter.middleware', () => ({
 
 import { ConversationModel } from '../../database/models/conversation.model'
 import { getRateLimitStats } from '../../middleware/rateLimiter.middleware'
-import { getChatbotOverview, getChatbotPerformance, getHealthCheck } from '../../controllers/analytics.controller'
+import {
+  getChatbotOverview,
+  getChatbotPerformance,
+  getHealthCheck,
+} from '../../controllers/analytics.controller'
 
 const mockConversationModel = ConversationModel as jest.Mocked<typeof ConversationModel>
 const mockGetRateLimitStats = getRateLimitStats as jest.MockedFunction<typeof getRateLimitStats>
@@ -32,7 +36,12 @@ const createMockRequest = (options: any = {}): Partial<Request> => ({
   params: options.params || {},
   query: options.query || {},
   headers: options.headers || {},
-  jwtDecoded: options.jwtDecoded || { id: 'user123', email: 'test@test.com', roles: ['User'], created_at: '2024-01-01' },
+  jwtDecoded: options.jwtDecoded || {
+    id: 'user123',
+    email: 'test@test.com',
+    roles: ['User'],
+    created_at: '2024-01-01',
+  },
 })
 
 const createMockResponse = (): Partial<Response> => {
@@ -59,21 +68,25 @@ describe('Analytics Controller', () => {
         .mockResolvedValueOnce(30 as any)
 
       mockConversationModel.aggregate
-        .mockResolvedValueOnce([{
-          totalMessages: 500,
-          totalUserMessages: 250,
-          totalAssistantMessages: 250,
-          avgMessagesPerConversation: 5,
-          maxMessagesInConversation: 20,
-        }] as any)
-        .mockResolvedValueOnce([{
-          userId: 'user1',
-          userName: 'Test User',
-          userEmail: 'test@test.com',
-          conversationCount: 5,
-          totalMessages: 25,
-          lastActivity: new Date(),
-        }] as any)
+        .mockResolvedValueOnce([
+          {
+            totalMessages: 500,
+            totalUserMessages: 250,
+            totalAssistantMessages: 250,
+            avgMessagesPerConversation: 5,
+            maxMessagesInConversation: 20,
+          },
+        ] as any)
+        .mockResolvedValueOnce([
+          {
+            userId: 'user1',
+            userName: 'Test User',
+            userEmail: 'test@test.com',
+            conversationCount: 5,
+            totalMessages: 25,
+            lastActivity: new Date(),
+          },
+        ] as any)
 
       mockGetRateLimitStats.mockReturnValue({
         totalRequests: 1000,
@@ -99,7 +112,7 @@ describe('Analytics Controller', () => {
             rateLimiting: expect.any(Object),
             systemHealth: expect.any(Object),
           }),
-        })
+        }),
       )
     })
 
@@ -116,19 +129,21 @@ describe('Analytics Controller', () => {
         expect.objectContaining({
           message: 'Lỗi server khi lấy thống kê chatbot',
           error: 'Database error',
-        })
+        }),
       )
     })
   })
 
   describe('getChatbotPerformance', () => {
-    const mockPerformanceData = [{
-      date: { year: 2024, month: 1, day: 15 },
-      conversationCount: 10,
-      totalMessages: 50,
-      uniqueUserCount: 5,
-      avgResponseTime: 2.5,
-    }]
+    const mockPerformanceData = [
+      {
+        date: { year: 2024, month: 1, day: 15 },
+        conversationCount: 10,
+        totalMessages: 50,
+        uniqueUserCount: 5,
+        avgResponseTime: 2.5,
+      },
+    ]
 
     it('should return performance data with default period (7d)', async () => {
       mockConversationModel.aggregate.mockResolvedValue(mockPerformanceData as any)
@@ -147,7 +162,7 @@ describe('Analytics Controller', () => {
             period: '7d',
             performance: mockPerformanceData,
           }),
-        })
+        }),
       )
     })
 
@@ -163,7 +178,7 @@ describe('Analytics Controller', () => {
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({ period: '24h' }),
-        })
+        }),
       )
     })
 
@@ -179,7 +194,7 @@ describe('Analytics Controller', () => {
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({ period: '30d' }),
-        })
+        }),
       )
     })
 
@@ -196,7 +211,7 @@ describe('Analytics Controller', () => {
         expect.objectContaining({
           message: 'Lỗi server khi lấy thống kê performance',
           error: 'Aggregation error',
-        })
+        }),
       )
     })
   })
@@ -220,7 +235,7 @@ describe('Analytics Controller', () => {
             database: 'operational',
             rateLimit: 'operational',
           }),
-        })
+        }),
       )
     })
 
@@ -241,11 +256,10 @@ describe('Analytics Controller', () => {
           status: 'unhealthy',
           error: 'System error',
           timestamp: expect.any(String),
-        })
+        }),
       )
 
       process.uptime = originalUptime
     })
   })
 })
-

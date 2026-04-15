@@ -1,14 +1,14 @@
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import classNames from 'classnames';
-import path from 'src/constant/path';
+import { Link } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import classNames from 'classnames'
+import path from 'src/constant/path'
 
 interface ComparisonTableEmptyProps {
-  className?: string;
+  className?: string
 }
 
 export default function ComparisonTableEmpty({ className }: ComparisonTableEmptyProps) {
-  const { t } = useTranslation('compare');
+  const { t } = useTranslation('compare')
   return (
     <div
       className={classNames('py-12 text-center', className)}
@@ -36,5 +36,5 @@ export default function ComparisonTableEmpty({ className }: ComparisonTableEmpty
         {t('addToCompare')}
       </Link>
     </div>
-  );
+  )
 }

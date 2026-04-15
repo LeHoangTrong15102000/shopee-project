@@ -37,15 +37,17 @@ const createMockResponse = (): any => {
 
 const createMockNext = () => jest.fn()
 
-const createSecurityMockRequest = (options: {
-  body?: Record<string, unknown>
-  params?: Record<string, unknown>
-  query?: Record<string, unknown>
-  headers?: Record<string, string>
-  ip?: string
-  path?: string
-  method?: string
-} = {}): any => {
+const createSecurityMockRequest = (
+  options: {
+    body?: Record<string, unknown>
+    params?: Record<string, unknown>
+    query?: Record<string, unknown>
+    headers?: Record<string, string>
+    ip?: string
+    path?: string
+    method?: string
+  } = {},
+): any => {
   return {
     body: options.body || {},
     params: options.params || {},
@@ -623,4 +625,3 @@ describe('Security Middleware', () => {
     })
   })
 })
-

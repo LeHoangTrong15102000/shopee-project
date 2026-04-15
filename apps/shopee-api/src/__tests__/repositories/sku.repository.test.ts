@@ -56,7 +56,7 @@ describe('SKURepository - Stock Sync', () => {
       expect(SKUModel.findOneAndUpdate).toHaveBeenCalledWith(
         { _id: mockSKUData._id, stock: { $gte: 2 } },
         { $inc: { stock: -2 } },
-        { new: true }
+        { new: true },
       )
       expect(mockProductRepo.decrementQuantity).toHaveBeenCalledWith(mockSKUData.product, 2)
     })
@@ -77,8 +77,12 @@ describe('SKURepository - Stock Sync', () => {
       mockProductRepo.decrementQuantity.mockRejectedValue(new Error('DB error'))
       SKUModel.findByIdAndUpdate.mockResolvedValue(mockSKUData)
 
-      await expect(repository.atomicDecrementStock(mockSKUData._id, 2)).rejects.toThrow(BusinessError)
-      expect(SKUModel.findByIdAndUpdate).toHaveBeenCalledWith(mockSKUData._id, { $inc: { stock: 2 } })
+      await expect(repository.atomicDecrementStock(mockSKUData._id, 2)).rejects.toThrow(
+        BusinessError,
+      )
+      expect(SKUModel.findByIdAndUpdate).toHaveBeenCalledWith(mockSKUData._id, {
+        $inc: { stock: 2 },
+      })
     })
   })
 
@@ -94,7 +98,7 @@ describe('SKURepository - Stock Sync', () => {
       expect(SKUModel.findByIdAndUpdate).toHaveBeenCalledWith(
         mockSKUData._id,
         { $inc: { stock: 2 } },
-        { new: true }
+        { new: true },
       )
       expect(mockProductRepo.incrementQuantity).toHaveBeenCalledWith(mockSKUData.product, 2)
     })
@@ -106,7 +110,9 @@ describe('SKURepository - Stock Sync', () => {
         .mockResolvedValueOnce(mockSKUData) // rollback
       mockProductRepo.incrementQuantity.mockRejectedValue(new Error('DB error'))
 
-      await expect(repository.atomicIncrementStock(mockSKUData._id, 2)).rejects.toThrow(BusinessError)
+      await expect(repository.atomicIncrementStock(mockSKUData._id, 2)).rejects.toThrow(
+        BusinessError,
+      )
       // Second call is the rollback
       expect(SKUModel.findByIdAndUpdate).toHaveBeenCalledTimes(2)
     })
@@ -170,4 +176,3 @@ describe('SKURepository - Stock Sync', () => {
     })
   })
 })
-

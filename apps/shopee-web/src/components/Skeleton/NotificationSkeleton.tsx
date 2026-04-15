@@ -1,12 +1,12 @@
-import { useTranslation } from 'react-i18next';
-import SkeletonBase from './SkeletonBase';
+import { useTranslation } from 'react-i18next'
+import SkeletonBase from './SkeletonBase'
 
 interface NotificationSkeletonProps {
-  count?: number;
+  count?: number
 }
 
 export default function NotificationSkeleton({ count = 3 }: NotificationSkeletonProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('common')
   return (
     <div
       role="status"
@@ -42,5 +42,5 @@ export default function NotificationSkeleton({ count = 3 }: NotificationSkeleton
         </div>
       ))}
     </div>
-  );
+  )
 }

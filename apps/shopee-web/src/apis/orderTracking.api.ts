@@ -1,6 +1,6 @@
-import { OrderTracking, OrderTrackingConfig, TrackingEvent } from 'src/types/orderTracking.type';
-import { SuccessResponseApi } from 'src/types/utils.type';
-import http from 'src/utils/http';
+import { OrderTracking, OrderTrackingConfig, TrackingEvent } from 'src/types/orderTracking.type'
+import { SuccessResponseApi } from 'src/types/utils.type'
+import http from 'src/utils/http'
 
 // All possible tracking events in chronological order
 const allTrackingEvents: TrackingEvent[] = [
@@ -34,25 +34,25 @@ const allTrackingEvents: TrackingEvent[] = [
     location: 'Hanoi - Cau Giay - Dich Vong',
     timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
   },
-];
+]
 
 // Status progression order for filtering timeline events
-const STATUS_ORDER = ['pending', 'confirmed', 'processing', 'shipping', 'delivered'];
+const STATUS_ORDER = ['pending', 'confirmed', 'processing', 'shipping', 'delivered']
 
 // Build timeline events up to and including the given status
 function buildTimelineForStatus(status: string): TrackingEvent[] {
-  const statusIndex = STATUS_ORDER.indexOf(status);
+  const statusIndex = STATUS_ORDER.indexOf(status)
   if (statusIndex === -1) {
     // For cancelled/returned, show events up to pending only
-    return allTrackingEvents.slice(0, 1);
+    return allTrackingEvents.slice(0, 1)
   }
-  return allTrackingEvents.slice(0, statusIndex + 1);
+  return allTrackingEvents.slice(0, statusIndex + 1)
 }
 
 // Build a mock OrderTracking object based on the provided status
 function buildMockTracking(orderId: string, status: string = 'pending'): OrderTracking {
-  const timeline = buildTimelineForStatus(status);
-  const isDelivered = status === 'delivered';
+  const timeline = buildTimelineForStatus(status)
+  const isDelivered = status === 'delivered'
 
   return {
     _id: `mock-tracking-${orderId}`,
@@ -76,7 +76,7 @@ function buildMockTracking(orderId: string, status: string = 'pending'): OrderTr
     },
     createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date().toISOString(),
-  };
+  }
 }
 
 const orderTrackingApi = {
@@ -85,12 +85,12 @@ const orderTrackingApi = {
     try {
       const response = await http.get<SuccessResponseApi<OrderTracking>>('/orders/tracking', {
         params,
-      });
-      return response;
+      })
+      return response
     } catch (error) {
-      console.warn('⚠️ [getTracking] API not available, using mock data');
-      const orderId = params.order_id || 'unknown';
-      const status = params.status || 'pending';
+      console.warn('⚠️ [getTracking] API not available, using mock data')
+      const orderId = params.order_id || 'unknown'
+      const status = params.status || 'pending'
       return {
         data: {
           message: 'Lấy thông tin tracking thành công',
@@ -99,7 +99,7 @@ const orderTrackingApi = {
             tracking_number: params.tracking_number || `VN2024${orderId.slice(-4).toUpperCase()}`,
           },
         },
-      };
+      }
     }
   },
 
@@ -108,10 +108,10 @@ const orderTrackingApi = {
     try {
       const response = await http.get<SuccessResponseApi<OrderTracking>>(
         `/tracking/${trackingNumber}`,
-      );
-      return response;
+      )
+      return response
     } catch (error) {
-      console.warn('⚠️ [getTrackingByNumber] API not available, using mock data');
+      console.warn('⚠️ [getTrackingByNumber] API not available, using mock data')
       return {
         data: {
           message: 'Lấy thông tin tracking thành công',
@@ -120,9 +120,9 @@ const orderTrackingApi = {
             tracking_number: trackingNumber,
           },
         },
-      };
+      }
     }
   },
-};
+}
 
-export default orderTrackingApi;
+export default orderTrackingApi

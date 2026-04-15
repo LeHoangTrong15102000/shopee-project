@@ -24,7 +24,7 @@ conversationRouter.get(
   rateLimitConfigs.conversation,
   validate(getConversationsSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(conversationController.getConversations)
+  asyncHandler(conversationController.getConversations),
 )
 
 /**
@@ -37,7 +37,7 @@ conversationRouter.post(
   rateLimitConfigs.conversation,
   validate(createConversationSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(conversationController.createConversation)
+  asyncHandler(conversationController.createConversation),
 )
 
 /**
@@ -49,7 +49,7 @@ conversationRouter.post(
   '/test',
   rateLimitConfigs.testChatbot,
   validate(testChatbotSchema),
-  asyncHandler(conversationController.testChatbot)
+  asyncHandler(conversationController.testChatbot),
 )
 
 /**
@@ -59,7 +59,7 @@ conversationRouter.post(
 conversationRouter.get(
   '/test-stream',
   rateLimitConfigs.testChatbot,
-  asyncHandler(conversationController.testChatbotStream)
+  asyncHandler(conversationController.testChatbotStream),
 )
 
 /**
@@ -71,7 +71,7 @@ conversationRouter.get(
   rateLimitConfigs.conversation,
   validate(conversationIdParamSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(conversationController.getConversation)
+  asyncHandler(conversationController.getConversation),
 )
 
 /**
@@ -85,7 +85,7 @@ conversationRouter.post(
   validate(conversationIdParamSchema),
   validate(sendMessageSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(conversationController.sendMessage)
+  asyncHandler(conversationController.sendMessage),
 )
 
 /**
@@ -99,7 +99,7 @@ conversationRouter.put(
   validate(conversationIdParamSchema),
   validate(updateConversationSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(conversationController.updateConversation)
+  asyncHandler(conversationController.updateConversation),
 )
 
 /**
@@ -111,7 +111,7 @@ conversationRouter.delete(
   rateLimitConfigs.conversation,
   validate(conversationIdParamSchema),
   authMiddleware.verifyAccessToken,
-  asyncHandler(conversationController.deleteConversation)
+  asyncHandler(conversationController.deleteConversation),
 )
 
 export default conversationRouter

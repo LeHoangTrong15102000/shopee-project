@@ -39,14 +39,21 @@ import {
   testChatbotStream,
 } from '@controllers/conversation.controller'
 
-const mockConversationService = container.services.conversation as jest.Mocked<typeof container.services.conversation>
+const mockConversationService = container.services.conversation as jest.Mocked<
+  typeof container.services.conversation
+>
 
 const createMockRequest = (options: any = {}): Partial<Request> => ({
   body: options.body || {},
   params: options.params || {},
   query: options.query || {},
   headers: options.headers || {},
-  jwtDecoded: options.jwtDecoded || { id: 'user123', email: 'test@test.com', roles: ['User'], created_at: '2024-01-01' },
+  jwtDecoded: options.jwtDecoded || {
+    id: 'user123',
+    email: 'test@test.com',
+    roles: ['User'],
+    created_at: '2024-01-01',
+  },
 })
 
 const createMockResponse = (): Partial<Response> => {
@@ -83,11 +90,18 @@ describe('Conversation Controller', () => {
 
       await getConversations(req as Request, res as Response)
 
-      expect(mockConversationService.getConversations).toHaveBeenCalledWith('user123', { status: 'active' }, { page: 1, limit: 10 })
+      expect(mockConversationService.getConversations).toHaveBeenCalledWith(
+        'user123',
+        { status: 'active' },
+        { page: 1, limit: 10 },
+      )
       expect(res.status).toHaveBeenCalledWith(200)
       expect(res.json).toHaveBeenCalledWith({
         message: 'Lấy danh sách cuộc trò chuyện thành công',
-        data: { conversations: [mockConversation], pagination: { page: 1, limit: 10, total: 1, totalPages: 1 } },
+        data: {
+          conversations: [mockConversation],
+          pagination: { page: 1, limit: 10, total: 1, totalPages: 1 },
+        },
       })
     })
 
@@ -102,7 +116,11 @@ describe('Conversation Controller', () => {
 
       await getConversations(req as Request, res as Response)
 
-      expect(mockConversationService.getConversations).toHaveBeenCalledWith('user123', { status: 'archived' }, { page: 2, limit: 5 })
+      expect(mockConversationService.getConversations).toHaveBeenCalledWith(
+        'user123',
+        { status: 'archived' },
+        { page: 2, limit: 5 },
+      )
       expect(res.status).toHaveBeenCalledWith(200)
     })
   })
@@ -117,7 +135,10 @@ describe('Conversation Controller', () => {
 
       expect(mockConversationService.getConversation).toHaveBeenCalledWith('user123', 'conv123')
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Lấy cuộc trò chuyện thành công', data: mockConversation })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Lấy cuộc trò chuyện thành công',
+        data: mockConversation,
+      })
     })
   })
 
@@ -133,7 +154,11 @@ describe('Conversation Controller', () => {
 
       await createConversation(req as Request, res as Response)
 
-      expect(mockConversationService.createConversation).toHaveBeenCalledWith('user123', 'Hello', 'New Chat')
+      expect(mockConversationService.createConversation).toHaveBeenCalledWith(
+        'user123',
+        'Hello',
+        'New Chat',
+      )
       expect(res.status).toHaveBeenCalledWith(201)
       expect(res.json).toHaveBeenCalledWith({
         message: 'Tạo cuộc trò chuyện thành công',
@@ -149,12 +174,19 @@ describe('Conversation Controller', () => {
         conversation: { ...mockConversation, messages: [...mockConversation.messages, aiMessage] },
         aiMessage,
       } as any)
-      const req = createMockRequest({ params: { id: 'conv123' }, body: { message: 'Test message' } })
+      const req = createMockRequest({
+        params: { id: 'conv123' },
+        body: { message: 'Test message' },
+      })
       const res = createMockResponse()
 
       await sendMessage(req as Request, res as Response)
 
-      expect(mockConversationService.sendMessage).toHaveBeenCalledWith('user123', 'conv123', 'Test message')
+      expect(mockConversationService.sendMessage).toHaveBeenCalledWith(
+        'user123',
+        'conv123',
+        'Test message',
+      )
       expect(res.status).toHaveBeenCalledWith(200)
       expect(res.json).toHaveBeenCalledWith({
         message: 'Gửi tin nhắn thành công',
@@ -165,16 +197,30 @@ describe('Conversation Controller', () => {
 
   describe('updateConversation', () => {
     it('should update conversation title and status', async () => {
-      const updatedConversation = { ...mockConversation, title: 'Updated Title', status: 'archived' }
+      const updatedConversation = {
+        ...mockConversation,
+        title: 'Updated Title',
+        status: 'archived',
+      }
       mockConversationService.updateConversation.mockResolvedValue(updatedConversation as any)
-      const req = createMockRequest({ params: { id: 'conv123' }, body: { title: 'Updated Title', status: 'archived' } })
+      const req = createMockRequest({
+        params: { id: 'conv123' },
+        body: { title: 'Updated Title', status: 'archived' },
+      })
       const res = createMockResponse()
 
       await updateConversation(req as Request, res as Response)
 
-      expect(mockConversationService.updateConversation).toHaveBeenCalledWith('user123', 'conv123', { title: 'Updated Title', status: 'archived' })
+      expect(mockConversationService.updateConversation).toHaveBeenCalledWith(
+        'user123',
+        'conv123',
+        { title: 'Updated Title', status: 'archived' },
+      )
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Cập nhật cuộc trò chuyện thành công', data: updatedConversation })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Cập nhật cuộc trò chuyện thành công',
+        data: updatedConversation,
+      })
     })
   })
 
@@ -206,7 +252,7 @@ describe('Conversation Controller', () => {
         expect.objectContaining({
           message: 'Test chatbot thành công',
           data: expect.objectContaining({ userMessage: 'Test input', botResponse: 'Bot response' }),
-        })
+        }),
       )
     })
   })
@@ -223,4 +269,3 @@ describe('Conversation Controller', () => {
     })
   })
 })
-

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 vi.mock('src/utils/http', () => ({
   default: {
@@ -8,109 +8,109 @@ vi.mock('src/utils/http', () => ({
     delete: vi.fn(),
     patch: vi.fn(),
   },
-}));
+}))
 
-import http from 'src/utils/http';
-import wishlistApi from '../wishlist.api';
+import http from 'src/utils/http'
+import wishlistApi from '../wishlist.api'
 
 describe('Wishlist API', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    vi.clearAllMocks()
+  })
 
   describe('getWishlist', () => {
     it('should call http.get on success', async () => {
-      const mockResponse = { data: { message: 'ok', data: { wishlist: [], pagination: {} } } };
-      vi.mocked(http.get).mockResolvedValue(mockResponse as any);
-      const result = await wishlistApi.getWishlist();
-      expect(http.get).toHaveBeenCalled();
-      expect(result).toEqual(mockResponse);
-    });
+      const mockResponse = { data: { message: 'ok', data: { wishlist: [], pagination: {} } } }
+      vi.mocked(http.get).mockResolvedValue(mockResponse as any)
+      const result = await wishlistApi.getWishlist()
+      expect(http.get).toHaveBeenCalled()
+      expect(result).toEqual(mockResponse)
+    })
 
     it('should return fallback data on error', async () => {
-      vi.mocked(http.get).mockRejectedValue(new Error('Network error'));
-      const result = await wishlistApi.getWishlist();
-      expect(result.data.message).toEqual(expect.any(String));
-    });
-  });
+      vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
+      const result = await wishlistApi.getWishlist()
+      expect(result.data.message).toEqual(expect.any(String))
+    })
+  })
 
   describe('addToWishlist', () => {
     it('should call http.post on success', async () => {
-      const mockResponse = { data: { message: 'ok', data: { _id: '1' } } };
-      vi.mocked(http.post).mockResolvedValue(mockResponse as any);
-      const result = await wishlistApi.addToWishlist({ product_id: '1' });
-      expect(http.post).toHaveBeenCalled();
-      expect(result).toEqual(mockResponse);
-    });
+      const mockResponse = { data: { message: 'ok', data: { _id: '1' } } }
+      vi.mocked(http.post).mockResolvedValue(mockResponse as any)
+      const result = await wishlistApi.addToWishlist({ product_id: '1' })
+      expect(http.post).toHaveBeenCalled()
+      expect(result).toEqual(mockResponse)
+    })
 
     it('should return fallback data on error', async () => {
-      vi.mocked(http.post).mockRejectedValue(new Error('Network error'));
-      const result = await wishlistApi.addToWishlist({ product_id: '1' });
-      expect(result.data.message).toEqual(expect.any(String));
-    });
-  });
+      vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
+      const result = await wishlistApi.addToWishlist({ product_id: '1' })
+      expect(result.data.message).toEqual(expect.any(String))
+    })
+  })
 
   describe('removeFromWishlist', () => {
     it('should call http.delete on success', async () => {
-      const mockResponse = { data: { message: 'ok', data: { message: 'deleted' } } };
-      vi.mocked(http.delete).mockResolvedValue(mockResponse as any);
-      const result = await wishlistApi.removeFromWishlist('1');
-      expect(http.delete).toHaveBeenCalled();
-      expect(result).toEqual(mockResponse);
-    });
+      const mockResponse = { data: { message: 'ok', data: { message: 'deleted' } } }
+      vi.mocked(http.delete).mockResolvedValue(mockResponse as any)
+      const result = await wishlistApi.removeFromWishlist('1')
+      expect(http.delete).toHaveBeenCalled()
+      expect(result).toEqual(mockResponse)
+    })
 
     it('should return fallback data on error', async () => {
-      vi.mocked(http.delete).mockRejectedValue(new Error('Network error'));
-      const result = await wishlistApi.removeFromWishlist('1');
-      expect(result.data.message).toEqual(expect.any(String));
-    });
-  });
+      vi.mocked(http.delete).mockRejectedValue(new Error('Network error'))
+      const result = await wishlistApi.removeFromWishlist('1')
+      expect(result.data.message).toEqual(expect.any(String))
+    })
+  })
 
   describe('checkInWishlist', () => {
     it('should call http.get on success', async () => {
-      const mockResponse = { data: { message: 'ok', data: { in_wishlist: true } } };
-      vi.mocked(http.get).mockResolvedValue(mockResponse as any);
-      const result = await wishlistApi.checkInWishlist('1');
-      expect(http.get).toHaveBeenCalled();
-      expect(result).toEqual(mockResponse);
-    });
+      const mockResponse = { data: { message: 'ok', data: { in_wishlist: true } } }
+      vi.mocked(http.get).mockResolvedValue(mockResponse as any)
+      const result = await wishlistApi.checkInWishlist('1')
+      expect(http.get).toHaveBeenCalled()
+      expect(result).toEqual(mockResponse)
+    })
 
     it('should return fallback data on error', async () => {
-      vi.mocked(http.get).mockRejectedValue(new Error('Network error'));
-      const result = await wishlistApi.checkInWishlist('1');
-      expect(result.data.message).toEqual(expect.any(String));
-    });
-  });
+      vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
+      const result = await wishlistApi.checkInWishlist('1')
+      expect(result.data.message).toEqual(expect.any(String))
+    })
+  })
 
   describe('clearWishlist', () => {
     it('should call http.delete on success', async () => {
-      const mockResponse = { data: { message: 'ok', data: { deleted_count: 5 } } };
-      vi.mocked(http.delete).mockResolvedValue(mockResponse as any);
-      const result = await wishlistApi.clearWishlist();
-      expect(http.delete).toHaveBeenCalled();
-      expect(result).toEqual(mockResponse);
-    });
+      const mockResponse = { data: { message: 'ok', data: { deleted_count: 5 } } }
+      vi.mocked(http.delete).mockResolvedValue(mockResponse as any)
+      const result = await wishlistApi.clearWishlist()
+      expect(http.delete).toHaveBeenCalled()
+      expect(result).toEqual(mockResponse)
+    })
 
     it('should return fallback data on error', async () => {
-      vi.mocked(http.delete).mockRejectedValue(new Error('Network error'));
-      const result = await wishlistApi.clearWishlist();
-      expect(result.data.message).toEqual(expect.any(String));
-    });
-  });
+      vi.mocked(http.delete).mockRejectedValue(new Error('Network error'))
+      const result = await wishlistApi.clearWishlist()
+      expect(result.data.message).toEqual(expect.any(String))
+    })
+  })
 
   describe('getWishlistCount', () => {
     it('should call http.get on success', async () => {
-      const mockResponse = { data: { message: 'ok', data: { count: 5 } } };
-      vi.mocked(http.get).mockResolvedValue(mockResponse as any);
-      const result = await wishlistApi.getWishlistCount();
-      expect(http.get).toHaveBeenCalled();
-      expect(result).toEqual(mockResponse);
-    });
+      const mockResponse = { data: { message: 'ok', data: { count: 5 } } }
+      vi.mocked(http.get).mockResolvedValue(mockResponse as any)
+      const result = await wishlistApi.getWishlistCount()
+      expect(http.get).toHaveBeenCalled()
+      expect(result).toEqual(mockResponse)
+    })
 
     it('should return fallback data on error', async () => {
-      vi.mocked(http.get).mockRejectedValue(new Error('Network error'));
-      const result = await wishlistApi.getWishlistCount();
-      expect(result.data.message).toEqual(expect.any(String));
-    });
-  });
-});
+      vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
+      const result = await wishlistApi.getWishlistCount()
+      expect(result.data.message).toEqual(expect.any(String))
+    })
+  })
+})

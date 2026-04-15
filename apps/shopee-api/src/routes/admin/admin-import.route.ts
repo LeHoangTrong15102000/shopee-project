@@ -72,7 +72,7 @@ adminImportRouter.post(
         error: error.message,
       })
     }
-  })
+  }),
 )
 
 // Kiểm tra thống kê products
@@ -109,7 +109,7 @@ adminImportRouter.get(
         error: error.message,
       })
     }
-  })
+  }),
 )
 
 export default adminImportRouter

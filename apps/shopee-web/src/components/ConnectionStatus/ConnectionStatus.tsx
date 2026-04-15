@@ -1,20 +1,20 @@
-import { useContext } from 'react';
-import { useTranslation } from 'react-i18next';
-import { AppContext } from 'src/contexts/app.context';
-import useSocket from 'src/hooks/useSocket';
-import Button from 'src/components/Button';
+import { useContext } from 'react'
+import { useTranslation } from 'react-i18next'
+import { AppContext } from 'src/contexts/app.context'
+import useSocket from 'src/hooks/useSocket'
+import Button from 'src/components/Button'
 
 export default function ConnectionStatus() {
-  const { t } = useTranslation('common');
-  const { isAuthenticated } = useContext(AppContext);
-  const { connectionStatus, connect } = useSocket();
+  const { t } = useTranslation('common')
+  const { isAuthenticated } = useContext(AppContext)
+  const { connectionStatus, connect } = useSocket()
 
   if (!isAuthenticated) {
-    return null;
+    return null
   }
 
   if (connectionStatus === 'connected') {
-    return null;
+    return null
   }
 
   if (connectionStatus === 'connecting') {
@@ -26,7 +26,7 @@ export default function ConnectionStatus() {
         </span>
         <span>{t('status.connecting')}</span>
       </div>
-    );
+    )
   }
 
   if (connectionStatus === 'disconnected') {
@@ -46,7 +46,7 @@ export default function ConnectionStatus() {
           {t('connection.reconnect')}
         </Button>
       </div>
-    );
+    )
   }
 
   if (connectionStatus === 'error') {
@@ -66,8 +66,8 @@ export default function ConnectionStatus() {
           {t('button.retry')}
         </Button>
       </div>
-    );
+    )
   }
 
-  return null;
+  return null
 }

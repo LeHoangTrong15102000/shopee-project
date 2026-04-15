@@ -70,4 +70,3 @@ export const clearActivities = (productId: string): void => {
   activityBufferMap.delete(productId)
   throttleMap.delete(productId)
 }
-

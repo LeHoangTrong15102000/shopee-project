@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import VoucherListModal from '../VoucherListModal';
-import { renderWithProviders } from 'src/utils/testUtils';
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import VoucherListModal from '../VoucherListModal'
+import { renderWithProviders } from 'src/utils/testUtils'
 
 // Mock voucher API
 vi.mock('src/apis/voucher.api', () => ({
@@ -43,163 +43,163 @@ vi.mock('src/apis/voucher.api', () => ({
     }),
     saveVoucher: vi.fn().mockResolvedValue({ data: { message: 'OK' } }),
   },
-}));
+}))
 
 vi.mock('react-toastify', () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn(),
   },
-}));
+}))
 
 describe('VoucherListModal (Task 2.13)', () => {
-  const onClose = vi.fn();
-  const user = userEvent.setup();
+  const onClose = vi.fn()
+  const user = userEvent.setup()
 
   beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    vi.clearAllMocks()
+  })
 
   it('renders modal with title when open', async () => {
-    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />);
+    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      expect(screen.getByText('Mã Giảm Giá Của Shop')).toBeInTheDocument();
-    });
-  });
+      expect(screen.getByText('Mã Giảm Giá Của Shop')).toBeInTheDocument()
+    })
+  })
 
   it('does not render content when closed', () => {
-    renderWithProviders(<VoucherListModal isOpen={false} onClose={onClose} />);
-    expect(screen.queryByText('Mã Giảm Giá Của Shop')).not.toBeInTheDocument();
-  });
+    renderWithProviders(<VoucherListModal isOpen={false} onClose={onClose} />)
+    expect(screen.queryByText('Mã Giảm Giá Của Shop')).not.toBeInTheDocument()
+  })
 
   it('shows loading skeletons initially', () => {
-    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />);
+    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />)
     // 6 skeleton cards rendered inside the grid container
-    const grid = document.querySelector('.grid');
-    expect(grid).toBeInTheDocument();
-    const skeletonCards = grid!.querySelectorAll(':scope > .animate-pulse');
-    expect(skeletonCards).toHaveLength(6);
-  });
+    const grid = document.querySelector('.grid')
+    expect(grid).toBeInTheDocument()
+    const skeletonCards = grid!.querySelectorAll(':scope > .animate-pulse')
+    expect(skeletonCards).toHaveLength(6)
+  })
 
   it('displays voucher cards after loading', async () => {
-    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />);
+    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      expect(screen.getByText('Giảm 50K')).toBeInTheDocument();
+      expect(screen.getByText('Giảm 50K')).toBeInTheDocument()
       // 'Giảm 10%' appears in both name and description, so use getAllByText
-      expect(screen.getAllByText('Giảm 10%').length).toBeGreaterThan(0);
-    });
-  });
+      expect(screen.getAllByText('Giảm 10%').length).toBeGreaterThan(0)
+    })
+  })
 
   it('calls onClose when close button is clicked', async () => {
-    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />);
+    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      expect(screen.getByText('Mã Giảm Giá Của Shop')).toBeInTheDocument();
-    });
-    const closeBtn = screen.getByLabelText('Đóng');
-    await user.click(closeBtn);
-    expect(onClose).toHaveBeenCalled();
-  });
+      expect(screen.getByText('Mã Giảm Giá Của Shop')).toBeInTheDocument()
+    })
+    const closeBtn = screen.getByLabelText('Đóng')
+    await user.click(closeBtn)
+    expect(onClose).toHaveBeenCalled()
+  })
 
   it('saves voucher with optimistic update', async () => {
-    const voucherApi = (await import('src/apis/voucher.api')).default;
-    const { toast } = await import('react-toastify');
-    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />);
+    const voucherApi = (await import('src/apis/voucher.api')).default
+    const { toast } = await import('react-toastify')
+    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      expect(screen.getByText('Giảm 50K')).toBeInTheDocument();
-    });
-    const saveButtons = screen.getAllByText('Lưu');
-    expect(saveButtons.length).toBeGreaterThan(0);
-    await user.click(saveButtons[0]);
-    expect(voucherApi.saveVoucher).toHaveBeenCalledWith('v1');
+      expect(screen.getByText('Giảm 50K')).toBeInTheDocument()
+    })
+    const saveButtons = screen.getAllByText('Lưu')
+    expect(saveButtons.length).toBeGreaterThan(0)
+    await user.click(saveButtons[0])
+    expect(voucherApi.saveVoucher).toHaveBeenCalledWith('v1')
     // Post-conditions: success toast, button text changes, button disabled
     await waitFor(() => {
-      expect(toast.success).toHaveBeenCalled();
-    });
+      expect(toast.success).toHaveBeenCalled()
+    })
     // After optimistic update, button should show "Đã lưu" and be disabled
     await waitFor(() => {
-      const savedButtons = screen.getAllByText('Đã lưu');
-      expect(savedButtons.length).toBeGreaterThanOrEqual(2); // v1 (just saved) + v2 (already saved)
+      const savedButtons = screen.getAllByText('Đã lưu')
+      expect(savedButtons.length).toBeGreaterThanOrEqual(2) // v1 (just saved) + v2 (already saved)
       // The first voucher's button should now be disabled
-      const v1Button = savedButtons[0].closest('button');
-      expect(v1Button).toBeDisabled();
-    });
-  });
+      const v1Button = savedButtons[0].closest('button')
+      expect(v1Button).toBeDisabled()
+    })
+  })
 
   it('shows "Đã lưu" disabled button for already-saved voucher', async () => {
-    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />);
+    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      expect(screen.getAllByText('Giảm 10%').length).toBeGreaterThan(0);
-    });
+      expect(screen.getAllByText('Giảm 10%').length).toBeGreaterThan(0)
+    })
     // v2 has is_collected: true, so it should show "Đã lưu"
-    const savedButtons = screen.getAllByText('Đã lưu');
-    expect(savedButtons.length).toBeGreaterThan(0);
-    expect(savedButtons[0].closest('button')).toBeDisabled();
-  });
+    const savedButtons = screen.getAllByText('Đã lưu')
+    expect(savedButtons.length).toBeGreaterThan(0)
+    expect(savedButtons[0].closest('button')).toBeDisabled()
+  })
 
   it('shows error toast when save voucher fails', async () => {
-    const voucherApi = (await import('src/apis/voucher.api')).default;
-    const { toast } = await import('react-toastify');
-    (voucherApi.saveVoucher as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('fail'));
-    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />);
+    const voucherApi = (await import('src/apis/voucher.api')).default
+    const { toast } = await import('react-toastify')
+    ;(voucherApi.saveVoucher as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('fail'))
+    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      expect(screen.getByText('Giảm 50K')).toBeInTheDocument();
-    });
-    const saveButtons = screen.getAllByText('Lưu');
-    expect(saveButtons.length).toBeGreaterThan(0);
-    await user.click(saveButtons[0]);
+      expect(screen.getByText('Giảm 50K')).toBeInTheDocument()
+    })
+    const saveButtons = screen.getAllByText('Lưu')
+    expect(saveButtons.length).toBeGreaterThan(0)
+    await user.click(saveButtons[0])
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalled();
-    });
-  });
+      expect(toast.error).toHaveBeenCalled()
+    })
+  })
 
   it('has accessible modal structure', async () => {
-    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />);
+    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      expect(screen.getByRole('dialog')).toBeInTheDocument();
-    });
-    expect(screen.getByRole('dialog')).toHaveAttribute('aria-modal', 'true');
-  });
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+    expect(screen.getByRole('dialog')).toHaveAttribute('aria-modal', 'true')
+  })
 
   it('shows responsive grid layout', async () => {
-    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />);
+    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      expect(screen.getByText('Giảm 50K')).toBeInTheDocument();
-    });
-    const grid = document.querySelector('.grid');
-    expect(grid).toBeInTheDocument();
-    expect(grid?.classList.contains('grid-cols-1')).toBe(true);
-    expect(grid?.classList.contains('sm:grid-cols-2')).toBe(true);
-    expect(grid?.classList.contains('lg:grid-cols-3')).toBe(true);
-  });
-});
+      expect(screen.getByText('Giảm 50K')).toBeInTheDocument()
+    })
+    const grid = document.querySelector('.grid')
+    expect(grid).toBeInTheDocument()
+    expect(grid?.classList.contains('grid-cols-1')).toBe(true)
+    expect(grid?.classList.contains('sm:grid-cols-2')).toBe(true)
+    expect(grid?.classList.contains('lg:grid-cols-3')).toBe(true)
+  })
+})
 
 describe('VoucherListModal - Error & Empty States', () => {
-  const onClose = vi.fn();
+  const onClose = vi.fn()
 
   beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    vi.clearAllMocks()
+  })
 
   it('displays empty state when no vouchers available', async () => {
-    const voucherApi = (await import('src/apis/voucher.api')).default;
-    (voucherApi.getAvailableVouchers as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+    const voucherApi = (await import('src/apis/voucher.api')).default
+    ;(voucherApi.getAvailableVouchers as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       data: { data: { vouchers: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0 } } },
-    });
-    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />);
+    })
+    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      expect(screen.getByText('Không có voucher khả dụng')).toBeInTheDocument();
-    });
-  });
+      expect(screen.getByText('Không có voucher khả dụng')).toBeInTheDocument()
+    })
+  })
 
   it('displays error state with retry button on API failure', async () => {
-    const voucherApi = (await import('src/apis/voucher.api')).default;
-    (voucherApi.getAvailableVouchers as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+    const voucherApi = (await import('src/apis/voucher.api')).default
+    ;(voucherApi.getAvailableVouchers as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
       new Error('Network error'),
-    );
-    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />);
+    )
+    renderWithProviders(<VoucherListModal isOpen={true} onClose={onClose} />)
     await waitFor(() => {
-      expect(screen.getByText('Không thể tải voucher. Vui lòng thử lại.')).toBeInTheDocument();
-    });
-    expect(screen.getByText('Thử lại')).toBeInTheDocument();
-  });
-});
+      expect(screen.getByText('Không thể tải voucher. Vui lòng thử lại.')).toBeInTheDocument()
+    })
+    expect(screen.getByText('Thử lại')).toBeInTheDocument()
+  })
+})

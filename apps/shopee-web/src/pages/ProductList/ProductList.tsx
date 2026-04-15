@@ -1,41 +1,41 @@
-import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
-import { ProductListConfig } from 'src/types/product.type';
-import { RetryError } from 'src/types/utils.type';
-import { useNavigate } from 'react-router';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
+import { ProductListConfig } from 'src/types/product.type'
+import { RetryError } from 'src/types/utils.type'
+import { useNavigate } from 'react-router'
+import { motion, AnimatePresence } from 'framer-motion'
 
-import categoryApi from 'src/apis/category.api';
-import productApi from 'src/apis/product.api';
+import categoryApi from 'src/apis/category.api'
+import productApi from 'src/apis/product.api'
 
-import AsideFilter from './components/AsideFilter';
-import SortProductList from './components/SortProductList';
-import Pagination from 'src/components/Pagination';
-import Product from './components/Product/Product';
-import ProductListItem from 'src/components/ProductListItem';
-import MobileFilterDrawer from 'src/components/MobileFilterDrawer';
-import SearchNoResults from 'src/components/SearchNoResults';
+import AsideFilter from './components/AsideFilter'
+import SortProductList from './components/SortProductList'
+import Pagination from 'src/components/Pagination'
+import Product from './components/Product/Product'
+import ProductListItem from 'src/components/ProductListItem'
+import MobileFilterDrawer from 'src/components/MobileFilterDrawer'
+import SearchNoResults from 'src/components/SearchNoResults'
 
-import path from 'src/constant/path';
-import { useProductQueryStates, normalizeProductQueryKey } from 'src/hooks/nuqs';
-import { useScrollRestoration } from 'src/hooks/useScrollRestoration';
-import { useViewMode } from 'src/hooks/useViewMode';
-import { useIsMobile } from 'src/hooks/useIsMobile';
-import SEO from 'src/components/SEO';
-import { SITE_URL } from 'src/components/SEO';
-import { useTranslation } from 'react-i18next';
-import Loader from 'src/components/Loader';
-import Button from 'src/components/Button';
+import path from 'src/constant/path'
+import { useProductQueryStates, normalizeProductQueryKey } from 'src/hooks/nuqs'
+import { useScrollRestoration } from 'src/hooks/useScrollRestoration'
+import { useViewMode } from 'src/hooks/useViewMode'
+import { useIsMobile } from 'src/hooks/useIsMobile'
+import SEO from 'src/components/SEO'
+import { SITE_URL } from 'src/components/SEO'
+import { useTranslation } from 'react-i18next'
+import Loader from 'src/components/Loader'
+import Button from 'src/components/Button'
 
 /**
  * ProductList Component với Query Cancellation
  * Tự động hủy request cũ khi queryConfig thay đổi (filter, search, pagination)
  */
 const ProductList = () => {
-  const { t } = useTranslation('home');
-  const [filters, setFilters] = useProductQueryStates();
-  const navigate = useNavigate();
-  const isMobile = useIsMobile();
+  const { t } = useTranslation('home')
+  const [filters, setFilters] = useProductQueryStates()
+  const navigate = useNavigate()
+  const isMobile = useIsMobile()
 
   const containerVariants = isMobile
     ? undefined
@@ -45,27 +45,27 @@ const ProductList = () => {
           opacity: 1,
           transition: { staggerChildren: 0.015 },
         },
-      };
+      }
 
   // State cho Mobile Filter Drawer
-  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false)
 
   // View Mode - Grid/List toggle with localStorage persistence
-  const { viewMode, changeViewMode } = useViewMode();
+  const { viewMode, changeViewMode } = useViewMode()
 
   // Scroll Restoration - tự động lưu và khôi phục vị trí scroll
-  const { scrollToTop } = useScrollRestoration(`product-list-${JSON.stringify(filters)}`, true);
+  const { scrollToTop } = useScrollRestoration(`product-list-${JSON.stringify(filters)}`, true)
 
   // Scroll to top chỉ khi có thay đổi filter/search/sort (không phải pagination)
   useEffect(() => {
-    const { page, ...restConfig } = filters;
-    const isFilterChange = Object.values(restConfig).some((value) => value && value !== '');
+    const { page, ...restConfig } = filters
+    const isFilterChange = Object.values(restConfig).some((value) => value && value !== '')
 
     // Chỉ scroll to top khi có filter change, không scroll khi chỉ thay đổi page
     if (isFilterChange && page === 1) {
-      scrollToTop();
+      scrollToTop()
     }
-  }, [filters, scrollToTop]);
+  }, [filters, scrollToTop])
 
   /**
    * Query Products với automatic cancellation
@@ -80,22 +80,22 @@ const ProductList = () => {
     queryKey: ['products', normalizeProductQueryKey(filters)],
     queryFn: ({ signal }) => {
       // Truyền AbortSignal vào API call để support cancellation
-      return productApi.getProducts(filters as ProductListConfig, { signal });
+      return productApi.getProducts(filters as ProductListConfig, { signal })
     },
     placeholderData: (previousData) => previousData, // Giữ data cũ khi loading
     staleTime: 3 * 60 * 1000, // 3 phút
     retry: (failureCount, error: RetryError) => {
       // Không retry nếu request bị abort (do cancellation)
       if (error?.name === 'AbortError' || error?.code === 'ERR_CANCELED') {
-        return false;
+        return false
       }
       // Không retry cho lỗi 404 (không tìm thấy sản phẩm)
       if (error?.response?.status === 404) {
-        return false;
+        return false
       }
-      return failureCount < 2; // Retry tối đa 2 lần cho các lỗi khác
+      return failureCount < 2 // Retry tối đa 2 lần cho các lỗi khác
     },
-  });
+  })
 
   /**
    * Query Categories với Query Cancellation
@@ -105,16 +105,16 @@ const ProductList = () => {
     queryKey: ['categories'],
     queryFn: ({ signal }) => {
       // Truyền AbortSignal vào API call
-      return categoryApi.getCategories({ signal });
+      return categoryApi.getCategories({ signal })
     },
     staleTime: 15 * 60 * 1000, // Cache 15 phút vì categories ít thay đổi
     retry: (failureCount, error: RetryError) => {
       if (error?.name === 'AbortError' || error?.code === 'ERR_CANCELED') {
-        return false;
+        return false
       }
-      return failureCount < 1;
+      return failureCount < 1
     },
-  });
+  })
 
   // Handle error và empty state
   useEffect(() => {
@@ -125,9 +125,9 @@ const ProductList = () => {
       !error
     ) {
       // Redirect về trang 1 nếu không có sản phẩm và không phải trang 1
-      setFilters({ page: 1 });
+      setFilters({ page: 1 })
     }
-  }, [productsData, isLoading, error, setFilters]);
+  }, [productsData, isLoading, error, setFilters])
 
   // Loading state - hiển thị loader khi lần đầu load
   if (isLoading && !productsData) {
@@ -137,7 +137,7 @@ const ProductList = () => {
           <Loader />
         </div>
       </div>
-    );
+    )
   }
 
   // Error state
@@ -160,17 +160,17 @@ const ProductList = () => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
-  const products = productsData?.data.data.products || [];
-  const pagination = productsData?.data.data.pagination;
-  const categories = categoriesData?.data.data || [];
+  const products = productsData?.data.data.products || []
+  const pagination = productsData?.data.data.pagination
+  const categories = categoriesData?.data.data || []
 
   // Get current category name for page title
   const currentCategory = filters.category
     ? categories.find((cat) => cat._id === filters.category)
-    : null;
+    : null
 
   return (
     <div className="bg-[#f5f5f5] py-6 dark:bg-slate-900">
@@ -346,7 +346,7 @@ const ProductList = () => {
             <SearchNoResults
               searchTerm={filters.name}
               onPopularSearch={(term) => {
-                setFilters({ name: term, page: 1 });
+                setFilters({ name: term, page: 1 })
               }}
             />
           ) : (
@@ -376,7 +376,7 @@ const ProductList = () => {
                   navigate({
                     pathname: path.home,
                     search: '',
-                  });
+                  })
                 }}
                 className="rounded-xs px-6 py-3"
               >
@@ -386,7 +386,7 @@ const ProductList = () => {
           ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProductList;
+export default ProductList

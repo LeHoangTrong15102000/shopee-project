@@ -50,7 +50,9 @@ const getCategory = async (req: Request, res: Response) => {
 const updateCategory = async (req: Request, res: Response) => {
   try {
     const { name } = req.body
-    const category = await categoryService.updateCategory(req.params.category_id as string, { name })
+    const category = await categoryService.updateCategory(req.params.category_id as string, {
+      name,
+    })
     const response = {
       message: 'Cập nhật category thành công',
       data: category,

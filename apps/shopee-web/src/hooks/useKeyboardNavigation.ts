@@ -1,74 +1,74 @@
-import { useEffect } from 'react';
+import { useEffect } from 'react'
 
 interface UseKeyboardNavigationOptions {
-  onEnter?: () => void;
-  onEscape?: () => void;
-  onArrowUp?: () => void;
-  onArrowDown?: () => void;
-  enabled?: boolean;
+  onEnter?: () => void
+  onEscape?: () => void
+  onArrowUp?: () => void
+  onArrowDown?: () => void
+  enabled?: boolean
 }
 
 export const useKeyboardNavigation = (options: UseKeyboardNavigationOptions) => {
-  const { onEnter, onEscape, onArrowUp, onArrowDown, enabled = true } = options;
+  const { onEnter, onEscape, onArrowUp, onArrowDown, enabled = true } = options
 
   const handleKeyDown = (event: KeyboardEvent) => {
-    if (!enabled) return;
+    if (!enabled) return
 
     switch (event.key) {
       case 'Enter':
       case ' ':
-        event.preventDefault();
-        onEnter?.();
-        break;
+        event.preventDefault()
+        onEnter?.()
+        break
       case 'Escape':
-        onEscape?.();
-        break;
+        onEscape?.()
+        break
       case 'ArrowUp':
-        event.preventDefault();
-        onArrowUp?.();
-        break;
+        event.preventDefault()
+        onArrowUp?.()
+        break
       case 'ArrowDown':
-        event.preventDefault();
-        onArrowDown?.();
-        break;
+        event.preventDefault()
+        onArrowDown?.()
+        break
     }
-  };
+  }
 
-  return { handleKeyDown };
-};
+  return { handleKeyDown }
+}
 
 export const useFocusTrap = (containerRef: React.RefObject<HTMLElement>, isActive: boolean) => {
   useEffect(() => {
-    if (!isActive || !containerRef.current) return;
+    if (!isActive || !containerRef.current) return
 
-    const container = containerRef.current;
+    const container = containerRef.current
     const focusableElements = container.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-    );
-    const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+    )
+    const firstElement = focusableElements[0] as HTMLElement
+    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
 
     const handleTabKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
+      if (e.key !== 'Tab') return
 
       if (e.shiftKey) {
         if (document.activeElement === firstElement) {
-          e.preventDefault();
-          lastElement?.focus();
+          e.preventDefault()
+          lastElement?.focus()
         }
       } else {
         if (document.activeElement === lastElement) {
-          e.preventDefault();
-          firstElement?.focus();
+          e.preventDefault()
+          firstElement?.focus()
         }
       }
-    };
+    }
 
-    container.addEventListener('keydown', handleTabKey);
-    firstElement?.focus();
+    container.addEventListener('keydown', handleTabKey)
+    firstElement?.focus()
 
     return () => {
-      container.removeEventListener('keydown', handleTabKey);
-    };
-  }, [containerRef, isActive]);
-};
+      container.removeEventListener('keydown', handleTabKey)
+    }
+  }, [containerRef, isActive])
+}

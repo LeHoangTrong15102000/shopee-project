@@ -1,16 +1,16 @@
-import { createContext, useContext, useEffect, useState, useRef } from 'react';
-import type { Socket } from 'socket.io-client';
-import { getAccessTokenFromLS } from 'src/utils/auth';
-import config from 'src/constant/config';
-import { ConnectionStatus } from 'src/types/socket.types';
-import { AppContext } from 'src/contexts/app.context';
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import type { Socket } from 'socket.io-client'
+import config from 'src/constant/config'
+import { AppContext } from 'src/contexts/app.context'
+import { ConnectionStatus } from 'src/types/socket.types'
+import { getAccessTokenFromLS } from 'src/utils/auth'
 
 interface SocketContextInterface {
-  socket: Socket | null;
-  isConnected: boolean;
-  connectionStatus: ConnectionStatus;
-  connect: () => void;
-  disconnect: () => void;
+  socket: Socket | null
+  isConnected: boolean
+  connectionStatus: ConnectionStatus
+  connect: () => void
+  disconnect: () => void
 }
 
 const initialSocketContext: SocketContextInterface = {
@@ -19,26 +19,26 @@ const initialSocketContext: SocketContextInterface = {
   connectionStatus: 'disconnected',
   connect: () => null,
   disconnect: () => null,
-};
+}
 
-export const SocketContext = createContext<SocketContextInterface>(initialSocketContext);
+export const SocketContext = createContext<SocketContextInterface>(initialSocketContext)
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useContext(AppContext);
-  const socketRef = useRef<Socket | null>(null);
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('disconnected');
+  const { isAuthenticated } = useContext(AppContext)
+  const socketRef = useRef<Socket | null>(null)
+  const [socket, setSocket] = useState<Socket | null>(null)
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('disconnected')
 
-  const isConnected = connectionStatus === 'connected';
+  const isConnected = connectionStatus === 'connected'
 
   const connect = async () => {
     if (socketRef.current?.connected || !isAuthenticated) {
-      return;
+      return
     }
 
-    const token = getAccessTokenFromLS();
+    const token = getAccessTokenFromLS()
     if (!token) {
-      return;
+      return
     }
 
     /**
@@ -51,80 +51,80 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
      * When a real backend is available, set `enableSocket: true` in src/constant/config.ts.
      */
     if (!config.enableSocket) {
-      setConnectionStatus('connected');
-      return;
+      setConnectionStatus('connected')
+      return
     }
 
     try {
-      setConnectionStatus('connecting');
+      setConnectionStatus('connecting')
 
       // Dynamic import socket.io-client - only loaded when actually connecting
-      const { io } = await import('socket.io-client');
+      const { io } = await import('socket.io-client')
 
       const newSocket = io(config.socketUrl, {
         auth: { token },
         transports: ['websocket'],
         autoConnect: false,
-      });
+      })
 
       newSocket.on('connect', () => {
-        setConnectionStatus('connected');
-        setSocket(newSocket);
-      });
+        setConnectionStatus('connected')
+        setSocket(newSocket)
+      })
 
       newSocket.on('disconnect', () => {
-        setConnectionStatus('disconnected');
-      });
+        setConnectionStatus('disconnected')
+      })
 
       newSocket.on('connect_error', () => {
-        setConnectionStatus('error');
-      });
+        setConnectionStatus('error')
+      })
 
       newSocket.on('token_expired', () => {
-        setConnectionStatus('disconnected');
-        newSocket.disconnect();
-      });
+        setConnectionStatus('disconnected')
+        newSocket.disconnect()
+      })
 
       newSocket.on('auth_error', () => {
-        setConnectionStatus('disconnected');
-        newSocket.disconnect();
-      });
+        setConnectionStatus('disconnected')
+        newSocket.disconnect()
+      })
 
-      socketRef.current = newSocket;
-      newSocket.connect();
+      socketRef.current = newSocket
+      newSocket.connect()
     } catch (error) {
-      console.error('Failed to load socket.io-client:', error);
-      setConnectionStatus('disconnected');
+      console.error('Failed to load socket.io-client:', error)
+      setConnectionStatus('disconnected')
     }
-  };
+  }
 
   const disconnect = () => {
     if (socketRef.current) {
-      socketRef.current.removeAllListeners();
-      socketRef.current.disconnect();
-      socketRef.current = null;
-      setSocket(null);
-      setConnectionStatus('disconnected');
+      socketRef.current.removeAllListeners()
+      socketRef.current.disconnect()
+      socketRef.current = null
+      setSocket(null)
+      setConnectionStatus('disconnected')
     }
-  };
+  }
 
   useEffect(() => {
     if (isAuthenticated) {
-      connect();
+      connect()
     } else {
-      disconnect();
+      disconnect()
     }
-  }, [isAuthenticated, connect, disconnect]);
+  }, [isAuthenticated, connect, disconnect])
 
   useEffect(() => {
     return () => {
       if (socketRef.current) {
-        socketRef.current.removeAllListeners();
-        socketRef.current.disconnect();
-        socketRef.current = null;
+        socketRef.current.removeAllListeners()
+        socketRef.current.disconnect()
+        socketRef.current = null
       }
-    };
-  }, []);
+    }
+  }, [])
 
   const value = {
     socket,
@@ -132,11 +132,11 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     connectionStatus,
     connect,
     disconnect,
-  };
+  }
 
-  return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>;
-};
+  return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>
+}
 
 export const useSocketContext = () => {
-  return useContext(SocketContext);
-};
+  return useContext(SocketContext)
+}

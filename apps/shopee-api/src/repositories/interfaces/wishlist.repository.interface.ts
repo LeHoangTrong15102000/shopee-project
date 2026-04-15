@@ -22,26 +22,42 @@ export interface CreateWishlistDTO {
 /**
  * Wishlist repository interface
  */
-export interface IWishlistRepository extends IBaseRepository<IWishlistItem, CreateWishlistDTO, Partial<IWishlistItem>> {
+export interface IWishlistRepository extends IBaseRepository<
+  IWishlistItem,
+  CreateWishlistDTO,
+  Partial<IWishlistItem>
+> {
   /**
    * Find user's wishlist with populated products
    */
-  findByUser(userId: string | Types.ObjectId, pagination: PaginationOptions): Promise<PaginatedResult<IWishlistItem>>
+  findByUser(
+    userId: string | Types.ObjectId,
+    pagination: PaginationOptions,
+  ): Promise<PaginatedResult<IWishlistItem>>
 
   /**
    * Check if product is in user's wishlist
    */
-  isInWishlist(userId: string | Types.ObjectId, productId: string | Types.ObjectId): Promise<boolean>
+  isInWishlist(
+    userId: string | Types.ObjectId,
+    productId: string | Types.ObjectId,
+  ): Promise<boolean>
 
   /**
    * Add product to wishlist (returns existing if already added)
    */
-  addToWishlist(userId: string | Types.ObjectId, productId: string | Types.ObjectId): Promise<IWishlistItem>
+  addToWishlist(
+    userId: string | Types.ObjectId,
+    productId: string | Types.ObjectId,
+  ): Promise<IWishlistItem>
 
   /**
    * Remove product from wishlist
    */
-  removeFromWishlist(userId: string | Types.ObjectId, productId: string | Types.ObjectId): Promise<IWishlistItem | null>
+  removeFromWishlist(
+    userId: string | Types.ObjectId,
+    productId: string | Types.ObjectId,
+  ): Promise<IWishlistItem | null>
 
   /**
    * Clear all items from user's wishlist
@@ -56,6 +72,8 @@ export interface IWishlistRepository extends IBaseRepository<IWishlistItem, Crea
   /**
    * Check multiple products in wishlist
    */
-  checkProducts(userId: string | Types.ObjectId, productIds: (string | Types.ObjectId)[]): Promise<Map<string, boolean>>
+  checkProducts(
+    userId: string | Types.ObjectId,
+    productIds: (string | Types.ObjectId)[],
+  ): Promise<Map<string, boolean>>
 }
-

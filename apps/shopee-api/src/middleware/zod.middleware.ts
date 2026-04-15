@@ -57,13 +57,15 @@ export const validateBadRequest = <T extends z.ZodType>(schema: T) => {
  * Output: { fieldName: "error message" }
  */
 function formatZodErrors(error: ZodError): Record<string, string> {
-  return error.issues.reduce((acc, err) => {
-    // Remove 'body', 'query', 'params' prefix from path
-    const path = err.path.length > 1 ? err.path.slice(1).join('.') : err.path[0]
-    if (path) {
-      acc[path as string] = err.message
-    }
-    return acc
-  }, {} as Record<string, string>)
+  return error.issues.reduce(
+    (acc, err) => {
+      // Remove 'body', 'query', 'params' prefix from path
+      const path = err.path.length > 1 ? err.path.slice(1).join('.') : err.path[0]
+      if (path) {
+        acc[path as string] = err.message
+      }
+      return acc
+    },
+    {} as Record<string, string>,
+  )
 }
-

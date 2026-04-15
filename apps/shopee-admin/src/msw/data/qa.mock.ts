@@ -1,5 +1,5 @@
-import { createMockQAQuestion } from 'src/test-utils/factories';
-import type { QAQuestion } from 'src/types';
+import { createMockQAQuestion } from 'src/test-utils/factories'
+import type { QAQuestion } from 'src/types'
 
 export const mockQuestions: QAQuestion[] = [
   createMockQAQuestion({
@@ -27,11 +27,11 @@ export const mockQuestions: QAQuestion[] = [
     title: 'Có hỗ trợ trả góp không?',
     answers_count: 0,
   }),
-];
+]
 
 export const mockQAStats = {
   total_questions: 3,
   total_answers: 3,
   unanswered: 1,
   avg_answers_per_question: 1,
-};
+}

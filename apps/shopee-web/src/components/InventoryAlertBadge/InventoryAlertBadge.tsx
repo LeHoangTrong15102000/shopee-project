@@ -1,13 +1,13 @@
-import classNames from 'classnames';
-import { useTranslation } from 'react-i18next';
-import { InventoryAlertPayload } from 'src/types/socket.types';
-import Button from 'src/components/Button';
+import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
+import { InventoryAlertPayload } from 'src/types/socket.types'
+import Button from 'src/components/Button'
 
 interface InventoryAlertBadgeProps {
-  alerts: InventoryAlertPayload[];
-  unreadCount: number;
-  onClear?: () => void;
-  className?: string;
+  alerts: InventoryAlertPayload[]
+  unreadCount: number
+  onClear?: () => void
+  className?: string
 }
 
 export default function InventoryAlertBadge({
@@ -16,8 +16,8 @@ export default function InventoryAlertBadge({
   onClear,
   className,
 }: InventoryAlertBadgeProps) {
-  const { t } = useTranslation('nav');
-  if (unreadCount === 0) return null;
+  const { t } = useTranslation('nav')
+  if (unreadCount === 0) return null
 
   return (
     <div className={classNames('relative', className)}>
@@ -93,5 +93,5 @@ export default function InventoryAlertBadge({
         </div>
       )}
     </div>
-  );
+  )
 }

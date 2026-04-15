@@ -1,7 +1,7 @@
-import { z } from 'zod';
-import i18n from '@/config/i18n';
+import { z } from 'zod'
+import i18n from '@/config/i18n'
 
-const t = (key: string) => i18n.t(key);
+const t = (key: string) => i18n.t(key)
 
 export const signInSchema = z.object({
   email: z
@@ -12,9 +12,9 @@ export const signInSchema = z.object({
     .string()
     .min(6, { message: t('AUTH_VALIDATION_PASSWORD_LENGTH') })
     .max(160, { message: t('AUTH_VALIDATION_PASSWORD_LENGTH') }),
-});
+})
 
-export type SignInFormData = z.infer<typeof signInSchema>;
+export type SignInFormData = z.infer<typeof signInSchema>
 
 export const signUpSchema = z
   .object({
@@ -34,6 +34,6 @@ export const signUpSchema = z
   .refine((data) => data.password === data.confirm_password, {
     message: t('AUTH_VALIDATION_PASSWORD_MISMATCH'),
     path: ['confirm_password'],
-  });
+  })
 
-export type SignUpFormData = z.infer<typeof signUpSchema>;
+export type SignUpFormData = z.infer<typeof signUpSchema>

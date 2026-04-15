@@ -1,19 +1,19 @@
-import { useQuery } from '@tanstack/react-query';
-import DOMPurify from 'dompurify';
-import { useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import { RetryError } from 'src/types/utils.type';
+import { useQuery } from '@tanstack/react-query'
+import DOMPurify from 'dompurify'
+import { useContext, useEffect, useRef, useState } from 'react'
+import { useNavigate, useParams } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import { RetryError } from 'src/types/utils.type'
 
-import productApi from 'src/apis/product.api';
+import productApi from 'src/apis/product.api'
 
-import ProductReviews from 'src/components/ProductReviews';
-import ProductQA from 'src/components/ProductQA';
-import ProductVariantSelector from 'src/components/ProductVariantSelector';
+import ProductReviews from 'src/components/ProductReviews'
+import ProductQA from 'src/components/ProductQA'
+import ProductVariantSelector from 'src/components/ProductVariantSelector'
 
-import path from 'src/constant/path';
+import path from 'src/constant/path'
 
-import { getIdFromNameId, generateNameId } from 'src/utils/utils';
+import { getIdFromNameId, generateNameId } from 'src/utils/utils'
 import {
   ProductImages,
   ProductInfo,
@@ -23,51 +23,51 @@ import {
   ProductSpecifications,
   ShopInfo,
   ShopProducts,
-} from './components';
+} from './components'
 
-import { AppContext } from 'src/contexts/app.context';
-import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum';
-import SEO from 'src/components/SEO';
-import { SITE_URL } from 'src/components/SEO';
-import { convert } from 'html-to-text';
-import { useRecentlyViewed } from 'src/hooks/useRecentlyViewed';
-import useLivePriceUpdate from 'src/hooks/useLivePriceUpdate';
-import usePresence from 'src/hooks/usePresence';
-import useViewerCount from 'src/hooks/useViewerCount';
-import useLiveReviews from 'src/hooks/useLiveReviews';
-import useLiveQA from 'src/hooks/useLiveQA';
-import useActivityFeed from 'src/hooks/useActivityFeed';
-import LiveReviewFeed from 'src/components/LiveReviewFeed';
-import LiveQASection from 'src/components/LiveQASection';
-import ActivityFeedWidget from 'src/components/ActivityFeedWidget';
-import { motion } from 'framer-motion';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import { staggerContainer, sectionEntrance, STAGGER_DELAY } from 'src/styles/animations';
-import Button from 'src/components/Button';
-import { ProductVariant, ProductVariantCombination } from 'src/types/variant.type';
-import { ProductSKU } from 'src/types/product.type';
-import { getMockVariants, getMockSKUs } from 'src/utils/mockVariantData';
+import { AppContext } from 'src/contexts/app.context'
+import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum'
+import SEO from 'src/components/SEO'
+import { SITE_URL } from 'src/components/SEO'
+import { convert } from 'html-to-text'
+import { useRecentlyViewed } from 'src/hooks/useRecentlyViewed'
+import useLivePriceUpdate from 'src/hooks/useLivePriceUpdate'
+import usePresence from 'src/hooks/usePresence'
+import useViewerCount from 'src/hooks/useViewerCount'
+import useLiveReviews from 'src/hooks/useLiveReviews'
+import useLiveQA from 'src/hooks/useLiveQA'
+import useActivityFeed from 'src/hooks/useActivityFeed'
+import LiveReviewFeed from 'src/components/LiveReviewFeed'
+import LiveQASection from 'src/components/LiveQASection'
+import ActivityFeedWidget from 'src/components/ActivityFeedWidget'
+import { motion } from 'framer-motion'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import { staggerContainer, sectionEntrance, STAGGER_DELAY } from 'src/styles/animations'
+import Button from 'src/components/Button'
+import { ProductVariant, ProductVariantCombination } from 'src/types/variant.type'
+import { ProductSKU } from 'src/types/product.type'
+import { getMockVariants, getMockSKUs } from 'src/utils/mockVariantData'
 
 /**
  * ProductDetail Component với Query Cancellation
  * Tự động hủy request cũ khi user navigate giữa các sản phẩm khác nhau
  */
 const ProductDetail = () => {
-  const { t } = useTranslation('product');
-  const { isAuthenticated } = useContext(AppContext);
-  const reducedMotion = useReducedMotion();
-  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-  const [needsCollapse, setNeedsCollapse] = useState(false);
-  const [showVariantError, setShowVariantError] = useState(false);
-  const descriptionRef = useRef<HTMLDivElement>(null);
-  const infoContainerVariants = staggerContainer(STAGGER_DELAY.normal);
+  const { t } = useTranslation('product')
+  const { isAuthenticated } = useContext(AppContext)
+  const reducedMotion = useReducedMotion()
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false)
+  const [needsCollapse, setNeedsCollapse] = useState(false)
+  const [showVariantError, setShowVariantError] = useState(false)
+  const descriptionRef = useRef<HTMLDivElement>(null)
+  const infoContainerVariants = staggerContainer(STAGGER_DELAY.normal)
 
-  const { nameId } = useParams();
-  const id = getIdFromNameId(nameId as string);
-  const navigate = useNavigate();
+  const { nameId } = useParams()
+  const id = getIdFromNameId(nameId as string)
+  const navigate = useNavigate()
 
   // Hook để track sản phẩm đã xem gần đây
-  const { addProduct: addToRecentlyViewed } = useRecentlyViewed();
+  const { addProduct: addToRecentlyViewed } = useRecentlyViewed()
 
   // WebSocket: Live price updates for this product
   const {
@@ -75,10 +75,10 @@ const ProductDetail = () => {
     priceBeforeDiscount: livePriceBeforeDiscount,
     hasChanged: priceHasChanged,
     previousPrice,
-  } = useLivePriceUpdate(id);
+  } = useLivePriceUpdate(id)
 
   // WebSocket: Real-time viewer count for this product
-  const { viewerCount, isPopular } = useViewerCount(id);
+  const { viewerCount, isPopular } = useViewerCount(id)
 
   // WebSocket: Live reviews for this product
   const {
@@ -86,7 +86,7 @@ const ProductDetail = () => {
     newComments: _newComments,
     likeUpdates: _reviewLikeUpdates,
     clearNewReviews,
-  } = useLiveReviews(id);
+  } = useLiveReviews(id)
 
   // WebSocket: Live Q&A for this product
   const {
@@ -94,10 +94,10 @@ const ProductDetail = () => {
     newAnswers,
     likeUpdates: _qaLikeUpdates,
     clearNewQuestions: _clearNewQuestions,
-  } = useLiveQA(id);
+  } = useLiveQA(id)
 
   // WebSocket: Activity feed for this product
-  const { latestActivity } = useActivityFeed(id);
+  const { latestActivity } = useActivityFeed(id)
 
   /**
    * Query Product Detail với automatic cancellation
@@ -110,43 +110,43 @@ const ProductDetail = () => {
   } = useQuery({
     queryKey: ['product', id],
     queryFn: ({ signal }) => {
-      return productApi.getProductDetail(id as string, { signal });
+      return productApi.getProductDetail(id as string, { signal })
     },
     placeholderData: (previousData) => previousData,
     staleTime: 5 * 60 * 1000,
     retry: (failureCount, error: RetryError) => {
       if (error?.name === 'AbortError' || error?.code === 'ERR_CANCELED') {
-        return false;
+        return false
       }
       if (error?.response?.status === 404) {
-        return false;
+        return false
       }
-      return failureCount < 1;
+      return failureCount < 1
     },
-  });
+  })
 
   const product =
-    productDetailData?.status === HTTP_STATUS_CODE.NotFound ? null : productDetailData?.data?.data;
+    productDetailData?.status === HTTP_STATUS_CODE.NotFound ? null : productDetailData?.data?.data
 
   // Variant selection state
-  const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
-  const [selectedSKU, setSelectedSKU] = useState<ProductSKU | null>(null);
+  const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({})
+  const [selectedSKU, setSelectedSKU] = useState<ProductSKU | null>(null)
 
   // Convert backend variants to ProductVariant format, or use mock data
   const variants: ProductVariant[] = (() => {
     if (product?.variants && product.variants.length > 0) {
-      return product.variants;
+      return product.variants
     }
-    return product ? getMockVariants(product.category?.name || '', product.name) : [];
-  })();
+    return product ? getMockVariants(product.category?.name || '', product.name) : []
+  })()
 
   // Convert backend SKUs to ProductVariantCombination format, or use mock data
   const skus: ProductSKU[] = (() => {
     if (product?.skus && product.skus.length > 0) {
-      return product.skus;
+      return product.skus
     }
-    return product ? getMockSKUs(product.price, product.category?.name || '', product.name) : [];
-  })();
+    return product ? getMockSKUs(product.price, product.category?.name || '', product.name) : []
+  })()
 
   // Convert SKUs to combinations for the selector component
   const combinations: ProductVariantCombination[] = skus.map((sku, i) => ({
@@ -157,76 +157,76 @@ const ProductDetail = () => {
     quantity: sku.stock,
     sku: sku.value,
     image: sku.image,
-  }));
+  }))
 
-  const hasVariants = variants.length > 0;
+  const hasVariants = variants.length > 0
 
   // Handle variant selection
   const handleVariantSelect = (type: string, value: string) => {
-    setShowVariantError(false);
+    setShowVariantError(false)
     setSelectedVariants((prev) => {
-      const next = { ...prev };
+      const next = { ...prev }
       if (next[type] === value) {
-        delete next[type]; // Deselect
+        delete next[type] // Deselect
       } else {
-        next[type] = value;
+        next[type] = value
       }
-      return next;
-    });
-  };
+      return next
+    })
+  }
 
   // Callback for ProductActions to trigger variant validation error highlight
   const handleVariantValidationError = () => {
-    setShowVariantError(true);
-  };
+    setShowVariantError(true)
+  }
 
   // Find matching SKU when variant selection changes
   useEffect(() => {
     if (!hasVariants) {
-      setSelectedSKU(null);
-      return;
+      setSelectedSKU(null)
+      return
     }
     // Check if all variant types are selected
-    const allSelected = variants.every((v) => selectedVariants[v.type] !== undefined);
+    const allSelected = variants.every((v) => selectedVariants[v.type] !== undefined)
     if (!allSelected) {
-      setSelectedSKU(null);
-      return;
+      setSelectedSKU(null)
+      return
     }
     // Find matching SKU
     const match = skus.find((sku) =>
       Object.entries(selectedVariants).every(([type, value]) => sku.variant_values[type] === value),
-    );
-    setSelectedSKU(match || null);
-  }, [selectedVariants, skus, variants, hasVariants]);
+    )
+    setSelectedSKU(match || null)
+  }, [selectedVariants, skus, variants, hasVariants])
 
   // Reset variant selection when product changes
   useEffect(() => {
-    setSelectedVariants({});
-    setSelectedSKU(null);
-  }, [product?._id]);
+    setSelectedVariants({})
+    setSelectedSKU(null)
+  }, [product?._id])
 
   // WebSocket: Seller online presence (using shop/category ID as seller proxy)
   const { isOnline: isSellerOnline, lastSeen: sellerLastSeen } = usePresence(
     product?.category?._id ? `shop_${product.category._id}` : undefined,
-  );
+  )
 
   // Track sản phẩm đã xem khi product load thành công
   useEffect(() => {
     if (product) {
-      addToRecentlyViewed(product);
+      addToRecentlyViewed(product)
     }
-  }, [product?._id]);
+  }, [product?._id])
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
-  }, [product?._id]);
+    window.scrollTo({ top: 0, left: 0, behavior: reducedMotion ? 'auto' : 'smooth' })
+  }, [product?._id])
 
   // Measure description content height to decide if collapse button is needed
   useEffect(() => {
     if (descriptionRef.current) {
-      setNeedsCollapse(descriptionRef.current.scrollHeight > 288);
+      setNeedsCollapse(descriptionRef.current.scrollHeight > 288)
     }
-  }, [product?.description]);
+  }, [product?.description])
 
   // Handle 404 case
   if (productDetailData?.status === HTTP_STATUS_CODE.NotFound) {
@@ -248,7 +248,7 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   // Loading state
@@ -305,7 +305,7 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   // Error state
@@ -328,10 +328,10 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
-  if (!product) return null;
+  if (!product) return null
 
   return (
     <div className="bg-neutral-100 py-6 dark:bg-slate-900">
@@ -515,10 +515,10 @@ const ProductDetail = () => {
                   : undefined
               }
               onViewReviews={() => {
-                clearNewReviews();
+                clearNewReviews()
                 document
                   .getElementById('product-reviews')
-                  ?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth' });
+                  ?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth' })
               }}
             />
           </div>
@@ -551,7 +551,7 @@ const ProductDetail = () => {
               onViewQuestions={() => {
                 document
                   .getElementById('product-qa')
-                  ?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth' });
+                  ?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth' })
               }}
             />
           </div>
@@ -588,7 +588,7 @@ const ProductDetail = () => {
         className="fixed bottom-4 left-4 z-50 max-w-xs"
       />
     </div>
-  );
-};
+  )
+}
 
-export default ProductDetail;
+export default ProductDetail

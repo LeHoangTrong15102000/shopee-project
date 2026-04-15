@@ -31,7 +31,13 @@ import { container } from '../../container'
 import { emitNewQuestion, emitNewAnswer, emitQuestionLiked } from '../../socket/utils/qa-emit'
 import { emitSellerQANotification } from '../../socket/utils/seller-emit'
 import { emitCurrentSellerMetrics } from '../../socket/utils/seller-metrics.service'
-import { getQuestions, askQuestion, answerQuestion, likeQuestion, likeAnswer } from '@controllers/qa.controller'
+import {
+  getQuestions,
+  askQuestion,
+  answerQuestion,
+  likeQuestion,
+  likeAnswer,
+} from '@controllers/qa.controller'
 
 const mockQAService = container.services.qa as jest.Mocked<typeof container.services.qa>
 
@@ -40,7 +46,12 @@ const createMockRequest = (options: any = {}): Partial<Request> => ({
   params: options.params || {},
   query: options.query || {},
   headers: options.headers || {},
-  jwtDecoded: options.jwtDecoded || { id: 'user123', email: 'test@test.com', roles: ['User'], created_at: '2024-01-01' },
+  jwtDecoded: options.jwtDecoded || {
+    id: 'user123',
+    email: 'test@test.com',
+    roles: ['User'],
+    created_at: '2024-01-01',
+  },
 })
 
 const createMockResponse = (): Partial<Response> => {
@@ -69,11 +80,17 @@ describe('QA Controller', () => {
 
       await getQuestions(req as any, res as Response)
 
-      expect(mockQAService.getQuestions).toHaveBeenCalledWith('prod123', 'user123', 'newest', { page: 1, limit: 10 })
+      expect(mockQAService.getQuestions).toHaveBeenCalledWith('prod123', 'user123', 'newest', {
+        page: 1,
+        limit: 10,
+      })
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
       expect(res.json).toHaveBeenCalledWith({
         message: 'Lấy danh sách câu hỏi thành công',
-        data: { questions: mockResult.data, pagination: { page: 1, limit: 10, total: 1, total_pages: 1 } },
+        data: {
+          questions: mockResult.data,
+          pagination: { page: 1, limit: 10, total: 1, total_pages: 1 },
+        },
       })
     })
 
@@ -84,12 +101,17 @@ describe('QA Controller', () => {
       }
       mockQAService.getQuestions.mockResolvedValue(mockResult as any)
 
-      const req = createMockRequest({ query: { product_id: 'prod456', page: '2', limit: '5', sort: 'oldest' } })
+      const req = createMockRequest({
+        query: { product_id: 'prod456', page: '2', limit: '5', sort: 'oldest' },
+      })
       const res = createMockResponse()
 
       await getQuestions(req as any, res as Response)
 
-      expect(mockQAService.getQuestions).toHaveBeenCalledWith('prod456', 'user123', 'oldest', { page: 2, limit: 5 })
+      expect(mockQAService.getQuestions).toHaveBeenCalledWith('prod456', 'user123', 'oldest', {
+        page: 2,
+        limit: 5,
+      })
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
   })
@@ -104,16 +126,28 @@ describe('QA Controller', () => {
         createdAt: new Date('2024-01-01'),
       }
       const mockProduct = { name: 'Test Product' }
-      mockQAService.askQuestion.mockResolvedValue({ question: mockQuestion, product: mockProduct } as any)
+      mockQAService.askQuestion.mockResolvedValue({
+        question: mockQuestion,
+        product: mockProduct,
+      } as any)
 
-      const req = createMockRequest({ body: { product_id: 'prod123', question: 'How does this work?' } })
+      const req = createMockRequest({
+        body: { product_id: 'prod123', question: 'How does this work?' },
+      })
       const res = createMockResponse()
 
       await askQuestion(req as any, res as Response)
 
-      expect(mockQAService.askQuestion).toHaveBeenCalledWith('user123', 'prod123', 'How does this work?')
+      expect(mockQAService.askQuestion).toHaveBeenCalledWith(
+        'user123',
+        'prod123',
+        'How does this work?',
+      )
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Đặt câu hỏi thành công', data: mockQuestion })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Đặt câu hỏi thành công',
+        data: mockQuestion,
+      })
 
       await new Promise((r) => setTimeout(r, 10))
       expect(emitNewQuestion).toHaveBeenCalled()
@@ -131,23 +165,41 @@ describe('QA Controller', () => {
         is_seller: true,
         created_at: new Date('2024-01-02'),
       }
-      mockQAService.answerQuestion.mockResolvedValue({ answer: mockAnswer, productId: 'prod123' } as any)
+      mockQAService.answerQuestion.mockResolvedValue({
+        answer: mockAnswer,
+        productId: 'prod123',
+      } as any)
 
-      const req = createMockRequest({ params: { questionId: 'q123' }, body: { answer: 'This is the answer', is_seller: true } })
+      const req = createMockRequest({
+        params: { questionId: 'q123' },
+        body: { answer: 'This is the answer', is_seller: true },
+      })
       const res = createMockResponse()
 
       await answerQuestion(req as any, res as Response)
 
-      expect(mockQAService.answerQuestion).toHaveBeenCalledWith('user123', 'q123', 'This is the answer', true)
+      expect(mockQAService.answerQuestion).toHaveBeenCalledWith(
+        'user123',
+        'q123',
+        'This is the answer',
+        true,
+      )
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Trả lời câu hỏi thành công', data: mockAnswer })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Trả lời câu hỏi thành công',
+        data: mockAnswer,
+      })
       expect(emitNewAnswer).toHaveBeenCalled()
     })
   })
 
   describe('likeQuestion', () => {
     it('should return liked message when question is liked', async () => {
-      mockQAService.likeQuestion.mockResolvedValue({ is_liked: true, likes_count: 5, productId: 'prod123' } as any)
+      mockQAService.likeQuestion.mockResolvedValue({
+        is_liked: true,
+        likes_count: 5,
+        productId: 'prod123',
+      } as any)
 
       const req = createMockRequest({ params: { questionId: 'q123' } })
       const res = createMockResponse()
@@ -156,12 +208,19 @@ describe('QA Controller', () => {
 
       expect(mockQAService.likeQuestion).toHaveBeenCalledWith('user123', 'q123')
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Thích câu hỏi thành công', data: { is_liked: true, likes_count: 5 } })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Thích câu hỏi thành công',
+        data: { is_liked: true, likes_count: 5 },
+      })
       expect(emitQuestionLiked).toHaveBeenCalledWith('prod123', 'q123', 5)
     })
 
     it('should return unliked message when question is unliked', async () => {
-      mockQAService.likeQuestion.mockResolvedValue({ is_liked: false, likes_count: 4, productId: 'prod123' } as any)
+      mockQAService.likeQuestion.mockResolvedValue({
+        is_liked: false,
+        likes_count: 4,
+        productId: 'prod123',
+      } as any)
 
       const req = createMockRequest({ params: { questionId: 'q123' } })
       const res = createMockResponse()
@@ -169,7 +228,10 @@ describe('QA Controller', () => {
       await likeQuestion(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Bỏ thích câu hỏi thành công', data: { is_liked: false, likes_count: 4 } })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Bỏ thích câu hỏi thành công',
+        data: { is_liked: false, likes_count: 4 },
+      })
     })
   })
 
@@ -184,7 +246,10 @@ describe('QA Controller', () => {
 
       expect(mockQAService.likeAnswer).toHaveBeenCalledWith('user123', 'q123', 'a456')
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Thích câu trả lời thành công', data: { is_liked: true, likes_count: 3 } })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Thích câu trả lời thành công',
+        data: { is_liked: true, likes_count: 3 },
+      })
     })
 
     it('should return unliked message when answer is unliked', async () => {
@@ -196,8 +261,10 @@ describe('QA Controller', () => {
       await likeAnswer(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Bỏ thích câu trả lời thành công', data: { is_liked: false, likes_count: 2 } })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Bỏ thích câu trả lời thành công',
+        data: { is_liked: false, likes_count: 2 },
+      })
     })
   })
 })
-

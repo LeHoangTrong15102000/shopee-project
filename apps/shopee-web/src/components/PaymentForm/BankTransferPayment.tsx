@@ -1,30 +1,30 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
-import BankDropdown, { BANKS } from './components/BankDropdown';
-import { BankInfo } from './components/BankLogo';
-import VietQRCode from './components/VietQRCode';
-import AccountInfoCard from './components/AccountInfoCard';
-import UploadReceipt from './components/UploadReceipt';
-import VerificationPendingView from './components/VerificationPendingView';
-import { BankTransferCountdownTimer } from './shared/CountdownTimer';
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
+import BankDropdown, { BANKS } from './components/BankDropdown'
+import { BankInfo } from './components/BankLogo'
+import VietQRCode from './components/VietQRCode'
+import AccountInfoCard from './components/AccountInfoCard'
+import UploadReceipt from './components/UploadReceipt'
+import VerificationPendingView from './components/VerificationPendingView'
+import { BankTransferCountdownTimer } from './shared/CountdownTimer'
 
-type PaymentState = 'select_bank' | 'payment_info' | 'verification_pending' | 'expired';
+type PaymentState = 'select_bank' | 'payment_info' | 'verification_pending' | 'expired'
 
 interface BankTransferPaymentProps {
-  amount?: number;
-  orderId?: string;
-  onPaymentConfirmed?: () => void;
-  onPaymentExpired?: () => void;
+  amount?: number
+  orderId?: string
+  onPaymentConfirmed?: () => void
+  onPaymentExpired?: () => void
 }
 
-const PAYMENT_DEADLINE_SECONDS = 24 * 60 * 60;
-const LOCAL_STORAGE_KEY = 'shopee_last_selected_bank';
+const PAYMENT_DEADLINE_SECONDS = 24 * 60 * 60
+const LOCAL_STORAGE_KEY = 'shopee_last_selected_bank'
 
 const generateTransferContent = (orderId: string): string => {
-  return `SHOPEE ${orderId.toUpperCase()}`;
-};
+  return `SHOPEE ${orderId.toUpperCase()}`
+}
 
 function BankTransferPayment({
   amount = 500000,
@@ -32,71 +32,71 @@ function BankTransferPayment({
   onPaymentConfirmed,
   onPaymentExpired,
 }: BankTransferPaymentProps) {
-  const { t } = useTranslation('payment');
-  const [paymentState, setPaymentState] = useState<PaymentState>('select_bank');
-  const [selectedBank, setSelectedBank] = useState<BankInfo | null>(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(PAYMENT_DEADLINE_SECONDS);
-  const [_receiptFile, setReceiptFile] = useState<File | null>(null);
+  const { t } = useTranslation('payment')
+  const [paymentState, setPaymentState] = useState<PaymentState>('select_bank')
+  const [selectedBank, setSelectedBank] = useState<BankInfo | null>(null)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [timeRemaining, setTimeRemaining] = useState(PAYMENT_DEADLINE_SECONDS)
+  const [_receiptFile, setReceiptFile] = useState<File | null>(null)
 
-  const transferContent = generateTransferContent(orderId);
+  const transferContent = generateTransferContent(orderId)
 
   // Load last selected bank from localStorage
   useEffect(() => {
-    const savedBankId = localStorage.getItem(LOCAL_STORAGE_KEY);
+    const savedBankId = localStorage.getItem(LOCAL_STORAGE_KEY)
     if (savedBankId) {
-      const bank = BANKS.find((b) => b.id === savedBankId);
-      if (bank) setSelectedBank(bank);
+      const bank = BANKS.find((b) => b.id === savedBankId)
+      if (bank) setSelectedBank(bank)
     }
-  }, []);
+  }, [])
 
   // Save selected bank to localStorage
   useEffect(() => {
     if (selectedBank) {
-      localStorage.setItem(LOCAL_STORAGE_KEY, selectedBank.id);
+      localStorage.setItem(LOCAL_STORAGE_KEY, selectedBank.id)
     }
-  }, [selectedBank]);
+  }, [selectedBank])
 
   // Countdown timer
   useEffect(() => {
-    if (paymentState === 'expired') return;
+    if (paymentState === 'expired') return
     const timer = setInterval(() => {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
-          clearInterval(timer);
-          return 0;
+          clearInterval(timer)
+          return 0
         }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [paymentState]);
+        return prev - 1
+      })
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [paymentState])
 
   const handleSelectBank = (bank: BankInfo) => {
-    setSelectedBank(bank);
-  };
+    setSelectedBank(bank)
+  }
 
   const handleToggleDropdown = () => {
-    setIsDropdownOpen((prev) => !prev);
-  };
+    setIsDropdownOpen((prev) => !prev)
+  }
 
   const handleProceedToPayment = () => {
-    if (selectedBank) setPaymentState('payment_info');
-  };
+    if (selectedBank) setPaymentState('payment_info')
+  }
 
   const handleConfirmTransfer = () => {
-    setPaymentState('verification_pending');
-    onPaymentConfirmed?.();
-  };
+    setPaymentState('verification_pending')
+    onPaymentConfirmed?.()
+  }
 
   const handleExpired = () => {
-    setPaymentState('expired');
-    onPaymentExpired?.();
-  };
+    setPaymentState('expired')
+    onPaymentExpired?.()
+  }
 
   const handleFileSelect = (file: File | null) => {
-    setReceiptFile(file);
-  };
+    setReceiptFile(file)
+  }
 
   // Bank Selection View
   if (paymentState === 'select_bank') {
@@ -142,10 +142,10 @@ function BankTransferPayment({
           </motion.div>
         )}
       </motion.div>
-    );
+    )
   }
 
-  if (paymentState === 'verification_pending') return <VerificationPendingView />;
+  if (paymentState === 'verification_pending') return <VerificationPendingView />
 
   if (paymentState === 'expired') {
     return (
@@ -178,7 +178,7 @@ function BankTransferPayment({
           </p>
         </div>
       </motion.div>
-    );
+    )
   }
 
   // Payment Info View (main view with QR, account info, timer)
@@ -233,7 +233,7 @@ function BankTransferPayment({
         </>
       )}
     </motion.div>
-  );
+  )
 }
 
-export default BankTransferPayment;
+export default BankTransferPayment

@@ -83,9 +83,7 @@ describe('Purchase & Checkout Integration', () => {
 
   describe('GET /purchases', () => {
     it('should retrieve empty cart initially', async () => {
-      const res = await supertest(app)
-        .get('/purchases')
-        .set('Authorization', `Bearer ${authToken}`)
+      const res = await supertest(app).get('/purchases').set('Authorization', `Bearer ${authToken}`)
 
       expect(res.status).toBe(200)
       expect(res.body.data).toBeDefined()
@@ -97,9 +95,7 @@ describe('Purchase & Checkout Integration', () => {
         .set('Authorization', `Bearer ${authToken}`)
         .send({ product_id: productId, buy_count: 2 })
 
-      const res = await supertest(app)
-        .get('/purchases')
-        .set('Authorization', `Bearer ${authToken}`)
+      const res = await supertest(app).get('/purchases').set('Authorization', `Bearer ${authToken}`)
 
       expect(res.status).toBe(200)
       expect(res.body.data).toBeDefined()
@@ -207,4 +203,3 @@ describe('Purchase & Checkout Integration', () => {
     })
   })
 })
-

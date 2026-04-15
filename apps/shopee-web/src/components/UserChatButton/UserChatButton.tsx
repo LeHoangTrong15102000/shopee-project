@@ -1,13 +1,13 @@
-import { useState, useContext, lazy, Suspense } from 'react';
-import { AppContext } from 'src/contexts/app.context';
+import { useState, useContext, lazy, Suspense } from 'react'
+import { AppContext } from 'src/contexts/app.context'
 
-const ChatWindow = lazy(() => import('src/components/Chat/ChatWindow'));
+const ChatWindow = lazy(() => import('src/components/Chat/ChatWindow'))
 
 const UserChatButton = () => {
-  const { isAuthenticated, profile } = useContext(AppContext);
-  const [isOpen, setIsOpen] = useState(false);
+  const { isAuthenticated, profile } = useContext(AppContext)
+  const [isOpen, setIsOpen] = useState(false)
 
-  if (!isAuthenticated) return null;
+  if (!isAuthenticated) return null
 
   return (
     <>
@@ -51,7 +51,7 @@ const UserChatButton = () => {
         </div>
       )}
     </>
-  );
-};
+  )
+}
 
-export default UserChatButton;
+export default UserChatButton

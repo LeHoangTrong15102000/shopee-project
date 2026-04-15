@@ -1,25 +1,25 @@
-import http from 'src/utils/http';
+import http from 'src/utils/http'
 import type {
   SuccessResponse,
   ProductAnalytics,
   ChatbotAnalytics,
   ChatbotPerformanceData,
-} from 'src/types';
+} from 'src/types'
 
 interface AnalyticsParams {
-  period?: string;
-  limit?: number;
-  min_reviews?: number;
+  period?: string
+  limit?: number
+  min_reviews?: number
 }
 
 interface CategoryStats {
-  _id: string;
-  category_name: string;
-  product_count: number;
-  total_stock: number;
-  total_sold: number;
-  average_price: number;
-  average_rating: number;
+  _id: string
+  category_name: string
+  product_count: number
+  total_stock: number
+  total_sold: number
+  average_price: number
+  average_rating: number
 }
 
 const analyticsApi = {
@@ -46,6 +46,6 @@ const analyticsApi = {
     http.get<SuccessResponse<ChatbotPerformanceData[]>>('admin/analytics/chatbot-performance', {
       params,
     }),
-};
+}
 
-export default analyticsApi;
+export default analyticsApi

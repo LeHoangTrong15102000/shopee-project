@@ -436,4 +436,3 @@ describe('Product Integration', () => {
     })
   })
 })
-

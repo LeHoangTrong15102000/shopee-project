@@ -11,7 +11,7 @@ const SKUSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 SKUSchema.index({ product: 1 })
@@ -20,4 +20,3 @@ SKUSchema.index({ stock: 1 })
 SKUSchema.index({ product: 1, stock: 1 })
 
 export const SKUModel = mongoose.model('skus', SKUSchema)
-

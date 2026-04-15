@@ -1,8 +1,8 @@
-import React from 'react';
-import { View, Dimensions } from 'react-native';
-import { SkeletonLoader } from '@/components/ui';
+import React from 'react'
+import { View, Dimensions } from 'react-native'
+import { SkeletonLoader } from '@/components/ui'
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
 export default function ProductDetailSkeleton() {
   return (
@@ -55,5 +55,5 @@ export default function ProductDetailSkeleton() {
         <SkeletonLoader width="100%" height={80} borderRadius={8} />
       </View>
     </View>
-  );
+  )
 }

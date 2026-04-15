@@ -3,7 +3,11 @@
 jest.mock('../../database/models/notification.model', () => ({
   NotificationModel: {
     findOne: jest.fn(),
-    find: jest.fn().mockReturnValue({ sort: jest.fn().mockReturnValue({ limit: jest.fn().mockReturnValue({ lean: jest.fn() }) }) }),
+    find: jest
+      .fn()
+      .mockReturnValue({
+        sort: jest.fn().mockReturnValue({ limit: jest.fn().mockReturnValue({ lean: jest.fn() }) }),
+      }),
     create: jest.fn(),
     updateOne: jest.fn(),
   },
@@ -39,7 +43,10 @@ describe('notification.handler', () => {
 
       registerNotificationHandlers(mockSocket)
 
-      expect(mockSocket.on).toHaveBeenCalledWith(SocketEvent.NOTIFICATION_READ, expect.any(Function))
+      expect(mockSocket.on).toHaveBeenCalledWith(
+        SocketEvent.NOTIFICATION_READ,
+        expect.any(Function),
+      )
     })
   })
 
@@ -51,21 +58,34 @@ describe('notification.handler', () => {
       ;(NotificationModel.updateOne as jest.Mock).mockResolvedValue({})
 
       registerNotificationHandlers(mockSocket)
-      const readHandler = mockSocket.on.mock.calls.find((c: any) => c[0] === SocketEvent.NOTIFICATION_READ)[1]
+      const readHandler = mockSocket.on.mock.calls.find(
+        (c: any) => c[0] === SocketEvent.NOTIFICATION_READ,
+      )[1]
       await readHandler({ notification_id: 'notif-123' })
 
-      expect(NotificationModel.findOne).toHaveBeenCalledWith({ _id: 'notif-123', user: 'test-user-id' })
-      expect(NotificationModel.updateOne).toHaveBeenCalledWith({ _id: 'notif-123' }, { is_read: true })
+      expect(NotificationModel.findOne).toHaveBeenCalledWith({
+        _id: 'notif-123',
+        user: 'test-user-id',
+      })
+      expect(NotificationModel.updateOne).toHaveBeenCalledWith(
+        { _id: 'notif-123' },
+        { is_read: true },
+      )
     })
 
     it('should emit error when notification_id is missing', async () => {
       const mockSocket = createMockSocket() as any
 
       registerNotificationHandlers(mockSocket)
-      const readHandler = mockSocket.on.mock.calls.find((c: any) => c[0] === SocketEvent.NOTIFICATION_READ)[1]
+      const readHandler = mockSocket.on.mock.calls.find(
+        (c: any) => c[0] === SocketEvent.NOTIFICATION_READ,
+      )[1]
       await readHandler({})
 
-      expect(mockSocket.emit).toHaveBeenCalledWith(SocketEvent.ERROR, expect.objectContaining({ code: 'INVALID_PAYLOAD' }))
+      expect(mockSocket.emit).toHaveBeenCalledWith(
+        SocketEvent.ERROR,
+        expect.objectContaining({ code: 'INVALID_PAYLOAD' }),
+      )
     })
 
     it('should emit error when notification not found', async () => {
@@ -73,10 +93,15 @@ describe('notification.handler', () => {
       ;(NotificationModel.findOne as jest.Mock).mockResolvedValue(null)
 
       registerNotificationHandlers(mockSocket)
-      const readHandler = mockSocket.on.mock.calls.find((c: any) => c[0] === SocketEvent.NOTIFICATION_READ)[1]
+      const readHandler = mockSocket.on.mock.calls.find(
+        (c: any) => c[0] === SocketEvent.NOTIFICATION_READ,
+      )[1]
       await readHandler({ notification_id: 'invalid-id' })
 
-      expect(mockSocket.emit).toHaveBeenCalledWith(SocketEvent.ERROR, expect.objectContaining({ code: 'INVALID_PAYLOAD' }))
+      expect(mockSocket.emit).toHaveBeenCalledWith(
+        SocketEvent.ERROR,
+        expect.objectContaining({ code: 'INVALID_PAYLOAD' }),
+      )
     })
   })
 
@@ -84,7 +109,13 @@ describe('notification.handler', () => {
     it('should fetch and emit unread notifications', async () => {
       const mockSocket = createMockSocket() as any
       const mockNotifications = [
-        { _id: { toString: () => 'n1' }, title: 'Test', content: 'Content', type: 'order', createdAt: new Date('2024-01-01') },
+        {
+          _id: { toString: () => 'n1' },
+          title: 'Test',
+          content: 'Content',
+          type: 'order',
+          createdAt: new Date('2024-01-01'),
+        },
       ]
       ;(NotificationModel.find as jest.Mock).mockReturnValue({
         sort: jest.fn().mockReturnValue({
@@ -97,7 +128,10 @@ describe('notification.handler', () => {
       await sendPendingNotifications(mockSocket)
 
       expect(NotificationModel.find).toHaveBeenCalledWith({ user: 'test-user-id', is_read: false })
-      expect(mockSocket.emit).toHaveBeenCalledWith(SocketEvent.NOTIFICATION, expect.objectContaining({ _id: 'n1' }))
+      expect(mockSocket.emit).toHaveBeenCalledWith(
+        SocketEvent.NOTIFICATION,
+        expect.objectContaining({ _id: 'n1' }),
+      )
     })
   })
 
@@ -121,13 +155,14 @@ describe('notification.handler', () => {
         link: '/orders/123',
       })
 
-      expect(NotificationModel.create).toHaveBeenCalledWith(expect.objectContaining({
-        user: 'user-123',
-        title: 'New Order',
-        is_read: false,
-      }))
+      expect(NotificationModel.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          user: 'user-123',
+          title: 'New Order',
+          is_read: false,
+        }),
+      )
       expect(mockIO.to).toHaveBeenCalledWith('user:user-123')
     })
   })
 })
-

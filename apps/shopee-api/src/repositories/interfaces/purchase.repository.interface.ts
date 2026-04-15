@@ -46,14 +46,18 @@ export interface PurchaseFilterOptions {
 /**
  * Purchase repository interface extending base repository
  */
-export interface IPurchaseRepository extends IBaseRepository<IPurchase, CreatePurchaseDTO, UpdatePurchaseDTO> {
+export interface IPurchaseRepository extends IBaseRepository<
+  IPurchase,
+  CreatePurchaseDTO,
+  UpdatePurchaseDTO
+> {
   /**
    * Find purchases by user
    */
   findByUser(
     userId: string | Types.ObjectId,
     status?: PurchaseStatus,
-    pagination?: PaginationOptions
+    pagination?: PaginationOptions,
   ): Promise<IPurchase[]>
 
   /**
@@ -70,7 +74,7 @@ export interface IPurchaseRepository extends IBaseRepository<IPurchase, CreatePu
     buyCount: number,
     price: number,
     priceBeforeDiscount: number,
-    skuId?: string | Types.ObjectId
+    skuId?: string | Types.ObjectId,
   ): Promise<IPurchase>
 
   /**
@@ -80,7 +84,7 @@ export interface IPurchaseRepository extends IBaseRepository<IPurchase, CreatePu
     purchaseId: string | Types.ObjectId,
     buyCount: number,
     skuId?: string | Types.ObjectId,
-    price?: number
+    price?: number,
   ): Promise<IPurchase | null>
 
   /**
@@ -98,7 +102,7 @@ export interface IPurchaseRepository extends IBaseRepository<IPurchase, CreatePu
    */
   updateStatus(
     purchaseId: string | Types.ObjectId,
-    status: PurchaseStatus
+    status: PurchaseStatus,
   ): Promise<IPurchase | null>
 
   /**
@@ -106,7 +110,7 @@ export interface IPurchaseRepository extends IBaseRepository<IPurchase, CreatePu
    */
   bulkUpdateStatus(
     purchaseIds: Array<string | Types.ObjectId>,
-    status: PurchaseStatus
+    status: PurchaseStatus,
   ): Promise<number>
 
   /**
@@ -114,7 +118,7 @@ export interface IPurchaseRepository extends IBaseRepository<IPurchase, CreatePu
    */
   findByStatus(
     status: PurchaseStatus,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IPurchase>>
 
   /**
@@ -131,7 +135,7 @@ export interface IPurchaseRepository extends IBaseRepository<IPurchase, CreatePu
    */
   findCartItem(
     userId: string | Types.ObjectId,
-    productId: string | Types.ObjectId
+    productId: string | Types.ObjectId,
   ): Promise<IPurchase | null>
 
   /**
@@ -139,7 +143,7 @@ export interface IPurchaseRepository extends IBaseRepository<IPurchase, CreatePu
    */
   findByIdAndUser(
     purchaseId: string | Types.ObjectId,
-    userId: string | Types.ObjectId
+    userId: string | Types.ObjectId,
   ): Promise<IPurchase | null>
 
   /**
@@ -148,7 +152,6 @@ export interface IPurchaseRepository extends IBaseRepository<IPurchase, CreatePu
   deleteByUserAndProduct(
     userId: string | Types.ObjectId,
     productId: string | Types.ObjectId,
-    status: PurchaseStatus
+    status: PurchaseStatus,
   ): Promise<number>
 }
-

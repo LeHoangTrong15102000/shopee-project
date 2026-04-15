@@ -1,6 +1,6 @@
-import { http, HttpResponse } from 'msw';
-import config from 'src/constant/config';
-import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum';
+import { http, HttpResponse } from 'msw'
+import config from 'src/constant/config'
+import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum'
 
 const sampleWishlistItems = [
   {
@@ -16,33 +16,33 @@ const sampleWishlistItems = [
     },
     createdAt: '2024-01-01T00:00:00.000Z',
   },
-];
+]
 
 const getWishlistRequest = http.get(`${config.baseUrl}wishlist`, () => {
   return HttpResponse.json(
     { message: 'Lấy danh sách yêu thích thành công', data: sampleWishlistItems },
     { status: HTTP_STATUS_CODE.Ok },
-  );
-});
+  )
+})
 
 const addToWishlistRequest = http.post(`${config.baseUrl}wishlist`, async ({ request }) => {
-  const body = (await request.json()) as { product_id: string };
+  const body = (await request.json()) as { product_id: string }
   return HttpResponse.json(
     {
       message: 'Thêm vào danh sách yêu thích thành công',
       data: { _id: `wishlist_${Date.now()}`, product_id: body.product_id },
     },
     { status: HTTP_STATUS_CODE.Created },
-  );
-});
+  )
+})
 
 const removeFromWishlistRequest = http.delete(`${config.baseUrl}wishlist/:id`, () => {
   return HttpResponse.json(
     { message: 'Xóa khỏi danh sách yêu thích thành công', data: { deleted_count: 1 } },
     { status: HTTP_STATUS_CODE.Ok },
-  );
-});
+  )
+})
 
-const wishlistRequests = [getWishlistRequest, addToWishlistRequest, removeFromWishlistRequest];
+const wishlistRequests = [getWishlistRequest, addToWishlistRequest, removeFromWishlistRequest]
 
-export default wishlistRequests;
+export default wishlistRequests

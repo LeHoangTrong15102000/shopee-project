@@ -55,7 +55,7 @@ export const createTestApp = (): express.Application => {
 
   // Register all routes (same as src/index.ts)
   routes.forEach((item) =>
-    item.routes.forEach((route) => app.use(item.prefix + route.path, route.route))
+    item.routes.forEach((route) => app.use(item.prefix + route.path, route.route)),
   )
 
   // 404 handler
@@ -71,4 +71,3 @@ export const createTestApp = (): express.Application => {
 
   return app
 }
-

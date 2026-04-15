@@ -15,7 +15,7 @@ import { getIORequired } from '../socket.init'
  */
 export const emitSellerOrderNotification = (
   sellerId: string,
-  notification: SellerOrderNotificationPayload
+  notification: SellerOrderNotificationPayload,
 ): void => {
   try {
     const io = getIORequired()
@@ -44,7 +44,7 @@ export const emitSellerOrderNotification = (
  */
 export const emitSellerMetricsUpdate = (
   sellerId: string,
-  metrics: SellerMetricsUpdatePayload
+  metrics: SellerMetricsUpdatePayload,
 ): void => {
   try {
     const io = getIORequired()
@@ -73,7 +73,7 @@ export const emitSellerMetricsUpdate = (
  */
 export const emitSellerQANotification = (
   sellerId: string,
-  notification: SellerQANotificationPayload
+  notification: SellerQANotificationPayload,
 ): void => {
   try {
     const io = getIORequired()
@@ -94,4 +94,3 @@ export const emitSellerQANotification = (
     })
   }
 }
-

@@ -1,9 +1,9 @@
 // Viết những cái file liên quan đến product
 // Viết những  cái liên quan đến uth
 
-import { http, HttpResponse } from 'msw';
-import config from 'src/constant/config';
-import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum';
+import { http, HttpResponse } from 'msw'
+import config from 'src/constant/config'
+import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum'
 
 const productsRes = {
   message: 'Lấy các sản phẩm thành công',
@@ -235,7 +235,7 @@ const productsRes = {
       page_size: 1,
     },
   },
-};
+}
 
 const productDetailRes = {
   message: 'Lấy sản phẩm thành công',
@@ -268,7 +268,7 @@ const productDetailRes = {
     createdAt: '2021-05-27T14:52:50.392Z',
     updatedAt: '2022-12-19T15:19:53.312Z',
   },
-};
+}
 
 export const productsRequest = http.get(`${config.baseUrl}products`, () => {
   // return HttpResponse(ctx.status(HTTP_STATUS_CODE.Ok), ctx.json(productsRes))
@@ -277,8 +277,8 @@ export const productsRequest = http.get(`${config.baseUrl}products`, () => {
     headers: {
       'Content-Type': 'application/json',
     },
-  });
-});
+  })
+})
 
 export const productDetailRequest = http.get(`${config.baseUrl}products/:id`, () => {
   // return HttpResponse(ctx.status(HTTP_STATUS_CODE.Ok), ctx.json(productDetailRes))
@@ -287,8 +287,8 @@ export const productDetailRequest = http.get(`${config.baseUrl}products/:id`, ()
     headers: {
       'Content-Type': 'application/json',
     },
-  });
-});
+  })
+})
 
 export const searchHistoryRequest = http.get(`${config.baseUrl}products/search/history`, () => {
   return HttpResponse.json(
@@ -302,9 +302,9 @@ export const searchHistoryRequest = http.get(`${config.baseUrl}products/search/h
         'Content-Type': 'application/json',
       },
     },
-  );
-});
+  )
+})
 
-const productRequests = [productsRequest, productDetailRequest, searchHistoryRequest];
+const productRequests = [productsRequest, productDetailRequest, searchHistoryRequest]
 
-export default productRequests;
+export default productRequests

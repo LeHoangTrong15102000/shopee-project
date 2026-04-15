@@ -1,9 +1,6 @@
 import { Types } from 'mongoose'
 import { RefreshTokenModel } from '@database/models/refresh-token.model'
-import {
-  IAuthRepository,
-  IRefreshToken,
-} from './interfaces/auth.repository.interface'
+import { IAuthRepository, IRefreshToken } from './interfaces/auth.repository.interface'
 
 export class AuthRepository implements IAuthRepository {
   async createRefreshToken(userId: string | Types.ObjectId, token: string): Promise<IRefreshToken> {
@@ -45,7 +42,7 @@ export class AuthRepository implements IAuthRepository {
   async rotateRefreshToken(
     oldToken: string,
     newToken: string,
-    userId: string | Types.ObjectId
+    userId: string | Types.ObjectId,
   ): Promise<IRefreshToken | null> {
     const deleted = await this.deleteRefreshToken(oldToken)
     if (!deleted) return null

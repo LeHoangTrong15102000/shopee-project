@@ -1,21 +1,21 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { getEstimatedDeliveryDate } from 'src/utils/date';
-import { ChevronRightIcon, DeliveryTruckIcon } from 'src/components/Icons';
-import ShippingMethodModal from 'src/components/ShippingMethodModal';
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { getEstimatedDeliveryDate } from 'src/utils/date'
+import { ChevronRightIcon, DeliveryTruckIcon } from 'src/components/Icons'
+import ShippingMethodModal from 'src/components/ShippingMethodModal'
 
 interface ShippingInfoProps {
-  location: string;
+  location: string
 }
 
-const DEFAULT_DELIVERY_DAYS = '3-5';
+const DEFAULT_DELIVERY_DAYS = '3-5'
 
 const ShippingInfo = ({ location }: ShippingInfoProps) => {
-  const { t } = useTranslation('product');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { t } = useTranslation('product')
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   // Estimated delivery: 3-5 days from now using existing utility
-  const deliveryRange = getEstimatedDeliveryDate(DEFAULT_DELIVERY_DAYS);
+  const deliveryRange = getEstimatedDeliveryDate(DEFAULT_DELIVERY_DAYS)
 
   return (
     <>
@@ -27,8 +27,8 @@ const ShippingInfo = ({ location }: ShippingInfoProps) => {
         aria-label={t('shipping.label')}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            setIsModalOpen(true);
+            e.preventDefault()
+            setIsModalOpen(true)
           }
         }}
       >
@@ -65,7 +65,7 @@ const ShippingInfo = ({ location }: ShippingInfoProps) => {
         location={location}
       />
     </>
-  );
-};
+  )
+}
 
-export default ShippingInfo;
+export default ShippingInfo

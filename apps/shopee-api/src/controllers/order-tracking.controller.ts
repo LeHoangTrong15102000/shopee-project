@@ -28,7 +28,9 @@ export const getTracking = async (req: Request, res: Response) => {
       return
     }
     if (error instanceof NotFoundError) {
-      res.status(STATUS.NOT_FOUND).json({ message: 'Không tìm thấy thông tin tracking cho đơn hàng này' })
+      res
+        .status(STATUS.NOT_FOUND)
+        .json({ message: 'Không tìm thấy thông tin tracking cho đơn hàng này' })
       return
     }
     res.status(STATUS.INTERNAL_SERVER_ERROR).json({
@@ -61,4 +63,3 @@ export const getTrackingByNumber = async (req: Req, res: Response) => {
     })
   }
 }
-

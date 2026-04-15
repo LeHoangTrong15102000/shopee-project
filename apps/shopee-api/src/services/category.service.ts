@@ -5,7 +5,10 @@ import {
   CreateCategoryDTO,
   UpdateCategoryDTO,
 } from '@repositories/interfaces/category.repository.interface'
-import { PaginatedResult, PaginationOptions } from '@repositories/interfaces/base.repository.interface'
+import {
+  PaginatedResult,
+  PaginationOptions,
+} from '@repositories/interfaces/base.repository.interface'
 import { BaseService, NotFoundError, ValidationError, ConflictError } from './base.service'
 import { cacheService, CacheKeys, CacheTTL } from '@utils/cache.service'
 

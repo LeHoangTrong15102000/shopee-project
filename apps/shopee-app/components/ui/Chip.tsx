@@ -1,22 +1,22 @@
-import React from 'react';
-import { Pressable, Text, View } from 'react-native';
-import { cn } from '@/utils';
-import { cva } from 'class-variance-authority';
-import { X } from 'lucide-react-native';
-import { useColors } from '@/hooks/useColors.ts';
+import React from 'react'
+import { Pressable, Text, View } from 'react-native'
+import { cn } from '@/utils'
+import { cva } from 'class-variance-authority'
+import { X } from 'lucide-react-native'
+import { useColors } from '@/hooks/useColors.ts'
 
 interface ChipProps {
-  children: React.ReactNode;
-  variant?: 'default' | 'primary' | 'secondary' | 'outline';
-  size?: 'sm' | 'md' | 'lg';
-  selected?: boolean;
-  disabled?: boolean;
-  closable?: boolean;
-  onPress?: () => void;
-  onClose?: () => void;
-  className?: string;
-  textClassName?: string;
-  icon?: React.ReactElement;
+  children: React.ReactNode
+  variant?: 'default' | 'primary' | 'secondary' | 'outline'
+  size?: 'sm' | 'md' | 'lg'
+  selected?: boolean
+  disabled?: boolean
+  closable?: boolean
+  onPress?: () => void
+  onClose?: () => void
+  className?: string
+  textClassName?: string
+  icon?: React.ReactElement
 }
 
 const chipVariants = cva('flex-row items-center justify-center rounded-full border gap-1.5', {
@@ -59,7 +59,7 @@ const chipVariants = cva('flex-row items-center justify-center rounded-full bord
     selected: false,
     disabled: false,
   },
-});
+})
 
 const chipTextVariants = cva('font-sans-medium text-center', {
   variants: {
@@ -91,20 +91,20 @@ const chipTextVariants = cva('font-sans-medium text-center', {
     size: 'md',
     selected: false,
   },
-});
+})
 
 const getIconSize = (size: 'sm' | 'md' | 'lg'): number => {
   switch (size) {
     case 'sm':
-      return 12;
+      return 12
     case 'md':
-      return 14;
+      return 14
     case 'lg':
-      return 16;
+      return 16
     default:
-      return 14;
+      return 14
   }
-};
+}
 
 export default function Chip({
   children,
@@ -119,35 +119,35 @@ export default function Chip({
   textClassName,
   icon,
 }: ChipProps) {
-  const colors = useColors();
+  const colors = useColors()
   const getTextColor = () => {
     switch (variant) {
       case 'primary':
-        return colors.primaryForeground;
+        return colors.primaryForeground
       case 'secondary':
-        return colors.secondaryForeground;
+        return colors.secondaryForeground
       case 'outline':
-        return colors.foreground;
+        return colors.foreground
       default:
-        return colors.foreground;
+        return colors.foreground
     }
-  };
+  }
 
   const getIconColor = () => {
-    return getTextColor();
-  };
+    return getTextColor()
+  }
 
   const handlePress = () => {
     if (!disabled && onPress) {
-      onPress();
+      onPress()
     }
-  };
+  }
 
   const handleClose = () => {
     if (!disabled && onClose) {
-      onClose();
+      onClose()
     }
-  };
+  }
 
   const content = (
     <>
@@ -175,7 +175,7 @@ export default function Chip({
         </Pressable>
       )}
     </>
-  );
+  )
 
   if (onPress && !disabled) {
     return (
@@ -189,12 +189,12 @@ export default function Chip({
         )}>
         {content}
       </Pressable>
-    );
+    )
   }
 
   return (
     <View className={cn(chipVariants({ variant, size, selected, disabled }), className)}>
       {content}
     </View>
-  );
+  )
 }

@@ -26,14 +26,21 @@ import {
   getWishlistCount,
 } from '../../controllers/wishlist.controller'
 
-const mockWishlistService = container.services.wishlist as jest.Mocked<typeof container.services.wishlist>
+const mockWishlistService = container.services.wishlist as jest.Mocked<
+  typeof container.services.wishlist
+>
 
 const createMockRequest = (options: any = {}): Partial<Request> => ({
   body: options.body || {},
   params: options.params || {},
   query: options.query || {},
   headers: options.headers || {},
-  jwtDecoded: options.jwtDecoded || { id: 'user123', email: 'test@test.com', roles: ['User'], created_at: '2024-01-01' },
+  jwtDecoded: options.jwtDecoded || {
+    id: 'user123',
+    email: 'test@test.com',
+    roles: ['User'],
+    created_at: '2024-01-01',
+  },
 })
 
 const createMockResponse = (): Partial<Response> => {
@@ -62,7 +69,10 @@ describe('Wishlist Controller', () => {
 
       await getWishlist(req as any, res as Response)
 
-      expect(mockWishlistService.getWishlist).toHaveBeenCalledWith('user123', { page: 1, limit: 10 })
+      expect(mockWishlistService.getWishlist).toHaveBeenCalledWith('user123', {
+        page: 1,
+        limit: 10,
+      })
       expect(res.status).toHaveBeenCalledWith(200)
       expect(res.json).toHaveBeenCalledWith({
         message: 'Lấy danh sách yêu thích thành công',
@@ -80,7 +90,10 @@ describe('Wishlist Controller', () => {
 
       await getWishlist(req as any, res as Response)
 
-      expect(mockWishlistService.getWishlist).toHaveBeenCalledWith('user123', { page: 2, limit: 20 })
+      expect(mockWishlistService.getWishlist).toHaveBeenCalledWith('user123', {
+        page: 2,
+        limit: 20,
+      })
     })
 
     it('should propagate service errors', async () => {
@@ -231,4 +244,3 @@ describe('Wishlist Controller', () => {
     })
   })
 })
-

@@ -1,5 +1,11 @@
 /// <reference types="jest" />
-import { getWishlistSchema, addToWishlistSchema, wishlistProductIdParamSchema, removeFromWishlistSchema, checkInWishlistSchema } from '@schemas/wishlist.schema'
+import {
+  getWishlistSchema,
+  addToWishlistSchema,
+  wishlistProductIdParamSchema,
+  removeFromWishlistSchema,
+  checkInWishlistSchema,
+} from '@schemas/wishlist.schema'
 
 const VALID_ID = '507f1f77bcf86cd799439011'
 

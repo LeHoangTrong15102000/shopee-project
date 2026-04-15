@@ -1,6 +1,6 @@
-export type { Category } from './category';
-export type { User } from './user';
-export type { SuccessResponse, ErrorResponse, PaginatedData } from './api-response';
+export type { Category } from './category'
+export type { User } from './user'
+export type { SuccessResponse, ErrorResponse, PaginatedData } from './api-response'
 export type {
   Product,
   ProductSKU,
@@ -10,6 +10,5 @@ export type {
   ProductWithVariants,
   ProductList,
   ProductListConfig,
-} from './product';
-export type { Review, ReviewComment } from './review';
-
+} from './product'
+export type { Review, ReviewComment } from './review'

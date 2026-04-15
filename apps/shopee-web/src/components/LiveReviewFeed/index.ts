@@ -1,1 +1,1 @@
-export { default } from './LiveReviewFeed';
+export { default } from './LiveReviewFeed'

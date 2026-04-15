@@ -37,7 +37,7 @@ describe('jwt utils', () => {
 
       await expect(verifyToken(token, SECRET_KEY)).rejects.toMatchObject({
         status: STATUS.UNAUTHORIZED,
-        error: { name: 'EXPIRED_TOKEN' }
+        error: { name: 'EXPIRED_TOKEN' },
       })
     })
 
@@ -45,9 +45,8 @@ describe('jwt utils', () => {
       const tamperedToken = 'invalid.token.here'
 
       await expect(verifyToken(tamperedToken, SECRET_KEY)).rejects.toMatchObject({
-        status: STATUS.UNAUTHORIZED
+        status: STATUS.UNAUTHORIZED,
       })
     })
   })
 })
-

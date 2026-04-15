@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import WalletSelectionView from '../WalletSelectionView';
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
+import WalletSelectionView from '../WalletSelectionView'
 
 describe('WalletSelectionView', () => {
   it('renders title', () => {
@@ -11,9 +11,9 @@ describe('WalletSelectionView', () => {
         onLinkNewWallet={vi.fn()}
         onProceed={vi.fn()}
       />,
-    );
-    expect(screen.getByText('Chọn ví điện tử')).toBeInTheDocument();
-  });
+    )
+    expect(screen.getByText('Chọn ví điện tử')).toBeInTheDocument()
+  })
 
   it('renders all wallet cards', () => {
     render(
@@ -23,11 +23,11 @@ describe('WalletSelectionView', () => {
         onLinkNewWallet={vi.fn()}
         onProceed={vi.fn()}
       />,
-    );
-    expect(screen.getByText('MoMo')).toBeInTheDocument();
-    expect(screen.getByText('ZaloPay')).toBeInTheDocument();
-    expect(screen.getByText('VNPay')).toBeInTheDocument();
-  });
+    )
+    expect(screen.getByText('MoMo')).toBeInTheDocument()
+    expect(screen.getByText('ZaloPay')).toBeInTheDocument()
+    expect(screen.getByText('VNPay')).toBeInTheDocument()
+  })
 
   it('renders link new wallet button', () => {
     render(
@@ -37,12 +37,12 @@ describe('WalletSelectionView', () => {
         onLinkNewWallet={vi.fn()}
         onProceed={vi.fn()}
       />,
-    );
-    expect(screen.getByText('Liên kết ví mới')).toBeInTheDocument();
-  });
+    )
+    expect(screen.getByText('Liên kết ví mới')).toBeInTheDocument()
+  })
 
   it('calls onLinkNewWallet when link button clicked', () => {
-    const onLink = vi.fn();
+    const onLink = vi.fn()
     render(
       <WalletSelectionView
         selectedWallet={null}
@@ -50,10 +50,10 @@ describe('WalletSelectionView', () => {
         onLinkNewWallet={onLink}
         onProceed={vi.fn()}
       />,
-    );
-    fireEvent.click(screen.getByText('Liên kết ví mới'));
-    expect(onLink).toHaveBeenCalled();
-  });
+    )
+    fireEvent.click(screen.getByText('Liên kết ví mới'))
+    expect(onLink).toHaveBeenCalled()
+  })
 
   it('shows proceed button when wallet selected', () => {
     render(
@@ -63,9 +63,9 @@ describe('WalletSelectionView', () => {
         onLinkNewWallet={vi.fn()}
         onProceed={vi.fn()}
       />,
-    );
-    expect(screen.getByText('Tiếp tục thanh toán')).toBeInTheDocument();
-  });
+    )
+    expect(screen.getByText('Tiếp tục thanh toán')).toBeInTheDocument()
+  })
 
   it('does not show proceed button when no wallet selected', () => {
     render(
@@ -75,12 +75,12 @@ describe('WalletSelectionView', () => {
         onLinkNewWallet={vi.fn()}
         onProceed={vi.fn()}
       />,
-    );
-    expect(screen.queryByText('Tiếp tục thanh toán')).not.toBeInTheDocument();
-  });
+    )
+    expect(screen.queryByText('Tiếp tục thanh toán')).not.toBeInTheDocument()
+  })
 
   it('calls onProceed when proceed button clicked', () => {
-    const onProceed = vi.fn();
+    const onProceed = vi.fn()
     render(
       <WalletSelectionView
         selectedWallet="momo"
@@ -88,8 +88,8 @@ describe('WalletSelectionView', () => {
         onLinkNewWallet={vi.fn()}
         onProceed={onProceed}
       />,
-    );
-    fireEvent.click(screen.getByText('Tiếp tục thanh toán'));
-    expect(onProceed).toHaveBeenCalled();
-  });
-});
+    )
+    fireEvent.click(screen.getByText('Tiếp tục thanh toán'))
+    expect(onProceed).toHaveBeenCalled()
+  })
+})

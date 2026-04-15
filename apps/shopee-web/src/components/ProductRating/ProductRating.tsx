@@ -3,22 +3,22 @@ const ProductRating = ({
   activeClassname = 'h-3 w-3 md:h-4 md:w-4 fill-orange text-orange dark:fill-orange-400 dark:text-orange-400',
   nonActiveClassname = 'h-3 w-3 md:h-4 md:w-4 fill-current text-gray-300 dark:text-slate-600',
 }: {
-  rating: number;
-  activeClassname?: string;
-  nonActiveClassname?: string;
+  rating: number
+  activeClassname?: string
+  nonActiveClassname?: string
 }) => {
   // order là truyền vào số thứ tự
   const handleWidthRating = (order: number) => {
     if (order <= rating) {
-      return '100%';
+      return '100%'
     }
     if (order > rating && order - rating < 1) {
       // Fix floating point precision by rounding to 6 decimal places
-      const percentage = (rating - Math.floor(rating)) * 100;
-      return Math.round(percentage * 1000000) / 1000000 + '%';
+      const percentage = (rating - Math.floor(rating)) * 100
+      return Math.round(percentage * 1000000) / 1000000 + '%'
     }
-    return '0%';
-  };
+    return '0%'
+  }
   return (
     <div className="flex items-center" role="img" aria-label={`${rating} out of 5 stars`}>
       {/* thẻ cha chứa relative để 2 ngôi sao chồng chéo */}
@@ -50,7 +50,7 @@ const ProductRating = ({
           </div>
         ))}
     </div>
-  );
-};
+  )
+}
 
-export default ProductRating;
+export default ProductRating

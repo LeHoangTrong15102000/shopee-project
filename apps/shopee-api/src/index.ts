@@ -69,7 +69,7 @@ app.use(
     hidePoweredBy: true,
     // Ngăn chặn XSS attacks
     xssFilter: true,
-  })
+  }),
 )
 
 // Thêm các security headers bổ sung
@@ -81,10 +81,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   // Referrer Policy
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
   // Permissions Policy
-  res.setHeader(
-    'Permissions-Policy',
-    'geolocation=(), microphone=(), camera=()'
-  )
+  res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()')
   next()
 })
 
@@ -147,18 +144,15 @@ const staticCacheOptions = {
 // Serve static files for images with caching headers
 app.use(
   `/${ROUTE_IMAGE}`,
-  express.static(
-    path.join(dirNameWithEnv, FOLDER_UPLOAD, FOLDERS.PRODUCT),
-    staticCacheOptions
-  )
+  express.static(path.join(dirNameWithEnv, FOLDER_UPLOAD, FOLDERS.PRODUCT), staticCacheOptions),
 )
 app.use(
   `/${ROUTE_IMAGE}`,
-  express.static(path.join(dirNameWithEnv, FOLDER_UPLOAD), staticCacheOptions)
+  express.static(path.join(dirNameWithEnv, FOLDER_UPLOAD), staticCacheOptions),
 )
 
 routes.forEach((item) =>
-  item.routes.forEach((route) => app.use(item.prefix + route.path, route.route))
+  item.routes.forEach((route) => app.use(item.prefix + route.path, route.route)),
 )
 
 // Swagger API Documentation Routes
@@ -173,7 +167,7 @@ app.get('/api-docs', (req: Request, res: Response) => {
   // Tắt CSP cho trang Swagger UI để load được các script từ CDN
   res.setHeader(
     'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https:;"
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https:;",
   )
   const specUrl = `${req.protocol}://${req.get('host')}/api-docs.json`
   res.send(swaggerUIHtml(specUrl))

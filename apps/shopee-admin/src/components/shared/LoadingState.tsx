@@ -1,12 +1,12 @@
-import { Loader2 } from 'lucide-react';
-import { Skeleton } from 'src/components/ui/skeleton';
-import { cn } from 'src/lib/utils';
+import { Loader2 } from 'lucide-react'
+import { Skeleton } from 'src/components/ui/skeleton'
+import { cn } from 'src/lib/utils'
 
 interface LoadingStateProps {
-  variant?: 'spinner' | 'skeleton';
-  fullPage?: boolean;
-  rows?: number;
-  className?: string;
+  variant?: 'spinner' | 'skeleton'
+  fullPage?: boolean
+  rows?: number
+  className?: string
 }
 
 export function LoadingState({
@@ -22,7 +22,7 @@ export function LoadingState({
           <Skeleton key={i} className="h-10 w-full" />
         ))}
       </div>
-    );
+    )
   }
 
   return (
@@ -37,5 +37,5 @@ export function LoadingState({
     >
       <Loader2 className="size-8 animate-spin text-muted-foreground" />
     </div>
-  );
+  )
 }

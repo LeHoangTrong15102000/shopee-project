@@ -6,7 +6,10 @@ import {
   VoucherStatusInfo,
   VoucherFilterOptions,
 } from '@repositories/interfaces/voucher.repository.interface'
-import { PaginatedResult, PaginationOptions } from '@repositories/interfaces/base.repository.interface'
+import {
+  PaginatedResult,
+  PaginationOptions,
+} from '@repositories/interfaces/base.repository.interface'
 import { BaseService, NotFoundError, ValidationError, BusinessError } from './base.service'
 import { IVoucher } from '@database/models/voucher.model'
 import { ISavedVoucher, VoucherStatus } from '@database/models/saved-voucher.model'
@@ -19,9 +22,12 @@ export class VoucherService extends BaseService {
   async getAvailableVouchers(
     pagination: PaginationOptions,
     userId?: string,
-    filters?: VoucherFilterOptions
+    filters?: VoucherFilterOptions,
   ): Promise<PaginatedResult<IVoucher & { is_collected?: boolean }>> {
-    const result = await this.voucherRepository.findAvailable(this.normalizePagination(pagination), filters)
+    const result = await this.voucherRepository.findAvailable(
+      this.normalizePagination(pagination),
+      filters,
+    )
 
     if (userId && this.isValidObjectId(userId)) {
       const collectedIds = await this.voucherRepository.getCollectedVoucherIds(userId)
@@ -63,9 +69,12 @@ export class VoucherService extends BaseService {
     const now = new Date()
     if (voucher.start_date > now) throw new BusinessError('Voucher chưa đến thời gian sử dụng')
     if (voucher.end_date < now) throw new BusinessError('Voucher đã hết hạn')
-    if (voucher.used_count >= voucher.usage_limit) throw new BusinessError('Voucher đã hết lượt sử dụng')
+    if (voucher.used_count >= voucher.usage_limit)
+      throw new BusinessError('Voucher đã hết lượt sử dụng')
     if (order_value < voucher.min_order_value) {
-      throw new BusinessError(`Giá trị đơn hàng tối thiểu là ${voucher.min_order_value.toLocaleString('vi-VN')}đ`)
+      throw new BusinessError(
+        `Giá trị đơn hàng tối thiểu là ${voucher.min_order_value.toLocaleString('vi-VN')}đ`,
+      )
     }
 
     if (voucher.applicable_products && voucher.applicable_products.length > 0) {
@@ -104,7 +113,8 @@ export class VoucherService extends BaseService {
 
     const now = new Date()
     if (voucher.end_date < now) throw new BusinessError('Voucher đã hết hạn')
-    if (voucher.used_count >= voucher.usage_limit) throw new BusinessError('Voucher đã hết lượt sử dụng')
+    if (voucher.used_count >= voucher.usage_limit)
+      throw new BusinessError('Voucher đã hết lượt sử dụng')
 
     const existing = await this.voucherRepository.findSavedVoucher(userId, voucherId)
     if (existing) throw new BusinessError('Bạn đã thu thập voucher này rồi')
@@ -115,11 +125,15 @@ export class VoucherService extends BaseService {
   async getSavedVouchers(
     userId: string,
     pagination: PaginationOptions,
-    status?: VoucherStatus
+    status?: VoucherStatus,
   ): Promise<PaginatedResult<ISavedVoucher & { computed_status?: string }>> {
     if (!this.isValidObjectId(userId)) throw new ValidationError('Invalid user ID format')
 
-    const result = await this.voucherRepository.findSavedByUser(userId, this.normalizePagination(pagination), status)
+    const result = await this.voucherRepository.findSavedByUser(
+      userId,
+      this.normalizePagination(pagination),
+      status,
+    )
     const now = new Date()
 
     const dataWithStatus = result.data.map((item) => {
@@ -139,7 +153,7 @@ export class VoucherService extends BaseService {
   async validateVoucher(
     userId: string,
     code: string,
-    orderTotal: number
+    orderTotal: number,
   ): Promise<{ is_valid: boolean } & Partial<ApplyVoucherResult>> {
     if (!this.isValidObjectId(userId)) throw new ValidationError('Invalid user ID format')
     if (!code) throw new ValidationError('Mã voucher là bắt buộc')
@@ -147,7 +161,10 @@ export class VoucherService extends BaseService {
     const voucher = await this.voucherRepository.findByCode(code)
     if (!voucher || !voucher.is_active) throw new NotFoundError('Voucher', code)
 
-    const userVoucher = await this.voucherRepository.findSavedVoucher(userId, voucher._id.toString())
+    const userVoucher = await this.voucherRepository.findSavedVoucher(
+      userId,
+      voucher._id.toString(),
+    )
     if (!userVoucher || userVoucher.status !== 'available') {
       throw new BusinessError('Bạn chưa thu thập voucher này hoặc đã sử dụng')
     }
@@ -156,7 +173,9 @@ export class VoucherService extends BaseService {
     if (voucher.start_date > now) throw new BusinessError('Voucher chưa đến thời gian sử dụng')
     if (voucher.end_date < now) throw new BusinessError('Voucher đã hết hạn')
     if (orderTotal < voucher.min_order_value) {
-      throw new BusinessError(`Giá trị đơn hàng tối thiểu là ${voucher.min_order_value.toLocaleString('vi-VN')}đ`)
+      throw new BusinessError(
+        `Giá trị đơn hàng tối thiểu là ${voucher.min_order_value.toLocaleString('vi-VN')}đ`,
+      )
     }
 
     const discount_amount = this.calculateDiscount(voucher, orderTotal)
@@ -194,7 +213,7 @@ export class VoucherService extends BaseService {
 
   async adminGetVouchers(
     filters: { is_active?: string; discount_type?: string; status?: string; search?: string },
-    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' }
+    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' },
   ) {
     return (this.voucherRepository as any).findAllWithFilters(filters, pagination)
   }
@@ -244,4 +263,3 @@ export class VoucherService extends BaseService {
     return (this.voucherRepository as any).getOverviewStats()
   }
 }
-

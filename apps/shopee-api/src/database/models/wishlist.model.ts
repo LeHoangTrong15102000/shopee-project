@@ -28,7 +28,7 @@ const WishlistSchema = new Schema<IWishlist>(
   },
   {
     timestamps: false,
-  }
+  },
 )
 
 // Compound unique index: mỗi user chỉ có thể thêm 1 product 1 lần
@@ -37,4 +37,3 @@ WishlistSchema.index({ user: 1, product: 1 }, { unique: true })
 export const WishlistModel = mongoose.model<IWishlist>('wishlists', WishlistSchema)
 
 export { IWishlist }
-

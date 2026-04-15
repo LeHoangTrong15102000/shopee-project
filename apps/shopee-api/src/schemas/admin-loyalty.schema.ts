@@ -1,6 +1,11 @@
 import { z } from 'zod'
 import { mongoIdSchema } from './common.schema'
-import { adminPaginationQuerySchema, sortQuerySchema, searchQuerySchema, dateRangeQuerySchema } from './admin-common.schema'
+import {
+  adminPaginationQuerySchema,
+  sortQuerySchema,
+  searchQuerySchema,
+  dateRangeQuerySchema,
+} from './admin-common.schema'
 
 const REWARD_TYPES = ['voucher', 'gift', 'discount'] as const
 const TRANSACTION_TYPES = ['earn', 'redeem', 'bonus'] as const
@@ -8,12 +13,10 @@ const TRANSACTION_TYPES = ['earn', 'redeem', 'bonus'] as const
 // ─── Admin Reward List Query ──────────────────────────────────
 
 export const adminRewardListSchema = z.object({
-  query: adminPaginationQuerySchema
-    .merge(sortQuerySchema)
-    .extend({
-      reward_type: z.enum(REWARD_TYPES).optional(),
-      is_active: z.enum(['true', 'false']).optional(),
-    }),
+  query: adminPaginationQuerySchema.merge(sortQuerySchema).extend({
+    reward_type: z.enum(REWARD_TYPES).optional(),
+    is_active: z.enum(['true', 'false']).optional(),
+  }),
 })
 
 // ─── Create Reward ────────────────────────────────────────────
@@ -57,7 +60,10 @@ export const adminRewardIdSchema = z.object({
 export const adminAdjustPointsSchema = z.object({
   body: z.object({
     user_id: mongoIdSchema,
-    points: z.number().int().refine((v) => v !== 0, 'Điểm phải khác 0'),
+    points: z
+      .number()
+      .int()
+      .refine((v) => v !== 0, 'Điểm phải khác 0'),
     type: z.enum(TRANSACTION_TYPES, { message: 'Loại giao dịch không hợp lệ' }),
     description: z.string().min(1, 'Mô tả không được để trống').max(500, 'Mô tả tối đa 500 ký tự'),
   }),
@@ -74,4 +80,3 @@ export const adminTransactionListSchema = z.object({
       user_id: mongoIdSchema.optional(),
     }),
 })
-

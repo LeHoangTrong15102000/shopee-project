@@ -64,5 +64,4 @@ enum HTTP_STATUS_CODE {
   NetworkAuthenticationRequired = 511,
 }
 
-export { HTTP_STATUS_CODE };
-
+export { HTTP_STATUS_CODE }

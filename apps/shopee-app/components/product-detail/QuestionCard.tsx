@@ -1,30 +1,30 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity } from 'react-native';
-import { ThumbsUp, MessageCircle, ShieldCheck } from 'lucide-react-native';
-import { AppText, Avatar } from '@/components/ui';
-import { useColors } from '@/hooks/useColors';
-import { useTranslation } from 'react-i18next';
-import type { Question } from '@/apis/product-detail.api';
+import React, { useState } from 'react'
+import { View, TouchableOpacity } from 'react-native'
+import { ThumbsUp, MessageCircle, ShieldCheck } from 'lucide-react-native'
+import { AppText, Avatar } from '@/components/ui'
+import { useColors } from '@/hooks/useColors'
+import { useTranslation } from 'react-i18next'
+import type { Question } from '@/apis/product-detail.api'
 
 interface QuestionCardProps {
-  question: Question;
-  onAnswer: (questionId: string) => void;
-  onToggleLike: (questionId: string) => void;
+  question: Question
+  onAnswer: (questionId: string) => void
+  onToggleLike: (questionId: string) => void
 }
 
-const INITIAL_ANSWERS = 2;
+const INITIAL_ANSWERS = 2
 
 export default function QuestionCard({ question, onAnswer, onToggleLike }: QuestionCardProps) {
-  const colors = useColors();
-  const { t, i18n } = useTranslation();
-  const [showAllAnswers, setShowAllAnswers] = useState(false);
+  const colors = useColors()
+  const { t, i18n } = useTranslation()
+  const [showAllAnswers, setShowAllAnswers] = useState(false)
 
-  const locale = i18n.language === 'vi' ? 'vi-VN' : 'en-US';
-  const date = new Date(question.createdAt).toLocaleDateString(locale);
+  const locale = i18n.language === 'vi' ? 'vi-VN' : 'en-US'
+  const date = new Date(question.createdAt).toLocaleDateString(locale)
   const visibleAnswers = showAllAnswers
     ? question.answers
-    : question.answers.slice(0, INITIAL_ANSWERS);
-  const hiddenCount = question.answers.length - INITIAL_ANSWERS;
+    : question.answers.slice(0, INITIAL_ANSWERS)
+  const hiddenCount = question.answers.length - INITIAL_ANSWERS
 
   return (
     <View className="border-b py-3" style={{ borderBottomColor: colors.neutrals800 }}>
@@ -115,5 +115,5 @@ export default function QuestionCard({ question, onAnswer, onToggleLike }: Quest
         </View>
       )}
     </View>
-  );
+  )
 }

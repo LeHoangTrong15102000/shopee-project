@@ -1,16 +1,16 @@
-import { useColors } from '@/hooks/useColors.ts';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { ChevronLeft } from 'lucide-react-native';
-import React from 'react';
-import { NativeStackHeaderProps } from '@react-navigation/native-stack';
-import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
+import { useColors } from '@/hooks/useColors.ts'
+import { Text, TouchableOpacity, View } from 'react-native'
+import { ChevronLeft } from 'lucide-react-native'
+import React from 'react'
+import { NativeStackHeaderProps } from '@react-navigation/native-stack'
+import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs'
 
-type HeaderProps = NativeStackHeaderProps | BottomTabHeaderProps;
+type HeaderProps = NativeStackHeaderProps | BottomTabHeaderProps
 
 export default function CustomScreenHeader(props: HeaderProps) {
-  const { navigation, route, options } = props;
-  const back = 'back' in props ? props.back : undefined;
-  const colors = useColors();
+  const { navigation, route, options } = props
+  const back = 'back' in props ? props.back : undefined
+  const colors = useColors()
 
   return (
     <View
@@ -34,5 +34,5 @@ export default function CustomScreenHeader(props: HeaderProps) {
           })
         : null}
     </View>
-  );
+  )
 }

@@ -1,26 +1,26 @@
-import { Notification, NotificationResponse } from 'src/types/notification.type';
-import { SuccessResponseApi } from 'src/types/utils.type';
-import http from 'src/utils/http';
+import { Notification, NotificationResponse } from 'src/types/notification.type'
+import { SuccessResponseApi } from 'src/types/utils.type'
+import http from 'src/utils/http'
 
 // Response types for notification API
 interface NotificationListBackendResponse {
-  message: string;
+  message: string
   data: {
-    notifications: Record<string, unknown>[];
-    pagination?: { page: number; limit: number; total: number; total_pages: number };
-    unread_count?: number;
-    unreadCount?: number;
-  };
+    notifications: Record<string, unknown>[]
+    pagination?: { page: number; limit: number; total: number; total_pages: number }
+    unread_count?: number
+    unreadCount?: number
+  }
 }
 
 interface MarkAsReadBackendResponse {
-  message: string;
-  data: Record<string, unknown>;
+  message: string
+  data: Record<string, unknown>
 }
 
 interface UnreadCountBackendResponse {
-  message: string;
-  data: { count?: number; unread_count?: number; unreadCount?: number };
+  message: string
+  data: { count?: number; unread_count?: number; unreadCount?: number }
 }
 
 // Mock data để fallback khi API chưa available
@@ -87,7 +87,7 @@ const mockNotifications: NotificationResponse = {
     },
     unreadCount: 2,
   },
-};
+}
 
 // Helper function để transform backend response (snake_case) sang frontend (camelCase)
 const transformNotification = (backendNotification: Record<string, unknown>): Notification => ({
@@ -99,12 +99,12 @@ const transformNotification = (backendNotification: Record<string, unknown>): No
   link: backendNotification.link as string | undefined,
   createdAt: backendNotification.createdAt as string,
   updatedAt: backendNotification.updatedAt as string,
-});
+})
 
 const transformNotificationResponse = (
   backendResponse: NotificationListBackendResponse,
 ): NotificationResponse => {
-  const data = backendResponse.data;
+  const data = backendResponse.data
   return {
     message: backendResponse.message,
     data: {
@@ -117,23 +117,23 @@ const transformNotificationResponse = (
       },
       unreadCount: (data.unread_count as number) ?? (data.unreadCount as number) ?? 0,
     },
-  };
-};
+  }
+}
 
 const notificationApi = {
   // Lấy danh sách thông báo với fallback mock data
   getNotifications: async () => {
     try {
-      const response = await http.get<NotificationListBackendResponse>('/notifications');
-      return { data: transformNotificationResponse(response.data) };
+      const response = await http.get<NotificationListBackendResponse>('/notifications')
+      return { data: transformNotificationResponse(response.data) }
     } catch (_error) {
       // Fallback to mock data when API is not available
-      console.warn('Notification API not available, using mock data');
+      console.warn('Notification API not available, using mock data')
       return new Promise<{ data: NotificationResponse }>((resolve) => {
         setTimeout(() => {
-          resolve({ data: mockNotifications });
-        }, 300);
-      });
+          resolve({ data: mockNotifications })
+        }, 300)
+      })
     }
   },
 
@@ -141,32 +141,32 @@ const notificationApi = {
   markAsRead: async (notificationId: string) => {
     const response = await http.put<MarkAsReadBackendResponse>(
       `/notifications/${notificationId}/read`,
-    );
+    )
     return {
       data: { message: response.data.message, data: transformNotification(response.data.data) },
-    };
+    }
   },
 
   // Đánh dấu tất cả thông báo đã đọc
   markAllAsRead: async () => {
     const response =
-      await http.put<SuccessResponseApi<{ message: string }>>('/notifications/read-all');
-    return { data: response.data };
+      await http.put<SuccessResponseApi<{ message: string }>>('/notifications/read-all')
+    return { data: response.data }
   },
 
   // Xóa thông báo
   deleteNotification: async (notificationId: string) => {
     const response = await http.delete<SuccessResponseApi<{ message: string }>>(
       `/notifications/${notificationId}`,
-    );
-    return { data: response.data };
+    )
+    return { data: response.data }
   },
 
   // Lấy số thông báo chưa đọc
   getUnreadCount: async () => {
     const response = await http.get<SuccessResponseApi<UnreadCountBackendResponse['data']>>(
       '/notifications/unread-count',
-    );
+    )
     return {
       data: {
         message: response.data.message,
@@ -178,8 +178,8 @@ const notificationApi = {
             0,
         },
       },
-    };
+    }
   },
-};
+}
 
-export default notificationApi;
+export default notificationApi

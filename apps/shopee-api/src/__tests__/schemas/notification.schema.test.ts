@@ -69,4 +69,3 @@ describe('markAsReadSchema', () => {
     expect(result.success).toBe(false)
   })
 })
-

@@ -11,7 +11,12 @@ jest.mock('../../container', () => ({
 }))
 
 import { productService } from '../../container'
-import { adminGetLowStock, adminGetOutOfStock, adminUpdateStock, adminBulkUpdateStock } from '../../controllers/admin-inventory.controller'
+import {
+  adminGetLowStock,
+  adminGetOutOfStock,
+  adminUpdateStock,
+  adminBulkUpdateStock,
+} from '../../controllers/admin-inventory.controller'
 import { ValidationError, NotFoundError } from '@services/base.service'
 
 const createMockRequest = (options: any = {}): Partial<Request> => ({

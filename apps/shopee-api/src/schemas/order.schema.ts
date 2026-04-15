@@ -21,7 +21,7 @@ export const adminUpdateStatusSchema = z.object({
   body: z.object({
     status: z.enum(
       ['confirmed', 'processing', 'shipping', 'delivered', 'cancelled', 'returned'],
-      'Trạng thái không hợp lệ'
+      'Trạng thái không hợp lệ',
     ),
     reason: z.string().optional(),
   }),
@@ -42,4 +42,3 @@ export const adminGetOrderSchema = z.object({
 })
 
 export type AdminGetOrderInput = z.infer<typeof adminGetOrderSchema>
-

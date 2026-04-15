@@ -82,12 +82,7 @@ export interface ReviewQuery {
   rating?: number
   page?: number
   limit?: number
-  sort?:
-    | 'newest'
-    | 'oldest'
-    | 'highest_rating'
-    | 'lowest_rating'
-    | 'most_helpful'
+  sort?: 'newest' | 'oldest' | 'highest_rating' | 'lowest_rating' | 'most_helpful'
 }
 
 export interface CreateCommentBody {

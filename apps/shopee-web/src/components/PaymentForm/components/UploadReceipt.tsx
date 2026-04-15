@@ -1,44 +1,44 @@
-import { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import Button from 'src/components/Button';
+import { useState, useRef, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import Button from 'src/components/Button'
 
 function UploadReceipt({ onFileSelect }: { onFileSelect: (file: File | null) => void }) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Cleanup blob URL when previewUrl changes or component unmounts
   useEffect(() => {
     return () => {
       if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
+        URL.revokeObjectURL(previewUrl)
       }
-    };
-  }, [previewUrl]);
+    }
+  }, [previewUrl])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    setSelectedFile(file);
-    onFileSelect(file);
+    const file = e.target.files?.[0] || null
+    setSelectedFile(file)
+    onFileSelect(file)
 
     if (file) {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
+      if (previewUrl) URL.revokeObjectURL(previewUrl)
+      const url = URL.createObjectURL(file)
+      setPreviewUrl(url)
     } else {
-      setPreviewUrl(null);
+      setPreviewUrl(null)
     }
-  };
+  }
 
   const handleRemoveFile = () => {
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setSelectedFile(null);
-    setPreviewUrl(null);
-    onFileSelect(null);
+    if (previewUrl) URL.revokeObjectURL(previewUrl)
+    setSelectedFile(null)
+    setPreviewUrl(null)
+    onFileSelect(null)
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = ''
     }
-  };
+  }
 
   return (
     <div className="space-y-3">
@@ -118,7 +118,7 @@ function UploadReceipt({ onFileSelect }: { onFileSelect: (file: File | null) => 
         </motion.div>
       )}
     </div>
-  );
+  )
 }
 
-export default UploadReceipt;
+export default UploadReceipt

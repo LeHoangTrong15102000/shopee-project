@@ -68,4 +68,3 @@ export const registerSellerDashboardHandlers = (socket: Socket): void => {
     }
   })
 }
-

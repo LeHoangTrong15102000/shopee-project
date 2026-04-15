@@ -1,21 +1,21 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { ExtendedPurchase } from 'src/types/purchases.type';
-import { ShippingMethod } from 'src/types/checkout.type';
-import OrderSummary from 'src/components/OrderSummary';
-import Button from 'src/components/Button';
-import { PaymentIcons, TrustIndicators } from './TrustIndicators';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { ExtendedPurchase } from 'src/types/purchases.type'
+import { ShippingMethod } from 'src/types/checkout.type'
+import OrderSummary from 'src/components/OrderSummary'
+import Button from 'src/components/Button'
+import { PaymentIcons, TrustIndicators } from './TrustIndicators'
 
 interface CheckoutSidebarProps {
-  checkedItems: ExtendedPurchase[];
-  selectedShippingMethod: ShippingMethod | null;
-  voucherDiscount: number;
-  voucherCode: string;
-  coinsUsed: number;
-  totalAmount: number;
-  isFormValid: boolean;
-  onRemoveVoucher: () => void;
-  onGoToReview: () => void;
+  checkedItems: ExtendedPurchase[]
+  selectedShippingMethod: ShippingMethod | null
+  voucherDiscount: number
+  voucherCode: string
+  coinsUsed: number
+  totalAmount: number
+  isFormValid: boolean
+  onRemoveVoucher: () => void
+  onGoToReview: () => void
 }
 
 export const CheckoutSidebar = ({
@@ -29,7 +29,7 @@ export const CheckoutSidebar = ({
   onRemoveVoucher,
   onGoToReview,
 }: CheckoutSidebarProps) => {
-  const { t, i18n } = useTranslation('checkout');
+  const { t, i18n } = useTranslation('checkout')
   return (
     <div className="lg:col-span-1">
       <div className="sticky top-4 space-y-4">
@@ -105,5 +105,5 @@ export const CheckoutSidebar = ({
         </motion.div>
       </div>
     </div>
-  );
-};
+  )
+}

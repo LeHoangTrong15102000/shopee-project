@@ -1,8 +1,8 @@
-import { useTranslation } from 'react-i18next';
-import { ShieldIcon, ShieldCheckIcon, DeliveryTruckIcon } from 'src/components/Icons';
+import { useTranslation } from 'react-i18next'
+import { ShieldIcon, ShieldCheckIcon, DeliveryTruckIcon } from 'src/components/Icons'
 
 const ShopeeProtectionPopupContent = () => {
-  const { t } = useTranslation('product');
+  const { t } = useTranslation('product')
 
   return (
     <div
@@ -57,7 +57,7 @@ const ShopeeProtectionPopupContent = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ShopeeProtectionPopupContent;
+export default ShopeeProtectionPopupContent

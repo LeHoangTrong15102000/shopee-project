@@ -1,16 +1,16 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { formatCurrency } from 'src/utils/utils';
-import { IconChartBar, IconCurrencyDollar, IconHeart, IconTag } from './WishlistIcons';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { formatCurrency } from 'src/utils/utils'
+import { IconChartBar, IconCurrencyDollar, IconHeart, IconTag } from './WishlistIcons'
 
 interface WishlistStatsProps {
-  itemCount: number;
-  totalValue: number;
-  totalSavings: number;
-  avgDiscount: number;
-  itemVariants: any;
-  containerVariants: any;
-  isMobile: boolean;
+  itemCount: number
+  totalValue: number
+  totalSavings: number
+  avgDiscount: number
+  itemVariants: any
+  containerVariants: any
+  isMobile: boolean
 }
 
 export default function WishlistStats({
@@ -22,7 +22,7 @@ export default function WishlistStats({
   containerVariants,
   isMobile,
 }: WishlistStatsProps) {
-  const { t } = useTranslation('wishlist');
+  const { t } = useTranslation('wishlist')
   return (
     <motion.div
       variants={containerVariants}
@@ -83,5 +83,5 @@ export default function WishlistStats({
         </div>
       </motion.div>
     </motion.div>
-  );
+  )
 }

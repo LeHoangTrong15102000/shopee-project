@@ -69,7 +69,10 @@ const getDetailMySelf = async (req: CustomRequest, res: Response) => {
   try {
     // Defensive check for missing jwtDecoded or id
     if (!req.jwtDecoded || !req.jwtDecoded.id) {
-      throw new ErrorHandler(STATUS.UNAUTHORIZED, 'Token không hợp lệ hoặc thiếu thông tin người dùng')
+      throw new ErrorHandler(
+        STATUS.UNAUTHORIZED,
+        'Token không hợp lệ hoặc thiếu thông tin người dùng',
+      )
     }
 
     const profile = await userService.getProfile(req.jwtDecoded.id)
@@ -141,7 +144,10 @@ const updateMe = async (req: CustomRequest, res: Response) => {
   try {
     // Defensive check for missing jwtDecoded or id
     if (!req.jwtDecoded || !req.jwtDecoded.id) {
-      throw new ErrorHandler(STATUS.UNAUTHORIZED, 'Token không hợp lệ hoặc thiếu thông tin người dùng')
+      throw new ErrorHandler(
+        STATUS.UNAUTHORIZED,
+        'Token không hợp lệ hoặc thiếu thông tin người dùng',
+      )
     }
 
     const form: User = req.body

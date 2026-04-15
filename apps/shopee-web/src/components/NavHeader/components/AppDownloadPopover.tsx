@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import classNames from 'classnames'
 
 const AppDownloadPopover = () => {
   return (
@@ -35,7 +35,7 @@ const AppDownloadPopover = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AppDownloadPopover;
+export default AppDownloadPopover

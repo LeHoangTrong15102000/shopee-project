@@ -1,45 +1,45 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, FlatList, Image, Dimensions, ViewToken } from 'react-native';
-import { useColors } from '@/hooks/useColors';
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { View, FlatList, Image, Dimensions, ViewToken } from 'react-native'
+import { useColors } from '@/hooks/useColors'
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
 const BANNERS = [
   { id: '1', image: 'https://cf.shopee.vn/file/e4a404283b3824c211c1c37f5b913174' },
   { id: '2', image: 'https://cf.shopee.vn/file/687f3967b7c2fe6a134a2c11e6199e40' },
   { id: '3', image: 'https://cf.shopee.vn/file/8e71245b9659ea2c3c765cf4d04a85ba' },
-];
+]
 
 export default function BannerCarousel() {
-  const colors = useColors();
-  const [activeIndex, setActiveIndex] = useState(0);
-  const flatListRef = useRef<FlatList>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval>>();
+  const colors = useColors()
+  const [activeIndex, setActiveIndex] = useState(0)
+  const flatListRef = useRef<FlatList>(null)
+  const timerRef = useRef<ReturnType<typeof setInterval>>()
 
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
       if (viewableItems.length > 0 && viewableItems[0].index != null) {
-        setActiveIndex(viewableItems[0].index);
+        setActiveIndex(viewableItems[0].index)
       }
     },
     []
-  );
+  )
 
-  const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
+  const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current
 
   useEffect(() => {
     timerRef.current = setInterval(() => {
       setActiveIndex((prev) => {
-        const next = (prev + 1) % BANNERS.length;
-        flatListRef.current?.scrollToIndex({ index: next, animated: true });
-        return next;
-      });
-    }, 4000);
+        const next = (prev + 1) % BANNERS.length
+        flatListRef.current?.scrollToIndex({ index: next, animated: true })
+        return next
+      })
+    }, 4000)
 
-    return () => clearInterval(timerRef.current);
-  }, []);
+    return () => clearInterval(timerRef.current)
+  }, [])
 
-  if (BANNERS.length === 0) return null;
+  if (BANNERS.length === 0) return null
 
   return (
     <View>
@@ -68,11 +68,11 @@ export default function BannerCarousel() {
         onScrollEndDrag={() => {
           timerRef.current = setInterval(() => {
             setActiveIndex((prev) => {
-              const next = (prev + 1) % BANNERS.length;
-              flatListRef.current?.scrollToIndex({ index: next, animated: true });
-              return next;
-            });
-          }, 4000);
+              const next = (prev + 1) % BANNERS.length
+              flatListRef.current?.scrollToIndex({ index: next, animated: true })
+              return next
+            })
+          }, 4000)
         }}
       />
       <View className="flex-row items-center justify-center gap-1.5 py-2">
@@ -89,5 +89,5 @@ export default function BannerCarousel() {
         ))}
       </View>
     </View>
-  );
+  )
 }

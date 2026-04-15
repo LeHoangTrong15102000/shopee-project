@@ -12,22 +12,16 @@ describe('Auth Integration', () => {
       const email = 'test@test.com'
       const password = 'Test123456'
 
-      const registerRes = await supertest(app)
-        .post('/register')
-        .send({ email, password })
+      const registerRes = await supertest(app).post('/register').send({ email, password })
       expect(registerRes.status).toBeLessThan(400)
 
-      const loginRes = await supertest(app)
-        .post('/login')
-        .send({ email, password })
+      const loginRes = await supertest(app).post('/login').send({ email, password })
       expect(loginRes.status).toBe(200)
       expect(loginRes.body.data).toHaveProperty('access_token')
       expect(loginRes.body.data).toHaveProperty('refresh_token')
       const { access_token, refresh_token } = loginRes.body.data
 
-      const meRes = await supertest(app)
-        .get('/me')
-        .set('Authorization', access_token)
+      const meRes = await supertest(app).get('/me').set('Authorization', access_token)
       expect(meRes.status).toBe(200)
       expect(meRes.body.data.email).toBe(email)
 
@@ -49,13 +43,9 @@ describe('Auth Integration', () => {
       const email = 'stateless@test.com'
       const password = 'Test123456'
 
-      await supertest(app)
-        .post('/register')
-        .send({ email, password })
+      await supertest(app).post('/register').send({ email, password })
 
-      const loginRes = await supertest(app)
-        .post('/login')
-        .send({ email, password })
+      const loginRes = await supertest(app).post('/login').send({ email, password })
       const { access_token, refresh_token } = loginRes.body.data
 
       // Logout with refresh_token
@@ -65,9 +55,7 @@ describe('Auth Integration', () => {
         .send({ refresh_token })
 
       // Access token should still work (stateless — no DB lookup)
-      const meAfterLogout = await supertest(app)
-        .get('/me')
-        .set('Authorization', access_token)
+      const meAfterLogout = await supertest(app).get('/me').set('Authorization', access_token)
       expect(meAfterLogout.status).toBe(200)
 
       // But refresh should fail (RT deleted)
@@ -81,13 +69,9 @@ describe('Auth Integration', () => {
       const email = 'duplicate@test.com'
       const password = 'Test123456'
 
-      await supertest(app)
-        .post('/register')
-        .send({ email, password })
+      await supertest(app).post('/register').send({ email, password })
 
-      const duplicateRes = await supertest(app)
-        .post('/register')
-        .send({ email, password })
+      const duplicateRes = await supertest(app).post('/register').send({ email, password })
       expect(duplicateRes.status).toBe(422)
     })
   })
@@ -97,9 +81,7 @@ describe('Auth Integration', () => {
       const email = 'wrongpass@test.com'
       const password = 'Test123456'
 
-      await supertest(app)
-        .post('/register')
-        .send({ email, password })
+      await supertest(app).post('/register').send({ email, password })
 
       const loginRes = await supertest(app)
         .post('/login')
@@ -154,4 +136,3 @@ describe('Auth Integration', () => {
     })
   })
 })
-

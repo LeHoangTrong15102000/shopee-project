@@ -74,12 +74,12 @@ export interface IConversationRepository {
   findByUser(
     userId: string | Types.ObjectId,
     filters: ConversationFilterOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IConversationListItem>>
 
   findByIdAndUser(
     conversationId: string | Types.ObjectId,
-    userId: string | Types.ObjectId
+    userId: string | Types.ObjectId,
   ): Promise<IConversationItem | null>
 
   create(data: CreateConversationDTO): Promise<IConversationItem>
@@ -87,18 +87,14 @@ export interface IConversationRepository {
   addMessages(
     conversationId: string | Types.ObjectId,
     userId: string | Types.ObjectId,
-    messages: IMessageItem[]
+    messages: IMessageItem[],
   ): Promise<IConversationItem | null>
 
   update(
     conversationId: string | Types.ObjectId,
     userId: string | Types.ObjectId,
-    data: UpdateConversationDTO
+    data: UpdateConversationDTO,
   ): Promise<IConversationItem | null>
 
-  delete(
-    conversationId: string | Types.ObjectId,
-    userId: string | Types.ObjectId
-  ): Promise<boolean>
+  delete(conversationId: string | Types.ObjectId, userId: string | Types.ObjectId): Promise<boolean>
 }
-

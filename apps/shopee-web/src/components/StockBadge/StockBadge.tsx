@@ -1,22 +1,22 @@
-import classNames from 'classnames';
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
+import classNames from 'classnames'
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
 
 interface StockBadgeProps {
-  availableStock: number;
-  requestedQuantity: number;
-  className?: string;
+  availableStock: number
+  requestedQuantity: number
+  className?: string
 }
 
-type StockStatus = 'out_of_stock' | 'exceeded' | 'critical_low' | 'running_low' | 'normal';
+type StockStatus = 'out_of_stock' | 'exceeded' | 'critical_low' | 'running_low' | 'normal'
 
 interface StockConfig {
-  bg: string;
-  text: string;
-  border: string;
-  icon: string;
-  shouldPulse: boolean;
+  bg: string
+  text: string
+  border: string
+  icon: string
+  shouldPulse: boolean
 }
 
 const STOCK_CONFIG: Record<Exclude<StockStatus, 'normal'>, StockConfig> = {
@@ -48,14 +48,14 @@ const STOCK_CONFIG: Record<Exclude<StockStatus, 'normal'>, StockConfig> = {
     icon: '',
     shouldPulse: false,
   },
-};
+}
 
 function getStockStatus(availableStock: number, requestedQuantity: number): StockStatus {
-  if (availableStock === 0) return 'out_of_stock';
-  if (requestedQuantity > availableStock) return 'exceeded';
-  if (availableStock <= 5) return 'critical_low';
-  if (availableStock <= 20) return 'running_low';
-  return 'normal';
+  if (availableStock === 0) return 'out_of_stock'
+  if (requestedQuantity > availableStock) return 'exceeded'
+  if (availableStock <= 5) return 'critical_low'
+  if (availableStock <= 20) return 'running_low'
+  return 'normal'
 }
 
 export default function StockBadge({
@@ -63,28 +63,28 @@ export default function StockBadge({
   requestedQuantity,
   className,
 }: StockBadgeProps) {
-  const prefersReducedMotion = useReducedMotion();
-  const { t } = useTranslation('common');
-  const status = getStockStatus(availableStock, requestedQuantity);
+  const prefersReducedMotion = useReducedMotion()
+  const { t } = useTranslation('common')
+  const status = getStockStatus(availableStock, requestedQuantity)
 
   // Don't render anything if stock is normal
-  if (status === 'normal') return null;
+  if (status === 'normal') return null
 
-  const config = STOCK_CONFIG[status];
+  const config = STOCK_CONFIG[status]
 
   const label = (() => {
     switch (status) {
       case 'out_of_stock':
-        return t('stock.outOfStock');
+        return t('stock.outOfStock')
       case 'exceeded':
-        return t('stock.exceeded');
+        return t('stock.exceeded')
       case 'critical_low':
-        return t('stock.onlyNLeft', { count: availableStock });
+        return t('stock.onlyNLeft', { count: availableStock })
       case 'running_low':
-        return t('stock.runningLow');
+        return t('stock.runningLow')
     }
-  })();
-  const shouldAnimate = config.shouldPulse && !prefersReducedMotion;
+  })()
+  const shouldAnimate = config.shouldPulse && !prefersReducedMotion
 
   const badgeContent = (
     <span
@@ -99,7 +99,7 @@ export default function StockBadge({
       {config.icon && <span className="text-[10px]">{config.icon}</span>}
       <span>{label}</span>
     </span>
-  );
+  )
 
   if (shouldAnimate) {
     return (
@@ -117,8 +117,8 @@ export default function StockBadge({
       >
         {badgeContent}
       </motion.div>
-    );
+    )
   }
 
-  return badgeContent;
+  return badgeContent
 }

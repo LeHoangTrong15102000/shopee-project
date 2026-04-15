@@ -1,7 +1,10 @@
 import { Request, Response } from 'express'
 import { STATUS } from '@constants/status'
 import { container } from '../container'
-import { RewardType, PointsTransactionType } from '@repositories/interfaces/loyalty.repository.interface'
+import {
+  RewardType,
+  PointsTransactionType,
+} from '@repositories/interfaces/loyalty.repository.interface'
 
 const loyaltyService = container.services.loyalty
 
@@ -26,7 +29,7 @@ export const getTransactions = async (req: Request, res: Response) => {
   const result = await loyaltyService.getTransactions(
     user_id!,
     { type: type as PointsTransactionType | undefined },
-    { page: Number(page), limit: Number(limit) }
+    { page: Number(page), limit: Number(limit) },
   )
 
   res.status(STATUS.OK).json({
@@ -48,7 +51,7 @@ export const getRewards = async (req: Request, res: Response) => {
 
   const result = await loyaltyService.getRewards(
     { reward_type: reward_type as RewardType | undefined },
-    { page: Number(page), limit: Number(limit) }
+    { page: Number(page), limit: Number(limit) },
   )
 
   res.status(STATUS.OK).json({
@@ -76,4 +79,3 @@ export const redeemPoints = async (req: Request, res: Response): Promise<void> =
     data: result,
   })
 }
-

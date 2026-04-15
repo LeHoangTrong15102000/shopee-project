@@ -57,11 +57,10 @@ const NotificationSchema = new Schema<INotification>(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 NotificationSchema.index({ user: 1, createdAt: -1 })
 NotificationSchema.index({ user: 1, is_read: 1 })
 
 export const NotificationModel = mongoose.model<INotification>('notifications', NotificationSchema)
-

@@ -54,9 +54,9 @@ export const getDeprecationInfo = (path: string): DeprecatedEndpoint | undefined
  */
 export const getDeprecationHeaders = (endpoint: DeprecatedEndpoint): Record<string, string> => {
   return {
-    'Deprecation': endpoint.deprecatedAt,
-    'Sunset': endpoint.removeAt,
-    'Link': `<${endpoint.replacement}>; rel="successor-version"`,
+    Deprecation: endpoint.deprecatedAt,
+    Sunset: endpoint.removeAt,
+    Link: `<${endpoint.replacement}>; rel="successor-version"`,
     'X-Deprecation-Notice': endpoint.message,
   }
 }
@@ -77,4 +77,3 @@ export const isVersionSupported = (version: string): version is ApiVersion => {
 export const getLatestVersion = (): ApiVersion => {
   return SUPPORTED_VERSIONS[SUPPORTED_VERSIONS.length - 1]
 }
-

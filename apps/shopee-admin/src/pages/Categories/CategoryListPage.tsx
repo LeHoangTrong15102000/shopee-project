@@ -1,48 +1,48 @@
-import { useState } from 'react';
-import { type ColumnDef } from '@tanstack/react-table';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { Button } from 'src/components/ui/button';
+import { useState } from 'react'
+import { type ColumnDef } from '@tanstack/react-table'
+import { Plus, Pencil, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { Button } from 'src/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from 'src/components/ui/dialog';
-import { Input } from 'src/components/ui/input';
-import { Label } from 'src/components/ui/label';
-import { DataTable } from 'src/components/shared/DataTable';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
-import { ErrorState } from 'src/components/shared/ErrorState';
+} from 'src/components/ui/dialog'
+import { Input } from 'src/components/ui/input'
+import { Label } from 'src/components/ui/label'
+import { DataTable } from 'src/components/shared/DataTable'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { ConfirmDialog } from 'src/components/shared/ConfirmDialog'
+import { ErrorState } from 'src/components/shared/ErrorState'
 import {
   useCategories,
   useCreateCategory,
   useUpdateCategory,
   useDeleteCategory,
-} from 'src/hooks/useCategories';
-import type { Category } from 'src/types';
+} from 'src/hooks/useCategories'
+import type { Category } from 'src/types'
 
 export default function CategoryListPage() {
-  const { t } = useTranslation('categories');
-  const { t: tc } = useTranslation('common');
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editCat, setEditCat] = useState<Category | null>(null);
-  const [deleteCat, setDeleteCat] = useState<Category | null>(null);
-  const [name, setName] = useState('');
+  const { t } = useTranslation('categories')
+  const { t: tc } = useTranslation('common')
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [editCat, setEditCat] = useState<Category | null>(null)
+  const [deleteCat, setDeleteCat] = useState<Category | null>(null)
+  const [name, setName] = useState('')
 
-  const { data: categories, isLoading, isError, refetch } = useCategories();
+  const { data: categories, isLoading, isError, refetch } = useCategories()
 
   const createMut = useCreateCategory(() => {
-    setDialogOpen(false);
-    setName('');
-  });
+    setDialogOpen(false)
+    setName('')
+  })
   const updateMut = useUpdateCategory(() => {
-    setEditCat(null);
-    setName('');
-  });
-  const deleteMut = useDeleteCategory(() => setDeleteCat(null));
+    setEditCat(null)
+    setName('')
+  })
+  const deleteMut = useDeleteCategory(() => setDeleteCat(null))
 
   const columns: ColumnDef<Category>[] = [
     { accessorKey: 'name', header: t('columns.name') },
@@ -61,8 +61,8 @@ export default function CategoryListPage() {
             size="sm"
             aria-label={t('common:aria.editItem', { item: t('categories:title') })}
             onClick={() => {
-              setEditCat(row.original);
-              setName(row.original.name);
+              setEditCat(row.original)
+              setName(row.original.name)
             }}
           >
             <Pencil className="size-4" />
@@ -78,7 +78,7 @@ export default function CategoryListPage() {
         </div>
       ),
     },
-  ];
+  ]
 
   return (
     <div className="space-y-6">
@@ -89,8 +89,8 @@ export default function CategoryListPage() {
           <Button
             size="sm"
             onClick={() => {
-              setDialogOpen(true);
-              setName('');
+              setDialogOpen(true)
+              setName('')
             }}
           >
             <Plus className="mr-2 size-4" />
@@ -158,5 +158,5 @@ export default function CategoryListPage() {
         isLoading={deleteMut.isPending}
       />
     </div>
-  );
+  )
 }

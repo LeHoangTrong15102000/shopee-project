@@ -1,39 +1,39 @@
-import classNames from 'classnames';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
-import LiveOrderTracker from 'src/components/LiveOrderTracker';
-import path from 'src/constant/path';
-import { purchasesStatus } from 'src/constant/purchase';
-import { useOptimisticAddToCart } from 'src/hooks/optimistic';
-import { staggerItem, buttonHover, ANIMATION_DURATION } from 'src/styles/animations';
-import { Purchase } from 'src/types/purchases.type';
-import { formatCurrency, generateNameId } from 'src/utils/utils';
-import Button from 'src/components/Button';
+import classNames from 'classnames'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
+import LiveOrderTracker from 'src/components/LiveOrderTracker'
+import path from 'src/constant/path'
+import { purchasesStatus } from 'src/constant/purchase'
+import { useOptimisticAddToCart } from 'src/hooks/optimistic'
+import { staggerItem, buttonHover, ANIMATION_DURATION } from 'src/styles/animations'
+import { Purchase } from 'src/types/purchases.type'
+import { formatCurrency, generateNameId } from 'src/utils/utils'
+import Button from 'src/components/Button'
 
 interface PurchaseItemProps {
-  purchase: Purchase;
-  reducedMotion: boolean;
-  isExpanded: boolean;
-  onToggleTracking: (orderId: string) => void;
-  onReviewClick: (purchase: Purchase) => void;
+  purchase: Purchase
+  reducedMotion: boolean
+  isExpanded: boolean
+  onToggleTracking: (orderId: string) => void
+  onReviewClick: (purchase: Purchase) => void
 }
 
 interface ReorderButtonProps {
-  purchase: Purchase;
-  reducedMotion: boolean;
+  purchase: Purchase
+  reducedMotion: boolean
 }
 
 const ReorderButton = ({ purchase, reducedMotion }: ReorderButtonProps) => {
-  const { t } = useTranslation('order');
-  const addToCartMutation = useOptimisticAddToCart();
+  const { t } = useTranslation('order')
+  const addToCartMutation = useOptimisticAddToCart()
 
   const handleReorder = () => {
     addToCartMutation.mutate({
       product_id: purchase.product._id,
       buy_count: purchase.buy_count,
-    });
-  };
+    })
+  }
 
   return (
     <motion.div
@@ -93,16 +93,16 @@ const ReorderButton = ({ purchase, reducedMotion }: ReorderButtonProps) => {
         <span>{t('purchase.reorderLabel')}</span>
       </Button>
     </motion.div>
-  );
-};
+  )
+}
 
 const isActiveOrder = (orderStatus: number) => {
   return (
     orderStatus === purchasesStatus.waitForConfirmation ||
     orderStatus === purchasesStatus.waitForGetting ||
     orderStatus === purchasesStatus.inProgress
-  );
-};
+  )
+}
 
 const PurchaseItem = ({
   purchase,
@@ -111,7 +111,7 @@ const PurchaseItem = ({
   onToggleTracking,
   onReviewClick,
 }: PurchaseItemProps) => {
-  const { t } = useTranslation('order');
+  const { t } = useTranslation('order')
   return (
     <motion.div key={purchase._id} variants={reducedMotion ? undefined : staggerItem}>
       <div className="mt-4 rounded-lg border border-gray-200 bg-white p-6 text-gray-800 shadow-xs dark:border-slate-600 dark:bg-slate-800 dark:text-gray-200">
@@ -305,7 +305,7 @@ const PurchaseItem = ({
         </div>
       </div>
     </motion.div>
-  );
-};
+  )
+}
 
-export default PurchaseItem;
+export default PurchaseItem

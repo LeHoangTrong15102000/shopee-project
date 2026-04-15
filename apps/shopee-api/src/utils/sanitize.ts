@@ -146,4 +146,3 @@ export const sanitizeMongoQuery = (query: unknown): unknown => {
 
   return sanitized
 }
-

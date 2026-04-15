@@ -1,9 +1,9 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { format } from 'date-fns';
-import { ArrowLeft } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { Button } from 'src/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
+import { useParams, useNavigate } from 'react-router-dom'
+import { format } from 'date-fns'
+import { ArrowLeft } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { Button } from 'src/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
 import {
   Table,
   TableBody,
@@ -11,38 +11,38 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from 'src/components/ui/table';
+} from 'src/components/ui/table'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/components/ui/select';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { StatusBadge } from 'src/components/shared/StatusBadge';
-import { LoadingState } from 'src/components/shared/LoadingState';
-import { ErrorState } from 'src/components/shared/ErrorState';
-import { useOrderDetail, useUpdateOrderStatus } from 'src/hooks/useOrderDetail';
-import { formatCurrency } from 'src/utils/format';
-import type { OrderStatus } from 'src/types';
+} from 'src/components/ui/select'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { StatusBadge } from 'src/components/shared/StatusBadge'
+import { LoadingState } from 'src/components/shared/LoadingState'
+import { ErrorState } from 'src/components/shared/ErrorState'
+import { useOrderDetail, useUpdateOrderStatus } from 'src/hooks/useOrderDetail'
+import { formatCurrency } from 'src/utils/format'
+import type { OrderStatus } from 'src/types'
 
-const statusFlow: OrderStatus[] = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+const statusFlow: OrderStatus[] = ['pending', 'processing', 'shipped', 'delivered', 'cancelled']
 
 export default function OrderDetailPage() {
-  const { t } = useTranslation('orders');
-  const { t: tc } = useTranslation('common');
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const { t } = useTranslation('orders')
+  const { t: tc } = useTranslation('common')
+  const { id } = useParams()
+  const navigate = useNavigate()
 
-  const { data: order, isLoading, error } = useOrderDetail(id);
+  const { data: order, isLoading, error } = useOrderDetail(id)
 
-  const updateMut = useUpdateOrderStatus(id);
+  const updateMut = useUpdateOrderStatus(id)
 
-  if (isLoading) return <LoadingState />;
-  if (error || !order) return <ErrorState message={t('notFound')} />;
+  if (isLoading) return <LoadingState />
+  if (error || !order) return <ErrorState message={t('notFound')} />
 
-  const customer = typeof order.user === 'object' ? order.user : null;
+  const customer = typeof order.user === 'object' ? order.user : null
 
   return (
     <div className="space-y-6">
@@ -72,7 +72,7 @@ export default function OrderDetailPage() {
               </TableHeader>
               <TableBody>
                 {order.items.map((item, i) => {
-                  const name = typeof item.product === 'object' ? item.product.name : item.product;
+                  const name = typeof item.product === 'object' ? item.product.name : item.product
                   return (
                     <TableRow key={i}>
                       <TableCell className="font-medium">{name}</TableCell>
@@ -82,7 +82,7 @@ export default function OrderDetailPage() {
                         {formatCurrency(item.price * item.buy_count)}
                       </TableCell>
                     </TableRow>
-                  );
+                  )
                 })}
               </TableBody>
             </Table>
@@ -166,5 +166,5 @@ export default function OrderDetailPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

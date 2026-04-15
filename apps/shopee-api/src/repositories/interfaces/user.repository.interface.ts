@@ -83,4 +83,3 @@ export interface IUserRepository extends IBaseRepository<IUser, CreateUserDTO, U
    */
   search(query: string, pagination: PaginationOptions): Promise<PaginatedResult<IUser>>
 }
-

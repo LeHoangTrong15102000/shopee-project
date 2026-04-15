@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import SaveForLaterSection from '../SaveForLaterSection';
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import SaveForLaterSection from '../SaveForLaterSection'
 
 vi.mock('framer-motion', () => ({
   motion: {
@@ -20,8 +20,8 @@ vi.mock('framer-motion', () => ({
               'layout',
             ].includes(k),
         ),
-      );
-      return <div {...safe}>{children}</div>;
+      )
+      return <div {...safe}>{children}</div>
     },
     svg: ({ children, ...props }: any) => {
       const safe = Object.fromEntries(
@@ -37,12 +37,12 @@ vi.mock('framer-motion', () => ({
               'whileTap',
             ].includes(k),
         ),
-      );
-      return <svg {...safe}>{children}</svg>;
+      )
+      return <svg {...safe}>{children}</svg>
     },
   },
   AnimatePresence: ({ children }: any) => children,
-}));
+}))
 
 vi.mock('react-router', () => ({
   Link: ({ children, to, ...props }: any) => (
@@ -50,7 +50,7 @@ vi.mock('react-router', () => ({
       {children}
     </a>
   ),
-}));
+}))
 
 vi.mock('src/components/Button', () => ({
   default: ({ children, onClick, ...props }: any) => (
@@ -58,28 +58,28 @@ vi.mock('src/components/Button', () => ({
       {children}
     </button>
   ),
-}));
+}))
 
 vi.mock('src/components/ImageWithFallback', () => ({
   default: ({ alt }: any) => <img alt={alt} />,
-}));
+}))
 
 vi.mock('src/hooks/useReducedMotion', () => ({
   useReducedMotion: () => false,
-}));
+}))
 
 vi.mock('src/utils/utils', () => ({
   formatCurrency: (n: number) => n.toLocaleString(),
   generateNameId: ({ name, id }: any) => `${name}-i-${id}`,
-}));
+}))
 
 vi.mock('src/constant/path', () => ({
   default: { home: '/' },
-}));
+}))
 
 vi.mock('date-fns', () => ({
   differenceInDays: () => 0,
-}));
+}))
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -93,21 +93,21 @@ vi.mock('react-i18next', () => ({
         'savedForLater.today': 'Hôm nay',
         'savedForLater.yesterday': 'Hôm qua',
         'savedForLater.savedInfo': 'Đã lưu {{time}} • SL: {{count}}',
-      };
+      }
 
       if (key === 'savedForLater.daysAgo' && params?.count) {
-        return `${params.count} ngày trước`;
+        return `${params.count} ngày trước`
       }
 
       if (key === 'savedForLater.savedInfo' && params) {
-        return `${params.time} • SL: ${params.count}`;
+        return `${params.time} • SL: ${params.count}`
       }
 
-      return translations[key] || key;
+      return translations[key] || key
     },
     i18n: { language: 'vi' },
   }),
-}));
+}))
 
 const makeItem = (id: string, overrides: any = {}) => ({
   product: {
@@ -121,7 +121,7 @@ const makeItem = (id: string, overrides: any = {}) => ({
   savedAt: '2026-03-19T08:00:00Z',
   originalBuyCount: 2,
   ...overrides,
-});
+})
 
 describe('SaveForLaterSection', () => {
   const baseProps = {
@@ -129,53 +129,53 @@ describe('SaveForLaterSection', () => {
     onMoveToCart: vi.fn(),
     onRemove: vi.fn(),
     onClear: vi.fn(),
-  };
+  }
 
   it('renders empty state when no items', () => {
-    render(<SaveForLaterSection {...baseProps} />);
-    expect(screen.getByText('Chưa có sản phẩm nào được lưu')).toBeInTheDocument();
-  });
+    render(<SaveForLaterSection {...baseProps} />)
+    expect(screen.getByText('Chưa có sản phẩm nào được lưu')).toBeInTheDocument()
+  })
 
   it('renders saved items header with count', () => {
-    render(<SaveForLaterSection {...baseProps} savedItems={[makeItem('1'), makeItem('2')]} />);
-    expect(screen.getByText(/Đã lưu để mua sau \(2\)/)).toBeInTheDocument();
-  });
+    render(<SaveForLaterSection {...baseProps} savedItems={[makeItem('1'), makeItem('2')]} />)
+    expect(screen.getByText(/Đã lưu để mua sau \(2\)/)).toBeInTheDocument()
+  })
 
   it('renders product names', () => {
-    render(<SaveForLaterSection {...baseProps} savedItems={[makeItem('1')]} />);
-    expect(screen.getByText('Product 1')).toBeInTheDocument();
-  });
+    render(<SaveForLaterSection {...baseProps} savedItems={[makeItem('1')]} />)
+    expect(screen.getByText('Product 1')).toBeInTheDocument()
+  })
 
   it('renders prices', () => {
-    render(<SaveForLaterSection {...baseProps} savedItems={[makeItem('1')]} />);
-    expect(screen.getByText(/₫150,000/)).toBeInTheDocument();
-    expect(screen.getByText(/₫100,000/)).toBeInTheDocument();
-  });
+    render(<SaveForLaterSection {...baseProps} savedItems={[makeItem('1')]} />)
+    expect(screen.getByText(/₫150,000/)).toBeInTheDocument()
+    expect(screen.getByText(/₫100,000/)).toBeInTheDocument()
+  })
 
   it('renders move to cart button', () => {
-    render(<SaveForLaterSection {...baseProps} savedItems={[makeItem('1')]} />);
-    expect(screen.getByText('Thêm vào giỏ')).toBeInTheDocument();
-  });
+    render(<SaveForLaterSection {...baseProps} savedItems={[makeItem('1')]} />)
+    expect(screen.getByText('Thêm vào giỏ')).toBeInTheDocument()
+  })
 
   it('renders remove button', () => {
-    render(<SaveForLaterSection {...baseProps} savedItems={[makeItem('1')]} />);
-    expect(screen.getByText('Xóa')).toBeInTheDocument();
-  });
+    render(<SaveForLaterSection {...baseProps} savedItems={[makeItem('1')]} />)
+    expect(screen.getByText('Xóa')).toBeInTheDocument()
+  })
 
   it('renders clear all button', () => {
-    render(<SaveForLaterSection {...baseProps} savedItems={[makeItem('1')]} />);
-    expect(screen.getByText('Xóa tất cả')).toBeInTheDocument();
-  });
+    render(<SaveForLaterSection {...baseProps} savedItems={[makeItem('1')]} />)
+    expect(screen.getByText('Xóa tất cả')).toBeInTheDocument()
+  })
 
   it('renders saved time info', () => {
-    render(<SaveForLaterSection {...baseProps} savedItems={[makeItem('1')]} />);
-    expect(screen.getByText(/Hôm nay/)).toBeInTheDocument();
-    expect(screen.getByText(/SL: 2/)).toBeInTheDocument();
-  });
+    render(<SaveForLaterSection {...baseProps} savedItems={[makeItem('1')]} />)
+    expect(screen.getByText(/Hôm nay/)).toBeInTheDocument()
+    expect(screen.getByText(/SL: 2/)).toBeInTheDocument()
+  })
 
   it('renders bookmark icon in empty state', () => {
-    const { container } = render(<SaveForLaterSection {...baseProps} />);
-    const svgs = container.querySelectorAll('svg');
-    expect(svgs.length).toBeGreaterThanOrEqual(1);
-  });
-});
+    const { container } = render(<SaveForLaterSection {...baseProps} />)
+    const svgs = container.querySelectorAll('svg')
+    expect(svgs.length).toBeGreaterThanOrEqual(1)
+  })
+})

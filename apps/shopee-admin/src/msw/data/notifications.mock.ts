@@ -1,5 +1,5 @@
-import { createMockNotification } from 'src/test-utils/factories';
-import type { Notification } from 'src/types';
+import { createMockNotification } from 'src/test-utils/factories'
+import type { Notification } from 'src/types'
 
 export const mockNotifications: Notification[] = [
   createMockNotification({
@@ -30,4 +30,4 @@ export const mockNotifications: Notification[] = [
     type: 'targeted',
     is_read: true,
   }),
-];
+]

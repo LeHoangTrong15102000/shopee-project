@@ -86,7 +86,7 @@ describe('QARepository', () => {
       ;(QuestionModel.countDocuments as jest.Mock).mockResolvedValue(1)
       const result = await repository.findQuestionsByProduct(
         { product_id: mockProductId },
-        { page: 1, limit: 10 }
+        { page: 1, limit: 10 },
       )
       expect(QuestionModel.find).toHaveBeenCalled()
       expect(result.data).toEqual([mockQuestion])
@@ -102,7 +102,7 @@ describe('QARepository', () => {
       ;(QuestionModel.countDocuments as jest.Mock).mockResolvedValue(1)
       const result = await repository.findQuestionsByProduct(
         { product_id: mockProductId, sort: 'oldest' },
-        { page: 1, limit: 10 }
+        { page: 1, limit: 10 },
       )
       expect(result.data).toEqual([mockQuestion])
     })
@@ -116,7 +116,7 @@ describe('QARepository', () => {
       ;(QuestionModel.countDocuments as jest.Mock).mockResolvedValue(1)
       const result = await repository.findQuestionsByProduct(
         { product_id: mockProductId, sort: 'most_liked' },
-        { page: 1, limit: 10 }
+        { page: 1, limit: 10 },
       )
       expect(result.data).toEqual([mockQuestion])
     })
@@ -183,7 +183,10 @@ describe('QARepository', () => {
     it('should return null if answer not found', async () => {
       const mockLean = jest.fn().mockResolvedValue({ ...mockQuestion, answers: [] })
       ;(QuestionModel.findById as jest.Mock).mockReturnValue({ lean: mockLean })
-      const result = await repository.findAnswerById(mockQuestionId, new Types.ObjectId().toString())
+      const result = await repository.findAnswerById(
+        mockQuestionId,
+        new Types.ObjectId().toString(),
+      )
       expect(result).toBeNull()
     })
   })
@@ -217,7 +220,9 @@ describe('QARepository', () => {
 
     it('should throw if question not found', async () => {
       ;(QuestionModel.findById as jest.Mock).mockResolvedValue(null)
-      await expect(repository.toggleQuestionLike(mockQuestionId, mockUserId)).rejects.toThrow('Question not found')
+      await expect(repository.toggleQuestionLike(mockQuestionId, mockUserId)).rejects.toThrow(
+        'Question not found',
+      )
     })
   })
 
@@ -229,7 +234,11 @@ describe('QARepository', () => {
         save: jest.fn().mockResolvedValue(true),
       }
       ;(QuestionModel.findById as jest.Mock).mockResolvedValue(mockDoc)
-      const result = await repository.toggleAnswerLike(mockQuestionId, mockAnswerId.toString(), mockUserId)
+      const result = await repository.toggleAnswerLike(
+        mockQuestionId,
+        mockAnswerId.toString(),
+        mockUserId,
+      )
       expect(result.is_liked).toBe(true)
       expect(mockDoc.save).toHaveBeenCalled()
     })
@@ -241,20 +250,28 @@ describe('QARepository', () => {
         save: jest.fn().mockResolvedValue(true),
       }
       ;(QuestionModel.findById as jest.Mock).mockResolvedValue(mockDoc)
-      const result = await repository.toggleAnswerLike(mockQuestionId, mockAnswerId.toString(), mockUserId)
+      const result = await repository.toggleAnswerLike(
+        mockQuestionId,
+        mockAnswerId.toString(),
+        mockUserId,
+      )
       expect(result.is_liked).toBe(false)
       expect(mockDoc.save).toHaveBeenCalled()
     })
 
     it('should throw if question not found', async () => {
       ;(QuestionModel.findById as jest.Mock).mockResolvedValue(null)
-      await expect(repository.toggleAnswerLike(mockQuestionId, mockAnswerId.toString(), mockUserId)).rejects.toThrow('Question not found')
+      await expect(
+        repository.toggleAnswerLike(mockQuestionId, mockAnswerId.toString(), mockUserId),
+      ).rejects.toThrow('Question not found')
     })
 
     it('should throw if answer not found', async () => {
       const mockDoc = { ...mockQuestion, answers: [] }
       ;(QuestionModel.findById as jest.Mock).mockResolvedValue(mockDoc)
-      await expect(repository.toggleAnswerLike(mockQuestionId, mockAnswerId.toString(), mockUserId)).rejects.toThrow('Answer not found')
+      await expect(
+        repository.toggleAnswerLike(mockQuestionId, mockAnswerId.toString(), mockUserId),
+      ).rejects.toThrow('Answer not found')
     })
   })
 
@@ -267,4 +284,3 @@ describe('QARepository', () => {
     })
   })
 })
-

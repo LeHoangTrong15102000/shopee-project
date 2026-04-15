@@ -1,7 +1,13 @@
 import { Request, Response } from 'express'
 import { responseSuccess, ErrorHandler } from '@utils/response'
 import { STATUS } from '@constants/status'
-import { orderService, purchaseService, addressService, loyaltyService, voucherService } from '../container'
+import {
+  orderService,
+  purchaseService,
+  addressService,
+  loyaltyService,
+  voucherService,
+} from '../container'
 import { ValidationError, NotFoundError, BusinessError } from '@services/base.service'
 import { emitAdminNewOrderNotification } from '../socket/utils/order-emit'
 
@@ -44,7 +50,10 @@ export const getCheckoutSummary = async (req: Request, res: Response) => {
     let appliedVoucher = null
     if (voucher_code) {
       try {
-        const voucherResult = await voucherService.applyVoucher({ code: voucher_code, order_value: subtotal })
+        const voucherResult = await voucherService.applyVoucher({
+          code: voucher_code,
+          order_value: subtotal,
+        })
         voucherDiscount = voucherResult.discount_amount
         appliedVoucher = { code: voucherResult.code, discount: voucherDiscount }
       } catch {
@@ -125,7 +134,10 @@ export const createCheckoutOrder = async (req: Request, res: Response) => {
           const product = p.product as any
           return sum + product.price * p.buy_count
         }, 0)
-        const voucherResult = await voucherService.applyVoucher({ code: voucher_code, order_value: subtotal })
+        const voucherResult = await voucherService.applyVoucher({
+          code: voucher_code,
+          order_value: subtotal,
+        })
         voucherDiscount = voucherResult.discount_amount
       } catch {
         // Voucher invalid - continue without discount
@@ -149,7 +161,11 @@ export const createCheckoutOrder = async (req: Request, res: Response) => {
       try {
         const voucherInfo = await voucherService.getVoucherByCode(voucher_code)
         if (voucherInfo.status.is_valid) {
-          await voucherService.useVoucher(user_id, voucherInfo.voucher._id.toString(), order._id?.toString())
+          await voucherService.useVoucher(
+            user_id,
+            voucherInfo.voucher._id.toString(),
+            order._id?.toString(),
+          )
         }
       } catch {
         // Voucher handling failed - order still created
@@ -188,4 +204,3 @@ export const createCheckoutOrder = async (req: Request, res: Response) => {
     throw error
   }
 }
-

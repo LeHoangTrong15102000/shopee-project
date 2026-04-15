@@ -1,23 +1,23 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
-import omit from 'lodash/omit';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
-import userApi, { BodyUpdateProfile } from 'src/apis/user.api';
-import Button from 'src/components/Button';
-import Input from 'src/components/Input';
-import PasswordStrengthMeter from 'src/components/PasswordStrengthMeter';
-import SEO from 'src/components/SEO';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import { ErrorResponseApi } from 'src/types/utils.type';
-import { UserSchema, baseUserSchema } from 'src/utils/rules';
-import { isAxiosUnprocessableEntityError } from 'src/utils/utils';
-import { z } from 'zod';
-import i18n from 'src/i18n/i18n';
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
+import { motion } from 'framer-motion'
+import omit from 'lodash/omit'
+import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+import userApi, { BodyUpdateProfile } from 'src/apis/user.api'
+import Button from 'src/components/Button'
+import Input from 'src/components/Input'
+import PasswordStrengthMeter from 'src/components/PasswordStrengthMeter'
+import SEO from 'src/components/SEO'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import { ErrorResponseApi } from 'src/types/utils.type'
+import { UserSchema, baseUserSchema } from 'src/utils/rules'
+import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import { z } from 'zod'
+import i18n from 'src/i18n/i18n'
 
-type FormData = Pick<UserSchema, 'password' | 'new_password' | 'confirm_password'>;
+type FormData = Pick<UserSchema, 'password' | 'new_password' | 'confirm_password'>
 
 const changePasswordSchema = baseUserSchema
   .pick({ password: true, new_password: true, confirm_password: true })
@@ -27,12 +27,12 @@ const changePasswordSchema = baseUserSchema
         code: z.ZodIssueCode.custom,
         message: i18n.t('common:validation.passwordMismatch'),
         path: ['confirm_password'],
-      });
+      })
     }
-  });
+  })
 
 const ChangePassword = () => {
-  const { t } = useTranslation('user');
+  const { t } = useTranslation('user')
   // Khai báo useForm
   const {
     register,
@@ -48,42 +48,42 @@ const ChangePassword = () => {
       confirm_password: '',
     },
     resolver: zodResolver(changePasswordSchema),
-  });
+  })
 
-  const watchedNewPassword = watch('new_password', '');
+  const watchedNewPassword = watch('new_password', '')
 
   // updateProfile
   const updateProfileMutation = useMutation({
     mutationFn: (body: BodyUpdateProfile) => userApi.updateProfile(body),
-  });
+  })
 
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = useReducedMotion()
 
   // Func xử lý sự kiện thay đổi mật khẩu
   const onSubmit = handleSubmit(async (data) => {
     try {
       // omit thằng confirm_password đi
-      const res = await updateProfileMutation.mutateAsync(omit(data, ['confirm_password']));
-      toast.success(res.data.message);
+      const res = await updateProfileMutation.mutateAsync(omit(data, ['confirm_password']))
+      toast.success(res.data.message)
       // reset lại cái Form
-      reset();
+      reset()
     } catch (error) {
       // // Xử lý lỗi từ phía server
       if (isAxiosUnprocessableEntityError<ErrorResponseApi<FormData>>(error)) {
         // Lấy lỗi và set vào RHF setError
-        const formError = error.response?.data.data;
+        const formError = error.response?.data.data
         if (formError) {
           Object.keys(formError).forEach((key) => {
             // Ép kiểu cho key luôn
             setError(key as keyof FormData, {
               message: formError[key as keyof FormData],
               type: 'Server',
-            });
-          });
+            })
+          })
         }
       }
     }
-  });
+  })
 
   // Password requirements for security tips card
   const passwordRequirements = [
@@ -104,7 +104,7 @@ const ChangePassword = () => {
       label: t('changePassword.requirements.special'),
       check: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(watchedNewPassword ?? ''),
     },
-  ];
+  ]
 
   return (
     <motion.div
@@ -387,7 +387,7 @@ const ChangePassword = () => {
         </motion.div>
       </form>
     </motion.div>
-  );
-};
+  )
+}
 
-export default ChangePassword;
+export default ChangePassword

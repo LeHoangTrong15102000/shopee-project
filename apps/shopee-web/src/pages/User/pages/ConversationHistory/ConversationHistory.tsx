@@ -1,60 +1,60 @@
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from 'react-toastify';
-import { useTranslation } from 'react-i18next';
-import chatbotApi from 'src/apis/chatbot.api';
-import SEO from 'src/components/SEO';
-import Button from 'src/components/Button';
-import { ConversationSummary } from 'src/types/chatbot.type';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { motion, AnimatePresence } from 'framer-motion'
+import { toast } from 'react-toastify'
+import { useTranslation } from 'react-i18next'
+import chatbotApi from 'src/apis/chatbot.api'
+import SEO from 'src/components/SEO'
+import Button from 'src/components/Button'
+import { ConversationSummary } from 'src/types/chatbot.type'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
 
 const ConversationHistory = () => {
-  const { t, i18n } = useTranslation('chat');
-  const queryClient = useQueryClient();
-  const reducedMotion = useReducedMotion();
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const { t, i18n } = useTranslation('chat')
+  const queryClient = useQueryClient()
+  const reducedMotion = useReducedMotion()
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ['conversations'],
     queryFn: () => chatbotApi.getConversations(),
-  });
+  })
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => chatbotApi.deleteConversation(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['conversations'] });
-      toast.success(t('history.deleteSuccess'));
-      setDeletingId(null);
+      queryClient.invalidateQueries({ queryKey: ['conversations'] })
+      toast.success(t('history.deleteSuccess'))
+      setDeletingId(null)
     },
     onError: () => {
-      toast.error(t('history.deleteError'));
-      setDeletingId(null);
+      toast.error(t('history.deleteError'))
+      setDeletingId(null)
     },
-  });
+  })
 
-  const conversations: ConversationSummary[] = data?.data?.data?.conversations || [];
+  const conversations: ConversationSummary[] = data?.data?.data?.conversations || []
 
   const handleDelete = (id: string) => {
-    setDeletingId(id);
-  };
+    setDeletingId(id)
+  }
 
   const confirmDelete = () => {
     if (deletingId) {
-      deleteMutation.mutate(deletingId);
+      deleteMutation.mutate(deletingId)
     }
-  };
+  }
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
+    const date = new Date(dateStr)
     return date.toLocaleDateString(i18n.language, {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    });
-  };
+    })
+  }
 
   return (
     <div className="rounded-sm bg-white px-4 pb-10 shadow md:px-7 md:pb-20 dark:bg-slate-800">
@@ -177,7 +177,7 @@ const ConversationHistory = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ConversationHistory;
+export default ConversationHistory

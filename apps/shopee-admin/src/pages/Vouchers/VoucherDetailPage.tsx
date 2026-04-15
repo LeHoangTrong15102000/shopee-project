@@ -1,9 +1,9 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { format } from 'date-fns';
-import { ArrowLeft } from 'lucide-react';
-import { Button } from 'src/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
+import { useParams, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { format } from 'date-fns'
+import { ArrowLeft } from 'lucide-react'
+import { Button } from 'src/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
 import {
   Table,
   TableBody,
@@ -11,27 +11,27 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from 'src/components/ui/table';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { StatusBadge } from 'src/components/shared/StatusBadge';
-import { LoadingState } from 'src/components/shared/LoadingState';
-import { ErrorState } from 'src/components/shared/ErrorState';
-import { useVoucherDetail, useVoucherUsage } from 'src/hooks/useVoucherDetail';
-import { formatCurrency } from 'src/utils/format';
+} from 'src/components/ui/table'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { StatusBadge } from 'src/components/shared/StatusBadge'
+import { LoadingState } from 'src/components/shared/LoadingState'
+import { ErrorState } from 'src/components/shared/ErrorState'
+import { useVoucherDetail, useVoucherUsage } from 'src/hooks/useVoucherDetail'
+import { formatCurrency } from 'src/utils/format'
 
 export default function VoucherDetailPage() {
-  const { t } = useTranslation('vouchers');
-  const { t: tc } = useTranslation('common');
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const { t } = useTranslation('vouchers')
+  const { t: tc } = useTranslation('common')
+  const { id } = useParams()
+  const navigate = useNavigate()
 
-  const { data: voucher, isLoading, isError, refetch } = useVoucherDetail(id);
+  const { data: voucher, isLoading, isError, refetch } = useVoucherDetail(id)
 
-  const { data: usageData } = useVoucherUsage(id);
+  const { data: usageData } = useVoucherUsage(id)
 
-  if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message={t('error')} onRetry={refetch} />;
-  if (!voucher) return null;
+  if (isLoading) return <LoadingState />
+  if (isError) return <ErrorState message={t('error')} onRetry={refetch} />
+  if (!voucher) return null
 
   return (
     <div className="space-y-6">
@@ -124,5 +124,5 @@ export default function VoucherDetailPage() {
         </Card>
       </div>
     </div>
-  );
+  )
 }

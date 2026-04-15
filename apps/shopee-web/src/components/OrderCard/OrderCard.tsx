@@ -1,25 +1,25 @@
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Order } from 'src/types/checkout.type';
-import { ORDER_STATUS_CONFIG, OrderStatus, getStatusLabel } from 'src/config/orderStatus';
-import { formatCurrency } from 'src/utils/utils';
-import { orderStatusToNumber } from 'src/constant/order';
-import ImageWithFallback from 'src/components/ImageWithFallback';
-import Button from 'src/components/Button';
+import { Link } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Order } from 'src/types/checkout.type'
+import { ORDER_STATUS_CONFIG, OrderStatus, getStatusLabel } from 'src/config/orderStatus'
+import { formatCurrency } from 'src/utils/utils'
+import { orderStatusToNumber } from 'src/constant/order'
+import ImageWithFallback from 'src/components/ImageWithFallback'
+import Button from 'src/components/Button'
 
 interface OrderCardProps {
-  order: Order;
-  onCancel?: (orderId: string) => void;
-  onReorder?: (order: Order) => void;
-  isTrackable?: boolean;
-  isTrackingExpanded?: boolean;
-  onToggleTracking?: (orderId: string) => void;
-  trackingContent?: React.ReactNode;
+  order: Order
+  onCancel?: (orderId: string) => void
+  onReorder?: (order: Order) => void
+  isTrackable?: boolean
+  isTrackingExpanded?: boolean
+  onToggleTracking?: (orderId: string) => void
+  trackingContent?: React.ReactNode
 }
 
 function getStatusDisplay(status: OrderStatus) {
-  const config = ORDER_STATUS_CONFIG[status];
+  const config = ORDER_STATUS_CONFIG[status]
   if (!config) {
     return {
       label: status,
@@ -28,7 +28,7 @@ function getStatusDisplay(status: OrderStatus) {
       borderColor: 'border-gray-200 dark:border-gray-700/50',
       icon: '?',
       animate: false,
-    };
+    }
   }
   return {
     label: getStatusLabel(status),
@@ -37,7 +37,7 @@ function getStatusDisplay(status: OrderStatus) {
     borderColor: `${config.borderColor.light} dark:${config.borderColor.dark}`,
     icon: config.icon,
     animate: config.animate ?? false,
-  };
+  }
 }
 
 const OrderCard = function OrderCard({
@@ -49,22 +49,22 @@ const OrderCard = function OrderCard({
   onToggleTracking,
   trackingContent,
 }: OrderCardProps) {
-  const { t, i18n } = useTranslation(['order', 'common']);
-  const status = getStatusDisplay(order.status as OrderStatus);
-  const canCancel = ['pending', 'confirmed'].includes(order.status);
-  const canReorder = ['delivered', 'cancelled'].includes(order.status);
+  const { t, i18n } = useTranslation(['order', 'common'])
+  const status = getStatusDisplay(order.status as OrderStatus)
+  const canCancel = ['pending', 'confirmed'].includes(order.status)
+  const canReorder = ['delivered', 'cancelled'].includes(order.status)
 
   const handleCancel = () => {
     if (onCancel) {
-      onCancel(order._id);
+      onCancel(order._id)
     }
-  };
+  }
 
   const handleReorder = () => {
     if (onReorder) {
-      onReorder(order);
+      onReorder(order)
     }
-  };
+  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US', {
@@ -73,8 +73,8 @@ const OrderCard = function OrderCard({
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    });
-  };
+    })
+  }
 
   return (
     <motion.div
@@ -260,7 +260,7 @@ const OrderCard = function OrderCard({
         </AnimatePresence>
       </div>
     </motion.div>
-  );
-};
+  )
+}
 
-export default OrderCard;
+export default OrderCard

@@ -1,20 +1,20 @@
-import { useState } from 'react';
-import { Link } from 'react-router';
-import { motion, AnimatePresence } from 'framer-motion';
-import { differenceInDays } from 'date-fns';
-import { useTranslation } from 'react-i18next';
-import { SavedItem } from 'src/hooks/useSaveForLater';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import { formatCurrency, generateNameId } from 'src/utils/utils';
-import ImageWithFallback from 'src/components/ImageWithFallback';
-import path from 'src/constant/path';
-import Button from 'src/components/Button';
+import { useState } from 'react'
+import { Link } from 'react-router'
+import { motion, AnimatePresence } from 'framer-motion'
+import { differenceInDays } from 'date-fns'
+import { useTranslation } from 'react-i18next'
+import { SavedItem } from 'src/hooks/useSaveForLater'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import { formatCurrency, generateNameId } from 'src/utils/utils'
+import ImageWithFallback from 'src/components/ImageWithFallback'
+import path from 'src/constant/path'
+import Button from 'src/components/Button'
 
 interface SaveForLaterSectionProps {
-  savedItems: SavedItem[];
-  onMoveToCart: (item: SavedItem) => void;
-  onRemove: (productId: string) => void;
-  onClear: () => void;
+  savedItems: SavedItem[]
+  onMoveToCart: (item: SavedItem) => void
+  onRemove: (productId: string) => void
+  onClear: () => void
 }
 
 // Bookmark icon component
@@ -33,18 +33,18 @@ const BookmarkIcon = ({ className = 'w-5 h-5' }: { className?: string }) => (
       d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z"
     />
   </svg>
-);
+)
 
 // Calculate days since saved — returns translated string
 const getDaysSinceSaved = (
   savedAt: string,
   t: ReturnType<typeof useTranslation<'cart'>>['t'],
 ): string => {
-  const days = differenceInDays(new Date(), new Date(savedAt));
-  if (days === 0) return t('savedForLater.today');
-  if (days === 1) return t('savedForLater.yesterday');
-  return t('savedForLater.daysAgo', { count: days });
-};
+  const days = differenceInDays(new Date(), new Date(savedAt))
+  if (days === 0) return t('savedForLater.today')
+  if (days === 1) return t('savedForLater.yesterday')
+  return t('savedForLater.daysAgo', { count: days })
+}
 
 const SaveForLaterSection = ({
   savedItems,
@@ -52,9 +52,9 @@ const SaveForLaterSection = ({
   onRemove,
   onClear,
 }: SaveForLaterSectionProps) => {
-  const { t } = useTranslation('cart');
-  const prefersReducedMotion = useReducedMotion();
-  const [isExpanded, setIsExpanded] = useState(savedItems.length > 0);
+  const { t } = useTranslation('cart')
+  const prefersReducedMotion = useReducedMotion()
+  const [isExpanded, setIsExpanded] = useState(savedItems.length > 0)
 
   // Animation variants
   const containerVariants = {
@@ -72,7 +72,7 @@ const SaveForLaterSection = ({
       height: 0,
       transition: { duration: prefersReducedMotion ? 0 : 0.2 },
     },
-  };
+  }
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20, scale: 0.95 },
@@ -91,7 +91,7 @@ const SaveForLaterSection = ({
       x: -20,
       transition: { duration: prefersReducedMotion ? 0 : 0.2 },
     },
-  };
+  }
 
   if (savedItems.length === 0) {
     return (
@@ -105,7 +105,7 @@ const SaveForLaterSection = ({
           <p>{t('savedForLater.empty')}</p>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -236,7 +236,7 @@ const SaveForLaterSection = ({
         )}
       </AnimatePresence>
     </div>
-  );
-};
+  )
+}
 
-export default SaveForLaterSection;
+export default SaveForLaterSection

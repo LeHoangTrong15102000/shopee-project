@@ -1,9 +1,9 @@
-import { Order, OrderListResponse } from 'src/types/checkout.type';
-import { Product } from 'src/types/product.type';
-import { SuccessResponseApi } from 'src/types/utils.type';
-import http from 'src/utils/http';
+import { Order, OrderListResponse } from 'src/types/checkout.type'
+import { Product } from 'src/types/product.type'
+import { SuccessResponseApi } from 'src/types/utils.type'
+import http from 'src/utils/http'
 
-const URL = '/orders';
+const URL = '/orders'
 
 const createMockProduct = (
   id: string,
@@ -26,7 +26,7 @@ const createMockProduct = (
   location: 'TP. Hồ Chí Minh',
   createdAt: '2024-01-01T00:00:00.000Z',
   updatedAt: '2024-01-01T00:00:00.000Z',
-});
+})
 
 const mockShippingAddress = {
   _id: 'addr1',
@@ -40,7 +40,7 @@ const mockShippingAddress = {
   isDefault: true,
   createdAt: '2024-01-01T00:00:00.000Z',
   updatedAt: '2024-01-01T00:00:00.000Z',
-};
+}
 
 const mockShippingStandard = {
   _id: 'standard',
@@ -49,7 +49,7 @@ const mockShippingStandard = {
   price: 30000,
   estimatedDays: '3-5 days',
   icon: '🚚',
-};
+}
 
 const mockShippingExpress = {
   _id: 'express',
@@ -58,7 +58,7 @@ const mockShippingExpress = {
   price: 50000,
   estimatedDays: '1-2 days',
   icon: '⚡',
-};
+}
 
 const mockOrders: Order[] = [
   // PENDING - Chờ xác nhận (2 đơn)
@@ -412,35 +412,35 @@ const mockOrders: Order[] = [
     createdAt: '2024-01-10T09:00:00.000Z',
     updatedAt: '2024-01-14T11:00:00.000Z',
   },
-];
+]
 
 const getFilteredOrders = (status?: string): Order[] => {
   if (!status || status === 'all') {
-    return mockOrders;
+    return mockOrders
   }
-  return mockOrders.filter((order) => order.status === status);
-};
+  return mockOrders.filter((order) => order.status === status)
+}
 
 export interface OrderQueryParams {
-  status?: string;
-  page?: number;
-  limit?: number;
+  status?: string
+  page?: number
+  limit?: number
 }
 
 const orderApi = {
   getOrders: async (params: OrderQueryParams) => {
     try {
-      const response = await http.get<SuccessResponseApi<OrderListResponse>>(URL, { params });
-      return response;
+      const response = await http.get<SuccessResponseApi<OrderListResponse>>(URL, { params })
+      return response
     } catch (error) {
-      console.warn('Orders API not available, using mock data');
-      const filteredOrders = getFilteredOrders(params.status);
-      const page = params.page || 1;
-      const limit = params.limit || 10;
-      const total = filteredOrders.length;
-      const totalPages = Math.ceil(total / limit);
-      const startIndex = (page - 1) * limit;
-      const paginatedOrders = filteredOrders.slice(startIndex, startIndex + limit);
+      console.warn('Orders API not available, using mock data')
+      const filteredOrders = getFilteredOrders(params.status)
+      const page = params.page || 1
+      const limit = params.limit || 10
+      const total = filteredOrders.length
+      const totalPages = Math.ceil(total / limit)
+      const startIndex = (page - 1) * limit
+      const paginatedOrders = filteredOrders.slice(startIndex, startIndex + limit)
 
       return {
         data: {
@@ -450,33 +450,33 @@ const orderApi = {
             pagination: { page, limit, total, totalPages },
           },
         },
-      };
+      }
     }
   },
 
   getOrderById: async (id: string) => {
     try {
-      const response = await http.get<SuccessResponseApi<Order>>(`${URL}/${id}`);
-      return response;
+      const response = await http.get<SuccessResponseApi<Order>>(`${URL}/${id}`)
+      return response
     } catch (error) {
-      console.warn('Order API not available, using mock data');
-      const order = mockOrders.find((o) => o._id === id) || mockOrders[0];
+      console.warn('Order API not available, using mock data')
+      const order = mockOrders.find((o) => o._id === id) || mockOrders[0]
       return {
         data: {
           message: 'Lấy chi tiết đơn hàng thành công',
           data: order,
         },
-      };
+      }
     }
   },
 
   cancelOrder: async (id: string, reason?: string) => {
     try {
-      const response = await http.put<SuccessResponseApi<Order>>(`${URL}/${id}/cancel`, { reason });
-      return response;
+      const response = await http.put<SuccessResponseApi<Order>>(`${URL}/${id}/cancel`, { reason })
+      return response
     } catch (error) {
-      console.warn('⚠️ [cancelOrder] API not available, using mock data');
-      const order = mockOrders.find((o) => o._id === id) || mockOrders[0];
+      console.warn('⚠️ [cancelOrder] API not available, using mock data')
+      const order = mockOrders.find((o) => o._id === id) || mockOrders[0]
       return {
         data: {
           message: 'Hủy đơn hàng thành công (mock)',
@@ -487,17 +487,17 @@ const orderApi = {
             updatedAt: new Date().toISOString(),
           },
         },
-      };
+      }
     }
   },
 
   returnOrder: async (id: string, reason: string) => {
     try {
-      const response = await http.put<SuccessResponseApi<Order>>(`${URL}/${id}/return`, { reason });
-      return response;
+      const response = await http.put<SuccessResponseApi<Order>>(`${URL}/${id}/return`, { reason })
+      return response
     } catch (error) {
-      console.warn('⚠️ [returnOrder] API not available, using mock data');
-      const order = mockOrders.find((o) => o._id === id) || mockOrders[0];
+      console.warn('⚠️ [returnOrder] API not available, using mock data')
+      const order = mockOrders.find((o) => o._id === id) || mockOrders[0]
       return {
         data: {
           message: 'Yêu cầu trả hàng thành công (mock)',
@@ -508,17 +508,17 @@ const orderApi = {
             updatedAt: new Date().toISOString(),
           },
         },
-      };
+      }
     }
   },
 
   confirmReceived: async (id: string) => {
     try {
-      const response = await http.put<SuccessResponseApi<Order>>(`${URL}/${id}/confirm-received`);
-      return response;
+      const response = await http.put<SuccessResponseApi<Order>>(`${URL}/${id}/confirm-received`)
+      return response
     } catch (error) {
-      console.warn('⚠️ [confirmReceived] API not available, using mock data');
-      const order = mockOrders.find((o) => o._id === id) || mockOrders[0];
+      console.warn('⚠️ [confirmReceived] API not available, using mock data')
+      const order = mockOrders.find((o) => o._id === id) || mockOrders[0]
       return {
         data: {
           message: 'Xác nhận đã nhận hàng thành công (mock)',
@@ -529,9 +529,9 @@ const orderApi = {
             updatedAt: new Date().toISOString(),
           },
         },
-      };
+      }
     }
   },
-};
+}
 
-export default orderApi;
+export default orderApi

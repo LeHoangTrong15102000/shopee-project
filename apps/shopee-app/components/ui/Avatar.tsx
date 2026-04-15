@@ -1,21 +1,21 @@
-import React from 'react';
-import { View, Text, Image, ImageSourcePropType } from 'react-native';
-import { cn } from '@/utils';
-import { cva } from 'class-variance-authority';
-import { ClassValue } from 'clsx';
-import { useColors } from '@/hooks/useColors.ts';
+import React from 'react'
+import { View, Text, Image, ImageSourcePropType } from 'react-native'
+import { cn } from '@/utils'
+import { cva } from 'class-variance-authority'
+import { ClassValue } from 'clsx'
+import { useColors } from '@/hooks/useColors.ts'
 
 interface AvatarProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
-  variant?: 'default' | 'primary' | 'secondary';
-  className?: ClassValue;
-  textClassName?: ClassValue;
+  size?: 'sm' | 'md' | 'lg' | 'xl'
+  variant?: 'default' | 'primary' | 'secondary'
+  className?: ClassValue
+  textClassName?: ClassValue
   // Content props - only one should be provided
-  text?: string;
-  source?: ImageSourcePropType;
-  icon?: React.ReactElement;
+  text?: string
+  source?: ImageSourcePropType
+  icon?: React.ReactElement
   // Optional props
-  alt?: string;
+  alt?: string
 }
 
 const avatarVariants = cva('rounded-full items-center justify-center overflow-hidden', {
@@ -36,7 +36,7 @@ const avatarVariants = cva('rounded-full items-center justify-center overflow-hi
     size: 'md',
     variant: 'default',
   },
-});
+})
 
 const avatarTextVariants = cva('font-sans-semibold text-center', {
   variants: {
@@ -56,7 +56,7 @@ const avatarTextVariants = cva('font-sans-semibold text-center', {
     size: 'md',
     variant: 'default',
   },
-});
+})
 
 const getInitials = (text: string): string => {
   return text
@@ -64,23 +64,23 @@ const getInitials = (text: string): string => {
     .map((word) => word.charAt(0))
     .join('')
     .toUpperCase()
-    .slice(0, 2);
-};
+    .slice(0, 2)
+}
 
 const getIconSize = (size: 'sm' | 'md' | 'lg' | 'xl'): number => {
   switch (size) {
     case 'sm':
-      return 12;
+      return 12
     case 'md':
-      return 20;
+      return 20
     case 'lg':
-      return 28;
+      return 28
     case 'xl':
-      return 36;
+      return 36
     default:
-      return 20;
+      return 20
   }
-};
+}
 
 export default function Avatar({
   size = 'md',
@@ -92,7 +92,7 @@ export default function Avatar({
   icon,
   alt,
 }: AvatarProps) {
-  const colors = useColors();
+  const colors = useColors()
   const renderContent = () => {
     // Priority: image > icon > text
     if (source) {
@@ -103,7 +103,7 @@ export default function Avatar({
           resizeMode="cover"
           accessibilityLabel={alt || 'Avatar image'}
         />
-      );
+      )
     }
 
     if (icon) {
@@ -115,7 +115,7 @@ export default function Avatar({
             : variant === 'primary'
               ? colors.primaryForeground
               : colors.secondaryForeground,
-      });
+      })
     }
 
     if (text) {
@@ -123,14 +123,12 @@ export default function Avatar({
         <Text className={cn(avatarTextVariants({ size, variant }), textClassName)}>
           {getInitials(text)}
         </Text>
-      );
+      )
     }
 
     // Fallback to empty avatar
-    return null;
-  };
+    return null
+  }
 
-  return (
-    <View className={cn(avatarVariants({ size, variant }), className)}>{renderContent()}</View>
-  );
+  return <View className={cn(avatarVariants({ size, variant }), className)}>{renderContent()}</View>
 }

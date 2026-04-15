@@ -9,12 +9,12 @@ const commonUserRouter = Router()
 commonUserRouter.get(
   '/me',
   authMiddleware.verifyAccessToken,
-  asyncHandler(userController.getDetailMySelf)
+  asyncHandler(userController.getDetailMySelf),
 )
 commonUserRouter.put(
   '/me',
   authMiddleware.verifyAccessToken,
   validate(updateMeSchema),
-  asyncHandler(userController.updateMe)
+  asyncHandler(userController.updateMe),
 )
 export default commonUserRouter

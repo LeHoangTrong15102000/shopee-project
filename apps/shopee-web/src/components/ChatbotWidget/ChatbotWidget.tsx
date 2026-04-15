@@ -1,38 +1,38 @@
-import { useState, useRef, useEffect } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import classNames from 'classnames';
-import chatbotApi from 'src/apis/chatbot.api';
-import { ChatMessage } from 'src/types/chatbot.type';
-import Button from 'src/components/Button';
+import { useState, useRef, useEffect } from 'react'
+import { useMutation } from '@tanstack/react-query'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import classNames from 'classnames'
+import chatbotApi from 'src/apis/chatbot.api'
+import { ChatMessage } from 'src/types/chatbot.type'
+import Button from 'src/components/Button'
 
 export default function ChatbotWidget() {
-  const { t } = useTranslation('chat');
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [inputValue, setInputValue] = useState('');
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const initializedRef = useRef(false);
+  const { t } = useTranslation('chat')
+  const [isOpen, setIsOpen] = useState(false)
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [inputValue, setInputValue] = useState('')
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const initializedRef = useRef(false)
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    scrollToBottom()
+  }, [messages])
 
   useEffect(() => {
     if (isOpen) {
-      inputRef.current?.focus();
+      inputRef.current?.focus()
     }
-  }, [isOpen]);
+  }, [isOpen])
 
   useEffect(() => {
     if (!initializedRef.current) {
-      initializedRef.current = true;
+      initializedRef.current = true
       setMessages([
         {
           id: '1',
@@ -40,9 +40,9 @@ export default function ChatbotWidget() {
           content: t('welcome'),
           timestamp: new Date().toISOString(),
         },
-      ]);
+      ])
     }
-  }, [t]);
+  }, [t])
 
   const sendMutation = useMutation({
     mutationFn: (message: string) => chatbotApi.testChatbot({ message }),
@@ -52,8 +52,8 @@ export default function ChatbotWidget() {
         role: 'assistant',
         content: response.data.data.botResponse,
         timestamp: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
+      }
+      setMessages((prev) => [...prev, assistantMessage])
     },
     onError: () => {
       const errorMessage: ChatMessage = {
@@ -61,32 +61,32 @@ export default function ChatbotWidget() {
         role: 'assistant',
         content: t('error'),
         timestamp: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      }
+      setMessages((prev) => [...prev, errorMessage])
     },
-  });
+  })
 
   const handleSend = () => {
-    if (!inputValue.trim() || sendMutation.isPending) return;
+    if (!inputValue.trim() || sendMutation.isPending) return
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       role: 'user',
       content: inputValue.trim(),
       timestamp: new Date().toISOString(),
-    };
-    setMessages((prev) => [...prev, userMessage]);
-    const messageToSend = inputValue.trim();
-    setInputValue('');
-    sendMutation.mutate(messageToSend);
-  };
+    }
+    setMessages((prev) => [...prev, userMessage])
+    const messageToSend = inputValue.trim()
+    setInputValue('')
+    sendMutation.mutate(messageToSend)
+  }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
+      e.preventDefault()
+      handleSend()
     }
-  };
+  }
 
   return (
     <>
@@ -248,5 +248,5 @@ export default function ChatbotWidget() {
         )}
       </AnimatePresence>
     </>
-  );
+  )
 }

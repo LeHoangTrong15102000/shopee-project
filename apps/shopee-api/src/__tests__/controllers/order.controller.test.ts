@@ -33,11 +33,18 @@ import {
 
 const mockOrderService = orderService as jest.Mocked<typeof orderService>
 
-const createMockRequest = (options: { body?: any; params?: any; query?: any; jwtDecoded?: any } = {}): any => ({
+const createMockRequest = (
+  options: { body?: any; params?: any; query?: any; jwtDecoded?: any } = {},
+): any => ({
   body: options.body || {},
   params: options.params || {},
   query: options.query || {},
-  jwtDecoded: options.jwtDecoded || { id: 'user_1', email: 'test@example.com', roles: ['User'], created_at: new Date().toISOString() },
+  jwtDecoded: options.jwtDecoded || {
+    id: 'user_1',
+    email: 'test@example.com',
+    roles: ['User'],
+    created_at: new Date().toISOString(),
+  },
 })
 
 const createMockResponse = (): Partial<Response> => {
@@ -104,10 +111,13 @@ describe('Order Controller', () => {
 
       await createOrder(req as any, res as Response)
 
-      expect(mockOrderService.createOrder).toHaveBeenCalledWith('user_1', expect.objectContaining({
-        items: [{ product_id: 'p1', buy_count: 2 }],
-        shipping_address_id: 'addr_1',
-      }))
+      expect(mockOrderService.createOrder).toHaveBeenCalledWith(
+        'user_1',
+        expect.objectContaining({
+          items: [{ product_id: 'p1', buy_count: 2 }],
+          shipping_address_id: 'addr_1',
+        }),
+      )
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
 
@@ -116,8 +126,9 @@ describe('Order Controller', () => {
       const req = createMockRequest({ body: { items: [] } })
       const res = createMockResponse()
 
-      await expect(createOrder(req as any, res as Response))
-        .rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
+      await expect(createOrder(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
     })
 
     it('should throw BAD_REQUEST on BusinessError', async () => {
@@ -125,17 +136,21 @@ describe('Order Controller', () => {
       const req = createMockRequest({ body: { items: [{ product_id: 'p1', buy_count: 1 }] } })
       const res = createMockResponse()
 
-      await expect(createOrder(req as any, res as Response))
-        .rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
+      await expect(createOrder(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
     })
 
     it('should throw NOT_FOUND on NotFoundError', async () => {
       mockOrderService.createOrder.mockRejectedValue(new NotFoundError('Address', 'addr_999'))
-      const req = createMockRequest({ body: { items: [{ product_id: 'p1', buy_count: 1 }], shipping_address_id: 'addr_999' } })
+      const req = createMockRequest({
+        body: { items: [{ product_id: 'p1', buy_count: 1 }], shipping_address_id: 'addr_999' },
+      })
       const res = createMockResponse()
 
-      await expect(createOrder(req as any, res as Response))
-        .rejects.toMatchObject({ status: STATUS.NOT_FOUND })
+      await expect(createOrder(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.NOT_FOUND,
+      })
     })
   })
 
@@ -151,7 +166,10 @@ describe('Order Controller', () => {
 
       await getOrders(req as any, res as Response)
 
-      expect(mockOrderService.getOrders).toHaveBeenCalledWith('user_1', undefined, { page: 1, limit: 10 })
+      expect(mockOrderService.getOrders).toHaveBeenCalledWith('user_1', undefined, {
+        page: 1,
+        limit: 10,
+      })
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
 
@@ -166,7 +184,10 @@ describe('Order Controller', () => {
 
       await getOrders(req as any, res as Response)
 
-      expect(mockOrderService.getOrders).toHaveBeenCalledWith('user_1', 'pending', { page: 1, limit: 10 })
+      expect(mockOrderService.getOrders).toHaveBeenCalledWith('user_1', 'pending', {
+        page: 1,
+        limit: 10,
+      })
     })
 
     it('should throw BAD_REQUEST on ValidationError', async () => {
@@ -174,8 +195,9 @@ describe('Order Controller', () => {
       const req = createMockRequest({ query: { status: 'invalid' } })
       const res = createMockResponse()
 
-      await expect(getOrders(req as any, res as Response))
-        .rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
+      await expect(getOrders(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
     })
   })
 
@@ -196,8 +218,9 @@ describe('Order Controller', () => {
       const req = createMockRequest({ params: { id: 'order_999' } })
       const res = createMockResponse()
 
-      await expect(getOrderById(req as any, res as Response))
-        .rejects.toMatchObject({ status: STATUS.NOT_FOUND })
+      await expect(getOrderById(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.NOT_FOUND,
+      })
     })
 
     it('should throw BAD_REQUEST on ValidationError', async () => {
@@ -205,8 +228,9 @@ describe('Order Controller', () => {
       const req = createMockRequest({ params: { id: 'invalid' } })
       const res = createMockResponse()
 
-      await expect(getOrderById(req as any, res as Response))
-        .rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
+      await expect(getOrderById(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
     })
   })
 
@@ -224,12 +248,15 @@ describe('Order Controller', () => {
     })
 
     it('should throw BAD_REQUEST on BusinessError', async () => {
-      mockOrderService.cancelOrder.mockRejectedValue(new BusinessError('Đơn hàng đã giao không thể hủy'))
+      mockOrderService.cancelOrder.mockRejectedValue(
+        new BusinessError('Đơn hàng đã giao không thể hủy'),
+      )
       const req = createMockRequest({ params: { id: 'order_1' }, body: { reason: 'test' } })
       const res = createMockResponse()
 
-      await expect(cancelOrder(req as any, res as Response))
-        .rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
+      await expect(cancelOrder(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
     })
 
     it('should throw NOT_FOUND when order not found', async () => {
@@ -237,8 +264,9 @@ describe('Order Controller', () => {
       const req = createMockRequest({ params: { id: 'order_999' }, body: { reason: 'test' } })
       const res = createMockResponse()
 
-      await expect(cancelOrder(req as any, res as Response))
-        .rejects.toMatchObject({ status: STATUS.NOT_FOUND })
+      await expect(cancelOrder(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.NOT_FOUND,
+      })
     })
   })
 
@@ -256,12 +284,15 @@ describe('Order Controller', () => {
     })
 
     it('should throw BAD_REQUEST on BusinessError', async () => {
-      mockOrderService.confirmReceived.mockRejectedValue(new BusinessError('Đơn hàng chưa được giao'))
+      mockOrderService.confirmReceived.mockRejectedValue(
+        new BusinessError('Đơn hàng chưa được giao'),
+      )
       const req = createMockRequest({ params: { id: 'order_1' } })
       const res = createMockResponse()
 
-      await expect(confirmReceived(req as any, res as Response))
-        .rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
+      await expect(confirmReceived(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
     })
 
     it('should throw NOT_FOUND when order not found', async () => {
@@ -269,8 +300,9 @@ describe('Order Controller', () => {
       const req = createMockRequest({ params: { id: 'order_999' } })
       const res = createMockResponse()
 
-      await expect(confirmReceived(req as any, res as Response))
-        .rejects.toMatchObject({ status: STATUS.NOT_FOUND })
+      await expect(confirmReceived(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.NOT_FOUND,
+      })
     })
   })
 })

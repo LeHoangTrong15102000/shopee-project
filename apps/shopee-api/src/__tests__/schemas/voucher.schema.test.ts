@@ -7,7 +7,7 @@ import {
   getAvailableVouchersSchema,
   getMyVouchersSchema,
   collectVoucherSchema,
-  validateVoucherSchema
+  validateVoucherSchema,
 } from '@schemas/voucher.schema'
 
 const VALID_ID = '507f1f77bcf86cd799439011'
@@ -15,7 +15,7 @@ const VALID_ID = '507f1f77bcf86cd799439011'
 describe('applyVoucherSchema', () => {
   it('should pass with valid data', () => {
     const result = applyVoucherSchema.safeParse({
-      body: { code: 'DISCOUNT10', order_value: 100, product_ids: [VALID_ID] }
+      body: { code: 'DISCOUNT10', order_value: 100, product_ids: [VALID_ID] },
     })
     expect(result.success).toBe(true)
   })
@@ -37,7 +37,7 @@ describe('applyVoucherSchema', () => {
 
   it('should fail when product_ids contains invalid ID', () => {
     const result = applyVoucherSchema.safeParse({
-      body: { code: 'CODE', order_value: 100, product_ids: ['invalid'] }
+      body: { code: 'CODE', order_value: 100, product_ids: ['invalid'] },
     })
     expect(result.success).toBe(false)
   })
@@ -131,4 +131,3 @@ describe('getVoucherByCodeSchema', () => {
     expect(result.success).toBe(false)
   })
 })
-

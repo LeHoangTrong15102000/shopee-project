@@ -1,16 +1,16 @@
 interface Props {
-  suggestion: string;
-  searchValue: string;
-  onSelect: () => void;
+  suggestion: string
+  searchValue: string
+  onSelect: () => void
 }
 
 const SearchSuggestionItem = ({ suggestion, searchValue, onSelect }: Props) => {
   // Highlight từ khóa tìm kiếm trong suggestion
   const highlightSearchValue = (text: string, searchValue: string) => {
-    if (!searchValue) return text;
+    if (!searchValue) return text
 
-    const regex = new RegExp(`(${searchValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-    const parts = text.split(regex);
+    const regex = new RegExp(`(${searchValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
+    const parts = text.split(regex)
 
     return parts.map((part, index) =>
       regex.test(part) ? (
@@ -20,8 +20,8 @@ const SearchSuggestionItem = ({ suggestion, searchValue, onSelect }: Props) => {
       ) : (
         part
       ),
-    );
-  };
+    )
+  }
 
   return (
     <div
@@ -45,7 +45,7 @@ const SearchSuggestionItem = ({ suggestion, searchValue, onSelect }: Props) => {
         {highlightSearchValue(suggestion, searchValue)}
       </span>
     </div>
-  );
-};
+  )
+}
 
-export default SearchSuggestionItem;
+export default SearchSuggestionItem

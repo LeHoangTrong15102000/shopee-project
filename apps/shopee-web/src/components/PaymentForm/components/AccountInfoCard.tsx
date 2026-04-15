@@ -1,19 +1,19 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import BankLogo, { BankInfo } from './BankLogo';
-import CopyButton from '../shared/CopyButton';
-import { formatCurrency } from './WalletCard';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import BankLogo, { BankInfo } from './BankLogo'
+import CopyButton from '../shared/CopyButton'
+import { formatCurrency } from './WalletCard'
 
 function AccountInfoCard({
   bank,
   amount,
   transferContent,
 }: {
-  bank: BankInfo;
-  amount: number;
-  transferContent: string;
+  bank: BankInfo
+  amount: number
+  transferContent: string
 }) {
-  const { t } = useTranslation('payment');
+  const { t } = useTranslation('payment')
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -62,7 +62,7 @@ function AccountInfoCard({
         <span className="text-red-500">*</span> {t('accountInfo.transferNote')}
       </p>
     </motion.div>
-  );
+  )
 }
 
-export default AccountInfoCard;
+export default AccountInfoCard

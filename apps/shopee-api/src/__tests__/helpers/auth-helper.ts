@@ -23,18 +23,14 @@ interface AuthResult {
  */
 export const getAuthToken = async (
   app: express.Application,
-  overrides?: { email?: string; password?: string }
+  overrides?: { email?: string; password?: string },
 ): Promise<AuthResult> => {
   const email = overrides?.email || `test-${Date.now()}@test.com`
   const password = overrides?.password || 'Test123456'
 
-  await supertest(app)
-    .post('/register')
-    .send({ email, password })
+  await supertest(app).post('/register').send({ email, password })
 
-  const loginRes = await supertest(app)
-    .post('/login')
-    .send({ email, password })
+  const loginRes = await supertest(app).post('/login').send({ email, password })
 
   const data = loginRes.body.data
   // Strip 'Bearer ' prefix from access_token if present, so tests can add it themselves
@@ -62,9 +58,7 @@ export const getAdminToken = async (app: express.Application): Promise<AuthResul
     name: 'Test Admin',
   })
 
-  const loginRes = await supertest(app)
-    .post('/login')
-    .send({ email, password })
+  const loginRes = await supertest(app).post('/login').send({ email, password })
 
   const data = loginRes.body.data
   // Strip 'Bearer ' prefix from access_token if present, so tests can add it themselves
@@ -73,4 +67,3 @@ export const getAdminToken = async (app: express.Application): Promise<AuthResul
   }
   return data
 }
-

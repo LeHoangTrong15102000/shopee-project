@@ -1,15 +1,15 @@
-import { motion } from 'framer-motion';
-import BankLogo, { BankInfo } from './BankLogo';
-import { formatCurrency } from './WalletCard';
+import { motion } from 'framer-motion'
+import BankLogo, { BankInfo } from './BankLogo'
+import { formatCurrency } from './WalletCard'
 
 function VietQRCode({
   bank,
   amount,
   transferContent: _transferContent,
 }: {
-  bank: BankInfo;
-  amount: number;
-  transferContent: string;
+  bank: BankInfo
+  amount: number
+  transferContent: string
 }) {
   return (
     <motion.div
@@ -32,10 +32,10 @@ function VietQRCode({
             <rect x="20" y="160" width="20" height="20" />
             {Array.from({ length: 12 }, (_, i) =>
               Array.from({ length: 12 }, (_, j) => {
-                const x = 58 + j * 7;
-                const y = 58 + i * 7;
-                const show = ((i + j) % 2 === 0 || (i * j) % 3 === 0) && Math.random() > 0.25;
-                return show ? <rect key={`${i}-${j}`} x={x} y={y} width="6" height="6" /> : null;
+                const x = 58 + j * 7
+                const y = 58 + i * 7
+                const show = ((i + j) % 2 === 0 || (i * j) % 3 === 0) && Math.random() > 0.25
+                return show ? <rect key={`${i}-${j}`} x={x} y={y} width="6" height="6" /> : null
               }),
             )}
           </g>
@@ -66,7 +66,7 @@ function VietQRCode({
         Mã QR đã bao gồm số tiền {formatCurrency(amount)}
       </p>
     </motion.div>
-  );
+  )
 }
 
-export default VietQRCode;
+export default VietQRCode

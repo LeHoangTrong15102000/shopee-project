@@ -1,20 +1,20 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import SEO from 'src/components/SEO';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { Link, useNavigate, useSearchParams } from 'react-router';
-import { toast } from 'react-toastify';
-import passwordResetApi from 'src/apis/password-reset.api';
-import Button from 'src/components/Button';
-import Input from 'src/components/Input';
-import path from 'src/constant/path';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import i18n from 'src/i18n/i18n';
-import { STAGGER_DELAY, staggerContainer, staggerItem } from 'src/styles/animations';
-import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
+import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import SEO from 'src/components/SEO'
+import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+import { Link, useNavigate, useSearchParams } from 'react-router'
+import { toast } from 'react-toastify'
+import passwordResetApi from 'src/apis/password-reset.api'
+import Button from 'src/components/Button'
+import Input from 'src/components/Input'
+import path from 'src/constant/path'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import i18n from 'src/i18n/i18n'
+import { STAGGER_DELAY, staggerContainer, staggerItem } from 'src/styles/animations'
+import { z } from 'zod'
 
 const resetPasswordSchema = z
   .object({
@@ -24,18 +24,18 @@ const resetPasswordSchema = z
   .refine((data) => data.password === data.confirmPassword, {
     message: i18n.t('validation:resetPassword.mismatch'),
     path: ['confirmPassword'],
-  });
+  })
 
-type FormData = z.infer<typeof resetPasswordSchema>;
+type FormData = z.infer<typeof resetPasswordSchema>
 
 const ResetPassword = () => {
-  const { t } = useTranslation('auth');
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const token = searchParams.get('token');
-  const [isSuccess, setIsSuccess] = useState(false);
-  const reducedMotion = useReducedMotion();
-  const containerVariants = staggerContainer(STAGGER_DELAY.normal);
+  const { t } = useTranslation('auth')
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const token = searchParams.get('token')
+  const [isSuccess, setIsSuccess] = useState(false)
+  const reducedMotion = useReducedMotion()
+  const containerVariants = staggerContainer(STAGGER_DELAY.normal)
 
   const {
     register,
@@ -45,38 +45,38 @@ const ResetPassword = () => {
   } = useForm<FormData>({
     mode: 'onTouched',
     resolver: zodResolver(resetPasswordSchema),
-  });
+  })
 
-  const watchPassword = watch('password', '');
-  const watchConfirmPassword = watch('confirmPassword', '');
+  const watchPassword = watch('password', '')
+  const watchConfirmPassword = watch('confirmPassword', '')
 
   const resetPasswordMutation = useMutation({
     mutationFn: (body: FormData) =>
       passwordResetApi.resetPassword(token!, body.password, body.confirmPassword),
-  });
+  })
 
   const onSubmit = handleSubmit((data) => {
-    if (!token) return;
+    if (!token) return
     resetPasswordMutation.mutate(data, {
       onSuccess: () => {
-        setIsSuccess(true);
-        toast.success(t('resetPassword.toast.success'), { autoClose: 3000 });
+        setIsSuccess(true)
+        toast.success(t('resetPassword.toast.success'), { autoClose: 3000 })
       },
       onError: () => {
-        toast.error(t('resetPassword.toast.error'), { autoClose: 2000 });
+        toast.error(t('resetPassword.toast.error'), { autoClose: 2000 })
       },
-    });
-  });
+    })
+  })
 
   // Redirect to login after 3 seconds on success
   useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
-        navigate(path.login);
-      }, 3000);
-      return () => clearTimeout(timer);
+        navigate(path.login)
+      }, 3000)
+      return () => clearTimeout(timer)
     }
-  }, [isSuccess, navigate]);
+  }, [isSuccess, navigate])
 
   return (
     <div className="relative bg-orange">
@@ -225,7 +225,7 @@ const ResetPassword = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ResetPassword;
+export default ResetPassword

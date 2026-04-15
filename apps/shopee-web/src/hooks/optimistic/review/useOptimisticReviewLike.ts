@@ -1,15 +1,15 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import reviewApi from 'src/apis/review.api';
-import { Review } from 'src/types/review.type';
-import { useQueryInvalidation } from '../../useQueryInvalidation';
-import { TOAST_MESSAGES } from '../shared/constants';
-import { QUERY_KEYS, ReviewLikeContext, ReviewsQueryData } from '../shared/types';
-import { logOptimisticError, showErrorToast, showSuccessToast } from '../shared/utils';
+import reviewApi from 'src/apis/review.api'
+import { Review } from 'src/types/review.type'
+import { useQueryInvalidation } from '../../useQueryInvalidation'
+import { TOAST_MESSAGES } from '../shared/constants'
+import { QUERY_KEYS, ReviewLikeContext, ReviewsQueryData } from '../shared/types'
+import { logOptimisticError, showErrorToast, showSuccessToast } from '../shared/utils'
 
 export const useOptimisticReviewLike = (productId: string) => {
-  const queryClient = useQueryClient();
-  const { invalidateProductReviews } = useQueryInvalidation();
+  const queryClient = useQueryClient()
+  const { invalidateProductReviews } = useQueryInvalidation()
 
   return useMutation({
     mutationFn: reviewApi.toggleReviewLike,
@@ -17,16 +17,16 @@ export const useOptimisticReviewLike = (productId: string) => {
       // Hủy các queries đang chờ để tránh override optimistic update
       await queryClient.cancelQueries({
         queryKey: QUERY_KEYS.PRODUCT_REVIEWS(productId),
-      });
+      })
 
       // Snapshot data hiện tại để rollback khi cần
-      const previousReviews = queryClient.getQueryData(QUERY_KEYS.PRODUCT_REVIEWS(productId));
+      const previousReviews = queryClient.getQueryData(QUERY_KEYS.PRODUCT_REVIEWS(productId))
 
       // Cập nhật cache optimistically
       queryClient.setQueryData(
         QUERY_KEYS.PRODUCT_REVIEWS(productId),
         (old: ReviewsQueryData | undefined) => {
-          if (!old) return old;
+          if (!old) return old
 
           return {
             ...old,
@@ -45,35 +45,35 @@ export const useOptimisticReviewLike = (productId: string) => {
                 ),
               },
             },
-          };
+          }
         },
-      );
+      )
 
       // Hiển thị feedback ngay lập tức
       const isCurrentlyLiked = previousReviews
         ? (previousReviews as ReviewsQueryData).data?.data?.reviews?.find(
             (r: Review) => r._id === reviewId,
           )?.is_liked
-        : false;
+        : false
 
       const message = isCurrentlyLiked
         ? TOAST_MESSAGES.REVIEW_UNLIKE_SUCCESS
-        : TOAST_MESSAGES.REVIEW_LIKE_SUCCESS;
+        : TOAST_MESSAGES.REVIEW_LIKE_SUCCESS
 
-      showSuccessToast(message, { autoClose: 1000 });
+      showSuccessToast(message, { autoClose: 1000 })
 
-      return { previousReviews, reviewId };
+      return { previousReviews, reviewId }
     },
 
     onError: (err, _reviewId, context) => {
       // Rollback khi có lỗi
       if (context?.previousReviews) {
-        queryClient.setQueryData(QUERY_KEYS.PRODUCT_REVIEWS(productId), context.previousReviews);
+        queryClient.setQueryData(QUERY_KEYS.PRODUCT_REVIEWS(productId), context.previousReviews)
       }
 
       // Hiển thị lỗi
-      showErrorToast(TOAST_MESSAGES.REVIEW_LIKE_ERROR);
-      logOptimisticError('Review like', err, context);
+      showErrorToast(TOAST_MESSAGES.REVIEW_LIKE_ERROR)
+      logOptimisticError('Review like', err, context)
     },
 
     onSuccess: (data, reviewId, _context) => {
@@ -81,7 +81,7 @@ export const useOptimisticReviewLike = (productId: string) => {
       queryClient.setQueryData(
         QUERY_KEYS.PRODUCT_REVIEWS(productId),
         (old: ReviewsQueryData | undefined) => {
-          if (!old) return old;
+          if (!old) return old
 
           return {
             ...old,
@@ -100,14 +100,14 @@ export const useOptimisticReviewLike = (productId: string) => {
                 ),
               },
             },
-          };
+          }
         },
-      );
+      )
     },
 
     onSettled: () => {
       // Invalidate product reviews để sync với server
-      invalidateProductReviews(productId);
+      invalidateProductReviews(productId)
     },
-  });
-};
+  })
+}

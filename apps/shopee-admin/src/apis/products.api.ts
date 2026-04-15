@@ -1,25 +1,25 @@
-import http from 'src/utils/http';
-import type { SuccessResponse, Product, PaginatedData } from 'src/types';
+import http from 'src/utils/http'
+import type { SuccessResponse, Product, PaginatedData } from 'src/types'
 
 interface ProductListParams {
-  page?: number;
-  limit?: number;
-  sort_by?: string;
-  order?: string;
-  category?: string;
-  name?: string;
+  page?: number
+  limit?: number
+  sort_by?: string
+  order?: string
+  category?: string
+  name?: string
 }
 
 interface ProductBody {
-  name: string;
-  description?: string;
-  price: number;
-  price_before_discount?: number;
-  quantity: number;
-  category: string;
-  image: string;
-  images?: string[];
-  location?: string;
+  name: string
+  description?: string
+  price: number
+  price_before_discount?: number
+  quantity: number
+  category: string
+  image: string
+  images?: string[]
+  location?: string
 }
 
 const productsApi = {
@@ -56,6 +56,6 @@ const productsApi = {
     http.post<SuccessResponse<string[]>>('admin/products/upload-images', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     }),
-};
+}
 
-export default productsApi;
+export default productsApi

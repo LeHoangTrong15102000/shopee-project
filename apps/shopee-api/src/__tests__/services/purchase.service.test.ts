@@ -6,7 +6,10 @@
 /// <reference types="jest" />
 import { PurchaseService, AddToCartDTO, BuyProductDTO } from '@services/purchase.service'
 import { NotFoundError, ValidationError } from '@services/base.service'
-import { IPurchaseRepository, PurchaseStatus } from '@repositories/interfaces/purchase.repository.interface'
+import {
+  IPurchaseRepository,
+  PurchaseStatus,
+} from '@repositories/interfaces/purchase.repository.interface'
 import { IProductRepository } from '@repositories/interfaces/product.repository.interface'
 import { Types } from 'mongoose'
 
@@ -122,7 +125,7 @@ describe('PurchaseService', () => {
       mockProductRepository.findById.mockResolvedValue(null)
 
       await expect(
-        purchaseService.addToCart(validUserId, { product_id: validProductId, buy_count: 2 })
+        purchaseService.addToCart(validUserId, { product_id: validProductId, buy_count: 2 }),
       ).rejects.toThrow(NotFoundError)
     })
 
@@ -130,7 +133,7 @@ describe('PurchaseService', () => {
       mockProductRepository.findById.mockResolvedValue(mockProduct as any)
 
       await expect(
-        purchaseService.addToCart(validUserId, { product_id: validProductId, buy_count: 100 })
+        purchaseService.addToCart(validUserId, { product_id: validProductId, buy_count: 100 }),
       ).rejects.toThrow(ValidationError)
     })
   })
@@ -139,7 +142,10 @@ describe('PurchaseService', () => {
     it('should update cart item successfully', async () => {
       mockPurchaseRepository.findCartItem.mockResolvedValue(mockPurchase as any)
       mockProductRepository.findById.mockResolvedValue(mockProduct as any)
-      mockPurchaseRepository.updateCartItem.mockResolvedValue({ ...mockPurchase, buy_count: 5 } as any)
+      mockPurchaseRepository.updateCartItem.mockResolvedValue({
+        ...mockPurchase,
+        buy_count: 5,
+      } as any)
 
       const result = await purchaseService.updateCartItem(validUserId, validProductId, 5)
 
@@ -149,7 +155,9 @@ describe('PurchaseService', () => {
     it('should throw NotFoundError when cart item not found', async () => {
       mockPurchaseRepository.findCartItem.mockResolvedValue(null)
 
-      await expect(purchaseService.updateCartItem(validUserId, validProductId, 5)).rejects.toThrow(NotFoundError)
+      await expect(purchaseService.updateCartItem(validUserId, validProductId, 5)).rejects.toThrow(
+        NotFoundError,
+      )
     })
   })
 
@@ -197,7 +205,10 @@ describe('PurchaseService', () => {
     it('should update purchase status', async () => {
       mockPurchaseRepository.updateStatus.mockResolvedValue({ ...mockPurchase, status: 1 } as any)
 
-      const result = await purchaseService.updatePurchaseStatus(validPurchaseId, PurchaseStatus.WAIT_FOR_CONFIRMATION)
+      const result = await purchaseService.updatePurchaseStatus(
+        validPurchaseId,
+        PurchaseStatus.WAIT_FOR_CONFIRMATION,
+      )
 
       expect(mockPurchaseRepository.updateStatus).toHaveBeenCalled()
       expect(result.status).toBe(1)
@@ -207,7 +218,7 @@ describe('PurchaseService', () => {
       mockPurchaseRepository.updateStatus.mockResolvedValue(null)
 
       await expect(
-        purchaseService.updatePurchaseStatus(validPurchaseId, PurchaseStatus.DELIVERED)
+        purchaseService.updatePurchaseStatus(validPurchaseId, PurchaseStatus.DELIVERED),
       ).rejects.toThrow(NotFoundError)
     })
   })
@@ -230,7 +241,9 @@ describe('PurchaseService', () => {
     })
 
     it('should throw ValidationError for invalid userId', async () => {
-      await expect(purchaseService.getCartItemsByIds('invalid-id', [validPurchaseId])).rejects.toThrow(ValidationError)
+      await expect(
+        purchaseService.getCartItemsByIds('invalid-id', [validPurchaseId]),
+      ).rejects.toThrow(ValidationError)
     })
   })
 
@@ -282,9 +295,15 @@ describe('PurchaseService', () => {
     it('should return purchases with status filter', async () => {
       mockPurchaseRepository.findByUser.mockResolvedValue([mockPurchase] as any)
 
-      const result = await purchaseService.getPurchases(validUserId, PurchaseStatus.WAIT_FOR_CONFIRMATION)
+      const result = await purchaseService.getPurchases(
+        validUserId,
+        PurchaseStatus.WAIT_FOR_CONFIRMATION,
+      )
 
-      expect(mockPurchaseRepository.findByUser).toHaveBeenCalledWith(validUserId, PurchaseStatus.WAIT_FOR_CONFIRMATION)
+      expect(mockPurchaseRepository.findByUser).toHaveBeenCalledWith(
+        validUserId,
+        PurchaseStatus.WAIT_FOR_CONFIRMATION,
+      )
       expect(result.length).toBe(1)
     })
   })
@@ -297,7 +316,10 @@ describe('PurchaseService', () => {
       }
       mockPurchaseRepository.findByStatus.mockResolvedValue(paginatedResult as any)
 
-      const result = await purchaseService.getPurchasesByStatus(PurchaseStatus.DELIVERED, { page: 1, limit: 10 })
+      const result = await purchaseService.getPurchasesByStatus(PurchaseStatus.DELIVERED, {
+        page: 1,
+        limit: 10,
+      })
 
       expect(mockPurchaseRepository.findByStatus).toHaveBeenCalled()
       expect(result.data.length).toBe(1)
@@ -327,7 +349,7 @@ describe('PurchaseService', () => {
       mockProductRepository.findById.mockResolvedValue(null)
 
       await expect(
-        purchaseService.buyProducts(validUserId, [{ product_id: validProductId, buy_count: 2 }])
+        purchaseService.buyProducts(validUserId, [{ product_id: validProductId, buy_count: 2 }]),
       ).rejects.toThrow(NotFoundError)
     })
 
@@ -335,7 +357,7 @@ describe('PurchaseService', () => {
       mockProductRepository.findById.mockResolvedValue(mockProduct as any)
 
       await expect(
-        purchaseService.buyProducts(validUserId, [{ product_id: validProductId, buy_count: 100 }])
+        purchaseService.buyProducts(validUserId, [{ product_id: validProductId, buy_count: 100 }]),
       ).rejects.toThrow(ValidationError)
     })
 
@@ -346,7 +368,9 @@ describe('PurchaseService', () => {
       mockProductRepository.decrementQuantity.mockResolvedValue(undefined)
       mockProductRepository.incrementSold.mockResolvedValue(undefined)
 
-      const result = await purchaseService.buyProducts(validUserId, [{ product_id: validProductId, buy_count: 2 }])
+      const result = await purchaseService.buyProducts(validUserId, [
+        { product_id: validProductId, buy_count: 2 },
+      ])
 
       expect(mockPurchaseRepository.updateById).toHaveBeenCalled()
       expect(mockPurchaseRepository.create).not.toHaveBeenCalled()
@@ -354,4 +378,3 @@ describe('PurchaseService', () => {
     })
   })
 })
-

@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Button from 'src/components/Button';
-import BankLogo, { BankInfo } from './BankLogo';
+import { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import Button from 'src/components/Button'
+import BankLogo, { BankInfo } from './BankLogo'
 
 const BANKS: BankInfo[] = [
   {
@@ -84,9 +84,9 @@ const BANKS: BankInfo[] = [
     accountHolder: 'CONG TY SHOPEE CLONE',
     branch: 'Chi nhánh Hoàn Kiếm',
   },
-];
+]
 
-export { BANKS };
+export { BANKS }
 
 function BankDropdown({
   selectedBank,
@@ -94,38 +94,38 @@ function BankDropdown({
   isOpen,
   onToggle,
 }: {
-  selectedBank: BankInfo | null;
-  onSelectBank: (bank: BankInfo) => void;
-  isOpen: boolean;
-  onToggle: () => void;
+  selectedBank: BankInfo | null
+  onSelectBank: (bank: BankInfo) => void
+  isOpen: boolean
+  onToggle: () => void
 }) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [searchQuery, setSearchQuery] = useState('')
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   const filteredBanks = (() => {
-    if (!searchQuery.trim()) return BANKS;
-    const query = searchQuery.toLowerCase();
+    if (!searchQuery.trim()) return BANKS
+    const query = searchQuery.toLowerCase()
     return BANKS.filter(
       (bank) =>
         bank.name.toLowerCase().includes(query) || bank.shortName.toLowerCase().includes(query),
-    );
-  })();
+    )
+  })()
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        if (isOpen) onToggle();
+        if (isOpen) onToggle()
       }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen, onToggle]);
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isOpen, onToggle])
 
   const handleSelectBank = (bank: BankInfo) => {
-    onSelectBank(bank);
-    setSearchQuery('');
-    onToggle();
-  };
+    onSelectBank(bank)
+    setSearchQuery('')
+    onToggle()
+  }
 
   return (
     <div ref={dropdownRef} className="relative">
@@ -234,7 +234,7 @@ function BankDropdown({
         )}
       </AnimatePresence>
     </div>
-  );
+  )
 }
 
-export default BankDropdown;
+export default BankDropdown

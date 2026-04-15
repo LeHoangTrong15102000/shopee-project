@@ -20,8 +20,9 @@ describe('priceProductIdParamSchema', () => {
   })
 
   it('should fail with non-hex string', () => {
-    const result = priceProductIdParamSchema.safeParse({ params: { productId: 'zzzzzzzzzzzzzzzzzzzzzzzz' } })
+    const result = priceProductIdParamSchema.safeParse({
+      params: { productId: 'zzzzzzzzzzzzzzzzzzzzzzzz' },
+    })
     expect(result.success).toBe(false)
   })
 })
-

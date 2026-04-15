@@ -1,6 +1,6 @@
-import { http, HttpResponse } from 'msw';
-import config from 'src/constant/config';
-import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum';
+import { http, HttpResponse } from 'msw'
+import config from 'src/constant/config'
+import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum'
 import {
   Address,
   AddressFormData,
@@ -10,7 +10,7 @@ import {
   OrderStatus,
   CreateOrderBody,
   CheckoutSummary,
-} from 'src/types/checkout.type';
+} from 'src/types/checkout.type'
 
 const mockShippingMethods: ShippingMethod[] = [
   {
@@ -79,7 +79,7 @@ const mockShippingMethods: ShippingMethod[] = [
     type: 'pickup',
     details: [{ text: 'Free shipping for orders over ₫0', type: 'free_threshold' }],
   },
-];
+]
 
 const mockPaymentMethods: PaymentMethod[] = [
   {
@@ -114,7 +114,7 @@ const mockPaymentMethods: PaymentMethod[] = [
     icon: 'credit_card',
     isAvailable: true,
   },
-];
+]
 
 const mockAddresses: Address[] = [
   {
@@ -189,7 +189,7 @@ const mockAddresses: Address[] = [
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
   },
-];
+]
 
 const sampleProduct = {
   _id: '60afb2426ef5b902180aacb9',
@@ -207,14 +207,14 @@ const sampleProduct = {
   location: 'Hồ Chí Minh',
   createdAt: '2021-05-27T14:52:50.392Z',
   updatedAt: '2022-12-19T15:19:53.312Z',
-};
+}
 
 const createMockOrder = (body: CreateOrderBody, id: string): Order => {
   const shippingMethod =
-    mockShippingMethods.find((m) => m._id === body.shippingMethodId) || mockShippingMethods[0];
+    mockShippingMethods.find((m) => m._id === body.shippingMethodId) || mockShippingMethods[0]
   const shippingAddress =
-    mockAddresses.find((a) => a._id === body.shippingAddressId) || mockAddresses[0];
-  const subtotal = body.purchaseIds.length * sampleProduct.price;
+    mockAddresses.find((a) => a._id === body.shippingAddressId) || mockAddresses[0]
+  const subtotal = body.purchaseIds.length * sampleProduct.price
 
   return {
     _id: id,
@@ -239,8 +239,8 @@ const createMockOrder = (body: CreateOrderBody, id: string): Order => {
     voucherCode: body.voucherCode,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-  };
-};
+  }
+}
 
 // Shipping Methods Handlers
 export const getShippingMethodsRequest = http.get(
@@ -249,33 +249,33 @@ export const getShippingMethodsRequest = http.get(
     return HttpResponse.json(
       { message: 'Get shipping methods successfully', data: mockShippingMethods },
       { status: HTTP_STATUS_CODE.Ok },
-    );
+    )
   },
-);
+)
 
 // Payment Methods Handlers
 export const getPaymentMethodsRequest = http.get(`${config.baseUrl}orders/payment/methods`, () => {
   return HttpResponse.json(
     { message: 'Get payment methods successfully', data: mockPaymentMethods },
     { status: HTTP_STATUS_CODE.Ok },
-  );
-});
+  )
+})
 
 // Checkout Calculate Handler
 export const calculateCheckoutRequest = http.post(
   `${config.baseUrl}checkout/summary`,
   async ({ request }) => {
     const rawBody = (await request.json()) as {
-      purchase_ids: string[];
-      shipping_method_id?: string;
-      voucher_code?: string;
-      coins_used?: number;
-    };
+      purchase_ids: string[]
+      shipping_method_id?: string
+      voucher_code?: string
+      coins_used?: number
+    }
     const shippingMethod =
       mockShippingMethods.find((m) => m._id === rawBody.shipping_method_id) ||
-      mockShippingMethods[0];
-    const subtotal = rawBody.purchase_ids.length * sampleProduct.price;
-    const coinsDiscount = rawBody.coins_used || 0;
+      mockShippingMethods[0]
+    const subtotal = rawBody.purchase_ids.length * sampleProduct.price
+    const coinsDiscount = rawBody.coins_used || 0
 
     const summary: CheckoutSummary = {
       items: rawBody.purchase_ids.map(() => ({
@@ -289,28 +289,28 @@ export const calculateCheckoutRequest = http.post(
       discount: 0,
       coinsDiscount,
       total: subtotal + shippingMethod.price - coinsDiscount,
-    };
+    }
 
     return HttpResponse.json(
       { message: 'Calculate successfully', data: summary },
       { status: HTTP_STATUS_CODE.Ok },
-    );
+    )
   },
-);
+)
 
 // Order Handlers
 export const createOrderRequest = http.post(
   `${config.baseUrl}checkout/create-order`,
   async ({ request }) => {
     const rawBody = (await request.json()) as {
-      purchase_ids: string[];
-      shipping_address_id: string;
-      shipping_method_id: string;
-      payment_method: string;
-      voucher_code?: string;
-      coins_used?: number;
-      note?: string;
-    };
+      purchase_ids: string[]
+      shipping_address_id: string
+      shipping_method_id: string
+      payment_method: string
+      voucher_code?: string
+      coins_used?: number
+      note?: string
+    }
     const body: CreateOrderBody = {
       purchaseIds: rawBody.purchase_ids,
       shippingAddressId: rawBody.shipping_address_id,
@@ -319,22 +319,22 @@ export const createOrderRequest = http.post(
       voucherCode: rawBody.voucher_code,
       coinsUsed: rawBody.coins_used,
       note: rawBody.note,
-    };
+    }
     const order = createMockOrder(
       body,
       `${Date.now().toString(16)}${Math.random().toString(16).slice(2, 10)}`,
-    );
+    )
     return HttpResponse.json(
       { message: 'Create order successfully', data: order },
       { status: HTTP_STATUS_CODE.Created },
-    );
+    )
   },
-);
+)
 
 export const getOrdersRequest = http.get(`${config.baseUrl}orders`, ({ request }) => {
-  const url = new URL(request.url);
-  const page = Number(url.searchParams.get('page')) || 1;
-  const limit = Number(url.searchParams.get('limit')) || 10;
+  const url = new URL(request.url)
+  const page = Number(url.searchParams.get('page')) || 1
+  const limit = Number(url.searchParams.get('limit')) || 10
 
   return HttpResponse.json(
     {
@@ -345,11 +345,11 @@ export const getOrdersRequest = http.get(`${config.baseUrl}orders`, ({ request }
       },
     },
     { status: HTTP_STATUS_CODE.Ok },
-  );
-});
+  )
+})
 
 export const getOrderByIdRequest = http.get(`${config.baseUrl}orders/:id`, ({ params }) => {
-  const { id } = params;
+  const { id } = params
   const mockOrder = createMockOrder(
     {
       purchaseIds: [sampleProduct._id],
@@ -358,17 +358,17 @@ export const getOrderByIdRequest = http.get(`${config.baseUrl}orders/:id`, ({ pa
       paymentMethod: 'cod',
     },
     id as string,
-  );
+  )
   return HttpResponse.json(
     { message: 'Get order successfully', data: mockOrder },
     { status: HTTP_STATUS_CODE.Ok },
-  );
-});
+  )
+})
 
 export const cancelOrderRequest = http.put(
   `${config.baseUrl}orders/:id/cancel`,
   async ({ params }) => {
-    const { id } = params;
+    const { id } = params
     const cancelledOrder = createMockOrder(
       {
         purchaseIds: [sampleProduct._id],
@@ -377,14 +377,14 @@ export const cancelOrderRequest = http.put(
         paymentMethod: 'cod',
       },
       id as string,
-    );
-    cancelledOrder.status = 'cancelled';
+    )
+    cancelledOrder.status = 'cancelled'
     return HttpResponse.json(
       { message: 'Cancel order successfully', data: cancelledOrder },
       { status: HTTP_STATUS_CODE.Ok },
-    );
+    )
   },
-);
+)
 
 // Address Handlers
 export const getAddressesRequest = http.get(`${config.baseUrl}addresses`, () => {
@@ -394,20 +394,20 @@ export const getAddressesRequest = http.get(`${config.baseUrl}addresses`, () => 
       data: { addresses: mockAddresses, total: mockAddresses.length },
     },
     { status: HTTP_STATUS_CODE.Ok },
-  );
-});
+  )
+})
 
 export const getAddressByIdRequest = http.get(`${config.baseUrl}addresses/:id`, ({ params }) => {
-  const { id } = params;
-  const address = mockAddresses.find((a) => a._id === id) || mockAddresses[0];
+  const { id } = params
+  const address = mockAddresses.find((a) => a._id === id) || mockAddresses[0]
   return HttpResponse.json(
     { message: 'Get address successfully', data: address },
     { status: HTTP_STATUS_CODE.Ok },
-  );
-});
+  )
+})
 
 export const createAddressRequest = http.post(`${config.baseUrl}addresses`, async ({ request }) => {
-  const body = (await request.json()) as AddressFormData;
+  const body = (await request.json()) as AddressFormData
   const newAddress: Address = {
     _id: `address_${Date.now()}`,
     userId: 'user1',
@@ -420,83 +420,83 @@ export const createAddressRequest = http.post(`${config.baseUrl}addresses`, asyn
     isDefault: body.isDefault || false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-  };
+  }
   return HttpResponse.json(
     { message: 'Create address successfully', data: newAddress },
     { status: HTTP_STATUS_CODE.Created },
-  );
-});
+  )
+})
 
 export const updateAddressRequest = http.put(
   `${config.baseUrl}addresses/:id`,
   async ({ params, request }) => {
-    const { id } = params;
-    const body = (await request.json()) as Partial<AddressFormData>;
-    const existingAddress = mockAddresses.find((a) => a._id === id) || mockAddresses[0];
+    const { id } = params
+    const body = (await request.json()) as Partial<AddressFormData>
+    const existingAddress = mockAddresses.find((a) => a._id === id) || mockAddresses[0]
     const updatedAddress: Address = {
       ...existingAddress,
       ...body,
       updatedAt: new Date().toISOString(),
-    };
+    }
     return HttpResponse.json(
       { message: 'Update address successfully', data: updatedAddress },
       { status: HTTP_STATUS_CODE.Ok },
-    );
+    )
   },
-);
+)
 
 export const deleteAddressRequest = http.delete(`${config.baseUrl}addresses/:id`, () => {
   return HttpResponse.json(
     { message: 'Delete address successfully', data: { message: 'Delete address successfully' } },
     { status: HTTP_STATUS_CODE.Ok },
-  );
-});
+  )
+})
 
 export const setDefaultAddressRequest = http.put(
   `${config.baseUrl}addresses/:id/default`,
   ({ params }) => {
-    const { id } = params;
-    const address = mockAddresses.find((a) => a._id === id) || mockAddresses[0];
+    const { id } = params
+    const address = mockAddresses.find((a) => a._id === id) || mockAddresses[0]
     const updatedAddress: Address = {
       ...address,
       isDefault: true,
       updatedAt: new Date().toISOString(),
-    };
+    }
     return HttpResponse.json(
       { message: 'Set default address successfully', data: updatedAddress },
       { status: HTTP_STATUS_CODE.Ok },
-    );
+    )
   },
-);
+)
 
 // Error Handlers
 export const createOrderErrorHandler = http.post(`${config.baseUrl}checkout/create-order`, () => {
   return HttpResponse.json(
     { message: 'Error creating order', data: { error: 'Internal Server Error' } },
     { status: HTTP_STATUS_CODE.InternalServerError },
-  );
-});
+  )
+})
 
 export const cancelOrderErrorHandler = http.put(`${config.baseUrl}orders/:id/cancel`, () => {
   return HttpResponse.json(
     { message: 'Error cancelling order', data: { error: 'Internal Server Error' } },
     { status: HTTP_STATUS_CODE.InternalServerError },
-  );
-});
+  )
+})
 
 export const createAddressErrorHandler = http.post(`${config.baseUrl}addresses`, () => {
   return HttpResponse.json(
     { message: 'Error creating address', data: { error: 'Internal Server Error' } },
     { status: HTTP_STATUS_CODE.InternalServerError },
-  );
-});
+  )
+})
 
 export const deleteAddressErrorHandler = http.delete(`${config.baseUrl}addresses/:id`, () => {
   return HttpResponse.json(
     { message: 'Error deleting address', data: { error: 'Internal Server Error' } },
     { status: HTTP_STATUS_CODE.InternalServerError },
-  );
-});
+  )
+})
 
 const checkoutRequests = [
   getShippingMethodsRequest,
@@ -512,6 +512,6 @@ const checkoutRequests = [
   updateAddressRequest,
   deleteAddressRequest,
   setDefaultAddressRequest,
-];
+]
 
-export default checkoutRequests;
+export default checkoutRequests

@@ -124,7 +124,11 @@ describe('ProductRepository', () => {
 
       const result = await repository.updateById('507f1f77bcf86cd799439011', { price: 150 })
 
-      expect(ProductModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', { price: 150 }, { new: true })
+      expect(ProductModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        '507f1f77bcf86cd799439011',
+        { price: 150 },
+        { new: true },
+      )
       expect(result).toEqual(mockProductData)
     })
   })
@@ -176,7 +180,7 @@ describe('ProductRepository', () => {
       const result = await repository.findProducts(
         { category: '507f1f77bcf86cd799439012', price_min: 50, price_max: 200 },
         { sort_by: 'price', order: 'asc' },
-        { page: 1, limit: 10 }
+        { page: 1, limit: 10 },
       )
 
       expect(result.data).toEqual([mockProductData])
@@ -193,7 +197,10 @@ describe('ProductRepository', () => {
       ;(ProductModel.find as jest.Mock).mockReturnValue({ populate: mockPopulate })
       ;(ProductModel.countDocuments as jest.Mock).mockResolvedValue(1)
 
-      const result = await repository.findByCategory('507f1f77bcf86cd799439012', { page: 1, limit: 10 })
+      const result = await repository.findByCategory('507f1f77bcf86cd799439012', {
+        page: 1,
+        limit: 10,
+      })
 
       expect(result.data).toEqual([mockProductData])
     })
@@ -226,7 +233,9 @@ describe('ProductRepository', () => {
     it('should increment sold count', async () => {
       ;(ProductModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(mockProductData)
       await repository.incrementSold('507f1f77bcf86cd799439011', 5)
-      expect(ProductModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', { $inc: { sold: 5 } })
+      expect(ProductModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', {
+        $inc: { sold: 5 },
+      })
     })
   })
 
@@ -236,7 +245,7 @@ describe('ProductRepository', () => {
       await repository.decrementQuantity('507f1f77bcf86cd799439011', 3)
       expect(ProductModel.findOneAndUpdate).toHaveBeenCalledWith(
         { _id: '507f1f77bcf86cd799439011', quantity: { $gte: 3 } },
-        { $inc: { quantity: -3 } }
+        { $inc: { quantity: -3 } },
       )
     })
   })
@@ -245,7 +254,9 @@ describe('ProductRepository', () => {
     it('should increment quantity', async () => {
       ;(ProductModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(mockProductData)
       await repository.incrementQuantity('507f1f77bcf86cd799439011', 3)
-      expect(ProductModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', { $inc: { quantity: 3 } })
+      expect(ProductModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', {
+        $inc: { quantity: 3 },
+      })
     })
   })
 
@@ -295,8 +306,9 @@ describe('ProductRepository', () => {
     it('should update product rating', async () => {
       ;(ProductModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(mockProductData)
       await repository.updateRating('507f1f77bcf86cd799439011', 4.8)
-      expect(ProductModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', { rating: 4.8 })
+      expect(ProductModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', {
+        rating: 4.8,
+      })
     })
   })
 })
-

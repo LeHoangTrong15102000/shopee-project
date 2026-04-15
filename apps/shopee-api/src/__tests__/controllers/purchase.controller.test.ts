@@ -40,15 +40,27 @@ jest.mock('@controllers/product.controller', () => ({
 }))
 
 import { purchaseService } from '../../container'
-import { addToCart, updatePurchase, getPurchases, deletePurchases } from '@controllers/purchase.controller'
+import {
+  addToCart,
+  updatePurchase,
+  getPurchases,
+  deletePurchases,
+} from '@controllers/purchase.controller'
 
 const mockPurchaseService = purchaseService as jest.Mocked<typeof purchaseService>
 
-const createMockRequest = (options: { body?: any; params?: any; query?: any; jwtDecoded?: any } = {}): Partial<Request> => ({
+const createMockRequest = (
+  options: { body?: any; params?: any; query?: any; jwtDecoded?: any } = {},
+): Partial<Request> => ({
   body: options.body || {},
   params: options.params || {},
   query: options.query || {},
-  jwtDecoded: options.jwtDecoded || { id: 'user_1', email: 'test@example.com', roles: ['User'], created_at: new Date().toISOString() },
+  jwtDecoded: options.jwtDecoded || {
+    id: 'user_1',
+    email: 'test@example.com',
+    roles: ['User'],
+    created_at: new Date().toISOString(),
+  },
 })
 
 const createMockResponse = (): Partial<Response> => {
@@ -83,7 +95,10 @@ describe('Purchase Controller', () => {
 
       await addToCart(req as Request, res as Response)
 
-      expect(mockPurchaseService.addToCart).toHaveBeenCalledWith('user_1', { product_id: 'product_1', buy_count: 2 })
+      expect(mockPurchaseService.addToCart).toHaveBeenCalledWith('user_1', {
+        product_id: 'product_1',
+        buy_count: 2,
+      })
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
 
@@ -94,9 +109,9 @@ describe('Purchase Controller', () => {
       })
       const res = createMockResponse()
 
-      await expect(
-        addToCart(req as Request, res as Response)
-      ).rejects.toMatchObject({ status: STATUS.NOT_FOUND })
+      await expect(addToCart(req as Request, res as Response)).rejects.toMatchObject({
+        status: STATUS.NOT_FOUND,
+      })
     })
 
     it('should throw error when quantity exceeded', async () => {
@@ -106,9 +121,9 @@ describe('Purchase Controller', () => {
       })
       const res = createMockResponse()
 
-      await expect(
-        addToCart(req as Request, res as Response)
-      ).rejects.toMatchObject({ status: STATUS.NOT_ACCEPTABLE })
+      await expect(addToCart(req as Request, res as Response)).rejects.toMatchObject({
+        status: STATUS.NOT_ACCEPTABLE,
+      })
     })
   })
 
@@ -122,7 +137,12 @@ describe('Purchase Controller', () => {
 
       await updatePurchase(req as Request, res as Response)
 
-      expect(mockPurchaseService.updateCartItem).toHaveBeenCalledWith('user_1', 'product_1', 3, undefined)
+      expect(mockPurchaseService.updateCartItem).toHaveBeenCalledWith(
+        'user_1',
+        'product_1',
+        3,
+        undefined,
+      )
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
 
@@ -133,9 +153,9 @@ describe('Purchase Controller', () => {
       })
       const res = createMockResponse()
 
-      await expect(
-        updatePurchase(req as Request, res as Response)
-      ).rejects.toMatchObject({ status: STATUS.NOT_FOUND })
+      await expect(updatePurchase(req as Request, res as Response)).rejects.toMatchObject({
+        status: STATUS.NOT_FOUND,
+      })
     })
   })
 
@@ -172,9 +192,11 @@ describe('Purchase Controller', () => {
 
       await deletePurchases(req as Request, res as Response)
 
-      expect(mockPurchaseService.removeFromCart).toHaveBeenCalledWith('user_1', ['purchase_1', 'purchase_2'])
+      expect(mockPurchaseService.removeFromCart).toHaveBeenCalledWith('user_1', [
+        'purchase_1',
+        'purchase_2',
+      ])
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
   })
 })
-

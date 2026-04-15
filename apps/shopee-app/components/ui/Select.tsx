@@ -1,50 +1,50 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Dimensions, FlatList, Pressable, Text, View } from 'react-native';
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
-import { cn } from '@/utils';
-import { cva } from 'class-variance-authority';
-import Icon from './Icon';
-import { useColors } from '@/hooks/useColors.ts';
-import { useInsets } from '@/hooks/useInsets.ts';
-import AppInput from '@/components/ui/AppInput.tsx';
+import React, { useCallback, useMemo, useRef, useState } from 'react'
+import { Dimensions, FlatList, Pressable, Text, View } from 'react-native'
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
+import { cn } from '@/utils'
+import { cva } from 'class-variance-authority'
+import Icon from './Icon'
+import { useColors } from '@/hooks/useColors.ts'
+import { useInsets } from '@/hooks/useInsets.ts'
+import AppInput from '@/components/ui/AppInput.tsx'
 
 export interface SelectOption {
-  label: string;
-  value: string | number;
-  disabled?: boolean;
+  label: string
+  value: string | number
+  disabled?: boolean
 }
 
 interface SelectBaseProps {
-  value: string | number;
-  onValueChange: (value: string | number) => void;
+  value: string | number
+  onValueChange: (value: string | number) => void
 }
 
 interface SelectMultipleProps {
-  value: (string | number)[];
-  onValueChange: (value: (string | number)[]) => void;
+  value: (string | number)[]
+  onValueChange: (value: (string | number)[]) => void
 }
 
-type SelectPropsWithType = SelectBaseProps | SelectMultipleProps;
+type SelectPropsWithType = SelectBaseProps | SelectMultipleProps
 
 type SelectProps = {
-  options: SelectOption[];
-  placeholder?: string;
-  label?: string;
-  helperText?: string;
-  errorText?: string;
-  disabled?: boolean;
-  searchable?: boolean;
-  multiple?: boolean;
-  size?: 'sm' | 'md' | 'lg';
-  renderSelector?: React.ReactElement;
-  className?: string;
-  containerClassName?: string;
-  labelClassName?: string;
-  helperClassName?: string;
-  errorClassName?: string;
-  required?: boolean;
-  maxHeight?: number; // e.g., '60vh', '400px', '50%'
-} & SelectPropsWithType;
+  options: SelectOption[]
+  placeholder?: string
+  label?: string
+  helperText?: string
+  errorText?: string
+  disabled?: boolean
+  searchable?: boolean
+  multiple?: boolean
+  size?: 'sm' | 'md' | 'lg'
+  renderSelector?: React.ReactElement
+  className?: string
+  containerClassName?: string
+  labelClassName?: string
+  helperClassName?: string
+  errorClassName?: string
+  required?: boolean
+  maxHeight?: number // e.g., '60vh', '400px', '50%'
+} & SelectPropsWithType
 
 const selectVariants = cva(
   'flex-row items-center justify-between border rounded-lg bg-background',
@@ -67,7 +67,7 @@ const selectVariants = cva(
       state: 'default',
     },
   }
-);
+)
 
 const labelVariants = cva('font-sans-medium text-foreground mb-1.5', {
   variants: {
@@ -83,7 +83,7 @@ const labelVariants = cva('font-sans-medium text-foreground mb-1.5', {
   defaultVariants: {
     size: 'md',
   },
-});
+})
 
 const helperVariants = cva('font-sans-regular mt-1.5', {
   variants: {
@@ -101,7 +101,7 @@ const helperVariants = cva('font-sans-regular mt-1.5', {
     type: 'helper',
     size: 'md',
   },
-});
+})
 
 export default function Select({
   options,
@@ -124,14 +124,14 @@ export default function Select({
   maxHeight = 60,
   renderSelector,
 }: SelectProps) {
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const { height: screenHeight } = Dimensions.get('screen');
-  const colors = useColors();
-  const insets = useInsets();
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const { height: screenHeight } = Dimensions.get('screen')
+  const colors = useColors()
+  const insets = useInsets()
 
-  const hasError = !!errorText;
-  const state = disabled ? 'disabled' : hasError ? 'error' : 'default';
+  const hasError = !!errorText
+  const state = disabled ? 'disabled' : hasError ? 'error' : 'default'
   // Handle both single and multiple selection
   const selectedValues = multiple
     ? Array.isArray(value)
@@ -139,34 +139,34 @@ export default function Select({
       : []
     : value !== undefined
       ? [value]
-      : [];
+      : []
 
-  const selectedOptions = options.filter((option) => selectedValues.includes(option.value));
+  const selectedOptions = options.filter((option) => selectedValues.includes(option.value))
 
   const isSelected = useCallback(
     (optionValue: string | number) => {
-      return selectedValues.includes(optionValue);
+      return selectedValues.includes(optionValue)
     },
     [selectedValues]
-  );
+  )
 
   const filteredOptions = useMemo(() => {
-    if (!searchable || !searchQuery) return options;
+    if (!searchable || !searchQuery) return options
     return options.filter((option) =>
       option.label.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [options, searchQuery, searchable]);
+    )
+  }, [options, searchQuery, searchable])
 
   const handlePresentModalPress = useCallback(() => {
-    if (disabled) return;
-    bottomSheetModalRef.current?.present();
-  }, [disabled]);
+    if (disabled) return
+    bottomSheetModalRef.current?.present()
+  }, [disabled])
 
   const handleSheetChanges = useCallback((index: number) => {
     if (index === -1) {
-      setSearchQuery('');
+      setSearchQuery('')
     }
-  }, []);
+  }, [])
 
   const handleOptionSelect = useCallback(
     (optionValue: string | number) => {
@@ -174,28 +174,28 @@ export default function Select({
         // For multiple selection, toggle the selected value
         const newValue = selectedValues.includes(optionValue)
           ? selectedValues.filter((v) => v !== optionValue)
-          : [...selectedValues, optionValue];
+          : [...selectedValues, optionValue]
 
-        onValueChange(newValue as any);
+        onValueChange(newValue as any)
       } else {
         // For single selection, just set the value and dismiss
-        onValueChange(optionValue as any);
-        bottomSheetModalRef.current?.dismiss();
-        setSearchQuery('');
+        onValueChange(optionValue as any)
+        bottomSheetModalRef.current?.dismiss()
+        setSearchQuery('')
       }
     },
     [multiple, onValueChange, selectedValues]
-  );
+  )
 
   const renderBackdrop = useCallback(
     (props: any) => (
       <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.5} />
     ),
     []
-  );
+  )
 
   const renderOption = ({ item, index }: { item: SelectOption; index: number }) => {
-    const itemSelected = isSelected(item.value);
+    const itemSelected = isSelected(item.value)
 
     return (
       <Pressable
@@ -222,8 +222,8 @@ export default function Select({
         </Text>
         {!multiple && itemSelected && <Icon name="Check" className="h-5 w-5 text-primary" />}
       </Pressable>
-    );
-  };
+    )
+  }
 
   return (
     <>
@@ -318,5 +318,5 @@ export default function Select({
         </BottomSheetView>
       </BottomSheetModal>
     </>
-  );
+  )
 }

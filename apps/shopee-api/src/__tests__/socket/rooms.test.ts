@@ -186,9 +186,9 @@ describe('rooms.ts', () => {
       jest.doMock('@utils/logger', () => ({
         Logger: { apiInfo: jest.fn(), apiError: jest.fn(), apiWarn: jest.fn() },
       }))
-      const mockFetchSockets = jest.fn().mockResolvedValue([
-        { id: 's1', data: { user: { id: 'user-999' } } },
-      ])
+      const mockFetchSockets = jest
+        .fn()
+        .mockResolvedValue([{ id: 's1', data: { user: { id: 'user-999' } } }])
       jest.doMock('../../socket/socket.init', () => ({
         getIORequired: jest.fn().mockReturnValue({
           in: jest.fn().mockReturnValue({ fetchSockets: mockFetchSockets }),
@@ -221,4 +221,3 @@ describe('rooms.ts', () => {
     })
   })
 })
-

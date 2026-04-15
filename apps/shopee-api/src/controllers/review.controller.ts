@@ -4,7 +4,12 @@ import { STATUS } from '@constants/status'
 import { reviewService } from '../container'
 import { emitNewReview, emitNewReviewComment, emitReviewLiked } from '../socket/utils/review-emit'
 import { emitActivityEvent } from '../socket/utils/activity-emit'
-import { ValidationError, NotFoundError, BusinessError, ForbiddenError } from '@services/base.service'
+import {
+  ValidationError,
+  NotFoundError,
+  BusinessError,
+  ForbiddenError,
+} from '@services/base.service'
 
 // Tạo review mới
 export const createReview = async (req: Request, res: Response): Promise<void> => {
@@ -17,7 +22,7 @@ export const createReview = async (req: Request, res: Response): Promise<void> =
       purchase_id,
       rating,
       comment,
-      images
+      images,
     )
 
     // WebSocket: Emit new review to product room (fire-and-forget)
@@ -35,7 +40,9 @@ export const createReview = async (req: Request, res: Response): Promise<void> =
           })
           emitActivityEvent(productId, 'review', `Ai đó vừa đánh giá ${rating} sao`)
         }
-      } catch (_) { /* non-critical */ }
+      } catch (_) {
+        /* non-critical */
+      }
     })()
 
     res.status(STATUS.OK).json({
@@ -64,7 +71,7 @@ export const getProductReviews = async (req: Req, res: Response): Promise<void> 
       product_id,
       user_id,
       { rating: rating ? Number(rating) : undefined, sort: sort as any },
-      { page: Number(page), limit: Number(limit) }
+      { page: Number(page), limit: Number(limit) },
     )
 
     res.status(STATUS.OK).json({
@@ -88,13 +95,18 @@ export const toggleReviewLike = async (req: Req, res: Response): Promise<void> =
     const user_id = req.jwtDecoded?.id
     const review_id = req.params.review_id
 
-    const { is_liked, helpful_count, productId } = await reviewService.toggleReviewLike(user_id!, review_id)
+    const { is_liked, helpful_count, productId } = await reviewService.toggleReviewLike(
+      user_id!,
+      review_id,
+    )
 
     // WebSocket: Emit review liked to product room (fire-and-forget)
     void (() => {
       try {
         emitReviewLiked(productId, review_id, helpful_count)
-      } catch (_) { /* non-critical */ }
+      } catch (_) {
+        /* non-critical */
+      }
     })()
 
     res.status(STATUS.OK).json({
@@ -126,7 +138,7 @@ export const createReviewComment = async (req: Request, res: Response): Promise<
       user_id!,
       review_id,
       content,
-      parent_comment_id
+      parent_comment_id,
     )
 
     // WebSocket: Emit new review comment to product room (fire-and-forget)
@@ -143,7 +155,9 @@ export const createReviewComment = async (req: Request, res: Response): Promise<
             createdAt: comment.createdAt?.toISOString?.() || new Date().toISOString(),
           })
         }
-      } catch (_) { /* non-critical */ }
+      } catch (_) {
+        /* non-critical */
+      }
     })()
 
     res.status(STATUS.OK).json({

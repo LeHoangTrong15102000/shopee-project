@@ -1,7 +1,7 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { getProducts, Product } from '@/services/product.api';
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { getProducts, Product } from '@/services/product.api'
 
-const PRODUCTS_PER_PAGE = 10;
+const PRODUCTS_PER_PAGE = 10
 
 export function useProducts(category?: string) {
   return useInfiniteQuery({
@@ -10,12 +10,12 @@ export function useProducts(category?: string) {
       getProducts({ page: pageParam, limit: PRODUCTS_PER_PAGE, category }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      const { page, page_size } = lastPage.pagination;
-      return page < page_size ? page + 1 : undefined;
+      const { page, page_size } = lastPage.pagination
+      return page < page_size ? page + 1 : undefined
     },
     select: (data) => ({
       ...data,
       products: data.pages.flatMap((p) => p.products) as Product[],
     }),
-  });
+  })
 }

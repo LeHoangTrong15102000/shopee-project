@@ -13,7 +13,7 @@ import { addActivity, getRecentActivities, ActivityEntry } from '../managers/act
 export const emitActivityEvent = (
   productId: string,
   type: 'purchase' | 'review',
-  message: string
+  message: string,
 ): void => {
   try {
     const activity: ActivityEntry = {
@@ -58,10 +58,7 @@ export const emitActivityEvent = (
  * @param socketId - The socket ID to send to
  * @param productId - The product ID
  */
-export const emitActivityBuffer = (
-  socketId: string,
-  productId: string
-): void => {
+export const emitActivityBuffer = (socketId: string, productId: string): void => {
   try {
     const activities = getRecentActivities(productId)
     if (activities.length === 0) return
@@ -93,4 +90,3 @@ export const emitActivityBuffer = (
     })
   }
 }
-

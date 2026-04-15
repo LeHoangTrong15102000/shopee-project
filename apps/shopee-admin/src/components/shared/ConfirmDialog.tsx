@@ -7,20 +7,20 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from 'src/components/ui/alert-dialog';
-import { useTranslation } from 'react-i18next';
+} from 'src/components/ui/alert-dialog'
+import { useTranslation } from 'react-i18next'
 
 interface ConfirmDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title?: string;
-  description?: string;
-  onConfirm: () => void;
-  onCancel?: () => void;
-  confirmText?: string;
-  cancelText?: string;
-  variant?: 'default' | 'destructive';
-  isLoading?: boolean;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  title?: string
+  description?: string
+  onConfirm: () => void
+  onCancel?: () => void
+  confirmText?: string
+  cancelText?: string
+  variant?: 'default' | 'destructive'
+  isLoading?: boolean
 }
 
 export function ConfirmDialog({
@@ -35,11 +35,11 @@ export function ConfirmDialog({
   variant = 'destructive',
   isLoading,
 }: ConfirmDialogProps) {
-  const { t } = useTranslation('common');
-  const resolvedTitle = title ?? t('dialog.areYouSure');
-  const resolvedDescription = description ?? t('dialog.cannotBeUndone');
-  const resolvedConfirmText = confirmText ?? t('buttons.confirm');
-  const resolvedCancelText = cancelText ?? t('buttons.cancel');
+  const { t } = useTranslation('common')
+  const resolvedTitle = title ?? t('dialog.areYouSure')
+  const resolvedDescription = description ?? t('dialog.cannotBeUndone')
+  const resolvedConfirmText = confirmText ?? t('buttons.confirm')
+  const resolvedCancelText = cancelText ?? t('buttons.cancel')
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -62,5 +62,5 @@ export function ConfirmDialog({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  );
+  )
 }

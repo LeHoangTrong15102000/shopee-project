@@ -1,34 +1,34 @@
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
-import { formatDistanceToNow } from 'date-fns';
-import { vi, enUS } from 'date-fns/locale';
-import reviewApi from 'src/apis/review.api';
-import { Review, ReviewComment, CreateCommentData } from 'src/types/review.type';
-import ProductRating from 'src/components/ProductRating';
-import { useOptimisticReviewLike } from 'src/hooks/optimistic';
-import Button from 'src/components/Button';
-import Pagination from 'src/components/Pagination';
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+import { formatDistanceToNow } from 'date-fns'
+import { vi, enUS } from 'date-fns/locale'
+import reviewApi from 'src/apis/review.api'
+import { Review, ReviewComment, CreateCommentData } from 'src/types/review.type'
+import ProductRating from 'src/components/ProductRating'
+import { useOptimisticReviewLike } from 'src/hooks/optimistic'
+import Button from 'src/components/Button'
+import Pagination from 'src/components/Pagination'
 
 interface ProductReviewsProps {
-  productId: string;
+  productId: string
 }
 
 const ProductReviews = ({ productId }: ProductReviewsProps) => {
-  const { t } = useTranslation('product');
-  const [currentPage, setCurrentPage] = useState(1);
+  const { t } = useTranslation('product')
+  const [currentPage, setCurrentPage] = useState(1)
   const [sortBy, setSortBy] = useState<
     'newest' | 'oldest' | 'highest_rating' | 'lowest_rating' | 'most_helpful'
-  >('newest');
-  const [ratingFilter, setRatingFilter] = useState<number | undefined>();
-  const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
+  >('newest')
+  const [ratingFilter, setRatingFilter] = useState<number | undefined>()
+  const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set())
   const [replyingTo, setReplyingTo] = useState<{ reviewId: string; commentId?: string } | null>(
     null,
-  );
-  const [commentText, setCommentText] = useState('');
+  )
+  const [commentText, setCommentText] = useState('')
 
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   // Fetch reviews
   const { data: reviewsData, isLoading } = useQuery({
@@ -40,58 +40,58 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
         sort: sortBy,
         rating: ratingFilter,
       }),
-  });
+  })
 
   // Like/Unlike mutation với Optimistic Updates
-  const likeMutation = useOptimisticReviewLike(productId);
+  const likeMutation = useOptimisticReviewLike(productId)
 
   // Comment mutation
   const commentMutation = useMutation({
     mutationFn: reviewApi.createComment,
-  });
+  })
 
-  const reviews = reviewsData?.data.data.reviews || [];
-  const stats = reviewsData?.data.data.stats;
-  const pagination = reviewsData?.data.data.pagination;
+  const reviews = reviewsData?.data.data.reviews || []
+  const stats = reviewsData?.data.data.stats
+  const pagination = reviewsData?.data.data.pagination
 
   // Handle like/unlike với Optimistic Updates
   const handleLike = (reviewId: string) => {
-    likeMutation.mutate(reviewId);
-  };
+    likeMutation.mutate(reviewId)
+  }
 
   // Handle comment submit
   const handleCommentSubmit = (reviewId: string, parentCommentId?: string) => {
-    if (!commentText.trim()) return;
+    if (!commentText.trim()) return
 
     const commentData: CreateCommentData = {
       review_id: reviewId,
       content: commentText.trim(),
       parent_comment_id: parentCommentId,
-    };
+    }
 
     commentMutation.mutate(commentData, {
       onSuccess: () => {
-        toast.success(t('reviews.comment') + '!');
-        setCommentText('');
-        setReplyingTo(null);
-        queryClient.invalidateQueries({ queryKey: ['review-comments', reviewId] });
+        toast.success(t('reviews.comment') + '!')
+        setCommentText('')
+        setReplyingTo(null)
+        queryClient.invalidateQueries({ queryKey: ['review-comments', reviewId] })
       },
       onError: () => {
-        toast.error('Error');
+        toast.error('Error')
       },
-    });
-  };
+    })
+  }
 
   // Toggle comments visibility
   const toggleComments = (reviewId: string) => {
-    const newExpanded = new Set(expandedComments);
+    const newExpanded = new Set(expandedComments)
     if (newExpanded.has(reviewId)) {
-      newExpanded.delete(reviewId);
+      newExpanded.delete(reviewId)
     } else {
-      newExpanded.add(reviewId);
+      newExpanded.add(reviewId)
     }
-    setExpandedComments(newExpanded);
-  };
+    setExpandedComments(newExpanded)
+  }
 
   if (isLoading) {
     return (
@@ -109,7 +109,7 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -174,8 +174,8 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
           <Button
             animated={false}
             onClick={() => {
-              setRatingFilter(undefined);
-              setCurrentPage(1);
+              setRatingFilter(undefined)
+              setCurrentPage(1)
             }}
             className={`rounded-sm px-3 py-1 text-sm ${!ratingFilter ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600'}`}
           >
@@ -186,8 +186,8 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
               animated={false}
               key={rating}
               onClick={() => {
-                setRatingFilter(rating);
-                setCurrentPage(1);
+                setRatingFilter(rating)
+                setCurrentPage(1)
               }}
               className={`flex items-center rounded-sm px-3 py-1 text-sm ${ratingFilter === rating ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600'}`}
             >
@@ -202,8 +202,8 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
         <select
           value={sortBy}
           onChange={(e) => {
-            setSortBy(e.target.value as typeof sortBy);
-            setCurrentPage(1);
+            setSortBy(e.target.value as typeof sortBy)
+            setCurrentPage(1)
           }}
           className="rounded-sm border border-gray-300 bg-white px-3 py-1 text-sm text-gray-900 dark:border-slate-600 dark:bg-slate-700 dark:text-gray-100"
         >
@@ -243,21 +243,21 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
         />
       )}
     </div>
-  );
-};
+  )
+}
 
 // Review Item Component
 interface ReviewItemProps {
-  review: Review;
-  onLike: (reviewId: string) => void;
-  onToggleComments: (reviewId: string) => void;
-  isCommentsExpanded: boolean;
-  onReply: (commentId?: string) => void;
-  replyingTo: { reviewId: string; commentId?: string } | null;
-  commentText: string;
-  setCommentText: (text: string) => void;
-  onCommentSubmit: (reviewId: string, parentCommentId?: string) => void;
-  isSubmittingComment: boolean;
+  review: Review
+  onLike: (reviewId: string) => void
+  onToggleComments: (reviewId: string) => void
+  isCommentsExpanded: boolean
+  onReply: (commentId?: string) => void
+  replyingTo: { reviewId: string; commentId?: string } | null
+  commentText: string
+  setCommentText: (text: string) => void
+  onCommentSubmit: (reviewId: string, parentCommentId?: string) => void
+  isSubmittingComment: boolean
 }
 
 const ReviewItem = ({
@@ -272,16 +272,16 @@ const ReviewItem = ({
   onCommentSubmit,
   isSubmittingComment,
 }: ReviewItemProps) => {
-  const { t, i18n } = useTranslation('product');
-  const dateLocale = i18n.language === 'vi' ? vi : enUS;
+  const { t, i18n } = useTranslation('product')
+  const dateLocale = i18n.language === 'vi' ? vi : enUS
   // Fetch comments when expanded
   const { data: commentsData } = useQuery({
     queryKey: ['review-comments', review._id],
     queryFn: () => reviewApi.getReviewComments(review._id),
     enabled: isCommentsExpanded,
-  });
+  })
 
-  const comments = commentsData?.data.data.comments || [];
+  const comments = commentsData?.data.data.comments || []
 
   return (
     <div className="border-b border-gray-200 pb-6 dark:border-slate-700">
@@ -423,18 +423,18 @@ const ReviewItem = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 // Comment Item Component
 interface CommentItemProps {
-  comment: ReviewComment;
-  onReply: (commentId?: string) => void;
-  replyingTo: { reviewId: string; commentId?: string } | null;
-  commentText: string;
-  setCommentText: (text: string) => void;
-  onCommentSubmit: (reviewId: string, parentCommentId?: string) => void;
-  isSubmittingComment: boolean;
+  comment: ReviewComment
+  onReply: (commentId?: string) => void
+  replyingTo: { reviewId: string; commentId?: string } | null
+  commentText: string
+  setCommentText: (text: string) => void
+  onCommentSubmit: (reviewId: string, parentCommentId?: string) => void
+  isSubmittingComment: boolean
 }
 
 const CommentItem = ({
@@ -446,8 +446,8 @@ const CommentItem = ({
   onCommentSubmit,
   isSubmittingComment,
 }: CommentItemProps) => {
-  const { t, i18n } = useTranslation('product');
-  const dateLocale = i18n.language === 'vi' ? vi : enUS;
+  const { t, i18n } = useTranslation('product')
+  const dateLocale = i18n.language === 'vi' ? vi : enUS
   return (
     <div className="mb-4">
       <div className="flex items-start space-x-3">
@@ -541,7 +541,7 @@ const CommentItem = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProductReviews;
+export default ProductReviews

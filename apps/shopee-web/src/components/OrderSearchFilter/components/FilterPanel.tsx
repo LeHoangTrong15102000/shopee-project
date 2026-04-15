@@ -1,17 +1,17 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { panelVariants } from '../orderSearchFilter.constants';
+import { motion, AnimatePresence } from 'framer-motion'
+import { panelVariants } from '../orderSearchFilter.constants'
 
 interface FilterPanelProps {
-  isOpen: boolean;
-  reducedMotion: boolean;
-  dateFrom: string;
-  dateTo: string;
-  priceMin: string;
-  priceMax: string;
-  onDateFromChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onDateToChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onPriceMinChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onPriceMaxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isOpen: boolean
+  reducedMotion: boolean
+  dateFrom: string
+  dateTo: string
+  priceMin: string
+  priceMax: string
+  onDateFromChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onDateToChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onPriceMinChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onPriceMaxChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export default function FilterPanel({
@@ -108,5 +108,5 @@ export default function FilterPanel({
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }

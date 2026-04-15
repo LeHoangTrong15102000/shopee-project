@@ -1,26 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { Pressable, Text } from 'react-native';
+import React, { useEffect, useState } from 'react'
+import { Pressable, Text } from 'react-native'
 import Animated, {
   Extrapolate,
   interpolate,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-} from 'react-native-reanimated';
-import { cn } from '@/utils';
-import { cva } from 'class-variance-authority';
-import { Check } from 'lucide-react-native';
+} from 'react-native-reanimated'
+import { cn } from '@/utils'
+import { cva } from 'class-variance-authority'
+import { Check } from 'lucide-react-native'
 
 interface CheckboxProps {
-  checked?: boolean;
-  onValueChange?: (checked: boolean) => void;
-  label?: string | React.ReactElement;
-  disabled?: boolean;
-  size?: 'sm' | 'md' | 'lg';
-  variant?: 'default' | 'primary';
-  className?: string;
-  boxClassName?: string;
-  labelClassName?: string;
+  checked?: boolean
+  onValueChange?: (checked: boolean) => void
+  label?: string | React.ReactElement
+  disabled?: boolean
+  size?: 'sm' | 'md' | 'lg'
+  variant?: 'default' | 'primary'
+  className?: string
+  boxClassName?: string
+  labelClassName?: string
 }
 
 const checkboxContainerVariants = cva('flex-row items-center', {
@@ -33,7 +33,7 @@ const checkboxContainerVariants = cva('flex-row items-center', {
   defaultVariants: {
     disabled: false,
   },
-});
+})
 
 const checkboxVariants = cva('items-center justify-center rounded-md border-2', {
   variants: {
@@ -68,7 +68,7 @@ const checkboxVariants = cva('items-center justify-center rounded-md border-2', 
     variant: 'default',
     checked: false,
   },
-});
+})
 
 const labelVariants = cva('font-sans-medium ml-2', {
   variants: {
@@ -81,7 +81,7 @@ const labelVariants = cva('font-sans-medium ml-2', {
   defaultVariants: {
     size: 'md',
   },
-});
+})
 
 export default function Checkbox({
   checked,
@@ -94,57 +94,57 @@ export default function Checkbox({
   boxClassName,
   labelClassName,
 }: CheckboxProps) {
-  const scale = useSharedValue(1);
-  const [isChecked, setIsChecked] = useState(checked);
-  const progress = useSharedValue(isChecked ? 1 : 0);
+  const scale = useSharedValue(1)
+  const [isChecked, setIsChecked] = useState(checked)
+  const progress = useSharedValue(isChecked ? 1 : 0)
 
   useEffect(() => {
-    progress.value = withTiming(isChecked ? 1 : 0, { duration: 150 });
-  }, [isChecked, progress]);
+    progress.value = withTiming(isChecked ? 1 : 0, { duration: 150 })
+  }, [isChecked, progress])
 
   useEffect(() => {
-    setIsChecked(checked);
-  }, [checked]);
+    setIsChecked(checked)
+  }, [checked])
 
   const animatedStyle = useAnimatedStyle(() => {
-    const opacity = progress.value;
-    const checkScale = interpolate(progress.value, [0, 0.5, 1], [0, 0.7, 1], Extrapolate.CLAMP);
+    const opacity = progress.value
+    const checkScale = interpolate(progress.value, [0, 0.5, 1], [0, 0.7, 1], Extrapolate.CLAMP)
 
     return {
       opacity,
       transform: [{ scale: checkScale }],
-    };
-  });
+    }
+  })
 
   const boxAnimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: scale.value }],
-    };
-  });
+    }
+  })
 
   const handlePress = () => {
-    if (disabled) return;
+    if (disabled) return
 
     scale.value = withTiming(0.9, { duration: 100 }, () => {
-      scale.value = withTiming(1, { duration: 100 });
-    });
+      scale.value = withTiming(1, { duration: 100 })
+    })
 
-    onValueChange?.(!isChecked);
-    setIsChecked(!isChecked);
-  };
+    onValueChange?.(!isChecked)
+    setIsChecked(!isChecked)
+  }
 
   const getCheckSize = () => {
     switch (size) {
       case 'sm':
-        return 12;
+        return 12
       case 'md':
-        return 16;
+        return 16
       case 'lg':
-        return 20;
+        return 20
       default:
-        return 16;
+        return 16
     }
-  };
+  }
 
   return (
     <Pressable
@@ -170,5 +170,5 @@ export default function Checkbox({
           label
         ))}
     </Pressable>
-  );
+  )
 }

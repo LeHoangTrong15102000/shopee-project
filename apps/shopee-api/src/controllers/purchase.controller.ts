@@ -27,7 +27,11 @@ interface IPurchasePopulated extends Omit<IPurchase, 'product'> {
 export const addToCart = async (req: Request, res: Response) => {
   try {
     const { product_id, buy_count, sku_id }: PurchaseBody = req.body
-    const data = await purchaseService.addToCart(req.jwtDecoded.id, { product_id, buy_count, sku_id })
+    const data = await purchaseService.addToCart(req.jwtDecoded.id, {
+      product_id,
+      buy_count,
+      sku_id,
+    })
 
     // Emit cart update for cross-device sync
     emitCartUpdate(req.jwtDecoded.id, 'add', product_id)
@@ -51,7 +55,12 @@ export const addToCart = async (req: Request, res: Response) => {
 export const updatePurchase = async (req: Request, res: Response) => {
   try {
     const { product_id, buy_count, sku_id }: PurchaseBody = req.body
-    const data = await purchaseService.updateCartItem(req.jwtDecoded.id, product_id, buy_count, sku_id)
+    const data = await purchaseService.updateCartItem(
+      req.jwtDecoded.id,
+      product_id,
+      buy_count,
+      sku_id,
+    )
 
     // Emit cart update for cross-device sync
     emitCartUpdate(req.jwtDecoded.id, 'update', product_id)
@@ -81,7 +90,9 @@ export const buyProducts = async (req: Request, res: Response) => {
     const purchases: IPurchasePopulated[] = []
 
     for (const item of items) {
-      const product = await ProductModel.findById(item.product_id).session(session).lean<IProduct | null>()
+      const product = await ProductModel.findById(item.product_id)
+        .session(session)
+        .lean<IProduct | null>()
       if (!product) {
         throw new NotFoundError(PRODUCT_MESSAGES.NOT_FOUND)
       }
@@ -123,7 +134,7 @@ export const buyProducts = async (req: Request, res: Response) => {
         {
           new: true,
           session,
-        }
+        },
       )
         .populate({
           path: 'product',
@@ -163,7 +174,7 @@ export const buyProducts = async (req: Request, res: Response) => {
         const decremented = await SKUModel.findOneAndUpdate(
           { _id: item.sku_id, stock: { $gte: item.buy_count } },
           { $inc: { stock: -item.buy_count } },
-          { new: true, session }
+          { new: true, session },
         )
         if (!decremented) {
           throw new ErrorHandler(STATUS.NOT_ACCEPTABLE, `SKU không đủ tồn kho`)
@@ -179,7 +190,7 @@ export const buyProducts = async (req: Request, res: Response) => {
             sold: item.buy_count,
           },
         },
-        { session }
+        { session },
       )
 
       if (data) {
@@ -192,7 +203,8 @@ export const buyProducts = async (req: Request, res: Response) => {
     // Check flash sale stock updates (fire-and-forget, non-blocking)
     void (async () => {
       try {
-        const { getActiveFlashSales, decrementStock } = await import('../socket/managers/flash-sale.manager')
+        const { getActiveFlashSales, decrementStock } =
+          await import('../socket/managers/flash-sale.manager')
         const { emitFlashSaleStockUpdate } = await import('../socket/utils/flash-sale-emit')
 
         const activeSales = getActiveFlashSales()
@@ -208,7 +220,7 @@ export const buyProducts = async (req: Request, res: Response) => {
                   sale.sale_id,
                   item.product_id,
                   updated.current_stock,
-                  updated.sold
+                  updated.sold,
                 )
               }
             }
@@ -229,13 +241,17 @@ export const buyProducts = async (req: Request, res: Response) => {
         for (const item of items) {
           emitActivityEvent(item.product_id, 'purchase', 'Ai đó vừa mua sản phẩm này')
         }
-      } catch (_) { /* non-critical */ }
+      } catch (_) {
+        /* non-critical */
+      }
     })()
 
     // Seller dashboard: emit order notification + metrics update (fire-and-forget)
     void (async () => {
       try {
-        const productNames = purchases.map((p) => (p.product as any)?.name || 'Sản phẩm').slice(0, 3)
+        const productNames = purchases
+          .map((p) => (p.product as any)?.name || 'Sản phẩm')
+          .slice(0, 3)
         const total = purchases.reduce((sum, p) => sum + (p.price || 0) * (p.buy_count || 0), 0)
 
         emitSellerOrderNotification('admin', {
@@ -248,7 +264,9 @@ export const buyProducts = async (req: Request, res: Response) => {
 
         // Emit real aggregated metrics from DB
         await emitCurrentSellerMetrics('admin')
-      } catch (_) { /* non-critical */ }
+      } catch (_) {
+        /* non-critical */
+      }
     })()
 
     // Admin new order notification (fire-and-forget)

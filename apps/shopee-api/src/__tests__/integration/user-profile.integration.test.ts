@@ -16,9 +16,7 @@ describe('User Profile Integration Tests', () => {
 
   describe('GET /me', () => {
     it('should return user profile when authenticated', async () => {
-      const response = await supertest(app)
-        .get('/me')
-        .set('Authorization', authToken)
+      const response = await supertest(app).get('/me').set('Authorization', authToken)
 
       expect(response.status).toBe(200)
       expect(response.body.data).toHaveProperty('email')
@@ -43,12 +41,9 @@ describe('User Profile Integration Tests', () => {
     })
 
     it('should return 401 when not authenticated', async () => {
-      const response = await supertest(app)
-        .put('/user')
-        .send({ name: 'Test Name' })
+      const response = await supertest(app).put('/user').send({ name: 'Test Name' })
 
       expect(response.status).toBe(401)
     })
   })
 })
-

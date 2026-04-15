@@ -1,5 +1,5 @@
-import { Tabs } from 'expo-router';
-import CustomTabBar from '@/components/navigation/CustomTabBar';
+import { Tabs } from 'expo-router'
+import CustomTabBar from '@/components/navigation/CustomTabBar'
 
 export default function TabsLayout() {
   return (
@@ -44,5 +44,5 @@ export default function TabsLayout() {
         }}
       />
     </Tabs>
-  );
+  )
 }

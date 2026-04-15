@@ -1,18 +1,18 @@
 export interface Ward {
-  id: string;
-  name: string;
+  id: string
+  name: string
 }
 
 export interface District {
-  id: string;
-  name: string;
-  wards: Ward[];
+  id: string
+  name: string
+  wards: Ward[]
 }
 
 export interface Province {
-  id: string;
-  name: string;
-  districts: District[];
+  id: string
+  name: string
+  districts: District[]
 }
 
 export const vietnamProvinces: Province[] = [
@@ -231,15 +231,15 @@ export const vietnamProvinces: Province[] = [
       },
     ],
   },
-];
+]
 
-export type AddressType = 'home' | 'office' | 'other';
+export type AddressType = 'home' | 'office' | 'other'
 
 export interface RecentAddress {
-  id: string;
-  street: string;
-  fullAddress: string;
-  timestamp: number;
+  id: string
+  street: string
+  fullAddress: string
+  timestamp: number
 }
 
 export const streetSuggestions: string[] = [
@@ -258,30 +258,30 @@ export const streetSuggestions: string[] = [
   '111 Đường Phạm Ngọc Thạch',
   '222 Đường Nguyễn Đình Chiểu',
   '333 Đường Võ Thị Sáu',
-];
+]
 
 export const getDistrictsByProvince = (provinceId: string): District[] => {
-  const province = vietnamProvinces.find((p) => p.id === provinceId);
-  return province?.districts || [];
-};
+  const province = vietnamProvinces.find((p) => p.id === provinceId)
+  return province?.districts || []
+}
 
 export const getWardsByDistrict = (provinceId: string, districtId: string): Ward[] => {
-  const province = vietnamProvinces.find((p) => p.id === provinceId);
-  const district = province?.districts.find((d) => d.id === districtId);
-  return district?.wards || [];
-};
+  const province = vietnamProvinces.find((p) => p.id === provinceId)
+  const district = province?.districts.find((d) => d.id === districtId)
+  return district?.wards || []
+}
 
 export const getProvinceNameById = (provinceId: string): string => {
-  return vietnamProvinces.find((p) => p.id === provinceId)?.name || '';
-};
+  return vietnamProvinces.find((p) => p.id === provinceId)?.name || ''
+}
 
 export const getDistrictNameById = (provinceId: string, districtId: string): string => {
-  const province = vietnamProvinces.find((p) => p.id === provinceId);
-  return province?.districts.find((d) => d.id === districtId)?.name || '';
-};
+  const province = vietnamProvinces.find((p) => p.id === provinceId)
+  return province?.districts.find((d) => d.id === districtId)?.name || ''
+}
 
 export const getWardNameById = (provinceId: string, districtId: string, wardId: string): string => {
-  const province = vietnamProvinces.find((p) => p.id === provinceId);
-  const district = province?.districts.find((d) => d.id === districtId);
-  return district?.wards.find((w) => w.id === wardId)?.name || '';
-};
+  const province = vietnamProvinces.find((p) => p.id === provinceId)
+  const district = province?.districts.find((d) => d.id === districtId)
+  return district?.wards.find((w) => w.id === wardId)?.name || ''
+}

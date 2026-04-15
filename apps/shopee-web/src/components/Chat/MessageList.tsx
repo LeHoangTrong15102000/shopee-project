@@ -1,21 +1,21 @@
-import { useRef, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { MessageReceivedPayload } from 'src/types/socket.types';
-import MessageItem from './MessageItem';
+import { useRef, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import { MessageReceivedPayload } from 'src/types/socket.types'
+import MessageItem from './MessageItem'
 
 interface MessageListProps {
-  messages: MessageReceivedPayload[];
-  isLoading: boolean;
-  currentUserId?: string;
+  messages: MessageReceivedPayload[]
+  isLoading: boolean
+  currentUserId?: string
 }
 
 export default function MessageList({ messages, isLoading, currentUserId }: MessageListProps) {
-  const { t } = useTranslation('chat');
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation('chat')
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
 
   if (isLoading) {
     return (
@@ -25,7 +25,7 @@ export default function MessageList({ messages, isLoading, currentUserId }: Mess
           <span className="text-sm text-gray-500 dark:text-gray-400">{t('loadingMessages')}</span>
         </div>
       </div>
-    );
+    )
   }
 
   if (messages.length === 0) {
@@ -43,7 +43,7 @@ export default function MessageList({ messages, isLoading, currentUserId }: Mess
           <span className="text-sm">{t('noMessages')}</span>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -57,5 +57,5 @@ export default function MessageList({ messages, isLoading, currentUserId }: Mess
       ))}
       <div ref={messagesEndRef} />
     </div>
-  );
+  )
 }

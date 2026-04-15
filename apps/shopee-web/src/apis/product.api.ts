@@ -1,22 +1,22 @@
 // khai báo APi cho Product
 
-import { Product, ProductList, ProductListConfig } from 'src/types/product.type';
-import { SuccessResponseApi } from 'src/types/utils.type';
-import http from 'src/utils/http';
+import { Product, ProductList, ProductListConfig } from 'src/types/product.type'
+import { SuccessResponseApi } from 'src/types/utils.type'
+import http from 'src/utils/http'
 
 export interface SearchSuggestionsResponse {
-  suggestions: string[];
+  suggestions: string[]
   products: {
-    _id: string;
-    name: string;
-    image: string;
-    price: number;
-  }[];
+    _id: string
+    name: string
+    image: string
+    price: number
+  }[]
 }
 
 // Interface cho API options với AbortSignal
 export interface ApiOptions {
-  signal?: AbortSignal;
+  signal?: AbortSignal
 }
 
 // Mock data for fallback when API is not available
@@ -129,7 +129,7 @@ const mockProducts: Product[] = [
     createdAt: '2024-01-12T10:00:00.000Z',
     updatedAt: '2024-01-25T10:00:00.000Z',
   },
-];
+]
 
 const mockProductDetail: Product = {
   _id: 'mock-product-detail-1',
@@ -156,7 +156,7 @@ const mockProductDetail: Product = {
   location: 'Hồ Chí Minh',
   createdAt: '2024-01-01T10:00:00.000Z',
   updatedAt: '2024-01-28T10:00:00.000Z',
-};
+}
 
 const mockSearchSuggestions: SearchSuggestionsResponse = {
   suggestions: ['áo thun nam', 'áo khoác', 'áo polo'],
@@ -180,7 +180,7 @@ const mockSearchSuggestions: SearchSuggestionsResponse = {
       price: 180000,
     },
   ],
-};
+}
 
 const mockSearchHistory: string[] = [
   'áo thun nam',
@@ -188,7 +188,7 @@ const mockSearchHistory: string[] = [
   'balo laptop',
   'kem chống nắng',
   'giày thể thao',
-];
+]
 
 const productApi = {
   getProducts: async (params: ProductListConfig, options?: ApiOptions) => {
@@ -196,9 +196,9 @@ const productApi = {
       return await http.get<SuccessResponseApi<ProductList>>('/products', {
         params,
         signal: options?.signal,
-      });
+      })
     } catch (error) {
-      console.warn('⚠️ [getProducts] API not available, using mock data');
+      console.warn('⚠️ [getProducts] API not available, using mock data')
       return {
         data: {
           message: 'Lấy danh sách sản phẩm thành công (mock)',
@@ -211,7 +211,7 @@ const productApi = {
             },
           },
         },
-      };
+      }
     }
   },
 
@@ -219,16 +219,16 @@ const productApi = {
     try {
       return await http.get<SuccessResponseApi<Product>>(`/products/${id}`, {
         signal: options?.signal,
-      });
+      })
     } catch (error) {
-      console.warn('⚠️ [getProductDetail] API not available, using mock data');
+      console.warn('⚠️ [getProductDetail] API not available, using mock data')
       return {
         status: 200,
         data: {
           message: 'Lấy chi tiết sản phẩm thành công (mock)',
           data: { ...mockProductDetail, _id: id },
         },
-      };
+      }
     }
   },
 
@@ -240,15 +240,15 @@ const productApi = {
           params,
           signal: options?.signal,
         },
-      );
+      )
     } catch (error) {
-      console.warn('⚠️ [getSearchSuggestions] API not available, using mock data');
+      console.warn('⚠️ [getSearchSuggestions] API not available, using mock data')
       return {
         data: {
           message: 'Lấy gợi ý tìm kiếm thành công (mock)',
           data: mockSearchSuggestions,
         },
-      };
+      }
     }
   },
 
@@ -256,15 +256,15 @@ const productApi = {
     try {
       return await http.get<SuccessResponseApi<string[]>>('products/search/history', {
         signal: options?.signal,
-      });
+      })
     } catch (error) {
-      console.warn('⚠️ [getSearchHistory] API not available, using mock data');
+      console.warn('⚠️ [getSearchHistory] API not available, using mock data')
       return {
         data: {
           message: 'Lấy lịch sử tìm kiếm thành công (mock)',
           data: mockSearchHistory,
         },
-      };
+      }
     }
   },
 
@@ -276,15 +276,15 @@ const productApi = {
         {
           signal: options?.signal,
         },
-      );
+      )
     } catch (error) {
-      console.warn('⚠️ [saveSearchHistory] API not available, using mock data');
+      console.warn('⚠️ [saveSearchHistory] API not available, using mock data')
       return {
         data: {
           message: 'Lưu lịch sử tìm kiếm thành công (mock)',
           data: { keyword: body.keyword, saved: true },
         },
-      };
+      }
     }
   },
 
@@ -295,15 +295,15 @@ const productApi = {
         {
           signal: options?.signal,
         },
-      );
+      )
     } catch (error) {
-      console.warn('⚠️ [deleteSearchHistory] API not available, using mock data');
+      console.warn('⚠️ [deleteSearchHistory] API not available, using mock data')
       return {
         data: {
           message: 'Xóa toàn bộ lịch sử tìm kiếm thành công (mock)',
           data: { deleted_count: mockSearchHistory.length },
         },
-      };
+      }
     }
   },
 
@@ -314,17 +314,17 @@ const productApi = {
         {
           signal: options?.signal,
         },
-      );
+      )
     } catch (error) {
-      console.warn('⚠️ [deleteSearchHistoryItem] API not available, using mock data');
+      console.warn('⚠️ [deleteSearchHistoryItem] API not available, using mock data')
       return {
         data: {
           message: 'Xóa từ khóa khỏi lịch sử tìm kiếm thành công (mock)',
           data: { message: `Đã xóa "${keyword}" khỏi lịch sử tìm kiếm` },
         },
-      };
+      }
     }
   },
-};
+}
 
-export default productApi;
+export default productApi

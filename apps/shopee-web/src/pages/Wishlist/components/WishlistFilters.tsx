@@ -1,15 +1,15 @@
-import { AnimatePresence, motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
-import { filterPills, sortOptions } from '../wishlist.constants';
+import { AnimatePresence, motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
+import { filterPills, sortOptions } from '../wishlist.constants'
 
 interface WishlistFiltersProps {
-  activeFilter: string;
-  activeSort: string;
-  showSortDropdown: boolean;
-  onFilterChange: (filterId: string) => void;
-  onSortChange: (sortId: string) => void;
-  onToggleSortDropdown: () => void;
+  activeFilter: string
+  activeSort: string
+  showSortDropdown: boolean
+  onFilterChange: (filterId: string) => void
+  onSortChange: (sortId: string) => void
+  onToggleSortDropdown: () => void
 }
 
 export default function WishlistFilters({
@@ -20,7 +20,7 @@ export default function WishlistFilters({
   onSortChange,
   onToggleSortDropdown,
 }: WishlistFiltersProps) {
-  const { t } = useTranslation('wishlist');
+  const { t } = useTranslation('wishlist')
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -76,8 +76,8 @@ export default function WishlistFilters({
                   animated={false}
                   key={opt.id}
                   onClick={() => {
-                    onSortChange(opt.id);
-                    onToggleSortDropdown();
+                    onSortChange(opt.id)
+                    onToggleSortDropdown()
                   }}
                   className={`flex w-full cursor-pointer items-center gap-2 px-4 py-2 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:outline-hidden focus-visible:ring-inset dark:focus-visible:ring-orange-400 ${
                     activeSort === opt.id
@@ -94,5 +94,5 @@ export default function WishlistFilters({
         </AnimatePresence>
       </div>
     </motion.div>
-  );
+  )
 }

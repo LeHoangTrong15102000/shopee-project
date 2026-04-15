@@ -1,11 +1,11 @@
-import { motion } from 'framer-motion';
-import classNames from 'classnames';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
+import { motion } from 'framer-motion'
+import classNames from 'classnames'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
 
 export interface PriceDropBadgeProps {
-  originalPrice: number;
-  currentPrice: number;
-  className?: string;
+  originalPrice: number
+  currentPrice: number
+  className?: string
 }
 
 export default function PriceDropBadge({
@@ -13,16 +13,16 @@ export default function PriceDropBadge({
   currentPrice,
   className,
 }: PriceDropBadgeProps) {
-  const prefersReducedMotion = useReducedMotion();
+  const prefersReducedMotion = useReducedMotion()
 
   // Calculate discount percentage
   const discountPercentage = (() => {
-    if (originalPrice <= 0 || currentPrice >= originalPrice) return 0;
-    return Math.round(((originalPrice - currentPrice) / originalPrice) * 100);
-  })();
+    if (originalPrice <= 0 || currentPrice >= originalPrice) return 0
+    return Math.round(((originalPrice - currentPrice) / originalPrice) * 100)
+  })()
 
   // Don't render if no discount
-  if (discountPercentage <= 0) return null;
+  if (discountPercentage <= 0) return null
 
   const badgeContent = (
     <span
@@ -48,10 +48,10 @@ export default function PriceDropBadge({
       </svg>
       <span>Giảm {discountPercentage}%</span>
     </span>
-  );
+  )
 
   if (prefersReducedMotion) {
-    return badgeContent;
+    return badgeContent
   }
 
   return (
@@ -67,5 +67,5 @@ export default function PriceDropBadge({
     >
       {badgeContent}
     </motion.div>
-  );
+  )
 }

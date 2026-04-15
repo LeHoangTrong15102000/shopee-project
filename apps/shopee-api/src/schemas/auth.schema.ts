@@ -50,4 +50,3 @@ export const registerSchema = z.object({
 // Type exports
 export type LoginInput = z.infer<typeof loginSchema>['body']
 export type RegisterInput = z.infer<typeof registerSchema>['body']
-

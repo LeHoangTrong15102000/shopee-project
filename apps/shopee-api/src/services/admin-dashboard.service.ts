@@ -3,7 +3,11 @@ import { ProductModel } from '@database/models/product.model'
 import { UserModel } from '@database/models/user.model'
 import { ReviewModel } from '@database/models/review.model'
 import { CategoryModel } from '@database/models/category.model'
-import { getDateRangeFromPeriod, getGroupingForPeriod, PeriodValue } from '@schemas/admin-common.schema'
+import {
+  getDateRangeFromPeriod,
+  getGroupingForPeriod,
+  PeriodValue,
+} from '@schemas/admin-common.schema'
 import { getOnlineUserCount } from '../socket/managers/presence.manager'
 import { BaseService } from './base.service'
 
@@ -51,9 +55,7 @@ export class AdminDashboardService extends BaseService {
         },
       ]),
       // Order counts by status
-      OrderModel.aggregate([
-        { $group: { _id: '$status', count: { $sum: 1 } } },
-      ]),
+      OrderModel.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
       OrderModel.countDocuments(),
       OrderModel.countDocuments({ createdAt: { $gte: todayStart } }),
       UserModel.countDocuments(),
@@ -144,7 +146,12 @@ export class AdminDashboardService extends BaseService {
     const prevEnd = new Date(start.getTime() - 1)
 
     const prevResult = await OrderModel.aggregate([
-      { $match: { status: ORDER_STATUS.DELIVERED, delivered_at: { $gte: prevStart, $lte: prevEnd } } },
+      {
+        $match: {
+          status: ORDER_STATUS.DELIVERED,
+          delivered_at: { $gte: prevStart, $lte: prevEnd },
+        },
+      },
       { $group: { _id: null, revenue: { $sum: '$total' } } },
     ])
 
@@ -269,7 +276,16 @@ export class AdminDashboardService extends BaseService {
         },
       },
       { $sort: { _id: 1 } },
-      { $project: { _id: 0, date: '$_id', order_count: 1, total_value: 1, delivered: 1, cancelled: 1 } },
+      {
+        $project: {
+          _id: 0,
+          date: '$_id',
+          order_count: 1,
+          total_value: 1,
+          delivered: 1,
+          cancelled: 1,
+        },
+      },
     ])
   }
 
@@ -412,7 +428,9 @@ export class AdminDashboardService extends BaseService {
 
   async getTopRated(limit = 10, minReviews = 1) {
     return ReviewModel.aggregate([
-      { $group: { _id: '$product', review_count: { $sum: 1 }, average_rating: { $avg: '$rating' } } },
+      {
+        $group: { _id: '$product', review_count: { $sum: 1 }, average_rating: { $avg: '$rating' } },
+      },
       { $match: { review_count: { $gte: minReviews } } },
       { $sort: { average_rating: -1, review_count: -1 } },
       { $limit: limit },
@@ -476,4 +494,3 @@ export class AdminDashboardService extends BaseService {
     ])
   }
 }
-

@@ -26,7 +26,7 @@ export class ProductRepository implements IProductRepository {
 
   async findPaginated(
     filter: FilterQuery<IProduct>,
-    options: PaginationOptions
+    options: PaginationOptions,
   ): Promise<PaginatedResult<IProduct>> {
     const { page, limit, sort } = options
     const skip = (page - 1) * limit
@@ -90,7 +90,7 @@ export class ProductRepository implements IProductRepository {
   async findProducts(
     filters: ProductFilterOptions,
     sort: ProductSortOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IProduct>> {
     const condition: FilterQuery<IProduct> = {}
 
@@ -127,15 +127,15 @@ export class ProductRepository implements IProductRepository {
 
   async findByCategory(
     categoryId: string | Types.ObjectId,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IProduct>> {
-    return this.findPaginated(
-      { category: new Types.ObjectId(categoryId.toString()) },
-      pagination
-    )
+    return this.findPaginated({ category: new Types.ObjectId(categoryId.toString()) }, pagination)
   }
 
-  async searchByName(query: string, pagination: PaginationOptions): Promise<PaginatedResult<IProduct>> {
+  async searchByName(
+    query: string,
+    pagination: PaginationOptions,
+  ): Promise<PaginatedResult<IProduct>> {
     const regex = new RegExp(query, 'i')
     return this.findPaginated({ name: regex }, pagination)
   }
@@ -152,7 +152,7 @@ export class ProductRepository implements IProductRepository {
   async decrementQuantity(productId: string | Types.ObjectId, count: number): Promise<void> {
     await ProductModel.findOneAndUpdate(
       { _id: productId, quantity: { $gte: count } },
-      { $inc: { quantity: -count } }
+      { $inc: { quantity: -count } },
     )
   }
 
@@ -166,7 +166,9 @@ export class ProductRepository implements IProductRepository {
       .lean<IProduct[]>()
   }
 
-  async bulkUpdate(updates: Array<{ id: string | Types.ObjectId; data: UpdateProductDTO }>): Promise<number> {
+  async bulkUpdate(
+    updates: Array<{ id: string | Types.ObjectId; data: UpdateProductDTO }>,
+  ): Promise<number> {
     const bulkOps = updates.map(({ id, data }) => ({
       updateOne: {
         filter: { _id: new Types.ObjectId(id.toString()) },
@@ -178,7 +180,11 @@ export class ProductRepository implements IProductRepository {
   }
 
   async bulkUpdateStock(
-    updates: Array<{ product_id: string | Types.ObjectId; quantity_change: number; sold_change: number }>
+    updates: Array<{
+      product_id: string | Types.ObjectId
+      quantity_change: number
+      sold_change: number
+    }>,
   ): Promise<number> {
     const bulkOps = updates.map(({ product_id, quantity_change, sold_change }) => ({
       updateOne: {
@@ -198,7 +204,7 @@ export class ProductRepository implements IProductRepository {
 
   async findLowStockPaginated(
     threshold: number,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IProduct>> {
     const { page, limit } = pagination
     const skip = (page - 1) * limit
@@ -241,4 +247,3 @@ export class ProductRepository implements IProductRepository {
     }
   }
 }
-

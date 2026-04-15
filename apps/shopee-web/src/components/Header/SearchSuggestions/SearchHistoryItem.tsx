@@ -1,18 +1,18 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
-  historyItem: string;
-  onSelect: () => void;
-  onDelete?: () => void;
+  historyItem: string
+  onSelect: () => void
+  onDelete?: () => void
 }
 
 const SearchHistoryItem = ({ historyItem, onSelect, onDelete }: Props) => {
-  const { t } = useTranslation('nav');
+  const { t } = useTranslation('nav')
   const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onDelete?.();
-  };
+    e.stopPropagation()
+    onDelete?.()
+  }
 
   return (
     <div
@@ -57,7 +57,7 @@ const SearchHistoryItem = ({ historyItem, onSelect, onDelete }: Props) => {
         </button>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default SearchHistoryItem;
+export default SearchHistoryItem

@@ -17,7 +17,7 @@ export const emitInventoryAlert = (
   productId: string,
   productName: string,
   currentQuantity: number,
-  threshold: number
+  threshold: number,
 ): void => {
   try {
     const io = getIORequired()
@@ -50,7 +50,9 @@ export const emitInventoryAlert = (
 
         if (adminUsers.length > 0) {
           const title =
-            severity === 'critical' ? `🚨 Hết hàng: ${productName}` : `⚠️ Sắp hết hàng: ${productName}`
+            severity === 'critical'
+              ? `🚨 Hết hàng: ${productName}`
+              : `⚠️ Sắp hết hàng: ${productName}`
           const content =
             currentQuantity === 0
               ? `Sản phẩm "${productName}" đã hết hàng!`
@@ -84,4 +86,3 @@ export const emitInventoryAlert = (
     })
   }
 }
-

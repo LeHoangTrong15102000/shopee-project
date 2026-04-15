@@ -1,5 +1,5 @@
-import { createMockProductAnalytics, createMockChatbotAnalytics } from 'src/test-utils/factories';
-import type { ProductAnalytics, ChatbotAnalytics } from 'src/types';
+import { createMockProductAnalytics, createMockChatbotAnalytics } from 'src/test-utils/factories'
+import type { ProductAnalytics, ChatbotAnalytics } from 'src/types'
 
 export const mockProductAnalytics: ProductAnalytics[] = [
   createMockProductAnalytics({
@@ -26,7 +26,7 @@ export const mockProductAnalytics: ProductAnalytics[] = [
     rating: 4.9,
     revenue: 1799400000,
   }),
-];
+]
 
 export const mockCategoryStats = [
   {
@@ -56,6 +56,6 @@ export const mockCategoryStats = [
     average_price: 500000,
     average_rating: 4.3,
   },
-];
+]
 
-export const mockChatbotAnalytics: ChatbotAnalytics = createMockChatbotAnalytics();
+export const mockChatbotAnalytics: ChatbotAnalytics = createMockChatbotAnalytics()

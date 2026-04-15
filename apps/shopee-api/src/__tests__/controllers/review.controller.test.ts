@@ -63,7 +63,12 @@ const createMockRequest = (options: any = {}): Partial<Request> => ({
   params: options.params || {},
   query: options.query || {},
   headers: options.headers || {},
-  jwtDecoded: options.jwtDecoded || { id: 'user123', email: 'test@test.com', roles: ['User'], created_at: '2024-01-01' },
+  jwtDecoded: options.jwtDecoded || {
+    id: 'user123',
+    email: 'test@test.com',
+    roles: ['User'],
+    created_at: '2024-01-01',
+  },
 })
 
 const createMockResponse = (): Partial<Response> => {
@@ -89,18 +94,35 @@ describe('Review Controller', () => {
         images: ['img1.jpg'],
         createdAt: new Date(),
       }
-      mockReviewService.createReview.mockResolvedValue({ review: mockReview, productId: 'prod123' } as any)
+      mockReviewService.createReview.mockResolvedValue({
+        review: mockReview,
+        productId: 'prod123',
+      } as any)
 
       const req = createMockRequest({
-        body: { purchase_id: 'purchase123', rating: 5, comment: 'Great product!', images: ['img1.jpg'] },
+        body: {
+          purchase_id: 'purchase123',
+          rating: 5,
+          comment: 'Great product!',
+          images: ['img1.jpg'],
+        },
       })
       const res = createMockResponse()
 
       await createReview(req as any, res as Response)
 
-      expect(mockReviewService.createReview).toHaveBeenCalledWith('user123', 'purchase123', 5, 'Great product!', ['img1.jpg'])
+      expect(mockReviewService.createReview).toHaveBeenCalledWith(
+        'user123',
+        'purchase123',
+        5,
+        'Great product!',
+        ['img1.jpg'],
+      )
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Đánh giá sản phẩm thành công', data: mockReview })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Đánh giá sản phẩm thành công',
+        data: mockReview,
+      })
     })
 
     it('should return 400 on ValidationError', async () => {
@@ -149,16 +171,28 @@ describe('Review Controller', () => {
       }
       mockReviewService.getProductReviews.mockResolvedValue(mockResult as any)
 
-      const req = createMockRequest({ params: { product_id: 'prod123' }, query: { page: '1', limit: '10' } })
+      const req = createMockRequest({
+        params: { product_id: 'prod123' },
+        query: { page: '1', limit: '10' },
+      })
       const res = createMockResponse()
 
       await getProductReviews(req as any, res as Response)
 
-      expect(mockReviewService.getProductReviews).toHaveBeenCalledWith('prod123', 'user123', { rating: undefined, sort: 'newest' }, { page: 1, limit: 10 })
+      expect(mockReviewService.getProductReviews).toHaveBeenCalledWith(
+        'prod123',
+        'user123',
+        { rating: undefined, sort: 'newest' },
+        { page: 1, limit: 10 },
+      )
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
       expect(res.json).toHaveBeenCalledWith({
         message: 'Lấy danh sách đánh giá thành công',
-        data: { reviews: mockResult.reviews, pagination: mockResult.pagination, stats: mockResult.stats },
+        data: {
+          reviews: mockResult.reviews,
+          pagination: mockResult.pagination,
+          stats: mockResult.stats,
+        },
       })
     })
 
@@ -177,7 +211,11 @@ describe('Review Controller', () => {
 
   describe('toggleReviewLike', () => {
     it('should return liked message when review is liked', async () => {
-      mockReviewService.toggleReviewLike.mockResolvedValue({ is_liked: true, helpful_count: 5, productId: 'prod123' } as any)
+      mockReviewService.toggleReviewLike.mockResolvedValue({
+        is_liked: true,
+        helpful_count: 5,
+        productId: 'prod123',
+      } as any)
 
       const req = createMockRequest({ params: { review_id: 'review123' } })
       const res = createMockResponse()
@@ -186,11 +224,18 @@ describe('Review Controller', () => {
 
       expect(mockReviewService.toggleReviewLike).toHaveBeenCalledWith('user123', 'review123')
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Thích đánh giá thành công', data: { is_liked: true, helpful_count: 5 } })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Thích đánh giá thành công',
+        data: { is_liked: true, helpful_count: 5 },
+      })
     })
 
     it('should return unliked message when review is unliked', async () => {
-      mockReviewService.toggleReviewLike.mockResolvedValue({ is_liked: false, helpful_count: 4, productId: 'prod123' } as any)
+      mockReviewService.toggleReviewLike.mockResolvedValue({
+        is_liked: false,
+        helpful_count: 4,
+        productId: 'prod123',
+      } as any)
 
       const req = createMockRequest({ params: { review_id: 'review123' } })
       const res = createMockResponse()
@@ -198,7 +243,10 @@ describe('Review Controller', () => {
       await toggleReviewLike(req as any, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Bỏ thích đánh giá thành công', data: { is_liked: false, helpful_count: 4 } })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Bỏ thích đánh giá thành công',
+        data: { is_liked: false, helpful_count: 4 },
+      })
     })
 
     it('should return 400 on ValidationError', async () => {
@@ -247,20 +295,33 @@ describe('Review Controller', () => {
         level: 0,
         createdAt: new Date(),
       }
-      mockReviewService.createReviewComment.mockResolvedValue({ comment: mockComment, productId: 'prod123' } as any)
+      mockReviewService.createReviewComment.mockResolvedValue({
+        comment: mockComment,
+        productId: 'prod123',
+      } as any)
 
       const req = createMockRequest({ body: { review_id: 'review123', content: 'Nice review!' } })
       const res = createMockResponse()
 
       await createReviewComment(req as any, res as Response)
 
-      expect(mockReviewService.createReviewComment).toHaveBeenCalledWith('user123', 'review123', 'Nice review!', undefined)
+      expect(mockReviewService.createReviewComment).toHaveBeenCalledWith(
+        'user123',
+        'review123',
+        'Nice review!',
+        undefined,
+      )
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Tạo bình luận thành công', data: mockComment })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Tạo bình luận thành công',
+        data: mockComment,
+      })
     })
 
     it('should return 400 on ValidationError', async () => {
-      mockReviewService.createReviewComment.mockRejectedValue(new ValidationError('Content too short'))
+      mockReviewService.createReviewComment.mockRejectedValue(
+        new ValidationError('Content too short'),
+      )
 
       const req = createMockRequest({ body: { review_id: 'r1', content: 'Hi' } })
       const res = createMockResponse()
@@ -304,21 +365,32 @@ describe('Review Controller', () => {
       }
       mockReviewService.getReviewComments.mockResolvedValue(mockResult as any)
 
-      const req = createMockRequest({ params: { review_id: 'review123' }, query: { page: '1', limit: '10' } })
+      const req = createMockRequest({
+        params: { review_id: 'review123' },
+        query: { page: '1', limit: '10' },
+      })
       const res = createMockResponse()
 
       await getReviewComments(req as any, res as Response)
 
-      expect(mockReviewService.getReviewComments).toHaveBeenCalledWith('review123', { page: 1, limit: 10 })
+      expect(mockReviewService.getReviewComments).toHaveBeenCalledWith('review123', {
+        page: 1,
+        limit: 10,
+      })
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
       expect(res.json).toHaveBeenCalledWith({
         message: 'Lấy danh sách bình luận thành công',
-        data: { comments: mockResult.data, pagination: { page: 1, limit: 10, total: 1, total_pages: 1 } },
+        data: {
+          comments: mockResult.data,
+          pagination: { page: 1, limit: 10, total: 1, total_pages: 1 },
+        },
       })
     })
 
     it('should return 400 on ValidationError', async () => {
-      mockReviewService.getReviewComments.mockRejectedValue(new ValidationError('Invalid review id'))
+      mockReviewService.getReviewComments.mockRejectedValue(
+        new ValidationError('Invalid review id'),
+      )
 
       const req = createMockRequest({ params: { review_id: 'invalid' } })
       const res = createMockResponse()
@@ -354,11 +426,16 @@ describe('Review Controller', () => {
 
       expect(mockReviewService.canReviewPurchase).toHaveBeenCalledWith('user123', 'purchase123')
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Kiểm tra quyền đánh giá thành công', data: mockResult })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Kiểm tra quyền đánh giá thành công',
+        data: mockResult,
+      })
     })
 
     it('should return 400 on ValidationError', async () => {
-      mockReviewService.canReviewPurchase.mockRejectedValue(new ValidationError('Invalid purchase id'))
+      mockReviewService.canReviewPurchase.mockRejectedValue(
+        new ValidationError('Invalid purchase id'),
+      )
 
       const req = createMockRequest({ params: { purchase_id: 'invalid' } })
       const res = createMockResponse()
@@ -382,4 +459,3 @@ describe('Review Controller', () => {
     })
   })
 })
-

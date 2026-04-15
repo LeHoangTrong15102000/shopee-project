@@ -3,13 +3,14 @@ import { config } from '@constants/config'
 import { Request, Response } from 'express'
 import { STATUS } from '@constants/status'
 import { Logger } from '@utils/logger'
-import {
-  recordFailedLogin,
-  resetLoginAttempts,
-} from '@middleware/security.middleware'
+import { recordFailedLogin, resetLoginAttempts } from '@middleware/security.middleware'
 import { AUTH_MESSAGES } from '@constants/messages'
 import { authService } from '../container'
-import { ConflictError, ValidationError as ServiceValidationError, UnauthorizedError as ServiceUnauthorizedError } from '@services/base.service'
+import {
+  ConflictError,
+  ValidationError as ServiceValidationError,
+  UnauthorizedError as ServiceUnauthorizedError,
+} from '@services/base.service'
 
 /**
  * Lấy IP thực của client
@@ -37,7 +38,7 @@ const registerController = async (req: Request, res: Response) => {
 
     const result = await authService.register(
       { email, password },
-      { expireAccessToken: expireAccessTokenConfig, expireRefreshToken: expireRefreshTokenConfig }
+      { expireAccessToken: expireAccessTokenConfig, expireRefreshToken: expireRefreshTokenConfig },
     )
 
     const response = {
@@ -61,7 +62,7 @@ const loginController = async (req: Request, res: Response) => {
 
     const result = await authService.login(
       { email, password },
-      { expireAccessToken: expireAccessTokenConfig, expireRefreshToken: expireRefreshTokenConfig }
+      { expireAccessToken: expireAccessTokenConfig, expireRefreshToken: expireRefreshTokenConfig },
     )
 
     // Đăng nhập thành công - reset login attempts

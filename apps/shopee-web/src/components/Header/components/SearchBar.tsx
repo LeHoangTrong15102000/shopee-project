@@ -1,26 +1,26 @@
-import { useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import SearchSuggestions from '../SearchSuggestions';
-import SearchHistory from 'src/components/SearchHistory';
-import { useProductQueryStates } from 'src/hooks/nuqs';
-import useSearchHistory from 'src/hooks/useSearchHistory';
-import Button from 'src/components/Button';
+import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import SearchSuggestions from '../SearchSuggestions'
+import SearchHistory from 'src/components/SearchHistory'
+import { useProductQueryStates } from 'src/hooks/nuqs'
+import useSearchHistory from 'src/hooks/useSearchHistory'
+import Button from 'src/components/Button'
 
 interface SearchBarProps {
-  filters: ReturnType<typeof useProductQueryStates>[0];
-  setFilters: ReturnType<typeof useProductQueryStates>[1];
+  filters: ReturnType<typeof useProductQueryStates>[0]
+  setFilters: ReturnType<typeof useProductQueryStates>[1]
 }
 
 const SearchBar = ({ filters, setFilters }: SearchBarProps) => {
-  const { t } = useTranslation('nav');
-  const [searchValue, setSearchValue] = useState<string>('');
-  const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
-  const [showSearchHistory, setShowSearchHistory] = useState<boolean>(false);
+  const { t } = useTranslation('nav')
+  const [searchValue, setSearchValue] = useState<string>('')
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(false)
+  const [showSearchHistory, setShowSearchHistory] = useState<boolean>(false)
 
-  const inputRef = useRef<HTMLInputElement>(null);
-  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null)
+  const searchContainerRef = useRef<HTMLDivElement>(null)
 
-  const { searchHistory, addToHistory, removeFromHistory, clearHistory } = useSearchHistory();
+  const { searchHistory, addToHistory, removeFromHistory, clearHistory } = useSearchHistory()
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -28,107 +28,107 @@ const SearchBar = ({ filters, setFilters }: SearchBarProps) => {
         searchContainerRef.current &&
         !searchContainerRef.current.contains(event.target as Node)
       ) {
-        setShowSuggestions(false);
-        setShowSearchHistory(false);
+        setShowSuggestions(false)
+        setShowSearchHistory(false)
       }
-    };
+    }
 
     const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setShowSuggestions(false);
-        setShowSearchHistory(false);
-        inputRef.current?.blur();
+        setShowSuggestions(false)
+        setShowSearchHistory(false)
+        inputRef.current?.blur()
       }
-    };
+    }
 
     if (showSuggestions || showSearchHistory) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleEscapeKey);
+      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('keydown', handleEscapeKey)
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscapeKey);
-    };
-  }, [showSuggestions, showSearchHistory]);
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEscapeKey)
+    }
+  }, [showSuggestions, showSearchHistory])
 
   const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.target;
-    setSearchValue(value);
+    const { value } = event.target
+    setSearchValue(value)
     if (value.trim()) {
-      setShowSearchHistory(false);
-      setShowSuggestions(true);
+      setShowSearchHistory(false)
+      setShowSuggestions(true)
     } else {
-      setShowSuggestions(false);
-      setShowSearchHistory(true);
+      setShowSuggestions(false)
+      setShowSearchHistory(true)
     }
-  };
+  }
 
   const handleFocusInput = () => {
     if (!searchValue.trim()) {
-      setShowSearchHistory(true);
-      setShowSuggestions(false);
+      setShowSearchHistory(true)
+      setShowSuggestions(false)
     } else {
-      setShowSuggestions(true);
-      setShowSearchHistory(false);
+      setShowSuggestions(true)
+      setShowSearchHistory(false)
     }
-  };
+  }
 
   const handleBlurInput = () => {
     setTimeout(() => {
       if (!searchContainerRef.current?.contains(document.activeElement)) {
-        setShowSuggestions(false);
-        setShowSearchHistory(false);
+        setShowSuggestions(false)
+        setShowSearchHistory(false)
       }
-    }, 150);
-  };
+    }, 150)
+  }
 
-  const searchParamsName = filters.name ?? '';
+  const searchParamsName = filters.name ?? ''
 
   useEffect(() => {
     if (searchParamsName) {
-      setSearchValue(searchParamsName);
+      setSearchValue(searchParamsName)
     }
-  }, [searchParamsName]);
+  }, [searchParamsName])
 
   const handleHideSuggestions = () => {
-    setShowSuggestions(false);
-    setShowSearchHistory(false);
-  };
+    setShowSuggestions(false)
+    setShowSearchHistory(false)
+  }
 
   const handleSearchSubmit = (searchTerm?: string) => {
-    const finalSearchValue = searchTerm || searchValue.trim();
+    const finalSearchValue = searchTerm || searchValue.trim()
 
-    if (!finalSearchValue) return;
+    if (!finalSearchValue) return
 
-    addToHistory(finalSearchValue);
+    addToHistory(finalSearchValue)
 
     if (filters.order) {
-      setFilters({ name: finalSearchValue, order: null, sort_by: 'createdAt' as const });
+      setFilters({ name: finalSearchValue, order: null, sort_by: 'createdAt' as const })
     } else {
-      setFilters({ name: finalSearchValue });
+      setFilters({ name: finalSearchValue })
     }
 
-    setShowSuggestions(false);
-    setShowSearchHistory(false);
-    inputRef.current?.blur();
-  };
+    setShowSuggestions(false)
+    setShowSearchHistory(false)
+    inputRef.current?.blur()
+  }
 
   const handleSelectSuggestion = (suggestion: string) => {
-    setSearchValue(suggestion);
-    handleSearchSubmit(suggestion);
-  };
+    setSearchValue(suggestion)
+    handleSearchSubmit(suggestion)
+  }
 
   const handleSelectHistoryItem = (query: string) => {
-    setSearchValue(query);
-    setShowSearchHistory(false);
-    handleSearchSubmit(query);
-  };
+    setSearchValue(query)
+    setShowSearchHistory(false)
+    handleSearchSubmit(query)
+  }
 
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    handleSearchSubmit();
-  };
+    event.preventDefault()
+    handleSearchSubmit()
+  }
 
   return (
     <div className="relative min-w-0 flex-1" ref={searchContainerRef}>
@@ -184,7 +184,7 @@ const SearchBar = ({ filters, setFilters }: SearchBarProps) => {
         />
       )}
     </div>
-  );
-};
+  )
+}
 
-export default SearchBar;
+export default SearchBar

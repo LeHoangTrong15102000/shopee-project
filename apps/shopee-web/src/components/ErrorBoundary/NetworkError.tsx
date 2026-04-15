@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import Button from 'src/components/Button';
+import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import { motion } from 'framer-motion'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import Button from 'src/components/Button'
 
 interface NetworkErrorProps {
-  onRetry?: () => void;
-  autoRetry?: boolean;
-  autoRetryInterval?: number;
-  maxAutoRetries?: number;
-  className?: string;
+  onRetry?: () => void
+  autoRetry?: boolean
+  autoRetryInterval?: number
+  maxAutoRetries?: number
+  className?: string
 }
 
 export default function NetworkError({
@@ -19,49 +19,49 @@ export default function NetworkError({
   maxAutoRetries = 3,
   className = '',
 }: NetworkErrorProps) {
-  const { t } = useTranslation('common');
-  const [isRetrying, setIsRetrying] = useState(false);
-  const [autoRetryCount, setAutoRetryCount] = useState(0);
-  const [countdown, setCountdown] = useState(0);
+  const { t } = useTranslation('common')
+  const [isRetrying, setIsRetrying] = useState(false)
+  const [autoRetryCount, setAutoRetryCount] = useState(0)
+  const [countdown, setCountdown] = useState(0)
 
   const handleRetry = async () => {
-    if (!onRetry) return;
+    if (!onRetry) return
 
-    setIsRetrying(true);
+    setIsRetrying(true)
     try {
-      await onRetry();
+      await onRetry()
     } finally {
-      setTimeout(() => setIsRetrying(false), 500);
+      setTimeout(() => setIsRetrying(false), 500)
     }
-  };
+  }
 
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = useReducedMotion()
 
   useEffect(() => {
-    if (!autoRetry || autoRetryCount >= maxAutoRetries) return;
+    if (!autoRetry || autoRetryCount >= maxAutoRetries) return
 
-    setCountdown(Math.ceil(autoRetryInterval / 1000));
+    setCountdown(Math.ceil(autoRetryInterval / 1000))
 
     const countdownTimer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          clearInterval(countdownTimer);
-          return 0;
+          clearInterval(countdownTimer)
+          return 0
         }
-        return prev - 1;
-      });
-    }, 1000);
+        return prev - 1
+      })
+    }, 1000)
 
     const retryTimer = setTimeout(() => {
-      setAutoRetryCount((prev) => prev + 1);
-      handleRetry();
-    }, autoRetryInterval);
+      setAutoRetryCount((prev) => prev + 1)
+      handleRetry()
+    }, autoRetryInterval)
 
     return () => {
-      clearInterval(countdownTimer);
-      clearTimeout(retryTimer);
-    };
-  }, [autoRetry, autoRetryCount, autoRetryInterval, maxAutoRetries, handleRetry]);
+      clearInterval(countdownTimer)
+      clearTimeout(retryTimer)
+    }
+  }, [autoRetry, autoRetryCount, autoRetryInterval, maxAutoRetries, handleRetry])
 
   return (
     <motion.div
@@ -178,5 +178,5 @@ export default function NetworkError({
         </Button>
       )}
     </motion.div>
-  );
+  )
 }

@@ -26,7 +26,7 @@ class CacheService {
    */
   get<T>(key: string): T | null {
     const entry = this.cache.get(key)
-    
+
     if (!entry) {
       return null
     }
@@ -135,7 +135,17 @@ export const CacheKeys = {
     price_max?: string
     name?: string
   }): string => {
-    const { page = 1, limit = 30, category = '', sort_by = '', order = '', rating_filter = '', price_min = '', price_max = '', name = '' } = params
+    const {
+      page = 1,
+      limit = 30,
+      category = '',
+      sort_by = '',
+      order = '',
+      rating_filter = '',
+      price_min = '',
+      price_max = '',
+      name = '',
+    } = params
     return `products:list:${page}:${limit}:${category}:${sort_by}:${order}:${rating_filter}:${price_min}:${price_max}:${name}`
   },
 
@@ -172,10 +182,9 @@ export const CacheKeys = {
 
 // TTL constants (giây)
 export const CacheTTL = {
-  PRODUCTS_LIST: 5 * 60,      // 5 phút
-  PRODUCT_DETAIL: 10 * 60,    // 10 phút
-  CATEGORIES_LIST: 30 * 60,   // 30 phút
+  PRODUCTS_LIST: 5 * 60, // 5 phút
+  PRODUCT_DETAIL: 10 * 60, // 10 phút
+  CATEGORIES_LIST: 30 * 60, // 30 phút
 }
 
 export default cacheService
-

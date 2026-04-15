@@ -1,24 +1,24 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
-import path from 'src/constant/path';
-import SEO from 'src/components/SEO';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import { useIsMobile } from 'src/hooks/useIsMobile';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
+import path from 'src/constant/path'
+import SEO from 'src/components/SEO'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import { useIsMobile } from 'src/hooks/useIsMobile'
 import {
   staggerContainer,
   staggerItem,
   STAGGER_DELAY,
   ANIMATION_DURATION,
-} from 'src/styles/animations';
+} from 'src/styles/animations'
 
 const NotFound = () => {
-  const { t } = useTranslation('common');
-  const reducedMotion = useReducedMotion();
-  const isMobile = useIsMobile();
-  const disableAnimation = reducedMotion || isMobile;
+  const { t } = useTranslation('common')
+  const reducedMotion = useReducedMotion()
+  const isMobile = useIsMobile()
+  const disableAnimation = reducedMotion || isMobile
 
-  const containerVariants = staggerContainer(STAGGER_DELAY.slow);
+  const containerVariants = staggerContainer(STAGGER_DELAY.slow)
 
   const floatingVariants = {
     hidden: { opacity: 0, scale: 0.5 },
@@ -27,7 +27,7 @@ const NotFound = () => {
       scale: 1,
       transition: { duration: ANIMATION_DURATION.slow, ease: 'easeOut' },
     },
-  };
+  }
 
   return (
     <motion.main
@@ -61,7 +61,7 @@ const NotFound = () => {
         </Link>
       </motion.div>
     </motion.main>
-  );
-};
+  )
+}
 
-export default NotFound;
+export default NotFound

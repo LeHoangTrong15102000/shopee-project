@@ -1,20 +1,20 @@
-import { Link } from 'react-router';
-import classNames from 'classnames';
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { Product } from 'src/types/product.type';
-import { formatCurrency, formatNumberToSocialStyle, generateNameId } from 'src/utils/utils';
-import ProductRating from 'src/components/ProductRating';
-import Button from 'src/components/Button';
-import path from 'src/constant/path';
-import { BestBadge, BestValues, getDiscountPercent } from '../comparisonTable.constants';
+import { Link } from 'react-router'
+import classNames from 'classnames'
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { Product } from 'src/types/product.type'
+import { formatCurrency, formatNumberToSocialStyle, generateNameId } from 'src/utils/utils'
+import ProductRating from 'src/components/ProductRating'
+import Button from 'src/components/Button'
+import path from 'src/constant/path'
+import { BestBadge, BestValues, getDiscountPercent } from '../comparisonTable.constants'
 
 interface ComparisonTableDesktopProps {
-  compareList: Product[];
-  bestValues: BestValues | null;
-  removeFromCompare: (id: string) => void;
-  handleAddToCart: (product: Product) => void;
-  reduceMotion: boolean;
+  compareList: Product[]
+  bestValues: BestValues | null
+  removeFromCompare: (id: string) => void
+  handleAddToCart: (product: Product) => void
+  reduceMotion: boolean
 }
 
 export default function ComparisonTableDesktop({
@@ -24,7 +24,7 @@ export default function ComparisonTableDesktop({
   handleAddToCart,
   reduceMotion,
 }: ComparisonTableDesktopProps) {
-  const { t } = useTranslation('compare');
+  const { t } = useTranslation('compare')
   return (
     <table
       className="hidden w-full border-collapse md:table"
@@ -100,11 +100,11 @@ export default function ComparisonTableDesktop({
         />
       </tbody>
     </table>
-  );
+  )
 }
 
 function ImageRow({ compareList }: { compareList: Product[] }) {
-  const { t } = useTranslation('compare');
+  const { t } = useTranslation('compare')
   return (
     <tr role="row">
       <th
@@ -133,11 +133,11 @@ function ImageRow({ compareList }: { compareList: Product[] }) {
         </td>
       ))}
     </tr>
-  );
+  )
 }
 
 function NameRow({ compareList }: { compareList: Product[] }) {
-  const { t } = useTranslation('compare');
+  const { t } = useTranslation('compare')
   return (
     <tr role="row">
       <th
@@ -163,17 +163,17 @@ function NameRow({ compareList }: { compareList: Product[] }) {
         </td>
       ))}
     </tr>
-  );
+  )
 }
 
 interface RowWithBestProps {
-  compareList: Product[];
-  bestValues: BestValues | null;
-  reduceMotion: boolean;
+  compareList: Product[]
+  bestValues: BestValues | null
+  reduceMotion: boolean
 }
 
 function PriceRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
-  const { t } = useTranslation('compare');
+  const { t } = useTranslation('compare')
   return (
     <tr role="row">
       <th
@@ -184,7 +184,7 @@ function PriceRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
         {t('price')}
       </th>
       {compareList.map((product) => {
-        const isBest = bestValues && product.price === bestValues.bestPrice;
+        const isBest = bestValues && product.price === bestValues.bestPrice
         return (
           <td
             key={product._id}
@@ -196,14 +196,14 @@ function PriceRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
             <span className="font-semibold text-orange">₫{formatCurrency(product.price)}</span>
             {isBest && <BestBadge label={t('bestPrice')} reduceMotion={reduceMotion} />}
           </td>
-        );
+        )
       })}
     </tr>
-  );
+  )
 }
 
 function OriginalPriceRow({ compareList }: { compareList: Product[] }) {
-  const { t } = useTranslation('compare');
+  const { t } = useTranslation('compare')
   return (
     <tr role="row">
       <th
@@ -225,11 +225,11 @@ function OriginalPriceRow({ compareList }: { compareList: Product[] }) {
         </td>
       ))}
     </tr>
-  );
+  )
 }
 
 function DiscountRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
-  const { t } = useTranslation('compare');
+  const { t } = useTranslation('compare')
   return (
     <tr role="row">
       <th
@@ -240,8 +240,8 @@ function DiscountRow({ compareList, bestValues, reduceMotion }: RowWithBestProps
         {t('discount')}
       </th>
       {compareList.map((product) => {
-        const discount = getDiscountPercent(product);
-        const isBest = bestValues && discount === bestValues.bestDiscount && discount > 0;
+        const discount = getDiscountPercent(product)
+        const isBest = bestValues && discount === bestValues.bestDiscount && discount > 0
         return (
           <td
             key={product._id}
@@ -259,14 +259,14 @@ function DiscountRow({ compareList, bestValues, reduceMotion }: RowWithBestProps
               <span className="text-gray-400 dark:text-gray-500">-</span>
             )}
           </td>
-        );
+        )
       })}
     </tr>
-  );
+  )
 }
 
 function RatingRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
-  const { t } = useTranslation('compare');
+  const { t } = useTranslation('compare')
   return (
     <tr role="row">
       <th
@@ -277,7 +277,7 @@ function RatingRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) 
         {t('rating')}
       </th>
       {compareList.map((product) => {
-        const isBest = bestValues && product.rating === bestValues.bestRating;
+        const isBest = bestValues && product.rating === bestValues.bestRating
         return (
           <td
             key={product._id}
@@ -292,14 +292,14 @@ function RatingRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) 
               {isBest && <BestBadge label={t('highestRated')} reduceMotion={reduceMotion} />}
             </div>
           </td>
-        );
+        )
       })}
     </tr>
-  );
+  )
 }
 
 function SoldRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
-  const { t } = useTranslation('compare');
+  const { t } = useTranslation('compare')
   return (
     <tr role="row">
       <th
@@ -310,7 +310,7 @@ function SoldRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
         {t('sold')}
       </th>
       {compareList.map((product) => {
-        const isBest = bestValues && product.sold === bestValues.bestSold;
+        const isBest = bestValues && product.sold === bestValues.bestSold
         return (
           <td
             key={product._id}
@@ -324,14 +324,14 @@ function SoldRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
             </span>
             {isBest && <BestBadge label={t('bestSeller')} reduceMotion={reduceMotion} />}
           </td>
-        );
+        )
       })}
     </tr>
-  );
+  )
 }
 
 function StockRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
-  const { t } = useTranslation('compare');
+  const { t } = useTranslation('compare')
   return (
     <tr role="row">
       <th
@@ -342,7 +342,7 @@ function StockRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
         {t('stock')}
       </th>
       {compareList.map((product) => {
-        const isBest = bestValues && product.quantity === bestValues.bestStock;
+        const isBest = bestValues && product.quantity === bestValues.bestStock
         return (
           <td
             key={product._id}
@@ -356,14 +356,14 @@ function StockRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
             </span>
             {isBest && <BestBadge label={t('mostStock')} reduceMotion={reduceMotion} />}
           </td>
-        );
+        )
       })}
     </tr>
-  );
+  )
 }
 
 function CategoryRow({ compareList }: { compareList: Product[] }) {
-  const { t } = useTranslation('compare');
+  const { t } = useTranslation('compare')
   return (
     <tr role="row">
       <th
@@ -385,11 +385,11 @@ function CategoryRow({ compareList }: { compareList: Product[] }) {
         </td>
       ))}
     </tr>
-  );
+  )
 }
 
 function RecommendationRow({ compareList, bestValues, reduceMotion }: RowWithBestProps) {
-  const { t } = useTranslation('compare');
+  const { t } = useTranslation('compare')
   return (
     <tr role="row">
       <th
@@ -400,7 +400,7 @@ function RecommendationRow({ compareList, bestValues, reduceMotion }: RowWithBes
         {t('recommendation')}
       </th>
       {compareList.map((product) => {
-        const isRecommended = product._id === bestValues?.recommendedProductId;
+        const isRecommended = product._id === bestValues?.recommendedProductId
         return (
           <td
             key={product._id}
@@ -427,20 +427,20 @@ function RecommendationRow({ compareList, bestValues, reduceMotion }: RowWithBes
               <span className="text-gray-400 dark:text-gray-500">-</span>
             )}
           </td>
-        );
+        )
       })}
     </tr>
-  );
+  )
 }
 
 interface ActionRowProps {
-  compareList: Product[];
-  handleAddToCart: (product: Product) => void;
-  removeFromCompare: (id: string) => void;
+  compareList: Product[]
+  handleAddToCart: (product: Product) => void
+  removeFromCompare: (id: string) => void
 }
 
 function ActionRow({ compareList, handleAddToCart, removeFromCompare }: ActionRowProps) {
-  const { t } = useTranslation('compare');
+  const { t } = useTranslation('compare')
   return (
     <tr role="row">
       <td className="p-3 text-sm text-gray-600 dark:text-gray-300" role="cell"></td>
@@ -467,5 +467,5 @@ function ActionRow({ compareList, handleAddToCart, removeFromCompare }: ActionRo
         </td>
       ))}
     </tr>
-  );
+  )
 }

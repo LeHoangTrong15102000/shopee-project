@@ -1,36 +1,36 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { format } from 'date-fns';
-import { toast } from 'sonner';
-import { ArrowLeft, Star, Trash2, CheckCircle, Flag } from 'lucide-react';
-import { Button } from 'src/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
-import { Badge } from 'src/components/ui/badge';
-import { Separator } from 'src/components/ui/separator';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { StatusBadge } from 'src/components/shared/StatusBadge';
-import { LoadingState } from 'src/components/shared/LoadingState';
-import { ErrorState } from 'src/components/shared/ErrorState';
-import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
-import { useReviewDetail, useDeleteComment } from 'src/hooks/useReviewDetail';
-import { useReviewModerationStore } from 'src/stores/review-moderation.store';
-import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { format } from 'date-fns'
+import { toast } from 'sonner'
+import { ArrowLeft, Star, Trash2, CheckCircle, Flag } from 'lucide-react'
+import { Button } from 'src/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
+import { Badge } from 'src/components/ui/badge'
+import { Separator } from 'src/components/ui/separator'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { StatusBadge } from 'src/components/shared/StatusBadge'
+import { LoadingState } from 'src/components/shared/LoadingState'
+import { ErrorState } from 'src/components/shared/ErrorState'
+import { ConfirmDialog } from 'src/components/shared/ConfirmDialog'
+import { useReviewDetail, useDeleteComment } from 'src/hooks/useReviewDetail'
+import { useReviewModerationStore } from 'src/stores/review-moderation.store'
+import { useState } from 'react'
 
 export default function ReviewDetailPage() {
-  const { t } = useTranslation('reviews');
-  const { t: tc } = useTranslation('common');
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [deleteCommentId, setDeleteCommentId] = useState<string | null>(null);
-  const { getStatus, setStatus } = useReviewModerationStore();
+  const { t } = useTranslation('reviews')
+  const { t: tc } = useTranslation('common')
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const [deleteCommentId, setDeleteCommentId] = useState<string | null>(null)
+  const { getStatus, setStatus } = useReviewModerationStore()
 
-  const { data: review, isLoading, isError, refetch } = useReviewDetail(id);
+  const { data: review, isLoading, isError, refetch } = useReviewDetail(id)
 
-  const deleteCommentMut = useDeleteComment(id, () => setDeleteCommentId(null));
+  const deleteCommentMut = useDeleteComment(id, () => setDeleteCommentId(null))
 
-  if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message={t('error')} onRetry={refetch} />;
-  if (!review) return null;
+  if (isLoading) return <LoadingState />
+  if (isError) return <ErrorState message={t('error')} onRetry={refetch} />
+  if (!review) return null
 
   return (
     <div className="space-y-6">
@@ -64,8 +64,8 @@ export default function ReviewDetailPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  setStatus(review._id, 'approved');
-                  toast.success(t('toast.approved'));
+                  setStatus(review._id, 'approved')
+                  toast.success(t('toast.approved'))
                 }}
               >
                 <CheckCircle className="mr-1 size-4" />
@@ -75,8 +75,8 @@ export default function ReviewDetailPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  setStatus(review._id, 'flagged');
-                  toast.success(t('toast.flagged'));
+                  setStatus(review._id, 'flagged')
+                  toast.success(t('toast.flagged'))
                 }}
               >
                 <Flag className="mr-1 size-4" />
@@ -161,5 +161,5 @@ export default function ReviewDetailPage() {
         isLoading={deleteCommentMut.isPending}
       />
     </div>
-  );
+  )
 }

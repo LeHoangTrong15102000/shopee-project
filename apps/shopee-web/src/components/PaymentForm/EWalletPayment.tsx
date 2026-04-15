@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { WALLETS, WalletType } from './components/WalletCard';
-import WalletSelectionView from './components/WalletSelectionView';
-import QRDisplayView from './components/QRDisplayView';
-import { WaitingView, SuccessView, FailedView, TimeoutView } from './components/EWalletFlowViews';
-import { useIsMobile } from 'src/hooks/useIsMobile';
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { WALLETS, WalletType } from './components/WalletCard'
+import WalletSelectionView from './components/WalletSelectionView'
+import QRDisplayView from './components/QRDisplayView'
+import { WaitingView, SuccessView, FailedView, TimeoutView } from './components/EWalletFlowViews'
+import { useIsMobile } from 'src/hooks/useIsMobile'
 
 export type PaymentFlowState =
   | 'select'
@@ -13,98 +13,98 @@ export type PaymentFlowState =
   | 'waiting'
   | 'success'
   | 'failed'
-  | 'timeout';
+  | 'timeout'
 
 export interface EWalletPaymentProps {
-  amount?: number;
-  onPaymentComplete?: () => void;
-  onPaymentFailed?: (error: string) => void;
+  amount?: number
+  onPaymentComplete?: () => void
+  onPaymentFailed?: (error: string) => void
 }
 
-const QR_EXPIRATION_SECONDS = 300;
+const QR_EXPIRATION_SECONDS = 300
 
 function EWalletPayment({
   amount = 150000,
   onPaymentComplete,
   onPaymentFailed,
 }: EWalletPaymentProps) {
-  const { t } = useTranslation('payment');
-  const [flowState, setFlowState] = useState<PaymentFlowState>('select');
-  const [selectedWallet, setSelectedWallet] = useState<WalletType | null>(null);
-  const [timeRemaining, setTimeRemaining] = useState(QR_EXPIRATION_SECONDS);
-  const [errorMessage, setErrorMessage] = useState('');
-  const isMobile = useIsMobile();
+  const { t } = useTranslation('payment')
+  const [flowState, setFlowState] = useState<PaymentFlowState>('select')
+  const [selectedWallet, setSelectedWallet] = useState<WalletType | null>(null)
+  const [timeRemaining, setTimeRemaining] = useState(QR_EXPIRATION_SECONDS)
+  const [errorMessage, setErrorMessage] = useState('')
+  const isMobile = useIsMobile()
 
-  const selectedWalletInfo = WALLETS.find((w) => w.id === selectedWallet) || null;
+  const selectedWalletInfo = WALLETS.find((w) => w.id === selectedWallet) || null
 
   useEffect(() => {
-    let timer: NodeJS.Timeout | null = null;
+    let timer: NodeJS.Timeout | null = null
     if (flowState === 'qr_display' && timeRemaining > 0) {
       timer = setInterval(() => {
         setTimeRemaining((prev) => {
           if (prev <= 1) {
-            setFlowState('timeout');
-            return 0;
+            setFlowState('timeout')
+            return 0
           }
-          return prev - 1;
-        });
-      }, 1000);
+          return prev - 1
+        })
+      }, 1000)
     }
     return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [flowState, timeRemaining]);
+      if (timer) clearInterval(timer)
+    }
+  }, [flowState, timeRemaining])
 
   const handleSelectWallet = (wallet: WalletType) => {
-    setSelectedWallet(wallet);
-  };
+    setSelectedWallet(wallet)
+  }
 
   const handleLinkNewWallet = () => {
-    alert(t('eWallet.linkNewWalletMessage'));
-  };
+    alert(t('eWallet.linkNewWalletMessage'))
+  }
 
   const handleProceedToQR = () => {
-    if (!selectedWallet) return;
-    setTimeRemaining(QR_EXPIRATION_SECONDS);
-    setFlowState('qr_display');
-  };
+    if (!selectedWallet) return
+    setTimeRemaining(QR_EXPIRATION_SECONDS)
+    setFlowState('qr_display')
+  }
 
   const handleOpenApp = () => {
-    if (!selectedWalletInfo) return;
-    window.location.href = selectedWalletInfo.deepLink;
+    if (!selectedWalletInfo) return
+    window.location.href = selectedWalletInfo.deepLink
     setTimeout(() => {
-      setFlowState('waiting');
+      setFlowState('waiting')
       setTimeout(() => {
-        const isSuccess = Math.random() > 0.3;
+        const isSuccess = Math.random() > 0.3
         if (isSuccess) {
-          setFlowState('success');
-          onPaymentComplete?.();
+          setFlowState('success')
+          onPaymentComplete?.()
         } else {
-          setErrorMessage(t('eWallet.transactionRejected'));
-          setFlowState('failed');
-          onPaymentFailed?.(t('eWallet.transactionRejected'));
+          setErrorMessage(t('eWallet.transactionRejected'))
+          setFlowState('failed')
+          onPaymentFailed?.(t('eWallet.transactionRejected'))
         }
-      }, 3000);
-    }, 1000);
-  };
+      }, 3000)
+    }, 1000)
+  }
 
   const handleCancel = () => {
-    setFlowState('select');
-    setSelectedWallet(null);
-    setTimeRemaining(QR_EXPIRATION_SECONDS);
-    setErrorMessage('');
-  };
+    setFlowState('select')
+    setSelectedWallet(null)
+    setTimeRemaining(QR_EXPIRATION_SECONDS)
+    setErrorMessage('')
+  }
 
   const handleRetry = () => {
-    setErrorMessage('');
-    setTimeRemaining(QR_EXPIRATION_SECONDS);
-    setFlowState('qr_display');
-  };
+    setErrorMessage('')
+    setTimeRemaining(QR_EXPIRATION_SECONDS)
+    setFlowState('qr_display')
+  }
 
   const handleRegenerateQR = () => {
-    setTimeRemaining(QR_EXPIRATION_SECONDS);
-    setFlowState('qr_display');
-  };
+    setTimeRemaining(QR_EXPIRATION_SECONDS)
+    setFlowState('qr_display')
+  }
 
   return (
     <motion.div
@@ -151,8 +151,8 @@ function EWalletPayment({
         )}
       </AnimatePresence>
     </motion.div>
-  );
+  )
 }
 
-export default EWalletPayment;
-export type { WalletType };
+export default EWalletPayment
+export type { WalletType }

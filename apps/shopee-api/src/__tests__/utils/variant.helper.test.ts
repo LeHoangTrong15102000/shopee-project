@@ -19,49 +19,93 @@ const opts = (...values: string[]) => values.map((v) => opt(v))
 describe('variant.helper', () => {
   describe('validateVariantStructure', () => {
     it('accepts valid variant', () => {
-      expect(validateVariantStructure({ type: 'color', name: 'Màu sắc', options: opts('Red', 'Blue') })).toBeNull()
+      expect(
+        validateVariantStructure({ type: 'color', name: 'Màu sắc', options: opts('Red', 'Blue') }),
+      ).toBeNull()
     })
     it('rejects null', () => {
       expect(validateVariantStructure(null)).toBe('Biến thể phải là một đối tượng hợp lệ')
     })
     it('rejects missing type', () => {
-      expect(validateVariantStructure({ name: 'Màu', options: opts('Red') })).toBe('Loại biến thể (type) không được để trống')
+      expect(validateVariantStructure({ name: 'Màu', options: opts('Red') })).toBe(
+        'Loại biến thể (type) không được để trống',
+      )
     })
     it('rejects empty type', () => {
-      expect(validateVariantStructure({ type: '', name: 'Màu', options: opts('Red') })).toBe('Loại biến thể (type) không được để trống')
+      expect(validateVariantStructure({ type: '', name: 'Màu', options: opts('Red') })).toBe(
+        'Loại biến thể (type) không được để trống',
+      )
     })
     it('rejects whitespace-only type', () => {
-      expect(validateVariantStructure({ type: '   ', name: 'Màu', options: opts('Red') })).toBe('Loại biến thể (type) không được để trống')
+      expect(validateVariantStructure({ type: '   ', name: 'Màu', options: opts('Red') })).toBe(
+        'Loại biến thể (type) không được để trống',
+      )
     })
     it('rejects missing name', () => {
-      expect(validateVariantStructure({ type: 'color', options: opts('Red') })).toBe('Tên biến thể (name) không được để trống')
+      expect(validateVariantStructure({ type: 'color', options: opts('Red') })).toBe(
+        'Tên biến thể (name) không được để trống',
+      )
     })
     it('rejects empty name', () => {
-      expect(validateVariantStructure({ type: 'color', name: '', options: opts('Red') })).toBe('Tên biến thể (name) không được để trống')
+      expect(validateVariantStructure({ type: 'color', name: '', options: opts('Red') })).toBe(
+        'Tên biến thể (name) không được để trống',
+      )
     })
     it('rejects whitespace-only name', () => {
-      expect(validateVariantStructure({ type: 'color', name: '   ', options: opts('Red') })).toBe('Tên biến thể (name) không được để trống')
+      expect(validateVariantStructure({ type: 'color', name: '   ', options: opts('Red') })).toBe(
+        'Tên biến thể (name) không được để trống',
+      )
     })
     it('rejects non-array options', () => {
-      expect(validateVariantStructure({ type: 'color', name: 'Màu', options: 'Red' })).toBe('Tùy chọn biến thể (options) phải là mảng không rỗng')
+      expect(validateVariantStructure({ type: 'color', name: 'Màu', options: 'Red' })).toBe(
+        'Tùy chọn biến thể (options) phải là mảng không rỗng',
+      )
     })
     it('rejects empty options array', () => {
-      expect(validateVariantStructure({ type: 'color', name: 'Màu', options: [] })).toBe('Tùy chọn biến thể (options) phải là mảng không rỗng')
+      expect(validateVariantStructure({ type: 'color', name: 'Màu', options: [] })).toBe(
+        'Tùy chọn biến thể (options) phải là mảng không rỗng',
+      )
     })
     it('rejects option with empty name', () => {
-      expect(validateVariantStructure({ type: 'color', name: 'Màu', options: [{ name: '', value: 'red' }] })).toBe('Mỗi tùy chọn phải có tên (name) không rỗng')
+      expect(
+        validateVariantStructure({
+          type: 'color',
+          name: 'Màu',
+          options: [{ name: '', value: 'red' }],
+        }),
+      ).toBe('Mỗi tùy chọn phải có tên (name) không rỗng')
     })
     it('rejects option with empty value', () => {
-      expect(validateVariantStructure({ type: 'color', name: 'Màu', options: [{ name: 'Red', value: '' }] })).toBe('Mỗi tùy chọn phải có giá trị (value) không rỗng')
+      expect(
+        validateVariantStructure({
+          type: 'color',
+          name: 'Màu',
+          options: [{ name: 'Red', value: '' }],
+        }),
+      ).toBe('Mỗi tùy chọn phải có giá trị (value) không rỗng')
     })
     it('rejects option with whitespace-only name', () => {
-      expect(validateVariantStructure({ type: 'color', name: 'Màu', options: [{ name: '   ', value: 'red' }] })).toBe('Mỗi tùy chọn phải có tên (name) không rỗng')
+      expect(
+        validateVariantStructure({
+          type: 'color',
+          name: 'Màu',
+          options: [{ name: '   ', value: 'red' }],
+        }),
+      ).toBe('Mỗi tùy chọn phải có tên (name) không rỗng')
     })
     it('rejects option with whitespace-only value', () => {
-      expect(validateVariantStructure({ type: 'color', name: 'Màu', options: [{ name: 'Red', value: '   ' }] })).toBe('Mỗi tùy chọn phải có giá trị (value) không rỗng')
+      expect(
+        validateVariantStructure({
+          type: 'color',
+          name: 'Màu',
+          options: [{ name: 'Red', value: '   ' }],
+        }),
+      ).toBe('Mỗi tùy chọn phải có giá trị (value) không rỗng')
     })
     it('rejects string options (old format)', () => {
-      expect(validateVariantStructure({ type: 'color', name: 'Màu', options: ['Red', 'Blue'] })).toBe('Mỗi tùy chọn phải là đối tượng có name và value')
+      expect(
+        validateVariantStructure({ type: 'color', name: 'Màu', options: ['Red', 'Blue'] }),
+      ).toBe('Mỗi tùy chọn phải là đối tượng có name và value')
     })
   })
 
@@ -91,35 +135,48 @@ describe('variant.helper', () => {
 
   describe('validateNoDuplicateOptions', () => {
     it('accepts unique options', () => {
-      const variants: VariantInput[] = [{ type: 'color', name: 'Màu', options: opts('Red', 'Blue') }]
+      const variants: VariantInput[] = [
+        { type: 'color', name: 'Màu', options: opts('Red', 'Blue') },
+      ]
       expect(validateNoDuplicateOptions(variants)).toBeNull()
     })
     it('rejects duplicate options by value', () => {
-      const variants: VariantInput[] = [{ type: 'color', name: 'Màu', options: [opt('Red'), opt('Blue'), opt('Red')] }]
+      const variants: VariantInput[] = [
+        { type: 'color', name: 'Màu', options: [opt('Red'), opt('Blue'), opt('Red')] },
+      ]
       expect(validateNoDuplicateOptions(variants)).toContain('trùng lặp')
     })
     it('rejects case-insensitive duplicates', () => {
-      const variants: VariantInput[] = [{ type: 'color', name: 'Màu', options: [opt('Red'), opt('red')] }]
+      const variants: VariantInput[] = [
+        { type: 'color', name: 'Màu', options: [opt('Red'), opt('red')] },
+      ]
       expect(validateNoDuplicateOptions(variants)).toContain('trùng lặp')
     })
   })
 
   describe('validateVariantLimits', () => {
     it('accepts within limits', () => {
-      const variants: VariantInput[] = [{ type: 'color', name: 'Màu', options: opts('Red', 'Blue') }]
+      const variants: VariantInput[] = [
+        { type: 'color', name: 'Màu', options: opts('Red', 'Blue') },
+      ]
       expect(validateVariantLimits(variants)).toBeNull()
     })
     it('rejects more than 5 variants', () => {
       const variants: VariantInput[] = Array.from({ length: 6 }, (_, i) => ({
-        type: `type${i}`, name: `Name${i}`, options: opts('A'),
+        type: `type${i}`,
+        name: `Name${i}`,
+        options: opts('A'),
       }))
       expect(validateVariantLimits(variants)).toContain('tối đa là 5')
     })
     it('rejects more than 20 options per variant', () => {
-      const variants: VariantInput[] = [{
-        type: 'color', name: 'Màu',
-        options: Array.from({ length: 21 }, (_, i) => opt(`opt${i}`)),
-      }]
+      const variants: VariantInput[] = [
+        {
+          type: 'color',
+          name: 'Màu',
+          options: Array.from({ length: 21 }, (_, i) => opt(`opt${i}`)),
+        },
+      ]
       expect(validateVariantLimits(variants)).toContain('tối đa mỗi biến thể là 20')
     })
     it('rejects more than 100 SKU combinations', () => {
@@ -136,7 +193,9 @@ describe('variant.helper', () => {
       expect(generateSKUCombinations([])).toEqual([])
     })
     it('generates for single variant', () => {
-      const variants: VariantInput[] = [{ type: 'color', name: 'Màu', options: opts('Red', 'Blue') }]
+      const variants: VariantInput[] = [
+        { type: 'color', name: 'Màu', options: opts('Red', 'Blue') },
+      ]
       expect(generateSKUCombinations(variants)).toEqual(['Red', 'Blue'])
     })
     it('generates for two variants', () => {
@@ -153,7 +212,10 @@ describe('variant.helper', () => {
         { type: 'material', name: 'Chất liệu', options: opts('Cotton', 'Polyester') },
       ]
       expect(generateSKUCombinations(variants)).toEqual([
-        'Red-S-Cotton', 'Red-S-Polyester', 'Red-M-Cotton', 'Red-M-Polyester',
+        'Red-S-Cotton',
+        'Red-S-Polyester',
+        'Red-M-Cotton',
+        'Red-M-Polyester',
       ])
     })
   })
@@ -220,7 +282,9 @@ describe('variant.helper', () => {
         { type: 'color', name: 'Màu', options: opts('Red', 'Blue') },
         { type: 'size', name: 'Size', options: opts('S', 'M') },
       ]
-      expect(validateSKUValues(variants, ['Red-M', 'Red-S', 'Blue-S', 'Blue-M'])).toContain('không khớp')
+      expect(validateSKUValues(variants, ['Red-M', 'Red-S', 'Blue-S', 'Blue-M'])).toContain(
+        'không khớp',
+      )
     })
   })
 })

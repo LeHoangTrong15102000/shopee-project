@@ -1,17 +1,17 @@
-import React from 'react';
-import { View } from 'react-native';
-import { ShoppingCart, Zap } from 'lucide-react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AppButton } from '@/components/ui';
-import { useColors } from '@/hooks/useColors';
-import { useTranslation } from 'react-i18next';
+import React from 'react'
+import { View } from 'react-native'
+import { ShoppingCart, Zap } from 'lucide-react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { AppButton } from '@/components/ui'
+import { useColors } from '@/hooks/useColors'
+import { useTranslation } from 'react-i18next'
 
 interface StickyBottomBarProps {
-  onAddToCart: () => void;
-  onBuyNow: () => void;
-  disabled?: boolean;
-  addToCartLoading?: boolean;
-  buyNowLoading?: boolean;
+  onAddToCart: () => void
+  onBuyNow: () => void
+  disabled?: boolean
+  addToCartLoading?: boolean
+  buyNowLoading?: boolean
 }
 
 export default function StickyBottomBar({
@@ -21,9 +21,9 @@ export default function StickyBottomBar({
   addToCartLoading,
   buyNowLoading,
 }: StickyBottomBarProps) {
-  const colors = useColors();
-  const insets = useSafeAreaInsets();
-  const { t } = useTranslation();
+  const colors = useColors()
+  const insets = useSafeAreaInsets()
+  const { t } = useTranslation()
 
   return (
     <View
@@ -60,5 +60,5 @@ export default function StickyBottomBar({
         </AppButton>
       </View>
     </View>
-  );
+  )
 }

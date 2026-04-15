@@ -5,7 +5,7 @@ import {
   useQueryStates,
   inferParserType,
   createSerializer,
-} from 'nuqs';
+} from 'nuqs'
 
 export const productSearchParsers = {
   page: parseAsInteger.withDefault(1),
@@ -20,16 +20,16 @@ export const productSearchParsers = {
   price_max: parseAsInteger,
   rating_filter: parseAsInteger,
   category: parseAsString,
-};
-
-export type ProductQueryConfig = inferParserType<typeof productSearchParsers>;
-
-export function useProductQueryStates() {
-  const [filters, setFilters] = useQueryStates(productSearchParsers);
-  return [filters, setFilters] as const;
 }
 
-export const createProductSearchURL = createSerializer(productSearchParsers);
+export type ProductQueryConfig = inferParserType<typeof productSearchParsers>
+
+export function useProductQueryStates() {
+  const [filters, setFilters] = useQueryStates(productSearchParsers)
+  return [filters, setFilters] as const
+}
+
+export const createProductSearchURL = createSerializer(productSearchParsers)
 
 /**
  * Normalizes ProductQueryConfig values back to strings for TanStack Query key compatibility.
@@ -51,5 +51,5 @@ export function normalizeProductQueryKey(
     price_max: filters.price_max != null ? String(filters.price_max) : undefined,
     rating_filter: filters.rating_filter != null ? String(filters.rating_filter) : undefined,
     category: filters.category ?? undefined,
-  };
+  }
 }

@@ -140,14 +140,18 @@ describe('ProductService', () => {
 
       const result = await productService.updateProduct(validObjectId, { name: 'Updated' })
 
-      expect(mockProductRepository.updateById).toHaveBeenCalledWith(validObjectId, { name: 'Updated' })
+      expect(mockProductRepository.updateById).toHaveBeenCalledWith(validObjectId, {
+        name: 'Updated',
+      })
       expect(result.name).toBe('Updated')
     })
 
     it('should throw NotFoundError when product not found', async () => {
       mockProductRepository.updateById.mockResolvedValue(null)
 
-      await expect(productService.updateProduct(validObjectId, { name: 'Updated' })).rejects.toThrow(NotFoundError)
+      await expect(
+        productService.updateProduct(validObjectId, { name: 'Updated' }),
+      ).rejects.toThrow(NotFoundError)
     })
   })
 
@@ -169,7 +173,10 @@ describe('ProductService', () => {
 
   describe('searchProducts', () => {
     it('should search products by name', async () => {
-      const mockResult = { data: [mockProduct], pagination: { page: 1, limit: 10, page_size: 1, total: 1 } }
+      const mockResult = {
+        data: [mockProduct],
+        pagination: { page: 1, limit: 10, page_size: 1, total: 1 },
+      }
       mockProductRepository.searchByName.mockResolvedValue(mockResult as any)
 
       const result = await productService.searchProducts('test', { page: 1, limit: 10 })
@@ -181,7 +188,10 @@ describe('ProductService', () => {
 
   describe('getProducts', () => {
     it('should return paginated products with image transformation', async () => {
-      const mockResult = { data: [mockProduct], pagination: { page: 1, limit: 10, page_size: 1, total: 1 } }
+      const mockResult = {
+        data: [mockProduct],
+        pagination: { page: 1, limit: 10, page_size: 1, total: 1 },
+      }
       mockProductRepository.findProducts.mockResolvedValue(mockResult as any)
       const { cacheService } = require('@utils/cache.service')
       cacheService.get.mockReturnValue(null)
@@ -193,7 +203,10 @@ describe('ProductService', () => {
     })
 
     it('should use cache on hit', async () => {
-      const cachedResult = { data: [mockProduct], pagination: { page: 1, limit: 10, page_size: 1, total: 1 } }
+      const cachedResult = {
+        data: [mockProduct],
+        pagination: { page: 1, limit: 10, page_size: 1, total: 1 },
+      }
       const { cacheService } = require('@utils/cache.service')
       cacheService.get.mockReturnValue(cachedResult)
 
@@ -204,7 +217,10 @@ describe('ProductService', () => {
     })
 
     it('should skip cache when exclude filter is present', async () => {
-      const mockResult = { data: [mockProduct], pagination: { page: 1, limit: 10, page_size: 1, total: 1 } }
+      const mockResult = {
+        data: [mockProduct],
+        pagination: { page: 1, limit: 10, page_size: 1, total: 1 },
+      }
       mockProductRepository.findProducts.mockResolvedValue(mockResult as any)
       const { cacheService } = require('@utils/cache.service')
       cacheService.get.mockReturnValue(null)
@@ -231,7 +247,9 @@ describe('ProductService', () => {
 
       await productService.getAllProducts(categoryId)
 
-      expect(mockProductRepository.find).toHaveBeenCalledWith({ category: expect.any(Types.ObjectId) })
+      expect(mockProductRepository.find).toHaveBeenCalledWith({
+        category: expect.any(Types.ObjectId),
+      })
     })
   })
 
@@ -303,7 +321,9 @@ describe('ProductService', () => {
 
   describe('updateProduct edge cases', () => {
     it('should throw ValidationError for invalid ObjectId', async () => {
-      await expect(productService.updateProduct('invalid-id', { name: 'Updated' })).rejects.toThrow(ValidationError)
+      await expect(productService.updateProduct('invalid-id', { name: 'Updated' })).rejects.toThrow(
+        ValidationError,
+      )
     })
   })
 
@@ -322,4 +342,3 @@ describe('ProductService', () => {
     })
   })
 })
-

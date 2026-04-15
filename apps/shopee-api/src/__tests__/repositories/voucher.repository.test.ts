@@ -120,7 +120,11 @@ describe('VoucherRepository', () => {
 
       const result = await repository.incrementUsedCount('507f1f77bcf86cd799439011')
 
-      expect(VoucherModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', { $inc: { used_count: 1 } }, { new: true })
+      expect(VoucherModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        '507f1f77bcf86cd799439011',
+        { $inc: { used_count: 1 } },
+        { new: true },
+      )
       expect(result?.used_count).toBe(11)
     })
   })
@@ -135,7 +139,10 @@ describe('VoucherRepository', () => {
       ;(SavedVoucherModel.find as jest.Mock).mockReturnValue({ populate: mockPopulate })
       ;(SavedVoucherModel.countDocuments as jest.Mock).mockResolvedValue(1)
 
-      const result = await repository.findSavedByUser('507f1f77bcf86cd799439012', { page: 1, limit: 10 })
+      const result = await repository.findSavedByUser('507f1f77bcf86cd799439012', {
+        page: 1,
+        limit: 10,
+      })
 
       expect(result.data).toEqual([mockSavedVoucherData])
     })
@@ -147,7 +154,10 @@ describe('VoucherRepository', () => {
       const mockPopulate = jest.fn().mockReturnValue({ lean: mockLean })
       ;(SavedVoucherModel.findOne as jest.Mock).mockReturnValue({ populate: mockPopulate })
 
-      const result = await repository.findSavedVoucher('507f1f77bcf86cd799439012', '507f1f77bcf86cd799439011')
+      const result = await repository.findSavedVoucher(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439011',
+      )
 
       expect(SavedVoucherModel.findOne).toHaveBeenCalled()
       expect(result).toEqual(mockSavedVoucherData)
@@ -158,10 +168,15 @@ describe('VoucherRepository', () => {
     it('should save a voucher for user', async () => {
       const mockLean = jest.fn().mockResolvedValue(mockSavedVoucherData)
       const mockPopulate = jest.fn().mockReturnValue({ lean: mockLean })
-      ;(SavedVoucherModel.create as jest.Mock).mockResolvedValue({ _id: '507f1f77bcf86cd799439020' })
+      ;(SavedVoucherModel.create as jest.Mock).mockResolvedValue({
+        _id: '507f1f77bcf86cd799439020',
+      })
       ;(SavedVoucherModel.findById as jest.Mock).mockReturnValue({ populate: mockPopulate })
 
-      const result = await repository.saveVoucher('507f1f77bcf86cd799439012', '507f1f77bcf86cd799439011')
+      const result = await repository.saveVoucher(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439011',
+      )
 
       expect(SavedVoucherModel.create).toHaveBeenCalled()
       expect(result).toEqual(mockSavedVoucherData)
@@ -173,7 +188,10 @@ describe('VoucherRepository', () => {
       const mockLean = jest.fn().mockResolvedValue({ ...mockSavedVoucherData, status: 'used' })
       ;(SavedVoucherModel.findOneAndUpdate as jest.Mock).mockReturnValue({ lean: mockLean })
 
-      const result = await repository.markVoucherUsed('507f1f77bcf86cd799439012', '507f1f77bcf86cd799439011')
+      const result = await repository.markVoucherUsed(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439011',
+      )
 
       expect(SavedVoucherModel.findOneAndUpdate).toHaveBeenCalled()
       expect(result?.status).toBe('used')
@@ -183,7 +201,11 @@ describe('VoucherRepository', () => {
       const mockLean = jest.fn().mockResolvedValue({ ...mockSavedVoucherData, status: 'used' })
       ;(SavedVoucherModel.findOneAndUpdate as jest.Mock).mockReturnValue({ lean: mockLean })
 
-      await repository.markVoucherUsed('507f1f77bcf86cd799439012', '507f1f77bcf86cd799439011', '507f1f77bcf86cd799439030')
+      await repository.markVoucherUsed(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439011',
+        '507f1f77bcf86cd799439030',
+      )
 
       expect(SavedVoucherModel.findOneAndUpdate).toHaveBeenCalled()
     })
@@ -191,10 +213,12 @@ describe('VoucherRepository', () => {
 
   describe('getCollectedVoucherIds', () => {
     it('should return collected voucher ids for user', async () => {
-      const mockLean = jest.fn().mockResolvedValue([
-        { voucher: { toString: () => '507f1f77bcf86cd799439011' } },
-        { voucher: { toString: () => '507f1f77bcf86cd799439015' } },
-      ])
+      const mockLean = jest
+        .fn()
+        .mockResolvedValue([
+          { voucher: { toString: () => '507f1f77bcf86cd799439011' } },
+          { voucher: { toString: () => '507f1f77bcf86cd799439015' } },
+        ])
       const mockSelect = jest.fn().mockReturnValue({ lean: mockLean })
       ;(SavedVoucherModel.find as jest.Mock).mockReturnValue({ select: mockSelect })
 
@@ -204,4 +228,3 @@ describe('VoucherRepository', () => {
     })
   })
 })
-

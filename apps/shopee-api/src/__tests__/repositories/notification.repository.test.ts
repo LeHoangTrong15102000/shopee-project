@@ -114,7 +114,11 @@ describe('NotificationRepository', () => {
 
       const result = await repository.updateById('507f1f77bcf86cd799439011', { is_read: true })
 
-      expect(NotificationModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', { is_read: true }, { new: true })
+      expect(NotificationModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        '507f1f77bcf86cd799439011',
+        { is_read: true },
+        { new: true },
+      )
       expect(result?.is_read).toBe(true)
     })
   })
@@ -123,7 +127,10 @@ describe('NotificationRepository', () => {
     it('should update many notifications', async () => {
       ;(NotificationModel.updateMany as jest.Mock).mockResolvedValue({ modifiedCount: 5 })
 
-      const result = await repository.updateMany({ user: '507f1f77bcf86cd799439012' }, { $set: { is_read: true } })
+      const result = await repository.updateMany(
+        { user: '507f1f77bcf86cd799439012' },
+        { $set: { is_read: true } },
+      )
 
       expect(result).toBe(5)
     })
@@ -161,7 +168,9 @@ describe('NotificationRepository', () => {
 
   describe('exists', () => {
     it('should return true if document exists', async () => {
-      ;(NotificationModel.exists as jest.Mock).mockResolvedValue({ _id: '507f1f77bcf86cd799439011' })
+      ;(NotificationModel.exists as jest.Mock).mockResolvedValue({
+        _id: '507f1f77bcf86cd799439011',
+      })
       const result = await repository.exists({ user: '507f1f77bcf86cd799439012' })
       expect(result).toBe(true)
     })
@@ -182,7 +191,11 @@ describe('NotificationRepository', () => {
       ;(NotificationModel.find as jest.Mock).mockReturnValue({ sort: mockSort })
       ;(NotificationModel.countDocuments as jest.Mock).mockResolvedValue(1)
 
-      const result = await repository.findByUser('507f1f77bcf86cd799439012', {}, { page: 1, limit: 10 })
+      const result = await repository.findByUser(
+        '507f1f77bcf86cd799439012',
+        {},
+        { page: 1, limit: 10 },
+      )
 
       expect(result.data).toEqual([mockNotificationData])
     })
@@ -195,7 +208,11 @@ describe('NotificationRepository', () => {
       ;(NotificationModel.find as jest.Mock).mockReturnValue({ sort: mockSort })
       ;(NotificationModel.countDocuments as jest.Mock).mockResolvedValue(1)
 
-      await repository.findByUser('507f1f77bcf86cd799439012', { type: 'order' }, { page: 1, limit: 10 })
+      await repository.findByUser(
+        '507f1f77bcf86cd799439012',
+        { type: 'order' },
+        { page: 1, limit: 10 },
+      )
 
       expect(NotificationModel.find).toHaveBeenCalled()
     })
@@ -208,7 +225,11 @@ describe('NotificationRepository', () => {
       ;(NotificationModel.find as jest.Mock).mockReturnValue({ sort: mockSort })
       ;(NotificationModel.countDocuments as jest.Mock).mockResolvedValue(1)
 
-      await repository.findByUser('507f1f77bcf86cd799439012', { is_read: false }, { page: 1, limit: 10 })
+      await repository.findByUser(
+        '507f1f77bcf86cd799439012',
+        { is_read: false },
+        { page: 1, limit: 10 },
+      )
 
       expect(NotificationModel.find).toHaveBeenCalled()
     })
@@ -219,7 +240,10 @@ describe('NotificationRepository', () => {
       const mockLean = jest.fn().mockResolvedValue({ ...mockNotificationData, is_read: true })
       ;(NotificationModel.findOneAndUpdate as jest.Mock).mockReturnValue({ lean: mockLean })
 
-      const result = await repository.markAsRead('507f1f77bcf86cd799439012', '507f1f77bcf86cd799439011')
+      const result = await repository.markAsRead(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439011',
+      )
 
       expect(NotificationModel.findOneAndUpdate).toHaveBeenCalled()
       expect(result?.is_read).toBe(true)
@@ -261,4 +285,3 @@ describe('NotificationRepository', () => {
     })
   })
 })
-

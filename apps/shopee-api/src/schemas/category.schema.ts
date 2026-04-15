@@ -7,10 +7,7 @@ import { mongoIdSchema } from './common.schema'
  */
 export const addCategorySchema = z.object({
   body: z.object({
-    name: z
-      .string()
-      .min(1, 'Tên không được để trống')
-      .max(160, 'Tên phải ít hơn 160 kí tự'),
+    name: z.string().min(1, 'Tên không được để trống').max(160, 'Tên phải ít hơn 160 kí tự'),
   }),
 })
 
@@ -25,9 +22,11 @@ export const updateCategorySchema = addCategorySchema
  * Validates query params for listing categories
  */
 export const getCategorySchema = z.object({
-  query: z.object({
-    exclude: mongoIdSchema.optional().or(z.literal('')),
-  }).passthrough(),
+  query: z
+    .object({
+      exclude: mongoIdSchema.optional().or(z.literal('')),
+    })
+    .passthrough(),
 })
 
 /**
@@ -43,4 +42,3 @@ export const categoryIdParamSchema = z.object({
 export type AddCategoryInput = z.infer<typeof addCategorySchema>['body']
 export type UpdateCategoryInput = z.infer<typeof updateCategorySchema>['body']
 export type GetCategoryQuery = z.infer<typeof getCategorySchema>['query']
-

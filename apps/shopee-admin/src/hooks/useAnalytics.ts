@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import analyticsApi from 'src/apis/analytics.api';
+import { useQuery } from '@tanstack/react-query'
+import analyticsApi from 'src/apis/analytics.api'
 
 export const ANALYTICS_KEYS = {
   topSelling: (period: string) => ['analytics-top-selling', period] as const,
@@ -8,10 +8,10 @@ export const ANALYTICS_KEYS = {
   byCategory: ['analytics-by-category'] as const,
   chatbot: ['analytics-chatbot'] as const,
   chatbotPerformance: (period: string) => ['analytics-chatbot-performance', period] as const,
-};
+}
 
 interface QueryOptions {
-  enabled?: boolean;
+  enabled?: boolean
 }
 
 export function useTopSelling(period: string, options?: QueryOptions) {
@@ -19,7 +19,7 @@ export function useTopSelling(period: string, options?: QueryOptions) {
     queryKey: ANALYTICS_KEYS.topSelling(period),
     queryFn: () => analyticsApi.getTopSelling({ period, limit: 20 }).then((r) => r.data.data),
     enabled: options?.enabled,
-  });
+  })
 }
 
 export function useTopViewed(options?: QueryOptions) {
@@ -27,7 +27,7 @@ export function useTopViewed(options?: QueryOptions) {
     queryKey: ANALYTICS_KEYS.topViewed,
     queryFn: () => analyticsApi.getTopViewed({ limit: 20 }).then((r) => r.data.data),
     enabled: options?.enabled,
-  });
+  })
 }
 
 export function useTopRated(options?: QueryOptions) {
@@ -35,7 +35,7 @@ export function useTopRated(options?: QueryOptions) {
     queryKey: ANALYTICS_KEYS.topRated,
     queryFn: () => analyticsApi.getTopRated({ limit: 20 }).then((r) => r.data.data),
     enabled: options?.enabled,
-  });
+  })
 }
 
 export function useStatsByCategory(options?: QueryOptions) {
@@ -43,7 +43,7 @@ export function useStatsByCategory(options?: QueryOptions) {
     queryKey: ANALYTICS_KEYS.byCategory,
     queryFn: () => analyticsApi.getStatsByCategory().then((r) => r.data.data),
     enabled: options?.enabled,
-  });
+  })
 }
 
 export function useChatbotOverview(options?: QueryOptions) {
@@ -51,7 +51,7 @@ export function useChatbotOverview(options?: QueryOptions) {
     queryKey: ANALYTICS_KEYS.chatbot,
     queryFn: () => analyticsApi.getChatbotOverview().then((r) => r.data.data),
     enabled: options?.enabled,
-  });
+  })
 }
 
 export function useChatbotPerformance(period: string, options?: QueryOptions) {
@@ -59,5 +59,5 @@ export function useChatbotPerformance(period: string, options?: QueryOptions) {
     queryKey: ANALYTICS_KEYS.chatbotPerformance(period),
     queryFn: () => analyticsApi.getChatbotPerformance({ period }).then((r) => r.data.data),
     enabled: options?.enabled,
-  });
+  })
 }

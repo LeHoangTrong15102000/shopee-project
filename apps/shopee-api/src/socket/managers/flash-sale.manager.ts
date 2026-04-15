@@ -26,7 +26,7 @@ const flashSaleMap = new Map<string, FlashSaleEntry>()
 export const startFlashSale = (
   saleId: string,
   endTime: Date,
-  products: { product_id: string; stock: number }[]
+  products: { product_id: string; stock: number }[],
 ): void => {
   const productMap = new Map<string, FlashSaleProduct>()
   for (const p of products) {
@@ -67,14 +67,12 @@ export const endFlashSale = (saleId: string): void => {
  * Get a flash sale entry by ID
  * @param saleId - The flash sale ID
  */
-export const getFlashSale = (saleId: string): FlashSaleEntry | undefined =>
-  flashSaleMap.get(saleId)
+export const getFlashSale = (saleId: string): FlashSaleEntry | undefined => flashSaleMap.get(saleId)
 
 /**
  * Get all active flash sales
  */
-export const getActiveFlashSales = (): FlashSaleEntry[] =>
-  Array.from(flashSaleMap.values())
+export const getActiveFlashSales = (): FlashSaleEntry[] => Array.from(flashSaleMap.values())
 
 /**
  * Set the timer interval for a flash sale
@@ -83,7 +81,7 @@ export const getActiveFlashSales = (): FlashSaleEntry[] =>
  */
 export const setFlashSaleTimer = (
   saleId: string,
-  interval: ReturnType<typeof setInterval>
+  interval: ReturnType<typeof setInterval>,
 ): void => {
   const entry = flashSaleMap.get(saleId)
   if (entry) {
@@ -101,7 +99,7 @@ export const setFlashSaleTimer = (
 export const decrementStock = (
   saleId: string,
   productId: string,
-  quantity: number = 1
+  quantity: number = 1,
 ): FlashSaleProduct | null => {
   const entry = flashSaleMap.get(saleId)
   if (!entry) return null
@@ -121,4 +119,3 @@ export const decrementStock = (
 
   return product
 }
-

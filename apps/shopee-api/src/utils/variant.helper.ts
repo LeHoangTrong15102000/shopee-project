@@ -191,7 +191,6 @@ export function validateSKUValues(variants: VariantInput[], skuValues: string[])
 function cartesianProduct(arrays: string[][]): string[][] {
   return arrays.reduce<string[][]>(
     (acc, arr) => acc.flatMap((combo) => arr.map((item) => [...combo, item])),
-    [[]]
+    [[]],
   )
 }
-

@@ -34,9 +34,8 @@ export const adminBulkStockUpdateSchema = z.object({
         z.object({
           product_id: mongoIdSchema,
           quantity: z.number().int().min(0, 'Số lượng không được âm'),
-        })
+        }),
       )
       .min(1, 'Danh sách sản phẩm không được rỗng'),
   }),
 })
-

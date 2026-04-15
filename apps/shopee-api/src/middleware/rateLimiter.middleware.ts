@@ -103,24 +103,21 @@ export const rateLimitConfigs = {
   testChatbot: createChatbotRateLimit({
     windowMs: 15 * 60 * 1000, // 15 phút
     maxRequests: 10, // 10 requests per 15 min
-    message:
-      'Bạn đã test chatbot quá nhiều lần. Vui lòng chờ 15 phút rồi thử lại.',
+    message: 'Bạn đã test chatbot quá nhiều lần. Vui lòng chờ 15 phút rồi thử lại.',
   }),
 
   // Cho conversation APIs (cần auth)
   conversation: createChatbotRateLimit({
     windowMs: 5 * 60 * 1000, // 5 phút
     maxRequests: 20, // 20 requests per 5 min
-    message:
-      'Bạn đang gửi tin nhắn quá nhanh. Vui lòng chờ ít phút rồi thử lại.',
+    message: 'Bạn đang gửi tin nhắn quá nhanh. Vui lòng chờ ít phút rồi thử lại.',
   }),
 
   // Cho sending messages (strict hơn)
   sendMessage: createChatbotRateLimit({
     windowMs: 1 * 60 * 1000, // 1 phút
     maxRequests: 5, // 5 messages per minute
-    message:
-      'Bạn đang gửi tin nhắn quá nhanh. Vui lòng chờ 1 phút rồi thử lại.',
+    message: 'Bạn đang gửi tin nhắn quá nhanh. Vui lòng chờ 1 phút rồi thử lại.',
   }),
 
   // General API rate limit
@@ -192,8 +189,7 @@ export const getRateLimitStats = () => {
     totalActiveKeys: activeKeys.length,
     averageRequestsPerKey:
       activeKeys.length > 0
-        ? activeKeys.reduce((sum, [, limit]) => sum + limit.count, 0) /
-          activeKeys.length
+        ? activeKeys.reduce((sum, [, limit]) => sum + limit.count, 0) / activeKeys.length
         : 0,
     topUsers: activeKeys
       .sort((a, b) => b[1].count - a[1].count)

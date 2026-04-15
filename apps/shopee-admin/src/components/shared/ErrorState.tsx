@@ -1,17 +1,17 @@
-import { AlertCircle } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { Button } from 'src/components/ui/button';
-import { cn } from 'src/lib/utils';
+import { AlertCircle } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { Button } from 'src/components/ui/button'
+import { cn } from 'src/lib/utils'
 
 interface ErrorStateProps {
-  message?: string;
-  onRetry?: () => void;
-  className?: string;
+  message?: string
+  onRetry?: () => void
+  className?: string
 }
 
 export function ErrorState({ message, onRetry, className }: ErrorStateProps) {
-  const { t } = useTranslation('common');
-  const resolvedMessage = message ?? t('states.somethingWentWrong');
+  const { t } = useTranslation('common')
+  const resolvedMessage = message ?? t('states.somethingWentWrong')
 
   return (
     <div
@@ -28,5 +28,5 @@ export function ErrorState({ message, onRetry, className }: ErrorStateProps) {
         </Button>
       )}
     </div>
-  );
+  )
 }

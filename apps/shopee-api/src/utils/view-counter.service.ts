@@ -97,4 +97,3 @@ class ViewCounterService {
 
 // Singleton instance
 export const viewCounterService = new ViewCounterService()
-

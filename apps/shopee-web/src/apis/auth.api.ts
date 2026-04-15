@@ -1,11 +1,11 @@
-import { AuthResponse, RefreshTokenResponse } from 'src/types/auth.type';
-import { User } from 'src/types/user.type';
-import http from 'src/utils/http';
+import { AuthResponse, RefreshTokenResponse } from 'src/types/auth.type'
+import { User } from 'src/types/user.type'
+import http from 'src/utils/http'
 
-export const URL_LOGIN = 'login';
-export const URL_REGISTER = 'register';
-export const URL_LOGOUT = 'logout';
-export const URL_REFRESH_TOKEN = 'refresh-access-token';
+export const URL_LOGIN = 'login'
+export const URL_REGISTER = 'register'
+export const URL_LOGOUT = 'logout'
+export const URL_REFRESH_TOKEN = 'refresh-access-token'
 
 const mockUser: User = {
   _id: 'mock-user-id',
@@ -18,16 +18,16 @@ const mockUser: User = {
   phone: '0901234567',
   createdAt: '2024-01-01T00:00:00.000Z',
   updatedAt: new Date().toISOString(),
-};
+}
 
 const authApi = {
   registerAccount: async (body: { email: string; password: string }) => {
     try {
-      return await http.post<AuthResponse>(URL_REGISTER, body);
+      return await http.post<AuthResponse>(URL_REGISTER, body)
     } catch (error) {
-      console.warn('⚠️ [registerAccount] API not available, using mock data');
-      const mockAccessToken = 'mock-access-token-' + Date.now();
-      const mockRefreshToken = 'mock-refresh-token-' + Date.now();
+      console.warn('⚠️ [registerAccount] API not available, using mock data')
+      const mockAccessToken = 'mock-access-token-' + Date.now()
+      const mockRefreshToken = 'mock-refresh-token-' + Date.now()
       return {
         data: {
           message: 'Đăng ký thành công',
@@ -39,17 +39,17 @@ const authApi = {
             user: { ...mockUser, email: body.email },
           },
         },
-      };
+      }
     }
   },
 
   loginAccount: async (body: { email: string; password: string }) => {
     try {
-      return await http.post<AuthResponse>(URL_LOGIN, body);
+      return await http.post<AuthResponse>(URL_LOGIN, body)
     } catch (error) {
-      console.warn('⚠️ [loginAccount] API not available, using mock data');
-      const mockAccessToken = 'mock-access-token-' + Date.now();
-      const mockRefreshToken = 'mock-refresh-token-' + Date.now();
+      console.warn('⚠️ [loginAccount] API not available, using mock data')
+      const mockAccessToken = 'mock-access-token-' + Date.now()
+      const mockRefreshToken = 'mock-refresh-token-' + Date.now()
       return {
         data: {
           message: 'Đăng nhập thành công',
@@ -61,29 +61,29 @@ const authApi = {
             user: { ...mockUser, email: body.email },
           },
         },
-      };
+      }
     }
   },
 
   logoutAccount: async () => {
     try {
-      return await http.post(URL_LOGOUT);
+      return await http.post(URL_LOGOUT)
     } catch (error) {
-      console.warn('⚠️ [logoutAccount] API not available, using mock data');
+      console.warn('⚠️ [logoutAccount] API not available, using mock data')
       return {
         data: {
           message: 'Đăng xuất thành công',
         },
-      };
+      }
     }
   },
 
   // Body phải gửi lên đúng là object có `refresh_token`, cái ở đây để cho biết là phải truyền lên một cái object có một thuộc tính là refresh_token(chỉ là params thôi) -> Nhưng mà cũng phải ghi giống với BE quy định
   refreshAccessToken: async (body: { refresh_token: string }) => {
     try {
-      return await http.post<RefreshTokenResponse>(URL_REFRESH_TOKEN, body);
+      return await http.post<RefreshTokenResponse>(URL_REFRESH_TOKEN, body)
     } catch (error) {
-      console.warn('⚠️ [refreshAccessToken] API not available, using mock data');
+      console.warn('⚠️ [refreshAccessToken] API not available, using mock data')
       return {
         data: {
           message: 'Refresh token thành công',
@@ -91,10 +91,10 @@ const authApi = {
             access_token: 'mock-access-token-refreshed-' + Date.now(),
           },
         },
-      };
+      }
     }
   },
-};
+}
 
 // export const registerAccount = (body: { email: string; password: string }) => http.post<AuthResponse>('/register', body)
 
@@ -109,4 +109,4 @@ const authApi = {
 
 // Test ci-cd-pipeline
 
-export default authApi;
+export default authApi

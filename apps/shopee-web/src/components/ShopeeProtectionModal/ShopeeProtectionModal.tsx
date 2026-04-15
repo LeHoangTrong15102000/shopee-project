@@ -1,14 +1,14 @@
-import { useTranslation } from 'react-i18next';
-import type { TFunction } from 'i18next';
-import BaseModal from 'src/components/BaseModal/BaseModal';
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
+import BaseModal from 'src/components/BaseModal/BaseModal'
 
 interface ShopeeProtectionModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen: boolean
+  onClose: () => void
 }
 
 interface SectionProps {
-  t: TFunction<'product'>;
+  t: TFunction<'product'>
 }
 
 const ReturnPolicySection = ({ t }: SectionProps) => (
@@ -37,7 +37,7 @@ const ReturnPolicySection = ({ t }: SectionProps) => (
       </ul>
     </div>
   </div>
-);
+)
 
 const AuthenticitySection = ({ t }: SectionProps) => (
   <div className="flex gap-3">
@@ -70,7 +70,7 @@ const AuthenticitySection = ({ t }: SectionProps) => (
       </ul>
     </div>
   </div>
-);
+)
 
 const FreeShippingSection = ({ t }: SectionProps) => (
   <div className="flex gap-3">
@@ -103,10 +103,10 @@ const FreeShippingSection = ({ t }: SectionProps) => (
       </ul>
     </div>
   </div>
-);
+)
 
 const ShopeeProtectionModal = ({ isOpen, onClose }: ShopeeProtectionModalProps) => {
-  const { t } = useTranslation('product');
+  const { t } = useTranslation('product')
 
   return (
     <BaseModal
@@ -159,7 +159,7 @@ const ShopeeProtectionModal = ({ isOpen, onClose }: ShopeeProtectionModalProps) 
         <FreeShippingSection t={t} />
       </div>
     </BaseModal>
-  );
-};
+  )
+}
 
-export default ShopeeProtectionModal;
+export default ShopeeProtectionModal

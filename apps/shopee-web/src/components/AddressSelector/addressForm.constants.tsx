@@ -1,6 +1,6 @@
-import { AddressType } from 'src/types/checkout.type';
-import { z } from 'zod';
-import i18n from 'src/i18n/i18n';
+import { AddressType } from 'src/types/checkout.type'
+import { z } from 'zod'
+import i18n from 'src/i18n/i18n'
 
 export const addressSchema = z.object({
   fullName: z
@@ -24,20 +24,20 @@ export const addressSchema = z.object({
   addressType: z.enum(['home', 'office', 'other']),
   label: z.string().max(50, i18n.t('address:form.label.max')).optional(),
   isDefault: z.boolean().optional(),
-});
+})
 
-export type AddressSchemaFormData = z.infer<typeof addressSchema>;
+export type AddressSchemaFormData = z.infer<typeof addressSchema>
 
 export const FORM_STEPS = [
   { id: 1, titleKey: 'step.contact' },
   { id: 2, titleKey: 'step.location' },
   { id: 3, titleKey: 'step.details' },
-];
+]
 
 export const ADDRESS_TYPE_OPTIONS: {
-  value: AddressType;
-  labelKey: string;
-  icon: React.ReactNode;
+  value: AddressType
+  labelKey: string
+  icon: React.ReactNode
 }[] = [
   {
     value: 'home',
@@ -74,11 +74,11 @@ export const ADDRESS_TYPE_OPTIONS: {
       </svg>
     ),
   },
-];
+]
 
 export const formatPhoneNumber = (value: string): string => {
-  const cleaned = value.replace(/\D/g, '');
-  if (cleaned.length <= 4) return cleaned;
-  if (cleaned.length <= 7) return `${cleaned.slice(0, 4)} ${cleaned.slice(4)}`;
-  return `${cleaned.slice(0, 4)} ${cleaned.slice(4, 7)} ${cleaned.slice(7, 10)}`;
-};
+  const cleaned = value.replace(/\D/g, '')
+  if (cleaned.length <= 4) return cleaned
+  if (cleaned.length <= 7) return `${cleaned.slice(0, 4)} ${cleaned.slice(4)}`
+  return `${cleaned.slice(0, 4)} ${cleaned.slice(4, 7)} ${cleaned.slice(7, 10)}`
+}

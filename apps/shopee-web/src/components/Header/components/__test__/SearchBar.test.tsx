@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import SearchBar from '../SearchBar';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import SearchBar from '../SearchBar'
 
 // Mock dependencies
 vi.mock('src/components/Header/SearchSuggestions', () => ({
@@ -11,7 +11,7 @@ vi.mock('src/components/Header/SearchSuggestions', () => ({
         <button onClick={onHide}>Hide</button>
       </div>
     ) : null,
-}));
+}))
 
 vi.mock('src/components/SearchHistory', () => ({
   default: ({ history, onSelect, onRemove, onClearAll }: any) => (
@@ -25,11 +25,11 @@ vi.mock('src/components/SearchHistory', () => ({
       <button onClick={onClearAll}>Clear All</button>
     </div>
   ),
-}));
+}))
 
-const mockAddToHistory = vi.fn();
-const mockRemoveFromHistory = vi.fn();
-const mockClearHistory = vi.fn();
+const mockAddToHistory = vi.fn()
+const mockRemoveFromHistory = vi.fn()
+const mockClearHistory = vi.fn()
 
 vi.mock('src/hooks/useSearchHistory', () => ({
   default: () => ({
@@ -38,14 +38,14 @@ vi.mock('src/hooks/useSearchHistory', () => ({
     removeFromHistory: mockRemoveFromHistory,
     clearHistory: mockClearHistory,
   }),
-}));
+}))
 
 vi.mock('src/components/Button', () => ({
   default: ({ children, ...props }: any) => <button {...props}>{children}</button>,
-}));
+}))
 
 describe('SearchBar', () => {
-  const mockSetFilters = vi.fn() as any;
+  const mockSetFilters = vi.fn() as any
   const defaultProps = {
     filters: {
       page: 1,
@@ -60,110 +60,110 @@ describe('SearchBar', () => {
       category: null,
     },
     setFilters: mockSetFilters,
-  };
+  }
 
   const createProps = (overrides: Partial<typeof defaultProps.filters>) => ({
     filters: { ...defaultProps.filters, ...overrides },
     setFilters: mockSetFilters,
-  });
+  })
 
   beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    vi.clearAllMocks()
+  })
 
   afterEach(() => {
-    vi.restoreAllMocks();
-  });
+    vi.restoreAllMocks()
+  })
 
   it('renders search input and submit button', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    const submitButton = screen.getByRole('button', { name: '' });
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    const submitButton = screen.getByRole('button', { name: '' })
 
-    expect(input).toBeTruthy();
-    expect(submitButton).toBeTruthy();
-  });
+    expect(input).toBeTruthy()
+    expect(submitButton).toBeTruthy()
+  })
 
   it('updates search value when typing', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm') as HTMLInputElement;
-    fireEvent.change(input, { target: { value: 'laptop' } });
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm') as HTMLInputElement
+    fireEvent.change(input, { target: { value: 'laptop' } })
 
-    expect(input.value).toBe('laptop');
-  });
+    expect(input.value).toBe('laptop')
+  })
 
   it('shows suggestions when typing non-empty value', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    fireEvent.change(input, { target: { value: 'laptop' } });
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    fireEvent.change(input, { target: { value: 'laptop' } })
 
-    expect(screen.getByTestId('search-suggestions')).toBeTruthy();
-  });
+    expect(screen.getByTestId('search-suggestions')).toBeTruthy()
+  })
 
   it('shows search history when input is focused with empty value', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    fireEvent.focus(input);
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    fireEvent.focus(input)
 
-    expect(screen.getByTestId('search-history')).toBeTruthy();
-  });
+    expect(screen.getByTestId('search-history')).toBeTruthy()
+  })
 
   it('hides suggestions and shows history when clearing input', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
 
     // Type something
-    fireEvent.change(input, { target: { value: 'laptop' } });
-    expect(screen.getByTestId('search-suggestions')).toBeTruthy();
+    fireEvent.change(input, { target: { value: 'laptop' } })
+    expect(screen.getByTestId('search-suggestions')).toBeTruthy()
 
     // Clear input
-    fireEvent.change(input, { target: { value: '' } });
-    expect(screen.queryByTestId('search-suggestions')).toBeFalsy();
-    expect(screen.getByTestId('search-history')).toBeTruthy();
-  });
+    fireEvent.change(input, { target: { value: '' } })
+    expect(screen.queryByTestId('search-suggestions')).toBeFalsy()
+    expect(screen.getByTestId('search-history')).toBeTruthy()
+  })
 
   it('submits search on form submit', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    const form = input.closest('form')!;
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    const form = input.closest('form')!
 
-    fireEvent.change(input, { target: { value: 'laptop' } });
-    fireEvent.submit(form);
+    fireEvent.change(input, { target: { value: 'laptop' } })
+    fireEvent.submit(form)
 
-    expect(mockAddToHistory).toHaveBeenCalledWith('laptop');
-    expect(mockSetFilters).toHaveBeenCalledWith({ name: 'laptop' });
-  });
+    expect(mockAddToHistory).toHaveBeenCalledWith('laptop')
+    expect(mockSetFilters).toHaveBeenCalledWith({ name: 'laptop' })
+  })
 
   it('does not submit empty search', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    const form = input.closest('form')!;
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    const form = input.closest('form')!
 
-    fireEvent.submit(form);
+    fireEvent.submit(form)
 
-    expect(mockAddToHistory).not.toHaveBeenCalled();
-    expect(mockSetFilters).not.toHaveBeenCalled();
-  });
+    expect(mockAddToHistory).not.toHaveBeenCalled()
+    expect(mockSetFilters).not.toHaveBeenCalled()
+  })
 
   it('trims whitespace before submitting', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    const form = input.closest('form')!;
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    const form = input.closest('form')!
 
-    fireEvent.change(input, { target: { value: '  laptop  ' } });
-    fireEvent.submit(form);
+    fireEvent.change(input, { target: { value: '  laptop  ' } })
+    fireEvent.submit(form)
 
-    expect(mockAddToHistory).toHaveBeenCalledWith('laptop');
-    expect(mockSetFilters).toHaveBeenCalledWith({ name: 'laptop' });
-  });
+    expect(mockAddToHistory).toHaveBeenCalledWith('laptop')
+    expect(mockSetFilters).toHaveBeenCalledWith({ name: 'laptop' })
+  })
 
   it('resets order filter when submitting with existing order', () => {
     const propsWithOrder = {
@@ -174,99 +174,99 @@ describe('SearchBar', () => {
         sort_by: 'price' as const,
       },
       setFilters: mockSetFilters,
-    };
+    }
 
-    render(<SearchBar {...propsWithOrder} />);
+    render(<SearchBar {...propsWithOrder} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    const form = input.closest('form')!;
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    const form = input.closest('form')!
 
-    fireEvent.change(input, { target: { value: 'laptop' } });
-    fireEvent.submit(form);
+    fireEvent.change(input, { target: { value: 'laptop' } })
+    fireEvent.submit(form)
 
     expect(mockSetFilters).toHaveBeenCalledWith({
       name: 'laptop',
       order: null,
       sort_by: 'createdAt',
-    });
-  });
+    })
+  })
 
   it('handles suggestion selection', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    fireEvent.change(input, { target: { value: 'lap' } });
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    fireEvent.change(input, { target: { value: 'lap' } })
 
-    const suggestionButton = screen.getByText('laptop');
-    fireEvent.click(suggestionButton);
+    const suggestionButton = screen.getByText('laptop')
+    fireEvent.click(suggestionButton)
 
-    expect(mockAddToHistory).toHaveBeenCalledWith('laptop');
-    expect(mockSetFilters).toHaveBeenCalledWith({ name: 'laptop' });
-  });
+    expect(mockAddToHistory).toHaveBeenCalledWith('laptop')
+    expect(mockSetFilters).toHaveBeenCalledWith({ name: 'laptop' })
+  })
 
   it('handles history item selection', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    fireEvent.focus(input);
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    fireEvent.focus(input)
 
-    const historyButton = screen.getByText('phone');
-    fireEvent.click(historyButton);
+    const historyButton = screen.getByText('phone')
+    fireEvent.click(historyButton)
 
-    expect(mockAddToHistory).toHaveBeenCalledWith('phone');
-    expect(mockSetFilters).toHaveBeenCalledWith({ name: 'phone' });
-  });
+    expect(mockAddToHistory).toHaveBeenCalledWith('phone')
+    expect(mockSetFilters).toHaveBeenCalledWith({ name: 'phone' })
+  })
 
   it('handles history item removal', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    fireEvent.focus(input);
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    fireEvent.focus(input)
 
-    const removeButton = screen.getByText('Remove');
-    fireEvent.click(removeButton);
+    const removeButton = screen.getByText('Remove')
+    fireEvent.click(removeButton)
 
-    expect(mockRemoveFromHistory).toHaveBeenCalledWith('test');
-  });
+    expect(mockRemoveFromHistory).toHaveBeenCalledWith('test')
+  })
 
   it('handles clear all history', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    fireEvent.focus(input);
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    fireEvent.focus(input)
 
-    const clearButton = screen.getByText('Clear All');
-    fireEvent.click(clearButton);
+    const clearButton = screen.getByText('Clear All')
+    fireEvent.click(clearButton)
 
-    expect(mockClearHistory).toHaveBeenCalled();
-  });
+    expect(mockClearHistory).toHaveBeenCalled()
+  })
 
   it('hides suggestions when hide button is clicked', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    fireEvent.change(input, { target: { value: 'laptop' } });
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    fireEvent.change(input, { target: { value: 'laptop' } })
 
-    expect(screen.getByTestId('search-suggestions')).toBeTruthy();
+    expect(screen.getByTestId('search-suggestions')).toBeTruthy()
 
-    const hideButton = screen.getByText('Hide');
-    fireEvent.click(hideButton);
+    const hideButton = screen.getByText('Hide')
+    fireEvent.click(hideButton)
 
-    expect(screen.queryByTestId('search-suggestions')).toBeFalsy();
-  });
+    expect(screen.queryByTestId('search-suggestions')).toBeFalsy()
+  })
 
   it('closes suggestions on Escape key', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    fireEvent.change(input, { target: { value: 'laptop' } });
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    fireEvent.change(input, { target: { value: 'laptop' } })
 
-    expect(screen.getByTestId('search-suggestions')).toBeTruthy();
+    expect(screen.getByTestId('search-suggestions')).toBeTruthy()
 
-    fireEvent.keyDown(document, { key: 'Escape' });
+    fireEvent.keyDown(document, { key: 'Escape' })
 
-    expect(screen.queryByTestId('search-suggestions')).toBeFalsy();
-  });
+    expect(screen.queryByTestId('search-suggestions')).toBeFalsy()
+  })
 
   it('closes suggestions on click outside', () => {
     render(
@@ -274,202 +274,202 @@ describe('SearchBar', () => {
         <SearchBar {...defaultProps} />
         <div data-testid="outside">Outside</div>
       </div>,
-    );
+    )
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    fireEvent.change(input, { target: { value: 'laptop' } });
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    fireEvent.change(input, { target: { value: 'laptop' } })
 
-    expect(screen.getByTestId('search-suggestions')).toBeTruthy();
+    expect(screen.getByTestId('search-suggestions')).toBeTruthy()
 
-    const outside = screen.getByTestId('outside');
-    fireEvent.mouseDown(outside);
+    const outside = screen.getByTestId('outside')
+    fireEvent.mouseDown(outside)
 
-    expect(screen.queryByTestId('search-suggestions')).toBeFalsy();
-  });
+    expect(screen.queryByTestId('search-suggestions')).toBeFalsy()
+  })
 
   it('initializes search value from filters.name', () => {
     const propsWithName = {
       filters: { ...defaultProps.filters, name: 'phone' },
       setFilters: mockSetFilters,
-    };
+    }
 
-    render(<SearchBar {...propsWithName} />);
+    render(<SearchBar {...propsWithName} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm') as HTMLInputElement;
-    expect(input.value).toBe('phone');
-  });
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm') as HTMLInputElement
+    expect(input.value).toBe('phone')
+  })
 
   it('updates search value when filters.name changes', () => {
-    const { rerender } = render(<SearchBar {...defaultProps} />);
+    const { rerender } = render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm') as HTMLInputElement;
-    expect(input.value).toBe('');
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm') as HTMLInputElement
+    expect(input.value).toBe('')
 
     const updatedProps = {
       filters: { ...defaultProps.filters, name: 'tablet' },
       setFilters: mockSetFilters,
-    };
+    }
 
-    rerender(<SearchBar {...updatedProps} />);
-    expect(input.value).toBe('tablet');
-  });
+    rerender(<SearchBar {...updatedProps} />)
+    expect(input.value).toBe('tablet')
+  })
 
   it('handles blur event with delay', async () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    fireEvent.change(input, { target: { value: 'laptop' } });
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    fireEvent.change(input, { target: { value: 'laptop' } })
 
-    expect(screen.getByTestId('search-suggestions')).toBeTruthy();
+    expect(screen.getByTestId('search-suggestions')).toBeTruthy()
 
-    fireEvent.blur(input);
+    fireEvent.blur(input)
 
     // Suggestions should still be visible immediately after blur
-    expect(screen.getByTestId('search-suggestions')).toBeTruthy();
+    expect(screen.getByTestId('search-suggestions')).toBeTruthy()
 
     // Wait for the timeout (150ms)
     await waitFor(
       () => {
-        expect(screen.queryByTestId('search-suggestions')).toBeFalsy();
+        expect(screen.queryByTestId('search-suggestions')).toBeFalsy()
       },
       { timeout: 200 },
-    );
-  });
+    )
+  })
 
   it('shows suggestions when focusing with non-empty value', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
 
     // Type something
-    fireEvent.change(input, { target: { value: 'laptop' } });
+    fireEvent.change(input, { target: { value: 'laptop' } })
 
     // Blur to hide suggestions
-    fireEvent.keyDown(document, { key: 'Escape' });
-    expect(screen.queryByTestId('search-suggestions')).toBeFalsy();
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(screen.queryByTestId('search-suggestions')).toBeFalsy()
 
     // Focus again
-    fireEvent.focus(input);
-    expect(screen.getByTestId('search-suggestions')).toBeTruthy();
-  });
+    fireEvent.focus(input)
+    expect(screen.getByTestId('search-suggestions')).toBeTruthy()
+  })
 
   it('does not show history when input has value', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    fireEvent.change(input, { target: { value: 'laptop' } });
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    fireEvent.change(input, { target: { value: 'laptop' } })
 
-    expect(screen.queryByTestId('search-history')).toBeFalsy();
-  });
+    expect(screen.queryByTestId('search-history')).toBeFalsy()
+  })
 
   it('handles whitespace-only input as empty', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    const form = input.closest('form')!;
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    const form = input.closest('form')!
 
-    fireEvent.change(input, { target: { value: '   ' } });
-    fireEvent.submit(form);
+    fireEvent.change(input, { target: { value: '   ' } })
+    fireEvent.submit(form)
 
-    expect(mockAddToHistory).not.toHaveBeenCalled();
-    expect(mockSetFilters).not.toHaveBeenCalled();
-  });
+    expect(mockAddToHistory).not.toHaveBeenCalled()
+    expect(mockSetFilters).not.toHaveBeenCalled()
+  })
 
   it('cleans up event listeners on unmount', () => {
-    const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
+    const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener')
 
-    const { unmount } = render(<SearchBar {...defaultProps} />);
+    const { unmount } = render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    fireEvent.change(input, { target: { value: 'laptop' } });
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    fireEvent.change(input, { target: { value: 'laptop' } })
 
-    unmount();
+    unmount()
 
-    expect(removeEventListenerSpy).toHaveBeenCalledWith('mousedown', expect.any(Function));
-    expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
-  });
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('mousedown', expect.any(Function))
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function))
+  })
 
   it('does not close suggestions on blur if focus remains within container', async () => {
-    const { container } = render(<SearchBar {...defaultProps} />);
+    const { container } = render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    fireEvent.change(input, { target: { value: 'laptop' } });
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    fireEvent.change(input, { target: { value: 'laptop' } })
 
-    expect(screen.getByTestId('search-suggestions')).toBeTruthy();
+    expect(screen.getByTestId('search-suggestions')).toBeTruthy()
 
     // Mock activeElement to be within the search container
-    const searchContainer = container.querySelector('[class*="relative"]');
+    const searchContainer = container.querySelector('[class*="relative"]')
     Object.defineProperty(document, 'activeElement', {
       writable: true,
       configurable: true,
       value: searchContainer,
-    });
+    })
 
-    fireEvent.blur(input);
+    fireEvent.blur(input)
 
     // Wait for the timeout
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 200))
 
     // Suggestions should still be visible
-    expect(screen.getByTestId('search-suggestions')).toBeTruthy();
-  });
+    expect(screen.getByTestId('search-suggestions')).toBeTruthy()
+  })
 
   it('does not add event listeners when suggestions and history are hidden', () => {
-    const addEventListenerSpy = vi.spyOn(document, 'addEventListener');
-    const initialCallCount = addEventListenerSpy.mock.calls.length;
+    const addEventListenerSpy = vi.spyOn(document, 'addEventListener')
+    const initialCallCount = addEventListenerSpy.mock.calls.length
 
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
     // No suggestions or history shown initially
-    expect(addEventListenerSpy.mock.calls.length).toBe(initialCallCount);
-  });
+    expect(addEventListenerSpy.mock.calls.length).toBe(initialCallCount)
+  })
 
   it('handles clicking inside search container', () => {
-    const { container } = render(<SearchBar {...defaultProps} />);
+    const { container } = render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    fireEvent.change(input, { target: { value: 'laptop' } });
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    fireEvent.change(input, { target: { value: 'laptop' } })
 
-    expect(screen.getByTestId('search-suggestions')).toBeTruthy();
+    expect(screen.getByTestId('search-suggestions')).toBeTruthy()
 
     // Click inside the container
-    const searchContainer = container.querySelector('[class*="relative"]')!;
-    fireEvent.mouseDown(searchContainer);
+    const searchContainer = container.querySelector('[class*="relative"]')!
+    fireEvent.mouseDown(searchContainer)
 
     // Suggestions should still be visible
-    expect(screen.getByTestId('search-suggestions')).toBeTruthy();
-  });
+    expect(screen.getByTestId('search-suggestions')).toBeTruthy()
+  })
 
   it('handles non-Escape key press', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    fireEvent.change(input, { target: { value: 'laptop' } });
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    fireEvent.change(input, { target: { value: 'laptop' } })
 
-    expect(screen.getByTestId('search-suggestions')).toBeTruthy();
+    expect(screen.getByTestId('search-suggestions')).toBeTruthy()
 
-    fireEvent.keyDown(document, { key: 'Enter' });
+    fireEvent.keyDown(document, { key: 'Enter' })
 
     // Suggestions should still be visible
-    expect(screen.getByTestId('search-suggestions')).toBeTruthy();
-  });
+    expect(screen.getByTestId('search-suggestions')).toBeTruthy()
+  })
 
   it('submits search without order when filters.order is null', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm');
-    const form = input.closest('form')!;
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm')
+    const form = input.closest('form')!
 
-    fireEvent.change(input, { target: { value: 'laptop' } });
-    fireEvent.submit(form);
+    fireEvent.change(input, { target: { value: 'laptop' } })
+    fireEvent.submit(form)
 
-    expect(mockSetFilters).toHaveBeenCalledWith({ name: 'laptop' });
-  });
+    expect(mockSetFilters).toHaveBeenCalledWith({ name: 'laptop' })
+  })
 
   it('handles empty filters.name on mount', () => {
-    render(<SearchBar {...defaultProps} />);
+    render(<SearchBar {...defaultProps} />)
 
-    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm') as HTMLInputElement;
-    expect(input.value).toBe('');
-  });
-});
+    const input = screen.getByPlaceholderText('Tìm kiếm sản phẩm') as HTMLInputElement
+    expect(input.value).toBe('')
+  })
+})

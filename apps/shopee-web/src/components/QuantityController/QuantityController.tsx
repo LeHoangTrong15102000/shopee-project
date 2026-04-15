@@ -1,21 +1,21 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import InputNumber, { InputNumberProps } from 'src/components/InputNumber';
-import Button from 'src/components/Button';
-import DeleteModal from '../DeleteModal';
-import { Product } from 'src/types/product.type';
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import InputNumber, { InputNumberProps } from 'src/components/InputNumber'
+import Button from 'src/components/Button'
+import DeleteModal from '../DeleteModal'
+import { Product } from 'src/types/product.type'
 
 // Ngoài những thuộc tính có sẵn chúng ta sẽ thêm các thuộc tính khác thuộc trường Quantity
 interface Props extends InputNumberProps {
-  max?: number;
-  onIncrease?: (value: number) => void;
-  onDecrease?: (value: number) => void;
-  onType?: (value: number) => void;
-  onFocusOut?: (value: number) => void;
-  classNameWrapper?: string;
-  handleDelete?: (value: number) => void;
-  product?: Product;
-  isQuantityInCart?: boolean;
+  max?: number
+  onIncrease?: (value: number) => void
+  onDecrease?: (value: number) => void
+  onType?: (value: number) => void
+  onFocusOut?: (value: number) => void
+  classNameWrapper?: string
+  handleDelete?: (value: number) => void
+  product?: Product
+  isQuantityInCart?: boolean
 }
 
 const QuantityController = ({
@@ -32,78 +32,78 @@ const QuantityController = ({
   ...rest
 }: Props) => {
   // State cho hiển thị modal -> Chỉ cần tạo cái idDelete rồi cái showConfirm sẽ phụ thuộc vòa
-  const [idDelete, setIdDelete] = useState<null | number>(null);
-  const openConfirm = idDelete !== null;
+  const [idDelete, setIdDelete] = useState<null | number>(null)
+  const openConfirm = idDelete !== null
 
-  const [localValue, setLocalValue] = useState<number>(Number(value || 0));
-  const [isShaking, setIsShaking] = useState(false);
+  const [localValue, setLocalValue] = useState<number>(Number(value || 0))
+  const [isShaking, setIsShaking] = useState(false)
   // Đã check chữ trong InputNumber component rồi nên không cần phải check nữa -> chỉ cần truyền giá trị vào
   // Hàm handleChange này dùng để truyền vào onChange gốc của chúng ta
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let _value = Number(event.target.value);
+    let _value = Number(event.target.value)
     if (max !== undefined && _value > max) {
-      _value = max;
+      _value = max
     } else if (_value < 1) {
-      _value = 1;
+      _value = 1
     }
 
     // Khi mà có onType thì chúng ta sẽ truyền vào onType như này
-    onType && onType(_value);
+    onType && onType(_value)
     // Cập nhật localValue tại đây luôn
-    setLocalValue(_value);
-  };
+    setLocalValue(_value)
+  }
 
   // func tăng sản phẩm
   const increase = () => {
-    let _value = Number(value || localValue) + 1;
+    let _value = Number(value || localValue) + 1
     if (max !== undefined && _value > max) {
-      _value = max;
+      _value = max
     }
     if (max !== undefined && Number(value || localValue) >= max) {
-      setIsShaking(true);
-      setTimeout(() => setIsShaking(false), 500);
+      setIsShaking(true)
+      setTimeout(() => setIsShaking(false), 500)
     }
 
-    onIncrease && onIncrease(_value);
-    setLocalValue(_value);
-  };
+    onIncrease && onIncrease(_value)
+    setLocalValue(_value)
+  }
 
   // func showConfirm,
   const showConfirm = (_id: number) => {
-    setIdDelete(_id);
-  };
+    setIdDelete(_id)
+  }
 
   // func hideConfirm
   const hideConfirm = () => {
-    setIdDelete(null);
-  };
+    setIdDelete(null)
+  }
 
   // handle xử lý việc show cái Modal ra, và xóa đi cái thằng
   const handleDeleteProduct = () => {
-    handleDelete && handleDelete(Number(product?._id));
-  };
+    handleDelete && handleDelete(Number(product?._id))
+  }
 
   // fucn giảm sản phẩm
   const decrease = () => {
-    let _value = Number(value || localValue) - 1;
+    let _value = Number(value || localValue) - 1
     if (_value < 1) {
-      _value = 1; // reset lại giá trị value
-      showConfirm(Number(product?._id));
+      _value = 1 // reset lại giá trị value
+      showConfirm(Number(product?._id))
     }
     if (Number(value || localValue) <= 1 && !isQuantityInCart) {
-      setIsShaking(true);
-      setTimeout(() => setIsShaking(false), 500);
+      setIsShaking(true)
+      setTimeout(() => setIsShaking(false), 500)
     }
 
-    onDecrease && onDecrease(_value);
-    setLocalValue(_value);
-  };
+    onDecrease && onDecrease(_value)
+    setLocalValue(_value)
+  }
 
   // func handle blur
   const handleBlur = (event: React.FocusEvent<HTMLInputElement, Element>) => {
-    const _value = Number(event.target.value);
-    onFocusOut && onFocusOut(_value);
-  };
+    const _value = Number(event.target.value)
+    onFocusOut && onFocusOut(_value)
+  }
 
   return (
     <motion.div
@@ -174,7 +174,7 @@ const QuantityController = ({
         />
       )}
     </motion.div>
-  );
-};
+  )
+}
 
-export default QuantityController;
+export default QuantityController

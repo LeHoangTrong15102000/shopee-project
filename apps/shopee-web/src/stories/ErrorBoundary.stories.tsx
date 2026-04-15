@@ -1,13 +1,13 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import type { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
 import EmptyState, {
   EmptyCart,
   EmptySearch,
   EmptyWishlist,
   EmptyOrders,
-} from 'src/components/ErrorBoundary/EmptyState';
-import ErrorFallback from 'src/components/ErrorBoundary/ErrorFallback';
-import NetworkError from 'src/components/ErrorBoundary/NetworkError';
+} from 'src/components/ErrorBoundary/EmptyState'
+import ErrorFallback from 'src/components/ErrorBoundary/ErrorFallback'
+import NetworkError from 'src/components/ErrorBoundary/NetworkError'
 
 const emptyStateMeta: Meta<typeof EmptyState> = {
   title: 'ErrorBoundary/EmptyState',
@@ -30,10 +30,10 @@ const emptyStateMeta: Meta<typeof EmptyState> = {
       description: 'Additional CSS classes',
     },
   },
-};
+}
 
-export default emptyStateMeta;
-type EmptyStateStory = StoryObj<typeof EmptyState>;
+export default emptyStateMeta
+type EmptyStateStory = StoryObj<typeof EmptyState>
 
 export const EmptyStateDefault: EmptyStateStory = {
   args: {
@@ -44,23 +44,23 @@ export const EmptyStateDefault: EmptyStateStory = {
       onClick: fn(),
     },
   },
-};
+}
 
 export const EmptyCartState: StoryObj<typeof EmptyCart> = {
   render: () => <EmptyCart onShopNow={fn()} />,
-};
+}
 
 export const EmptySearchState: StoryObj<typeof EmptySearch> = {
   render: () => <EmptySearch searchTerm="iPhone 15 Pro Max" onClear={fn()} />,
-};
+}
 
 export const EmptyWishlistState: StoryObj<typeof EmptyWishlist> = {
   render: () => <EmptyWishlist onExplore={fn()} />,
-};
+}
 
 export const EmptyOrdersState: StoryObj<typeof EmptyOrders> = {
   render: () => <EmptyOrders onShopNow={fn()} />,
-};
+}
 
 const errorFallbackMeta: Meta<typeof ErrorFallback> = {
   title: 'ErrorBoundary/ErrorFallback',
@@ -69,9 +69,9 @@ const errorFallbackMeta: Meta<typeof ErrorFallback> = {
     layout: 'centered',
   },
   tags: ['autodocs'],
-};
+}
 
-type ErrorFallbackStory = StoryObj<typeof ErrorFallback>;
+type ErrorFallbackStory = StoryObj<typeof ErrorFallback>
 
 export const ErrorFallbackDefault: ErrorFallbackStory = {
   parameters: errorFallbackMeta.parameters,
@@ -83,7 +83,7 @@ export const ErrorFallbackDefault: ErrorFallbackStory = {
     showRetry: true,
     retryText: 'Thử lại',
   },
-};
+}
 
 const networkErrorMeta: Meta<typeof NetworkError> = {
   title: 'ErrorBoundary/NetworkError',
@@ -92,9 +92,9 @@ const networkErrorMeta: Meta<typeof NetworkError> = {
     layout: 'centered',
   },
   tags: ['autodocs'],
-};
+}
 
-type NetworkErrorStory = StoryObj<typeof NetworkError>;
+type NetworkErrorStory = StoryObj<typeof NetworkError>
 
 export const NetworkErrorDefault: NetworkErrorStory = {
   parameters: networkErrorMeta.parameters,
@@ -102,7 +102,7 @@ export const NetworkErrorDefault: NetworkErrorStory = {
     onRetry: fn(),
     autoRetry: false,
   },
-};
+}
 
 export const NetworkErrorAutoRetry: NetworkErrorStory = {
   parameters: networkErrorMeta.parameters,
@@ -112,4 +112,4 @@ export const NetworkErrorAutoRetry: NetworkErrorStory = {
     autoRetryInterval: 5000,
     maxAutoRetries: 3,
   },
-};
+}

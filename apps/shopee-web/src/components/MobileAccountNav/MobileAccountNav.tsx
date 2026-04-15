@@ -1,11 +1,11 @@
-import classNames from 'classnames';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router';
-import path from 'src/constant/path';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import Button from 'src/components/Button';
+import classNames from 'classnames'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useLocation, useNavigate } from 'react-router'
+import path from 'src/constant/path'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import Button from 'src/components/Button'
 
 // ChevronDown icon
 const ChevronDownIcon = ({ className }: { className?: string }) => (
@@ -19,7 +19,7 @@ const ChevronDownIcon = ({ className }: { className?: string }) => (
   >
     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
   </svg>
-);
+)
 
 // Mobile tab navigation items with icons
 const mobileNavItems = [
@@ -164,58 +164,58 @@ const mobileNavItems = [
       </svg>
     ),
   },
-];
+]
 
 interface MobileAccountNavProps {
-  className?: string;
+  className?: string
 }
 
 const MobileAccountNav = ({ className }: MobileAccountNavProps) => {
-  const { t } = useTranslation('nav');
-  const reducedMotion = useReducedMotion();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation('nav')
+  const reducedMotion = useReducedMotion()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   // Find current active item based on location
   const activeItem =
-    mobileNavItems.find((item) => location.pathname === item.to) || mobileNavItems[0];
+    mobileNavItems.find((item) => location.pathname === item.to) || mobileNavItems[0]
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+        setIsOpen(false)
       }
-    };
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
     }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen]);
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isOpen])
 
   // Close dropdown on escape key
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setIsOpen(false);
+        setIsOpen(false)
       }
-    };
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
     }
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen]);
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape)
+    }
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isOpen])
 
   const handleSelect = (to: string) => {
-    setIsOpen(false);
-    navigate(to);
-  };
+    setIsOpen(false)
+    navigate(to)
+  }
 
   const toggleDropdown = () => {
-    setIsOpen((prev) => !prev);
-  };
+    setIsOpen((prev) => !prev)
+  }
 
   return (
     <div
@@ -259,7 +259,7 @@ const MobileAccountNav = ({ className }: MobileAccountNavProps) => {
             className="absolute top-full right-0 left-0 z-50 mt-px overflow-hidden rounded-b-lg border border-gray-200 bg-white shadow-lg dark:border-slate-600 dark:bg-slate-800"
           >
             {mobileNavItems.map((item) => {
-              const isActive = location.pathname === item.to;
+              const isActive = location.pathname === item.to
               return (
                 <Button
                   key={item.to}
@@ -290,13 +290,13 @@ const MobileAccountNav = ({ className }: MobileAccountNavProps) => {
                   </span>
                   <span className="font-medium">{t(item.label)}</span>
                 </Button>
-              );
+              )
             })}
           </motion.div>
         )}
       </AnimatePresence>
     </div>
-  );
-};
+  )
+}
 
-export default MobileAccountNav;
+export default MobileAccountNav

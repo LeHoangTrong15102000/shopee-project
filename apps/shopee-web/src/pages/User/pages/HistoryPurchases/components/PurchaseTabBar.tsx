@@ -1,11 +1,11 @@
-import classNames from 'classnames';
-import { useTranslation } from 'react-i18next';
-import { purchasesStatus } from 'src/constant/purchase';
-import Button from 'src/components/Button';
+import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
+import { purchasesStatus } from 'src/constant/purchase'
+import Button from 'src/components/Button'
 
 interface PurchaseTabBarProps {
-  status: number;
-  onStatusChange: (status: number) => void;
+  status: number
+  onStatusChange: (status: number) => void
 }
 
 const purchaseTabs = [
@@ -15,10 +15,10 @@ const purchaseTabs = [
   { status: purchasesStatus.inProgress, nameKey: 'history.inDelivery' },
   { status: purchasesStatus.delivered, nameKey: 'history.completed' },
   { status: purchasesStatus.cancelled, nameKey: 'history.cancelled' },
-];
+]
 
 const PurchaseTabBar = ({ status, onStatusChange }: PurchaseTabBarProps) => {
-  const { t } = useTranslation('user');
+  const { t } = useTranslation('user')
   return (
     <div className="sticky top-0 z-20 scrollbar-hide flex items-center overflow-x-auto rounded-t-sm bg-white shadow-xs dark:bg-slate-800">
       {purchaseTabs.map((tab) => (
@@ -40,7 +40,7 @@ const PurchaseTabBar = ({ status, onStatusChange }: PurchaseTabBarProps) => {
         </Button>
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default PurchaseTabBar;
+export default PurchaseTabBar

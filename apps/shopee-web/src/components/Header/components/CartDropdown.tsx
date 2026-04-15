@@ -1,20 +1,20 @@
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import Popover from 'src/components/Popover';
-import { formatCurrency, generateNameId } from 'src/utils/utils';
-import noproduct from 'src/assets/images/img-product-incart.png';
-import path from 'src/constant/path';
-import { Purchase } from 'src/types/purchases.type';
+import { Link } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import Popover from 'src/components/Popover'
+import { formatCurrency, generateNameId } from 'src/utils/utils'
+import noproduct from 'src/assets/images/img-product-incart.png'
+import path from 'src/constant/path'
+import { Purchase } from 'src/types/purchases.type'
 
-const MAX_PURCHASES = 5;
+const MAX_PURCHASES = 5
 
 interface CartDropdownProps {
-  purchasesInCart: Purchase[] | undefined;
-  isAuthenticated: boolean;
+  purchasesInCart: Purchase[] | undefined
+  isAuthenticated: boolean
 }
 
 const CartDropdown = ({ purchasesInCart, isAuthenticated }: CartDropdownProps) => {
-  const { t } = useTranslation('cart');
+  const { t } = useTranslation('cart')
   return (
     <div className="flex shrink-0 items-center justify-end gap-1.5 sm:gap-2 md:col-span-1 md:gap-3">
       {/* Wishlist Icon */}
@@ -129,7 +129,7 @@ const CartDropdown = ({ purchasesInCart, isAuthenticated }: CartDropdownProps) =
         </Popover>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CartDropdown;
+export default CartDropdown

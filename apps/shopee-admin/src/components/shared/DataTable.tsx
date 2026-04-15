@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -11,8 +11,8 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table';
-import { useVirtualizer } from '@tanstack/react-virtual';
+} from '@tanstack/react-table'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import {
   Table,
   TableBody,
@@ -20,10 +20,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from 'src/components/ui/table';
-import { Button } from 'src/components/ui/button';
-import { Input } from 'src/components/ui/input';
-import { Skeleton } from 'src/components/ui/skeleton';
+} from 'src/components/ui/table'
+import { Button } from 'src/components/ui/button'
+import { Input } from 'src/components/ui/input'
+import { Skeleton } from 'src/components/ui/skeleton'
 import {
   ChevronLeft,
   ChevronRight,
@@ -31,29 +31,29 @@ import {
   ChevronsRight,
   SlidersHorizontal,
   X,
-} from 'lucide-react';
+} from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from 'src/components/ui/dropdown-menu';
+} from 'src/components/ui/dropdown-menu'
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  searchKey?: string;
-  searchPlaceholder?: string;
-  isLoading?: boolean;
-  pageCount?: number;
-  pageIndex?: number;
-  pageSize?: number;
-  onPaginationChange?: (page: number, pageSize: number) => void;
-  enableRowSelection?: boolean;
-  onRowSelectionChange?: (rows: TData[]) => void;
-  bulkActions?: React.ReactNode;
-  manualPagination?: boolean;
-  totalRows?: number;
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
+  searchKey?: string
+  searchPlaceholder?: string
+  isLoading?: boolean
+  pageCount?: number
+  pageIndex?: number
+  pageSize?: number
+  onPaginationChange?: (page: number, pageSize: number) => void
+  enableRowSelection?: boolean
+  onRowSelectionChange?: (rows: TData[]) => void
+  bulkActions?: React.ReactNode
+  manualPagination?: boolean
+  totalRows?: number
 }
 
 export function DataTable<TData, TValue>({
@@ -72,12 +72,12 @@ export function DataTable<TData, TValue>({
   manualPagination = false,
   totalRows,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
-  const [globalFilter, setGlobalFilter] = useState('');
-  const { t } = useTranslation('common');
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = useState({})
+  const [globalFilter, setGlobalFilter] = useState('')
+  const { t } = useTranslation('common')
 
   const table = useReactTable({
     data,
@@ -95,14 +95,14 @@ export function DataTable<TData, TValue>({
     },
     enableRowSelection,
     onRowSelectionChange: (updater) => {
-      setRowSelection(updater);
+      setRowSelection(updater)
       if (onRowSelectionChange) {
-        const newSelection = typeof updater === 'function' ? updater(rowSelection) : updater;
+        const newSelection = typeof updater === 'function' ? updater(rowSelection) : updater
         const selectedRows = Object.keys(newSelection)
           .filter((key) => newSelection[key as keyof typeof newSelection])
           .map((key) => data[parseInt(key)])
-          .filter(Boolean);
-        onRowSelectionChange(selectedRows);
+          .filter(Boolean)
+        onRowSelectionChange(selectedRows)
       }
     },
     onSortingChange: setSorting,
@@ -114,21 +114,21 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     manualPagination,
-  });
+  })
 
   const selectedCount = Object.keys(rowSelection).filter(
     (k) => rowSelection[k as keyof typeof rowSelection],
-  ).length;
+  ).length
 
-  const rows = table.getRowModel().rows;
-  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const rows = table.getRowModel().rows
+  const tableContainerRef = useRef<HTMLDivElement>(null)
 
   const rowVirtualizer = useVirtualizer({
     count: isLoading ? controlledPageSize : rows.length,
     getScrollElement: () => tableContainerRef.current,
     estimateSize: () => 48,
     overscan: 5,
-  });
+  })
 
   return (
     <div className="space-y-4">
@@ -220,7 +220,7 @@ export function DataTable<TData, TValue>({
               <>
                 <tr style={{ height: `${rowVirtualizer.getVirtualItems()[0]?.start ?? 0}px` }} />
                 {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-                  const row = rows[virtualRow.index];
+                  const row = rows[virtualRow.index]
                   return (
                     <TableRow
                       key={row.id}
@@ -234,7 +234,7 @@ export function DataTable<TData, TValue>({
                         </TableCell>
                       ))}
                     </TableRow>
-                  );
+                  )
                 })}
                 <tr
                   style={{
@@ -336,5 +336,5 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
     </div>
-  );
+  )
 }

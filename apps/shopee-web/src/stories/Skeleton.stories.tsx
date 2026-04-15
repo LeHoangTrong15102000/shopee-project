@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react'
 import {
   SkeletonBase,
   ProductCardSkeleton,
@@ -6,7 +6,7 @@ import {
   NotificationSkeleton,
   ProductDetailSkeleton,
   ProductListSkeleton,
-} from 'src/components/Skeleton';
+} from 'src/components/Skeleton'
 
 const meta = {
   title: 'Components/Skeleton',
@@ -21,9 +21,9 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta;
+} satisfies Meta
 
-export default meta;
+export default meta
 
 export const SkeletonBaseDefault: StoryObj = {
   render: () => (
@@ -50,7 +50,7 @@ export const SkeletonBaseDefault: StoryObj = {
       </div>
     </div>
   ),
-};
+}
 
 export const ProductCard: StoryObj = {
   render: () => (
@@ -58,7 +58,7 @@ export const ProductCard: StoryObj = {
       <ProductCardSkeleton />
     </div>
   ),
-};
+}
 
 export const CartItem: StoryObj = {
   render: () => (
@@ -73,7 +73,7 @@ export const CartItem: StoryObj = {
       </div>
     ),
   ],
-};
+}
 
 export const Notification: StoryObj = {
   render: () => (
@@ -84,7 +84,7 @@ export const Notification: StoryObj = {
       <NotificationSkeleton count={3} />
     </div>
   ),
-};
+}
 
 export const ProductDetail: StoryObj = {
   render: () => <ProductDetailSkeleton />,
@@ -98,7 +98,7 @@ export const ProductDetail: StoryObj = {
   parameters: {
     layout: 'fullscreen',
   },
-};
+}
 
 export const ProductList: StoryObj = {
   render: () => (
@@ -116,4 +116,4 @@ export const ProductList: StoryObj = {
   parameters: {
     layout: 'fullscreen',
   },
-};
+}

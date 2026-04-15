@@ -1,11 +1,11 @@
-import classNames from 'classnames';
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import classNames from 'classnames'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface CartSyncIndicatorProps {
-  isSyncing: boolean;
-  lastSyncTimestamp: string | null;
-  className?: string;
+  isSyncing: boolean
+  lastSyncTimestamp: string | null
+  className?: string
 }
 
 export default function CartSyncIndicator({
@@ -13,22 +13,22 @@ export default function CartSyncIndicator({
   lastSyncTimestamp,
   className,
 }: CartSyncIndicatorProps) {
-  const { t } = useTranslation('cart');
-  const [showSynced, setShowSynced] = useState(false);
-  const [prevTimestamp, setPrevTimestamp] = useState<string | null>(null);
+  const { t } = useTranslation('cart')
+  const [showSynced, setShowSynced] = useState(false)
+  const [prevTimestamp, setPrevTimestamp] = useState<string | null>(null)
 
   useEffect(() => {
     if (lastSyncTimestamp && lastSyncTimestamp !== prevTimestamp && !isSyncing) {
-      setShowSynced(true);
-      setPrevTimestamp(lastSyncTimestamp);
+      setShowSynced(true)
+      setPrevTimestamp(lastSyncTimestamp)
 
       const timer = setTimeout(() => {
-        setShowSynced(false);
-      }, 3000);
+        setShowSynced(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [lastSyncTimestamp, prevTimestamp, isSyncing]);
+  }, [lastSyncTimestamp, prevTimestamp, isSyncing])
 
   if (isSyncing) {
     return (
@@ -41,7 +41,7 @@ export default function CartSyncIndicator({
         <span>🔄</span>
         <span>{t('sync.syncing')}</span>
       </div>
-    );
+    )
   }
 
   if (showSynced) {
@@ -55,8 +55,8 @@ export default function CartSyncIndicator({
         <span>✓</span>
         <span>{t('sync.synced')}</span>
       </div>
-    );
+    )
   }
 
-  return null;
+  return null
 }

@@ -1,21 +1,21 @@
-import { useQuery } from '@tanstack/react-query';
-import { useContext, useState } from 'react';
-import { Link } from 'react-router';
-import { AppContext } from 'src/contexts/app.context';
-import path from 'src/constant/path';
-import { purchasesStatus } from 'src/constant/purchase';
-import purchaseApi from 'src/apis/purchases.api';
-import NavHeader from '../NavHeader';
-import { useProductQueryStates } from 'src/hooks/nuqs';
-import { SearchBar, CartDropdown } from './components';
-import MobileNavigationDrawer from '../MobileNavigationDrawer';
-import Button from 'src/components/Button';
+import { useQuery } from '@tanstack/react-query'
+import { useContext, useState } from 'react'
+import { Link } from 'react-router'
+import { AppContext } from 'src/contexts/app.context'
+import path from 'src/constant/path'
+import { purchasesStatus } from 'src/constant/purchase'
+import purchaseApi from 'src/apis/purchases.api'
+import NavHeader from '../NavHeader'
+import { useProductQueryStates } from 'src/hooks/nuqs'
+import { SearchBar, CartDropdown } from './components'
+import MobileNavigationDrawer from '../MobileNavigationDrawer'
+import Button from 'src/components/Button'
 
 const Header = () => {
-  const [filters, setFilters] = useProductQueryStates();
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [filters, setFilters] = useProductQueryStates()
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
-  const { isAuthenticated } = useContext(AppContext);
+  const { isAuthenticated } = useContext(AppContext)
 
   // useQuery để gọi purchaseList hiển thị Cart product
   const { data: purchasesInCartData } = useQuery({
@@ -24,9 +24,9 @@ const Header = () => {
     enabled: isAuthenticated,
     staleTime: 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
-  });
+  })
 
-  const purchasesInCart = purchasesInCartData?.data.data;
+  const purchasesInCart = purchasesInCartData?.data.data
 
   return (
     <div className="bg-[linear-gradient(-180deg,#f53d2d,#f63)] pt-[4px] pb-3 text-white md:pb-[25px]">
@@ -102,7 +102,7 @@ const Header = () => {
         <MobileNavigationDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

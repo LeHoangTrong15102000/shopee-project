@@ -2,7 +2,11 @@ import { SOCKET_CONFIG } from '@constants/socket'
 import { ROLE } from '@constants/role.enum'
 import { PurchaseModel } from '@database/models/purchase.model'
 import { UserModel } from '@database/models/user.model'
-import { SocketEvent, OrderStatusUpdatedPayload, AdminNewOrderPayload } from '../../@types/socket.type'
+import {
+  SocketEvent,
+  OrderStatusUpdatedPayload,
+  AdminNewOrderPayload,
+} from '../../@types/socket.type'
 import { Logger } from '@utils/logger'
 import { getIORequired } from '../socket.init'
 import { pushNotification } from '../handlers/notification.handler'
@@ -19,7 +23,7 @@ export const emitOrderStatusUpdate = (
   orderId: string,
   oldStatus: string,
   newStatus: string,
-  message?: string
+  message?: string,
 ): void => {
   try {
     const io = getIORequired()
@@ -72,7 +76,8 @@ export const emitOrderStatusUpdate = (
         }
 
         const title = getTitle(newStatus)
-        const content = message || `Trạng thái đơn hàng đã thay đổi từ ${oldStatus} sang ${newStatus}`
+        const content =
+          message || `Trạng thái đơn hàng đã thay đổi từ ${oldStatus} sang ${newStatus}`
 
         await pushNotification(io, purchase.user.toString(), {
           title,
@@ -157,4 +162,3 @@ export const emitAdminNewOrderNotification = (payload: AdminNewOrderPayload): vo
     }
   })()
 }
-

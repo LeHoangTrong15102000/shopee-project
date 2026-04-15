@@ -78,7 +78,7 @@ describe('Inventory Emit Utils', () => {
           product_name: 'Test Product',
           current_quantity: 5,
           threshold: 10,
-        })
+        }),
       )
     })
 
@@ -92,7 +92,7 @@ describe('Inventory Emit Utils', () => {
         SocketEvent.INVENTORY_ALERT,
         expect.objectContaining({
           severity: 'warning',
-        })
+        }),
       )
     })
 
@@ -106,7 +106,7 @@ describe('Inventory Emit Utils', () => {
         SocketEvent.INVENTORY_ALERT,
         expect.objectContaining({
           severity: 'critical',
-        })
+        }),
       )
     })
 
@@ -148,9 +148,8 @@ describe('Inventory Emit Utils', () => {
             type: 'system',
             is_read: false,
           }),
-        ])
+        ]),
       )
     })
   })
 })
-

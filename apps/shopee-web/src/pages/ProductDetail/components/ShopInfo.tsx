@@ -1,13 +1,13 @@
-import { useTranslation } from 'react-i18next';
-import OnlineIndicator from 'src/components/OnlineIndicator';
-import ShopMetrics from './ShopMetrics';
+import { useTranslation } from 'react-i18next'
+import OnlineIndicator from 'src/components/OnlineIndicator'
+import ShopMetrics from './ShopMetrics'
 
 interface ShopInfoProps {
-  categoryName?: string;
-  location?: string;
-  rating: number;
-  isSellerOnline: boolean;
-  sellerLastSeen: string | null;
+  categoryName?: string
+  location?: string
+  rating: number
+  isSellerOnline: boolean
+  sellerLastSeen: string | null
 }
 
 const ShopInfo = ({
@@ -17,7 +17,7 @@ const ShopInfo = ({
   isSellerOnline,
   sellerLastSeen,
 }: ShopInfoProps) => {
-  const { t } = useTranslation('product');
+  const { t } = useTranslation('product')
 
   return (
     <div className="rounded-sm bg-white p-4 shadow-sm dark:bg-slate-800 dark:shadow-slate-900/50">
@@ -104,7 +104,7 @@ const ShopInfo = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ShopInfo;
+export default ShopInfo

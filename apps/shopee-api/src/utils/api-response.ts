@@ -46,7 +46,7 @@ export class ApiResponse {
     res: Response,
     data: T,
     message: string = COMMON_MESSAGES.SUCCESS,
-    statusCode: number = STATUS.OK
+    statusCode: number = STATUS.OK,
   ): Response {
     const response: SuccessResponseData<T> = {
       message,
@@ -66,7 +66,7 @@ export class ApiResponse {
     res: Response,
     message: string = COMMON_MESSAGES.ERROR,
     statusCode: number = STATUS.BAD_REQUEST,
-    errors?: Record<string, string>
+    errors?: Record<string, string>,
   ): Response {
     const response: ErrorResponseData = {
       message,
@@ -88,7 +88,7 @@ export class ApiResponse {
     res: Response,
     data: T[],
     pagination: PaginationInfo,
-    message: string = COMMON_MESSAGES.SUCCESS
+    message: string = COMMON_MESSAGES.SUCCESS,
   ): Response {
     const response: PaginatedResponseData<T> = {
       message,
@@ -107,7 +107,7 @@ export class ApiResponse {
   static created<T = any>(
     res: Response,
     data: T,
-    message: string = COMMON_MESSAGES.CREATED
+    message: string = COMMON_MESSAGES.CREATED,
   ): Response {
     return ApiResponse.success(res, data, message, 201)
   }
@@ -126,10 +126,7 @@ export class ApiResponse {
    * @param res - Express Response object
    * @param message - Message lỗi
    */
-  static unauthorized(
-    res: Response,
-    message: string = 'Bạn không có quyền truy cập'
-  ): Response {
+  static unauthorized(res: Response, message: string = 'Bạn không có quyền truy cập'): Response {
     return ApiResponse.error(res, message, STATUS.UNAUTHORIZED)
   }
 
@@ -140,7 +137,7 @@ export class ApiResponse {
    */
   static forbidden(
     res: Response,
-    message: string = 'Bạn không có quyền thực hiện hành động này'
+    message: string = 'Bạn không có quyền thực hiện hành động này',
   ): Response {
     return ApiResponse.error(res, message, STATUS.FORBIDDEN)
   }
@@ -150,10 +147,7 @@ export class ApiResponse {
    * @param res - Express Response object
    * @param message - Message lỗi
    */
-  static notFound(
-    res: Response,
-    message: string = COMMON_MESSAGES.NOT_FOUND
-  ): Response {
+  static notFound(res: Response, message: string = COMMON_MESSAGES.NOT_FOUND): Response {
     return ApiResponse.error(res, message, STATUS.NOT_FOUND)
   }
 
@@ -166,11 +160,10 @@ export class ApiResponse {
   static validationError(
     res: Response,
     errors: Record<string, string>,
-    message: string = COMMON_MESSAGES.VALIDATION_ERROR
+    message: string = COMMON_MESSAGES.VALIDATION_ERROR,
   ): Response {
     return ApiResponse.error(res, message, STATUS.UNPROCESSABLE_ENTITY, errors)
   }
 }
 
 export default ApiResponse
-

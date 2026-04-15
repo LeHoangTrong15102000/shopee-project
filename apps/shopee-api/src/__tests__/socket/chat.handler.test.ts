@@ -25,7 +25,12 @@ jest.mock('../../utils/logger', () => ({
 
 jest.mock('../../constants/socket', () => ({
   SOCKET_CONFIG: { ROOM_PREFIX: { CHAT: 'chat:' } },
-  SOCKET_ERRORS: { INVALID_PAYLOAD: 'INVALID_PAYLOAD', CHAT_NOT_FOUND: 'CHAT_NOT_FOUND', UNAUTHORIZED: 'UNAUTHORIZED', INTERNAL_ERROR: 'INTERNAL_ERROR' },
+  SOCKET_ERRORS: {
+    INVALID_PAYLOAD: 'INVALID_PAYLOAD',
+    CHAT_NOT_FOUND: 'CHAT_NOT_FOUND',
+    UNAUTHORIZED: 'UNAUTHORIZED',
+    INTERNAL_ERROR: 'INTERNAL_ERROR',
+  },
 }))
 
 const VALID_USER_ID = '507f1f77bcf86cd799439011'
@@ -78,7 +83,9 @@ describe('chat.handler', () => {
       ;(ChatModel.findById as jest.Mock).mockResolvedValue(mockChat)
 
       registerChatHandlers(mockSocket)
-      const joinHandler = mockSocket.on.mock.calls.find((c: any) => c[0] === SocketEvent.JOIN_CHAT)[1]
+      const joinHandler = mockSocket.on.mock.calls.find(
+        (c: any) => c[0] === SocketEvent.JOIN_CHAT,
+      )[1]
       await joinHandler({ chat_id: 'chat-123' })
 
       expect(ChatModel.findById).toHaveBeenCalledWith('chat-123')
@@ -89,10 +96,15 @@ describe('chat.handler', () => {
       const mockSocket = createMockSocket() as any
 
       registerChatHandlers(mockSocket)
-      const joinHandler = mockSocket.on.mock.calls.find((c: any) => c[0] === SocketEvent.JOIN_CHAT)[1]
+      const joinHandler = mockSocket.on.mock.calls.find(
+        (c: any) => c[0] === SocketEvent.JOIN_CHAT,
+      )[1]
       await joinHandler({})
 
-      expect(mockSocket.emit).toHaveBeenCalledWith(SocketEvent.ERROR, expect.objectContaining({ code: 'INVALID_PAYLOAD' }))
+      expect(mockSocket.emit).toHaveBeenCalledWith(
+        SocketEvent.ERROR,
+        expect.objectContaining({ code: 'INVALID_PAYLOAD' }),
+      )
     })
 
     it('should emit error when chat not found', async () => {
@@ -100,10 +112,15 @@ describe('chat.handler', () => {
       ;(ChatModel.findById as jest.Mock).mockResolvedValue(null)
 
       registerChatHandlers(mockSocket)
-      const joinHandler = mockSocket.on.mock.calls.find((c: any) => c[0] === SocketEvent.JOIN_CHAT)[1]
+      const joinHandler = mockSocket.on.mock.calls.find(
+        (c: any) => c[0] === SocketEvent.JOIN_CHAT,
+      )[1]
       await joinHandler({ chat_id: 'invalid-chat' })
 
-      expect(mockSocket.emit).toHaveBeenCalledWith(SocketEvent.ERROR, expect.objectContaining({ code: 'CHAT_NOT_FOUND' }))
+      expect(mockSocket.emit).toHaveBeenCalledWith(
+        SocketEvent.ERROR,
+        expect.objectContaining({ code: 'CHAT_NOT_FOUND' }),
+      )
     })
   })
 
@@ -119,11 +136,15 @@ describe('chat.handler', () => {
       }
       ;(ChatModel.findById as jest.Mock).mockResolvedValue(mockChat)
       ;(MessageModel.create as jest.Mock).mockResolvedValue(mockMessage)
-      ;(UserModel.findById as jest.Mock).mockReturnValue({ select: jest.fn().mockResolvedValue({ name: 'Test User' }) })
+      ;(UserModel.findById as jest.Mock).mockReturnValue({
+        select: jest.fn().mockResolvedValue({ name: 'Test User' }),
+      })
       ;(ChatModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({})
 
       registerChatHandlers(mockSocket)
-      const sendHandler = mockSocket.on.mock.calls.find((c: any) => c[0] === SocketEvent.SEND_MESSAGE)[1]
+      const sendHandler = mockSocket.on.mock.calls.find(
+        (c: any) => c[0] === SocketEvent.SEND_MESSAGE,
+      )[1]
       await sendHandler({ chat_id: 'chat-123', message: 'Hello' })
 
       expect(MessageModel.create).toHaveBeenCalled()
@@ -136,7 +157,9 @@ describe('chat.handler', () => {
       const mockSocket = createMockSocket() as any
 
       registerChatHandlers(mockSocket)
-      const typingHandler = mockSocket.on.mock.calls.find((c: any) => c[0] === SocketEvent.TYPING_START)[1]
+      const typingHandler = mockSocket.on.mock.calls.find(
+        (c: any) => c[0] === SocketEvent.TYPING_START,
+      )[1]
       typingHandler({ chat_id: 'chat-123' })
 
       expect(mockSocket.to).toHaveBeenCalledWith('chat:chat-123')
@@ -146,11 +169,12 @@ describe('chat.handler', () => {
       const mockSocket = createMockSocket() as any
 
       registerChatHandlers(mockSocket)
-      const typingHandler = mockSocket.on.mock.calls.find((c: any) => c[0] === SocketEvent.TYPING_STOP)[1]
+      const typingHandler = mockSocket.on.mock.calls.find(
+        (c: any) => c[0] === SocketEvent.TYPING_STOP,
+      )[1]
       typingHandler({ chat_id: 'chat-123' })
 
       expect(mockSocket.to).toHaveBeenCalledWith('chat:chat-123')
     })
   })
 })
-

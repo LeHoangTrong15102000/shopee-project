@@ -1,5 +1,5 @@
-import React, { ButtonHTMLAttributes, forwardRef } from 'react';
-import { Link } from 'react-router';
+import React, { ButtonHTMLAttributes, forwardRef } from 'react'
+import { Link } from 'react-router'
 
 export type ButtonVariant =
   | 'primary'
@@ -8,9 +8,9 @@ export type ButtonVariant =
   | 'ghost'
   | 'outline'
   | 'icon'
-  | 'text';
-export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
-export type ButtonShape = 'default' | 'rounded' | 'pill';
+  | 'text'
+export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg'
+export type ButtonShape = 'default' | 'rounded' | 'pill'
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary: 'bg-orange text-white hover:bg-orange/90',
@@ -22,20 +22,20 @@ const variantClasses: Record<ButtonVariant, string> = {
   outline: 'border border-orange text-orange bg-transparent hover:bg-orange/5',
   icon: 'rounded-full p-2 bg-transparent',
   text: 'bg-transparent',
-};
+}
 
 const sizeClasses: Record<ButtonSize, string> = {
   xs: 'px-2 py-0.5 text-xs',
   sm: 'px-3 py-1 text-xs',
   md: 'px-5 py-2 text-sm',
   lg: 'px-6 py-3 text-base',
-};
+}
 
 const shapeClasses: Record<ButtonShape, string> = {
   default: 'rounded-sm',
   rounded: 'rounded-md',
   pill: 'rounded-full',
-};
+}
 
 const focusClasses: Record<ButtonVariant, string> = {
   primary: 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange',
@@ -47,31 +47,31 @@ const focusClasses: Record<ButtonVariant, string> = {
     'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-400 dark:focus-visible:outline-gray-500',
   icon: 'focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2',
   text: 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-400 dark:focus-visible:outline-gray-500',
-};
+}
 
 interface BaseButtonProps {
-  isLoading?: boolean;
-  children?: React.ReactNode;
-  className?: string;
-  ariaLabel?: string;
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  shape?: ButtonShape;
-  animated?: boolean;
+  isLoading?: boolean
+  children?: React.ReactNode
+  className?: string
+  ariaLabel?: string
+  variant?: ButtonVariant
+  size?: ButtonSize
+  shape?: ButtonShape
+  animated?: boolean
 }
 
 interface ButtonAsButton extends BaseButtonProps, ButtonHTMLAttributes<HTMLButtonElement> {
-  as?: 'button';
-  to?: never;
+  as?: 'button'
+  to?: never
 }
 
 interface ButtonAsLink extends BaseButtonProps {
-  as: 'link';
-  to: string;
-  onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
+  as: 'link'
+  to: string
+  onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void
 }
 
-type ButtonProps = ButtonAsButton | ButtonAsLink;
+type ButtonProps = ButtonAsButton | ButtonAsLink
 
 const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>((props, ref) => {
   const {
@@ -84,46 +84,46 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>((p
     shape,
     animated = true,
     ...rest
-  } = props;
+  } = props
 
   const getClassName = (addHoverTransition = false) => {
-    const classes: string[] = ['outline-hidden focus:outline-hidden'];
+    const classes: string[] = ['outline-hidden focus:outline-hidden']
     // Per-variant focus classes, or default orange outline
     if (variant) {
-      classes.push(focusClasses[variant]);
+      classes.push(focusClasses[variant])
     } else {
       classes.push(
         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange',
-      );
+      )
     }
     if (variant) {
-      classes.push(variantClasses[variant]);
+      classes.push(variantClasses[variant])
     }
     if (size) {
-      classes.push(sizeClasses[size]);
+      classes.push(sizeClasses[size])
     }
     if (shape) {
-      classes.push(shapeClasses[shape]);
+      classes.push(shapeClasses[shape])
     }
     if (className) {
-      classes.push(className);
+      classes.push(className)
     }
-    const isDisabledState = ('disabled' in rest && rest.disabled) || isLoading;
+    const isDisabledState = ('disabled' in rest && rest.disabled) || isLoading
     if (isDisabledState) {
-      classes.push('cursor-not-allowed opacity-70');
+      classes.push('cursor-not-allowed opacity-70')
     }
     if (addHoverTransition) {
-      classes.push('transition-all duration-150');
+      classes.push('transition-all duration-150')
       if (!isDisabledState) {
-        classes.push('hover:scale-[1.02] active:scale-[0.98]');
+        classes.push('hover:scale-[1.02] active:scale-[0.98]')
       }
     }
-    return classes.join(' ').trim();
-  };
+    return classes.join(' ').trim()
+  }
 
   // Render as Link when as='link'
   if (props.as === 'link') {
-    const { to, ...linkRest } = rest as ButtonAsLink;
+    const { to, ...linkRest } = rest as ButtonAsLink
     return (
       <Link
         to={to}
@@ -152,12 +152,12 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>((p
         )}
         {children}
       </Link>
-    );
+    )
   }
 
   // Render as button (default)
-  const { disabled, ...buttonRest } = rest as ButtonAsButton;
-  const isDisabled = disabled || isLoading;
+  const { disabled, ...buttonRest } = rest as ButtonAsButton
+  const isDisabled = disabled || isLoading
 
   return (
     <button
@@ -190,9 +190,9 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>((p
       )}
       {children}
     </button>
-  );
-});
+  )
+})
 
-Button.displayName = 'Button';
+Button.displayName = 'Button'
 
-export default Button;
+export default Button

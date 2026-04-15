@@ -18,6 +18,6 @@ const config = {
    *   simulate 'connected' status to avoid showing the connection error banner.
    */
   enableSocket: false,
-};
+}
 
-export default config;
+export default config

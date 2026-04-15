@@ -1,29 +1,23 @@
-import {
-  AccessibilityInfo,
-  ActivityIndicator,
-  Pressable,
-  PressableProps,
-  Text,
-} from 'react-native';
-import { cn } from '@/utils';
-import { cva } from 'class-variance-authority';
-import React, { JSX, ReactNode, useEffect, useState } from 'react';
+import { AccessibilityInfo, ActivityIndicator, Pressable, PressableProps, Text } from 'react-native'
+import { cn } from '@/utils'
+import { cva } from 'class-variance-authority'
+import React, { JSX, ReactNode, useEffect, useState } from 'react'
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
-} from 'react-native-reanimated';
-import { useColors } from '@/hooks/useColors.ts';
+} from 'react-native-reanimated'
+import { useColors } from '@/hooks/useColors.ts'
 
 interface AppButtonProps extends PressableProps {
-  variant?: 'default' | 'primary' | 'secondary' | 'ghost' | 'outline' | 'link';
-  disabled?: boolean;
-  loading?: boolean;
-  size?: 'default' | 'sm' | 'lg' | 'icon';
-  textClassname?: string;
-  children: ReactNode;
-  icon?: JSX.Element;
+  variant?: 'default' | 'primary' | 'secondary' | 'ghost' | 'outline' | 'link'
+  disabled?: boolean
+  loading?: boolean
+  size?: 'default' | 'sm' | 'lg' | 'icon'
+  textClassname?: string
+  children: ReactNode
+  icon?: JSX.Element
 }
 
 const buttonVariants = cva(
@@ -60,7 +54,7 @@ const buttonVariants = cva(
       size: 'default',
     },
   }
-);
+)
 
 const buttonTextVariants = cva('font-sans-medium text-foreground', {
   variants: {
@@ -92,84 +86,84 @@ const buttonTextVariants = cva('font-sans-medium text-foreground', {
   defaultVariants: {
     variant: 'default',
   },
-});
+})
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
 
 export default function AppButton(props: AppButtonProps) {
-  const { variant, size, className, disabled, loading, onPress, ...rest } = props;
-  const scale = useSharedValue(1);
-  const opacity = useSharedValue(1);
-  const colors = useColors();
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const { variant, size, className, disabled, loading, onPress, ...rest } = props
+  const scale = useSharedValue(1)
+  const opacity = useSharedValue(1)
+  const colors = useColors()
+  const [reduceMotion, setReduceMotion] = useState(false)
 
   useEffect(() => {
-    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
-  }, []);
+    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion)
+  }, [])
 
   const getIconColor = () => {
     switch (variant) {
       case 'primary':
-        return colors.primaryForeground;
+        return colors.primaryForeground
       case 'ghost':
-        return colors.foreground;
+        return colors.foreground
       case 'outline':
-        return colors.foreground;
+        return colors.foreground
       case 'link':
-        return colors.primary;
+        return colors.primary
       default:
-        return colors.foreground;
+        return colors.foreground
     }
-  };
+  }
 
   const getIconSize = (size: AppButtonProps['size']): number => {
     switch (size) {
       case 'sm':
-        return 12;
+        return 12
       case 'lg':
-        return 16;
+        return 16
       case 'icon':
-        return 18;
+        return 18
       default:
-        return 14;
+        return 14
     }
-  };
+  }
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: scale.value }],
       opacity: opacity.value,
-    };
-  });
+    }
+  })
 
   const handlePressIn = () => {
     if (reduceMotion) {
-      scale.value = 1;
-      opacity.value = 1;
-      return;
+      scale.value = 1
+      opacity.value = 1
+      return
     }
-    scale.value = withSpring(0.95, { damping: 15, stiffness: 300 });
+    scale.value = withSpring(0.95, { damping: 15, stiffness: 300 })
     if (variant === 'ghost' || variant === 'outline' || variant === 'link') {
-      opacity.value = withTiming(0.7, { duration: 150 });
+      opacity.value = withTiming(0.7, { duration: 150 })
     }
-  };
+  }
 
   const handlePressOut = () => {
     if (reduceMotion) {
-      scale.value = 1;
-      opacity.value = 1;
-      return;
+      scale.value = 1
+      opacity.value = 1
+      return
     }
-    scale.value = withSpring(1, { damping: 15, stiffness: 300 });
-    opacity.value = withTiming(1, { duration: 150 });
-  };
+    scale.value = withSpring(1, { damping: 15, stiffness: 300 })
+    opacity.value = withTiming(1, { duration: 150 })
+  }
 
   const handlePress = (event: any) => {
-    if (loading || disabled) return;
-    onPress?.(event);
-  };
+    if (loading || disabled) return
+    onPress?.(event)
+  }
 
-  const isDisabled = disabled || loading;
+  const isDisabled = disabled || loading
 
   return (
     <AnimatedPressable
@@ -205,5 +199,5 @@ export default function AppButton(props: AppButtonProps) {
         {props.children}
       </Text>
     </AnimatedPressable>
-  );
+  )
 }

@@ -1,30 +1,30 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { format } from 'date-fns';
-import { ArrowLeft, Pencil } from 'lucide-react';
-import { Button } from 'src/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
-import { Badge } from 'src/components/ui/badge';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { LoadingState } from 'src/components/shared/LoadingState';
-import { ErrorState } from 'src/components/shared/ErrorState';
-import { useProductDetail } from 'src/hooks/useProductDetail';
-import { formatCurrency } from 'src/utils/format';
+import { useParams, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { format } from 'date-fns'
+import { ArrowLeft, Pencil } from 'lucide-react'
+import { Button } from 'src/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
+import { Badge } from 'src/components/ui/badge'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { LoadingState } from 'src/components/shared/LoadingState'
+import { ErrorState } from 'src/components/shared/ErrorState'
+import { useProductDetail } from 'src/hooks/useProductDetail'
+import { formatCurrency } from 'src/utils/format'
 
 export default function ProductDetailPage() {
-  const { t } = useTranslation('products');
-  const { t: tc } = useTranslation('common');
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const { t } = useTranslation('products')
+  const { t: tc } = useTranslation('common')
+  const { id } = useParams()
+  const navigate = useNavigate()
 
-  const { data: product, isLoading, error } = useProductDetail(id);
+  const { data: product, isLoading, error } = useProductDetail(id)
 
-  if (isLoading) return <LoadingState />;
+  if (isLoading) return <LoadingState />
   if (error || !product)
-    return <ErrorState message={t('notFound')} onRetry={() => navigate('/products')} />;
+    return <ErrorState message={t('notFound')} onRetry={() => navigate('/products')} />
 
   const categoryName =
-    typeof product.category === 'object' ? product.category.name : product.category;
+    typeof product.category === 'object' ? product.category.name : product.category
 
   return (
     <div className="space-y-6">
@@ -104,5 +104,5 @@ export default function ProductDetailPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

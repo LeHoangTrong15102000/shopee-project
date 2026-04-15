@@ -1,6 +1,6 @@
-export type PageItem = { type: 'page'; number: number } | { type: 'dots' };
+export type PageItem = { type: 'page'; number: number } | { type: 'dots' }
 
-const RANGE = 2;
+const RANGE = 2
 
 /**
  * Generates an array of PageItem objects representing the pagination sequence
@@ -17,16 +17,16 @@ export function generatePageNumbers(
   totalPages: number,
   range: number = RANGE,
 ): PageItem[] {
-  if (totalPages <= 0) return [];
+  if (totalPages <= 0) return []
 
-  const safePage = Math.min(Math.max(currentPage, 1), totalPages);
+  const safePage = Math.min(Math.max(currentPage, 1), totalPages)
 
-  const items: PageItem[] = [];
-  let dotBefore = false;
-  let dotAfter = false;
+  const items: PageItem[] = []
+  let dotBefore = false
+  let dotAfter = false
 
   for (let i = 0; i < totalPages; i++) {
-    const pageNumber = i + 1;
+    const pageNumber = i + 1
 
     // The original algorithm uses three branches based on where safePage is:
     // 1) Near the start (safePage <= range*2+1): dots only after
@@ -34,7 +34,7 @@ export function generatePageNumbers(
     // 3) Near the end (safePage >= totalPages - range*2): dots only before
     // Pages that match a dot condition are skipped (not added as page items).
 
-    let isDot = false;
+    let isDot = false
 
     if (
       safePage <= range * 2 + 1 &&
@@ -42,23 +42,23 @@ export function generatePageNumbers(
       pageNumber < totalPages - range + 1
     ) {
       if (!dotAfter) {
-        dotAfter = true;
-        items.push({ type: 'dots' });
+        dotAfter = true
+        items.push({ type: 'dots' })
       }
-      isDot = true;
+      isDot = true
     } else if (safePage > range * 2 + 1 && safePage < totalPages - range * 2) {
       if (pageNumber < safePage - range && pageNumber > range) {
         if (!dotBefore) {
-          dotBefore = true;
-          items.push({ type: 'dots' });
+          dotBefore = true
+          items.push({ type: 'dots' })
         }
-        isDot = true;
+        isDot = true
       } else if (pageNumber > safePage + range && pageNumber < totalPages - range + 1) {
         if (!dotAfter) {
-          dotAfter = true;
-          items.push({ type: 'dots' });
+          dotAfter = true
+          items.push({ type: 'dots' })
         }
-        isDot = true;
+        isDot = true
       }
     } else if (
       safePage >= totalPages - range * 2 &&
@@ -66,16 +66,16 @@ export function generatePageNumbers(
       pageNumber < safePage - range
     ) {
       if (!dotBefore) {
-        dotBefore = true;
-        items.push({ type: 'dots' });
+        dotBefore = true
+        items.push({ type: 'dots' })
       }
-      isDot = true;
+      isDot = true
     }
 
     if (!isDot) {
-      items.push({ type: 'page', number: pageNumber });
+      items.push({ type: 'page', number: pageNumber })
     }
   }
 
-  return items;
+  return items
 }

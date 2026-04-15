@@ -52,7 +52,7 @@ const SavedVoucherSchema = new Schema<ISavedVoucher>(
   },
   {
     timestamps: false,
-  }
+  },
 )
 
 SavedVoucherSchema.index({ user: 1, voucher: 1 }, { unique: true })
@@ -61,4 +61,3 @@ SavedVoucherSchema.index({ user: 1, status: 1 })
 export const SavedVoucherModel = mongoose.model<ISavedVoucher>('saved_vouchers', SavedVoucherSchema)
 
 export { ISavedVoucher }
-

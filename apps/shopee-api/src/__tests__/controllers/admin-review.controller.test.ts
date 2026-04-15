@@ -68,7 +68,7 @@ describe('Admin Review Controller', () => {
           user_id: 'user789',
           search: 'great product',
         },
-        { page: 3, limit: 25, sort_by: 'rating', order: 'asc' }
+        { page: 3, limit: 25, sort_by: 'rating', order: 'asc' },
       )
       expect(res.status).toHaveBeenCalledWith(200)
       expect(res.send).toHaveBeenCalledWith({
@@ -88,7 +88,7 @@ describe('Admin Review Controller', () => {
 
       expect(reviewService.adminGetReviews).toHaveBeenCalledWith(
         { rating: undefined, product_id: undefined, user_id: undefined, search: undefined },
-        { page: 1, limit: 20, sort_by: undefined, order: undefined }
+        { page: 1, limit: 20, sort_by: undefined, order: undefined },
       )
       expect(res.status).toHaveBeenCalledWith(200)
     })
@@ -117,7 +117,7 @@ describe('Admin Review Controller', () => {
       const res = createMockResponse()
 
       ;(reviewService.adminGetReviewById as jest.Mock).mockRejectedValue(
-        new NotFoundError('Review not found')
+        new NotFoundError('Review not found'),
       )
 
       await expect(adminGetReviewById(req as Request, res as Response)).rejects.toThrow()
@@ -147,7 +147,7 @@ describe('Admin Review Controller', () => {
       const res = createMockResponse()
 
       ;(reviewService.adminDeleteReview as jest.Mock).mockRejectedValue(
-        new ValidationError('Cannot delete review')
+        new ValidationError('Cannot delete review'),
       )
 
       await expect(adminDeleteReview(req as Request, res as Response)).rejects.toThrow()
@@ -177,7 +177,7 @@ describe('Admin Review Controller', () => {
       const res = createMockResponse()
 
       ;(reviewService.adminDeleteComment as jest.Mock).mockRejectedValue(
-        new NotFoundError('Comment not found')
+        new NotFoundError('Comment not found'),
       )
 
       await expect(adminDeleteComment(req as Request, res as Response)).rejects.toThrow()

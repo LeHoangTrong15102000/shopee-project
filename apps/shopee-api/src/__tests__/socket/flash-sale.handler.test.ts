@@ -7,7 +7,10 @@ jest.mock('@utils/logger', () => ({
 import { createMockSocket, MockSocket } from './setup'
 import { SocketEvent } from '../../@types/socket.type'
 import { SOCKET_CONFIG, SOCKET_ERRORS } from '@constants/socket'
-import { getFlashSaleRoomName, registerFlashSaleHandlers } from '../../socket/handlers/flash-sale.handler'
+import {
+  getFlashSaleRoomName,
+  registerFlashSaleHandlers,
+} from '../../socket/handlers/flash-sale.handler'
 
 describe('Flash Sale Handler', () => {
   let mockSocket: MockSocket
@@ -37,8 +40,14 @@ describe('Flash Sale Handler', () => {
     it('should register SUBSCRIBE_FLASH_SALE and UNSUBSCRIBE_FLASH_SALE handlers', () => {
       registerFlashSaleHandlers(mockSocket as any)
 
-      expect(mockSocket.on).toHaveBeenCalledWith(SocketEvent.SUBSCRIBE_FLASH_SALE, expect.any(Function))
-      expect(mockSocket.on).toHaveBeenCalledWith(SocketEvent.UNSUBSCRIBE_FLASH_SALE, expect.any(Function))
+      expect(mockSocket.on).toHaveBeenCalledWith(
+        SocketEvent.SUBSCRIBE_FLASH_SALE,
+        expect.any(Function),
+      )
+      expect(mockSocket.on).toHaveBeenCalledWith(
+        SocketEvent.UNSUBSCRIBE_FLASH_SALE,
+        expect.any(Function),
+      )
     })
   })
 
@@ -117,4 +126,3 @@ describe('Flash Sale Handler', () => {
     })
   })
 })
-

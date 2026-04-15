@@ -1,7 +1,7 @@
-import { HttpResponse, http } from 'msw';
-import config from 'src/constant/config';
-import HttpStatusCode from 'src/constant/httpStatusCode.enum';
-import { access_token_1s } from './auth.msw';
+import { HttpResponse, http } from 'msw'
+import config from 'src/constant/config'
+import HttpStatusCode from 'src/constant/httpStatusCode.enum'
+import { access_token_1s } from './auth.msw'
 // import { Request } from 'polyfill-that-msw-uses'
 
 const meRes = {
@@ -18,12 +18,12 @@ const meRes = {
     phone: '0773094710',
     avatar: '77d9909d-3161-4195-a67c-db4585f80e4b.jpg',
   },
-};
+}
 
 const meRequest = http.get(`${config.baseUrl}me`, ({ request }) => {
-  const access_token = request.headers.get('authorization');
+  const access_token = request.headers.get('authorization')
   // const { token } = cookies
-  console.log('Checkkk access_token >>> ');
+  console.log('Checkkk access_token >>> ')
   if (access_token === access_token_1s) {
     // return res(
     //   ctx.status(HttpStatusCode.Unauthorized),
@@ -49,7 +49,7 @@ const meRequest = http.get(`${config.baseUrl}me`, ({ request }) => {
           'Content-Type': 'application/json',
         },
       },
-    );
+    )
   }
   // return res(ctx.status(HttpStatusCode.Ok), ctx.json(meRes))
 
@@ -58,9 +58,9 @@ const meRequest = http.get(`${config.baseUrl}me`, ({ request }) => {
     headers: {
       'Content-Type': 'application/json',
     },
-  });
-});
+  })
+})
 
-const userRequests = [meRequest];
+const userRequests = [meRequest]
 
-export default userRequests;
+export default userRequests

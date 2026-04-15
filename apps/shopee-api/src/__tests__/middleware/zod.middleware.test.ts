@@ -27,7 +27,9 @@ describe('Zod Middleware', () => {
 
   describe('validate', () => {
     it('should call next() when input is valid', async () => {
-      const req = createMockRequest({ body: { email: 'test@example.com', password: 'password123' } })
+      const req = createMockRequest({
+        body: { email: 'test@example.com', password: 'password123' },
+      })
       const res = createMockResponse()
       const next = createMockNext()
 
@@ -58,7 +60,7 @@ describe('Zod Middleware', () => {
 
       expect(ErrorHandler).toHaveBeenCalledWith(
         STATUS.UNPROCESSABLE_ENTITY,
-        expect.objectContaining({ email: 'Email không hợp lệ' })
+        expect.objectContaining({ email: 'Email không hợp lệ' }),
       )
     })
 
@@ -91,7 +93,9 @@ describe('Zod Middleware', () => {
     })
 
     it('should call next() when input is valid', async () => {
-      const req = createMockRequest({ body: { email: 'test@example.com', password: 'password123' } })
+      const req = createMockRequest({
+        body: { email: 'test@example.com', password: 'password123' },
+      })
       const res = createMockResponse()
       const next = createMockNext()
 
@@ -102,4 +106,3 @@ describe('Zod Middleware', () => {
     })
   })
 })
-

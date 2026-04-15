@@ -1,10 +1,10 @@
-import { useTranslation } from 'react-i18next';
-import Popover from 'src/components/Popover';
-import { ChevronRightIcon, ShieldIcon, ShieldCheckIcon } from 'src/components/Icons';
-import ShopeeProtectionPopupContent from './ShopeeProtectionPopupContent';
+import { useTranslation } from 'react-i18next'
+import Popover from 'src/components/Popover'
+import { ChevronRightIcon, ShieldIcon, ShieldCheckIcon } from 'src/components/Icons'
+import ShopeeProtectionPopupContent from './ShopeeProtectionPopupContent'
 
 const ShopeeProtection = () => {
-  const { t } = useTranslation('product');
+  const { t } = useTranslation('product')
 
   return (
     <Popover
@@ -41,7 +41,7 @@ const ShopeeProtection = () => {
         <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-gray-500" />
       </div>
     </Popover>
-  );
-};
+  )
+}
 
-export default ShopeeProtection;
+export default ShopeeProtection

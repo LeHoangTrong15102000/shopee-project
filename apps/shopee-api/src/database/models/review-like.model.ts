@@ -23,7 +23,7 @@ const ReviewLikeSchema = new Schema<IReviewLike>(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 // Tạo compound index để đảm bảo user chỉ like một review một lần
@@ -34,10 +34,7 @@ ReviewLikeSchema.index({ review: 1 }) // Đếm số likes của review
 ReviewLikeSchema.index({ user: 1 }) // Lấy danh sách reviews user đã like
 
 // Export model
-export const ReviewLikeModel = mongoose.model<IReviewLike>(
-  'review_likes',
-  ReviewLikeSchema
-)
+export const ReviewLikeModel = mongoose.model<IReviewLike>('review_likes', ReviewLikeSchema)
 
 // Export interface
 export { IReviewLike }

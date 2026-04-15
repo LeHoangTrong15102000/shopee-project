@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { OrderSearchFilterProps } from './OrderSearchFilter';
+import { useState, useEffect } from 'react'
+import { OrderSearchFilterProps } from './OrderSearchFilter'
 
 export function useFilterState({
   searchQuery,
@@ -11,120 +11,120 @@ export function useFilterState({
   onClearAll,
   activeFilterCount,
 }: OrderSearchFilterProps) {
-  const [inputValue, setInputValue] = useState(searchQuery);
-  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [inputValue, setInputValue] = useState(searchQuery)
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false)
 
-  const [dateFrom, setDateFrom] = useState(dateRange?.from || '');
-  const [dateTo, setDateTo] = useState(dateRange?.to || '');
-  const [priceMin, setPriceMin] = useState(priceRange?.min?.toString() || '');
-  const [priceMax, setPriceMax] = useState(priceRange?.max?.toString() || '');
-
-  useEffect(() => {
-    setInputValue(searchQuery);
-  }, [searchQuery]);
+  const [dateFrom, setDateFrom] = useState(dateRange?.from || '')
+  const [dateTo, setDateTo] = useState(dateRange?.to || '')
+  const [priceMin, setPriceMin] = useState(priceRange?.min?.toString() || '')
+  const [priceMax, setPriceMax] = useState(priceRange?.max?.toString() || '')
 
   useEffect(() => {
-    setDateFrom(dateRange?.from || '');
-    setDateTo(dateRange?.to || '');
-  }, [dateRange]);
+    setInputValue(searchQuery)
+  }, [searchQuery])
 
   useEffect(() => {
-    setPriceMin(priceRange?.min?.toString() || '');
-    setPriceMax(priceRange?.max?.toString() || '');
-  }, [priceRange]);
+    setDateFrom(dateRange?.from || '')
+    setDateTo(dateRange?.to || '')
+  }, [dateRange])
+
+  useEffect(() => {
+    setPriceMin(priceRange?.min?.toString() || '')
+    setPriceMax(priceRange?.max?.toString() || '')
+  }, [priceRange])
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (inputValue !== searchQuery) {
-        onSearchChange(inputValue);
+        onSearchChange(inputValue)
       }
-    }, 300);
+    }, 300)
 
-    return () => clearTimeout(timer);
-  }, [inputValue, searchQuery, onSearchChange]);
+    return () => clearTimeout(timer)
+  }, [inputValue, searchQuery, onSearchChange])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-  };
+    setInputValue(e.target.value)
+  }
 
   const handleClearSearch = () => {
-    setInputValue('');
-    onSearchChange('');
-  };
+    setInputValue('')
+    onSearchChange('')
+  }
 
   const handleDateFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newFrom = e.target.value;
-    setDateFrom(newFrom);
+    const newFrom = e.target.value
+    setDateFrom(newFrom)
     if (newFrom && dateTo) {
-      onDateRangeChange({ from: newFrom, to: dateTo });
+      onDateRangeChange({ from: newFrom, to: dateTo })
     } else if (!newFrom && !dateTo) {
-      onDateRangeChange(null);
+      onDateRangeChange(null)
     }
-  };
+  }
 
   const handleDateToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTo = e.target.value;
-    setDateTo(newTo);
+    const newTo = e.target.value
+    setDateTo(newTo)
     if (dateFrom && newTo) {
-      onDateRangeChange({ from: dateFrom, to: newTo });
+      onDateRangeChange({ from: dateFrom, to: newTo })
     } else if (!dateFrom && !newTo) {
-      onDateRangeChange(null);
+      onDateRangeChange(null)
     }
-  };
+  }
 
   const handleClearDateRange = () => {
-    setDateFrom('');
-    setDateTo('');
-    onDateRangeChange(null);
-  };
+    setDateFrom('')
+    setDateTo('')
+    onDateRangeChange(null)
+  }
 
   const handlePriceMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setPriceMin(value);
-    const min = parseFloat(value);
-    const max = parseFloat(priceMax);
+    const value = e.target.value
+    setPriceMin(value)
+    const min = parseFloat(value)
+    const max = parseFloat(priceMax)
     if (!isNaN(min) && !isNaN(max)) {
-      onPriceRangeChange({ min, max });
+      onPriceRangeChange({ min, max })
     } else if (value === '' && priceMax === '') {
-      onPriceRangeChange(null);
+      onPriceRangeChange(null)
     }
-  };
+  }
 
   const handlePriceMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setPriceMax(value);
-    const min = parseFloat(priceMin);
-    const max = parseFloat(value);
+    const value = e.target.value
+    setPriceMax(value)
+    const min = parseFloat(priceMin)
+    const max = parseFloat(value)
     if (!isNaN(min) && !isNaN(max)) {
-      onPriceRangeChange({ min, max });
+      onPriceRangeChange({ min, max })
     } else if (priceMin === '' && value === '') {
-      onPriceRangeChange(null);
+      onPriceRangeChange(null)
     }
-  };
+  }
 
   const handleClearPriceRange = () => {
-    setPriceMin('');
-    setPriceMax('');
-    onPriceRangeChange(null);
-  };
+    setPriceMin('')
+    setPriceMax('')
+    onPriceRangeChange(null)
+  }
 
   const handleClearAllFilters = () => {
-    setInputValue('');
-    setDateFrom('');
-    setDateTo('');
-    setPriceMin('');
-    setPriceMax('');
-    onClearAll();
-  };
+    setInputValue('')
+    setDateFrom('')
+    setDateTo('')
+    setPriceMin('')
+    setPriceMax('')
+    onClearAll()
+  }
 
   const toggleFilterPanel = () => {
-    setIsFilterPanelOpen((prev) => !prev);
-  };
+    setIsFilterPanelOpen((prev) => !prev)
+  }
 
-  const hasSearchFilter = searchQuery.trim().length > 0;
-  const hasDateFilter = dateRange !== null;
-  const hasPriceFilter = priceRange !== null;
-  const hasAnyFilter = activeFilterCount > 0;
+  const hasSearchFilter = searchQuery.trim().length > 0
+  const hasDateFilter = dateRange !== null
+  const hasPriceFilter = priceRange !== null
+  const hasAnyFilter = activeFilterCount > 0
 
   return {
     inputValue,
@@ -147,5 +147,5 @@ export function useFilterState({
     handleClearPriceRange,
     handleClearAllFilters,
     toggleFilterPanel,
-  };
+  }
 }

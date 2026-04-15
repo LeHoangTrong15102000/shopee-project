@@ -23,7 +23,7 @@ export class UserRepository implements IUserRepository {
 
   async findPaginated(
     filter: FilterQuery<IUser>,
-    options: PaginationOptions
+    options: PaginationOptions,
   ): Promise<PaginatedResult<IUser>> {
     const { page, limit, sort } = options
     const skip = (page - 1) * limit
@@ -106,7 +106,7 @@ export class UserRepository implements IUserRepository {
   async updatePassword(userId: string | Types.ObjectId, hashedPassword: string): Promise<boolean> {
     const result = await UserModel.updateOne(
       { _id: new Types.ObjectId(userId.toString()) },
-      { password: hashedPassword }
+      { password: hashedPassword },
     )
     return result.modifiedCount > 0
   }
@@ -118,15 +118,13 @@ export class UserRepository implements IUserRepository {
   }
 
   async getProfile(userId: string | Types.ObjectId): Promise<Omit<IUser, 'password'> | null> {
-    return UserModel.findById(userId).select({ password: 0, __v: 0 }).lean<Omit<IUser, 'password'> | null>()
+    return UserModel.findById(userId)
+      .select({ password: 0, __v: 0 })
+      .lean<Omit<IUser, 'password'> | null>()
   }
 
   async search(query: string, pagination: PaginationOptions): Promise<PaginatedResult<IUser>> {
     const regex = new RegExp(query, 'i')
-    return this.findPaginated(
-      { $or: [{ name: regex }, { email: regex }] },
-      pagination
-    )
+    return this.findPaginated({ $or: [{ name: regex }, { email: regex }] }, pagination)
   }
 }
-

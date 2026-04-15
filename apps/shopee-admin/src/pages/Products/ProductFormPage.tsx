@@ -1,26 +1,26 @@
-import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useTranslation } from 'react-i18next';
-import { Loader2 } from 'lucide-react';
-import { Button } from 'src/components/ui/button';
-import { Input } from 'src/components/ui/input';
-import { Label } from 'src/components/ui/label';
-import { Textarea } from 'src/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
+import { useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { useTranslation } from 'react-i18next'
+import { Loader2 } from 'lucide-react'
+import { Button } from 'src/components/ui/button'
+import { Input } from 'src/components/ui/input'
+import { Label } from 'src/components/ui/label'
+import { Textarea } from 'src/components/ui/textarea'
+import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/components/ui/select';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { LoadingState } from 'src/components/shared/LoadingState';
-import { useProductFormData, useCreateProduct, useUpdateProduct } from 'src/hooks/useProductForm';
-import { useCategories } from 'src/hooks/useCategories';
+} from 'src/components/ui/select'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { LoadingState } from 'src/components/shared/LoadingState'
+import { useProductFormData, useCreateProduct, useUpdateProduct } from 'src/hooks/useProductForm'
+import { useCategories } from 'src/hooks/useCategories'
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -31,50 +31,50 @@ const schema = z.object({
   category: z.string().min(1, 'Category is required'),
   image: z.string().min(1, 'Image URL is required'),
   location: z.string().optional(),
-});
+})
 
-type FormData = z.infer<typeof schema>;
+type FormData = z.infer<typeof schema>
 
 export default function ProductFormPage() {
-  const { t } = useTranslation('products');
-  const { t: tc } = useTranslation('common');
-  const { id } = useParams();
-  const isEdit = !!id;
-  const navigate = useNavigate();
+  const { t } = useTranslation('products')
+  const { t: tc } = useTranslation('common')
+  const { id } = useParams()
+  const isEdit = !!id
+  const navigate = useNavigate()
 
-  const { data: product, isLoading } = useProductFormData(id);
-  const { data: categories } = useCategories();
-  const createMut = useCreateProduct(() => navigate('/products'));
-  const updateMut = useUpdateProduct(() => navigate('/products'));
+  const { data: product, isLoading } = useProductFormData(id)
+  const { data: categories } = useCategories()
+  const createMut = useCreateProduct(() => navigate('/products'))
+  const updateMut = useUpdateProduct(() => navigate('/products'))
 
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<FormData>({ resolver: zodResolver(schema) });
+  } = useForm<FormData>({ resolver: zodResolver(schema) })
 
   useEffect(() => {
     if (product) {
-      setValue('name', product.name);
-      setValue('description', product.description || '');
-      setValue('price', product.price);
-      setValue('price_before_discount', product.price_before_discount);
-      setValue('quantity', product.quantity);
+      setValue('name', product.name)
+      setValue('description', product.description || '')
+      setValue('price', product.price)
+      setValue('price_before_discount', product.price_before_discount)
+      setValue('quantity', product.quantity)
       setValue(
         'category',
         typeof product.category === 'object' ? product.category._id : product.category,
-      );
-      setValue('image', product.image);
-      setValue('location', product.location || '');
+      )
+      setValue('image', product.image)
+      setValue('location', product.location || '')
     }
-  }, [product, setValue]);
+  }, [product, setValue])
 
   const onSubmit = (data: FormData) =>
-    isEdit ? updateMut.mutate({ id: id!, data }) : createMut.mutate(data);
-  const isPending = createMut.isPending || updateMut.isPending;
+    isEdit ? updateMut.mutate({ id: id!, data }) : createMut.mutate(data)
+  const isPending = createMut.isPending || updateMut.isPending
 
-  if (isEdit && isLoading) return <LoadingState />;
+  if (isEdit && isLoading) return <LoadingState />
 
   return (
     <div className="space-y-6">
@@ -194,5 +194,5 @@ export default function ProductFormPage() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

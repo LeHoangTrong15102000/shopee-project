@@ -1,29 +1,29 @@
-import classNames from 'classnames';
-import { useTranslation } from 'react-i18next';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import Button from 'src/components/Button';
-import SearchInput from './components/SearchInput';
-import FilterPanel from './components/FilterPanel';
-import ActiveFilterChips from './components/ActiveFilterChips';
-import { useFilterState } from './useFilterState';
+import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import Button from 'src/components/Button'
+import SearchInput from './components/SearchInput'
+import FilterPanel from './components/FilterPanel'
+import ActiveFilterChips from './components/ActiveFilterChips'
+import { useFilterState } from './useFilterState'
 
 export interface OrderSearchFilterProps {
-  searchQuery: string;
-  onSearchChange: (query: string) => void;
-  dateRange: { from: string; to: string } | null;
-  onDateRangeChange: (range: { from: string; to: string } | null) => void;
-  priceRange: { min: number; max: number } | null;
-  onPriceRangeChange: (range: { min: number; max: number } | null) => void;
-  onClearAll: () => void;
-  activeFilterCount: number;
-  totalResults?: number;
-  className?: string;
+  searchQuery: string
+  onSearchChange: (query: string) => void
+  dateRange: { from: string; to: string } | null
+  onDateRangeChange: (range: { from: string; to: string } | null) => void
+  priceRange: { min: number; max: number } | null
+  onPriceRangeChange: (range: { min: number; max: number } | null) => void
+  onClearAll: () => void
+  activeFilterCount: number
+  totalResults?: number
+  className?: string
 }
 
 export default function OrderSearchFilter(props: OrderSearchFilterProps) {
-  const { t } = useTranslation('order');
-  const { totalResults, className, searchQuery, dateRange, priceRange } = props;
-  const reducedMotion = useReducedMotion();
+  const { t } = useTranslation('order')
+  const { totalResults, className, searchQuery, dateRange, priceRange } = props
+  const reducedMotion = useReducedMotion()
 
   const {
     inputValue,
@@ -46,7 +46,7 @@ export default function OrderSearchFilter(props: OrderSearchFilterProps) {
     handleClearPriceRange,
     handleClearAllFilters,
     toggleFilterPanel,
-  } = useFilterState(props);
+  } = useFilterState(props)
 
   return (
     <div className={classNames('rounded-xs bg-white p-4 shadow-xs dark:bg-slate-800', className)}>
@@ -139,5 +139,5 @@ export default function OrderSearchFilter(props: OrderSearchFilterProps) {
         onClearAllFilters={handleClearAllFilters}
       />
     </div>
-  );
+  )
 }

@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import LiveOrderTracker from '../LiveOrderTracker/LiveOrderTracker';
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import LiveOrderTracker from '../LiveOrderTracker/LiveOrderTracker'
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -9,7 +9,7 @@ vi.mock('react-i18next', () => ({
     i18n: { language: 'vi', changeLanguage: vi.fn() },
   }),
   Trans: ({ children }: any) => children,
-}));
+}))
 
 vi.mock('src/apis/orderTracking.api', () => ({
   default: {
@@ -26,7 +26,7 @@ vi.mock('src/apis/orderTracking.api', () => ({
       }),
     ),
   },
-}));
+}))
 
 vi.mock('src/hooks/useOrderTracking', () => ({
   default: vi.fn(() => ({
@@ -35,49 +35,49 @@ vi.mock('src/hooks/useOrderTracking', () => ({
     isSubscribed: true,
     statusHistory: [],
   })),
-}));
+}))
 
 vi.mock('src/hooks/useReducedMotion', () => ({
   useReducedMotion: vi.fn(() => false),
-}));
+}))
 
 vi.mock('src/components/OrderTimeline', () => ({
   default: () => <div>OrderTimeline</div>,
-}));
+}))
 
 describe('LiveOrderTracker', () => {
   it('renders order tracker component', () => {
     const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
-    });
+    })
 
     const { container } = render(
       <QueryClientProvider client={queryClient}>
         <LiveOrderTracker orderId="test-order-id" initialStatus={1} />
       </QueryClientProvider>,
-    );
+    )
 
-    expect(screen.getByText('tracking.title')).toBeInTheDocument();
-  });
+    expect(screen.getByText('tracking.title')).toBeInTheDocument()
+  })
 
   it('displays tracking title', () => {
     const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
-    });
+    })
 
     render(
       <QueryClientProvider client={queryClient}>
         <LiveOrderTracker orderId="test-order-id" initialStatus={1} />
       </QueryClientProvider>,
-    );
+    )
 
-    expect(screen.getByText('tracking.title')).toBeInTheDocument();
-  });
+    expect(screen.getByText('tracking.title')).toBeInTheDocument()
+  })
 
   it('shows tracking number', () => {
     const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
-    });
+    })
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -87,22 +87,22 @@ describe('LiveOrderTracker', () => {
           trackingNumber="VN2024SHOP001"
         />
       </QueryClientProvider>,
-    );
+    )
 
-    expect(screen.getAllByText(/VN2024SHOP001/).length).toBeGreaterThan(0);
-  });
+    expect(screen.getAllByText(/VN2024SHOP001/).length).toBeGreaterThan(0)
+  })
 
   it('displays carrier information', () => {
     const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
-    });
+    })
 
     render(
       <QueryClientProvider client={queryClient}>
         <LiveOrderTracker orderId="test-order-id" initialStatus={1} carrier="Giao Hàng Nhanh" />
       </QueryClientProvider>,
-    );
+    )
 
-    expect(screen.getByText('Giao Hàng Nhanh')).toBeInTheDocument();
-  });
-});
+    expect(screen.getByText('Giao Hàng Nhanh')).toBeInTheDocument()
+  })
+})

@@ -6,19 +6,21 @@ import { mongoIdSchema } from './common.schema'
  * Validates query params for listing wishlist items
  */
 export const getWishlistSchema = z.object({
-  query: z.object({
-    page: z.coerce
-      .number()
-      .int('Page phải là số nguyên dương')
-      .min(1, 'Page phải là số nguyên dương')
-      .optional(),
-    limit: z.coerce
-      .number()
-      .int('Limit phải từ 1 đến 50')
-      .min(1, 'Limit phải từ 1 đến 50')
-      .max(50, 'Limit phải từ 1 đến 50')
-      .optional(),
-  }).passthrough(),
+  query: z
+    .object({
+      page: z.coerce
+        .number()
+        .int('Page phải là số nguyên dương')
+        .min(1, 'Page phải là số nguyên dương')
+        .optional(),
+      limit: z.coerce
+        .number()
+        .int('Limit phải từ 1 đến 50')
+        .min(1, 'Limit phải từ 1 đến 50')
+        .max(50, 'Limit phải từ 1 đến 50')
+        .optional(),
+    })
+    .passthrough(),
 })
 
 /**
@@ -60,4 +62,3 @@ export const checkInWishlistSchema = wishlistProductIdParamSchema
 // Type exports
 export type GetWishlistQuery = z.infer<typeof getWishlistSchema>['query']
 export type AddToWishlistInput = z.infer<typeof addToWishlistSchema>['body']
-

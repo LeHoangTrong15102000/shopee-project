@@ -75,7 +75,9 @@ describe('CategoryService', () => {
     it('should throw ConflictError if name already exists', async () => {
       mockCategoryRepository.nameExists.mockResolvedValue(true)
 
-      await expect(categoryService.createCategory({ name: 'Existing Category' })).rejects.toThrow(ConflictError)
+      await expect(categoryService.createCategory({ name: 'Existing Category' })).rejects.toThrow(
+        ConflictError,
+      )
     })
   })
 
@@ -123,25 +125,34 @@ describe('CategoryService', () => {
   describe('updateCategory', () => {
     it('should update category successfully', async () => {
       mockCategoryRepository.nameExists.mockResolvedValue(false)
-      mockCategoryRepository.updateById.mockResolvedValue({ ...mockCategory, name: 'Updated' } as any)
+      mockCategoryRepository.updateById.mockResolvedValue({
+        ...mockCategory,
+        name: 'Updated',
+      } as any)
 
       const result = await categoryService.updateCategory(validObjectId, { name: 'Updated' })
 
-      expect(mockCategoryRepository.updateById).toHaveBeenCalledWith(validObjectId, { name: 'Updated' })
+      expect(mockCategoryRepository.updateById).toHaveBeenCalledWith(validObjectId, {
+        name: 'Updated',
+      })
       expect(result.name).toBe('Updated')
     })
 
     it('should throw ConflictError if name already exists', async () => {
       mockCategoryRepository.nameExists.mockResolvedValue(true)
 
-      await expect(categoryService.updateCategory(validObjectId, { name: 'Existing' })).rejects.toThrow(ConflictError)
+      await expect(
+        categoryService.updateCategory(validObjectId, { name: 'Existing' }),
+      ).rejects.toThrow(ConflictError)
     })
 
     it('should throw NotFoundError when category not found', async () => {
       mockCategoryRepository.nameExists.mockResolvedValue(false)
       mockCategoryRepository.updateById.mockResolvedValue(null)
 
-      await expect(categoryService.updateCategory(validObjectId, { name: 'Updated' })).rejects.toThrow(NotFoundError)
+      await expect(
+        categoryService.updateCategory(validObjectId, { name: 'Updated' }),
+      ).rejects.toThrow(NotFoundError)
     })
   })
 
@@ -173,4 +184,3 @@ describe('CategoryService', () => {
     })
   })
 })
-

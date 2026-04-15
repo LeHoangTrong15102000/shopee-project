@@ -3,26 +3,26 @@
  * Single source of truth for all order status labels, colors, icons, and animation flags
  */
 
-export type { OrderStatus } from 'src/types/orderTracking.type';
-import type { OrderStatus } from 'src/types/orderTracking.type';
-import i18n from 'src/i18n/i18n';
+export type { OrderStatus } from 'src/types/orderTracking.type'
+import type { OrderStatus } from 'src/types/orderTracking.type'
+import i18n from 'src/i18n/i18n'
 
 export interface OrderStatusConfig {
-  label: string;
+  label: string
   color: {
-    light: string;
-    dark: string;
-  };
+    light: string
+    dark: string
+  }
   bgColor: {
-    light: string;
-    dark: string;
-  };
+    light: string
+    dark: string
+  }
   borderColor: {
-    light: string;
-    dark: string;
-  };
-  icon: string;
-  animate?: boolean;
+    light: string
+    dark: string
+  }
+  icon: string
+  animate?: boolean
 }
 
 export const ORDER_STATUS_CONFIG: Record<OrderStatus, OrderStatusConfig> = {
@@ -78,19 +78,19 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, OrderStatusConfig> = {
     borderColor: { light: 'border-slate-200/60', dark: 'border-slate-600/30' },
     icon: '↩',
   },
-};
+}
 
 export const getStatusLabel = (status: OrderStatus): string =>
   i18n.t(`config.${status}`, {
     ns: 'order',
     defaultValue: ORDER_STATUS_CONFIG[status]?.label ?? status,
-  });
+  })
 
 export const getStatusClasses = (status: OrderStatus): string => {
-  const config = ORDER_STATUS_CONFIG[status];
-  if (!config) return '';
-  return `${config.color.light} dark:${config.color.dark} ${config.bgColor.light} dark:${config.bgColor.dark} ${config.borderColor.light} dark:${config.borderColor.dark}`;
-};
+  const config = ORDER_STATUS_CONFIG[status]
+  if (!config) return ''
+  return `${config.color.light} dark:${config.color.dark} ${config.bgColor.light} dark:${config.bgColor.dark} ${config.borderColor.light} dark:${config.borderColor.dark}`
+}
 
 // Carrier code to display name mapping (fallback values)
 export const CARRIER_DISPLAY_NAMES: Record<string, string> = {
@@ -99,7 +99,7 @@ export const CARRIER_DISPLAY_NAMES: Record<string, string> = {
   viettel_post: 'Viettel Post',
   'j&t': 'J&T Express',
   other: 'Khác',
-};
+}
 
 // Carrier code to i18n key mapping (backend uses codes, UI shows translated names)
 const CARRIER_I18N_KEYS: Record<string, string> = {
@@ -108,7 +108,7 @@ const CARRIER_I18N_KEYS: Record<string, string> = {
   viettel_post: 'carrier.viettelPost',
   'j&t': 'carrier.jt',
   other: 'carrier.other',
-};
+}
 
 export const getCarrierDisplayName = (carrierCode: string): string =>
   CARRIER_I18N_KEYS[carrierCode]
@@ -116,4 +116,4 @@ export const getCarrierDisplayName = (carrierCode: string): string =>
         ns: 'order',
         defaultValue: CARRIER_DISPLAY_NAMES[carrierCode],
       })
-    : carrierCode;
+    : carrierCode

@@ -17,16 +17,30 @@ jest.mock('../../container', () => ({
 }))
 
 import { container } from '../../container'
-import { getAddresses, getAddressById, createAddress, updateAddress, deleteAddress, setDefaultAddress } from '../../controllers/address.controller'
+import {
+  getAddresses,
+  getAddressById,
+  createAddress,
+  updateAddress,
+  deleteAddress,
+  setDefaultAddress,
+} from '../../controllers/address.controller'
 
-const mockAddressService = container.services.address as jest.Mocked<typeof container.services.address>
+const mockAddressService = container.services.address as jest.Mocked<
+  typeof container.services.address
+>
 
 const createMockRequest = (options: any = {}): Partial<Request> => ({
   body: options.body || {},
   params: options.params || {},
   query: options.query || {},
   headers: options.headers || {},
-  jwtDecoded: options.jwtDecoded || { id: 'user123', email: 'test@test.com', roles: ['User'], created_at: '2024-01-01' },
+  jwtDecoded: options.jwtDecoded || {
+    id: 'user123',
+    email: 'test@test.com',
+    roles: ['User'],
+    created_at: '2024-01-01',
+  },
 })
 
 const createMockResponse = (): Partial<Response> => {
@@ -58,7 +72,10 @@ describe('Address Controller', () => {
     it('should return addresses successfully', async () => {
       const req = createMockRequest()
       const res = createMockResponse()
-      mockAddressService.getAddresses.mockResolvedValue({ addresses: [mockAddress], total: 1 } as any)
+      mockAddressService.getAddresses.mockResolvedValue({
+        addresses: [mockAddress],
+        total: 1,
+      } as any)
 
       await getAddresses(req as Request, res as Response)
 
@@ -89,7 +106,10 @@ describe('Address Controller', () => {
 
       expect(mockAddressService.getAddressById).toHaveBeenCalledWith('user123', 'addr123')
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Lấy địa chỉ thành công', data: mockAddress })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Lấy địa chỉ thành công',
+        data: mockAddress,
+      })
     })
 
     it('should propagate service errors', async () => {
@@ -97,13 +117,23 @@ describe('Address Controller', () => {
       const res = createMockResponse()
       mockAddressService.getAddressById.mockRejectedValue(new Error('Address not found'))
 
-      await expect(getAddressById(req as Request, res as Response)).rejects.toThrow('Address not found')
+      await expect(getAddressById(req as Request, res as Response)).rejects.toThrow(
+        'Address not found',
+      )
     })
   })
 
   describe('createAddress', () => {
     it('should create address successfully', async () => {
-      const addressData = { full_name: 'John Doe', phone: '0123456789', province: 'Ho Chi Minh', district: 'District 1', ward: 'Ward 1', street: '123 Main St', is_default: true }
+      const addressData = {
+        full_name: 'John Doe',
+        phone: '0123456789',
+        province: 'Ho Chi Minh',
+        district: 'District 1',
+        ward: 'Ward 1',
+        street: '123 Main St',
+        is_default: true,
+      }
       const req = createMockRequest({ body: addressData })
       const res = createMockResponse()
       mockAddressService.createAddress.mockResolvedValue(mockAddress as any)
@@ -112,7 +142,10 @@ describe('Address Controller', () => {
 
       expect(mockAddressService.createAddress).toHaveBeenCalledWith('user123', addressData)
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Tạo địa chỉ thành công', data: mockAddress })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Tạo địa chỉ thành công',
+        data: mockAddress,
+      })
     })
 
     it('should propagate service errors', async () => {
@@ -120,22 +153,39 @@ describe('Address Controller', () => {
       const res = createMockResponse()
       mockAddressService.createAddress.mockRejectedValue(new Error('Validation error'))
 
-      await expect(createAddress(req as Request, res as Response)).rejects.toThrow('Validation error')
+      await expect(createAddress(req as Request, res as Response)).rejects.toThrow(
+        'Validation error',
+      )
     })
   })
 
   describe('updateAddress', () => {
     it('should update address successfully', async () => {
-      const addressData = { full_name: 'Jane Doe', phone: '0987654321', province: 'Ha Noi', district: 'District 2', ward: 'Ward 2', street: '456 Other St', is_default: false }
+      const addressData = {
+        full_name: 'Jane Doe',
+        phone: '0987654321',
+        province: 'Ha Noi',
+        district: 'District 2',
+        ward: 'Ward 2',
+        street: '456 Other St',
+        is_default: false,
+      }
       const req = createMockRequest({ params: { id: 'addr123' }, body: addressData })
       const res = createMockResponse()
       mockAddressService.updateAddress.mockResolvedValue({ ...mockAddress, ...addressData } as any)
 
       await updateAddress(req as Request, res as Response)
 
-      expect(mockAddressService.updateAddress).toHaveBeenCalledWith('user123', 'addr123', addressData)
+      expect(mockAddressService.updateAddress).toHaveBeenCalledWith(
+        'user123',
+        'addr123',
+        addressData,
+      )
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Cập nhật địa chỉ thành công', data: { ...mockAddress, ...addressData } })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Cập nhật địa chỉ thành công',
+        data: { ...mockAddress, ...addressData },
+      })
     })
 
     it('should propagate service errors', async () => {
@@ -179,7 +229,10 @@ describe('Address Controller', () => {
 
       expect(mockAddressService.setDefaultAddress).toHaveBeenCalledWith('user123', 'addr123')
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Đặt địa chỉ mặc định thành công', data: mockAddress })
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Đặt địa chỉ mặc định thành công',
+        data: mockAddress,
+      })
     })
 
     it('should propagate service errors', async () => {
@@ -187,8 +240,9 @@ describe('Address Controller', () => {
       const res = createMockResponse()
       mockAddressService.setDefaultAddress.mockRejectedValue(new Error('Set default failed'))
 
-      await expect(setDefaultAddress(req as Request, res as Response)).rejects.toThrow('Set default failed')
+      await expect(setDefaultAddress(req as Request, res as Response)).rejects.toThrow(
+        'Set default failed',
+      )
     })
   })
 })
-

@@ -1,34 +1,34 @@
-import classNames from 'classnames';
-import { useForm, Controller } from 'react-hook-form';
-import { Link, createSearchParams } from 'react-router';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import Button from 'src/components/Button';
-import InputNumber from 'src/components/InputNumber';
-import path from 'src/constant/path';
+import classNames from 'classnames'
+import { useForm, Controller } from 'react-hook-form'
+import { Link, createSearchParams } from 'react-router'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import Button from 'src/components/Button'
+import InputNumber from 'src/components/InputNumber'
+import path from 'src/constant/path'
 
-import { Category } from 'src/types/category.type';
-import { inputNumberSchema } from 'src/utils/rules';
-import RatingStars from 'src/pages/ProductList/components/RatingStars';
-import { useProductQueryStates } from 'src/hooks/nuqs';
-import { useTranslation } from 'react-i18next';
+import { Category } from 'src/types/category.type'
+import { inputNumberSchema } from 'src/utils/rules'
+import RatingStars from 'src/pages/ProductList/components/RatingStars'
+import { useProductQueryStates } from 'src/hooks/nuqs'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
-  categories: Category[];
+  categories: Category[]
 }
 
-type FormData = z.infer<typeof inputNumberSchema>;
+type FormData = z.infer<typeof inputNumberSchema>
 
 const AsideFilter = ({ categories }: Props) => {
-  const { t } = useTranslation('home');
-  const [filters, setFilters] = useProductQueryStates();
-  const { category } = filters;
+  const { t } = useTranslation('home')
+  const [filters, setFilters] = useProductQueryStates()
+  const { category } = filters
 
   const filtersAsStrings = Object.fromEntries(
     Object.entries(filters)
       .filter(([_, v]) => v != null)
       .map(([k, v]) => [k, String(v)]),
-  ) as Record<string, string>;
+  ) as Record<string, string>
 
   const {
     control,
@@ -43,24 +43,24 @@ const AsideFilter = ({ categories }: Props) => {
     },
     resolver: zodResolver(inputNumberSchema),
     shouldFocusError: false,
-  });
+  })
 
   const onSubmit = handleSubmit(
     (data) => {
       setFilters({
         price_max: data.price_max ? Number(data.price_max) : null,
         price_min: data.price_min ? Number(data.price_min) : null,
-      });
+      })
     },
     (err) => {
-      console.log(err);
+      console.log(err)
     },
-  );
+  )
 
   const handleRemoveAsideFilter = () => {
-    reset();
-    setFilters({ price_min: null, price_max: null, category: null, rating_filter: null });
-  };
+    reset()
+    setFilters({ price_min: null, price_max: null, category: null, rating_filter: null })
+  }
 
   return (
     <div
@@ -93,7 +93,7 @@ const AsideFilter = ({ categories }: Props) => {
       <div className="my-4 h-px bg-gray-300 dark:bg-slate-600"></div>
       <ul>
         {categories.map((categoryItem) => {
-          const isActive = category === categoryItem._id;
+          const isActive = category === categoryItem._id
           return (
             <li className="py-2 pl-2" key={categoryItem._id}>
               <Link
@@ -119,7 +119,7 @@ const AsideFilter = ({ categories }: Props) => {
                 {categoryItem.name}
               </Link>
             </li>
-          );
+          )
         })}
         {/* <li className='py-2 pl-2'>
           <Link to={path.home} className='relative px-2'>
@@ -168,8 +168,8 @@ const AsideFilter = ({ categories }: Props) => {
                     // onChange={(event) => field.onChange(event)} // onChange trong field có nhận vào cái event
                     {...field}
                     onChange={(event) => {
-                      field.onChange(event);
-                      trigger('price_max');
+                      field.onChange(event)
+                      trigger('price_max')
                     }} // có thể viết gọn lại như này
                     /**
                      *  Nó vẫn sẽ hiểu là có hai thằng này trong thẻ Input
@@ -177,7 +177,7 @@ const AsideFilter = ({ categories }: Props) => {
                         // ref={field.ref}
                      */
                   />
-                );
+                )
               }}
             />
             {/* shrink-0 cho nó đừng có bị co lại */}
@@ -209,11 +209,11 @@ const AsideFilter = ({ categories }: Props) => {
                     maxValue={'50000000'}
                     {...field}
                     onChange={(event) => {
-                      field.onChange(event);
-                      trigger('price_min');
+                      field.onChange(event)
+                      trigger('price_min')
                     }}
                   />
-                );
+                )
               }}
             />
           </div>
@@ -247,7 +247,7 @@ const AsideFilter = ({ categories }: Props) => {
         {t('filter.clearAll')}
       </Button>
     </div>
-  );
-};
+  )
+}
 
-export default AsideFilter;
+export default AsideFilter

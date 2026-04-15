@@ -1,59 +1,59 @@
-import { useState, useEffect } from 'react';
-import classNames from 'classnames';
-import { useTranslation } from 'react-i18next';
-import useChat from 'src/hooks/useChat';
-import useTypingIndicator from 'src/hooks/useTypingIndicator';
-import MessageList from './MessageList';
-import MessageInput from './MessageInput';
-import TypingIndicator from './TypingIndicator';
-import Button from 'src/components/Button';
+import { useState, useEffect } from 'react'
+import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
+import useChat from 'src/hooks/useChat'
+import useTypingIndicator from 'src/hooks/useTypingIndicator'
+import MessageList from './MessageList'
+import MessageInput from './MessageInput'
+import TypingIndicator from './TypingIndicator'
+import Button from 'src/components/Button'
 
 interface ChatWindowProps {
-  conversationId?: string;
-  sellerName?: string;
-  currentUserId?: string;
+  conversationId?: string
+  sellerName?: string
+  currentUserId?: string
 }
 
 export default function ChatWindow({ conversationId, sellerName, currentUserId }: ChatWindowProps) {
-  const { t } = useTranslation('chat');
-  const [isMinimized, setIsMinimized] = useState(true);
+  const { t } = useTranslation('chat')
+  const [isMinimized, setIsMinimized] = useState(true)
   const { messages, currentChatId, isLoading, isConnected, joinChat, leaveChat, sendMessage } =
-    useChat();
-  const { typingUsers, startTyping, stopTyping } = useTypingIndicator(currentChatId);
+    useChat()
+  const { typingUsers, startTyping, stopTyping } = useTypingIndicator(currentChatId)
 
   useEffect(() => {
     if (conversationId && !isMinimized && isConnected) {
-      joinChat(conversationId);
+      joinChat(conversationId)
     }
     return () => {
       if (currentChatId) {
-        leaveChat();
+        leaveChat()
       }
-    };
-  }, [conversationId, isMinimized, isConnected]);
+    }
+  }, [conversationId, isMinimized, isConnected])
 
   const handleToggle = () => {
-    setIsMinimized((prev) => !prev);
-  };
+    setIsMinimized((prev) => !prev)
+  }
 
   const handleClose = () => {
-    setIsMinimized(true);
+    setIsMinimized(true)
     if (currentChatId) {
-      leaveChat();
+      leaveChat()
     }
-  };
+  }
 
   const getConnectionStatus = () => {
-    if (isLoading) return t('status.connecting');
-    if (!isConnected) return t('status.noConnection');
-    return t('status.online');
-  };
+    if (isLoading) return t('status.connecting')
+    if (!isConnected) return t('status.noConnection')
+    return t('status.online')
+  }
 
   const getStatusColor = () => {
-    if (isLoading) return 'bg-yellow-400';
-    if (!isConnected) return 'bg-red-400';
-    return 'bg-green-400';
-  };
+    if (isLoading) return 'bg-yellow-400'
+    if (!isConnected) return 'bg-red-400'
+    return 'bg-green-400'
+  }
 
   if (isMinimized) {
     return (
@@ -71,7 +71,7 @@ export default function ChatWindow({ conversationId, sellerName, currentUserId }
           />
         </svg>
       </Button>
-    );
+    )
   }
 
   return (
@@ -136,5 +136,5 @@ export default function ChatWindow({ conversationId, sellerName, currentUserId }
         disabled={!isConnected}
       />
     </div>
-  );
+  )
 }

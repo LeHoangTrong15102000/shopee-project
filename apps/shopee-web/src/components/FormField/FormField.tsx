@@ -1,12 +1,12 @@
-import type { ReactNode } from 'react';
+import type { ReactNode } from 'react'
 
 interface FormFieldProps {
-  label?: string;
-  error?: string;
-  required?: boolean;
-  className?: string;
-  children: ReactNode;
-  htmlFor?: string;
+  label?: string
+  error?: string
+  required?: boolean
+  className?: string
+  children: ReactNode
+  htmlFor?: string
 }
 
 const FormField = ({
@@ -31,7 +31,7 @@ const FormField = ({
       {children}
       {error && <p className="mt-1 min-h-5 text-sm text-red-600 dark:text-red-400">{error}</p>}
     </div>
-  );
-};
+  )
+}
 
-export default FormField;
+export default FormField

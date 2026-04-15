@@ -1,26 +1,26 @@
-export type NotificationType = 'order' | 'promotion' | 'system' | 'other';
+export type NotificationType = 'order' | 'promotion' | 'system' | 'other'
 
 export interface Notification {
-  _id: string;
-  title: string;
-  content: string;
-  type: NotificationType;
-  isRead: boolean;
-  link?: string;
-  createdAt: string;
-  updatedAt: string;
+  _id: string
+  title: string
+  content: string
+  type: NotificationType
+  isRead: boolean
+  link?: string
+  createdAt: string
+  updatedAt: string
 }
 
 export interface NotificationResponse {
-  message: string;
+  message: string
   data: {
-    notifications: Notification[];
+    notifications: Notification[]
     pagination: {
-      page: number;
-      limit: number;
-      total: number;
-      total_pages: number;
-    };
-    unreadCount: number;
-  };
+      page: number
+      limit: number
+      total: number
+      total_pages: number
+    }
+    unreadCount: number
+  }
 }

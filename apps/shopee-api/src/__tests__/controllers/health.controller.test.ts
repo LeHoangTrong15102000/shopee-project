@@ -63,7 +63,7 @@ describe('HealthController', () => {
               heapTotal: expect.any(Number),
             }),
           }),
-        })
+        }),
       )
     })
 
@@ -85,7 +85,7 @@ describe('HealthController', () => {
           data: expect.objectContaining({
             status: 'unhealthy',
           }),
-        })
+        }),
       )
     })
 
@@ -107,7 +107,7 @@ describe('HealthController', () => {
           data: expect.objectContaining({
             status: 'degraded',
           }),
-        })
+        }),
       )
     })
   })
@@ -129,7 +129,7 @@ describe('HealthController', () => {
             ready: true,
             checks: { database: true },
           }),
-        })
+        }),
       )
     })
 
@@ -149,9 +149,8 @@ describe('HealthController', () => {
             ready: false,
             checks: { database: false },
           }),
-        })
+        }),
       )
     })
   })
 })
-

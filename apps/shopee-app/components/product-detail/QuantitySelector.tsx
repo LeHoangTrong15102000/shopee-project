@@ -1,15 +1,15 @@
-import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
-import { Minus, Plus } from 'lucide-react-native';
-import { AppText } from '@/components/ui';
-import { useColors } from '@/hooks/useColors';
-import { useTranslation } from 'react-i18next';
+import React from 'react'
+import { View, TouchableOpacity } from 'react-native'
+import { Minus, Plus } from 'lucide-react-native'
+import { AppText } from '@/components/ui'
+import { useColors } from '@/hooks/useColors'
+import { useTranslation } from 'react-i18next'
 
 interface QuantitySelectorProps {
-  value: number;
-  onChange: (value: number) => void;
-  max: number;
-  disabled?: boolean;
+  value: number
+  onChange: (value: number) => void
+  max: number
+  disabled?: boolean
 }
 
 export default function QuantitySelector({
@@ -18,10 +18,10 @@ export default function QuantitySelector({
   max,
   disabled,
 }: QuantitySelectorProps) {
-  const colors = useColors();
-  const { t } = useTranslation();
-  const isMin = value <= 1;
-  const isMax = value >= max;
+  const colors = useColors()
+  const { t } = useTranslation()
+  const isMin = value <= 1
+  const isMax = value >= max
 
   return (
     <View className="flex-row items-center gap-3 px-4 py-3">
@@ -79,5 +79,5 @@ export default function QuantitySelector({
         </TouchableOpacity>
       </View>
     </View>
-  );
+  )
 }

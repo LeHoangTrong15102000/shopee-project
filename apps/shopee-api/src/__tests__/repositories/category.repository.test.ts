@@ -123,7 +123,11 @@ describe('CategoryRepository', () => {
 
       const result = await repository.updateById('507f1f77bcf86cd799439011', { name: 'Updated' })
 
-      expect(CategoryModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', { name: 'Updated' }, { new: true })
+      expect(CategoryModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        '507f1f77bcf86cd799439011',
+        { name: 'Updated' },
+        { new: true },
+      )
       expect(result).toEqual(mockCategoryData)
     })
   })
@@ -261,4 +265,3 @@ describe('CategoryRepository', () => {
     })
   })
 })
-

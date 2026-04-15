@@ -52,9 +52,9 @@ export const buyProductsSchema = z.object({
           (item) =>
             /^[0-9a-fA-F]{24}$/.test(item.product_id) &&
             Number.isInteger(item.buy_count) &&
-            item.buy_count >= 1
+            item.buy_count >= 1,
         ),
-      { message: 'body không đúng định dạng' }
+      { message: 'body không đúng định dạng' },
     ),
 })
 
@@ -76,4 +76,3 @@ export type AddToCartInput = z.infer<typeof addToCartSchema>['body']
 export type UpdatePurchaseInput = z.infer<typeof updatePurchaseSchema>['body']
 export type BuyProductsInput = z.infer<typeof buyProductsSchema>['body']
 export type DeletePurchasesInput = z.infer<typeof deletePurchasesSchema>['body']
-

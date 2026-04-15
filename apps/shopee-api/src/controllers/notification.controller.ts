@@ -175,4 +175,3 @@ export const adminDeleteNotification = async (req: Request, res: Response) => {
     message: 'Xóa thông báo thành công',
   })
 }
-

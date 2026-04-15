@@ -17,12 +17,35 @@ adminVoucherRouter.use(authMiddleware.verifyAccessToken, authMiddleware.verifyAd
 
 adminVoucherRouter.get('/', validate(adminVoucherListSchema), asyncHandler(ctrl.adminGetVouchers))
 adminVoucherRouter.get('/stats', asyncHandler(ctrl.adminGetVoucherStats))
-adminVoucherRouter.get('/:id', validate(adminVoucherIdSchema), asyncHandler(ctrl.adminGetVoucherById))
-adminVoucherRouter.get('/:id/usage', validate(adminVoucherUsageSchema), asyncHandler(ctrl.adminGetVoucherUsage))
-adminVoucherRouter.post('/', validate(adminCreateVoucherSchema), asyncHandler(ctrl.adminCreateVoucher))
-adminVoucherRouter.put('/:id', validate(adminUpdateVoucherSchema), asyncHandler(ctrl.adminUpdateVoucher))
-adminVoucherRouter.delete('/:id', validate(adminVoucherIdSchema), asyncHandler(ctrl.adminDeleteVoucher))
-adminVoucherRouter.patch('/:id/toggle', validate(adminVoucherIdSchema), asyncHandler(ctrl.adminToggleVoucher))
+adminVoucherRouter.get(
+  '/:id',
+  validate(adminVoucherIdSchema),
+  asyncHandler(ctrl.adminGetVoucherById),
+)
+adminVoucherRouter.get(
+  '/:id/usage',
+  validate(adminVoucherUsageSchema),
+  asyncHandler(ctrl.adminGetVoucherUsage),
+)
+adminVoucherRouter.post(
+  '/',
+  validate(adminCreateVoucherSchema),
+  asyncHandler(ctrl.adminCreateVoucher),
+)
+adminVoucherRouter.put(
+  '/:id',
+  validate(adminUpdateVoucherSchema),
+  asyncHandler(ctrl.adminUpdateVoucher),
+)
+adminVoucherRouter.delete(
+  '/:id',
+  validate(adminVoucherIdSchema),
+  asyncHandler(ctrl.adminDeleteVoucher),
+)
+adminVoucherRouter.patch(
+  '/:id/toggle',
+  validate(adminVoucherIdSchema),
+  asyncHandler(ctrl.adminToggleVoucher),
+)
 
 export default adminVoucherRouter
-

@@ -30,7 +30,14 @@ describe('WishlistService', () => {
   describe('getWishlist', () => {
     it('should return items with transformed image URLs', async () => {
       const mockData = {
-        data: [{ _id: new Types.ObjectId(), user: new Types.ObjectId(), product: { image: 'test.jpg' }, addedAt: new Date() }],
+        data: [
+          {
+            _id: new Types.ObjectId(),
+            user: new Types.ObjectId(),
+            product: { image: 'test.jpg' },
+            addedAt: new Date(),
+          },
+        ],
         pagination: { page: 1, limit: 10, page_size: 1, total: 1 },
       }
       ;(mockWishlistRepository.findByUser as jest.Mock).mockResolvedValue(mockData)
@@ -44,9 +51,17 @@ describe('WishlistService', () => {
 
   describe('addToWishlist', () => {
     it('should add product with valid IDs', async () => {
-      const mockItem = { _id: new Types.ObjectId(), user: new Types.ObjectId(userId), product: new Types.ObjectId(productId), addedAt: new Date() }
+      const mockItem = {
+        _id: new Types.ObjectId(),
+        user: new Types.ObjectId(userId),
+        product: new Types.ObjectId(productId),
+        addedAt: new Date(),
+      }
       ;(mockWishlistRepository.addToWishlist as jest.Mock).mockResolvedValue(mockItem)
-      ;(mockWishlistRepository.findById as jest.Mock).mockResolvedValue({ ...mockItem, product: { image: 'img.jpg' } })
+      ;(mockWishlistRepository.findById as jest.Mock).mockResolvedValue({
+        ...mockItem,
+        product: { image: 'img.jpg' },
+      })
 
       const result = await service.addToWishlist(userId, productId)
 
@@ -60,7 +75,9 @@ describe('WishlistService', () => {
 
   describe('removeFromWishlist', () => {
     it('should remove item when found', async () => {
-      ;(mockWishlistRepository.removeFromWishlist as jest.Mock).mockResolvedValue({ _id: new Types.ObjectId() })
+      ;(mockWishlistRepository.removeFromWishlist as jest.Mock).mockResolvedValue({
+        _id: new Types.ObjectId(),
+      })
 
       await expect(service.removeFromWishlist(userId, productId)).resolves.toBeUndefined()
       expect(mockWishlistRepository.removeFromWishlist).toHaveBeenCalledWith(userId, productId)
@@ -106,7 +123,10 @@ describe('WishlistService', () => {
   describe('checkProducts', () => {
     it('should return map for valid product IDs', async () => {
       const productIds = [new Types.ObjectId().toString(), new Types.ObjectId().toString()]
-      const mockMap = new Map([[productIds[0], true], [productIds[1], false]])
+      const mockMap = new Map([
+        [productIds[0], true],
+        [productIds[1], false],
+      ])
       ;(mockWishlistRepository.checkProducts as jest.Mock).mockResolvedValue(mockMap)
 
       const result = await service.checkProducts(userId, productIds)
@@ -120,4 +140,3 @@ describe('WishlistService', () => {
     })
   })
 })
-

@@ -1,7 +1,10 @@
 /// <reference types="jest" />
 import { Types } from 'mongoose'
 import { ConversationService } from '@services/conversation.service'
-import { IConversationRepository, CONVERSATION_STATUS } from '@repositories/interfaces/conversation.repository.interface'
+import {
+  IConversationRepository,
+  CONVERSATION_STATUS,
+} from '@repositories/interfaces/conversation.repository.interface'
 import { NotFoundError, ValidationError, BusinessError } from '@services/base.service'
 
 jest.mock('@utils/chatbot.service', () => ({
@@ -40,9 +43,16 @@ describe('ConversationService', () => {
 
   describe('getConversations', () => {
     it('returns paginated results', async () => {
-      const paginatedResult = { data: [mockConversation], pagination: { page: 1, limit: 10, page_size: 1, total: 1 } }
+      const paginatedResult = {
+        data: [mockConversation],
+        pagination: { page: 1, limit: 10, page_size: 1, total: 1 },
+      }
       mockConversationRepository.findByUser.mockResolvedValue(paginatedResult)
-      const result = await service.getConversations(validObjectId.toString(), {}, { page: 1, limit: 10 })
+      const result = await service.getConversations(
+        validObjectId.toString(),
+        {},
+        { page: 1, limit: 10 },
+      )
       expect(result).toEqual(paginatedResult)
       expect(mockConversationRepository.findByUser).toHaveBeenCalled()
     })
@@ -51,13 +61,18 @@ describe('ConversationService', () => {
   describe('getConversation', () => {
     it('returns conversation when found', async () => {
       mockConversationRepository.findByIdAndUser.mockResolvedValue(mockConversation)
-      const result = await service.getConversation(validObjectId.toString(), validObjectId.toString())
+      const result = await service.getConversation(
+        validObjectId.toString(),
+        validObjectId.toString(),
+      )
       expect(result).toEqual(mockConversation)
     })
 
     it('throws NotFoundError when not found', async () => {
       mockConversationRepository.findByIdAndUser.mockResolvedValue(null)
-      await expect(service.getConversation(validObjectId.toString(), validObjectId.toString())).rejects.toThrow(NotFoundError)
+      await expect(
+        service.getConversation(validObjectId.toString(), validObjectId.toString()),
+      ).rejects.toThrow(NotFoundError)
     })
   })
 
@@ -71,7 +86,9 @@ describe('ConversationService', () => {
     })
 
     it('throws ValidationError for empty message', async () => {
-      await expect(service.createConversation(validObjectId.toString(), '')).rejects.toThrow(ValidationError)
+      await expect(service.createConversation(validObjectId.toString(), '')).rejects.toThrow(
+        ValidationError,
+      )
     })
   })
 
@@ -79,7 +96,11 @@ describe('ConversationService', () => {
     it('sends message and returns AI response', async () => {
       mockConversationRepository.findByIdAndUser.mockResolvedValue(mockConversation)
       mockConversationRepository.addMessages.mockResolvedValue(mockConversation)
-      const result = await service.sendMessage(validObjectId.toString(), validObjectId.toString(), 'Hello')
+      const result = await service.sendMessage(
+        validObjectId.toString(),
+        validObjectId.toString(),
+        'Hello',
+      )
       expect(result.conversation).toEqual(mockConversation)
       expect(result.aiMessage).toBeDefined()
     })
@@ -87,14 +108,20 @@ describe('ConversationService', () => {
     it('throws BusinessError for archived conversation', async () => {
       const archivedConversation = { ...mockConversation, status: CONVERSATION_STATUS.ARCHIVED }
       mockConversationRepository.findByIdAndUser.mockResolvedValue(archivedConversation)
-      await expect(service.sendMessage(validObjectId.toString(), validObjectId.toString(), 'Hello')).rejects.toThrow(BusinessError)
+      await expect(
+        service.sendMessage(validObjectId.toString(), validObjectId.toString(), 'Hello'),
+      ).rejects.toThrow(BusinessError)
     })
   })
 
   describe('updateConversation', () => {
     it('updates conversation successfully', async () => {
       mockConversationRepository.update.mockResolvedValue(mockConversation)
-      const result = await service.updateConversation(validObjectId.toString(), validObjectId.toString(), { title: 'New Title' })
+      const result = await service.updateConversation(
+        validObjectId.toString(),
+        validObjectId.toString(),
+        { title: 'New Title' },
+      )
       expect(result).toEqual(mockConversation)
     })
   })
@@ -102,12 +129,16 @@ describe('ConversationService', () => {
   describe('deleteConversation', () => {
     it('deletes conversation when found', async () => {
       mockConversationRepository.delete.mockResolvedValue(true)
-      await expect(service.deleteConversation(validObjectId.toString(), validObjectId.toString())).resolves.toBeUndefined()
+      await expect(
+        service.deleteConversation(validObjectId.toString(), validObjectId.toString()),
+      ).resolves.toBeUndefined()
     })
 
     it('throws NotFoundError when not found', async () => {
       mockConversationRepository.delete.mockResolvedValue(false)
-      await expect(service.deleteConversation(validObjectId.toString(), validObjectId.toString())).rejects.toThrow(NotFoundError)
+      await expect(
+        service.deleteConversation(validObjectId.toString(), validObjectId.toString()),
+      ).rejects.toThrow(NotFoundError)
     })
   })
 
@@ -118,4 +149,3 @@ describe('ConversationService', () => {
     })
   })
 })
-

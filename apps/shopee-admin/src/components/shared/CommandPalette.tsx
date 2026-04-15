@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   LayoutDashboard,
   Users,
@@ -17,7 +17,7 @@ import {
   Upload,
   Settings,
   FileText,
-} from 'lucide-react';
+} from 'lucide-react'
 import {
   CommandDialog,
   Command,
@@ -26,11 +26,11 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandItem,
-} from 'src/components/ui/command';
-import { useDebounce } from '@shopee/shared-utils';
-import usersApi from 'src/apis/users.api';
-import productsApi from 'src/apis/products.api';
-import ordersApi from 'src/apis/orders.api';
+} from 'src/components/ui/command'
+import { useDebounce } from '@shopee/shared-utils'
+import usersApi from 'src/apis/users.api'
+import productsApi from 'src/apis/products.api'
+import ordersApi from 'src/apis/orders.api'
 
 const pages = [
   { titleKey: 'menu.overview', href: '/', icon: LayoutDashboard },
@@ -48,89 +48,89 @@ const pages = [
   { titleKey: 'menu.import', href: '/import', icon: Upload },
   { titleKey: 'menu.settings', href: '/settings', icon: Settings },
   { titleKey: 'menu.activityLog', href: '/activity-log', icon: FileText },
-];
+]
 interface SearchResult {
-  id: string;
-  label: string;
-  type: 'product' | 'order' | 'user';
-  href: string;
+  id: string
+  label: string
+  type: 'product' | 'order' | 'user'
+  href: string
 }
 
 export function CommandPalette() {
-  const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const navigate = useNavigate();
-  const { t } = useTranslation('layout');
-  const { t: tc } = useTranslation('common');
-  const debouncedQuery = useDebounce(query, 300);
+  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState('')
+  const [results, setResults] = useState<SearchResult[]>([])
+  const navigate = useNavigate()
+  const { t } = useTranslation('layout')
+  const { t: tc } = useTranslation('common')
+  const debouncedQuery = useDebounce(query, 300)
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setOpen((o) => !o);
+        e.preventDefault()
+        setOpen((o) => !o)
       }
-    };
-    document.addEventListener('keydown', down);
-    return () => document.removeEventListener('keydown', down);
-  }, []);
+    }
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [])
 
   useEffect(() => {
     if (!debouncedQuery || debouncedQuery.length < 2) {
-      setResults([]);
-      return;
+      setResults([])
+      return
     }
-    let cancelled = false;
-    (async () => {
+    let cancelled = false
+    ;(async () => {
       try {
         const [products, orders, users] = await Promise.allSettled([
           productsApi.getProducts({ name: debouncedQuery, limit: 5 }).then((r) => r.data.data),
           ordersApi.getOrders({ search: debouncedQuery, limit: 5 }).then((r) => r.data.data),
           usersApi.getUsers({ search: debouncedQuery, limit: 5 }).then((r) => r.data.data),
-        ]);
-        if (cancelled) return;
-        const items: SearchResult[] = [];
+        ])
+        if (cancelled) return
+        const items: SearchResult[] = []
         if (products.status === 'fulfilled') {
-          (products.value.products ?? []).forEach((p: any) =>
+          ;(products.value.products ?? []).forEach((p: any) =>
             items.push({ id: p._id, label: p.name, type: 'product', href: `/products/${p._id}` }),
-          );
+          )
         }
         if (orders.status === 'fulfilled') {
-          (orders.value.orders ?? []).forEach((o: any) =>
+          ;(orders.value.orders ?? []).forEach((o: any) =>
             items.push({
               id: o._id,
               label: `Order #${o._id.slice(-8)}`,
               type: 'order',
               href: `/orders/${o._id}`,
             }),
-          );
+          )
         }
         if (users.status === 'fulfilled') {
-          (users.value.items ?? []).forEach((u: any) =>
+          ;(users.value.items ?? []).forEach((u: any) =>
             items.push({
               id: u._id,
               label: u.name || u.email,
               type: 'user',
               href: `/users/${u._id}`,
             }),
-          );
+          )
         }
-        setResults(items);
+        setResults(items)
       } catch {
-        if (!cancelled) setResults([]);
+        if (!cancelled) setResults([])
       }
-    })();
+    })()
     return () => {
-      cancelled = true;
-    };
-  }, [debouncedQuery]);
+      cancelled = true
+    }
+  }, [debouncedQuery])
 
   const select = (href: string) => {
-    setOpen(false);
-    setQuery('');
-    navigate(href);
-  };
+    setOpen(false)
+    setQuery('')
+    navigate(href)
+  }
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
@@ -163,5 +163,5 @@ export function CommandPalette() {
         </CommandList>
       </Command>
     </CommandDialog>
-  );
+  )
 }

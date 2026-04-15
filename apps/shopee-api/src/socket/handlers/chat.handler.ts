@@ -143,4 +143,3 @@ export const registerChatHandlers = (socket: Socket): void => {
     })
   })
 }
-

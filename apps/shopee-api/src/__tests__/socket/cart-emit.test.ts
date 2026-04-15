@@ -63,7 +63,7 @@ describe('Cart Emit Utils', () => {
           user_id: userId,
           action: 'add',
           product_id: 'product-456',
-        })
+        }),
       )
     })
 
@@ -82,7 +82,7 @@ describe('Cart Emit Utils', () => {
           action: 'update',
           product_id: productId,
           timestamp: expect.any(String),
-        })
+        }),
       )
     })
 
@@ -102,7 +102,7 @@ describe('Cart Emit Utils', () => {
           user_id: userId,
           action: 'delete',
           product_id: 'product-xyz',
-        })
+        }),
       )
     })
 
@@ -121,7 +121,7 @@ describe('Cart Emit Utils', () => {
           user_id: userId,
           action: 'buy',
           product_id: 'product-buy',
-        })
+        }),
       )
     })
 
@@ -134,4 +134,3 @@ describe('Cart Emit Utils', () => {
     })
   })
 })
-

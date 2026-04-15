@@ -1,14 +1,14 @@
-import classNames from 'classnames';
-import { useTranslation } from 'react-i18next';
-import { ArrowDownIcon, ArrowUpIcon } from 'src/components/Icons';
-import { formatCurrency } from 'src/utils/utils';
+import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
+import { ArrowDownIcon, ArrowUpIcon } from 'src/components/Icons'
+import { formatCurrency } from 'src/utils/utils'
 
 interface LivePriceTagProps {
-  currentPrice: number;
-  livePrice: number | null;
-  previousPrice: number | null;
-  hasChanged: boolean;
-  className?: string;
+  currentPrice: number
+  livePrice: number | null
+  previousPrice: number | null
+  hasChanged: boolean
+  className?: string
 }
 
 export default function LivePriceTag({
@@ -18,10 +18,10 @@ export default function LivePriceTag({
   hasChanged,
   className,
 }: LivePriceTagProps) {
-  const { t } = useTranslation('product');
-  const displayPrice = livePrice ?? currentPrice;
-  const priceDecreased = previousPrice !== null && displayPrice < previousPrice;
-  const priceIncreased = previousPrice !== null && displayPrice > previousPrice;
+  const { t } = useTranslation('product')
+  const displayPrice = livePrice ?? currentPrice
+  const priceDecreased = previousPrice !== null && displayPrice < previousPrice
+  const priceIncreased = previousPrice !== null && displayPrice > previousPrice
 
   return (
     <div className={classNames('relative', className)}>
@@ -63,5 +63,5 @@ export default function LivePriceTag({
         </span>
       )}
     </div>
-  );
+  )
 }

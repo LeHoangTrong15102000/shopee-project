@@ -1,18 +1,18 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import classNames from 'classnames';
-import { useTranslation } from 'react-i18next';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
 
 export interface FlashSaleUrgencyProps {
-  productId: string;
-  totalStock: number;
-  soldCount: number;
-  endTime: string | Date;
-  className?: string;
+  productId: string
+  totalStock: number
+  soldCount: number
+  endTime: string | Date
+  className?: string
 }
 
-type UrgencyLevel = 'normal' | 'low' | 'critical' | 'out_of_stock' | 'ending_soon' | 'ended';
+type UrgencyLevel = 'normal' | 'low' | 'critical' | 'out_of_stock' | 'ending_soon' | 'ended'
 
 export default function FlashSaleUrgency({
   productId,
@@ -21,82 +21,82 @@ export default function FlashSaleUrgency({
   endTime,
   className,
 }: FlashSaleUrgencyProps) {
-  const prefersReducedMotion = useReducedMotion();
-  const { t } = useTranslation('home');
-  const [timeRemaining, setTimeRemaining] = useState<number>(0);
+  const prefersReducedMotion = useReducedMotion()
+  const { t } = useTranslation('home')
+  const [timeRemaining, setTimeRemaining] = useState<number>(0)
 
   // Calculate stock metrics
-  const remainingStock = Math.max(0, totalStock - soldCount);
+  const remainingStock = Math.max(0, totalStock - soldCount)
   const soldPercentage = (() => {
-    if (totalStock <= 0) return 100;
-    return Math.min(100, Math.round((soldCount / totalStock) * 100));
-  })();
+    if (totalStock <= 0) return 100
+    return Math.min(100, Math.round((soldCount / totalStock) * 100))
+  })()
 
   // Calculate time remaining
   useEffect(() => {
     const calculateTimeRemaining = () => {
-      const end = typeof endTime === 'string' ? new Date(endTime) : endTime;
-      const now = new Date();
-      const diff = Math.max(0, Math.floor((end.getTime() - now.getTime()) / 1000));
-      setTimeRemaining(diff);
-    };
+      const end = typeof endTime === 'string' ? new Date(endTime) : endTime
+      const now = new Date()
+      const diff = Math.max(0, Math.floor((end.getTime() - now.getTime()) / 1000))
+      setTimeRemaining(diff)
+    }
 
-    calculateTimeRemaining();
-    const timer = setInterval(calculateTimeRemaining, 1000);
-    return () => clearInterval(timer);
-  }, [endTime]);
+    calculateTimeRemaining()
+    const timer = setInterval(calculateTimeRemaining, 1000)
+    return () => clearInterval(timer)
+  }, [endTime])
 
   // Determine urgency level
   const urgencyLevel = ((): UrgencyLevel => {
-    if (timeRemaining <= 0) return 'ended';
-    if (remainingStock === 0) return 'out_of_stock';
-    if (remainingStock < 5) return 'critical';
-    if (remainingStock < 10) return 'low';
-    if (timeRemaining < 30 * 60) return 'ending_soon'; // < 30 minutes
-    return 'normal';
-  })();
+    if (timeRemaining <= 0) return 'ended'
+    if (remainingStock === 0) return 'out_of_stock'
+    if (remainingStock < 5) return 'critical'
+    if (remainingStock < 10) return 'low'
+    if (timeRemaining < 30 * 60) return 'ending_soon' // < 30 minutes
+    return 'normal'
+  })()
 
   // Get urgency message
   const urgencyMessage = (() => {
     switch (urgencyLevel) {
       case 'ended':
-        return { text: t('flashSale.ended'), emoji: '⏰' };
+        return { text: t('flashSale.ended'), emoji: '⏰' }
       case 'out_of_stock':
-        return { text: t('flashSale.soldOut'), emoji: '🚫' };
+        return { text: t('flashSale.soldOut'), emoji: '🚫' }
       case 'critical':
-        return { text: t('flashSale.onlyNLeft', { count: remainingStock }), emoji: '🔥' };
+        return { text: t('flashSale.onlyNLeft', { count: remainingStock }), emoji: '🔥' }
       case 'low':
-        return { text: t('flashSale.almostGone'), emoji: '⚡' };
+        return { text: t('flashSale.almostGone'), emoji: '⚡' }
       case 'ending_soon':
-        return { text: t('flashSale.endingSoon'), emoji: '⏰' };
+        return { text: t('flashSale.endingSoon'), emoji: '⏰' }
       default:
-        return null;
+        return null
     }
-  })();
+  })()
 
   const shouldPulse =
-    ['critical', 'low', 'ending_soon'].includes(urgencyLevel) && !prefersReducedMotion;
-  const isInactive = urgencyLevel === 'ended' || urgencyLevel === 'out_of_stock';
+    ['critical', 'low', 'ending_soon'].includes(urgencyLevel) && !prefersReducedMotion
+  const isInactive = urgencyLevel === 'ended' || urgencyLevel === 'out_of_stock'
 
   const progressBarFill = isInactive
     ? 'bg-gray-400 dark:bg-gray-600'
-    : 'bg-linear-to-r from-[#ee4d2d] to-[#ff6633]';
+    : 'bg-linear-to-r from-[#ee4d2d] to-[#ff6633]'
 
   const urgencyTextColor = (() => {
     switch (urgencyLevel) {
       case 'critical':
-        return 'text-red-600 dark:text-red-400';
+        return 'text-red-600 dark:text-red-400'
       case 'low':
-        return 'text-red-500 dark:text-red-400';
+        return 'text-red-500 dark:text-red-400'
       case 'ending_soon':
-        return 'text-orange-500 dark:text-orange-400';
+        return 'text-orange-500 dark:text-orange-400'
       case 'ended':
       case 'out_of_stock':
-        return 'text-gray-400 dark:text-gray-500';
+        return 'text-gray-400 dark:text-gray-500'
       default:
-        return 'text-gray-600 dark:text-gray-400';
+        return 'text-gray-600 dark:text-gray-400'
     }
-  })();
+  })()
 
   return (
     <div className={classNames('w-full', className)} data-product-id={productId}>
@@ -142,5 +142,5 @@ export default function FlashSaleUrgency({
         </motion.div>
       )}
     </div>
-  );
+  )
 }

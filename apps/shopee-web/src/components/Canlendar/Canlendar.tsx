@@ -1,5 +1,5 @@
 const Canlendar = () => {
-  return <div></div>;
-};
+  return <div></div>
+}
 
-export default Canlendar;
+export default Canlendar

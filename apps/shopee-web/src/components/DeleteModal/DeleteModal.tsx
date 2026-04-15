@@ -1,47 +1,47 @@
-import React, { useEffect, useRef } from 'react';
-import ReactDOM from 'react-dom';
-import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
-import { Product } from 'src/types/product.type';
-import { useFocusTrap } from 'src/hooks/useFocusTrap';
-import Button from 'src/components/Button';
+import React, { useEffect, useRef } from 'react'
+import ReactDOM from 'react-dom'
+import { useTranslation } from 'react-i18next'
+import { motion } from 'framer-motion'
+import { Product } from 'src/types/product.type'
+import { useFocusTrap } from 'src/hooks/useFocusTrap'
+import Button from 'src/components/Button'
 
 interface Props {
-  children?: React.ReactNode;
-  open: boolean;
-  product: Product;
-  handleIsAgree: () => void;
-  handleIsCancel: () => void;
+  children?: React.ReactNode
+  open: boolean
+  product: Product
+  handleIsAgree: () => void
+  handleIsCancel: () => void
 }
 
-const root = document.querySelector('body') as HTMLElement;
+const root = document.querySelector('body') as HTMLElement
 
 const DeleteModal = ({ open = false, handleIsAgree, handleIsCancel, product }: Props) => {
-  const { t } = useTranslation('common');
-  const modalRef = useRef<HTMLDivElement>(null);
-  useFocusTrap({ isOpen: open, containerRef: modalRef, onClose: handleIsCancel });
+  const { t } = useTranslation('common')
+  const modalRef = useRef<HTMLDivElement>(null)
+  useFocusTrap({ isOpen: open, containerRef: modalRef, onClose: handleIsCancel })
 
   const handleDelete = () => {
-    handleIsAgree();
-    handleIsCancel();
-  };
+    handleIsAgree()
+    handleIsCancel()
+  }
 
   const handleCancel = () => {
-    handleIsCancel();
-  };
+    handleIsCancel()
+  }
 
   useEffect(() => {
     if (open) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden'
     } else {
-      document.body.style.removeProperty('overflow');
+      document.body.style.removeProperty('overflow')
     }
     return () => {
-      document.body.style.removeProperty('overflow');
-    };
-  }, [open]);
+      document.body.style.removeProperty('overflow')
+    }
+  }, [open])
 
-  if (typeof document === 'undefined') return <div className="modal"></div>;
+  if (typeof document === 'undefined') return <div className="modal"></div>
   return ReactDOM.createPortal(
     <div
       className={`modal fixed inset-0 z-50 flex items-center justify-center p-5 ${open ? '' : 'invisible opacity-0'}`}
@@ -93,7 +93,7 @@ const DeleteModal = ({ open = false, handleIsAgree, handleIsCancel, product }: P
       </motion.div>
     </div>,
     root,
-  );
-};
+  )
+}
 
-export default DeleteModal;
+export default DeleteModal

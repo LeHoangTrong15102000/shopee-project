@@ -1,1 +1,1 @@
-export { default } from './InventoryAlertBadge';
+export { default } from './InventoryAlertBadge'

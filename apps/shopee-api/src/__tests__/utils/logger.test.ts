@@ -241,4 +241,3 @@ describe('PerformanceTracker', () => {
     expect(duration).toBeGreaterThanOrEqual(40)
   })
 })
-

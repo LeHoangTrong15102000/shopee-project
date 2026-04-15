@@ -1,20 +1,20 @@
-import { Inbox } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { Button } from 'src/components/ui/button';
-import { cn } from 'src/lib/utils';
+import { Inbox } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { Button } from 'src/components/ui/button'
+import { cn } from 'src/lib/utils'
 
 interface EmptyStateProps {
-  title?: string;
-  description?: string;
-  icon?: React.ReactNode;
-  action?: { label: string; onClick: () => void };
-  className?: string;
+  title?: string
+  description?: string
+  icon?: React.ReactNode
+  action?: { label: string; onClick: () => void }
+  className?: string
 }
 
 export function EmptyState({ title, description, icon, action, className }: EmptyStateProps) {
-  const { t } = useTranslation('common');
-  const resolvedTitle = title ?? t('states.noData');
-  const resolvedDescription = description ?? t('states.noResults');
+  const { t } = useTranslation('common')
+  const resolvedTitle = title ?? t('states.noData')
+  const resolvedDescription = description ?? t('states.noResults')
   return (
     <div
       className={cn('flex flex-col items-center justify-center py-12 text-center', className)}
@@ -30,5 +30,5 @@ export function EmptyState({ title, description, icon, action, className }: Empt
         </Button>
       )}
     </div>
-  );
+  )
 }

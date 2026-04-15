@@ -1,8 +1,8 @@
-import { useTranslation } from 'react-i18next';
-import { Badge } from 'src/components/ui/badge';
-import { cn } from 'src/lib/utils';
+import { useTranslation } from 'react-i18next'
+import { Badge } from 'src/components/ui/badge'
+import { cn } from 'src/lib/utils'
 
-type StatusVariant = 'default' | 'secondary' | 'destructive' | 'outline';
+type StatusVariant = 'default' | 'secondary' | 'destructive' | 'outline'
 
 const statusColorMap: Record<string, { className: string; variant: StatusVariant }> = {
   active: {
@@ -49,23 +49,23 @@ const statusColorMap: Record<string, { className: string; variant: StatusVariant
     className: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
     variant: 'outline',
   },
-};
+}
 
 interface StatusBadgeProps {
-  status: string;
-  className?: string;
+  status: string
+  className?: string
 }
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('common')
   const config = statusColorMap[status.toLowerCase()] ?? {
     className: '',
     variant: 'secondary' as StatusVariant,
-  };
+  }
 
-  const key = `statuses.${status.toLowerCase()}`;
-  const translated = t(key);
-  const label = translated !== key ? translated : status;
+  const key = `statuses.${status.toLowerCase()}`
+  const translated = t(key)
+  const label = translated !== key ? translated : status
 
   return (
     <Badge
@@ -74,5 +74,5 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
     >
       {label}
     </Badge>
-  );
+  )
 }

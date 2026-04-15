@@ -1,12 +1,12 @@
-import { SuccessResponseApi } from 'src/types/utils.type';
+import { SuccessResponseApi } from 'src/types/utils.type'
 import {
   ShippingMethod,
   PaymentMethod,
   Order,
   CreateOrderBody,
   CheckoutSummary,
-} from 'src/types/checkout.type';
-import http from 'src/utils/http';
+} from 'src/types/checkout.type'
+import http from 'src/utils/http'
 
 // Mock shipping methods - Shopee style with details
 const mockShippingMethods: ShippingMethod[] = [
@@ -76,7 +76,7 @@ const mockShippingMethods: ShippingMethod[] = [
     type: 'pickup',
     details: [{ text: 'Free shipping for orders over ₫0', type: 'free_threshold' }],
   },
-];
+]
 
 // Mock payment methods
 const mockPaymentMethods: PaymentMethod[] = [
@@ -112,47 +112,47 @@ const mockPaymentMethods: PaymentMethod[] = [
     icon: 'credit_card',
     isAvailable: true,
   },
-];
+]
 
 const checkoutApi = {
   getShippingMethods: async () => {
     try {
       const response = await http.get<SuccessResponseApi<ShippingMethod[]>>(
         '/orders/shipping/methods',
-      );
-      return response;
+      )
+      return response
     } catch (error) {
-      console.warn('Shipping API not available, using mock data');
+      console.warn('Shipping API not available, using mock data')
       return {
         data: {
           message: 'Get shipping methods successfully',
           data: mockShippingMethods,
         },
-      };
+      }
     }
   },
 
   getPaymentMethods: async () => {
     try {
       const response =
-        await http.get<SuccessResponseApi<PaymentMethod[]>>('/orders/payment/methods');
-      return response;
+        await http.get<SuccessResponseApi<PaymentMethod[]>>('/orders/payment/methods')
+      return response
     } catch (error) {
-      console.warn('Payment API not available, using mock data');
+      console.warn('Payment API not available, using mock data')
       return {
         data: {
           message: 'Get payment methods successfully',
           data: mockPaymentMethods,
         },
-      };
+      }
     }
   },
 
   calculateSummary: async (body: {
-    purchaseIds: string[];
-    shippingMethodId?: string;
-    voucherCode?: string;
-    coinsUsed?: number;
+    purchaseIds: string[]
+    shippingMethodId?: string
+    voucherCode?: string
+    coinsUsed?: number
   }) => {
     try {
       const response = await http.post<SuccessResponseApi<CheckoutSummary>>('/checkout/summary', {
@@ -160,11 +160,11 @@ const checkoutApi = {
         shipping_method_id: body.shippingMethodId,
         voucher_code: body.voucherCode,
         coins_used: body.coinsUsed,
-      });
-      return response;
+      })
+      return response
     } catch (error) {
       const shippingMethod =
-        mockShippingMethods.find((m) => m._id === body.shippingMethodId) || mockShippingMethods[0];
+        mockShippingMethods.find((m) => m._id === body.shippingMethodId) || mockShippingMethods[0]
       return {
         data: {
           message: 'Calculate successfully',
@@ -177,7 +177,7 @@ const checkoutApi = {
             total: shippingMethod.price,
           },
         },
-      };
+      }
     }
   },
 
@@ -191,10 +191,10 @@ const checkoutApi = {
         voucher_code: body.voucherCode,
         coins_used: body.coinsUsed,
         note: body.note,
-      });
-      return response;
+      })
+      return response
     } catch (error) {
-      console.warn('⚠️ [createOrder] API not available, using mock data');
+      console.warn('⚠️ [createOrder] API not available, using mock data')
       const mockOrder: Order = {
         _id: `order-${Date.now()}`,
         userId: 'mock-user-id',
@@ -225,15 +225,15 @@ const checkoutApi = {
         voucherCode: body.voucherCode,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      };
+      }
       return {
         data: {
           message: 'Create order successfully (mock)',
           data: mockOrder,
         },
-      };
+      }
     }
   },
-};
+}
 
-export default checkoutApi;
+export default checkoutApi

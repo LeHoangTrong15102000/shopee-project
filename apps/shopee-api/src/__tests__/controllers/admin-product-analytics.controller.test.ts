@@ -16,7 +16,10 @@ jest.mock('@services/admin-dashboard.service', () => ({
 }))
 
 import {
-  adminGetTopSelling, adminGetTopViewed, adminGetTopRated, adminGetStatsByCategory,
+  adminGetTopSelling,
+  adminGetTopViewed,
+  adminGetTopRated,
+  adminGetStatsByCategory,
 } from '../../controllers/admin-product-analytics.controller'
 
 const createMockRequest = (options: any = {}): Partial<Request> => ({

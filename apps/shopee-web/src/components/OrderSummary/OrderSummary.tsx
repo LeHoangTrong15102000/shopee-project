@@ -1,26 +1,26 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
-import { formatCurrency } from 'src/utils/utils';
-import { getEstimatedDeliveryDate } from 'src/utils/date';
-import { ExtendedPurchase } from 'src/types/purchases.type';
-import { ShippingMethod } from 'src/types/checkout.type';
-import ImageWithFallback from 'src/components/ImageWithFallback';
-import { ShippingIcon } from 'src/components/Icons';
-import Button from 'src/components/Button';
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { motion } from 'framer-motion'
+import { formatCurrency } from 'src/utils/utils'
+import { getEstimatedDeliveryDate } from 'src/utils/date'
+import { ExtendedPurchase } from 'src/types/purchases.type'
+import { ShippingMethod } from 'src/types/checkout.type'
+import ImageWithFallback from 'src/components/ImageWithFallback'
+import { ShippingIcon } from 'src/components/Icons'
+import Button from 'src/components/Button'
 
 interface OrderSummaryProps {
-  items: ExtendedPurchase[];
-  shippingMethod: ShippingMethod | null;
-  voucherDiscount?: number;
-  voucherCode?: string;
-  onRemoveVoucher?: () => void;
-  coinsUsed?: number;
-  coinsValue?: number;
+  items: ExtendedPurchase[]
+  shippingMethod: ShippingMethod | null
+  voucherDiscount?: number
+  voucherCode?: string
+  onRemoveVoucher?: () => void
+  coinsUsed?: number
+  coinsValue?: number
 }
 
-const VISIBLE_ITEMS_COUNT = 2;
-const VAT_RATE = 0.1;
+const VISIBLE_ITEMS_COUNT = 2
+const VAT_RATE = 0.1
 
 function OrderSummary({
   items,
@@ -31,32 +31,32 @@ function OrderSummary({
   coinsUsed = 0,
   coinsValue = 1,
 }: OrderSummaryProps) {
-  const { t } = useTranslation('checkout');
-  const [isExpanded, setIsExpanded] = useState(false);
+  const { t } = useTranslation('checkout')
+  const [isExpanded, setIsExpanded] = useState(false)
 
-  const subtotal = items.reduce((total, item) => total + item.price * item.buy_count, 0);
+  const subtotal = items.reduce((total, item) => total + item.price * item.buy_count, 0)
 
   const originalTotal = items.reduce(
     (total, item) => total + item.price_before_discount * item.buy_count,
     0,
-  );
+  )
 
   // Số sản phẩm unique (không tính số lượng mua)
-  const uniqueProductCount = items.length;
+  const uniqueProductCount = items.length
 
-  const productDiscount = originalTotal - subtotal;
-  const shippingFee = shippingMethod?.price || 0;
-  const coinsDiscount = coinsUsed * coinsValue;
-  const vatAmount = 0;
-  const totalDiscount = productDiscount + voucherDiscount + coinsDiscount;
-  const total = subtotal + shippingFee + vatAmount - voucherDiscount - coinsDiscount;
+  const productDiscount = originalTotal - subtotal
+  const shippingFee = shippingMethod?.price || 0
+  const coinsDiscount = coinsUsed * coinsValue
+  const vatAmount = 0
+  const totalDiscount = productDiscount + voucherDiscount + coinsDiscount
+  const total = subtotal + shippingFee + vatAmount - voucherDiscount - coinsDiscount
 
   const estimatedDeliveryDate = (() => {
-    if (!shippingMethod) return null;
-    return getEstimatedDeliveryDate(shippingMethod.estimatedDays);
-  })();
+    if (!shippingMethod) return null
+    return getEstimatedDeliveryDate(shippingMethod.estimatedDays)
+  })()
 
-  const hiddenItemsCount = items.length - VISIBLE_ITEMS_COUNT;
+  const hiddenItemsCount = items.length - VISIBLE_ITEMS_COUNT
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
@@ -423,7 +423,7 @@ function OrderSummary({
         </motion.div>
       </div>
     </div>
-  );
+  )
 }
 
-export default OrderSummary;
+export default OrderSummary

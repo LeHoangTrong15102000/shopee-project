@@ -4,7 +4,13 @@ import { Types } from 'mongoose'
 
 const mockUserId = new Types.ObjectId().toString()
 const mockRewardId = new Types.ObjectId().toString()
-const mockPoints = { _id: new Types.ObjectId(), user: mockUserId, total_points: 100, available_points: 50, tier: 'BRONZE' }
+const mockPoints = {
+  _id: new Types.ObjectId(),
+  user: mockUserId,
+  total_points: 100,
+  available_points: 50,
+  tier: 'BRONZE',
+}
 const mockTransaction = { _id: new Types.ObjectId(), user: mockUserId, points: 10, type: 'EARN' }
 const mockReward = { _id: mockRewardId, name: 'Discount', points_required: 100, stock: 10 }
 
@@ -43,7 +49,11 @@ jest.mock('@database/models/loyalty.model', () => {
   }
 })
 
-import { LoyaltyPointsModel, PointsTransactionModel, PointsRewardModel } from '@database/models/loyalty.model'
+import {
+  LoyaltyPointsModel,
+  PointsTransactionModel,
+  PointsRewardModel,
+} from '@database/models/loyalty.model'
 import { LoyaltyRepository } from '@repositories/loyalty.repository'
 
 describe('LoyaltyRepository', () => {
@@ -101,14 +111,22 @@ describe('LoyaltyRepository', () => {
     it('should filter by type', async () => {
       ;(PointsTransactionModel.find as jest.Mock).mockReturnValue(chainMock([mockTransaction]))
       ;(PointsTransactionModel.countDocuments as jest.Mock).mockResolvedValue(1)
-      const result = await repository.findTransactionsByUser(mockUserId, { type: 'earn' }, { page: 1, limit: 10 })
+      const result = await repository.findTransactionsByUser(
+        mockUserId,
+        { type: 'earn' },
+        { page: 1, limit: 10 },
+      )
       expect(result.data).toEqual([mockTransaction])
     })
   })
 
   describe('createTransaction', () => {
     it('should create transaction', async () => {
-      const result = await repository.createTransaction({ user: mockUserId, points: 10, type: 'earn' } as any)
+      const result = await repository.createTransaction({
+        user: mockUserId,
+        points: 10,
+        type: 'earn',
+      } as any)
       expect(result).toEqual(mockTransaction)
     })
   })
@@ -141,18 +159,26 @@ describe('LoyaltyRepository', () => {
     it('should filter by reward_type', async () => {
       ;(PointsRewardModel.find as jest.Mock).mockReturnValue(chainMock([mockReward]))
       ;(PointsRewardModel.countDocuments as jest.Mock).mockResolvedValue(1)
-      const result = await repository.findRewards({ reward_type: 'discount' }, { page: 1, limit: 10 })
+      const result = await repository.findRewards(
+        { reward_type: 'discount' },
+        { page: 1, limit: 10 },
+      )
       expect(result.data).toEqual([mockReward])
     })
   })
 
   describe('updateRewardStock', () => {
     it('should update reward stock', async () => {
-      ;(PointsRewardModel.findByIdAndUpdate as jest.Mock).mockReturnValue(chainMock({ ...mockReward, stock: 9 }))
+      ;(PointsRewardModel.findByIdAndUpdate as jest.Mock).mockReturnValue(
+        chainMock({ ...mockReward, stock: 9 }),
+      )
       const result = await repository.updateRewardStock(mockRewardId, 1)
-      expect(PointsRewardModel.findByIdAndUpdate).toHaveBeenCalledWith(mockRewardId, { $inc: { stock: -1 } }, { new: true })
+      expect(PointsRewardModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        mockRewardId,
+        { $inc: { stock: -1 } },
+        { new: true },
+      )
       expect(result?.stock).toBe(9)
     })
   })
 })
-

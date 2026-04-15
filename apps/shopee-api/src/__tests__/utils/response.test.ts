@@ -1,9 +1,17 @@
 /// <reference types="jest" />
 import { Response } from 'express'
 import {
-  ErrorHandler, ValidationError, NotFoundError, UnauthorizedError, ForbiddenError,
-  BadRequestError, InternalServerError, ConflictError, TooManyRequestsError,
-  responseError, responseSuccess,
+  ErrorHandler,
+  ValidationError,
+  NotFoundError,
+  UnauthorizedError,
+  ForbiddenError,
+  BadRequestError,
+  InternalServerError,
+  ConflictError,
+  TooManyRequestsError,
+  responseError,
+  responseSuccess,
 } from '@utils/response'
 import { STATUS } from '@constants/status'
 import { COMMON_MESSAGES, ERROR_CODES } from '@constants/messages'
@@ -113,9 +121,12 @@ describe('responseError', () => {
     const error = new ErrorHandler(400, 'Bad request', true, ERROR_CODES.BAD_REQUEST)
     responseError(res, error)
     expect(res.status).toHaveBeenCalledWith(400)
-    expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
-      message: 'Bad request', code: ERROR_CODES.BAD_REQUEST,
-    }))
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Bad request',
+        code: ERROR_CODES.BAD_REQUEST,
+      }),
+    )
   })
 
   it('ErrorHandler with object error sends response with data', () => {
@@ -124,9 +135,13 @@ describe('responseError', () => {
     const error = new ValidationError(errorData)
     responseError(res, error)
     expect(res.status).toHaveBeenCalledWith(STATUS.UNPROCESSABLE_ENTITY)
-    expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
-      message: COMMON_MESSAGES.ERROR, data: errorData, code: ERROR_CODES.VALIDATION_ERROR,
-    }))
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: COMMON_MESSAGES.ERROR,
+        data: errorData,
+        code: ERROR_CODES.VALIDATION_ERROR,
+      }),
+    )
   })
 
   it('generic Error sends 500', () => {
@@ -134,9 +149,11 @@ describe('responseError', () => {
     const error = new Error('Unexpected error')
     responseError(res, error)
     expect(res.status).toHaveBeenCalledWith(STATUS.INTERNAL_SERVER_ERROR)
-    expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
-      code: ERROR_CODES.INTERNAL_SERVER_ERROR,
-    }))
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: ERROR_CODES.INTERNAL_SERVER_ERROR,
+      }),
+    )
   })
 })
 
@@ -149,4 +166,3 @@ describe('responseSuccess', () => {
     expect(res.send).toHaveBeenCalledWith(data)
   })
 })
-

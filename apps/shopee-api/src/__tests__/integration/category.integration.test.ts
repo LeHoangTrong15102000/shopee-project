@@ -39,9 +39,7 @@ describe('Category Integration', () => {
 
   describe('Admin routes - auth required', () => {
     it('POST /admin/categories - requires admin auth', async () => {
-      const res = await supertest(app)
-        .post('/admin/categories')
-        .send({ name: 'New Category' })
+      const res = await supertest(app).post('/admin/categories').send({ name: 'New Category' })
       expect(res.status).toBe(401)
     })
 
@@ -64,10 +62,8 @@ describe('Category Integration', () => {
 
     it('DELETE /admin/categories/delete/:id - requires admin auth', async () => {
       const category = await CategoryModel.create({ name: 'ToDelete' })
-      const res = await supertest(app)
-        .delete(`/admin/categories/delete/${category._id}`)
+      const res = await supertest(app).delete(`/admin/categories/delete/${category._id}`)
       expect(res.status).toBe(401)
     })
   })
 })
-

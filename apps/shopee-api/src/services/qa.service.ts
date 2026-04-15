@@ -8,14 +8,17 @@ import {
 } from '@repositories/interfaces/qa.repository.interface'
 import { IProductRepository } from '@repositories/interfaces/product.repository.interface'
 import { IUserRepository } from '@repositories/interfaces/user.repository.interface'
-import { PaginatedResult, PaginationOptions } from '@repositories/interfaces/base.repository.interface'
+import {
+  PaginatedResult,
+  PaginationOptions,
+} from '@repositories/interfaces/base.repository.interface'
 import { BaseService, NotFoundError, ValidationError } from './base.service'
 
 export class QAService extends BaseService {
   constructor(
     private readonly qaRepository: IQARepository,
     private readonly productRepository: IProductRepository,
-    private readonly userRepository: IUserRepository
+    private readonly userRepository: IUserRepository,
   ) {
     super()
   }
@@ -24,14 +27,17 @@ export class QAService extends BaseService {
     productId: string,
     userId: string | undefined,
     sort: 'newest' | 'oldest' | 'most_liked' = 'newest',
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IQuestionWithLikeStatus>> {
     if (!productId) {
       throw new ValidationError('Product ID là bắt buộc')
     }
 
     const filters: QuestionFilterOptions = { product_id: productId, sort }
-    const result = await this.qaRepository.findQuestionsByProduct(filters, this.normalizePagination(pagination))
+    const result = await this.qaRepository.findQuestionsByProduct(
+      filters,
+      this.normalizePagination(pagination),
+    )
 
     // Add like status for current user
     const questionsWithLikeStatus: IQuestionWithLikeStatus[] = result.data.map((q) => ({
@@ -52,7 +58,7 @@ export class QAService extends BaseService {
   async askQuestion(
     userId: string,
     productId: string,
-    question: string
+    question: string,
   ): Promise<{ question: IQuestionItem; product: { name: string } }> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')
@@ -86,7 +92,7 @@ export class QAService extends BaseService {
     userId: string,
     questionId: string,
     answer: string,
-    isSeller: boolean = false
+    isSeller: boolean = false,
   ): Promise<{ answer: IAnswerItem; productId: string }> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')
@@ -118,7 +124,7 @@ export class QAService extends BaseService {
 
   async likeQuestion(
     userId: string,
-    questionId: string
+    questionId: string,
   ): Promise<{ is_liked: boolean; likes_count: number; productId: string }> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')
@@ -139,7 +145,7 @@ export class QAService extends BaseService {
   async likeAnswer(
     userId: string,
     questionId: string,
-    answerId: string
+    answerId: string,
   ): Promise<{ is_liked: boolean; likes_count: number }> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')
@@ -172,7 +178,7 @@ export class QAService extends BaseService {
 
   async adminGetQuestions(
     filters: { product_id?: string; unanswered?: string; start_date?: string; end_date?: string },
-    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' }
+    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' },
   ) {
     return (this.qaRepository as any).findQuestionsWithFilters(filters, pagination)
   }
@@ -200,4 +206,3 @@ export class QAService extends BaseService {
     return (this.qaRepository as any).getQAStats()
   }
 }
-

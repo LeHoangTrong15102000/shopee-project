@@ -1,5 +1,10 @@
 import { Socket, Server as SocketIOServer } from 'socket.io'
-import { SocketEvent, NotificationPayload, SocketErrorPayload, SocketUserData } from '../../@types/socket.type'
+import {
+  SocketEvent,
+  NotificationPayload,
+  SocketErrorPayload,
+  SocketUserData,
+} from '../../@types/socket.type'
 import { NotificationModel, NotificationType } from '@database/models/notification.model'
 import { SOCKET_CONFIG, SOCKET_ERRORS } from '@constants/socket'
 import { Logger } from '@utils/logger'
@@ -69,7 +74,7 @@ export const pushNotification = async (
     content: string
     type: NotificationType
     link?: string
-  }
+  },
 ): Promise<void> => {
   try {
     const savedNotification = await NotificationModel.create({
@@ -147,7 +152,7 @@ export const broadcastToAll = (
     content: string
     type: NotificationType
     link?: string
-  }
+  },
 ): void => {
   const payload: NotificationPayload = {
     _id: '',
@@ -162,4 +167,3 @@ export const broadcastToAll = (
 
   Logger.apiInfo('Broadcast notification sent to all users')
 }
-

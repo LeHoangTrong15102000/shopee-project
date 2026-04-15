@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
+import React, { useEffect } from 'react'
+import { View, Text } from 'react-native'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -7,22 +7,22 @@ import Animated, {
   withSpring,
   interpolate,
   Extrapolate,
-} from 'react-native-reanimated';
-import { cn } from '@/utils';
-import { cva } from 'class-variance-authority';
+} from 'react-native-reanimated'
+import { cn } from '@/utils'
+import { cva } from 'class-variance-authority'
 
 interface ProgressBarProps {
-  value: number; // 0-100
-  variant?: 'default' | 'primary' | 'success' | 'warning' | 'error';
-  size?: 'sm' | 'md' | 'lg';
-  animated?: boolean;
-  showValue?: boolean;
-  label?: string;
-  className?: string;
-  trackClassName?: string;
-  fillClassName?: string;
-  labelClassName?: string;
-  valueClassName?: string;
+  value: number // 0-100
+  variant?: 'default' | 'primary' | 'success' | 'warning' | 'error'
+  size?: 'sm' | 'md' | 'lg'
+  animated?: boolean
+  showValue?: boolean
+  label?: string
+  className?: string
+  trackClassName?: string
+  fillClassName?: string
+  labelClassName?: string
+  valueClassName?: string
 }
 
 const progressContainerVariants = cva('w-full', {
@@ -36,7 +36,7 @@ const progressContainerVariants = cva('w-full', {
   defaultVariants: {
     size: 'md',
   },
-});
+})
 
 const progressTrackVariants = cva('w-full rounded-full bg-neutrals800 overflow-hidden', {
   variants: {
@@ -49,7 +49,7 @@ const progressTrackVariants = cva('w-full rounded-full bg-neutrals800 overflow-h
   defaultVariants: {
     size: 'md',
   },
-});
+})
 
 const progressFillVariants = cva('h-full rounded-full', {
   variants: {
@@ -64,7 +64,7 @@ const progressFillVariants = cva('h-full rounded-full', {
   defaultVariants: {
     variant: 'default',
   },
-});
+})
 
 const labelVariants = cva('font-sans-medium', {
   variants: {
@@ -77,7 +77,7 @@ const labelVariants = cva('font-sans-medium', {
   defaultVariants: {
     size: 'md',
   },
-});
+})
 
 const valueVariants = cva('font-sans-medium text-right', {
   variants: {
@@ -90,7 +90,7 @@ const valueVariants = cva('font-sans-medium text-right', {
   defaultVariants: {
     size: 'md',
   },
-});
+})
 
 export default function ProgressBar({
   value,
@@ -105,36 +105,36 @@ export default function ProgressBar({
   labelClassName,
   valueClassName,
 }: ProgressBarProps) {
-  const progress = useSharedValue(0);
-  const scale = useSharedValue(0.95);
+  const progress = useSharedValue(0)
+  const scale = useSharedValue(0.95)
 
   // Clamp value between 0 and 100
-  const clampedValue = Math.max(0, Math.min(100, value));
+  const clampedValue = Math.max(0, Math.min(100, value))
 
   useEffect(() => {
     if (animated) {
-      progress.value = withTiming(clampedValue, { duration: 500 });
-      scale.value = withSpring(1, { damping: 15, stiffness: 150 });
+      progress.value = withTiming(clampedValue, { duration: 500 })
+      scale.value = withSpring(1, { damping: 15, stiffness: 150 })
     } else {
-      progress.value = clampedValue;
-      scale.value = 1;
+      progress.value = clampedValue
+      scale.value = 1
     }
-  }, [clampedValue, animated, progress, scale]);
+  }, [clampedValue, animated, progress, scale])
 
   const fillAnimatedStyle = useAnimatedStyle(() => {
-    const width = interpolate(progress.value, [0, 100], [0, 100], Extrapolate.CLAMP);
+    const width = interpolate(progress.value, [0, 100], [0, 100], Extrapolate.CLAMP)
 
     return {
       width: `${width}%`,
       transform: [{ scale: scale.value }],
-    };
-  });
+    }
+  })
 
   const trackAnimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: scale.value }],
-    };
-  });
+    }
+  })
 
   return (
     <View className={cn(progressContainerVariants({ size }), className)}>
@@ -166,5 +166,5 @@ export default function ProgressBar({
         />
       </Animated.View>
     </View>
-  );
+  )
 }

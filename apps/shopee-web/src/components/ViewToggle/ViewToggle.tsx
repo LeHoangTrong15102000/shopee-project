@@ -1,22 +1,22 @@
-import classNames from 'classnames';
-import Button from 'src/components/Button';
+import classNames from 'classnames'
+import Button from 'src/components/Button'
 
-export type ViewMode = 'grid' | 'list';
+export type ViewMode = 'grid' | 'list'
 
 interface ViewToggleProps {
-  viewMode: ViewMode;
-  onViewChange: (mode: ViewMode) => void;
-  className?: string;
+  viewMode: ViewMode
+  onViewChange: (mode: ViewMode) => void
+  className?: string
 }
 
 const ViewToggle = ({ viewMode, onViewChange, className }: ViewToggleProps) => {
   const handleGridClick = () => {
-    onViewChange('grid');
-  };
+    onViewChange('grid')
+  }
 
   const handleListClick = () => {
-    onViewChange('list');
-  };
+    onViewChange('list')
+  }
 
   return (
     <div className={classNames('flex items-center gap-1 overflow-hidden rounded-lg', className)}>
@@ -67,7 +67,7 @@ const ViewToggle = ({ viewMode, onViewChange, className }: ViewToggleProps) => {
         </svg>
       </Button>
     </div>
-  );
-};
+  )
+}
 
-export default ViewToggle;
+export default ViewToggle

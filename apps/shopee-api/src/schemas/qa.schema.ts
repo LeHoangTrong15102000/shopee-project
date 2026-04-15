@@ -6,25 +6,25 @@ import { mongoIdSchema } from './common.schema'
  * Validates query params for listing questions
  */
 export const getQuestionsSchema = z.object({
-  query: z.object({
-    product_id: mongoIdSchema.refine((val) => val, {
-      message: 'Product ID không hợp lệ',
-    }),
-    page: z.coerce
-      .number()
-      .int('Page phải là số nguyên dương')
-      .min(1, 'Page phải là số nguyên dương')
-      .optional(),
-    limit: z.coerce
-      .number()
-      .int('Limit phải từ 1 đến 50')
-      .min(1, 'Limit phải từ 1 đến 50')
-      .max(50, 'Limit phải từ 1 đến 50')
-      .optional(),
-    sort: z
-      .enum(['newest', 'oldest', 'most_liked'])
-      .optional(),
-  }).passthrough(),
+  query: z
+    .object({
+      product_id: mongoIdSchema.refine((val) => val, {
+        message: 'Product ID không hợp lệ',
+      }),
+      page: z.coerce
+        .number()
+        .int('Page phải là số nguyên dương')
+        .min(1, 'Page phải là số nguyên dương')
+        .optional(),
+      limit: z.coerce
+        .number()
+        .int('Limit phải từ 1 đến 50')
+        .min(1, 'Limit phải từ 1 đến 50')
+        .max(50, 'Limit phải từ 1 đến 50')
+        .optional(),
+      sort: z.enum(['newest', 'oldest', 'most_liked']).optional(),
+    })
+    .passthrough(),
 })
 
 /**
@@ -93,4 +93,3 @@ export const likeAnswerSchema = z.object({
 export type GetQuestionsQuery = z.infer<typeof getQuestionsSchema>['query']
 export type AskQuestionInput = z.infer<typeof askQuestionSchema>['body']
 export type AnswerQuestionInput = z.infer<typeof answerQuestionSchema>['body']
-

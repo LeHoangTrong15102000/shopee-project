@@ -28,7 +28,7 @@ export class WishlistRepository implements IWishlistRepository {
 
   async findPaginated(
     filter: FilterQuery<IWishlist>,
-    options: PaginationOptions
+    options: PaginationOptions,
   ): Promise<PaginatedResult<IWishlistItem>> {
     const { page, limit, sort } = options
     const skip = (page - 1) * limit
@@ -64,7 +64,10 @@ export class WishlistRepository implements IWishlistRepository {
     return saved.toObject() as IWishlistItem
   }
 
-  async updateById(id: string | Types.ObjectId, data: Partial<IWishlistItem>): Promise<IWishlistItem | null> {
+  async updateById(
+    id: string | Types.ObjectId,
+    data: Partial<IWishlistItem>,
+  ): Promise<IWishlistItem | null> {
     return WishlistModel.findByIdAndUpdate(id, data, { new: true }).lean<IWishlistItem | null>()
   }
 
@@ -91,18 +94,27 @@ export class WishlistRepository implements IWishlistRepository {
     return doc !== null
   }
 
-  async findByUser(userId: string | Types.ObjectId, pagination: PaginationOptions): Promise<PaginatedResult<IWishlistItem>> {
+  async findByUser(
+    userId: string | Types.ObjectId,
+    pagination: PaginationOptions,
+  ): Promise<PaginatedResult<IWishlistItem>> {
     return this.findPaginated({ user: new Types.ObjectId(userId.toString()) }, pagination)
   }
 
-  async isInWishlist(userId: string | Types.ObjectId, productId: string | Types.ObjectId): Promise<boolean> {
+  async isInWishlist(
+    userId: string | Types.ObjectId,
+    productId: string | Types.ObjectId,
+  ): Promise<boolean> {
     return this.exists({
       user: new Types.ObjectId(userId.toString()),
       product: new Types.ObjectId(productId.toString()),
     })
   }
 
-  async addToWishlist(userId: string | Types.ObjectId, productId: string | Types.ObjectId): Promise<IWishlistItem> {
+  async addToWishlist(
+    userId: string | Types.ObjectId,
+    productId: string | Types.ObjectId,
+  ): Promise<IWishlistItem> {
     const existing = await WishlistModel.findOne({
       user: new Types.ObjectId(userId.toString()),
       product: new Types.ObjectId(productId.toString()),
@@ -118,7 +130,10 @@ export class WishlistRepository implements IWishlistRepository {
     })
   }
 
-  async removeFromWishlist(userId: string | Types.ObjectId, productId: string | Types.ObjectId): Promise<IWishlistItem | null> {
+  async removeFromWishlist(
+    userId: string | Types.ObjectId,
+    productId: string | Types.ObjectId,
+  ): Promise<IWishlistItem | null> {
     return WishlistModel.findOneAndDelete({
       user: new Types.ObjectId(userId.toString()),
       product: new Types.ObjectId(productId.toString()),
@@ -133,23 +148,25 @@ export class WishlistRepository implements IWishlistRepository {
     return this.count({ user: new Types.ObjectId(userId.toString()) })
   }
 
-  async checkProducts(userId: string | Types.ObjectId, productIds: (string | Types.ObjectId)[]): Promise<Map<string, boolean>> {
+  async checkProducts(
+    userId: string | Types.ObjectId,
+    productIds: (string | Types.ObjectId)[],
+  ): Promise<Map<string, boolean>> {
     const userObjectId = new Types.ObjectId(userId.toString())
-    const productObjectIds = productIds.map(id => new Types.ObjectId(id.toString()))
+    const productObjectIds = productIds.map((id) => new Types.ObjectId(id.toString()))
 
     const items = await WishlistModel.find({
       user: userObjectId,
       product: { $in: productObjectIds },
     }).lean<IWishlistItem[]>()
 
-    const inWishlist = new Set(items.map(item => item.product.toString()))
+    const inWishlist = new Set(items.map((item) => item.product.toString()))
     const result = new Map<string, boolean>()
 
-    productIds.forEach(id => {
+    productIds.forEach((id) => {
       result.set(id.toString(), inWishlist.has(id.toString()))
     })
 
     return result
   }
 }
-

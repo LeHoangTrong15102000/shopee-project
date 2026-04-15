@@ -7,15 +7,23 @@ import {
   ValidationError,
   ConflictError,
   UnauthorizedError,
-  BusinessError
+  BusinessError,
 } from '@services/base.service'
 import { PaginationOptions } from '@repositories/interfaces/base.repository.interface'
 
 class TestService extends BaseService {
-  public testIsValidObjectId(id: string | Types.ObjectId) { return this.isValidObjectId(id) }
-  public testToObjectId(id: string | Types.ObjectId) { return this.toObjectId(id) }
-  public testNormalizePagination(options: Partial<PaginationOptions>) { return this.normalizePagination(options) }
-  public testEmptyPaginatedResult<T>(options: PaginationOptions) { return this.emptyPaginatedResult<T>(options) }
+  public testIsValidObjectId(id: string | Types.ObjectId) {
+    return this.isValidObjectId(id)
+  }
+  public testToObjectId(id: string | Types.ObjectId) {
+    return this.toObjectId(id)
+  }
+  public testNormalizePagination(options: Partial<PaginationOptions>) {
+    return this.normalizePagination(options)
+  }
+  public testEmptyPaginatedResult<T>(options: PaginationOptions) {
+    return this.emptyPaginatedResult<T>(options)
+  }
 }
 
 describe('BaseService', () => {
@@ -52,8 +60,11 @@ describe('BaseService', () => {
       expect(service.testNormalizePagination({})).toEqual({ page: 1, limit: 30 })
     })
     it('respects provided values', () => {
-      expect(service.testNormalizePagination({ page: 5, limit: 20, sort: { name: 1 } }))
-        .toEqual({ page: 5, limit: 20, sort: { name: 1 } })
+      expect(service.testNormalizePagination({ page: 5, limit: 20, sort: { name: 1 } })).toEqual({
+        page: 5,
+        limit: 20,
+        sort: { name: 1 },
+      })
     })
     it('enforces page minimum of 1', () => {
       expect(service.testNormalizePagination({ page: 0 }).page).toBe(1)
@@ -75,7 +86,7 @@ describe('BaseService', () => {
       const result = service.testEmptyPaginatedResult<string>({ page: 2, limit: 10 })
       expect(result).toEqual({
         data: [],
-        pagination: { page: 2, limit: 10, page_size: 1, total: 0 }
+        pagination: { page: 2, limit: 10, page_size: 1, total: 0 },
       })
     })
   })
@@ -146,4 +157,3 @@ describe('Error Classes', () => {
     })
   })
 })
-

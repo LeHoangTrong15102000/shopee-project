@@ -1,23 +1,23 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import NavHeader from '../NavHeader';
-import { Link, useLocation } from 'react-router';
-import path from 'src/constant/path';
-import useSearchProducts from 'src/hooks/useSearchProducts';
-import { motion } from 'framer-motion';
-import MobileNavigationDrawer from '../MobileNavigationDrawer';
-import Button from 'src/components/Button';
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import NavHeader from '../NavHeader'
+import { Link, useLocation } from 'react-router'
+import path from 'src/constant/path'
+import useSearchProducts from 'src/hooks/useSearchProducts'
+import { motion } from 'framer-motion'
+import MobileNavigationDrawer from '../MobileNavigationDrawer'
+import Button from 'src/components/Button'
 
 interface CartHeaderProps {
-  title?: string;
-  showStepper?: boolean;
+  title?: string
+  showStepper?: boolean
 }
 
 const CartHeader = ({ title, showStepper = true }: CartHeaderProps) => {
-  const { t } = useTranslation('cart');
-  const { onSubmitSearch, register } = useSearchProducts();
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const displayTitle = title ?? t('header.title');
+  const { t } = useTranslation('cart')
+  const { onSubmitSearch, register } = useSearchProducts()
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const displayTitle = title ?? t('header.title')
   return (
     <motion.div
       className="border-b border-b-black/10 dark:border-b-slate-700"
@@ -126,27 +126,27 @@ const CartHeader = ({ title, showStepper = true }: CartHeaderProps) => {
       {/* Mobile Navigation Drawer */}
       <MobileNavigationDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
     </motion.div>
-  );
-};
+  )
+}
 
 /**
  * Shopping flow breadcrumb bar below the cart header.
  * Shows: Trang chủ > Giỏ hàng, plus a visual step indicator for the shopping journey.
  */
 const CartShoppingFlow = () => {
-  const { t } = useTranslation('cart');
-  const location = useLocation();
+  const { t } = useTranslation('cart')
+  const location = useLocation()
   const SHOPPING_STEPS = [
     { label: t('steps.cart'), path: path.cart },
     { label: t('steps.checkout'), path: path.checkout },
     { label: t('steps.complete'), path: '' },
-  ];
+  ]
 
   // Determine current step based on route
   const currentStepIndex = SHOPPING_STEPS.findIndex(
     (step) => step.path && location.pathname === step.path,
-  );
-  const activeStep = currentStepIndex >= 0 ? currentStepIndex : 0;
+  )
+  const activeStep = currentStepIndex >= 0 ? currentStepIndex : 0
 
   return (
     <motion.div
@@ -228,7 +228,7 @@ const CartShoppingFlow = () => {
         </div>
       </div>
     </motion.div>
-  );
-};
+  )
+}
 
-export default CartHeader;
+export default CartHeader

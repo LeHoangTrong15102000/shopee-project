@@ -1,56 +1,56 @@
-import React, { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
-import { useColors } from '@/hooks/useColors';
-import { useInsets } from '@/hooks/useInsets';
-import AppButton from './AppButton';
-import { cn } from '@/utils';
+import React, { forwardRef, useCallback, useImperativeHandle, useState } from 'react'
+import { ActivityIndicator, Text, View } from 'react-native'
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
+import { useColors } from '@/hooks/useColors'
+import { useInsets } from '@/hooks/useInsets'
+import AppButton from './AppButton'
+import { cn } from '@/utils'
 
-export type DialogType = 'message' | 'confirm' | 'loading';
+export type DialogType = 'message' | 'confirm' | 'loading'
 
 export interface DialogButton {
-  text: string;
-  onPress?: () => void | Promise<void>;
-  variant?: 'default' | 'primary' | 'ghost' | 'outline' | 'link';
-  loading?: boolean;
-  disabled?: boolean;
+  text: string
+  onPress?: () => void | Promise<void>
+  variant?: 'default' | 'primary' | 'ghost' | 'outline' | 'link'
+  loading?: boolean
+  disabled?: boolean
 }
 
 export interface DialogOptions {
-  type?: DialogType;
-  title?: string;
-  message?: string;
-  icon?: React.ReactNode;
-  buttons?: DialogButton[];
-  dismissable?: boolean;
-  onDismiss?: () => void;
-  buttonLayout?: 'horizontal' | 'vertical' | 'auto';
+  type?: DialogType
+  title?: string
+  message?: string
+  icon?: React.ReactNode
+  buttons?: DialogButton[]
+  dismissable?: boolean
+  onDismiss?: () => void
+  buttonLayout?: 'horizontal' | 'vertical' | 'auto'
 }
 
 export interface DialogRef {
-  show: (options: DialogOptions) => void;
-  hide: () => void;
-  hideAll: () => void;
+  show: (options: DialogOptions) => void
+  hide: () => void
+  hideAll: () => void
 }
 
 interface DialogInstance {
-  id: string;
-  options: DialogOptions;
-  buttonLoadingStates: Record<number, boolean>;
+  id: string
+  options: DialogOptions
+  buttonLoadingStates: Record<number, boolean>
 }
 
 const Dialog = forwardRef<DialogRef>((_, ref) => {
-  const colors = useColors();
-  const insets = useInsets();
+  const colors = useColors()
+  const insets = useInsets()
 
-  const [dialogs, setDialogs] = useState<DialogInstance[]>([]);
-  const dialogRefs = React.useRef<Map<string, React.RefObject<BottomSheetModal>>>(new Map());
+  const [dialogs, setDialogs] = useState<DialogInstance[]>([])
+  const dialogRefs = React.useRef<Map<string, React.RefObject<BottomSheetModal>>>(new Map())
 
   useImperativeHandle(ref, () => ({
     show: (newOptions: DialogOptions) => {
-      const id = `dialog-${Date.now()}-${Math.random()}`;
-      const dialogRef = React.createRef<BottomSheetModal>();
-      dialogRefs.current.set(id, dialogRef as any);
+      const id = `dialog-${Date.now()}-${Math.random()}`
+      const dialogRef = React.createRef<BottomSheetModal>()
+      dialogRefs.current.set(id, dialogRef as any)
 
       const newDialog: DialogInstance = {
         id,
@@ -61,48 +61,48 @@ const Dialog = forwardRef<DialogRef>((_, ref) => {
           ...newOptions,
         },
         buttonLoadingStates: {},
-      };
+      }
 
-      setDialogs((prev) => [...prev, newDialog]);
+      setDialogs((prev) => [...prev, newDialog])
 
       // Present the dialog after it's added to state
       setTimeout(() => {
-        dialogRef.current?.present();
-      }, 50);
+        dialogRef.current?.present()
+      }, 50)
     },
     hide: () => {
       if (dialogs.length > 0) {
-        const lastDialog = dialogs[dialogs.length - 1];
-        const dialogRef = dialogRefs.current.get(lastDialog.id);
-        dialogRef?.current?.dismiss();
+        const lastDialog = dialogs[dialogs.length - 1]
+        const dialogRef = dialogRefs.current.get(lastDialog.id)
+        dialogRef?.current?.dismiss()
       }
     },
     hideAll: () => {
       dialogs.forEach((dialog) => {
-        const dialogRef = dialogRefs.current.get(dialog.id);
-        dialogRef?.current?.dismiss();
-      });
+        const dialogRef = dialogRefs.current.get(dialog.id)
+        dialogRef?.current?.dismiss()
+      })
     },
-  }));
+  }))
 
   const handleDismiss = useCallback((dialogId: string) => {
     setDialogs((prev) => {
-      const dialog = prev.find((d) => d.id === dialogId);
+      const dialog = prev.find((d) => d.id === dialogId)
       if (dialog) {
-        dialog.options.onDismiss?.();
+        dialog.options.onDismiss?.()
       }
-      return prev.filter((d) => d.id !== dialogId);
-    });
-    dialogRefs.current.delete(dialogId);
-  }, []);
+      return prev.filter((d) => d.id !== dialogId)
+    })
+    dialogRefs.current.delete(dialogId)
+  }, [])
 
   const handleButtonPress = useCallback(
     async (dialogId: string, button: DialogButton, index: number) => {
-      const dialog = dialogs.find((d) => d.id === dialogId);
-      if (!dialog || button.disabled || dialog.buttonLoadingStates[index]) return;
+      const dialog = dialogs.find((d) => d.id === dialogId)
+      if (!dialog || button.disabled || dialog.buttonLoadingStates[index]) return
 
       if (button.onPress) {
-        const result = button.onPress();
+        const result = button.onPress()
 
         if (result instanceof Promise) {
           // Set loading state for this button
@@ -112,16 +112,16 @@ const Dialog = forwardRef<DialogRef>((_, ref) => {
                 ? { ...d, buttonLoadingStates: { ...d.buttonLoadingStates, [index]: true } }
                 : d
             )
-          );
+          )
 
           try {
-            await result;
-            const dialogRef = dialogRefs.current.get(dialogId);
-            dialogRef?.current?.dismiss();
+            await result
+            const dialogRef = dialogRefs.current.get(dialogId)
+            dialogRef?.current?.dismiss()
           } catch (error) {
-            console.error('Dialog button action error:', error);
-            const dialogRef = dialogRefs.current.get(dialogId);
-            dialogRef?.current?.dismiss();
+            console.error('Dialog button action error:', error)
+            const dialogRef = dialogRefs.current.get(dialogId)
+            dialogRef?.current?.dismiss()
           } finally {
             setDialogs((prev) =>
               prev.map((d) =>
@@ -129,19 +129,19 @@ const Dialog = forwardRef<DialogRef>((_, ref) => {
                   ? { ...d, buttonLoadingStates: { ...d.buttonLoadingStates, [index]: false } }
                   : d
               )
-            );
+            )
           }
         } else {
-          const dialogRef = dialogRefs.current.get(dialogId);
-          dialogRef?.current?.dismiss();
+          const dialogRef = dialogRefs.current.get(dialogId)
+          dialogRef?.current?.dismiss()
         }
       } else {
-        const dialogRef = dialogRefs.current.get(dialogId);
-        dialogRef?.current?.dismiss();
+        const dialogRef = dialogRefs.current.get(dialogId)
+        dialogRef?.current?.dismiss()
       }
     },
     [dialogs]
-  );
+  )
 
   const renderBackdrop = useCallback(
     (dismissable: boolean) => (props: any) => (
@@ -154,11 +154,11 @@ const Dialog = forwardRef<DialogRef>((_, ref) => {
       />
     ),
     []
-  );
+  )
 
   const getDefaultButtons = (type?: DialogType): DialogButton[] => {
     if (type === 'loading') {
-      return [];
+      return []
     }
 
     if (type === 'confirm') {
@@ -173,7 +173,7 @@ const Dialog = forwardRef<DialogRef>((_, ref) => {
           variant: 'primary',
           onPress: () => {},
         },
-      ];
+      ]
     }
 
     return [
@@ -182,30 +182,30 @@ const Dialog = forwardRef<DialogRef>((_, ref) => {
         variant: 'primary',
         onPress: () => {},
       },
-    ];
-  };
+    ]
+  }
 
   const getButtonLayout = (
     options: DialogOptions,
     buttons: DialogButton[]
   ): 'horizontal' | 'vertical' => {
-    if (options.buttonLayout === 'horizontal') return 'horizontal';
-    if (options.buttonLayout === 'vertical') return 'vertical';
-    return buttons.length <= 2 ? 'horizontal' : 'vertical';
-  };
+    if (options.buttonLayout === 'horizontal') return 'horizontal'
+    if (options.buttonLayout === 'vertical') return 'vertical'
+    return buttons.length <= 2 ? 'horizontal' : 'vertical'
+  }
 
   return (
     <>
       {dialogs.map((dialog) => {
-        const dialogRef = dialogRefs.current.get(dialog.id);
-        if (!dialogRef) return null;
+        const dialogRef = dialogRefs.current.get(dialog.id)
+        if (!dialogRef) return null
 
         const buttons =
           dialog.options.buttons && dialog.options.buttons.length > 0
             ? dialog.options.buttons
-            : getDefaultButtons(dialog.options.type);
+            : getDefaultButtons(dialog.options.type)
 
-        const buttonLayout = getButtonLayout(dialog.options, buttons);
+        const buttonLayout = getButtonLayout(dialog.options, buttons)
 
         return (
           <BottomSheetModal
@@ -294,12 +294,12 @@ const Dialog = forwardRef<DialogRef>((_, ref) => {
               </View>
             </BottomSheetView>
           </BottomSheetModal>
-        );
+        )
       })}
     </>
-  );
-});
+  )
+})
 
-Dialog.displayName = 'Dialog';
+Dialog.displayName = 'Dialog'
 
-export default Dialog;
+export default Dialog

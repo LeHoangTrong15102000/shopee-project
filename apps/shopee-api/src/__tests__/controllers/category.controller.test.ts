@@ -23,7 +23,9 @@ import { categoryService } from '../../container'
 
 const mockCategoryService = categoryService as jest.Mocked<typeof categoryService>
 
-const createMockRequest = (options: { body?: any; params?: any; query?: any } = {}): Partial<Request> => ({
+const createMockRequest = (
+  options: { body?: any; params?: any; query?: any } = {},
+): Partial<Request> => ({
   body: options.body || {},
   params: options.params || {},
   query: options.query || {},
@@ -57,12 +59,14 @@ describe('Category Controller', () => {
     })
 
     it('should throw error when category name already exists', async () => {
-      mockCategoryService.createCategory.mockRejectedValue(new ConflictError('Category name already exists'))
+      mockCategoryService.createCategory.mockRejectedValue(
+        new ConflictError('Category name already exists'),
+      )
       const req = createMockRequest({ body: { name: 'Điện thoại' } })
       const res = createMockResponse()
 
       await expect(
-        categoryController.addCategory(req as Request, res as Response)
+        categoryController.addCategory(req as Request, res as Response),
       ).rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
     })
   })
@@ -103,12 +107,14 @@ describe('Category Controller', () => {
     })
 
     it('should throw error when category not found', async () => {
-      mockCategoryService.getCategoryById.mockRejectedValue(new NotFoundError('Category', 'cat_999'))
+      mockCategoryService.getCategoryById.mockRejectedValue(
+        new NotFoundError('Category', 'cat_999'),
+      )
       const req = createMockRequest({ params: { category_id: 'cat_999' } })
       const res = createMockResponse()
 
       await expect(
-        categoryController.getCategory(req as Request, res as Response)
+        categoryController.getCategory(req as Request, res as Response),
       ).rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
     })
   })
@@ -128,21 +134,29 @@ describe('Category Controller', () => {
 
     it('should throw error when category not found', async () => {
       mockCategoryService.updateCategory.mockRejectedValue(new NotFoundError('Category', 'cat_999'))
-      const req = createMockRequest({ params: { category_id: 'cat_999' }, body: { name: 'Laptop' } })
+      const req = createMockRequest({
+        params: { category_id: 'cat_999' },
+        body: { name: 'Laptop' },
+      })
       const res = createMockResponse()
 
       await expect(
-        categoryController.updateCategory(req as Request, res as Response)
+        categoryController.updateCategory(req as Request, res as Response),
       ).rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
     })
 
     it('should throw error when name conflicts', async () => {
-      mockCategoryService.updateCategory.mockRejectedValue(new ConflictError('Category name already exists'))
-      const req = createMockRequest({ params: { category_id: 'cat_1' }, body: { name: 'Existing' } })
+      mockCategoryService.updateCategory.mockRejectedValue(
+        new ConflictError('Category name already exists'),
+      )
+      const req = createMockRequest({
+        params: { category_id: 'cat_1' },
+        body: { name: 'Existing' },
+      })
       const res = createMockResponse()
 
       await expect(
-        categoryController.updateCategory(req as Request, res as Response)
+        categoryController.updateCategory(req as Request, res as Response),
       ).rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
     })
   })
@@ -165,9 +179,8 @@ describe('Category Controller', () => {
       const res = createMockResponse()
 
       await expect(
-        categoryController.deleteCategory(req as Request, res as Response)
+        categoryController.deleteCategory(req as Request, res as Response),
       ).rejects.toMatchObject({ status: STATUS.BAD_REQUEST })
     })
   })
 })
-

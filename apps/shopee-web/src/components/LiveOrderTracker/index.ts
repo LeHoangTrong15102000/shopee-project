@@ -1,1 +1,1 @@
-export { default } from './LiveOrderTracker';
+export { default } from './LiveOrderTracker'

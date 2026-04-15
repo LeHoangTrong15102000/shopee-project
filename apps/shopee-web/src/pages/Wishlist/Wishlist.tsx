@@ -1,15 +1,15 @@
-import { motion } from 'framer-motion';
-import { Fragment, useState } from 'react';
-import SEO from 'src/components/SEO';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
-import WishlistPriceAlert from 'src/components/WishlistPriceAlert';
-import Button from 'src/components/Button';
-import path from 'src/constant/path';
-import { useIsMobile } from 'src/hooks/useIsMobile';
-import { formatCurrency } from 'src/utils/utils';
-import { useWishlist } from './useWishlist';
-import { containerVariants, fadeInUp, itemVariants } from './wishlist.constants';
+import { motion } from 'framer-motion'
+import { Fragment, useState } from 'react'
+import SEO from 'src/components/SEO'
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
+import WishlistPriceAlert from 'src/components/WishlistPriceAlert'
+import Button from 'src/components/Button'
+import path from 'src/constant/path'
+import { useIsMobile } from 'src/hooks/useIsMobile'
+import { formatCurrency } from 'src/utils/utils'
+import { useWishlist } from './useWishlist'
+import { containerVariants, fadeInUp, itemVariants } from './wishlist.constants'
 import {
   getCategoryIcon,
   IconBell,
@@ -22,19 +22,19 @@ import {
   IconTarget,
   IconTrendingDown,
   IconTrendingUp,
-} from './components/WishlistIcons';
-import WishlistCard from './components/WishlistCard';
-import WishlistStats from './components/WishlistStats';
-import WishlistFilters from './components/WishlistFilters';
-import WishlistSkeletonLoader from './components/WishlistSkeletonLoader';
+} from './components/WishlistIcons'
+import WishlistCard from './components/WishlistCard'
+import WishlistStats from './components/WishlistStats'
+import WishlistFilters from './components/WishlistFilters'
+import WishlistSkeletonLoader from './components/WishlistSkeletonLoader'
 
 export default function Wishlist() {
-  const { t } = useTranslation('wishlist');
-  const [activeFilter, setActiveFilter] = useState('all');
-  const [activeSort, setActiveSort] = useState('newest');
-  const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
-  const [showSortDropdown, setShowSortDropdown] = useState(false);
-  const isMobile = useIsMobile();
+  const { t } = useTranslation('wishlist')
+  const [activeFilter, setActiveFilter] = useState('all')
+  const [activeSort, setActiveSort] = useState('newest')
+  const [hoveredCardId, setHoveredCardId] = useState<string | null>(null)
+  const [showSortDropdown, setShowSortDropdown] = useState(false)
+  const isMobile = useIsMobile()
 
   const {
     allWishlistItems,
@@ -50,13 +50,13 @@ export default function Wishlist() {
     getDiscountPercent,
     removeMutation,
     addToCartMutation,
-  } = useWishlist(activeFilter, activeSort);
+  } = useWishlist(activeFilter, activeSort)
 
-  const activeContainerVariants = isMobile ? undefined : containerVariants;
-  const activeFadeInUp = isMobile ? undefined : fadeInUp;
+  const activeContainerVariants = isMobile ? undefined : containerVariants
+  const activeFadeInUp = isMobile ? undefined : fadeInUp
 
   if (isLoading) {
-    return <WishlistSkeletonLoader />;
+    return <WishlistSkeletonLoader />
   }
 
   return (
@@ -137,8 +137,8 @@ export default function Wishlist() {
                     {t('topCategory')}{' '}
                     <span className="inline-flex items-center gap-1 font-semibold text-purple-600 dark:text-purple-400">
                       {(() => {
-                        const CatIcon = getCategoryIcon(insights.topCategory);
-                        return <CatIcon className="h-3.5 w-3.5" />;
+                        const CatIcon = getCategoryIcon(insights.topCategory)
+                        return <CatIcon className="h-3.5 w-3.5" />
                       })()}{' '}
                       {insights.topCategory}
                     </span>{' '}
@@ -299,14 +299,14 @@ export default function Wishlist() {
               <div className="scrollbar-hide flex gap-2 overflow-x-auto pb-2">
                 {Object.entries(
                   allWishlistItems.reduce<Record<string, number>>((acc, item) => {
-                    const cat = item.product.category?.name || t('categoryOther');
-                    acc[cat] = (acc[cat] || 0) + 1;
-                    return acc;
+                    const cat = item.product.category?.name || t('categoryOther')
+                    acc[cat] = (acc[cat] || 0) + 1
+                    return acc
                   }, {}),
                 )
                   .sort((a, b) => b[1] - a[1])
                   .map(([cat, count]) => {
-                    const CatIcon = getCategoryIcon(cat);
+                    const CatIcon = getCategoryIcon(cat)
                     return (
                       <div
                         key={cat}
@@ -320,7 +320,7 @@ export default function Wishlist() {
                           {count}
                         </span>
                       </div>
-                    );
+                    )
                   })}
               </div>
             </motion.div>
@@ -387,5 +387,5 @@ export default function Wishlist() {
         )}
       </div>
     </div>
-  );
+  )
 }

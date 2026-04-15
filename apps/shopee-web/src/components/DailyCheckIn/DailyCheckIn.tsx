@@ -1,18 +1,18 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from 'react-toastify';
-import classNames from 'classnames';
-import useDailyCheckIn from 'src/hooks/useDailyCheckIn';
-import { DEFAULT_CHECKIN_CONFIG } from 'src/types/checkin.type';
-import Button from 'src/components/Button';
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { motion, AnimatePresence } from 'framer-motion'
+import { toast } from 'react-toastify'
+import classNames from 'classnames'
+import useDailyCheckIn from 'src/hooks/useDailyCheckIn'
+import { DEFAULT_CHECKIN_CONFIG } from 'src/types/checkin.type'
+import Button from 'src/components/Button'
 
 interface DailyCheckInProps {
-  className?: string;
+  className?: string
 }
 
 function DailyCheckIn({ className }: DailyCheckInProps) {
-  const { t } = useTranslation('checkin');
+  const { t } = useTranslation('checkin')
   const {
     streak,
     totalCoins,
@@ -21,53 +21,53 @@ function DailyCheckIn({ className }: DailyCheckInProps) {
     getMonthCalendar,
     nextReward,
     streakProgress,
-  } = useDailyCheckIn();
+  } = useDailyCheckIn()
 
-  const [showCalendar, setShowCalendar] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(() => {
-    const now = new Date();
-    return { year: now.getFullYear(), month: now.getMonth() };
-  });
-  const [isChecking, setIsChecking] = useState(false);
+    const now = new Date()
+    return { year: now.getFullYear(), month: now.getMonth() }
+  })
+  const [isChecking, setIsChecking] = useState(false)
 
   const handleCheckIn = async () => {
-    if (!canCheckInToday || isChecking) return;
+    if (!canCheckInToday || isChecking) return
 
-    setIsChecking(true);
+    setIsChecking(true)
 
-    const reward = await checkIn();
+    const reward = await checkIn()
     if (reward) {
       toast.success(t('toast.success', { value: reward.value }), {
         autoClose: 3000,
         position: 'top-center',
-      });
+      })
     }
-    setIsChecking(false);
-  };
+    setIsChecking(false)
+  }
 
-  const calendar = getMonthCalendar(currentMonth.year, currentMonth.month);
-  const monthNames = t('months', { returnObjects: true }) as string[];
-  const dayNames = t('days', { returnObjects: true }) as string[];
+  const calendar = getMonthCalendar(currentMonth.year, currentMonth.month)
+  const monthNames = t('months', { returnObjects: true }) as string[]
+  const dayNames = t('days', { returnObjects: true }) as string[]
 
-  const firstDayOfMonth = new Date(currentMonth.year, currentMonth.month, 1).getDay();
+  const firstDayOfMonth = new Date(currentMonth.year, currentMonth.month, 1).getDay()
 
   const goToPrevMonth = () => {
     setCurrentMonth((prev) => {
-      if (prev.month === 0) return { year: prev.year - 1, month: 11 };
-      return { ...prev, month: prev.month - 1 };
-    });
-  };
+      if (prev.month === 0) return { year: prev.year - 1, month: 11 }
+      return { ...prev, month: prev.month - 1 }
+    })
+  }
 
   const goToNextMonth = () => {
     setCurrentMonth((prev) => {
-      if (prev.month === 11) return { year: prev.year + 1, month: 0 };
-      return { ...prev, month: prev.month + 1 };
-    });
-  };
+      if (prev.month === 11) return { year: prev.year + 1, month: 0 }
+      return { ...prev, month: prev.month + 1 }
+    })
+  }
 
   const milestones = Object.keys(DEFAULT_CHECKIN_CONFIG.streakBonuses)
     .map(Number)
-    .sort((a, b) => a - b);
+    .sort((a, b) => a - b)
 
   return (
     <div
@@ -369,8 +369,8 @@ function DailyCheckIn({ className }: DailyCheckInProps) {
                 ))}
                 {/* Calendar days */}
                 {calendar.map((day) => {
-                  const dayNum = parseInt(day.date.split('-')[2]);
-                  const isToday = day.date === new Date().toISOString().split('T')[0];
+                  const dayNum = parseInt(day.date.split('-')[2])
+                  const isToday = day.date === new Date().toISOString().split('T')[0]
                   return (
                     <div
                       key={day.date}
@@ -398,7 +398,7 @@ function DailyCheckIn({ className }: DailyCheckInProps) {
                         </svg>
                       )}
                     </div>
-                  );
+                  )
                 })}
               </div>
             </div>
@@ -406,7 +406,7 @@ function DailyCheckIn({ className }: DailyCheckInProps) {
         )}
       </AnimatePresence>
     </div>
-  );
+  )
 }
 
-export default DailyCheckIn;
+export default DailyCheckIn

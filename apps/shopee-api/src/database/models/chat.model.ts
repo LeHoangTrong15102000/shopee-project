@@ -41,7 +41,7 @@ const ChatParticipantSchema = new Schema<IChatParticipant>(
       type: Date,
     },
   },
-  { _id: false }
+  { _id: false },
 )
 
 const ChatSchema = new Schema<IChat>(
@@ -70,7 +70,7 @@ const ChatSchema = new Schema<IChat>(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 // Indexes
@@ -78,4 +78,3 @@ ChatSchema.index({ 'participants.user': 1, updatedAt: -1 })
 ChatSchema.index({ 'participants.user': 1, status: 1 })
 
 export const ChatModel = mongoose.model<IChat>('chats', ChatSchema)
-

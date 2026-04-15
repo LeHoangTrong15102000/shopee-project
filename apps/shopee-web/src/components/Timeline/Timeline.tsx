@@ -1,25 +1,25 @@
-import classNames from 'classnames';
-import type { ReactNode } from 'react';
+import classNames from 'classnames'
+import type { ReactNode } from 'react'
 
-type StepState = 'completed' | 'current' | 'pending' | 'cancelled';
+type StepState = 'completed' | 'current' | 'pending' | 'cancelled'
 
 interface TimelineProps {
-  children: ReactNode;
-  className?: string;
+  children: ReactNode
+  className?: string
 }
 
 interface StepProps {
-  state: StepState;
-  label: string;
-  description?: string;
-  timestamp?: string;
-  icon?: ReactNode;
-  className?: string;
+  state: StepState
+  label: string
+  description?: string
+  timestamp?: string
+  icon?: ReactNode
+  className?: string
 }
 
 interface LineProps {
-  active?: boolean;
-  className?: string;
+  active?: boolean
+  className?: string
 }
 
 const stateStyles: Record<StepState, { dot: string; label: string }> = {
@@ -39,10 +39,10 @@ const stateStyles: Record<StepState, { dot: string; label: string }> = {
     dot: 'bg-red-500 border-red-500',
     label: 'text-red-700 dark:text-red-400',
   },
-};
+}
 
 const Step = ({ state, label, description, timestamp, icon, className }: StepProps) => {
-  const styles = stateStyles[state];
+  const styles = stateStyles[state]
   return (
     <div className={classNames('flex items-start gap-3', className)}>
       <div className="flex flex-col items-center">
@@ -64,8 +64,8 @@ const Step = ({ state, label, description, timestamp, icon, className }: StepPro
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
 const Line = ({ active = false, className }: LineProps) => (
   <div
@@ -75,13 +75,13 @@ const Line = ({ active = false, className }: LineProps) => (
       className,
     )}
   />
-);
+)
 
 const Timeline = ({ children, className }: TimelineProps) => {
-  return <div className={classNames('flex flex-col', className)}>{children}</div>;
-};
+  return <div className={classNames('flex flex-col', className)}>{children}</div>
+}
 
-Timeline.Step = Step;
-Timeline.Line = Line;
+Timeline.Step = Step
+Timeline.Line = Line
 
-export default Timeline;
+export default Timeline

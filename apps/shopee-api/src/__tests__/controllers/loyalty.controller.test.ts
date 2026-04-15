@@ -15,16 +15,28 @@ jest.mock('../../container', () => ({
 }))
 
 import { container } from '../../container'
-import { getPoints, getTransactions, getRewards, redeemPoints } from '../../controllers/loyalty.controller'
+import {
+  getPoints,
+  getTransactions,
+  getRewards,
+  redeemPoints,
+} from '../../controllers/loyalty.controller'
 
-const mockLoyaltyService = container.services.loyalty as jest.Mocked<typeof container.services.loyalty>
+const mockLoyaltyService = container.services.loyalty as jest.Mocked<
+  typeof container.services.loyalty
+>
 
 const createMockRequest = (options: any = {}): Partial<Request> => ({
   body: options.body || {},
   params: options.params || {},
   query: options.query || {},
   headers: options.headers || {},
-  jwtDecoded: options.jwtDecoded || { id: 'user123', email: 'test@test.com', roles: ['User'], created_at: '2024-01-01' },
+  jwtDecoded: options.jwtDecoded || {
+    id: 'user123',
+    email: 'test@test.com',
+    roles: ['User'],
+    created_at: '2024-01-01',
+  },
 })
 
 const createMockResponse = (): Partial<Response> => {
@@ -79,14 +91,16 @@ describe('Loyalty Controller', () => {
 
   describe('getTransactions', () => {
     const mockTransactionsResult = {
-      data: [{
-        _id: 'tx1',
-        user: 'user123',
-        type: 'earn',
-        points: 100,
-        description: 'Purchase reward',
-        created_at: new Date(),
-      }],
+      data: [
+        {
+          _id: 'tx1',
+          user: 'user123',
+          type: 'earn',
+          points: 100,
+          description: 'Purchase reward',
+          created_at: new Date(),
+        },
+      ],
       pagination: { page: 1, limit: 10, total: 1, page_size: 1 },
     }
 
@@ -97,11 +111,18 @@ describe('Loyalty Controller', () => {
 
       await getTransactions(req as Request, res as Response)
 
-      expect(mockLoyaltyService.getTransactions).toHaveBeenCalledWith('user123', { type: undefined }, { page: 1, limit: 10 })
+      expect(mockLoyaltyService.getTransactions).toHaveBeenCalledWith(
+        'user123',
+        { type: undefined },
+        { page: 1, limit: 10 },
+      )
       expect(res.status).toHaveBeenCalledWith(200)
       expect(res.json).toHaveBeenCalledWith({
         message: 'Lấy lịch sử giao dịch điểm thành công',
-        data: { transactions: mockTransactionsResult.data, pagination: { page: 1, limit: 10, total: 1, total_pages: 1 } },
+        data: {
+          transactions: mockTransactionsResult.data,
+          pagination: { page: 1, limit: 10, total: 1, total_pages: 1 },
+        },
       })
     })
 
@@ -112,7 +133,11 @@ describe('Loyalty Controller', () => {
 
       await getTransactions(req as Request, res as Response)
 
-      expect(mockLoyaltyService.getTransactions).toHaveBeenCalledWith('user123', { type: 'earn' }, { page: 2, limit: 20 })
+      expect(mockLoyaltyService.getTransactions).toHaveBeenCalledWith(
+        'user123',
+        { type: 'earn' },
+        { page: 2, limit: 20 },
+      )
     })
 
     it('should propagate service errors', async () => {
@@ -120,22 +145,26 @@ describe('Loyalty Controller', () => {
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await expect(getTransactions(req as Request, res as Response)).rejects.toThrow('Transaction error')
+      await expect(getTransactions(req as Request, res as Response)).rejects.toThrow(
+        'Transaction error',
+      )
     })
   })
 
   describe('getRewards', () => {
     const mockRewardsResult = {
-      data: [{
-        _id: 'reward1',
-        name: 'Discount',
-        description: '10% off',
-        points_required: 100,
-        reward_type: 'discount',
-        reward_value: 10,
-        stock: 100,
-        is_active: true,
-      }],
+      data: [
+        {
+          _id: 'reward1',
+          name: 'Discount',
+          description: '10% off',
+          points_required: 100,
+          reward_type: 'discount',
+          reward_value: 10,
+          stock: 100,
+          is_active: true,
+        },
+      ],
       pagination: { page: 1, limit: 10, total: 1, page_size: 1 },
     }
 
@@ -146,11 +175,17 @@ describe('Loyalty Controller', () => {
 
       await getRewards(req as Request, res as Response)
 
-      expect(mockLoyaltyService.getRewards).toHaveBeenCalledWith({ reward_type: undefined }, { page: 1, limit: 10 })
+      expect(mockLoyaltyService.getRewards).toHaveBeenCalledWith(
+        { reward_type: undefined },
+        { page: 1, limit: 10 },
+      )
       expect(res.status).toHaveBeenCalledWith(200)
       expect(res.json).toHaveBeenCalledWith({
         message: 'Lấy danh sách phần thưởng thành công',
-        data: { rewards: mockRewardsResult.data, pagination: { page: 1, limit: 10, total: 1, total_pages: 1 } },
+        data: {
+          rewards: mockRewardsResult.data,
+          pagination: { page: 1, limit: 10, total: 1, total_pages: 1 },
+        },
       })
     })
 
@@ -161,7 +196,10 @@ describe('Loyalty Controller', () => {
 
       await getRewards(req as Request, res as Response)
 
-      expect(mockLoyaltyService.getRewards).toHaveBeenCalledWith({ reward_type: 'voucher' }, { page: 3, limit: 5 })
+      expect(mockLoyaltyService.getRewards).toHaveBeenCalledWith(
+        { reward_type: 'voucher' },
+        { page: 3, limit: 5 },
+      )
     })
 
     it('should propagate service errors', async () => {
@@ -200,8 +238,9 @@ describe('Loyalty Controller', () => {
       const req = createMockRequest({ params: { rewardId: 'reward1' } })
       const res = createMockResponse()
 
-      await expect(redeemPoints(req as Request, res as Response)).rejects.toThrow('Insufficient points')
+      await expect(redeemPoints(req as Request, res as Response)).rejects.toThrow(
+        'Insufficient points',
+      )
     })
   })
 })
-

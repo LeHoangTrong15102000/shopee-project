@@ -1,14 +1,14 @@
-import { http, HttpResponse } from 'msw';
-import { mockVouchers } from './data/vouchers.mock';
-import { API_URL } from './msw-utils';
+import { http, HttpResponse } from 'msw'
+import { mockVouchers } from './data/vouchers.mock'
+import { API_URL } from './msw-utils'
 
 const vouchersHandlers = [
   http.get(`${API_URL}/admin/vouchers`, ({ request }) => {
-    const url = new URL(request.url);
-    const page = Number(url.searchParams.get('page') ?? '1');
-    const limit = Number(url.searchParams.get('limit') ?? '10');
-    const start = (page - 1) * limit;
-    const paginated = mockVouchers.slice(start, start + limit);
+    const url = new URL(request.url)
+    const page = Number(url.searchParams.get('page') ?? '1')
+    const limit = Number(url.searchParams.get('limit') ?? '10')
+    const start = (page - 1) * limit
+    const paginated = mockVouchers.slice(start, start + limit)
     return HttpResponse.json({
       message: 'Thành công',
       data: {
@@ -20,7 +20,7 @@ const vouchersHandlers = [
           totalPages: Math.ceil(mockVouchers.length / limit) || 1,
         },
       },
-    });
+    })
   }),
 
   http.get(`${API_URL}/admin/vouchers/stats`, () => {
@@ -32,7 +32,7 @@ const vouchersHandlers = [
         inactive: mockVouchers.filter((v) => !v.is_active).length,
         total_usage: mockVouchers.reduce((sum, v) => sum + v.used_count, 0),
       },
-    });
+    })
   }),
 
   http.get(`${API_URL}/admin/vouchers/:id/usage`, ({ params }) => {
@@ -51,38 +51,38 @@ const vouchersHandlers = [
         ],
         pagination: { page: 1, limit: 10, total: 1 },
       },
-    });
+    })
   }),
 
   http.get(`${API_URL}/admin/vouchers/:id`, ({ params }) => {
-    const voucher = mockVouchers.find((v) => v._id === params.id);
+    const voucher = mockVouchers.find((v) => v._id === params.id)
     if (!voucher) {
-      return HttpResponse.json({ message: 'Không tìm thấy voucher' }, { status: 404 });
+      return HttpResponse.json({ message: 'Không tìm thấy voucher' }, { status: 404 })
     }
-    return HttpResponse.json({ message: 'Thành công', data: voucher });
+    return HttpResponse.json({ message: 'Thành công', data: voucher })
   }),
 
   http.post(`${API_URL}/admin/vouchers`, async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
-    const newVoucher = { ...mockVouchers[0], ...body, _id: `voucher-new-${Date.now()}` };
+    const body = (await request.json()) as Record<string, unknown>
+    const newVoucher = { ...mockVouchers[0], ...body, _id: `voucher-new-${Date.now()}` }
     return HttpResponse.json(
       { message: 'Tạo voucher thành công', data: newVoucher },
       { status: 201 },
-    );
+    )
   }),
 
   http.put(`${API_URL}/admin/vouchers/:id`, async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
-    const voucher = mockVouchers.find((v) => v._id === params.id);
+    const body = (await request.json()) as Record<string, unknown>
+    const voucher = mockVouchers.find((v) => v._id === params.id)
     if (!voucher) {
-      return HttpResponse.json({ message: 'Không tìm thấy voucher' }, { status: 404 });
+      return HttpResponse.json({ message: 'Không tìm thấy voucher' }, { status: 404 })
     }
-    return HttpResponse.json({ message: 'Cập nhật thành công', data: { ...voucher, ...body } });
+    return HttpResponse.json({ message: 'Cập nhật thành công', data: { ...voucher, ...body } })
   }),
 
   http.delete(`${API_URL}/admin/vouchers/:id`, () => {
-    return HttpResponse.json({ message: 'Xóa voucher thành công', data: null });
+    return HttpResponse.json({ message: 'Xóa voucher thành công', data: null })
   }),
-];
+]
 
-export default vouchersHandlers;
+export default vouchersHandlers

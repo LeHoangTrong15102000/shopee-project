@@ -22,7 +22,7 @@ export const AppColors = {
   gradientStart: '#1a1a2e',
   gradientMiddle: '#16213e',
   gradientEnd: '#0f3460',
-};
+}
 
 export const AppColorsLight: typeof AppColors = {
   primary: '#EE4D2D',
@@ -48,10 +48,10 @@ export const AppColorsLight: typeof AppColors = {
   gradientStart: '#283593',
   gradientMiddle: '#1a237e',
   gradientEnd: '#0d1b5e',
-};
+}
 
 // Spacing tokens (aligned with Tailwind scale)
 export const AppSpacing = {
   screenPaddingHorizontal: 24, // p-6
   screenPaddingVertical: 20, // p-5
-} as const;
+} as const

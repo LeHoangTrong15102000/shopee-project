@@ -1,5 +1,10 @@
 import { Socket } from 'socket.io'
-import { SocketEvent, GetPresencePayload, PresenceStatusPayload, PresenceUpdatePayload } from '../../@types/socket.type'
+import {
+  SocketEvent,
+  GetPresencePayload,
+  PresenceStatusPayload,
+  PresenceUpdatePayload,
+} from '../../@types/socket.type'
 import { SOCKET_ERRORS } from '@constants/socket'
 import { Logger } from '@utils/logger'
 import { getUserPresence } from '../managers/presence.manager'
@@ -46,7 +51,12 @@ export const registerPresenceHandlers = (socket: Socket): void => {
  * Broadcast a presence update to all connected clients in a user's room.
  * Called when a user goes online or offline.
  */
-export const broadcastPresenceUpdate = (socket: Socket, userId: string, status: 'online' | 'offline', lastSeen?: string | null): void => {
+export const broadcastPresenceUpdate = (
+  socket: Socket,
+  userId: string,
+  status: 'online' | 'offline',
+  lastSeen?: string | null,
+): void => {
   try {
     const payload: PresenceUpdatePayload = {
       user_id: userId,
@@ -66,4 +76,3 @@ export const broadcastPresenceUpdate = (socket: Socket, userId: string, status: 
     })
   }
 }
-

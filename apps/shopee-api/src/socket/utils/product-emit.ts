@@ -16,7 +16,7 @@ export const emitPriceUpdate = (
   oldPrice: number,
   newPrice: number,
   oldPriceBeforeDiscount: number,
-  newPriceBeforeDiscount: number
+  newPriceBeforeDiscount: number,
 ): void => {
   try {
     const io = getIORequired()
@@ -45,4 +45,3 @@ export const emitPriceUpdate = (
     })
   }
 }
-

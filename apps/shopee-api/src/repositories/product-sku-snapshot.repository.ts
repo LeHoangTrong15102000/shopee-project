@@ -32,4 +32,3 @@ export class ProductSkuSnapshotRepository implements IProductSkuSnapshotReposito
     return ProductSkuSnapshotModel.find({ sku: skuId }).lean<IProductSkuSnapshot[]>()
   }
 }
-

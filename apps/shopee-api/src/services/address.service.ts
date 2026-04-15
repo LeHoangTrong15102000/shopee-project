@@ -36,10 +36,7 @@ export class AddressService extends BaseService {
     return address
   }
 
-  async createAddress(
-    userId: string,
-    data: Omit<CreateAddressDTO, 'user'>
-  ): Promise<IAddressItem> {
+  async createAddress(userId: string, data: Omit<CreateAddressDTO, 'user'>): Promise<IAddressItem> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')
     }
@@ -63,7 +60,7 @@ export class AddressService extends BaseService {
   async updateAddress(
     userId: string,
     addressId: string,
-    data: UpdateAddressDTO
+    data: UpdateAddressDTO,
   ): Promise<IAddressItem> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')
@@ -106,7 +103,9 @@ export class AddressService extends BaseService {
     if (address.is_default) {
       const otherCount = await this.addressRepository.countByUser(userId)
       if (otherCount > 1) {
-        throw new BusinessError('Không thể xóa địa chỉ mặc định. Vui lòng đặt địa chỉ khác làm mặc định trước.')
+        throw new BusinessError(
+          'Không thể xóa địa chỉ mặc định. Vui lòng đặt địa chỉ khác làm mặc định trước.',
+        )
       }
     }
 
@@ -141,4 +140,3 @@ export class AddressService extends BaseService {
     return this.addressRepository.findDefaultAddress(userId)
   }
 }
-

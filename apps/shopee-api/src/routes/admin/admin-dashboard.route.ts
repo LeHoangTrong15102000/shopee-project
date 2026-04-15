@@ -30,7 +30,7 @@ adminDashboardRouter.get('/overview', asyncHandler(adminDashboardController.getO
 adminDashboardRouter.get(
   '/revenue',
   validate(dashboardRevenueSchema),
-  asyncHandler(adminDashboardController.getRevenue)
+  asyncHandler(adminDashboardController.getRevenue),
 )
 
 /**
@@ -40,7 +40,7 @@ adminDashboardRouter.get(
 adminDashboardRouter.get(
   '/revenue/by-category',
   validate(dashboardRevenueByCategorySchema),
-  asyncHandler(adminDashboardController.getRevenueByCategory)
+  asyncHandler(adminDashboardController.getRevenueByCategory),
 )
 
 /**
@@ -50,7 +50,7 @@ adminDashboardRouter.get(
 adminDashboardRouter.get(
   '/revenue/by-product',
   validate(dashboardRevenueByProductSchema),
-  asyncHandler(adminDashboardController.getRevenueByProduct)
+  asyncHandler(adminDashboardController.getRevenueByProduct),
 )
 
 /**
@@ -60,7 +60,7 @@ adminDashboardRouter.get(
 adminDashboardRouter.get(
   '/orders/trend',
   validate(dashboardOrderTrendSchema),
-  asyncHandler(adminDashboardController.getOrderTrend)
+  asyncHandler(adminDashboardController.getOrderTrend),
 )
 
 /**
@@ -70,7 +70,7 @@ adminDashboardRouter.get(
 adminDashboardRouter.get(
   '/users/growth',
   validate(dashboardUserGrowthSchema),
-  asyncHandler(adminDashboardController.getUserGrowth)
+  asyncHandler(adminDashboardController.getUserGrowth),
 )
 
 /**
@@ -80,8 +80,7 @@ adminDashboardRouter.get(
 adminDashboardRouter.get(
   '/users/top-buyers',
   validate(dashboardTopBuyersSchema),
-  asyncHandler(adminDashboardController.getTopBuyers)
+  asyncHandler(adminDashboardController.getTopBuyers),
 )
 
 export default adminDashboardRouter
-

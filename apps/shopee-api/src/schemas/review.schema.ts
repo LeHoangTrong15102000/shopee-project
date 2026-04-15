@@ -4,9 +4,9 @@ import { mongoIdSchema } from './common.schema'
 /**
  * Review sort enum
  */
-const reviewSortEnum = z.enum(
-  ['newest', 'oldest', 'highest_rating', 'lowest_rating', 'most_helpful']
-).catch('newest')
+const reviewSortEnum = z
+  .enum(['newest', 'oldest', 'highest_rating', 'lowest_rating', 'most_helpful'])
+  .catch('newest')
 
 /**
  * Create review schema
@@ -43,26 +43,28 @@ export const getProductReviewsSchema = z.object({
       message: 'Product ID không hợp lệ',
     }),
   }),
-  query: z.object({
-    page: z.coerce
-      .number()
-      .int('Page phải là số nguyên dương')
-      .min(1, 'Page phải là số nguyên dương')
-      .optional(),
-    limit: z.coerce
-      .number()
-      .int('Limit phải từ 1 đến 50')
-      .min(1, 'Limit phải từ 1 đến 50')
-      .max(50, 'Limit phải từ 1 đến 50')
-      .optional(),
-    rating: z.coerce
-      .number()
-      .int('Rating phải từ 1 đến 5')
-      .min(1, 'Rating phải từ 1 đến 5')
-      .max(5, 'Rating phải từ 1 đến 5')
-      .optional(),
-    sort: reviewSortEnum.optional(),
-  }).passthrough(),
+  query: z
+    .object({
+      page: z.coerce
+        .number()
+        .int('Page phải là số nguyên dương')
+        .min(1, 'Page phải là số nguyên dương')
+        .optional(),
+      limit: z.coerce
+        .number()
+        .int('Limit phải từ 1 đến 50')
+        .min(1, 'Limit phải từ 1 đến 50')
+        .max(50, 'Limit phải từ 1 đến 50')
+        .optional(),
+      rating: z.coerce
+        .number()
+        .int('Rating phải từ 1 đến 5')
+        .min(1, 'Rating phải từ 1 đến 5')
+        .max(5, 'Rating phải từ 1 đến 5')
+        .optional(),
+      sort: reviewSortEnum.optional(),
+    })
+    .passthrough(),
 })
 
 /**
@@ -111,19 +113,21 @@ export const getReviewCommentsSchema = z.object({
       message: 'Review ID không hợp lệ',
     }),
   }),
-  query: z.object({
-    page: z.coerce
-      .number()
-      .int('Page phải là số nguyên dương')
-      .min(1, 'Page phải là số nguyên dương')
-      .optional(),
-    limit: z.coerce
-      .number()
-      .int('Limit phải từ 1 đến 50')
-      .min(1, 'Limit phải từ 1 đến 50')
-      .max(50, 'Limit phải từ 1 đến 50')
-      .optional(),
-  }).passthrough(),
+  query: z
+    .object({
+      page: z.coerce
+        .number()
+        .int('Page phải là số nguyên dương')
+        .min(1, 'Page phải là số nguyên dương')
+        .optional(),
+      limit: z.coerce
+        .number()
+        .int('Limit phải từ 1 đến 50')
+        .min(1, 'Limit phải từ 1 đến 50')
+        .max(50, 'Limit phải từ 1 đến 50')
+        .optional(),
+    })
+    .passthrough(),
 })
 
 /**
@@ -148,26 +152,29 @@ export const updateReviewSchema = z.object({
       message: 'Review ID không hợp lệ',
     }),
   }),
-  body: z.object({
-    rating: z.coerce
-      .number()
-      .int('Rating phải từ 1 đến 5')
-      .min(1, 'Rating phải từ 1 đến 5')
-      .max(5, 'Rating phải từ 1 đến 5')
-      .optional(),
-    comment: z
-      .string()
-      .min(10, 'Bình luận phải từ 10 đến 2000 ký tự')
-      .max(2000, 'Bình luận phải từ 10 đến 2000 ký tự')
-      .optional(),
-    images: z
-      .array(z.string().max(1000, 'URL hình ảnh không hợp lệ'))
-      .max(10, 'Tối đa 10 hình ảnh')
-      .optional(),
-  }).refine(
-    (data) => data.rating !== undefined || data.comment !== undefined || data.images !== undefined,
-    { message: 'Cần ít nhất một trường để cập nhật' }
-  ),
+  body: z
+    .object({
+      rating: z.coerce
+        .number()
+        .int('Rating phải từ 1 đến 5')
+        .min(1, 'Rating phải từ 1 đến 5')
+        .max(5, 'Rating phải từ 1 đến 5')
+        .optional(),
+      comment: z
+        .string()
+        .min(10, 'Bình luận phải từ 10 đến 2000 ký tự')
+        .max(2000, 'Bình luận phải từ 10 đến 2000 ký tự')
+        .optional(),
+      images: z
+        .array(z.string().max(1000, 'URL hình ảnh không hợp lệ'))
+        .max(10, 'Tối đa 10 hình ảnh')
+        .optional(),
+    })
+    .refine(
+      (data) =>
+        data.rating !== undefined || data.comment !== undefined || data.images !== undefined,
+      { message: 'Cần ít nhất một trường để cập nhật' },
+    ),
 })
 
 /**
@@ -188,4 +195,3 @@ export type UpdateReviewInput = z.infer<typeof updateReviewSchema>['body']
 export type GetProductReviewsQuery = z.infer<typeof getProductReviewsSchema>['query']
 export type CreateReviewCommentInput = z.infer<typeof createReviewCommentSchema>['body']
 export type GetReviewCommentsQuery = z.infer<typeof getReviewCommentsSchema>['query']
-

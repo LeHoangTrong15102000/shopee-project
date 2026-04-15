@@ -31,7 +31,7 @@ export const ALLOWED_ORIGINS = isProduction
 // Hàm kiểm tra origin có trong whitelist không
 export const checkOriginWhitelist = (
   origin: string | undefined,
-  callback: (err: Error | null, allow?: boolean) => void
+  callback: (err: Error | null, allow?: boolean) => void,
 ) => {
   // Cho phép requests không có origin (như mobile apps, Postman, curl)
   if (!origin) {
@@ -50,14 +50,7 @@ export const corsOptions: CorsOptions = {
   origin: checkOriginWhitelist,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization',
-    'X-Requested-With',
-    'Accept',
-    'Origin',
-  ],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   exposedHeaders: ['Content-Range', 'X-Content-Range'],
   maxAge: 86400, // 24 giờ - thời gian cache preflight request
 }
-

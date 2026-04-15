@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import ProductQA from '../ProductQA/ProductQA';
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import ProductQA from '../ProductQA/ProductQA'
 
 // Hoisted mock variables (must be hoisted for vi.mock factories)
 const {
@@ -40,24 +40,24 @@ const {
   mockToastSuccess: vi.fn(),
   mockToastError: vi.fn(),
   mockToastWarning: vi.fn(),
-}));
+}))
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: any) => {
-      if (key === 'questionCount') return `${options?.count || 0} questions`;
-      if (key === 'reply') return `Reply (${options?.count || 0})`;
-      return key;
+      if (key === 'questionCount') return `${options?.count || 0} questions`
+      if (key === 'reply') return `Reply (${options?.count || 0})`
+      return key
     },
     i18n: { language: 'vi', changeLanguage: vi.fn() },
   }),
   Trans: ({ children }: any) => children,
-}));
+}))
 
 // Mock @tanstack/react-query
 vi.mock('@tanstack/react-query', async () => {
-  const actual = await vi.importActual('@tanstack/react-query');
+  const actual = await vi.importActual('@tanstack/react-query')
   return {
     ...actual,
     useInfiniteQuery: () => ({
@@ -70,23 +70,23 @@ vi.mock('@tanstack/react-query', async () => {
     useMutation: ({ onSuccess, onError }: any) => {
       const mutationFn = vi.fn((data: any) => {
         if (data?.product_id || data?.questionId || typeof data === 'string') {
-          onSuccess?.();
-          return Promise.resolve();
+          onSuccess?.()
+          return Promise.resolve()
         }
-        onError?.();
-        return Promise.reject();
-      });
+        onError?.()
+        return Promise.reject()
+      })
 
       return {
         mutate: mutationFn,
         isPending: false,
-      };
+      }
     },
     useQueryClient: () => ({
       invalidateQueries: mockInvalidateQueries,
     }),
-  };
-});
+  }
+})
 
 // Mock react-toastify
 vi.mock('react-toastify', () => ({
@@ -95,12 +95,12 @@ vi.mock('react-toastify', () => ({
     error: (msg: string) => mockToastError(msg),
     warning: (msg: string) => mockToastWarning(msg),
   },
-}));
+}))
 
 // Mock date-fns
 vi.mock('date-fns', () => ({
   formatDistanceToNow: () => '2 hours ago',
-}));
+}))
 
 // Mock qa.api
 vi.mock('src/apis/qa.api', () => ({
@@ -111,7 +111,7 @@ vi.mock('src/apis/qa.api', () => ({
     likeQuestion: mockLikeQuestionMutate,
     likeAnswer: mockLikeAnswerMutate,
   },
-}));
+}))
 
 // Mock AppContext — use getter so isAuthenticated reads dynamically from mockState
 vi.mock('src/contexts/app.context', () => ({
@@ -125,10 +125,10 @@ vi.mock('src/contexts/app.context', () => ({
         profile: null,
         setProfile: vi.fn(),
         reset: vi.fn(),
-      };
+      }
     },
   },
-}));
+}))
 
 // Mock Button component
 vi.mock('src/components/Button', () => ({
@@ -137,18 +137,18 @@ vi.mock('src/components/Button', () => ({
       {children}
     </button>
   ),
-}));
+}))
 
 describe('ProductQA', () => {
-  let queryClient: QueryClient;
+  let queryClient: QueryClient
 
   beforeEach(() => {
     // Reset all mocks
-    vi.clearAllMocks();
-    mockState.isAuthenticated = false;
-    mockState.isLoading = false;
-    mockState.hasNextPage = false;
-    mockState.isFetchingNextPage = false;
+    vi.clearAllMocks()
+    mockState.isAuthenticated = false
+    mockState.isLoading = false
+    mockState.hasNextPage = false
+    mockState.isFetchingNextPage = false
     mockState.questionsData = {
       data: {
         data: {
@@ -156,45 +156,45 @@ describe('ProductQA', () => {
           pagination: { page: 1, limit: 5, total: 0, total_pages: 0 },
         },
       },
-    };
+    }
 
     queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
-    });
-  });
+    })
+  })
 
   const renderComponent = (props = {}) => {
     return render(
       <QueryClientProvider client={queryClient}>
         <ProductQA productId="test-product-id" {...props} />
       </QueryClientProvider>,
-    );
-  };
+    )
+  }
 
   describe('Loading state', () => {
     it('shows skeleton when loading', () => {
-      mockState.isLoading = true;
+      mockState.isLoading = true
 
-      renderComponent();
+      renderComponent()
 
-      const skeleton = document.querySelector('.animate-pulse');
-      expect(skeleton).toBeTruthy();
-      expect(skeleton?.closest('[role="status"]')).toBeTruthy();
-    });
+      const skeleton = document.querySelector('.animate-pulse')
+      expect(skeleton).toBeTruthy()
+      expect(skeleton?.closest('[role="status"]')).toBeTruthy()
+    })
 
     it('shows multiple skeleton items', () => {
-      mockState.isLoading = true;
+      mockState.isLoading = true
 
-      renderComponent();
+      renderComponent()
 
-      const skeletonItems = document.querySelectorAll('.animate-pulse .rounded-lg');
-      expect(skeletonItems.length).toBeGreaterThan(0);
-    });
-  });
+      const skeletonItems = document.querySelectorAll('.animate-pulse .rounded-lg')
+      expect(skeletonItems.length).toBeGreaterThan(0)
+    })
+  })
 
   describe('Empty state', () => {
     it('shows empty state when no questions', async () => {
-      mockState.isLoading = false;
+      mockState.isLoading = false
       mockState.questionsData = {
         data: {
           data: {
@@ -202,86 +202,86 @@ describe('ProductQA', () => {
             pagination: { page: 1, limit: 5, total: 0, total_pages: 0 },
           },
         },
-      };
+      }
 
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        expect(screen.getByText('empty.title')).toBeTruthy();
-      });
-    });
+        expect(screen.getByText('empty.title')).toBeTruthy()
+      })
+    })
 
     it('shows empty state subtitle', async () => {
-      mockState.isLoading = false;
+      mockState.isLoading = false
 
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        expect(screen.getByText('empty.subtitle')).toBeTruthy();
-      });
-    });
-  });
+        expect(screen.getByText('empty.subtitle')).toBeTruthy()
+      })
+    })
+  })
 
   describe('Authenticated user', () => {
     beforeEach(() => {
-      mockState.isAuthenticated = true;
-    });
+      mockState.isAuthenticated = true
+    })
 
     it('shows ask question form for authenticated user', async () => {
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        const textarea = screen.getByPlaceholderText('questionPlaceholder');
-        expect(textarea).toBeTruthy();
-      });
-    });
+        const textarea = screen.getByPlaceholderText('questionPlaceholder')
+        expect(textarea).toBeTruthy()
+      })
+    })
 
     it('shows submit button for authenticated user', async () => {
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        const submitButton = screen.getByText('submitQuestion');
-        expect(submitButton).toBeTruthy();
-      });
-    });
+        const submitButton = screen.getByText('submitQuestion')
+        expect(submitButton).toBeTruthy()
+      })
+    })
 
     it('submit button is disabled when textarea is empty', async () => {
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        const submitButton = screen.getByText('submitQuestion') as HTMLButtonElement;
-        expect(submitButton.disabled).toBe(true);
-      });
-    });
-  });
+        const submitButton = screen.getByText('submitQuestion') as HTMLButtonElement
+        expect(submitButton.disabled).toBe(true)
+      })
+    })
+  })
 
   describe('Unauthenticated user', () => {
     beforeEach(() => {
-      mockState.isAuthenticated = false;
-    });
+      mockState.isAuthenticated = false
+    })
 
     it('shows login prompt for unauthenticated user', async () => {
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        expect(screen.getByText('loginToAsk')).toBeTruthy();
-      });
-    });
+        expect(screen.getByText('loginToAsk')).toBeTruthy()
+      })
+    })
 
     it('shows login link for unauthenticated user', async () => {
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        const loginLink = screen.getByText('loginNow');
-        expect(loginLink).toBeTruthy();
-        expect(loginLink.closest('a')?.getAttribute('href')).toBe('/login');
-      });
-    });
-  });
+        const loginLink = screen.getByText('loginNow')
+        expect(loginLink).toBeTruthy()
+        expect(loginLink.closest('a')?.getAttribute('href')).toBe('/login')
+      })
+    })
+  })
 
   describe('Question list rendering', () => {
     beforeEach(() => {
-      mockState.isLoading = false;
+      mockState.isLoading = false
       mockState.questionsData = {
         data: {
           data: {
@@ -316,35 +316,35 @@ describe('ProductQA', () => {
             pagination: { page: 1, limit: 5, total: 2, total_pages: 1 },
           },
         },
-      };
-    });
+      }
+    })
 
     it('renders question list with user names', async () => {
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        expect(screen.getByText('John Doe')).toBeTruthy();
-        expect(screen.getByText('Jane Smith')).toBeTruthy();
-      });
-    });
+        expect(screen.getByText('John Doe')).toBeTruthy()
+        expect(screen.getByText('Jane Smith')).toBeTruthy()
+      })
+    })
 
     it('renders question text', async () => {
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        expect(screen.getByText('Is this product good?')).toBeTruthy();
-        expect(screen.getByText('What is the warranty?')).toBeTruthy();
-      });
-    });
+        expect(screen.getByText('Is this product good?')).toBeTruthy()
+        expect(screen.getByText('What is the warranty?')).toBeTruthy()
+      })
+    })
 
     it('shows question count', async () => {
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        expect(screen.getByText('2 questions')).toBeTruthy();
-      });
-    });
-  });
+        expect(screen.getByText('2 questions')).toBeTruthy()
+      })
+    })
+  })
 
   describe('User avatars', () => {
     it('shows avatar image when available', async () => {
@@ -369,16 +369,16 @@ describe('ProductQA', () => {
             pagination: { page: 1, limit: 5, total: 1, total_pages: 1 },
           },
         },
-      };
+      }
 
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        const avatar = screen.getByAltText('John Doe') as HTMLImageElement;
-        expect(avatar).toBeTruthy();
-        expect(avatar.src).toContain('avatar.jpg');
-      });
-    });
+        const avatar = screen.getByAltText('John Doe') as HTMLImageElement
+        expect(avatar).toBeTruthy()
+        expect(avatar.src).toContain('avatar.jpg')
+      })
+    })
 
     it('shows initials fallback when no avatar', async () => {
       mockState.questionsData = {
@@ -402,15 +402,15 @@ describe('ProductQA', () => {
             pagination: { page: 1, limit: 5, total: 1, total_pages: 1 },
           },
         },
-      };
+      }
 
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        expect(screen.getByText('J')).toBeTruthy();
-      });
-    });
-  });
+        expect(screen.getByText('J')).toBeTruthy()
+      })
+    })
+  })
 
   describe('Answers section', () => {
     beforeEach(() => {
@@ -449,34 +449,34 @@ describe('ProductQA', () => {
             pagination: { page: 1, limit: 5, total: 1, total_pages: 1 },
           },
         },
-      };
-    });
+      }
+    })
 
     it('renders answers for questions', async () => {
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        expect(screen.getByText('This is a great product!')).toBeTruthy();
-      });
-    });
+        expect(screen.getByText('This is a great product!')).toBeTruthy()
+      })
+    })
 
     it('shows answer user name', async () => {
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        expect(screen.getByText('Seller Name')).toBeTruthy();
-      });
-    });
+        expect(screen.getByText('Seller Name')).toBeTruthy()
+      })
+    })
 
     it('shows answer likes count', async () => {
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        const answerSection = screen.getByText('This is a great product!').closest('div');
-        expect(answerSection?.textContent).toContain('2');
-      });
-    });
-  });
+        const answerSection = screen.getByText('This is a great product!').closest('div')
+        expect(answerSection?.textContent).toContain('2')
+      })
+    })
+  })
 
   describe('Seller badge', () => {
     it('shows seller badge on seller answers', async () => {
@@ -515,14 +515,14 @@ describe('ProductQA', () => {
             pagination: { page: 1, limit: 5, total: 1, total_pages: 1 },
           },
         },
-      };
+      }
 
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        expect(screen.getByText('seller')).toBeTruthy();
-      });
-    });
+        expect(screen.getByText('seller')).toBeTruthy()
+      })
+    })
 
     it('does not show seller badge on non-seller answers', async () => {
       mockState.questionsData = {
@@ -560,15 +560,15 @@ describe('ProductQA', () => {
             pagination: { page: 1, limit: 5, total: 1, total_pages: 1 },
           },
         },
-      };
+      }
 
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        expect(screen.queryByText('seller')).toBeNull();
-      });
-    });
-  });
+        expect(screen.queryByText('seller')).toBeNull()
+      })
+    })
+  })
 
   describe('Reply form toggle', () => {
     beforeEach(() => {
@@ -593,38 +593,38 @@ describe('ProductQA', () => {
             pagination: { page: 1, limit: 5, total: 1, total_pages: 1 },
           },
         },
-      };
-    });
+      }
+    })
 
     it('shows reply button', async () => {
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        expect(screen.getByText('Reply (0)')).toBeTruthy();
-      });
-    });
+        expect(screen.getByText('Reply (0)')).toBeTruthy()
+      })
+    })
 
     it('toggles reply form when reply button clicked', async () => {
-      const user = userEvent.setup();
-      renderComponent();
+      const user = userEvent.setup()
+      renderComponent()
 
       await waitFor(() => {
-        expect(screen.getByText('Reply (0)')).toBeTruthy();
-      });
+        expect(screen.getByText('Reply (0)')).toBeTruthy()
+      })
 
-      const replyButton = screen.getByText('Reply (0)');
-      await user.click(replyButton);
+      const replyButton = screen.getByText('Reply (0)')
+      await user.click(replyButton)
 
       await waitFor(() => {
-        const replyForm = document.querySelector('#reply-form-q1');
-        expect(replyForm).toBeTruthy();
-      });
-    });
-  });
+        const replyForm = document.querySelector('#reply-form-q1')
+        expect(replyForm).toBeTruthy()
+      })
+    })
+  })
 
   describe('Load more button', () => {
     it('shows load more button when hasNextPage is true', async () => {
-      mockState.hasNextPage = true;
+      mockState.hasNextPage = true
       mockState.questionsData = {
         data: {
           data: {
@@ -646,17 +646,17 @@ describe('ProductQA', () => {
             pagination: { page: 1, limit: 5, total: 10, total_pages: 2 },
           },
         },
-      };
+      }
 
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        expect(screen.getByText('loadMore')).toBeTruthy();
-      });
-    });
+        expect(screen.getByText('loadMore')).toBeTruthy()
+      })
+    })
 
     it('does not show load more button when hasNextPage is false', async () => {
-      mockState.hasNextPage = false;
+      mockState.hasNextPage = false
       mockState.questionsData = {
         data: {
           data: {
@@ -678,18 +678,18 @@ describe('ProductQA', () => {
             pagination: { page: 1, limit: 5, total: 1, total_pages: 1 },
           },
         },
-      };
+      }
 
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        expect(screen.queryByText('loadMore')).toBeNull();
-      });
-    });
+        expect(screen.queryByText('loadMore')).toBeNull()
+      })
+    })
 
     it('calls fetchNextPage when load more clicked', async () => {
-      const user = userEvent.setup();
-      mockState.hasNextPage = true;
+      const user = userEvent.setup()
+      mockState.hasNextPage = true
       mockState.questionsData = {
         data: {
           data: {
@@ -711,23 +711,23 @@ describe('ProductQA', () => {
             pagination: { page: 1, limit: 5, total: 10, total_pages: 2 },
           },
         },
-      };
+      }
 
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        expect(screen.getByText('loadMore')).toBeTruthy();
-      });
+        expect(screen.getByText('loadMore')).toBeTruthy()
+      })
 
-      const loadMoreButton = screen.getByText('loadMore');
-      await user.click(loadMoreButton);
+      const loadMoreButton = screen.getByText('loadMore')
+      await user.click(loadMoreButton)
 
-      expect(mockFetchNextPage).toHaveBeenCalled();
-    });
+      expect(mockFetchNextPage).toHaveBeenCalled()
+    })
 
     it('shows loading text when fetching next page', async () => {
-      mockState.hasNextPage = true;
-      mockState.isFetchingNextPage = true;
+      mockState.hasNextPage = true
+      mockState.isFetchingNextPage = true
       mockState.questionsData = {
         data: {
           data: {
@@ -749,37 +749,37 @@ describe('ProductQA', () => {
             pagination: { page: 1, limit: 5, total: 10, total_pages: 2 },
           },
         },
-      };
+      }
 
-      renderComponent();
+      renderComponent()
 
       await waitFor(() => {
-        expect(screen.getByText('loading')).toBeTruthy();
-      });
-    });
-  });
+        expect(screen.getByText('loading')).toBeTruthy()
+      })
+    })
+  })
 
   describe('className prop', () => {
     it('passes through className prop', async () => {
-      mockState.isLoading = false;
+      mockState.isLoading = false
 
-      const { container } = renderComponent({ className: 'custom-class' });
+      const { container } = renderComponent({ className: 'custom-class' })
 
       await waitFor(() => {
-        const mainDiv = container.querySelector('.custom-class');
-        expect(mainDiv).toBeTruthy();
-      });
-    });
+        const mainDiv = container.querySelector('.custom-class')
+        expect(mainDiv).toBeTruthy()
+      })
+    })
 
     it('applies default className when not provided', async () => {
-      mockState.isLoading = false;
+      mockState.isLoading = false
 
-      const { container } = renderComponent();
+      const { container } = renderComponent()
 
       await waitFor(() => {
-        const mainDiv = container.querySelector('.rounded-sm.bg-white');
-        expect(mainDiv).toBeTruthy();
-      });
-    });
-  });
-});
+        const mainDiv = container.querySelector('.rounded-sm.bg-white')
+        expect(mainDiv).toBeTruthy()
+      })
+    })
+  })
+})

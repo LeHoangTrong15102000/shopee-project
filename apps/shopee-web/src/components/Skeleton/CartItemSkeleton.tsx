@@ -1,12 +1,12 @@
-import { useTranslation } from 'react-i18next';
-import SkeletonBase from './SkeletonBase';
+import { useTranslation } from 'react-i18next'
+import SkeletonBase from './SkeletonBase'
 
 interface CartItemSkeletonProps {
-  count?: number;
+  count?: number
 }
 
 export default function CartItemSkeleton({ count = 1 }: CartItemSkeletonProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('common')
   return (
     <>
       {[...Array(count)].map((_, index) => (
@@ -68,5 +68,5 @@ export default function CartItemSkeleton({ count = 1 }: CartItemSkeletonProps) {
         </div>
       ))}
     </>
-  );
+  )
 }

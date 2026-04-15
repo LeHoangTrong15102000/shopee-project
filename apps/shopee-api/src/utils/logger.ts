@@ -16,7 +16,7 @@ export class Logger {
     level: LogLevel,
     category: string,
     message: string,
-    data?: any
+    data?: any,
   ): string {
     const timestamp = this.formatTimestamp()
     const baseMessage = `[${timestamp}] [${level}] [${category}] ${message}`
@@ -28,12 +28,7 @@ export class Logger {
     return baseMessage
   }
 
-  private static log(
-    level: LogLevel,
-    category: string,
-    message: string,
-    data?: any
-  ): void {
+  private static log(level: LogLevel, category: string, message: string, data?: any): void {
     const formattedMessage = this.formatMessage(level, category, message, data)
 
     switch (level) {
@@ -102,21 +97,11 @@ export class Logger {
       duration_ms: duration,
       ...data,
     }
-    this.log(
-      LogLevel.INFO,
-      'PERFORMANCE',
-      `Operation completed`,
-      performanceData
-    )
+    this.log(LogLevel.INFO, 'PERFORMANCE', `Operation completed`, performanceData)
   }
 
   // Request logging
-  static request(
-    method: string,
-    url: string,
-    userId?: string,
-    data?: any
-  ): void {
+  static request(method: string, url: string, userId?: string, data?: any): void {
     const requestData = {
       method,
       url,

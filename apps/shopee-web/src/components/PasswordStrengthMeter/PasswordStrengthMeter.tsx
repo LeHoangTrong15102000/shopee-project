@@ -1,17 +1,17 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
 
 interface PasswordStrengthMeterProps {
-  password: string;
-  className?: string;
+  password: string
+  className?: string
 }
 
 interface StrengthLevel {
-  labelKey: string;
-  percent: number;
-  barColor: string;
-  textColor: string;
+  labelKey: string
+  percent: number
+  barColor: string
+  textColor: string
 }
 
 const strengthLevels: StrengthLevel[] = [
@@ -40,46 +40,46 @@ const strengthLevels: StrengthLevel[] = [
     barColor: '#22c55e',
     textColor: 'text-green-500 dark:text-green-400',
   },
-];
+]
 
 const calculateStrength = (password: string): number => {
-  if (!password) return 0;
+  if (!password) return 0
 
   // Exactly 5 requirements matching the UI checklist
-  let met = 0;
-  if (password.length >= 6) met++; // 1. Ít nhất 6 ký tự
-  if (/[A-Z]/.test(password)) met++; // 2. Chứa ít nhất 1 chữ hoa
-  if (/[a-z]/.test(password)) met++; // 3. Chứa ít nhất 1 chữ thường
-  if (/\d/.test(password)) met++; // 4. Chứa ít nhất 1 số
-  if (/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(password)) met++; // 5. Chứa ký tự đặc biệt
+  let met = 0
+  if (password.length >= 6) met++ // 1. Ít nhất 6 ký tự
+  if (/[A-Z]/.test(password)) met++ // 2. Chứa ít nhất 1 chữ hoa
+  if (/[a-z]/.test(password)) met++ // 3. Chứa ít nhất 1 chữ thường
+  if (/\d/.test(password)) met++ // 4. Chứa ít nhất 1 số
+  if (/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(password)) met++ // 5. Chứa ký tự đặc biệt
 
   // Map: 0→0, 1→1(Yếu), 2→2(Trung bình), 3-4→3(Khá), 5→4(Mạnh)
-  if (met === 5) return 4;
-  if (met >= 3) return 3;
-  if (met === 2) return 2;
-  if (met === 1) return 1;
-  return 0;
-};
+  if (met === 5) return 4
+  if (met >= 3) return 3
+  if (met === 2) return 2
+  if (met === 1) return 1
+  return 0
+}
 
 const PasswordStrengthMeter = ({ password, className = '' }: PasswordStrengthMeterProps) => {
-  const { t } = useTranslation('auth');
-  const reducedMotion = useReducedMotion();
+  const { t } = useTranslation('auth')
+  const reducedMotion = useReducedMotion()
 
-  const strength = calculateStrength(password);
+  const strength = calculateStrength(password)
 
   // Don't show if no password
   if (!password || password.length === 0) {
-    return null;
+    return null
   }
 
-  const currentLevel = strengthLevels[strength];
+  const currentLevel = strengthLevels[strength]
   const labelKey = currentLevel.labelKey as
     | 'passwordStrength.weak'
     | 'passwordStrength.fair'
     | 'passwordStrength.good'
     | 'passwordStrength.strong'
-    | '';
-  const label = labelKey ? t(labelKey) : '';
+    | ''
+  const label = labelKey ? t(labelKey) : ''
 
   return (
     <div
@@ -157,7 +157,7 @@ const PasswordStrengthMeter = ({ password, className = '' }: PasswordStrengthMet
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default PasswordStrengthMeter;
+export default PasswordStrengthMeter

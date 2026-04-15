@@ -1,12 +1,12 @@
-import { lazy, Suspense, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { DollarSign, ShoppingCart, Users, Package } from 'lucide-react';
-import { StatCard } from 'src/components/shared/StatCard';
-import { PeriodSelect } from 'src/components/shared/PeriodSelect';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { ErrorState } from 'src/components/shared/ErrorState';
-import { Skeleton } from 'src/components/ui/skeleton';
-import { Card, CardContent, CardHeader } from 'src/components/ui/card';
+import { lazy, Suspense, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { DollarSign, ShoppingCart, Users, Package } from 'lucide-react'
+import { StatCard } from 'src/components/shared/StatCard'
+import { PeriodSelect } from 'src/components/shared/PeriodSelect'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { ErrorState } from 'src/components/shared/ErrorState'
+import { Skeleton } from 'src/components/ui/skeleton'
+import { Card, CardContent, CardHeader } from 'src/components/ui/card'
 import {
   useDashboardOverview,
   useDashboardRevenue,
@@ -15,39 +15,38 @@ import {
   useDashboardTopProducts,
   useDashboardTopBuyers,
   useDashboardRevenueByCategory,
-} from 'src/hooks/useDashboard';
-import { formatCurrency } from 'src/utils/format';
-import { ChartSkeleton } from './components/ChartSkeleton';
+} from 'src/hooks/useDashboard'
+import { formatCurrency } from 'src/utils/format'
+import { ChartSkeleton } from './components/ChartSkeleton'
 
-const RevenueOrderCharts = lazy(() => import('./components/RevenueOrderCharts'));
-const UserCategoryCharts = lazy(() => import('./components/UserCategoryCharts'));
-const TopProductsBuyers = lazy(() => import('./components/TopProductsBuyers'));
+const RevenueOrderCharts = lazy(() => import('./components/RevenueOrderCharts'))
+const UserCategoryCharts = lazy(() => import('./components/UserCategoryCharts'))
+const TopProductsBuyers = lazy(() => import('./components/TopProductsBuyers'))
 
 export default function DashboardPage() {
-  const { t } = useTranslation('dashboard');
-  const [period, setPeriod] = useState('30d');
+  const { t } = useTranslation('dashboard')
+  const [period, setPeriod] = useState('30d')
   const [customRange, setCustomRange] = useState<
     { start_date: string; end_date: string } | undefined
-  >();
+  >()
 
   const {
     data: overview,
     isLoading: loadingOverview,
     isError: overviewError,
     refetch: refetchOverview,
-  } = useDashboardOverview();
+  } = useDashboardOverview()
 
-  const { data: revenue } = useDashboardRevenue(period, customRange);
-  const { data: orderTrend } = useDashboardOrderTrend(period);
-  const { data: userGrowth } = useDashboardUserGrowth(period);
-  const { data: topProducts } = useDashboardTopProducts(period);
-  const { data: topBuyers } = useDashboardTopBuyers(period);
-  const { data: revenueByCategory } = useDashboardRevenueByCategory(period);
+  const { data: revenue } = useDashboardRevenue(period, customRange)
+  const { data: orderTrend } = useDashboardOrderTrend(period)
+  const { data: userGrowth } = useDashboardUserGrowth(period)
+  const { data: topProducts } = useDashboardTopProducts(period)
+  const { data: topBuyers } = useDashboardTopBuyers(period)
+  const { data: revenueByCategory } = useDashboardRevenueByCategory(period)
 
-  const handleCustomRange = (s: string, e: string) =>
-    setCustomRange({ start_date: s, end_date: e });
+  const handleCustomRange = (s: string, e: string) => setCustomRange({ start_date: s, end_date: e })
 
-  if (overviewError) return <ErrorState message={t('error')} onRetry={refetchOverview} />;
+  if (overviewError) return <ErrorState message={t('error')} onRetry={refetchOverview} />
 
   return (
     <div className="space-y-6">
@@ -116,5 +115,5 @@ export default function DashboardPage() {
         <TopProductsBuyers topProducts={topProducts} topBuyers={topBuyers} />
       </Suspense>
     </div>
-  );
+  )
 }

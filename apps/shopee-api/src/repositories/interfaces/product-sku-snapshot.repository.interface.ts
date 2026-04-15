@@ -46,4 +46,3 @@ export interface IProductSkuSnapshotRepository {
    */
   findBySku(skuId: string | Types.ObjectId): Promise<IProductSkuSnapshot[]>
 }
-

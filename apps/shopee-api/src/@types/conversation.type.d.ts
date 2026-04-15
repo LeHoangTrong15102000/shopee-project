@@ -1,7 +1,4 @@
-import {
-  MessageRole,
-  ConversationStatus,
-} from '../database/models/conversation.model'
+import { MessageRole, ConversationStatus } from '../database/models/conversation.model'
 
 export interface ChatMessage {
   id: string

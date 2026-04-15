@@ -26,7 +26,7 @@ export const getSellerMetrics = async (): Promise<SellerMetricsUpdatePayload> =>
     const today_orders = todayPurchases.length
     const today_revenue = todayPurchases.reduce(
       (sum, p: any) => sum + (p.price || 0) * (p.buy_count || 0),
-      0
+      0,
     )
 
     // Pending orders: status = WAIT_FOR_CONFIRMATION (1)
@@ -36,10 +36,7 @@ export const getSellerMetrics = async (): Promise<SellerMetricsUpdatePayload> =>
 
     // Pending Q&A: questions with zero answers
     const pending_qa = await QuestionModel.countDocuments({
-      $or: [
-        { answers: { $size: 0 } },
-        { answers: { $exists: false } },
-      ],
+      $or: [{ answers: { $size: 0 } }, { answers: { $exists: false } }],
     })
 
     // Active users: currently online user count
@@ -50,12 +47,26 @@ export const getSellerMetrics = async (): Promise<SellerMetricsUpdatePayload> =>
     const hoursElapsed = Math.max(1, (now.getTime() - todayStart.getTime()) / (1000 * 60 * 60))
     const orders_per_hour = Math.round((today_orders / hoursElapsed) * 10) / 10
 
-    return { today_orders, today_revenue, pending_orders, pending_qa, active_users, orders_per_hour }
+    return {
+      today_orders,
+      today_revenue,
+      pending_orders,
+      pending_qa,
+      active_users,
+      orders_per_hour,
+    }
   } catch (error) {
     Logger.apiError('Failed to get seller metrics', {
       error: error instanceof Error ? error.message : error,
     })
-    return { today_orders: 0, today_revenue: 0, pending_orders: 0, pending_qa: 0, active_users: 0, orders_per_hour: 0 }
+    return {
+      today_orders: 0,
+      today_revenue: 0,
+      pending_orders: 0,
+      pending_qa: 0,
+      active_users: 0,
+      orders_per_hour: 0,
+    }
   }
 }
 
@@ -142,4 +153,3 @@ export const stopPeriodicSellerMetrics = (): void => {
     Logger.apiInfo('Periodic seller metrics stopped')
   }
 }
-

@@ -1,1 +1,1 @@
-export { default } from './CartSyncIndicator';
+export { default } from './CartSyncIndicator'

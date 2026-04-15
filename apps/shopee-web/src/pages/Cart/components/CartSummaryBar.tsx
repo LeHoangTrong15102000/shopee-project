@@ -1,22 +1,22 @@
-import { Tooltip } from '@heroui/tooltip';
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
-import ShopeeCheckbox from 'src/components/ShopeeCheckbox';
-import { ExtendedPurchase } from '../types';
+import { Tooltip } from '@heroui/tooltip'
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
+import ShopeeCheckbox from 'src/components/ShopeeCheckbox'
+import { ExtendedPurchase } from '../types'
 
 interface CartSummaryBarProps {
-  extendedPurchases: ExtendedPurchase[];
-  isAllChecked: boolean;
-  checkedPurchaseCount: number;
-  animatedTotalPrice: number;
-  animatedSavingsPrice: number;
-  totalCheckedPurchasePrice: number;
-  totalCheckedPurchaseSavingPrice: number;
-  handleCheckedAll: () => void;
-  handleDeleteManyPurchases: () => void;
-  handleBuyPurchases: () => void;
-  formatCurrency: (value: number) => string;
+  extendedPurchases: ExtendedPurchase[]
+  isAllChecked: boolean
+  checkedPurchaseCount: number
+  animatedTotalPrice: number
+  animatedSavingsPrice: number
+  totalCheckedPurchasePrice: number
+  totalCheckedPurchaseSavingPrice: number
+  handleCheckedAll: () => void
+  handleDeleteManyPurchases: () => void
+  handleBuyPurchases: () => void
+  formatCurrency: (value: number) => string
 }
 
 const CartSummaryBar = ({
@@ -32,7 +32,7 @@ const CartSummaryBar = ({
   handleBuyPurchases,
   formatCurrency,
 }: CartSummaryBarProps) => {
-  const { t } = useTranslation('cart');
+  const { t } = useTranslation('cart')
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -209,7 +209,7 @@ const CartSummaryBar = ({
         </motion.div>
       </div>
     </motion.div>
-  );
-};
+  )
+}
 
-export default CartSummaryBar;
+export default CartSummaryBar

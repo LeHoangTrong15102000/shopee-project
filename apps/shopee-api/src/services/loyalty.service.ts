@@ -9,13 +9,31 @@ import {
   LoyaltyTier,
   LOYALTY_TIER,
 } from '@repositories/interfaces/loyalty.repository.interface'
-import { PaginatedResult, PaginationOptions } from '@repositories/interfaces/base.repository.interface'
+import {
+  PaginatedResult,
+  PaginationOptions,
+} from '@repositories/interfaces/base.repository.interface'
 import { BaseService, NotFoundError, ValidationError, BusinessError } from './base.service'
 
 const TIER_THRESHOLDS = {
-  [LOYALTY_TIER.BRONZE]: { min: 0, max: 999, next_tier: LOYALTY_TIER.SILVER as LoyaltyTier, next_threshold: 1000 },
-  [LOYALTY_TIER.SILVER]: { min: 1000, max: 4999, next_tier: LOYALTY_TIER.GOLD as LoyaltyTier, next_threshold: 5000 },
-  [LOYALTY_TIER.GOLD]: { min: 5000, max: 19999, next_tier: LOYALTY_TIER.PLATINUM as LoyaltyTier, next_threshold: 20000 },
+  [LOYALTY_TIER.BRONZE]: {
+    min: 0,
+    max: 999,
+    next_tier: LOYALTY_TIER.SILVER as LoyaltyTier,
+    next_threshold: 1000,
+  },
+  [LOYALTY_TIER.SILVER]: {
+    min: 1000,
+    max: 4999,
+    next_tier: LOYALTY_TIER.GOLD as LoyaltyTier,
+    next_threshold: 5000,
+  },
+  [LOYALTY_TIER.GOLD]: {
+    min: 5000,
+    max: 19999,
+    next_tier: LOYALTY_TIER.PLATINUM as LoyaltyTier,
+    next_threshold: 20000,
+  },
   [LOYALTY_TIER.PLATINUM]: { min: 20000, max: null, next_tier: null, next_threshold: null },
 }
 
@@ -67,26 +85,33 @@ export class LoyaltyService extends BaseService {
   async getTransactions(
     userId: string,
     filters: TransactionFilterOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IPointsTransactionItem>> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')
     }
 
-    return this.loyaltyRepository.findTransactionsByUser(userId, filters, this.normalizePagination(pagination))
+    return this.loyaltyRepository.findTransactionsByUser(
+      userId,
+      filters,
+      this.normalizePagination(pagination),
+    )
   }
 
   async getRewards(
     filters: RewardFilterOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IPointsRewardItem>> {
     return this.loyaltyRepository.findRewards(
       { ...filters, is_active: true, in_stock: true },
-      this.normalizePagination(pagination)
+      this.normalizePagination(pagination),
     )
   }
 
-  async redeemPoints(userId: string, rewardId: string): Promise<{
+  async redeemPoints(
+    userId: string,
+    rewardId: string,
+  ): Promise<{
     reward: Partial<IPointsRewardItem>
     points_used: number
     remaining_points: number
@@ -117,7 +142,7 @@ export class LoyaltyService extends BaseService {
 
     if (points.available_points < reward.points_required) {
       throw new BusinessError(
-        `Bạn cần ${reward.points_required} điểm để đổi phần thưởng này. Hiện tại bạn có ${points.available_points} điểm`
+        `Bạn cần ${reward.points_required} điểm để đổi phần thưởng này. Hiện tại bạn có ${points.available_points} điểm`,
       )
     }
 
@@ -152,7 +177,11 @@ export class LoyaltyService extends BaseService {
     }
   }
 
-  async deductPoints(userId: string, points: number, description: string): Promise<IPointsTransactionItem> {
+  async deductPoints(
+    userId: string,
+    points: number,
+    description: string,
+  ): Promise<IPointsTransactionItem> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')
     }
@@ -185,7 +214,7 @@ export class LoyaltyService extends BaseService {
 
   async adminGetRewards(
     filters: { reward_type?: string; is_active?: string },
-    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' }
+    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' },
   ) {
     return (this.loyaltyRepository as any).findRewardsWithFilters(filters, pagination)
   }
@@ -231,7 +260,8 @@ export class LoyaltyService extends BaseService {
 
     const newAvailable = userPoints.available_points + points
     const newTotal = userPoints.total_points + points
-    const newLifetime = points > 0 ? userPoints.lifetime_points + points : userPoints.lifetime_points
+    const newLifetime =
+      points > 0 ? userPoints.lifetime_points + points : userPoints.lifetime_points
 
     // Recalculate tier
     const newTier = this.calculateTier(newLifetime)
@@ -255,7 +285,7 @@ export class LoyaltyService extends BaseService {
 
   async adminGetTransactions(
     filters: { type?: string; user_id?: string },
-    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' }
+    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' },
   ) {
     return (this.loyaltyRepository as any).findAllTransactions(filters, pagination)
   }
@@ -264,4 +294,3 @@ export class LoyaltyService extends BaseService {
     return (this.loyaltyRepository as any).getLoyaltyStats()
   }
 }
-

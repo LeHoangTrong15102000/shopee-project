@@ -1,12 +1,12 @@
-import { createMockProduct, createMockCategory } from 'src/test-utils/factories';
-import type { Product, Category } from 'src/types';
+import { createMockProduct, createMockCategory } from 'src/test-utils/factories'
+import type { Product, Category } from 'src/types'
 
 export const mockCategories: Category[] = [
   createMockCategory({ _id: 'cat-1', name: 'Điện thoại' }),
   createMockCategory({ _id: 'cat-2', name: 'Laptop' }),
   createMockCategory({ _id: 'cat-3', name: 'Máy tính bảng' }),
   createMockCategory({ _id: 'cat-4', name: 'Phụ kiện' }),
-];
+]
 
 export const mockProducts: Product[] = [
   createMockProduct({
@@ -49,4 +49,4 @@ export const mockProducts: Product[] = [
     sold: 300,
     quantity: 500,
   }),
-];
+]

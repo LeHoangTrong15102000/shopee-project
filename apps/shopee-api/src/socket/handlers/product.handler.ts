@@ -1,5 +1,9 @@
 import { Socket } from 'socket.io'
-import { SocketEvent, SubscribeProductPayload, ViewerCountUpdatePayload } from '../../@types/socket.type'
+import {
+  SocketEvent,
+  SubscribeProductPayload,
+  ViewerCountUpdatePayload,
+} from '../../@types/socket.type'
 import { SOCKET_CONFIG, SOCKET_ERRORS } from '@constants/socket'
 import { ROLE } from '@constants/role.enum'
 import { Logger } from '@utils/logger'
@@ -143,4 +147,3 @@ export const joinAdminRoomIfAdmin = (socket: Socket): void => {
     })
   }
 }
-

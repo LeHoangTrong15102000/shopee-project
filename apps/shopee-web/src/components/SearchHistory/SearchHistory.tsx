@@ -1,14 +1,14 @@
-import { AnimatePresence, motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { SearchHistoryItem } from 'src/hooks/useSearchHistory';
-import Button from 'src/components/Button';
+import { AnimatePresence, motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { SearchHistoryItem } from 'src/hooks/useSearchHistory'
+import Button from 'src/components/Button'
 
 interface SearchHistoryProps {
-  history: SearchHistoryItem[];
-  trendingSearches?: string[];
-  onSelect: (query: string) => void;
-  onRemove: (query: string) => void;
-  onClearAll: () => void;
+  history: SearchHistoryItem[]
+  trendingSearches?: string[]
+  onSelect: (query: string) => void
+  onRemove: (query: string) => void
+  onClearAll: () => void
 }
 
 const SearchHistory = function SearchHistory({
@@ -24,11 +24,11 @@ const SearchHistory = function SearchHistory({
   onRemove,
   onClearAll,
 }: SearchHistoryProps) {
-  const { t } = useTranslation('home');
+  const { t } = useTranslation('home')
   const handleRemove = (e: React.MouseEvent, query: string) => {
-    e.stopPropagation();
-    onRemove(query);
-  };
+    e.stopPropagation()
+    onRemove(query)
+  }
 
   return (
     <div className="absolute top-full right-0 left-0 z-50 mt-1 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-slate-600 dark:bg-slate-800">
@@ -130,7 +130,7 @@ const SearchHistory = function SearchHistory({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SearchHistory;
+export default SearchHistory

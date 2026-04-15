@@ -1,1 +1,1 @@
-export { default } from './ScrollRestoration';
+export { default } from './ScrollRestoration'

@@ -1,28 +1,28 @@
-import React, { forwardRef, useId, useState } from 'react';
-import { Text, TextInput, TextInputProps, View } from 'react-native';
-import { cn } from '@/utils';
-import { cva } from 'class-variance-authority';
-import { useColors } from '@/hooks/useColors.ts';
+import React, { forwardRef, useId, useState } from 'react'
+import { Text, TextInput, TextInputProps, View } from 'react-native'
+import { cn } from '@/utils'
+import { cva } from 'class-variance-authority'
+import { useColors } from '@/hooks/useColors.ts'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   withTiming,
-} from 'react-native-reanimated';
+} from 'react-native-reanimated'
 
 interface AppInputProps extends TextInputProps {
-  label?: string;
-  helperText?: string;
-  errorText?: string;
-  variant?: 'default' | 'textarea';
-  size?: 'sm' | 'md' | 'lg';
-  leftIcon?: React.ReactNode;
-  rightIcon?: React.ReactNode;
-  containerClassName?: string;
-  labelClassName?: string;
-  helperClassName?: string;
-  errorClassName?: string;
-  required?: boolean;
+  label?: string
+  helperText?: string
+  errorText?: string
+  variant?: 'default' | 'textarea'
+  size?: 'sm' | 'md' | 'lg'
+  leftIcon?: React.ReactNode
+  rightIcon?: React.ReactNode
+  containerClassName?: string
+  labelClassName?: string
+  helperClassName?: string
+  errorClassName?: string
+  required?: boolean
 }
 
 const inputVariants = cva('border rounded-lg font-sans-medium bg-background', {
@@ -53,7 +53,7 @@ const inputVariants = cva('border rounded-lg font-sans-medium bg-background', {
     size: 'md',
     state: 'default',
   },
-});
+})
 
 const labelVariants = cva('font-sans-medium text-foreground mb-1.5', {
   variants: {
@@ -69,7 +69,7 @@ const labelVariants = cva('font-sans-medium text-foreground mb-1.5', {
   defaultVariants: {
     size: 'md',
   },
-});
+})
 
 const helperVariants = cva('font-sans-regular mt-1.5', {
   variants: {
@@ -87,7 +87,7 @@ const helperVariants = cva('font-sans-regular mt-1.5', {
     type: 'helper',
     size: 'md',
   },
-});
+})
 
 const AppInput = forwardRef<TextInput, AppInputProps>(
   (
@@ -109,42 +109,42 @@ const AppInput = forwardRef<TextInput, AppInputProps>(
     },
     ref
   ) => {
-    const [focused, setFocused] = useState(false);
-    const hasError = !!errorText;
-    const state = hasError ? 'error' : focused ? 'focused' : 'default';
-    const colors = useColors();
-    const reactId = useId();
-    const inputNativeId = `input-${reactId}`;
+    const [focused, setFocused] = useState(false)
+    const hasError = !!errorText
+    const state = hasError ? 'error' : focused ? 'focused' : 'default'
+    const colors = useColors()
+    const reactId = useId()
+    const inputNativeId = `input-${reactId}`
 
     // Animation values
-    const scale = useSharedValue(1);
-    const borderOpacity = useSharedValue(0);
+    const scale = useSharedValue(1)
+    const borderOpacity = useSharedValue(0)
 
     const animatedStyle = useAnimatedStyle(() => {
       return {
         transform: [{ scale: scale.value }],
-      };
-    });
+      }
+    })
 
     const borderAnimatedStyle = useAnimatedStyle(() => {
       return {
         opacity: borderOpacity.value,
-      };
-    });
+      }
+    })
 
     const handleFocus = (e: any) => {
-      setFocused(true);
-      scale.value = withSpring(1.02, { damping: 15, stiffness: 300 });
-      borderOpacity.value = withTiming(1, { duration: 200 });
-      props.onFocus?.(e);
-    };
+      setFocused(true)
+      scale.value = withSpring(1.02, { damping: 15, stiffness: 300 })
+      borderOpacity.value = withTiming(1, { duration: 200 })
+      props.onFocus?.(e)
+    }
 
     const handleBlur = (e: any) => {
-      setFocused(false);
-      scale.value = withSpring(1, { damping: 15, stiffness: 300 });
-      borderOpacity.value = withTiming(0, { duration: 200 });
-      props.onBlur?.(e);
-    };
+      setFocused(false)
+      scale.value = withSpring(1, { damping: 15, stiffness: 300 })
+      borderOpacity.value = withTiming(0, { duration: 200 })
+      props.onBlur?.(e)
+    }
 
     return (
       <View className={cn('w-full', containerClassName)}>
@@ -212,10 +212,10 @@ const AppInput = forwardRef<TextInput, AppInputProps>(
           </Text>
         )}
       </View>
-    );
+    )
   }
-);
+)
 
-AppInput.displayName = 'AppInput';
+AppInput.displayName = 'AppInput'
 
-export default AppInput;
+export default AppInput

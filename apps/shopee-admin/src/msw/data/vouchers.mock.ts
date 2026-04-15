@@ -1,5 +1,5 @@
-import { createMockVoucher } from 'src/test-utils/factories';
-import type { Voucher } from 'src/types';
+import { createMockVoucher } from 'src/test-utils/factories'
+import type { Voucher } from 'src/types'
 
 export const mockVouchers: Voucher[] = [
   createMockVoucher({
@@ -32,4 +32,4 @@ export const mockVouchers: Voucher[] = [
     is_active: true,
     start_date: '2025-06-01T00:00:00.000Z',
   }),
-];
+]

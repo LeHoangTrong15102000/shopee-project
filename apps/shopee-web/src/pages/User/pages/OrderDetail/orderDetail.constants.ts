@@ -1,5 +1,5 @@
-import { ORDER_STATUS_CONFIG, OrderStatus, getStatusLabel } from 'src/config/orderStatus';
-import { ANIMATION_DURATION, STAGGER_DELAY } from 'src/styles/animations/motion.config';
+import { ORDER_STATUS_CONFIG, OrderStatus, getStatusLabel } from 'src/config/orderStatus'
+import { ANIMATION_DURATION, STAGGER_DELAY } from 'src/styles/animations/motion.config'
 
 // Page-level stagger container
 export const pageContainerVariants = {
@@ -8,7 +8,7 @@ export const pageContainerVariants = {
     opacity: 1,
     transition: { staggerChildren: STAGGER_DELAY.slow, delayChildren: 0.1 },
   },
-};
+}
 
 // Section stagger item with fadeInUp
 export const sectionVariants = {
@@ -18,7 +18,7 @@ export const sectionVariants = {
     y: 0,
     transition: { duration: ANIMATION_DURATION.normal, ease: [0.25, 0.46, 0.45, 0.94] },
   },
-};
+}
 
 // Order items container with faster stagger
 export const itemsContainerVariants = {
@@ -27,7 +27,7 @@ export const itemsContainerVariants = {
     opacity: 1,
     transition: { staggerChildren: STAGGER_DELAY.normal, delayChildren: 0.05 },
   },
-};
+}
 
 // Individual order item
 export const orderItemVariants = {
@@ -37,7 +37,7 @@ export const orderItemVariants = {
     y: 0,
     transition: { duration: ANIMATION_DURATION.normal, ease: [0.25, 0.46, 0.45, 0.94] },
   },
-};
+}
 
 // Status badge animation with scale-in
 export const statusBadgeVariants = {
@@ -47,14 +47,14 @@ export const statusBadgeVariants = {
     scale: 1,
     transition: { duration: ANIMATION_DURATION.normal, ease: [0.25, 0.46, 0.45, 0.94] },
   },
-};
+}
 
 // Modal variants with improved entrance
 export const modalBackdropVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { duration: ANIMATION_DURATION.fast } },
   exit: { opacity: 0, transition: { duration: ANIMATION_DURATION.fast } },
-};
+}
 
 export const modalContentVariants = {
   hidden: { opacity: 0, scale: 0.9, y: 20 },
@@ -70,30 +70,30 @@ export const modalContentVariants = {
     y: 10,
     transition: { duration: ANIMATION_DURATION.fast },
   },
-};
+}
 
 // Reduced motion variants
 export const reducedMotionVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { duration: 0.1 } },
-};
+}
 
 export function getStatusDisplay(status: OrderStatus) {
-  const config = ORDER_STATUS_CONFIG[status];
+  const config = ORDER_STATUS_CONFIG[status]
   if (!config) {
     return {
       label: status,
       color: 'text-gray-700 dark:text-gray-300',
       bgColor: 'bg-gray-100 dark:bg-gray-800',
       icon: status,
-    };
+    }
   }
   return {
     label: getStatusLabel(status),
     color: `${config.color.light} dark:${config.color.dark}`,
     bgColor: `${config.bgColor.light} dark:${config.bgColor.dark}`,
     icon: config.icon,
-  };
+  }
 }
 
 export const paymentMethodLabelKeys: Record<string, string> = {
@@ -101,7 +101,7 @@ export const paymentMethodLabelKeys: Record<string, string> = {
   bank_transfer: 'payment:method.bankTransfer',
   e_wallet: 'payment:method.eWallet',
   credit_card: 'payment:method.creditCard',
-};
+}
 
 export const formatDate = (dateString: string, locale: string = 'vi-VN') => {
   return new Date(dateString).toLocaleDateString(locale, {
@@ -110,5 +110,5 @@ export const formatDate = (dateString: string, locale: string = 'vi-VN') => {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-  });
-};
+  })
+}

@@ -1,8 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render } from '@testing-library/react';
-import { MemoryRouter } from 'react-router';
-import PWAInstallPrompt from '../PWAInstallPrompt/PWAInstallPrompt';
-import SellerDashboardPanel from '../SellerDashboardPanel/SellerDashboardPanel';
+import { describe, it, expect, vi } from 'vitest'
+import { render } from '@testing-library/react'
+import { MemoryRouter } from 'react-router'
+import PWAInstallPrompt from '../PWAInstallPrompt/PWAInstallPrompt'
+import SellerDashboardPanel from '../SellerDashboardPanel/SellerDashboardPanel'
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -10,7 +10,7 @@ vi.mock('react-i18next', () => ({
     i18n: { language: 'vi', changeLanguage: vi.fn() },
   }),
   Trans: ({ children }: any) => children,
-}));
+}))
 
 vi.mock('src/hooks/usePWAInstall', () => ({
   usePWAInstall: () => ({
@@ -18,11 +18,11 @@ vi.mock('src/hooks/usePWAInstall', () => ({
     promptInstall: vi.fn(),
     dismissPrompt: vi.fn(),
   }),
-}));
+}))
 
 vi.mock('src/hooks/useReducedMotion', () => ({
   useReducedMotion: () => false,
-}));
+}))
 
 vi.mock('src/hooks/useSellerDashboard', () => ({
   default: () => ({
@@ -36,17 +36,17 @@ vi.mock('src/hooks/useSellerDashboard', () => ({
     qaNotifications: [],
     isActive: false,
   }),
-}));
+}))
 
 vi.mock('@shopee/shared-utils', () => ({
   formatVNDCurrency: (value: number) => value.toString(),
-}));
+}))
 
 describe('PWAInstallPrompt', () => {
   it('renders nothing when not installable', () => {
-    const { container } = render(<PWAInstallPrompt />);
-    expect(container.firstChild).toBeFalsy();
-  });
+    const { container } = render(<PWAInstallPrompt />)
+    expect(container.firstChild).toBeFalsy()
+  })
 
   it('renders prompt when installable', () => {
     vi.doMock('src/hooks/usePWAInstall', () => ({
@@ -55,12 +55,12 @@ describe('PWAInstallPrompt', () => {
         promptInstall: vi.fn(),
         dismissPrompt: vi.fn(),
       }),
-    }));
+    }))
 
-    const { container } = render(<PWAInstallPrompt />);
-    expect(container).toBeInstanceOf(HTMLDivElement);
-  });
-});
+    const { container } = render(<PWAInstallPrompt />)
+    expect(container).toBeInstanceOf(HTMLDivElement)
+  })
+})
 
 describe('SellerDashboardPanel', () => {
   it('renders nothing when not active', () => {
@@ -68,9 +68,9 @@ describe('SellerDashboardPanel', () => {
       <MemoryRouter>
         <SellerDashboardPanel />
       </MemoryRouter>,
-    );
-    expect(container.firstChild).toBeFalsy();
-  });
+    )
+    expect(container.firstChild).toBeFalsy()
+  })
 
   it('renders dashboard when active', () => {
     vi.doMock('src/hooks/useSellerDashboard', () => ({
@@ -98,15 +98,15 @@ describe('SellerDashboardPanel', () => {
         ],
         isActive: true,
       }),
-    }));
+    }))
 
     const { container } = render(
       <MemoryRouter>
         <SellerDashboardPanel />
       </MemoryRouter>,
-    );
-    expect(container).toBeInstanceOf(HTMLDivElement);
-  });
+    )
+    expect(container).toBeInstanceOf(HTMLDivElement)
+  })
 
   it('renders with metrics', () => {
     vi.doMock('src/hooks/useSellerDashboard', () => ({
@@ -121,13 +121,13 @@ describe('SellerDashboardPanel', () => {
         qaNotifications: [],
         isActive: true,
       }),
-    }));
+    }))
 
     const { container } = render(
       <MemoryRouter>
         <SellerDashboardPanel className="test-class" />
       </MemoryRouter>,
-    );
-    expect(container).toBeInstanceOf(HTMLDivElement);
-  });
-});
+    )
+    expect(container).toBeInstanceOf(HTMLDivElement)
+  })
+})

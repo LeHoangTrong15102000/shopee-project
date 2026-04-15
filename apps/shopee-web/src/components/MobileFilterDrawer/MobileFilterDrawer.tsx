@@ -1,37 +1,37 @@
-import { useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useForm, Controller } from 'react-hook-form';
-import { Link, createSearchParams } from 'react-router';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import classNames from 'classnames';
+import { useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useForm, Controller } from 'react-hook-form'
+import { Link, createSearchParams } from 'react-router'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import classNames from 'classnames'
 
-import Button from 'src/components/Button';
-import InputNumber from 'src/components/InputNumber';
-import RatingStars from 'src/pages/ProductList/components/RatingStars';
-import path from 'src/constant/path';
-import { useProductQueryStates } from 'src/hooks/nuqs';
-import { useFocusTrap } from 'src/hooks/useFocusTrap';
-import { Category } from 'src/types/category.type';
-import { inputNumberSchema } from 'src/utils/rules';
-import { useTranslation } from 'react-i18next';
+import Button from 'src/components/Button'
+import InputNumber from 'src/components/InputNumber'
+import RatingStars from 'src/pages/ProductList/components/RatingStars'
+import path from 'src/constant/path'
+import { useProductQueryStates } from 'src/hooks/nuqs'
+import { useFocusTrap } from 'src/hooks/useFocusTrap'
+import { Category } from 'src/types/category.type'
+import { inputNumberSchema } from 'src/utils/rules'
+import { useTranslation } from 'react-i18next'
 
 interface MobileFilterDrawerProps {
-  isOpen: boolean;
-  onClose: () => void;
-  categories: Category[];
+  isOpen: boolean
+  onClose: () => void
+  categories: Category[]
 }
 
-type FormData = z.infer<typeof inputNumberSchema>;
+type FormData = z.infer<typeof inputNumberSchema>
 
 const MobileFilterDrawer = ({ isOpen, onClose, categories }: MobileFilterDrawerProps) => {
-  const { t } = useTranslation('home');
-  const [filters, setFilters] = useProductQueryStates();
-  const { category } = filters;
-  const drawerRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation('home')
+  const [filters, setFilters] = useProductQueryStates()
+  const { category } = filters
+  const drawerRef = useRef<HTMLDivElement>(null)
 
-  useFocusTrap({ isOpen, containerRef: drawerRef, onClose });
+  useFocusTrap({ isOpen, containerRef: drawerRef, onClose })
 
   const {
     control,
@@ -46,39 +46,39 @@ const MobileFilterDrawer = ({ isOpen, onClose, categories }: MobileFilterDrawerP
     },
     resolver: zodResolver(inputNumberSchema),
     shouldFocusError: false,
-  });
+  })
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden'
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = ''
     }
     return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
 
   const onSubmit = handleSubmit((data) => {
-    setFilters({ price_max: Number(data.price_max), price_min: Number(data.price_min) });
-    onClose();
-  });
+    setFilters({ price_max: Number(data.price_max), price_min: Number(data.price_min) })
+    onClose()
+  })
 
   const handleRemoveAsideFilter = () => {
-    reset();
-    setFilters({ price_min: null, price_max: null, category: null, rating_filter: null });
-    onClose();
-  };
+    reset()
+    setFilters({ price_min: null, price_max: null, category: null, rating_filter: null })
+    onClose()
+  }
 
   const handleCategoryClick = () => {
-    onClose();
-  };
+    onClose()
+  }
 
   const filtersAsStrings = Object.fromEntries(
     Object.entries(filters)
       .filter(([_, v]) => v != null)
       .map(([k, v]) => [k, String(v)]),
-  ) as Record<string, string>;
+  ) as Record<string, string>
 
   const drawerContent = (
     <AnimatePresence>
@@ -156,7 +156,7 @@ const MobileFilterDrawer = ({ isOpen, onClose, categories }: MobileFilterDrawerP
               <div className="my-4 h-px bg-gray-300 dark:bg-slate-600" />
               <ul>
                 {categories.map((categoryItem) => {
-                  const isActive = category === categoryItem._id;
+                  const isActive = category === categoryItem._id
                   return (
                     <li className="py-2 pl-2" key={categoryItem._id}>
                       <Link
@@ -183,7 +183,7 @@ const MobileFilterDrawer = ({ isOpen, onClose, categories }: MobileFilterDrawerP
                         {categoryItem.name}
                       </Link>
                     </li>
-                  );
+                  )
                 })}
               </ul>
               <Link
@@ -226,8 +226,8 @@ const MobileFilterDrawer = ({ isOpen, onClose, categories }: MobileFilterDrawerP
                           classNameInput="px-1 py-1 text-sm w-full outline-hidden border rounded-xs border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 focus:border-gray-500 dark:focus:border-gray-400 focus:shadow-xs"
                           {...field}
                           onChange={(event) => {
-                            field.onChange(event);
-                            trigger('price_max');
+                            field.onChange(event)
+                            trigger('price_max')
                           }}
                         />
                       )}
@@ -246,8 +246,8 @@ const MobileFilterDrawer = ({ isOpen, onClose, categories }: MobileFilterDrawerP
                           maxValue="50000000"
                           {...field}
                           onChange={(event) => {
-                            field.onChange(event);
-                            trigger('price_min');
+                            field.onChange(event)
+                            trigger('price_min')
                           }}
                         />
                       )}
@@ -282,9 +282,9 @@ const MobileFilterDrawer = ({ isOpen, onClose, categories }: MobileFilterDrawerP
         </>
       )}
     </AnimatePresence>
-  );
+  )
 
-  return createPortal(drawerContent, document.body);
-};
+  return createPortal(drawerContent, document.body)
+}
 
-export default MobileFilterDrawer;
+export default MobileFilterDrawer

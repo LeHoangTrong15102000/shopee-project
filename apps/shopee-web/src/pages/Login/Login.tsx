@@ -1,39 +1,38 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { useContext, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { Link, useLocation, useNavigate } from 'react-router';
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
+import { useContext, useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+import { Link, useLocation, useNavigate } from 'react-router'
 
-import classNames from 'classnames';
-import { motion } from 'framer-motion';
-import SEO from 'src/components/SEO';
-import { toast } from 'react-toastify';
-import authApi from 'src/apis/auth.api';
-import Button from 'src/components/Button';
-import Input from 'src/components/Input';
-import path from 'src/constant/path';
-import { AppContext } from 'src/contexts/app.context';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import { STAGGER_DELAY, staggerContainer, staggerItem } from 'src/styles/animations';
-import { ErrorResponseApi } from 'src/types/utils.type';
-import { LoginSchema, loginSchema } from 'src/utils/rules';
-import { generateNameId, isAxiosUnprocessableEntityError } from 'src/utils/utils';
+import classNames from 'classnames'
+import { motion } from 'framer-motion'
+import SEO from 'src/components/SEO'
+import { toast } from 'react-toastify'
+import authApi from 'src/apis/auth.api'
+import Button from 'src/components/Button'
+import Input from 'src/components/Input'
+import path from 'src/constant/path'
+import { AppContext } from 'src/contexts/app.context'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import { STAGGER_DELAY, staggerContainer, staggerItem } from 'src/styles/animations'
+import { ErrorResponseApi } from 'src/types/utils.type'
+import { LoginSchema, loginSchema } from 'src/utils/rules'
+import { generateNameId, isAxiosUnprocessableEntityError } from 'src/utils/utils'
 
-type FormData = LoginSchema;
+type FormData = LoginSchema
 
 const Login = () => {
-  const { t } = useTranslation('auth');
-  const { setIsAuthenticated, setProfile } = useContext(AppContext);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const reducedMotion = useReducedMotion();
-  const containerVariants = staggerContainer(STAGGER_DELAY.normal);
+  const { t } = useTranslation('auth')
+  const { setIsAuthenticated, setProfile } = useContext(AppContext)
+  const navigate = useNavigate()
+  const location = useLocation()
+  const reducedMotion = useReducedMotion()
+  const containerVariants = staggerContainer(STAGGER_DELAY.normal)
   // console.log(location)
 
-  const purchaseIdFromLocation = (location.state as { purchaseId: string } | null)?.purchaseId;
-  const purchaseNameFromLocation = (location.state as { purchaseName: string } | null)
-    ?.purchaseName;
+  const purchaseIdFromLocation = (location.state as { purchaseId: string } | null)?.purchaseId
+  const purchaseNameFromLocation = (location.state as { purchaseName: string } | null)?.purchaseName
   // console.log('CHOOSENPURCHASEHREF FROM LOCATION', choosenPurchaseHrefFromLocation)
   const {
     register,
@@ -44,21 +43,21 @@ const Login = () => {
   } = useForm<FormData>({
     mode: 'onTouched',
     resolver: zodResolver(loginSchema),
-  }); // return cho chúng ta một cái object
+  }) // return cho chúng ta một cái object
   // const rules = getRules(getValues)
 
-  const watchEmail = watch('email', '');
-  const watchPassword = watch('password', '');
+  const watchEmail = watch('email', '')
+  const watchPassword = watch('password', '')
 
   const loginAccountMutation = useMutation({
     mutationFn: (body: FormData) => authApi.loginAccount(body),
     onSuccess: () => {
-      toast.success(t('login.success'), { autoClose: 1000 });
+      toast.success(t('login.success'), { autoClose: 1000 })
     },
     onError: () => {
-      toast.error(t('login.error'), { autoClose: 1000 });
+      toast.error(t('login.error'), { autoClose: 1000 })
     },
-  });
+  })
 
   // data chính là giá trị trả ra khi mà onSubmit thành công
   const onSubmit = handleSubmit((data) => {
@@ -68,8 +67,8 @@ const Login = () => {
       // data onSuccess là object do sv trả về
       onSuccess: (data) => {
         // console.log(data) // data đầu tiên là axiosRes trả về, data thứ 2 là Successapi sv trả về
-        setIsAuthenticated(true);
-        setProfile(data.data.data.user);
+        setIsAuthenticated(true)
+        setProfile(data.data.data.user)
         navigate(
           purchaseIdFromLocation
             ? `${path.home}${generateNameId({
@@ -77,33 +76,33 @@ const Login = () => {
                 id: purchaseIdFromLocation,
               })}`
             : '/',
-        );
+        )
       },
       onError: (error) => {
         //  isAxiosUn...<truyền vào kiểu type của data khi api lỗi>
         if (isAxiosUnprocessableEntityError<ErrorResponseApi<FormData>>(error)) {
-          const formError = error.response?.data.data;
+          const formError = error.response?.data.data
           if (formError) {
             Object.keys(formError).forEach((key) => {
               setError(key as keyof FormData, {
                 message: formError[key as keyof FormData],
                 type: 'Server',
-              });
-            });
+              })
+            })
           }
         }
         // console.log(error)
       },
-    });
-  });
+    })
+  })
 
   // Viết các hàm sau cho có thể tái sử dụng được
 
   useEffect(() => {
     return () => {
-      history.replaceState(null, ''); // hàm history.replaceState là hàm có sẵn ở trên trình duyệt
-    };
-  }, []);
+      history.replaceState(null, '') // hàm history.replaceState là hàm có sẵn ở trên trình duyệt
+    }
+  }, [])
 
   return (
     <div className="relative bg-orange">
@@ -254,7 +253,7 @@ const Login = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

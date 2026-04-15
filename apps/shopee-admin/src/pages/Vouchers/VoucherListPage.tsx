@@ -1,38 +1,38 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { type ColumnDef } from '@tanstack/react-table';
-import { format } from 'date-fns';
-import { Plus, Eye, Trash2, MoreHorizontal, Pencil, ToggleLeft } from 'lucide-react';
-import { Button } from 'src/components/ui/button';
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { type ColumnDef } from '@tanstack/react-table'
+import { format } from 'date-fns'
+import { Plus, Eye, Trash2, MoreHorizontal, Pencil, ToggleLeft } from 'lucide-react'
+import { Button } from 'src/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from 'src/components/ui/dialog';
-import { Input } from 'src/components/ui/input';
-import { Label } from 'src/components/ui/label';
+} from 'src/components/ui/dialog'
+import { Input } from 'src/components/ui/input'
+import { Label } from 'src/components/ui/label'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/components/ui/select';
+} from 'src/components/ui/select'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from 'src/components/ui/dropdown-menu';
-import { DataTable } from 'src/components/shared/DataTable';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { StatusBadge } from 'src/components/shared/StatusBadge';
-import { StatCard } from 'src/components/shared/StatCard';
-import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
-import { ErrorState } from 'src/components/shared/ErrorState';
+} from 'src/components/ui/dropdown-menu'
+import { DataTable } from 'src/components/shared/DataTable'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { StatusBadge } from 'src/components/shared/StatusBadge'
+import { StatCard } from 'src/components/shared/StatCard'
+import { ConfirmDialog } from 'src/components/shared/ConfirmDialog'
+import { ErrorState } from 'src/components/shared/ErrorState'
 import {
   useVouchers,
   useVoucherStats,
@@ -40,18 +40,18 @@ import {
   useDeleteVoucher,
   useUpdateVoucher,
   useToggleVoucher,
-} from 'src/hooks/useVouchers';
-import { formatCurrency } from 'src/utils/format';
-import type { Voucher, DiscountType } from 'src/types';
+} from 'src/hooks/useVouchers'
+import { formatCurrency } from 'src/utils/format'
+import type { Voucher, DiscountType } from 'src/types'
 
 export default function VoucherListPage() {
-  const { t } = useTranslation('vouchers');
-  const { t: tc } = useTranslation('common');
-  const navigate = useNavigate();
-  const [page, setPage] = useState(0);
-  const [createOpen, setCreateOpen] = useState(false);
-  const [editVoucher, setEditVoucher] = useState<Voucher | null>(null);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const { t } = useTranslation('vouchers')
+  const { t: tc } = useTranslation('common')
+  const navigate = useNavigate()
+  const [page, setPage] = useState(0)
+  const [createOpen, setCreateOpen] = useState(false)
+  const [editVoucher, setEditVoucher] = useState<Voucher | null>(null)
+  const [deleteId, setDeleteId] = useState<string | null>(null)
   const [form, setForm] = useState({
     code: '',
     discount_type: 'percentage' as DiscountType,
@@ -60,14 +60,14 @@ export default function VoucherListPage() {
     usage_limit: 100,
     start_date: '',
     end_date: '',
-  });
+  })
 
-  const { data, isLoading, isError, refetch } = useVouchers(page);
-  const { data: stats } = useVoucherStats();
-  const createMut = useCreateVoucher(() => setCreateOpen(false));
-  const deleteMut = useDeleteVoucher(() => setDeleteId(null));
-  const updateMut = useUpdateVoucher(() => setEditVoucher(null));
-  const toggleMut = useToggleVoucher();
+  const { data, isLoading, isError, refetch } = useVouchers(page)
+  const { data: stats } = useVoucherStats()
+  const createMut = useCreateVoucher(() => setCreateOpen(false))
+  const deleteMut = useDeleteVoucher(() => setDeleteId(null))
+  const updateMut = useUpdateVoucher(() => setEditVoucher(null))
+  const toggleMut = useToggleVoucher()
 
   const columns: ColumnDef<Voucher>[] = [
     {
@@ -115,7 +115,7 @@ export default function VoucherListPage() {
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
-                setEditVoucher(row.original);
+                setEditVoucher(row.original)
                 setForm({
                   code: row.original.code,
                   discount_type: row.original.discount_type,
@@ -124,7 +124,7 @@ export default function VoucherListPage() {
                   usage_limit: row.original.usage_limit,
                   start_date: row.original.start_date?.slice(0, 10) ?? '',
                   end_date: row.original.end_date?.slice(0, 10) ?? '',
-                });
+                })
               }}
             >
               <Pencil className="mr-2 size-4" />
@@ -149,7 +149,7 @@ export default function VoucherListPage() {
         </DropdownMenu>
       ),
     },
-  ];
+  ]
 
   return (
     <div className="space-y-6">
@@ -361,5 +361,5 @@ export default function VoucherListPage() {
         isLoading={deleteMut.isPending}
       />
     </div>
-  );
+  )
 }

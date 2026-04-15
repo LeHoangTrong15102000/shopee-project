@@ -1,50 +1,50 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { addDays, format } from 'date-fns';
-import { vi } from 'date-fns/locale';
-import classNames from 'classnames';
-import { formatCurrency } from 'src/utils/utils';
-import Button from 'src/components/Button';
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { addDays, format } from 'date-fns'
+import { vi } from 'date-fns/locale'
+import classNames from 'classnames'
+import { formatCurrency } from 'src/utils/utils'
+import Button from 'src/components/Button'
 
 export interface ShippingOption {
-  id: string;
-  name: string;
-  price: number;
-  estimated_days: { min: number; max: number };
-  icon?: string;
+  id: string
+  name: string
+  price: number
+  estimated_days: { min: number; max: number }
+  icon?: string
 }
 
 interface ShippingEstimateProps {
-  productLocation: string;
-  selectedAddress?: string;
-  onAddressChange?: (address: string) => void;
-  onShippingSelect?: (option: ShippingOption) => void;
-  className?: string;
+  productLocation: string
+  selectedAddress?: string
+  onAddressChange?: (address: string) => void
+  onShippingSelect?: (option: ShippingOption) => void
+  className?: string
 }
 
 const defaultShippingOptions: ShippingOption[] = [
   { id: 'instant', name: 'option.instant', price: 45000, estimated_days: { min: 0, max: 1 } },
   { id: 'express', name: 'option.express', price: 25000, estimated_days: { min: 1, max: 2 } },
   { id: 'standard', name: 'option.standard', price: 15000, estimated_days: { min: 3, max: 5 } },
-];
+]
 
 const formatDeliveryDate = (daysFromNow: number): string => {
-  const date = addDays(new Date(), daysFromNow);
-  return format(date, 'dd/MM', { locale: vi });
-};
+  const date = addDays(new Date(), daysFromNow)
+  return format(date, 'dd/MM', { locale: vi })
+}
 
 const getDeliveryDateRange = (
   estimated_days: { min: number; max: number },
   t: ReturnType<typeof import('react-i18next').useTranslation<'shipping'>>['t'],
 ): string => {
-  const minDate = formatDeliveryDate(estimated_days.min);
-  const maxDate = formatDeliveryDate(estimated_days.max);
+  const minDate = formatDeliveryDate(estimated_days.min)
+  const maxDate = formatDeliveryDate(estimated_days.max)
 
   if (estimated_days.min === estimated_days.max) {
-    return t('deliverOn', { date: minDate });
+    return t('deliverOn', { date: minDate })
   }
-  return t('deliverRange', { minDate, maxDate });
-};
+  return t('deliverRange', { minDate, maxDate })
+}
 
 function ShippingEstimate({
   productLocation,
@@ -53,22 +53,22 @@ function ShippingEstimate({
   onShippingSelect,
   className,
 }: ShippingEstimateProps) {
-  const { t } = useTranslation('shipping');
-  const [address, setAddress] = useState(selectedAddress);
-  const [selectedOptionId, setSelectedOptionId] = useState<string>(defaultShippingOptions[0].id);
-  const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const { t } = useTranslation('shipping')
+  const [address, setAddress] = useState(selectedAddress)
+  const [selectedOptionId, setSelectedOptionId] = useState<string>(defaultShippingOptions[0].id)
+  const [isEditingAddress, setIsEditingAddress] = useState(false)
 
-  const selectedOption = defaultShippingOptions.find((opt) => opt.id === selectedOptionId);
+  const selectedOption = defaultShippingOptions.find((opt) => opt.id === selectedOptionId)
 
   const handleAddressChange = (newAddress: string) => {
-    setAddress(newAddress);
-    onAddressChange?.(newAddress);
-  };
+    setAddress(newAddress)
+    onAddressChange?.(newAddress)
+  }
 
   const handleShippingSelect = (option: ShippingOption) => {
-    setSelectedOptionId(option.id);
-    onShippingSelect?.(option);
-  };
+    setSelectedOptionId(option.id)
+    onShippingSelect?.(option)
+  }
 
   return (
     <div className={classNames('rounded-xs bg-gray-50 p-3 sm:p-4 dark:bg-slate-900', className)}>
@@ -138,8 +138,8 @@ function ShippingEstimate({
         </span>
         <div role="radiogroup" aria-labelledby="shipping-options-label" className="space-y-2">
           {defaultShippingOptions.map((option) => {
-            const deliveryDateId = `delivery-date-${option.id}`;
-            const isSelected = selectedOptionId === option.id;
+            const deliveryDateId = `delivery-date-${option.id}`
+            const isSelected = selectedOptionId === option.id
             return (
               <label
                 key={option.id}
@@ -180,7 +180,7 @@ function ShippingEstimate({
                   ₫{formatCurrency(option.price)}
                 </span>
               </label>
-            );
+            )
           })}
         </div>
       </div>
@@ -200,7 +200,7 @@ function ShippingEstimate({
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default ShippingEstimate;
+export default ShippingEstimate

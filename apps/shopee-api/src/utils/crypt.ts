@@ -18,9 +18,7 @@ const generateSalt = (rounds: number): string => {
 export const hashValue = (value: string): string => {
   const salt = generateSalt(BCRYPT_SALT_ROUNDS)
   const iterations = Math.pow(2, BCRYPT_SALT_ROUNDS)
-  const hash = crypto
-    .pbkdf2Sync(value, salt, iterations, 64, 'sha512')
-    .toString('hex')
+  const hash = crypto.pbkdf2Sync(value, salt, iterations, 64, 'sha512').toString('hex')
   // Format: $rounds$salt$hash (tương tự bcrypt format)
   return `$${BCRYPT_SALT_ROUNDS}$${salt}$${hash}`
 }
@@ -44,9 +42,7 @@ export const compareValue = (plainText: string, storedHash: string): boolean => 
     const originalHash = parts[3]
 
     const iterations = Math.pow(2, rounds)
-    const newHash = crypto
-      .pbkdf2Sync(plainText, salt, iterations, 64, 'sha512')
-      .toString('hex')
+    const newHash = crypto.pbkdf2Sync(plainText, salt, iterations, 64, 'sha512').toString('hex')
 
     // Sử dụng timingSafeEqual để chống timing attacks
     const originalBuffer = Buffer.from(originalHash, 'hex')

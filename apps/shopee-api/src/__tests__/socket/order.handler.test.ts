@@ -49,7 +49,10 @@ describe('Order Handler', () => {
       registerOrderHandlers(mockSocket)
 
       expect(mockSocket.on).toHaveBeenCalledWith(SocketEvent.SUBSCRIBE_ORDER, expect.any(Function))
-      expect(mockSocket.on).toHaveBeenCalledWith(SocketEvent.UNSUBSCRIBE_ORDER, expect.any(Function))
+      expect(mockSocket.on).toHaveBeenCalledWith(
+        SocketEvent.UNSUBSCRIBE_ORDER,
+        expect.any(Function),
+      )
     })
   })
 
@@ -135,4 +138,3 @@ describe('Order Handler', () => {
     })
   })
 })
-

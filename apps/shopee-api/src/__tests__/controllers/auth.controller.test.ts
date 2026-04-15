@@ -8,7 +8,11 @@
 import { Request, Response } from 'express'
 import authController from '@controllers/auth.controller'
 import { STATUS } from '@constants/status'
-import { ConflictError, ValidationError as ServiceValidationError, UnauthorizedError as ServiceUnauthorizedError } from '@services/base.service'
+import {
+  ConflictError,
+  ValidationError as ServiceValidationError,
+  UnauthorizedError as ServiceUnauthorizedError,
+} from '@services/base.service'
 
 // Mock the container's authService
 jest.mock('../../container', () => ({
@@ -93,7 +97,7 @@ describe('Auth Controller', () => {
 
       expect(mockAuthService.register).toHaveBeenCalledWith(
         { email: 'test@example.com', password: 'password123' },
-        expect.any(Object)
+        expect.any(Object),
       )
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
@@ -123,10 +127,10 @@ describe('Auth Controller', () => {
 
       await authController.registerController(req as Request, res as Response)
 
-      expect(mockAuthService.register).toHaveBeenCalledWith(
-        expect.any(Object),
-        { expireAccessToken: 900, expireRefreshToken: expect.any(Number) }
-      )
+      expect(mockAuthService.register).toHaveBeenCalledWith(expect.any(Object), {
+        expireAccessToken: 900,
+        expireRefreshToken: expect.any(Number),
+      })
     })
 
     it('should ignore client-provided expire-access-token header', async () => {
@@ -156,10 +160,10 @@ describe('Auth Controller', () => {
       await authController.registerController(req as Request, res as Response)
 
       // Verify service called with server config (900), not client value
-      expect(mockAuthService.register).toHaveBeenCalledWith(
-        expect.any(Object),
-        { expireAccessToken: 900, expireRefreshToken: expect.any(Number) }
-      )
+      expect(mockAuthService.register).toHaveBeenCalledWith(expect.any(Object), {
+        expireAccessToken: 900,
+        expireRefreshToken: expect.any(Number),
+      })
     })
 
     it('should ignore client-provided expire-refresh-token header', async () => {
@@ -189,10 +193,10 @@ describe('Auth Controller', () => {
       await authController.registerController(req as Request, res as Response)
 
       // Verify service called with server config, not client value
-      expect(mockAuthService.register).toHaveBeenCalledWith(
-        expect.any(Object),
-        { expireAccessToken: 900, expireRefreshToken: 8640000 }
-      )
+      expect(mockAuthService.register).toHaveBeenCalledWith(expect.any(Object), {
+        expireAccessToken: 900,
+        expireRefreshToken: 8640000,
+      })
     })
 
     it('should return error if email already exists', async () => {
@@ -208,7 +212,7 @@ describe('Auth Controller', () => {
       const res = createMockResponse()
 
       await expect(
-        authController.registerController(req as Request, res as Response)
+        authController.registerController(req as Request, res as Response),
       ).rejects.toMatchObject({
         status: STATUS.UNPROCESSABLE_ENTITY,
       })
@@ -244,7 +248,7 @@ describe('Auth Controller', () => {
 
       expect(mockAuthService.login).toHaveBeenCalledWith(
         { email: 'test@example.com', password: 'password123' },
-        expect.any(Object)
+        expect.any(Object),
       )
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
@@ -262,7 +266,7 @@ describe('Auth Controller', () => {
       const res = createMockResponse()
 
       await expect(
-        authController.loginController(req as Request, res as Response)
+        authController.loginController(req as Request, res as Response),
       ).rejects.toMatchObject({
         status: STATUS.UNPROCESSABLE_ENTITY,
       })
@@ -281,7 +285,7 @@ describe('Auth Controller', () => {
       const res = createMockResponse()
 
       await expect(
-        authController.loginController(req as Request, res as Response)
+        authController.loginController(req as Request, res as Response),
       ).rejects.toMatchObject({
         status: STATUS.UNPROCESSABLE_ENTITY,
       })
@@ -341,7 +345,7 @@ describe('Auth Controller', () => {
 
     it('should throw UnauthorizedError when refresh token is invalid', async () => {
       mockAuthService.refreshToken.mockRejectedValue(
-        new ServiceUnauthorizedError('Refresh token không tồn tại')
+        new ServiceUnauthorizedError('Refresh token không tồn tại'),
       )
 
       const req = createMockRequest({
@@ -355,11 +359,10 @@ describe('Auth Controller', () => {
       const res = createMockResponse()
 
       await expect(
-        authController.refreshTokenController(req as Request, res as Response)
+        authController.refreshTokenController(req as Request, res as Response),
       ).rejects.toMatchObject({
         status: STATUS.UNAUTHORIZED,
       })
     })
   })
 })
-

@@ -28,10 +28,7 @@ const getSystemPrompt = (): string => {
 /**
  * Fallback responses khi không có Anthropic API key hoặc có lỗi
  */
-const getFallbackResponse = (
-  userMessage: string,
-  errorType: string = 'general'
-): string => {
+const getFallbackResponse = (userMessage: string, errorType: string = 'general'): string => {
   const lowerMessage = userMessage.toLowerCase()
 
   // Xử lý theo loại lỗi
@@ -66,13 +63,10 @@ const getFallbackResponse = (
  * Chuyển đổi messages thành format cho Anthropic
  */
 const formatMessagesForAnthropic = (
-  messages: ChatMessage[]
+  messages: ChatMessage[],
 ): Array<{ role: 'user' | 'assistant'; content: string }> => {
   return messages.map((msg) => ({
-    role:
-      msg.role === MESSAGE_ROLE.USER
-        ? ('user' as const)
-        : ('assistant' as const),
+    role: msg.role === MESSAGE_ROLE.USER ? ('user' as const) : ('assistant' as const),
     content: msg.content,
   }))
 }
@@ -82,7 +76,7 @@ const formatMessagesForAnthropic = (
  */
 export const generateChatResponse = async (
   messages: ChatMessage[],
-  userMessage: string
+  userMessage: string,
 ): Promise<string> => {
   try {
     // Kiểm tra API key trước khi gọi Anthropic
@@ -93,10 +87,7 @@ export const generateChatResponse = async (
 
     console.log('🤖 Đang gọi Anthropic Claude API...')
 
-    const allMessages: ChatMessage[] = [
-      ...messages,
-      createMessage(userMessage, MESSAGE_ROLE.USER),
-    ]
+    const allMessages: ChatMessage[] = [...messages, createMessage(userMessage, MESSAGE_ROLE.USER)]
 
     const response = await anthropic.messages.create({
       model: 'claude-3-haiku-20240307', // Model nhanh và rẻ nhất
@@ -127,9 +118,7 @@ export const generateChatResponse = async (
       err.message?.includes('quota') ||
       err.message?.includes('rate limit')
     ) {
-      console.log(
-        '💳 Lỗi quota/rate limit Anthropic - sử dụng fallback response'
-      )
+      console.log('💳 Lỗi quota/rate limit Anthropic - sử dụng fallback response')
       return getFallbackResponse(userMessage, 'quota')
     }
 
@@ -156,7 +145,7 @@ export const generateStreamingChatResponse = async (
   userMessage: string,
   onChunk: (chunk: string) => void,
   onComplete: () => void,
-  onError: (error: string) => void
+  onError: (error: string) => void,
 ) => {
   try {
     // Kiểm tra API key trước khi gọi Anthropic
@@ -177,10 +166,7 @@ export const generateStreamingChatResponse = async (
 
     console.log('🤖 Đang khởi tạo Anthropic Claude Streaming...')
 
-    const allMessages: ChatMessage[] = [
-      ...messages,
-      createMessage(userMessage, MESSAGE_ROLE.USER),
-    ]
+    const allMessages: ChatMessage[] = [...messages, createMessage(userMessage, MESSAGE_ROLE.USER)]
 
     // Tạo streaming request với Anthropic
     const stream = await anthropic.messages.stream({
@@ -225,9 +211,7 @@ export const generateStreamingChatResponse = async (
 /**
  * Tạo title cho conversation dựa trên tin nhắn đầu tiên
  */
-export const generateConversationTitle = async (
-  firstMessage: string
-): Promise<string> => {
+export const generateConversationTitle = async (firstMessage: string): Promise<string> => {
   try {
     if (firstMessage.length <= 50) {
       return firstMessage

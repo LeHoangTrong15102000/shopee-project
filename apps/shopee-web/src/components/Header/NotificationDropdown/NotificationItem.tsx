@@ -1,10 +1,10 @@
-import { formatDistanceToNow } from 'date-fns';
-import { vi } from 'date-fns/locale';
-import { Notification, NotificationType } from 'src/types/notification.type';
+import { formatDistanceToNow } from 'date-fns'
+import { vi } from 'date-fns/locale'
+import { Notification, NotificationType } from 'src/types/notification.type'
 
 interface Props {
-  notification: Notification;
-  onMarkAsRead?: (id: string) => void;
+  notification: Notification
+  onMarkAsRead?: (id: string) => void
 }
 
 const NotificationItem = ({ notification, onMarkAsRead }: Props) => {
@@ -27,7 +27,7 @@ const NotificationItem = ({ notification, onMarkAsRead }: Props) => {
               />
             </svg>
           </div>
-        );
+        )
       case 'order':
         return (
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
@@ -45,7 +45,7 @@ const NotificationItem = ({ notification, onMarkAsRead }: Props) => {
               />
             </svg>
           </div>
-        );
+        )
       case 'system':
         return (
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
@@ -63,7 +63,7 @@ const NotificationItem = ({ notification, onMarkAsRead }: Props) => {
               />
             </svg>
           </div>
-        );
+        )
       case 'other':
       default:
         return (
@@ -82,23 +82,23 @@ const NotificationItem = ({ notification, onMarkAsRead }: Props) => {
               />
             </svg>
           </div>
-        );
+        )
     }
-  };
+  }
 
   const formatTime = (dateString: string) => {
     try {
-      return formatDistanceToNow(new Date(dateString), { addSuffix: true, locale: vi });
+      return formatDistanceToNow(new Date(dateString), { addSuffix: true, locale: vi })
     } catch {
-      return dateString;
+      return dateString
     }
-  };
+  }
 
   const handleClick = () => {
     if (onMarkAsRead) {
-      onMarkAsRead(notification._id);
+      onMarkAsRead(notification._id)
     }
-  };
+  }
 
   return (
     <div
@@ -122,7 +122,7 @@ const NotificationItem = ({ notification, onMarkAsRead }: Props) => {
         </p>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default NotificationItem;
+export default NotificationItem

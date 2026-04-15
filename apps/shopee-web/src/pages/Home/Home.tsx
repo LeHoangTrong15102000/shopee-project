@@ -1,18 +1,18 @@
-import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router';
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router'
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
-import HeroBanner from 'src/components/HeroBanner';
-import { FlashSaleTimer } from 'src/components/FlashSale';
-import OptimizedImage from 'src/components/OptimizedImage';
-import SEO from 'src/components/SEO';
-import { SITE_URL } from 'src/components/SEO';
-import categoryApi from 'src/apis/category.api';
-import productApi from 'src/apis/product.api';
-import path from 'src/constant/path';
-import { generateNameId } from 'src/utils/utils';
-import useFlashSale from 'src/hooks/useFlashSale';
+import HeroBanner from 'src/components/HeroBanner'
+import { FlashSaleTimer } from 'src/components/FlashSale'
+import OptimizedImage from 'src/components/OptimizedImage'
+import SEO from 'src/components/SEO'
+import { SITE_URL } from 'src/components/SEO'
+import categoryApi from 'src/apis/category.api'
+import productApi from 'src/apis/product.api'
+import path from 'src/constant/path'
+import { generateNameId } from 'src/utils/utils'
+import useFlashSale from 'src/hooks/useFlashSale'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -22,7 +22,7 @@ const containerVariants = {
       staggerChildren: 0.02,
     },
   },
-};
+}
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -31,7 +31,7 @@ const itemVariants = {
     y: 0,
     transition: { duration: 0.3 },
   },
-};
+}
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 30 },
@@ -40,23 +40,23 @@ const sectionVariants = {
     y: 0,
     transition: { duration: 0.5 },
   },
-};
+}
 
 const Home = () => {
-  const { t } = useTranslation('home');
+  const { t } = useTranslation('home')
   // Lấy danh mục sản phẩm
   const { data: categoriesData } = useQuery({
     queryKey: ['categories'],
     queryFn: () => categoryApi.getCategories(),
     staleTime: 5 * 60 * 1000, // Cache 5 phút
-  });
+  })
 
   // Lấy sản phẩm nổi bật (top 20)
   const { data: featuredProductsData } = useQuery({
     queryKey: ['featuredProducts'],
     queryFn: () => productApi.getProducts({ page: 1, limit: 20, sort_by: 'sold', order: 'desc' }),
     staleTime: 5 * 60 * 1000,
-  });
+  })
 
   // Lấy sản phẩm mới (top 20)
   const { data: newProductsData } = useQuery({
@@ -64,21 +64,21 @@ const Home = () => {
     queryFn: () =>
       productApi.getProducts({ page: 1, limit: 20, sort_by: 'createdAt', order: 'desc' }),
     staleTime: 5 * 60 * 1000,
-  });
+  })
 
   // WebSocket: Real-time flash sale data (use undefined for demo, replace with actual sale ID when available)
-  const activeSaleId = undefined; // TODO: Replace with actual flash sale ID from API when available
+  const activeSaleId = undefined // TODO: Replace with actual flash sale ID from API when available
   const {
     remainingSeconds,
     products: flashSaleProducts,
     isActive: _isActive,
     isEnded,
     isConnectedToServer,
-  } = useFlashSale(activeSaleId);
+  } = useFlashSale(activeSaleId)
 
-  const categories = categoriesData?.data.data || [];
-  const featuredProducts = featuredProductsData?.data.data.products || [];
-  const newProducts = newProductsData?.data.data.products || [];
+  const categories = categoriesData?.data.data || []
+  const featuredProducts = featuredProductsData?.data.data.products || []
+  const newProducts = newProductsData?.data.data.products || []
 
   return (
     <div className="bg-gray-50 dark:bg-slate-900">
@@ -342,7 +342,7 @@ const Home = () => {
         </div>
       </motion.div>
     </div>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

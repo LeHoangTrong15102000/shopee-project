@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('path')
 
 module.exports = {
   preset: 'jest-expo',
@@ -15,4 +15,4 @@ module.exports = {
   },
   testMatch: ['**/__tests__/**/*.(test|spec).(ts|tsx)', '**/*.(test|spec).(ts|tsx)'],
   moduleDirectories: ['node_modules', path.join(__dirname, '../../node_modules')],
-};
+}

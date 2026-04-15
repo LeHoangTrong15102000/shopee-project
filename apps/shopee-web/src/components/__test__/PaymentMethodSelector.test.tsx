@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import PaymentMethodSelector from '../PaymentMethodSelector/PaymentMethodSelector';
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import PaymentMethodSelector from '../PaymentMethodSelector/PaymentMethodSelector'
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -9,7 +9,7 @@ vi.mock('react-i18next', () => ({
     i18n: { language: 'vi', changeLanguage: vi.fn() },
   }),
   Trans: ({ children }: any) => children,
-}));
+}))
 
 vi.mock('src/apis/checkout.api', () => ({
   default: {
@@ -36,37 +36,37 @@ vi.mock('src/apis/checkout.api', () => ({
       }),
     ),
   },
-}));
+}))
 
 describe('PaymentMethodSelector', () => {
-  const mockOnSelect = vi.fn();
+  const mockOnSelect = vi.fn()
 
   it('renders payment method selector', async () => {
     const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
-    });
+    })
 
     const { container } = render(
       <QueryClientProvider client={queryClient}>
         <PaymentMethodSelector selectedMethodType={null} onSelect={mockOnSelect} />
       </QueryClientProvider>,
-    );
+    )
 
-    expect(container.querySelector('[class]')).not.toBeNull();
-  });
+    expect(container.querySelector('[class]')).not.toBeNull()
+  })
 
   it('displays loading skeleton initially', () => {
     const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
-    });
+    })
 
     render(
       <QueryClientProvider client={queryClient}>
         <PaymentMethodSelector selectedMethodType={null} onSelect={mockOnSelect} />
       </QueryClientProvider>,
-    );
+    )
 
-    const skeletons = document.querySelectorAll('.animate-pulse');
-    expect(skeletons.length).toBeGreaterThan(0);
-  });
-});
+    const skeletons = document.querySelectorAll('.animate-pulse')
+    expect(skeletons.length).toBeGreaterThan(0)
+  })
+})

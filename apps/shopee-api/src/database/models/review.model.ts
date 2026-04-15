@@ -58,7 +58,7 @@ const ReviewSchema = new Schema<IReview>(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 // Tạo compound indexes

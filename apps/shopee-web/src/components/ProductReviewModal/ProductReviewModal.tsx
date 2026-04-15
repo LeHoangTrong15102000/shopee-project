@@ -1,40 +1,40 @@
-import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
-import { CreateReviewData } from 'src/types/review.type';
-import { Purchase } from 'src/types/purchases.type';
-import reviewApi from 'src/apis/review.api';
-import ProductRating from 'src/components/ProductRating';
-import Button from 'src/components/Button';
+import { useState } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+import { CreateReviewData } from 'src/types/review.type'
+import { Purchase } from 'src/types/purchases.type'
+import reviewApi from 'src/apis/review.api'
+import ProductRating from 'src/components/ProductRating'
+import Button from 'src/components/Button'
 
 interface ProductReviewModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  purchase: Purchase;
+  isOpen: boolean
+  onClose: () => void
+  purchase: Purchase
 }
 
 const ProductReviewModal = ({ isOpen, onClose, purchase }: ProductReviewModalProps) => {
-  const { t } = useTranslation('product');
-  const [rating, setRating] = useState<number>(5);
-  const [comment, setComment] = useState<string>('');
-  const [images, _setImages] = useState<string[]>([]);
+  const { t } = useTranslation('product')
+  const [rating, setRating] = useState<number>(5)
+  const [comment, setComment] = useState<string>('')
+  const [images, _setImages] = useState<string[]>([])
 
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   const createReviewMutation = useMutation({
     mutationFn: reviewApi.createReview,
-  });
+  })
 
   const handleSubmit = async () => {
     if (!rating || !comment.trim()) {
-      toast.error(t('review.rateAndComment'));
-      return;
+      toast.error(t('review.rateAndComment'))
+      return
     }
 
     if (comment.length < 10) {
-      toast.error(t('review.minChars'));
-      return;
+      toast.error(t('review.minChars'))
+      return
     }
 
     const reviewData: CreateReviewData = {
@@ -42,27 +42,27 @@ const ProductReviewModal = ({ isOpen, onClose, purchase }: ProductReviewModalPro
       rating,
       comment: comment.trim(),
       images,
-    };
+    }
 
     createReviewMutation.mutate(reviewData, {
       onSuccess: () => {
-        toast.success(t('review.success'));
-        queryClient.invalidateQueries({ queryKey: ['purchases'] });
-        queryClient.invalidateQueries({ queryKey: ['product-reviews'] });
-        onClose();
+        toast.success(t('review.success'))
+        queryClient.invalidateQueries({ queryKey: ['purchases'] })
+        queryClient.invalidateQueries({ queryKey: ['product-reviews'] })
+        onClose()
       },
       onError: (error) => {
-        const axiosError = error as Error & { response?: { data?: { message?: string } } };
-        toast.error(axiosError?.response?.data?.message || t('error.title'));
+        const axiosError = error as Error & { response?: { data?: { message?: string } } }
+        toast.error(axiosError?.response?.data?.message || t('error.title'))
       },
-    });
-  };
+    })
+  }
 
   const handleRatingClick = (value: number) => {
-    setRating(value);
-  };
+    setRating(value)
+  }
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
@@ -233,7 +233,7 @@ const ProductReviewModal = ({ isOpen, onClose, purchase }: ProductReviewModalPro
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProductReviewModal;
+export default ProductReviewModal

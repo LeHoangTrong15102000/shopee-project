@@ -1,44 +1,44 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { type ColumnDef } from '@tanstack/react-table';
-import { format } from 'date-fns';
-import { Plus, Trash2, MoreHorizontal, CheckCircle } from 'lucide-react';
-import { Button } from 'src/components/ui/button';
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { type ColumnDef } from '@tanstack/react-table'
+import { format } from 'date-fns'
+import { Plus, Trash2, MoreHorizontal, CheckCircle } from 'lucide-react'
+import { Button } from 'src/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from 'src/components/ui/dialog';
-import { Input } from 'src/components/ui/input';
-import { Label } from 'src/components/ui/label';
-import { Textarea } from 'src/components/ui/textarea';
+} from 'src/components/ui/dialog'
+import { Input } from 'src/components/ui/input'
+import { Label } from 'src/components/ui/label'
+import { Textarea } from 'src/components/ui/textarea'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from 'src/components/ui/dropdown-menu';
+} from 'src/components/ui/dropdown-menu'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from 'src/components/ui/select';
-import { DataTable } from 'src/components/shared/DataTable';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { StatusBadge } from 'src/components/shared/StatusBadge';
-import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
-import { ErrorState } from 'src/components/shared/ErrorState';
+} from 'src/components/ui/select'
+import { DataTable } from 'src/components/shared/DataTable'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { StatusBadge } from 'src/components/shared/StatusBadge'
+import { ConfirmDialog } from 'src/components/shared/ConfirmDialog'
+import { ErrorState } from 'src/components/shared/ErrorState'
 import {
   useNotifications,
   useCreateNotification,
   useDeleteNotification,
   useMarkNotificationAsRead,
-} from 'src/hooks/useNotifications';
-import type { Notification } from 'src/types';
+} from 'src/hooks/useNotifications'
+import type { Notification } from 'src/types'
 
 const notificationTemplates = [
   { value: 'custom', labelKey: 'form.custom' as const, title: '', message: '' },
@@ -60,21 +60,21 @@ const notificationTemplates = [
     titleKey: 'form.templates.promotionTitle' as const,
     messageKey: 'form.templates.promotionMessage' as const,
   },
-];
+]
 
 export default function NotificationListPage() {
-  const [page, setPage] = useState(0);
-  const [createType, setCreateType] = useState<'targeted' | 'broadcast' | null>(null);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [form, setForm] = useState({ user_id: '', title: '', message: '' });
-  const [selectedTemplate, setSelectedTemplate] = useState('custom');
-  const { t } = useTranslation('notifications');
-  const { t: tc } = useTranslation('common');
+  const [page, setPage] = useState(0)
+  const [createType, setCreateType] = useState<'targeted' | 'broadcast' | null>(null)
+  const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [form, setForm] = useState({ user_id: '', title: '', message: '' })
+  const [selectedTemplate, setSelectedTemplate] = useState('custom')
+  const { t } = useTranslation('notifications')
+  const { t: tc } = useTranslation('common')
 
-  const { data, isLoading, isError, refetch } = useNotifications(page);
-  const createMut = useCreateNotification(() => setCreateType(null));
-  const deleteMut = useDeleteNotification(() => setDeleteId(null));
-  const markReadMut = useMarkNotificationAsRead();
+  const { data, isLoading, isError, refetch } = useNotifications(page)
+  const createMut = useCreateNotification(() => setCreateType(null))
+  const deleteMut = useDeleteNotification(() => setDeleteId(null))
+  const markReadMut = useMarkNotificationAsRead()
 
   const columns: ColumnDef<Notification>[] = [
     { accessorKey: 'title', header: t('columns.title') },
@@ -121,7 +121,7 @@ export default function NotificationListPage() {
         </DropdownMenu>
       ),
     },
-  ];
+  ]
 
   return (
     <div className="space-y-6">
@@ -134,9 +134,9 @@ export default function NotificationListPage() {
               size="sm"
               variant="outline"
               onClick={() => {
-                setCreateType('targeted');
-                setForm({ user_id: '', title: '', message: '' });
-                setSelectedTemplate('custom');
+                setCreateType('targeted')
+                setForm({ user_id: '', title: '', message: '' })
+                setSelectedTemplate('custom')
               }}
             >
               <Plus className="mr-2 size-4" />
@@ -145,9 +145,9 @@ export default function NotificationListPage() {
             <Button
               size="sm"
               onClick={() => {
-                setCreateType('broadcast');
-                setForm({ user_id: '', title: '', message: '' });
-                setSelectedTemplate('custom');
+                setCreateType('broadcast')
+                setForm({ user_id: '', title: '', message: '' })
+                setSelectedTemplate('custom')
               }}
             >
               <Plus className="mr-2 size-4" />
@@ -185,17 +185,17 @@ export default function NotificationListPage() {
                 <Select
                   value={selectedTemplate}
                   onValueChange={(v) => {
-                    setSelectedTemplate(v || '');
-                    const tpl = notificationTemplates.find((tp) => tp.value === v);
+                    setSelectedTemplate(v || '')
+                    const tpl = notificationTemplates.find((tp) => tp.value === v)
                     if (tpl) {
                       if (tpl.value === 'custom') {
-                        setForm({ ...form, title: '', message: '' });
+                        setForm({ ...form, title: '', message: '' })
                       } else {
                         setForm({
                           ...form,
                           title: t((tpl as any).titleKey),
                           message: t((tpl as any).messageKey),
-                        });
+                        })
                       }
                     }
                   }}
@@ -259,5 +259,5 @@ export default function NotificationListPage() {
         isLoading={deleteMut.isPending}
       />
     </div>
-  );
+  )
 }

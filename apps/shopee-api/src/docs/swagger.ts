@@ -133,4 +133,3 @@ export const swaggerUIHtml = (specUrl: string) => `
 </body>
 </html>
 `
-

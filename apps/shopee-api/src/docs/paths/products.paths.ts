@@ -9,7 +9,8 @@ export const productsPaths = {
     get: {
       tags: ['Products'],
       summary: 'Lấy danh sách sản phẩm',
-      description: 'Lấy danh sách sản phẩm với phân trang, lọc theo danh mục, sắp xếp theo giá/rating/sold.',
+      description:
+        'Lấy danh sách sản phẩm với phân trang, lọc theo danh mục, sắp xếp theo giá/rating/sold.',
       operationId: 'getProducts',
       parameters: [
         {
@@ -162,9 +163,24 @@ export const productsPaths = {
             },
           },
         },
-        '401': { description: 'Chưa xác thực', content: { 'application/json': { schema: { $ref: '#/components/schemas/UnauthorizedError' } } } },
-        '403': { description: 'Không có quyền Admin', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } },
-        '422': { description: 'Dữ liệu không hợp lệ', content: { 'application/json': { schema: { $ref: '#/components/schemas/ValidationError' } } } },
+        '401': {
+          description: 'Chưa xác thực',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/UnauthorizedError' } },
+          },
+        },
+        '403': {
+          description: 'Không có quyền Admin',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } },
+          },
+        },
+        '422': {
+          description: 'Dữ liệu không hợp lệ',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/ValidationError' } },
+          },
+        },
       },
     },
   },
@@ -209,10 +225,30 @@ export const productsPaths = {
             },
           },
         },
-        '401': { description: 'Chưa xác thực', content: { 'application/json': { schema: { $ref: '#/components/schemas/UnauthorizedError' } } } },
-        '403': { description: 'Không có quyền Admin', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } },
-        '404': { description: 'Không tìm thấy sản phẩm', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } },
-        '422': { description: 'Dữ liệu không hợp lệ', content: { 'application/json': { schema: { $ref: '#/components/schemas/ValidationError' } } } },
+        '401': {
+          description: 'Chưa xác thực',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/UnauthorizedError' } },
+          },
+        },
+        '403': {
+          description: 'Không có quyền Admin',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } },
+          },
+        },
+        '404': {
+          description: 'Không tìm thấy sản phẩm',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } },
+          },
+        },
+        '422': {
+          description: 'Dữ liệu không hợp lệ',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/ValidationError' } },
+          },
+        },
       },
     },
     delete: {
@@ -244,11 +280,25 @@ export const productsPaths = {
             },
           },
         },
-        '401': { description: 'Chưa xác thực', content: { 'application/json': { schema: { $ref: '#/components/schemas/UnauthorizedError' } } } },
-        '403': { description: 'Không có quyền Admin', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } },
-        '404': { description: 'Không tìm thấy sản phẩm', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } },
+        '401': {
+          description: 'Chưa xác thực',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/UnauthorizedError' } },
+          },
+        },
+        '403': {
+          description: 'Không có quyền Admin',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } },
+          },
+        },
+        '404': {
+          description: 'Không tìm thấy sản phẩm',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } },
+          },
+        },
       },
     },
   },
 }
-

@@ -1,14 +1,14 @@
-import React from 'react';
-import { View } from 'react-native';
-import { LucideIcon } from 'lucide-react-native';
-import { AppText, AppButton } from '@/components/ui';
-import { useColors } from '@/hooks/useColors';
+import React from 'react'
+import { View } from 'react-native'
+import { LucideIcon } from 'lucide-react-native'
+import { AppText, AppButton } from '@/components/ui'
+import { useColors } from '@/hooks/useColors'
 
 interface EmptyStateProps {
-  icon: LucideIcon;
-  message: string;
-  actionLabel?: string;
-  onAction?: () => void;
+  icon: LucideIcon
+  message: string
+  actionLabel?: string
+  onAction?: () => void
 }
 
 export default function EmptyState({
@@ -17,7 +17,7 @@ export default function EmptyState({
   actionLabel,
   onAction,
 }: EmptyStateProps) {
-  const colors = useColors();
+  const colors = useColors()
 
   return (
     <View className="items-center justify-center gap-3 py-12">
@@ -31,5 +31,5 @@ export default function EmptyState({
         </AppButton>
       )}
     </View>
-  );
+  )
 }

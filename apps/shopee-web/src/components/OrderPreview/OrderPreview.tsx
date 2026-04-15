@@ -1,27 +1,27 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { formatCurrency } from 'src/utils/utils';
-import { getEstimatedDeliveryDate } from 'src/utils/date';
-import { ExtendedPurchase } from 'src/types/purchases.type';
-import { Address, ShippingMethod, PaymentMethodType } from 'src/types/checkout.type';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import { staggerContainer, staggerItem, STAGGER_DELAY } from 'src/styles/animations';
-import ImageWithFallback from 'src/components/ImageWithFallback';
-import Button from 'src/components/Button';
-import { ShippingIcon, PaymentIcon } from 'src/components/Icons';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { formatCurrency } from 'src/utils/utils'
+import { getEstimatedDeliveryDate } from 'src/utils/date'
+import { ExtendedPurchase } from 'src/types/purchases.type'
+import { Address, ShippingMethod, PaymentMethodType } from 'src/types/checkout.type'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import { staggerContainer, staggerItem, STAGGER_DELAY } from 'src/styles/animations'
+import ImageWithFallback from 'src/components/ImageWithFallback'
+import Button from 'src/components/Button'
+import { ShippingIcon, PaymentIcon } from 'src/components/Icons'
 
 interface OrderPreviewProps {
-  items: ExtendedPurchase[];
-  selectedAddress: Address | null;
-  selectedShippingMethod: ShippingMethod | null;
-  selectedPaymentMethod: PaymentMethodType | null;
-  voucherCode?: string;
-  voucherDiscount?: number;
-  coinsUsed?: number;
-  note?: string;
-  onPlaceOrder: () => void;
-  onBack: () => void;
-  isPlacingOrder: boolean;
+  items: ExtendedPurchase[]
+  selectedAddress: Address | null
+  selectedShippingMethod: ShippingMethod | null
+  selectedPaymentMethod: PaymentMethodType | null
+  voucherCode?: string
+  voucherDiscount?: number
+  coinsUsed?: number
+  note?: string
+  onPlaceOrder: () => void
+  onBack: () => void
+  isPlacingOrder: boolean
 }
 
 const PAYMENT_METHOD_I18N_KEYS = {
@@ -29,7 +29,7 @@ const PAYMENT_METHOD_I18N_KEYS = {
   bank_transfer: 'method.bankTransfer',
   e_wallet: 'method.eWallet',
   credit_card: 'method.creditCard',
-} as const;
+} as const
 
 function SectionWrapper({
   title,
@@ -37,10 +37,10 @@ function SectionWrapper({
   reducedMotion,
   gradient,
 }: {
-  title: string;
-  children: React.ReactNode;
-  reducedMotion: boolean;
-  gradient?: string;
+  title: string
+  children: React.ReactNode
+  reducedMotion: boolean
+  gradient?: string
 }) {
   return (
     <motion.div
@@ -50,7 +50,7 @@ function SectionWrapper({
       <h3 className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
       {children}
     </motion.div>
-  );
+  )
 }
 
 function OrderPreview({
@@ -66,23 +66,23 @@ function OrderPreview({
   onBack,
   isPlacingOrder,
 }: OrderPreviewProps) {
-  const reducedMotion = useReducedMotion();
-  const { t } = useTranslation(['order', 'payment']);
-  const containerVariants = staggerContainer(STAGGER_DELAY.normal);
+  const reducedMotion = useReducedMotion()
+  const { t } = useTranslation(['order', 'payment'])
+  const containerVariants = staggerContainer(STAGGER_DELAY.normal)
 
-  const subtotal = items.reduce((total, item) => total + item.price * item.buy_count, 0);
+  const subtotal = items.reduce((total, item) => total + item.price * item.buy_count, 0)
 
-  const shippingFee = selectedShippingMethod?.price || 0;
-  const coinsDiscount = coinsUsed;
-  const totalDiscount = voucherDiscount + coinsDiscount;
-  const total = subtotal + shippingFee - totalDiscount;
+  const shippingFee = selectedShippingMethod?.price || 0
+  const coinsDiscount = coinsUsed
+  const totalDiscount = voucherDiscount + coinsDiscount
+  const total = subtotal + shippingFee - totalDiscount
 
   const estimatedDeliveryDate = (() => {
-    if (!selectedShippingMethod) return null;
-    return getEstimatedDeliveryDate(selectedShippingMethod.estimatedDays);
-  })();
+    if (!selectedShippingMethod) return null
+    return getEstimatedDeliveryDate(selectedShippingMethod.estimatedDays)
+  })()
 
-  const totalItemCount = items.reduce((count, item) => count + item.buy_count, 0);
+  const totalItemCount = items.reduce((count, item) => count + item.buy_count, 0)
 
   return (
     <motion.div
@@ -402,7 +402,7 @@ function OrderPreview({
         </a>
       </motion.p>
     </motion.div>
-  );
+  )
 }
 
-export default OrderPreview;
+export default OrderPreview

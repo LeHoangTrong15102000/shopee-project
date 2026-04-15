@@ -1,58 +1,58 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { type ColumnDef } from '@tanstack/react-table';
-import { RefreshCw } from 'lucide-react';
-import { Checkbox } from 'src/components/ui/checkbox';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from 'src/components/ui/tabs';
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { type ColumnDef } from '@tanstack/react-table'
+import { RefreshCw } from 'lucide-react'
+import { Checkbox } from 'src/components/ui/checkbox'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from 'src/components/ui/tabs'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from 'src/components/ui/dialog';
-import { Button } from 'src/components/ui/button';
-import { Input } from 'src/components/ui/input';
-import { Label } from 'src/components/ui/label';
-import { DataTable } from 'src/components/shared/DataTable';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { ErrorState } from 'src/components/shared/ErrorState';
+} from 'src/components/ui/dialog'
+import { Button } from 'src/components/ui/button'
+import { Input } from 'src/components/ui/input'
+import { Label } from 'src/components/ui/label'
+import { DataTable } from 'src/components/shared/DataTable'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { ErrorState } from 'src/components/shared/ErrorState'
 import {
   useLowStock,
   useOutOfStock,
   useUpdateStock,
   useBulkUpdateStock,
-} from 'src/hooks/useInventory';
-import { formatCurrency } from 'src/utils/format';
-import type { Product } from 'src/types';
+} from 'src/hooks/useInventory'
+import { formatCurrency } from 'src/utils/format'
+import type { Product } from 'src/types'
 
 export default function InventoryPage() {
-  const { t } = useTranslation('inventory');
-  const { t: tc } = useTranslation('common');
-  const [updateProduct, setUpdateProduct] = useState<Product | null>(null);
-  const [quantity, setQuantity] = useState(0);
-  const [selected, setSelected] = useState<Product[]>([]);
-  const [bulkOpen, setBulkOpen] = useState(false);
-  const [bulkQty, setBulkQty] = useState(0);
+  const { t } = useTranslation('inventory')
+  const { t: tc } = useTranslation('common')
+  const [updateProduct, setUpdateProduct] = useState<Product | null>(null)
+  const [quantity, setQuantity] = useState(0)
+  const [selected, setSelected] = useState<Product[]>([])
+  const [bulkOpen, setBulkOpen] = useState(false)
+  const [bulkQty, setBulkQty] = useState(0)
 
   const {
     data: lowStock,
     isLoading: loadingLow,
     isError: lowError,
     refetch: refetchLow,
-  } = useLowStock();
+  } = useLowStock()
   const {
     data: outOfStock,
     isLoading: loadingOut,
     isError: outError,
     refetch: refetchOut,
-  } = useOutOfStock();
+  } = useOutOfStock()
 
-  const updateMut = useUpdateStock(() => setUpdateProduct(null));
+  const updateMut = useUpdateStock(() => setUpdateProduct(null))
   const bulkUpdateMut = useBulkUpdateStock(() => {
-    setBulkOpen(false);
-    setSelected([]);
-  });
+    setBulkOpen(false)
+    setSelected([])
+  })
 
   const columns: ColumnDef<Product>[] = [
     {
@@ -121,15 +121,15 @@ export default function InventoryPage() {
           variant="outline"
           size="sm"
           onClick={() => {
-            setUpdateProduct(row.original);
-            setQuantity(row.original.quantity);
+            setUpdateProduct(row.original)
+            setQuantity(row.original.quantity)
           }}
         >
           {t('actions.updateStock')}
         </Button>
       ),
     },
-  ];
+  ]
 
   const bulkActions =
     selected.length > 0 ? (
@@ -137,14 +137,14 @@ export default function InventoryPage() {
         variant="outline"
         size="sm"
         onClick={() => {
-          setBulkOpen(true);
-          setBulkQty(0);
+          setBulkOpen(true)
+          setBulkQty(0)
         }}
       >
         <RefreshCw className="mr-2 size-4" />
         {t('actions.bulkUpdate')} ({selected.length})
       </Button>
-    ) : undefined;
+    ) : undefined
 
   return (
     <div className="space-y-6">
@@ -248,5 +248,5 @@ export default function InventoryPage() {
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }

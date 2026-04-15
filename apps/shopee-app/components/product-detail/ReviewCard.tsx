@@ -1,23 +1,23 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity } from 'react-native';
-import { Star, ThumbsUp } from 'lucide-react-native';
-import { AppText, Avatar } from '@/components/ui';
-import { useColors } from '@/hooks/useColors';
-import { useTranslation } from 'react-i18next';
-import type { Review } from '@/apis/product-detail.api';
+import React, { useState } from 'react'
+import { View, TouchableOpacity } from 'react-native'
+import { Star, ThumbsUp } from 'lucide-react-native'
+import { AppText, Avatar } from '@/components/ui'
+import { useColors } from '@/hooks/useColors'
+import { useTranslation } from 'react-i18next'
+import type { Review } from '@/apis/product-detail.api'
 
 interface ReviewCardProps {
-  review: Review;
-  onToggleLike: (reviewId: string) => void;
+  review: Review
+  onToggleLike: (reviewId: string) => void
 }
 
 export default function ReviewCard({ review, onToggleLike }: ReviewCardProps) {
-  const colors = useColors();
-  const { i18n } = useTranslation();
-  const [expanded, setExpanded] = useState(false);
+  const colors = useColors()
+  const { i18n } = useTranslation()
+  const [expanded, setExpanded] = useState(false)
 
-  const locale = i18n.language === 'vi' ? 'vi-VN' : 'en-US';
-  const date = new Date(review.createdAt).toLocaleDateString(locale);
+  const locale = i18n.language === 'vi' ? 'vi-VN' : 'en-US'
+  const date = new Date(review.createdAt).toLocaleDateString(locale)
 
   return (
     <View className="border-b py-3" style={{ borderBottomColor: colors.neutrals800 }}>
@@ -79,5 +79,5 @@ export default function ReviewCard({ review, onToggleLike }: ReviewCardProps) {
         </TouchableOpacity>
       </View>
     </View>
-  );
+  )
 }

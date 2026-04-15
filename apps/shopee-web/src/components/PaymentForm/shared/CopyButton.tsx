@@ -1,16 +1,16 @@
-import { motion } from 'framer-motion';
-import { toast } from 'react-toastify';
-import Button from 'src/components/Button';
+import { motion } from 'framer-motion'
+import { toast } from 'react-toastify'
+import Button from 'src/components/Button'
 
 function CopyButton({ text, label }: { text: string; label: string }) {
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(text);
-      toast.success(`Đã sao chép ${label}`, { autoClose: 1500, position: 'top-center' });
+      await navigator.clipboard.writeText(text)
+      toast.success(`Đã sao chép ${label}`, { autoClose: 1500, position: 'top-center' })
     } catch {
-      toast.error('Không thể sao chép', { autoClose: 1500, position: 'top-center' });
+      toast.error('Không thể sao chép', { autoClose: 1500, position: 'top-center' })
     }
-  };
+  }
 
   return (
     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -31,7 +31,7 @@ function CopyButton({ text, label }: { text: string; label: string }) {
         </svg>
       </Button>
     </motion.div>
-  );
+  )
 }
 
-export default CopyButton;
+export default CopyButton

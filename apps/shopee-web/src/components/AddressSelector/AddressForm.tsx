@@ -1,17 +1,17 @@
-import { AnimatePresence, motion } from 'framer-motion';
-import { Address } from 'src/types/checkout.type';
-import AddressDetailsStep from './components/AddressDetailsStep';
-import AddressFormFooter from './components/AddressFormFooter';
-import AddressFormHeader from './components/AddressFormHeader';
-import ContactInfoStep from './components/ContactInfoStep';
-import LocationStep from './components/LocationStep';
-import StepIndicator from './components/StepIndicator';
-import { useAddressForm } from './useAddressForm';
+import { AnimatePresence, motion } from 'framer-motion'
+import { Address } from 'src/types/checkout.type'
+import AddressDetailsStep from './components/AddressDetailsStep'
+import AddressFormFooter from './components/AddressFormFooter'
+import AddressFormHeader from './components/AddressFormHeader'
+import ContactInfoStep from './components/ContactInfoStep'
+import LocationStep from './components/LocationStep'
+import StepIndicator from './components/StepIndicator'
+import { useAddressForm } from './useAddressForm'
 
 interface AddressFormProps {
-  address: Address | null;
-  onClose: () => void;
-  onSuccess: () => void;
+  address: Address | null
+  onClose: () => void
+  onSuccess: () => void
 }
 
 function AddressForm({ address, onClose, onSuccess }: AddressFormProps) {
@@ -40,7 +40,7 @@ function AddressForm({ address, onClose, onSuccess }: AddressFormProps) {
     handleTypeSelect,
     onSubmit,
     isLoading,
-  } = useAddressForm(address, onSuccess);
+  } = useAddressForm(address, onSuccess)
 
   return (
     <motion.div
@@ -115,7 +115,7 @@ function AddressForm({ address, onClose, onSuccess }: AddressFormProps) {
         />
       </motion.div>
     </motion.div>
-  );
+  )
 }
 
-export default AddressForm;
+export default AddressForm

@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import LiveQASection from '../LiveQASection/LiveQASection';
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import LiveQASection from '../LiveQASection/LiveQASection'
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -8,26 +8,26 @@ vi.mock('react-i18next', () => ({
     i18n: { language: 'vi', changeLanguage: vi.fn() },
   }),
   Trans: ({ children }: any) => children,
-}));
+}))
 
 describe('LiveQASection', () => {
   it('renders nothing when no new questions or answers', () => {
-    const { container } = render(<LiveQASection newQuestionCount={0} newAnswers={[]} />);
+    const { container } = render(<LiveQASection newQuestionCount={0} newAnswers={[]} />)
 
-    expect(container.firstChild).toBeNull();
-  });
+    expect(container.firstChild).toBeNull()
+  })
 
   it('renders when there are new questions', () => {
-    const { container } = render(<LiveQASection newQuestionCount={5} newAnswers={[]} />);
+    const { container } = render(<LiveQASection newQuestionCount={5} newAnswers={[]} />)
 
-    expect(screen.getByText(/qa.newQuestions/)).toBeInTheDocument();
-  });
+    expect(screen.getByText(/qa.newQuestions/)).toBeInTheDocument()
+  })
 
   it('displays new question count', () => {
-    render(<LiveQASection newQuestionCount={5} newAnswers={[]} />);
+    render(<LiveQASection newQuestionCount={5} newAnswers={[]} />)
 
-    expect(screen.getByText(/qa.newQuestions/)).toBeInTheDocument();
-  });
+    expect(screen.getByText(/qa.newQuestions/)).toBeInTheDocument()
+  })
 
   it('renders new answers', () => {
     const newAnswers = [
@@ -39,13 +39,13 @@ describe('LiveQASection', () => {
           is_seller: false,
         },
       },
-    ];
+    ]
 
-    render(<LiveQASection newQuestionCount={0} newAnswers={newAnswers} />);
+    render(<LiveQASection newQuestionCount={0} newAnswers={newAnswers} />)
 
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
-    expect(screen.getByText('This is a test answer')).toBeInTheDocument();
-  });
+    expect(screen.getByText('John Doe')).toBeInTheDocument()
+    expect(screen.getByText('This is a test answer')).toBeInTheDocument()
+  })
 
   it('highlights seller answers', () => {
     const newAnswers = [
@@ -57,12 +57,12 @@ describe('LiveQASection', () => {
           is_seller: true,
         },
       },
-    ];
+    ]
 
-    render(<LiveQASection newQuestionCount={0} newAnswers={newAnswers} />);
+    render(<LiveQASection newQuestionCount={0} newAnswers={newAnswers} />)
 
-    expect(screen.getByText(/qa.seller/)).toBeInTheDocument();
-  });
+    expect(screen.getByText(/qa.seller/)).toBeInTheDocument()
+  })
 
   it('limits displayed answers to 3', () => {
     const newAnswers = [
@@ -82,11 +82,11 @@ describe('LiveQASection', () => {
         question_id: '4',
         answer: { user_name: 'User4', answer: 'Answer 4', is_seller: false },
       },
-    ];
+    ]
 
-    const { container } = render(<LiveQASection newQuestionCount={0} newAnswers={newAnswers} />);
+    const { container } = render(<LiveQASection newQuestionCount={0} newAnswers={newAnswers} />)
 
-    const answerElements = container.querySelectorAll('.flex.items-start.gap-2');
-    expect(answerElements.length).toBe(3);
-  });
-});
+    const answerElements = container.querySelectorAll('.flex.items-start.gap-2')
+    expect(answerElements.length).toBe(3)
+  })
+})

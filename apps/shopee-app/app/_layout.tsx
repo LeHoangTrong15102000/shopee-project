@@ -1,52 +1,52 @@
-import '../config/global.css';
-import { Stack, useRouter, useSegments } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import InsetsHelper from '@/components/helpers/InsetsHelper.tsx';
-import { LanguageHelper } from '@/components/helpers/LanguageHelper.tsx';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from '@/config/queryClient';
-import { useColors } from '@/hooks/useColors.ts';
-import { useAppStore } from '@/store/appStore';
-import { useAuthStore } from '@/store/authStore';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { ToastProvider } from '@/components/ui/ToastProvider';
-import { View } from 'react-native';
-import { useEffect, useState } from 'react';
+import '../config/global.css'
+import { Stack, useRouter, useSegments } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+import InsetsHelper from '@/components/helpers/InsetsHelper.tsx'
+import { LanguageHelper } from '@/components/helpers/LanguageHelper.tsx'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { queryClient } from '@/config/queryClient'
+import { useColors } from '@/hooks/useColors.ts'
+import { useAppStore } from '@/store/appStore'
+import { useAuthStore } from '@/store/authStore'
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
+import { ToastProvider } from '@/components/ui/ToastProvider'
+import { View } from 'react-native'
+import { useEffect, useState } from 'react'
 
 function AppContent() {
-  const theme = useAppStore((state) => state.theme);
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const colors = useColors();
-  const segments = useSegments();
-  const router = useRouter();
-  const [isReady, setIsReady] = useState(false);
+  const theme = useAppStore((state) => state.theme)
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const colors = useColors()
+  const segments = useSegments()
+  const router = useRouter()
+  const [isReady, setIsReady] = useState(false)
 
   useEffect(() => {
     // Wait for store rehydration
     const unsub = useAuthStore.persist.onFinishHydration(() => {
-      setIsReady(true);
-    });
+      setIsReady(true)
+    })
     // If already hydrated
     if (useAuthStore.persist.hasHydrated()) {
-      setIsReady(true);
+      setIsReady(true)
     }
-    return unsub;
-  }, []);
+    return unsub
+  }, [])
 
   useEffect(() => {
-    if (!isReady) return;
+    if (!isReady) return
 
-    const inAuthGroup = segments[0] === '(auth)';
+    const inAuthGroup = segments[0] === '(auth)'
 
     if (!isAuthenticated && !inAuthGroup) {
-      router.replace('/(auth)/sign-in');
+      router.replace('/(auth)/sign-in')
     } else if (isAuthenticated && inAuthGroup) {
-      router.replace('/(tabs)/home');
+      router.replace('/(tabs)/home')
     }
-  }, [isAuthenticated, segments, isReady]);
+  }, [isAuthenticated, segments, isReady])
 
   const navigationTheme = {
     ...(theme === 'dark' ? DarkTheme : DefaultTheme),
@@ -60,10 +60,10 @@ function AppContent() {
       border: colors.neutrals700,
       notification: colors.primary,
     },
-  };
+  }
 
   if (!isReady) {
-    return <View style={{ flex: 1, backgroundColor: colors.background }} />;
+    return <View style={{ flex: 1, backgroundColor: colors.background }} />
   }
 
   return (
@@ -85,7 +85,7 @@ function AppContent() {
         </SafeAreaProvider>
       </GestureHandlerRootView>
     </View>
-  );
+  )
 }
 
 export default function RootLayout() {
@@ -95,5 +95,5 @@ export default function RootLayout() {
         <AppContent />
       </ToastProvider>
     </QueryClientProvider>
-  );
+  )
 }

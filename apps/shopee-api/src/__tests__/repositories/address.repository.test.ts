@@ -111,7 +111,11 @@ describe('AddressRepository', () => {
       const mockLean = jest.fn().mockResolvedValue(mockAddress)
       ;(AddressModel.findByIdAndUpdate as jest.Mock).mockReturnValue({ lean: mockLean })
       const result = await repository.updateById(mockId, { street: 'New St' })
-      expect(AddressModel.findByIdAndUpdate).toHaveBeenCalledWith(mockId, { street: 'New St' }, { new: true })
+      expect(AddressModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        mockId,
+        { street: 'New St' },
+        { new: true },
+      )
       expect(result).toEqual(mockAddress)
     })
   })
@@ -206,4 +210,3 @@ describe('AddressRepository', () => {
     })
   })
 })
-

@@ -1,34 +1,34 @@
-import { format } from 'date-fns';
-import { useTranslation } from 'react-i18next';
-import { Plus, Pencil, Trash2, FileText } from 'lucide-react';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { EmptyState } from 'src/components/shared/EmptyState';
-import { ConfirmDialog } from 'src/components/shared/ConfirmDialog';
-import { Button } from 'src/components/ui/button';
-import { Card, CardContent } from 'src/components/ui/card';
-import { useActivityLogStore, type ActivityLogEntry } from 'src/stores/activity-log.store';
-import { useState } from 'react';
+import { format } from 'date-fns'
+import { useTranslation } from 'react-i18next'
+import { Plus, Pencil, Trash2, FileText } from 'lucide-react'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { EmptyState } from 'src/components/shared/EmptyState'
+import { ConfirmDialog } from 'src/components/shared/ConfirmDialog'
+import { Button } from 'src/components/ui/button'
+import { Card, CardContent } from 'src/components/ui/card'
+import { useActivityLogStore, type ActivityLogEntry } from 'src/stores/activity-log.store'
+import { useState } from 'react'
 
 const actionIcons: Record<string, typeof Plus> = {
   create: Plus,
   update: Pencil,
   delete: Trash2,
-};
+}
 
 function groupByDate(entries: ActivityLogEntry[]) {
-  const groups: Record<string, ActivityLogEntry[]> = {};
+  const groups: Record<string, ActivityLogEntry[]> = {}
   for (const entry of entries) {
-    const date = format(new Date(entry.timestamp), 'yyyy-MM-dd');
-    (groups[date] ??= []).push(entry);
+    const date = format(new Date(entry.timestamp), 'yyyy-MM-dd')
+    ;(groups[date] ??= []).push(entry)
   }
-  return Object.entries(groups).sort(([a], [b]) => b.localeCompare(a));
+  return Object.entries(groups).sort(([a], [b]) => b.localeCompare(a))
 }
 
 export default function ActivityLogPage() {
-  const { entries, clearLog } = useActivityLogStore();
-  const [clearOpen, setClearOpen] = useState(false);
-  const { t } = useTranslation('activity-log');
-  const grouped = groupByDate(entries);
+  const { entries, clearLog } = useActivityLogStore()
+  const [clearOpen, setClearOpen] = useState(false)
+  const { t } = useTranslation('activity-log')
+  const grouped = groupByDate(entries)
 
   return (
     <div className="space-y-6">
@@ -59,7 +59,7 @@ export default function ActivityLogPage() {
               <Card>
                 <CardContent className="divide-y">
                   {items.map((entry) => {
-                    const Icon = actionIcons[entry.action] ?? FileText;
+                    const Icon = actionIcons[entry.action] ?? FileText
                     return (
                       <div
                         key={entry.id}
@@ -80,7 +80,7 @@ export default function ActivityLogPage() {
                           {format(new Date(entry.timestamp), 'HH:mm')}
                         </span>
                       </div>
-                    );
+                    )
                   })}
                 </CardContent>
               </Card>
@@ -94,10 +94,10 @@ export default function ActivityLogPage() {
         title={t('confirm.title')}
         description={t('confirm.description')}
         onConfirm={() => {
-          clearLog();
-          setClearOpen(false);
+          clearLog()
+          setClearOpen(false)
         }}
       />
     </div>
-  );
+  )
 }

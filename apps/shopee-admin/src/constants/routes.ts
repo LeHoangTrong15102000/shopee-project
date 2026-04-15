@@ -30,7 +30,7 @@ export const ROUTES = {
   IMPORT: '/import',
   SETTINGS: '/settings',
   ACTIVITY_LOG: '/activity-log',
-} as const;
+} as const
 
-export type RouteKey = keyof typeof ROUTES;
-export type RoutePath = (typeof ROUTES)[RouteKey];
+export type RouteKey = keyof typeof ROUTES
+export type RoutePath = (typeof ROUTES)[RouteKey]

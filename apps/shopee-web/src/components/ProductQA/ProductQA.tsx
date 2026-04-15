@@ -1,30 +1,30 @@
-import { useState, useContext } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'react-toastify';
-import { formatDistanceToNow } from 'date-fns';
-import { vi } from 'date-fns/locale';
-import qaApi from 'src/apis/qa.api';
-import { ProductQuestion, ProductAnswer } from 'src/types/qa.type';
-import { AppContext } from 'src/contexts/app.context';
-import Button from 'src/components/Button';
+import { useState, useContext } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
+import { formatDistanceToNow } from 'date-fns'
+import { vi } from 'date-fns/locale'
+import qaApi from 'src/apis/qa.api'
+import { ProductQuestion, ProductAnswer } from 'src/types/qa.type'
+import { AppContext } from 'src/contexts/app.context'
+import Button from 'src/components/Button'
 
 interface ProductQAProps {
-  productId: string;
-  className?: string;
+  productId: string
+  className?: string
 }
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 5
 
 const ProductQA = function ProductQA({ productId, className = '' }: ProductQAProps) {
-  const { t } = useTranslation('qa');
-  const { isAuthenticated } = useContext(AppContext);
-  const [sortBy, setSortBy] = useState<'newest' | 'most_liked' | 'most_answered'>('newest');
-  const [questionText, setQuestionText] = useState('');
-  const [replyingTo, setReplyingTo] = useState<string | null>(null);
-  const [answerText, setAnswerText] = useState('');
+  const { t } = useTranslation('qa')
+  const { isAuthenticated } = useContext(AppContext)
+  const [sortBy, setSortBy] = useState<'newest' | 'most_liked' | 'most_answered'>('newest')
+  const [questionText, setQuestionText] = useState('')
+  const [replyingTo, setReplyingTo] = useState<string | null>(null)
+  const [answerText, setAnswerText] = useState('')
 
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   // Use useInfiniteQuery for proper pagination with load more
   const {
@@ -43,95 +43,95 @@ const ProductQA = function ProductQA({ productId, className = '' }: ProductQAPro
         sort_by: sortBy,
       }),
     getNextPageParam: (lastPage, allPages) => {
-      const pagination = lastPage.data.data.pagination;
-      const currentPage = allPages.length;
+      const pagination = lastPage.data.data.pagination
+      const currentPage = allPages.length
       if (currentPage * ITEMS_PER_PAGE < pagination.total) {
-        return currentPage + 1;
+        return currentPage + 1
       }
-      return undefined;
+      return undefined
     },
     initialPageParam: 1,
-  });
+  })
 
   const askQuestionMutation = useMutation({
     mutationFn: qaApi.askQuestion,
     onSuccess: () => {
-      toast.success(t('toast.askSuccess'));
-      setQuestionText('');
-      queryClient.invalidateQueries({ queryKey: ['product-qa', productId] });
+      toast.success(t('toast.askSuccess'))
+      setQuestionText('')
+      queryClient.invalidateQueries({ queryKey: ['product-qa', productId] })
     },
     onError: () => {
-      toast.error(t('toast.askError'));
+      toast.error(t('toast.askError'))
     },
-  });
+  })
 
   const answerQuestionMutation = useMutation({
     mutationFn: ({ questionId, answer }: { questionId: string; answer: string }) =>
       qaApi.answerQuestion(questionId, { answer }),
     onSuccess: () => {
-      toast.success(t('toast.answerSuccess'));
-      setAnswerText('');
-      setReplyingTo(null);
-      queryClient.invalidateQueries({ queryKey: ['product-qa', productId] });
+      toast.success(t('toast.answerSuccess'))
+      setAnswerText('')
+      setReplyingTo(null)
+      queryClient.invalidateQueries({ queryKey: ['product-qa', productId] })
     },
     onError: () => {
-      toast.error(t('toast.answerError'));
+      toast.error(t('toast.answerError'))
     },
-  });
+  })
 
   const likeQuestionMutation = useMutation({
     mutationFn: qaApi.likeQuestion,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['product-qa', productId] });
+      queryClient.invalidateQueries({ queryKey: ['product-qa', productId] })
     },
-  });
+  })
 
   const likeAnswerMutation = useMutation({
     mutationFn: ({ questionId, answerId }: { questionId: string; answerId: string }) =>
       qaApi.likeAnswer(questionId, answerId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['product-qa', productId] });
+      queryClient.invalidateQueries({ queryKey: ['product-qa', productId] })
     },
-  });
+  })
 
   // Flatten all pages into a single array of questions
-  const questions = questionsData?.pages.flatMap((page) => page.data.data.questions) || [];
-  const totalQuestions = questionsData?.pages[0]?.data.data.pagination.total || 0;
+  const questions = questionsData?.pages.flatMap((page) => page.data.data.questions) || []
+  const totalQuestions = questionsData?.pages[0]?.data.data.pagination.total || 0
 
   const handleAskQuestion = () => {
-    if (!questionText.trim()) return;
-    askQuestionMutation.mutate({ product_id: productId, question: questionText.trim() });
-  };
+    if (!questionText.trim()) return
+    askQuestionMutation.mutate({ product_id: productId, question: questionText.trim() })
+  }
 
   const handleAnswerQuestion = (questionId: string) => {
-    if (!answerText.trim()) return;
-    answerQuestionMutation.mutate({ questionId, answer: answerText.trim() });
-  };
+    if (!answerText.trim()) return
+    answerQuestionMutation.mutate({ questionId, answer: answerText.trim() })
+  }
 
   const handleLikeQuestion = (questionId: string) => {
     if (!isAuthenticated) {
-      toast.warning(t('toast.loginToLikeQuestion'));
-      return;
+      toast.warning(t('toast.loginToLikeQuestion'))
+      return
     }
-    likeQuestionMutation.mutate(questionId);
-  };
+    likeQuestionMutation.mutate(questionId)
+  }
 
   const handleLikeAnswer = (questionId: string, answerId: string) => {
     if (!isAuthenticated) {
-      toast.warning(t('toast.loginToLikeAnswer'));
-      return;
+      toast.warning(t('toast.loginToLikeAnswer'))
+      return
     }
-    likeAnswerMutation.mutate({ questionId, answerId });
-  };
+    likeAnswerMutation.mutate({ questionId, answerId })
+  }
 
   const handleLoadMore = () => {
     if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+      fetchNextPage()
     }
-  };
+  }
 
   if (isLoading) {
-    return <QALoadingSkeleton className={className} />;
+    return <QALoadingSkeleton className={className} />
   }
 
   return (
@@ -250,20 +250,20 @@ const ProductQA = function ProductQA({ productId, className = '' }: ProductQAPro
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
 interface QuestionItemProps {
-  question: ProductQuestion;
-  onLikeQuestion: (questionId: string) => void;
-  onLikeAnswer: (questionId: string, answerId: string) => void;
-  isReplying: boolean;
-  onToggleReply: () => void;
-  answerText: string;
-  setAnswerText: (text: string) => void;
-  onSubmitAnswer: () => void;
-  isSubmitting: boolean;
-  isAuthenticated: boolean;
+  question: ProductQuestion
+  onLikeQuestion: (questionId: string) => void
+  onLikeAnswer: (questionId: string, answerId: string) => void
+  isReplying: boolean
+  onToggleReply: () => void
+  answerText: string
+  setAnswerText: (text: string) => void
+  onSubmitAnswer: () => void
+  isSubmitting: boolean
+  isAuthenticated: boolean
 }
 
 const QuestionItem = function QuestionItem({
@@ -278,9 +278,9 @@ const QuestionItem = function QuestionItem({
   isSubmitting,
   isAuthenticated,
 }: QuestionItemProps) {
-  const { t } = useTranslation('qa');
-  const replyFormId = `reply-form-${question._id}`;
-  const answerTextareaId = `answer-textarea-${question._id}`;
+  const { t } = useTranslation('qa')
+  const replyFormId = `reply-form-${question._id}`
+  const answerTextareaId = `answer-textarea-${question._id}`
 
   return (
     <div className="rounded-lg border border-gray-200 p-4 dark:border-slate-700" role="listitem">
@@ -408,17 +408,17 @@ const QuestionItem = function QuestionItem({
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
 interface AnswerItemProps {
-  answer: ProductAnswer;
-  questionId: string;
-  onLikeAnswer: (questionId: string, answerId: string) => void;
+  answer: ProductAnswer
+  questionId: string
+  onLikeAnswer: (questionId: string, answerId: string) => void
 }
 
 const AnswerItem = function AnswerItem({ answer, questionId, onLikeAnswer }: AnswerItemProps) {
-  const { t } = useTranslation('qa');
+  const { t } = useTranslation('qa')
   return (
     <div className="flex items-start space-x-3" role="listitem">
       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-300 dark:bg-slate-600">
@@ -463,11 +463,11 @@ const AnswerItem = function AnswerItem({ answer, questionId, onLikeAnswer }: Ans
         </Button>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const QALoadingSkeleton = function QALoadingSkeleton({ className = '' }: { className?: string }) {
-  const { t } = useTranslation('qa');
+  const { t } = useTranslation('qa')
   return (
     <div
       className={`min-h-[400px] rounded-sm bg-white p-4 shadow-sm md:p-6 dark:bg-slate-800 ${className}`}
@@ -493,11 +493,11 @@ const QALoadingSkeleton = function QALoadingSkeleton({ className = '' }: { class
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const QAEmptyState = function QAEmptyState() {
-  const { t } = useTranslation('qa');
+  const { t } = useTranslation('qa')
   return (
     <div className="py-8 text-center" role="status">
       <svg
@@ -517,7 +517,7 @@ const QAEmptyState = function QAEmptyState() {
       <p className="text-gray-500 dark:text-gray-400">{t('empty.title')}</p>
       <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">{t('empty.subtitle')}</p>
     </div>
-  );
-};
+  )
+}
 
-export default ProductQA;
+export default ProductQA

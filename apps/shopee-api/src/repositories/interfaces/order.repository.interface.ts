@@ -1,6 +1,13 @@
 import { Types } from 'mongoose'
 import { PaginatedResult, PaginationOptions } from './base.repository.interface'
-import { IOrder, IOrderItem, IShippingAddress, IShippingMethod, OrderStatusType, PaymentMethodType } from '@database/models/order.model'
+import {
+  IOrder,
+  IOrderItem,
+  IShippingAddress,
+  IShippingMethod,
+  OrderStatusType,
+  PaymentMethodType,
+} from '@database/models/order.model'
 import { IOrderTracking } from '@database/models/order-tracking.model'
 
 /**
@@ -37,27 +44,29 @@ export interface OrderFilterOptions {
 export interface IOrderRepository {
   findByUser(
     filters: OrderFilterOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IOrder>>
 
   findById(orderId: string | Types.ObjectId): Promise<IOrder | null>
 
-  findByIdAndUser(orderId: string | Types.ObjectId, userId: string | Types.ObjectId): Promise<IOrder | null>
+  findByIdAndUser(
+    orderId: string | Types.ObjectId,
+    userId: string | Types.ObjectId,
+  ): Promise<IOrder | null>
 
   create(data: CreateOrderDTO): Promise<IOrder>
 
   updateStatus(
     orderId: string | Types.ObjectId,
     status: OrderStatusType,
-    additionalData?: Partial<IOrder>
+    additionalData?: Partial<IOrder>,
   ): Promise<IOrder | null>
 
   // Tracking
   findTrackingByOrderAndUser(
     orderId: string | Types.ObjectId,
-    userId: string | Types.ObjectId
+    userId: string | Types.ObjectId,
   ): Promise<IOrderTracking | null>
 
   findTrackingByNumber(trackingNumber: string): Promise<IOrderTracking | null>
 }
-

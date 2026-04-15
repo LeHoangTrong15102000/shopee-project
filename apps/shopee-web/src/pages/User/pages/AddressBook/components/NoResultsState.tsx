@@ -1,24 +1,24 @@
-import { motion } from 'framer-motion';
-import Button from 'src/components/Button';
-import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion'
+import Button from 'src/components/Button'
+import { useTranslation } from 'react-i18next'
 
-type FilterType = 'all' | 'home' | 'office' | 'other';
+type FilterType = 'all' | 'home' | 'office' | 'other'
 
 const FILTER_TYPE_I18N_KEYS = {
   all: 'book.all',
   home: 'book.typeHome',
   office: 'book.typeOffice',
   other: 'book.typeOther',
-} as const;
+} as const
 
 interface NoResultsStateProps {
-  searchQuery: string;
-  filterType: FilterType;
-  onClear: () => void;
+  searchQuery: string
+  filterType: FilterType
+  onClear: () => void
 }
 
 const NoResultsState = ({ searchQuery, filterType, onClear }: NoResultsStateProps) => {
-  const { t } = useTranslation('address');
+  const { t } = useTranslation('address')
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -57,7 +57,7 @@ const NoResultsState = ({ searchQuery, filterType, onClear }: NoResultsStateProp
         {t('book.clearFilter')}
       </Button>
     </motion.div>
-  );
-};
+  )
+}
 
-export default NoResultsState;
+export default NoResultsState

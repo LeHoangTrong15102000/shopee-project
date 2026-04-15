@@ -1,63 +1,63 @@
-import { useState, useEffect, useContext } from 'react';
-import { useTranslation } from 'react-i18next';
-import useSocket from './useSocket';
-import { SocketEvent, InventoryAlertPayload } from 'src/types/socket.types';
-import { toast } from 'react-toastify';
-import { AppContext } from 'src/contexts/app.context';
+import { useState, useEffect, useContext } from 'react'
+import { useTranslation } from 'react-i18next'
+import useSocket from './useSocket'
+import { SocketEvent, InventoryAlertPayload } from 'src/types/socket.types'
+import { toast } from 'react-toastify'
+import { AppContext } from 'src/contexts/app.context'
 
 interface UseInventoryAlertsReturn {
-  alerts: InventoryAlertPayload[];
-  unreadCount: number;
-  clearAlerts: () => void;
+  alerts: InventoryAlertPayload[]
+  unreadCount: number
+  clearAlerts: () => void
 }
 
 const useInventoryAlerts = (): UseInventoryAlertsReturn => {
-  const { t } = useTranslation('common');
-  const { socket, isConnected } = useSocket();
-  const { profile } = useContext(AppContext);
-  const [alerts, setAlerts] = useState<InventoryAlertPayload[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const { t } = useTranslation('common')
+  const { socket, isConnected } = useSocket()
+  const { profile } = useContext(AppContext)
+  const [alerts, setAlerts] = useState<InventoryAlertPayload[]>([])
+  const [unreadCount, setUnreadCount] = useState(0)
 
-  const isAdmin = profile?.roles?.includes('Admin') ?? false;
+  const isAdmin = profile?.roles?.includes('Admin') ?? false
 
   useEffect(() => {
-    if (!socket || !isConnected || !isAdmin) return;
+    if (!socket || !isConnected || !isAdmin) return
 
     const handleInventoryAlert = (data: InventoryAlertPayload) => {
-      setAlerts((prev) => [data, ...prev]);
-      setUnreadCount((prev) => prev + 1);
+      setAlerts((prev) => [data, ...prev])
+      setUnreadCount((prev) => prev + 1)
 
       if (data.severity === 'critical') {
         toast.error(`🚨 ${t('inventory.outOfStock', { name: data.product_name })}`, {
           autoClose: 5000,
-        });
+        })
       } else {
         toast.warning(
           `⚠️ ${t('inventory.lowStock', { name: data.product_name, count: data.current_quantity })}`,
           {
             autoClose: 4000,
           },
-        );
+        )
       }
-    };
+    }
 
-    socket.on(SocketEvent.INVENTORY_ALERT, handleInventoryAlert);
+    socket.on(SocketEvent.INVENTORY_ALERT, handleInventoryAlert)
 
     return () => {
-      socket.off(SocketEvent.INVENTORY_ALERT, handleInventoryAlert);
-    };
-  }, [socket, isConnected, isAdmin, t]);
+      socket.off(SocketEvent.INVENTORY_ALERT, handleInventoryAlert)
+    }
+  }, [socket, isConnected, isAdmin, t])
 
   const clearAlerts = () => {
-    setAlerts([]);
-    setUnreadCount(0);
-  };
+    setAlerts([])
+    setUnreadCount(0)
+  }
 
   return {
     alerts,
     unreadCount,
     clearAlerts,
-  };
-};
+  }
+}
 
-export default useInventoryAlerts;
+export default useInventoryAlerts

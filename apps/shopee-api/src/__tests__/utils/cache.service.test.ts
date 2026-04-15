@@ -155,7 +155,7 @@ describe('CacheKeys', () => {
         rating_filter: '4',
         price_min: '100',
         price_max: '500',
-        name: 'phone'
+        name: 'phone',
       })
 
       expect(key).toBe('products:list:2:20:electronics:price:asc:4:100:500:phone')
@@ -170,7 +170,7 @@ describe('CacheKeys', () => {
     it('should handle partial params', () => {
       const key = CacheKeys.productsList({
         page: 3,
-        category: 'books'
+        category: 'books',
       })
 
       expect(key).toBe('products:list:3:30:books::::::')
@@ -224,4 +224,3 @@ describe('CacheTTL', () => {
     expect(CacheTTL.CATEGORIES_LIST).toBe(1800)
   })
 })
-

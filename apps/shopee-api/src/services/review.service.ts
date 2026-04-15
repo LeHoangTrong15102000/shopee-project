@@ -8,15 +8,24 @@ import {
 } from '@repositories/interfaces/review.repository.interface'
 import { IPurchaseRepository } from '@repositories/interfaces/purchase.repository.interface'
 import { IProductRepository } from '@repositories/interfaces/product.repository.interface'
-import { PaginatedResult, PaginationOptions } from '@repositories/interfaces/base.repository.interface'
-import { BaseService, NotFoundError, ValidationError, BusinessError, ForbiddenError } from './base.service'
+import {
+  PaginatedResult,
+  PaginationOptions,
+} from '@repositories/interfaces/base.repository.interface'
+import {
+  BaseService,
+  NotFoundError,
+  ValidationError,
+  BusinessError,
+  ForbiddenError,
+} from './base.service'
 import { STATUS_PURCHASE } from '@constants/purchase'
 
 export class ReviewService extends BaseService {
   constructor(
     private readonly reviewRepository: IReviewRepository,
     private readonly purchaseRepository: IPurchaseRepository,
-    private readonly productRepository: IProductRepository
+    private readonly productRepository: IProductRepository,
   ) {
     super()
   }
@@ -26,7 +35,7 @@ export class ReviewService extends BaseService {
     purchaseId: string,
     rating: number,
     comment: string,
-    images: string[] = []
+    images: string[] = [],
   ): Promise<{ review: IReviewItem; productId: string }> {
     if (!this.isValidObjectId(userId)) throw new ValidationError('Invalid user ID format')
     if (!this.isValidObjectId(purchaseId)) throw new ValidationError('Invalid purchase ID format')
@@ -61,18 +70,18 @@ export class ReviewService extends BaseService {
     productId: string,
     userId: string | undefined,
     filters: Omit<ReviewFilterOptions, 'product_id'>,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<{ reviews: IReviewItem[]; pagination: any; stats: IReviewStats }> {
     const result = await this.reviewRepository.findByProduct(
       { ...filters, product_id: productId },
-      this.normalizePagination(pagination)
+      this.normalizePagination(pagination),
     )
 
     let reviewsWithLikes = result.data
     if (userId) {
       const likedIds = await this.reviewRepository.findUserLikes(
         userId,
-        result.data.map((r) => r._id!)
+        result.data.map((r) => r._id!),
       )
       reviewsWithLikes = result.data.map((review) => ({
         ...review,
@@ -96,7 +105,7 @@ export class ReviewService extends BaseService {
 
   async toggleReviewLike(
     userId: string,
-    reviewId: string
+    reviewId: string,
   ): Promise<{ is_liked: boolean; helpful_count: number; productId: string }> {
     if (!this.isValidObjectId(userId)) throw new ValidationError('Invalid user ID format')
     if (!this.isValidObjectId(reviewId)) throw new ValidationError('Invalid review ID format')
@@ -114,7 +123,7 @@ export class ReviewService extends BaseService {
     userId: string,
     reviewId: string,
     content: string,
-    parentCommentId?: string
+    parentCommentId?: string,
   ): Promise<{ comment: IReviewCommentItem; productId: string }> {
     if (!this.isValidObjectId(userId)) throw new ValidationError('Invalid user ID format')
     if (!this.isValidObjectId(reviewId)) throw new ValidationError('Invalid review ID format')
@@ -124,7 +133,8 @@ export class ReviewService extends BaseService {
 
     let level = 0
     if (parentCommentId) {
-      if (!this.isValidObjectId(parentCommentId)) throw new ValidationError('Invalid parent comment ID format')
+      if (!this.isValidObjectId(parentCommentId))
+        throw new ValidationError('Invalid parent comment ID format')
       const parentComment = await this.reviewRepository.findCommentById(parentCommentId)
       if (!parentComment) throw new NotFoundError('Parent comment', parentCommentId)
       level = parentComment.level + 1
@@ -145,15 +155,18 @@ export class ReviewService extends BaseService {
 
   async getReviewComments(
     reviewId: string,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IReviewCommentItem>> {
     if (!this.isValidObjectId(reviewId)) throw new ValidationError('Invalid review ID format')
-    return this.reviewRepository.findCommentsByReview(reviewId, this.normalizePagination(pagination))
+    return this.reviewRepository.findCommentsByReview(
+      reviewId,
+      this.normalizePagination(pagination),
+    )
   }
 
   async canReviewPurchase(
     userId: string,
-    purchaseId: string
+    purchaseId: string,
   ): Promise<{ can_review: boolean; reason?: string; review_id?: string }> {
     if (!this.isValidObjectId(userId)) throw new ValidationError('Invalid user ID format')
     if (!this.isValidObjectId(purchaseId)) throw new ValidationError('Invalid purchase ID format')
@@ -165,7 +178,11 @@ export class ReviewService extends BaseService {
 
     const existingReview = await this.reviewRepository.findByPurchase(purchaseId)
     if (existingReview) {
-      return { can_review: false, reason: 'Sản phẩm đã được đánh giá', review_id: existingReview._id?.toString() }
+      return {
+        can_review: false,
+        reason: 'Sản phẩm đã được đánh giá',
+        review_id: existingReview._id?.toString(),
+      }
     }
 
     return { can_review: true }
@@ -179,7 +196,7 @@ export class ReviewService extends BaseService {
   async updateReview(
     userId: string,
     reviewId: string,
-    data: { rating?: number; comment?: string; images?: string[] }
+    data: { rating?: number; comment?: string; images?: string[] },
   ): Promise<IReviewItem> {
     if (!this.isValidObjectId(userId)) throw new ValidationError('Invalid user ID format')
     if (!this.isValidObjectId(reviewId)) throw new ValidationError('Invalid review ID format')
@@ -211,7 +228,7 @@ export class ReviewService extends BaseService {
 
   async deleteReview(
     userId: string,
-    reviewId: string
+    reviewId: string,
   ): Promise<{ deleted: boolean; product_id: string }> {
     if (!this.isValidObjectId(userId)) throw new ValidationError('Invalid user ID format')
     if (!this.isValidObjectId(reviewId)) throw new ValidationError('Invalid review ID format')
@@ -239,7 +256,7 @@ export class ReviewService extends BaseService {
 
   async adminGetReviews(
     filters: { rating?: number; product_id?: string; user_id?: string; search?: string },
-    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' }
+    pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' },
   ) {
     return (this.reviewRepository as any).findAllWithFilters(filters, pagination)
   }
@@ -277,4 +294,3 @@ export class ReviewService extends BaseService {
     return (this.reviewRepository as any).getReviewStats()
   }
 }
-

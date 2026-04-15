@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import StatusBadge from '../StatusBadge';
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import StatusBadge from '../StatusBadge'
 
 vi.mock('src/config/orderStatus', () => ({
   ORDER_STATUS_CONFIG: {
@@ -21,38 +21,36 @@ vi.mock('src/config/orderStatus', () => ({
     },
   },
   getStatusLabel: (status: string) => `Status: ${status}`,
-}));
+}))
 
 describe('StatusBadge', () => {
   it('renders status label', () => {
-    render(<StatusBadge status={'pending' as any} />);
-    expect(screen.getByText('Status: pending')).toBeInTheDocument();
-  });
+    render(<StatusBadge status={'pending' as any} />)
+    expect(screen.getByText('Status: pending')).toBeInTheDocument()
+  })
 
   it('renders with sm size', () => {
-    const { container } = render(<StatusBadge status={'pending' as any} size="sm" />);
-    expect(container.firstChild).toHaveClass('px-2');
-  });
+    const { container } = render(<StatusBadge status={'pending' as any} size="sm" />)
+    expect(container.firstChild).toHaveClass('px-2')
+  })
 
   it('renders with md size by default', () => {
-    const { container } = render(<StatusBadge status={'pending' as any} />);
-    expect(container.firstChild).toHaveClass('px-3');
-  });
+    const { container } = render(<StatusBadge status={'pending' as any} />)
+    expect(container.firstChild).toHaveClass('px-3')
+  })
 
   it('renders with lg size', () => {
-    const { container } = render(<StatusBadge status={'pending' as any} size="lg" />);
-    expect(container.firstChild).toHaveClass('px-4');
-  });
+    const { container } = render(<StatusBadge status={'pending' as any} size="lg" />)
+    expect(container.firstChild).toHaveClass('px-4')
+  })
 
   it('returns null for unknown status', () => {
-    const { container } = render(<StatusBadge status={'unknown' as any} />);
-    expect(container.firstChild).toBeNull();
-  });
+    const { container } = render(<StatusBadge status={'unknown' as any} />)
+    expect(container.firstChild).toBeNull()
+  })
 
   it('applies custom className', () => {
-    const { container } = render(
-      <StatusBadge status={'pending' as any} className="custom-class" />,
-    );
-    expect(container.firstChild).toHaveClass('custom-class');
-  });
-});
+    const { container } = render(<StatusBadge status={'pending' as any} className="custom-class" />)
+    expect(container.firstChild).toHaveClass('custom-class')
+  })
+})

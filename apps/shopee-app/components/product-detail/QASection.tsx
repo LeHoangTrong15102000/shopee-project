@@ -1,18 +1,18 @@
-import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
-import { AppText, AppButton } from '@/components/ui';
-import { useColors } from '@/hooks/useColors';
-import { useTranslation } from 'react-i18next';
-import QuestionCard from './QuestionCard';
-import type { Question } from '@/apis/product-detail.api';
+import React from 'react'
+import { View, TouchableOpacity } from 'react-native'
+import { AppText, AppButton } from '@/components/ui'
+import { useColors } from '@/hooks/useColors'
+import { useTranslation } from 'react-i18next'
+import QuestionCard from './QuestionCard'
+import type { Question } from '@/apis/product-detail.api'
 
 interface QASectionProps {
-  questions: Question[];
-  hasNextPage: boolean;
-  onLoadMore: () => void;
-  onAskQuestion: () => void;
-  onAnswerQuestion: (questionId: string) => void;
-  onToggleLike: (questionId: string) => void;
+  questions: Question[]
+  hasNextPage: boolean
+  onLoadMore: () => void
+  onAskQuestion: () => void
+  onAnswerQuestion: (questionId: string) => void
+  onToggleLike: (questionId: string) => void
 }
 
 export default function QASection({
@@ -23,8 +23,8 @@ export default function QASection({
   onAnswerQuestion,
   onToggleLike,
 }: QASectionProps) {
-  const colors = useColors();
-  const { t } = useTranslation();
+  const colors = useColors()
+  const { t } = useTranslation()
 
   return (
     <View className="px-4 py-3">
@@ -71,5 +71,5 @@ export default function QASection({
         </>
       )}
     </View>
-  );
+  )
 }

@@ -1,6 +1,6 @@
-import { motion } from 'framer-motion';
-import Button from 'src/components/Button';
-import WalletCard, { WALLETS, WalletType } from './WalletCard';
+import { motion } from 'framer-motion'
+import Button from 'src/components/Button'
+import WalletCard, { WALLETS, WalletType } from './WalletCard'
 
 function LinkNewWalletButton({ onClick }: { onClick: () => void }) {
   return (
@@ -17,7 +17,7 @@ function LinkNewWalletButton({ onClick }: { onClick: () => void }) {
         <span className="font-medium">Liên kết ví mới</span>
       </Button>
     </motion.div>
-  );
+  )
 }
 
 function WalletSelectionView({
@@ -26,10 +26,10 @@ function WalletSelectionView({
   onLinkNewWallet,
   onProceed,
 }: {
-  selectedWallet: WalletType | null;
-  onSelectWallet: (wallet: WalletType) => void;
-  onLinkNewWallet: () => void;
-  onProceed: () => void;
+  selectedWallet: WalletType | null
+  onSelectWallet: (wallet: WalletType) => void
+  onLinkNewWallet: () => void
+  onProceed: () => void
 }) {
   return (
     <motion.div
@@ -67,7 +67,7 @@ function WalletSelectionView({
         </motion.div>
       )}
     </motion.div>
-  );
+  )
 }
 
-export default WalletSelectionView;
+export default WalletSelectionView

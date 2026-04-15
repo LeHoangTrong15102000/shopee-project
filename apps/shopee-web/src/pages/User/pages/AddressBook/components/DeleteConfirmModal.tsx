@@ -1,13 +1,13 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
 
 interface DeleteConfirmModalProps {
-  onConfirm: () => void;
-  onCancel: () => void;
-  isLoading: boolean;
-  title?: string;
-  message?: string;
+  onConfirm: () => void
+  onCancel: () => void
+  isLoading: boolean
+  title?: string
+  message?: string
 }
 
 const DeleteConfirmModal = ({
@@ -17,9 +17,9 @@ const DeleteConfirmModal = ({
   title,
   message,
 }: DeleteConfirmModalProps) => {
-  const { t } = useTranslation('address');
-  const resolvedTitle = title || t('deleteModal.title');
-  const resolvedMessage = message || t('deleteModal.message');
+  const { t } = useTranslation('address')
+  const resolvedTitle = title || t('deleteModal.title')
+  const resolvedMessage = message || t('deleteModal.message')
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -76,7 +76,7 @@ const DeleteConfirmModal = ({
         </div>
       </motion.div>
     </motion.div>
-  );
-};
+  )
+}
 
-export default DeleteConfirmModal;
+export default DeleteConfirmModal

@@ -1,1 +1,1 @@
-export { default } from './ShippingMethodModal';
+export { default } from './ShippingMethodModal'

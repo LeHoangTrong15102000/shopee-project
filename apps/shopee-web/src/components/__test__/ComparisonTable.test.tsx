@@ -1,9 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render } from '@testing-library/react';
-import { MemoryRouter } from 'react-router';
-import ComparisonTable from '../ComparisonTable/ComparisonTable';
-import CompareButton from '../CompareButton/CompareButton';
-import CompareFloatingBar from '../CompareFloatingBar/CompareFloatingBar';
+import { describe, it, expect, vi } from 'vitest'
+import { render } from '@testing-library/react'
+import { MemoryRouter } from 'react-router'
+import ComparisonTable from '../ComparisonTable/ComparisonTable'
+import CompareButton from '../CompareButton/CompareButton'
+import CompareFloatingBar from '../CompareFloatingBar/CompareFloatingBar'
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -11,7 +11,7 @@ vi.mock('react-i18next', () => ({
     i18n: { language: 'vi', changeLanguage: vi.fn() },
   }),
   Trans: ({ children }: any) => children,
-}));
+}))
 
 vi.mock('src/hooks/useProductComparison', () => ({
   useProductComparison: () => ({
@@ -22,11 +22,11 @@ vi.mock('src/hooks/useProductComparison', () => ({
     addToCompare: vi.fn(),
     canAddMore: true,
   }),
-}));
+}))
 
 vi.mock('src/hooks/useReducedMotion', () => ({
   useReducedMotion: () => false,
-}));
+}))
 
 vi.mock('react-toastify', () => ({
   toast: {
@@ -34,7 +34,7 @@ vi.mock('react-toastify', () => ({
     success: vi.fn(),
     warning: vi.fn(),
   },
-}));
+}))
 
 const mockProduct = {
   _id: '1',
@@ -52,7 +52,7 @@ const mockProduct = {
   location: 'Test Location',
   createdAt: '',
   updatedAt: '',
-};
+}
 
 describe('ComparisonTable', () => {
   it('renders empty comparison table', () => {
@@ -60,10 +60,10 @@ describe('ComparisonTable', () => {
       <MemoryRouter>
         <ComparisonTable />
       </MemoryRouter>,
-    );
+    )
 
-    expect(container.querySelector('[class]')).not.toBeNull();
-  });
+    expect(container.querySelector('[class]')).not.toBeNull()
+  })
 
   it('renders comparison table with products', () => {
     vi.doMock('src/hooks/useProductComparison', () => ({
@@ -75,17 +75,17 @@ describe('ComparisonTable', () => {
         addToCompare: vi.fn(),
         canAddMore: true,
       }),
-    }));
+    }))
 
     const { container } = render(
       <MemoryRouter>
         <ComparisonTable onAddToCart={vi.fn()} />
       </MemoryRouter>,
-    );
+    )
 
-    expect(container.querySelector('[class]')).not.toBeNull();
-  });
-});
+    expect(container.querySelector('[class]')).not.toBeNull()
+  })
+})
 
 describe('CompareButton', () => {
   it('renders compare button', () => {
@@ -93,11 +93,11 @@ describe('CompareButton', () => {
       <MemoryRouter>
         <CompareButton product={mockProduct} />
       </MemoryRouter>,
-    );
+    )
 
-    expect(container.querySelector('[class]')).not.toBeNull();
-  });
-});
+    expect(container.querySelector('[class]')).not.toBeNull()
+  })
+})
 
 describe('CompareFloatingBar', () => {
   it('renders nothing when no products', () => {
@@ -105,8 +105,8 @@ describe('CompareFloatingBar', () => {
       <MemoryRouter>
         <CompareFloatingBar />
       </MemoryRouter>,
-    );
+    )
 
-    expect(container.firstChild).toBeFalsy();
-  });
-});
+    expect(container.firstChild).toBeFalsy()
+  })
+})

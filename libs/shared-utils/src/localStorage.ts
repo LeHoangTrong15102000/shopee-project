@@ -1,39 +1,38 @@
 export interface AuthStorageConfig {
-  accessTokenKey: string;
-  refreshTokenKey: string;
-  profileKey: string;
+  accessTokenKey: string
+  refreshTokenKey: string
+  profileKey: string
 }
 
 export function createAuthStorage(config: AuthStorageConfig) {
   return {
     getAccessToken(): string {
-      return localStorage.getItem(config.accessTokenKey) ?? '';
+      return localStorage.getItem(config.accessTokenKey) ?? ''
     },
     setAccessToken(token: string): void {
-      localStorage.setItem(config.accessTokenKey, token);
+      localStorage.setItem(config.accessTokenKey, token)
     },
     getRefreshToken(): string {
-      return localStorage.getItem(config.refreshTokenKey) ?? '';
+      return localStorage.getItem(config.refreshTokenKey) ?? ''
     },
     setRefreshToken(token: string): void {
-      localStorage.setItem(config.refreshTokenKey, token);
+      localStorage.setItem(config.refreshTokenKey, token)
     },
     getProfile<T>(): T | null {
       try {
-        const result = localStorage.getItem(config.profileKey);
-        return result ? JSON.parse(result) : null;
+        const result = localStorage.getItem(config.profileKey)
+        return result ? JSON.parse(result) : null
       } catch {
-        return null;
+        return null
       }
     },
     setProfile(profile: unknown): void {
-      localStorage.setItem(config.profileKey, JSON.stringify(profile));
+      localStorage.setItem(config.profileKey, JSON.stringify(profile))
     },
     clearAll(): void {
-      localStorage.removeItem(config.accessTokenKey);
-      localStorage.removeItem(config.refreshTokenKey);
-      localStorage.removeItem(config.profileKey);
+      localStorage.removeItem(config.accessTokenKey)
+      localStorage.removeItem(config.refreshTokenKey)
+      localStorage.removeItem(config.profileKey)
     },
-  };
+  }
 }
-

@@ -8,7 +8,7 @@ import tsparser from '@typescript-eslint/parser'
 
 export default [
   {
-    ignores: ['dist', 'node_modules', 'coverage', '*.cjs']
+    ignores: ['dist', 'node_modules', 'coverage', '*.cjs'],
   },
   {
     files: ['**/*.{ts,tsx}'],
@@ -18,34 +18,31 @@ export default [
         ...globals.browser,
         ...globals.node,
         ...globals.es2020,
-        React: 'readonly'
+        React: 'readonly',
       },
       parser: tsparser,
       parserOptions: {
         ecmaVersion: 'latest',
         ecmaFeatures: { jsx: true },
-        sourceType: 'module'
-      }
+        sourceType: 'module',
+      },
     },
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
       'react-compiler': reactCompiler,
-      '@typescript-eslint': tseslint
+      '@typescript-eslint': tseslint,
     },
     rules: {
       ...js.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true }
-      ],
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       'react-compiler/react-compiler': 'error',
       'no-unused-vars': 'off',
       'no-undef': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
-      '@typescript-eslint/no-explicit-any': 'warn'
-    }
+      '@typescript-eslint/no-explicit-any': 'warn',
+    },
   },
   {
     files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
@@ -62,8 +59,8 @@ export default [
         afterEach: 'readonly',
         vi: 'readonly',
         beforeAll: 'readonly',
-        afterAll: 'readonly'
-      }
-    }
-  }
+        afterAll: 'readonly',
+      },
+    },
+  },
 ]

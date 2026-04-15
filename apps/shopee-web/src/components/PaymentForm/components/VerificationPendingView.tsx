@@ -1,8 +1,8 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
 function VerificationPendingView() {
-  const { t } = useTranslation('payment');
+  const { t } = useTranslation('payment')
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -45,7 +45,7 @@ function VerificationPendingView() {
         <span>{t('verification.processing')}</span>
       </motion.div>
     </motion.div>
-  );
+  )
 }
 
-export default VerificationPendingView;
+export default VerificationPendingView

@@ -1,22 +1,22 @@
-import { motion } from 'framer-motion';
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import { fadeIn } from 'src/styles/animations';
+import { motion } from 'framer-motion'
+import { Link } from 'react-router'
+import { useTranslation } from 'react-i18next'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import { fadeIn } from 'src/styles/animations'
 
 export interface BreadcrumbItem {
-  label: string;
-  to?: string; // If undefined, it's the current page (no link)
+  label: string
+  to?: string // If undefined, it's the current page (no link)
 }
 
 export interface BreadcrumbProps {
-  items: BreadcrumbItem[];
-  className?: string;
+  items: BreadcrumbItem[]
+  className?: string
 }
 
 const Breadcrumb = ({ items, className = '' }: BreadcrumbProps) => {
-  const { t } = useTranslation('common');
-  const reducedMotion = useReducedMotion();
+  const { t } = useTranslation('common')
+  const reducedMotion = useReducedMotion()
 
   // Generate JSON-LD structured data for SEO
   const structuredData = {
@@ -30,7 +30,7 @@ const Breadcrumb = ({ items, className = '' }: BreadcrumbProps) => {
         item: `${typeof window !== 'undefined' ? window.location.origin : ''}${item.to}`,
       }),
     })),
-  };
+  }
 
   return (
     <>
@@ -49,7 +49,7 @@ const Breadcrumb = ({ items, className = '' }: BreadcrumbProps) => {
       >
         <ol className="flex items-center gap-2">
           {items.map((item, index) => {
-            const isLastItem = index === items.length - 1;
+            const isLastItem = index === items.length - 1
 
             return (
               <li key={index} className="flex items-center gap-2">
@@ -79,12 +79,12 @@ const Breadcrumb = ({ items, className = '' }: BreadcrumbProps) => {
                   </span>
                 )}
               </li>
-            );
+            )
           })}
         </ol>
       </motion.nav>
     </>
-  );
-};
+  )
+}
 
-export default Breadcrumb;
+export default Breadcrumb

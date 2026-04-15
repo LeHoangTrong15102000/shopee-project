@@ -353,7 +353,7 @@ describe('Cache Middleware', () => {
         expect(cacheService.set).toHaveBeenCalledWith(
           expect.any(String),
           expect.any(Object),
-          CacheTTL.PRODUCTS_LIST
+          CacheTTL.PRODUCTS_LIST,
         )
       })
     })
@@ -375,7 +375,7 @@ describe('Cache Middleware', () => {
         expect(cacheService.set).toHaveBeenCalledWith(
           expect.any(String),
           expect.any(Object),
-          CacheTTL.PRODUCT_DETAIL
+          CacheTTL.PRODUCT_DETAIL,
         )
       })
     })
@@ -397,7 +397,7 @@ describe('Cache Middleware', () => {
         expect(cacheService.set).toHaveBeenCalledWith(
           expect.any(String),
           expect.any(Object),
-          CacheTTL.CATEGORIES_LIST
+          CacheTTL.CATEGORIES_LIST,
         )
       })
     })

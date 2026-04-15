@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react'
 import {
   View,
   FlatList,
@@ -9,31 +9,31 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
   ScrollView,
-} from 'react-native';
-import { X } from 'lucide-react-native';
-import { useColors } from '@/hooks/useColors';
+} from 'react-native'
+import { X } from 'lucide-react-native'
+import { useColors } from '@/hooks/useColors'
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
 interface ImageGalleryProps {
-  images: string[];
+  images: string[]
 }
 
 export default function ImageGallery({ images }: ImageGalleryProps) {
-  const colors = useColors();
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [fullscreenVisible, setFullscreenVisible] = useState(false);
-  const flatListRef = useRef<FlatList>(null);
+  const colors = useColors()
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [fullscreenVisible, setFullscreenVisible] = useState(false)
+  const flatListRef = useRef<FlatList>(null)
 
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const index = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
-    if (index !== activeIndex) setActiveIndex(index);
-  };
+    const index = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH)
+    if (index !== activeIndex) setActiveIndex(index)
+  }
 
   const scrollToIndex = (index: number) => {
-    flatListRef.current?.scrollToIndex({ index, animated: true });
-    setActiveIndex(index);
-  };
+    flatListRef.current?.scrollToIndex({ index, animated: true })
+    setActiveIndex(index)
+  }
 
   return (
     <View>
@@ -160,5 +160,5 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
         </View>
       </Modal>
     </View>
-  );
+  )
 }

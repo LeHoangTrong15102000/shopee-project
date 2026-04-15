@@ -51,7 +51,7 @@ const ReviewCommentSchema = new Schema<IReviewComment>(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 // Tạo compound indexes
@@ -71,7 +71,7 @@ ReviewCommentSchema.pre('save', async function () {
 // Export model
 export const ReviewCommentModel = mongoose.model<IReviewComment>(
   'review_comments',
-  ReviewCommentSchema
+  ReviewCommentSchema,
 )
 
 // Export interface

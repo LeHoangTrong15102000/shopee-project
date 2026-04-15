@@ -78,7 +78,10 @@ describe('ReviewRepository', () => {
       ;(ReviewModel.find as jest.Mock).mockReturnValue({ populate: mockPopulate })
       ;(ReviewModel.countDocuments as jest.Mock).mockResolvedValue(1)
 
-      const result = await repository.findByProduct({ product_id: '507f1f77bcf86cd799439013' }, { page: 1, limit: 10 })
+      const result = await repository.findByProduct(
+        { product_id: '507f1f77bcf86cd799439013' },
+        { page: 1, limit: 10 },
+      )
 
       expect(ReviewModel.find).toHaveBeenCalledWith({ product: '507f1f77bcf86cd799439013' })
       expect(result.data).toEqual([mockReviewData])
@@ -93,9 +96,15 @@ describe('ReviewRepository', () => {
       ;(ReviewModel.find as jest.Mock).mockReturnValue({ populate: mockPopulate })
       ;(ReviewModel.countDocuments as jest.Mock).mockResolvedValue(1)
 
-      await repository.findByProduct({ product_id: '507f1f77bcf86cd799439013', rating: 5 }, { page: 1, limit: 10 })
+      await repository.findByProduct(
+        { product_id: '507f1f77bcf86cd799439013', rating: 5 },
+        { page: 1, limit: 10 },
+      )
 
-      expect(ReviewModel.find).toHaveBeenCalledWith({ product: '507f1f77bcf86cd799439013', rating: 5 })
+      expect(ReviewModel.find).toHaveBeenCalledWith({
+        product: '507f1f77bcf86cd799439013',
+        rating: 5,
+      })
     })
   })
 
@@ -146,7 +155,10 @@ describe('ReviewRepository', () => {
   describe('getProductStats', () => {
     it('should return product review stats', async () => {
       ;(ReviewModel.aggregate as jest.Mock)
-        .mockResolvedValueOnce([{ _id: 5, count: 10 }, { _id: 4, count: 5 }])
+        .mockResolvedValueOnce([
+          { _id: 5, count: 10 },
+          { _id: 4, count: 5 },
+        ])
         .mockResolvedValueOnce([{ avg: 4.5 }])
       ;(ReviewModel.countDocuments as jest.Mock).mockResolvedValue(15)
 
@@ -161,13 +173,19 @@ describe('ReviewRepository', () => {
   describe('findUserLike', () => {
     it('should return true if user liked review', async () => {
       ;(ReviewLikeModel.findOne as jest.Mock).mockResolvedValue({ _id: '123' })
-      const result = await repository.findUserLike('507f1f77bcf86cd799439012', '507f1f77bcf86cd799439011')
+      const result = await repository.findUserLike(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439011',
+      )
       expect(result).toBe(true)
     })
 
     it('should return false if user has not liked review', async () => {
       ;(ReviewLikeModel.findOne as jest.Mock).mockResolvedValue(null)
-      const result = await repository.findUserLike('507f1f77bcf86cd799439012', '507f1f77bcf86cd799439011')
+      const result = await repository.findUserLike(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439011',
+      )
       expect(result).toBe(false)
     })
   })
@@ -179,7 +197,10 @@ describe('ReviewRepository', () => {
         { review: { toString: () => '507f1f77bcf86cd799439015' } },
       ])
 
-      const result = await repository.findUserLikes('507f1f77bcf86cd799439012', ['507f1f77bcf86cd799439011', '507f1f77bcf86cd799439015'])
+      const result = await repository.findUserLikes('507f1f77bcf86cd799439012', [
+        '507f1f77bcf86cd799439011',
+        '507f1f77bcf86cd799439015',
+      ])
 
       expect(result.has('507f1f77bcf86cd799439011')).toBe(true)
       expect(result.has('507f1f77bcf86cd799439015')).toBe(true)
@@ -193,7 +214,10 @@ describe('ReviewRepository', () => {
       ;(ReviewModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({})
       ;(ReviewLikeModel.countDocuments as jest.Mock).mockResolvedValue(9)
 
-      const result = await repository.toggleLike('507f1f77bcf86cd799439012', '507f1f77bcf86cd799439011')
+      const result = await repository.toggleLike(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439011',
+      )
 
       expect(result.is_liked).toBe(false)
       expect(result.helpful_count).toBe(9)
@@ -204,7 +228,10 @@ describe('ReviewRepository', () => {
       ;(ReviewModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({})
       ;(ReviewLikeModel.countDocuments as jest.Mock).mockResolvedValue(11)
 
-      const result = await repository.toggleLike('507f1f77bcf86cd799439012', '507f1f77bcf86cd799439011')
+      const result = await repository.toggleLike(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439011',
+      )
 
       expect(result.is_liked).toBe(true)
       expect(result.helpful_count).toBe(11)
@@ -220,10 +247,19 @@ describe('ReviewRepository', () => {
       const mockPopulate = jest.fn().mockReturnValue({ sort: mockSort })
       ;(ReviewCommentModel.find as jest.Mock)
         .mockReturnValueOnce({ populate: mockPopulate })
-        .mockReturnValueOnce({ populate: jest.fn().mockReturnValue({ sort: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue([]) }) }) })
+        .mockReturnValueOnce({
+          populate: jest
+            .fn()
+            .mockReturnValue({
+              sort: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue([]) }),
+            }),
+        })
       ;(ReviewCommentModel.countDocuments as jest.Mock).mockResolvedValue(1)
 
-      const result = await repository.findCommentsByReview('507f1f77bcf86cd799439011', { page: 1, limit: 10 })
+      const result = await repository.findCommentsByReview('507f1f77bcf86cd799439011', {
+        page: 1,
+        limit: 10,
+      })
 
       expect(result.data).toBeDefined()
       expect(result.pagination.total).toBe(1)
@@ -259,4 +295,3 @@ describe('ReviewRepository', () => {
     })
   })
 })
-

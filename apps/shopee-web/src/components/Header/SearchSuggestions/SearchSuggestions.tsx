@@ -1,22 +1,22 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router';
-import { toast } from 'react-toastify';
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
-import productApi from 'src/apis/product.api';
-import path from 'src/constant/path';
-import useDebounce from 'src/hooks/useDebounce';
-import { RetryError } from 'src/types/utils.type';
-import { generateNameId } from 'src/utils/utils';
-import SearchHistoryItem from './SearchHistoryItem';
-import SearchSuggestionItem from './SearchSuggestionItem';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router'
+import { toast } from 'react-toastify'
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
+import productApi from 'src/apis/product.api'
+import path from 'src/constant/path'
+import useDebounce from 'src/hooks/useDebounce'
+import { RetryError } from 'src/types/utils.type'
+import { generateNameId } from 'src/utils/utils'
+import SearchHistoryItem from './SearchHistoryItem'
+import SearchSuggestionItem from './SearchSuggestionItem'
 
 interface Props {
-  searchValue: string;
-  isVisible: boolean;
-  onSelectSuggestion: (suggestion: string) => void;
-  onHide: () => void;
+  searchValue: string
+  isVisible: boolean
+  onSelectSuggestion: (suggestion: string) => void
+  onHide: () => void
 }
 
 // Mock data để fallback khi API lỗi
@@ -39,20 +39,20 @@ const mockProducts = [
     image: '/src/assets/images/img-product-incart.png',
     price: 45999000,
   },
-];
+]
 
 /**
  * SearchSuggestions Component với Query Cancellation
  * Tự động hủy các request search cũ khi user gõ tiếp
  */
 const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide }: Props) => {
-  const { t, i18n } = useTranslation('nav');
-  const queryClient = useQueryClient();
-  const debouncedSearchValue = useDebounce(searchValue, 300); // Giảm từ 500ms xuống 300ms cho responsive hơn
-  const [searchHistory, setSearchHistory] = useState<string[]>([]);
+  const { t, i18n } = useTranslation('nav')
+  const queryClient = useQueryClient()
+  const debouncedSearchValue = useDebounce(searchValue, 300) // Giảm từ 500ms xuống 300ms cho responsive hơn
+  const [searchHistory, setSearchHistory] = useState<string[]>([])
 
   // State để track các hình ảnh bị lỗi và ngăn re-render liên tục
-  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set())
 
   /**
    * Query để lấy search suggestions với Query Cancellation
@@ -66,18 +66,18 @@ const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide 
     queryKey: ['searchSuggestions', debouncedSearchValue],
     queryFn: ({ signal }) => {
       // Truyền AbortSignal vào API call để support cancellation
-      return productApi.getSearchSuggestions({ q: debouncedSearchValue || '' }, { signal });
+      return productApi.getSearchSuggestions({ q: debouncedSearchValue || '' }, { signal })
     },
     enabled: Boolean(debouncedSearchValue?.trim()) && (debouncedSearchValue?.length ?? 0) > 1,
     staleTime: 30000, // Cache 30 giây
     retry: (failureCount, error: RetryError) => {
       // Không retry nếu request bị abort (do cancellation)
       if (error?.name === 'AbortError' || error?.code === 'ERR_CANCELED') {
-        return false;
+        return false
       }
-      return failureCount < 1; // Retry tối đa 1 lần nếu lỗi khác
+      return failureCount < 1 // Retry tối đa 1 lần nếu lỗi khác
     },
-  });
+  })
 
   /**
    * Query để lấy search history với Query Cancellation
@@ -86,17 +86,17 @@ const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide 
     queryKey: ['searchHistory'],
     queryFn: ({ signal }) => {
       // Truyền AbortSignal vào API call
-      return productApi.getSearchHistory({ signal });
+      return productApi.getSearchHistory({ signal })
     },
     staleTime: 60000, // Cache 1 phút
     retry: (failureCount, error: RetryError) => {
       // Không retry nếu request bị abort
       if (error?.name === 'AbortError' || error?.code === 'ERR_CANCELED') {
-        return false;
+        return false
       }
-      return failureCount < 1;
+      return failureCount < 1
     },
-  });
+  })
 
   /**
    * Mutation để xóa một keyword khỏi lịch sử tìm kiếm
@@ -104,13 +104,13 @@ const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide 
   const deleteHistoryItemMutation = useMutation({
     mutationFn: (keyword: string) => productApi.deleteSearchHistoryItem(keyword),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['searchHistory'] });
-      toast.success(t('nav.deletedFromHistory'));
+      queryClient.invalidateQueries({ queryKey: ['searchHistory'] })
+      toast.success(t('nav.deletedFromHistory'))
     },
     onError: () => {
-      toast.error(t('nav.deleteHistoryError'));
+      toast.error(t('nav.deleteHistoryError'))
     },
-  });
+  })
 
   /**
    * Mutation để xóa toàn bộ lịch sử tìm kiếm
@@ -118,27 +118,27 @@ const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide 
   const clearHistoryMutation = useMutation({
     mutationFn: () => productApi.deleteSearchHistory(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['searchHistory'] });
-      toast.success(t('nav.clearedHistory'));
+      queryClient.invalidateQueries({ queryKey: ['searchHistory'] })
+      toast.success(t('nav.clearedHistory'))
     },
     onError: () => {
-      toast.error(t('nav.clearHistoryError'));
+      toast.error(t('nav.clearHistoryError'))
     },
-  });
+  })
 
   useEffect(() => {
     if (historyData?.data.data) {
-      setSearchHistory(historyData.data.data);
+      setSearchHistory(historyData.data.data)
     } else if (historyError) {
       // Fallback với mock data khi API lỗi
-      setSearchHistory(['điện thoại', 'áo thun', 'giày thể thao', 'laptop']);
+      setSearchHistory(['điện thoại', 'áo thun', 'giày thể thao', 'laptop'])
     }
-  }, [historyData, historyError]);
+  }, [historyData, historyError])
 
   // Reset failed images khi search value thay đổi
   useEffect(() => {
-    setFailedImages(new Set());
-  }, [debouncedSearchValue]);
+    setFailedImages(new Set())
+  }, [debouncedSearchValue])
 
   // Fallback data khi API lỗi
   const suggestions =
@@ -150,7 +150,7 @@ const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide 
           `${debouncedSearchValue} oppo`,
           `${debouncedSearchValue} xiaomi`,
         ].filter((item) => item.trim() !== debouncedSearchValue)
-      : []);
+      : [])
 
   const products =
     suggestionsData?.data.data.products ||
@@ -158,45 +158,45 @@ const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide 
       ? mockProducts.filter((product) =>
           product.name.toLowerCase().includes(debouncedSearchValue.toLowerCase()),
         )
-      : []);
+      : [])
 
   const handleSelectSuggestion = (suggestion: string) => {
-    onSelectSuggestion(suggestion);
+    onSelectSuggestion(suggestion)
 
     // Lưu vào search history với error handling và cancellation support
     productApi.saveSearchHistory({ keyword: suggestion }, {}).catch((error) => {
       // Bỏ qua lỗi nếu request bị cancel
       if (error?.name !== 'AbortError' && error?.code !== 'ERR_CANCELED') {
-        console.warn('Không thể lưu lịch sử tìm kiếm:', error);
+        console.warn('Không thể lưu lịch sử tìm kiếm:', error)
       }
-    });
-    onHide();
-  };
+    })
+    onHide()
+  }
 
   // Xử lý lỗi hình ảnh - chỉ thay đổi source một lần duy nhất
   const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>, productId: string) => {
-    const img = event.target as HTMLImageElement;
+    const img = event.target as HTMLImageElement
 
     // Kiểm tra xem hình ảnh này đã bị lỗi chưa
     if (!failedImages.has(productId)) {
       // Đánh dấu hình ảnh này đã lỗi
-      setFailedImages((prev) => new Set(prev).add(productId));
+      setFailedImages((prev) => new Set(prev).add(productId))
 
       // Thay thế bằng hình ảnh placeholder an toàn (base64 SVG)
       img.src =
-        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMiAxNkwyOCAyNE0yOCAxNkwxMiAyNCIgc3Ryb2tlPSIjOTk5OTk5IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K';
+        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMiAxNkwyOCAyNE0yOCAxNkwxMiAyNCIgc3Ryb2tlPSIjOTk5OTk5IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K'
     }
-  };
+  }
 
   // Tạo component ProductItem để tối ưu rendering
   const ProductItem = ({
     product,
   }: {
-    product: { _id: string; name: string; image: string; price: number };
+    product: { _id: string; name: string; image: string; price: number }
   }) => {
     const imageUrl = failedImages.has(product._id)
       ? 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMiAxNkwyOCAyNE0yOCAxNkwxMiAyNCIgc3Ryb2tlPSIjOTk5OTk5IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K'
-      : product.image;
+      : product.image
 
     return (
       <Link
@@ -233,13 +233,13 @@ const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide 
           </svg>
         </div>
       </Link>
-    );
-  };
+    )
+  }
 
-  if (!isVisible) return null;
+  if (!isVisible) return null
 
   // Hiển thị loading state khi đang fetch
-  const showLoading = isFetching && (debouncedSearchValue?.length ?? 0) > 1;
+  const showLoading = isFetching && (debouncedSearchValue?.length ?? 0) > 1
 
   return (
     <div className="absolute top-full right-0 left-0 z-50 max-h-[60vh] overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg sm:max-h-96 dark:border-slate-700 dark:bg-slate-800">
@@ -334,7 +334,7 @@ const SearchSuggestions = ({ searchValue, isVisible, onSelectSuggestion, onHide 
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default SearchSuggestions;
+export default SearchSuggestions

@@ -1,17 +1,17 @@
-import React from 'react';
-import { ScrollView } from 'react-native';
-import { Chip } from '@/components/ui';
-import { useTranslation } from 'react-i18next';
-import { Category } from '@/services/product.api';
+import React from 'react'
+import { ScrollView } from 'react-native'
+import { Chip } from '@/components/ui'
+import { useTranslation } from 'react-i18next'
+import { Category } from '@/services/product.api'
 
 interface CategoryBarProps {
-  categories: Category[];
-  selectedCategory?: string;
-  onSelect: (categoryId?: string) => void;
+  categories: Category[]
+  selectedCategory?: string
+  onSelect: (categoryId?: string) => void
 }
 
 export default function CategoryBar({ categories, selectedCategory, onSelect }: CategoryBarProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   return (
     <ScrollView
@@ -31,5 +31,5 @@ export default function CategoryBar({ categories, selectedCategory, onSelect }: 
         </Chip>
       ))}
     </ScrollView>
-  );
+  )
 }

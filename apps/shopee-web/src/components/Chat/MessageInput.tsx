@@ -1,13 +1,13 @@
-import { useState, useRef } from 'react';
-import classNames from 'classnames';
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
+import { useState, useRef } from 'react'
+import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
 
 interface MessageInputProps {
-  onSendMessage: (message: string) => void;
-  onTypingStart: () => void;
-  onTypingStop: () => void;
-  disabled?: boolean;
+  onSendMessage: (message: string) => void
+  onTypingStart: () => void
+  onTypingStop: () => void
+  disabled?: boolean
 }
 
 export default function MessageInput({
@@ -16,60 +16,60 @@ export default function MessageInput({
   onTypingStop,
   disabled,
 }: MessageInputProps) {
-  const { t } = useTranslation('chat');
-  const [inputValue, setInputValue] = useState('');
-  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isTypingRef = useRef(false);
+  const { t } = useTranslation('chat')
+  const [inputValue, setInputValue] = useState('')
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isTypingRef = useRef(false)
 
   const clearTypingTimeout = () => {
     if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-      typingTimeoutRef.current = null;
+      clearTimeout(typingTimeoutRef.current)
+      typingTimeoutRef.current = null
     }
-  };
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setInputValue(value);
+    const value = e.target.value
+    setInputValue(value)
 
     if (value.trim() && !isTypingRef.current) {
-      isTypingRef.current = true;
-      onTypingStart();
+      isTypingRef.current = true
+      onTypingStart()
     }
 
-    clearTypingTimeout();
+    clearTypingTimeout()
 
     if (value.trim()) {
       typingTimeoutRef.current = setTimeout(() => {
-        isTypingRef.current = false;
-        onTypingStop();
-      }, 2000);
+        isTypingRef.current = false
+        onTypingStop()
+      }, 2000)
     } else if (isTypingRef.current) {
-      isTypingRef.current = false;
-      onTypingStop();
+      isTypingRef.current = false
+      onTypingStop()
     }
-  };
+  }
 
   const handleSubmit = () => {
-    const trimmedValue = inputValue.trim();
-    if (!trimmedValue || disabled) return;
+    const trimmedValue = inputValue.trim()
+    if (!trimmedValue || disabled) return
 
-    clearTypingTimeout();
+    clearTypingTimeout()
     if (isTypingRef.current) {
-      isTypingRef.current = false;
-      onTypingStop();
+      isTypingRef.current = false
+      onTypingStop()
     }
 
-    onSendMessage(trimmedValue);
-    setInputValue('');
-  };
+    onSendMessage(trimmedValue)
+    setInputValue('')
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit();
+      e.preventDefault()
+      handleSubmit()
     }
-  };
+  }
 
   return (
     <div className="border-t bg-white p-3 dark:border-slate-700 dark:bg-slate-800">
@@ -110,5 +110,5 @@ export default function MessageInput({
         </Button>
       </div>
     </div>
-  );
+  )
 }

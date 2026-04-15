@@ -13,21 +13,23 @@ const notificationTypeEnum = z.enum(notificationTypeValues).catch('other')
  * Validates query params for listing notifications
  */
 export const getNotificationsSchema = z.object({
-  query: z.object({
-    page: z.coerce
-      .number()
-      .int('Page phải là số nguyên dương')
-      .min(1, 'Page phải là số nguyên dương')
-      .optional(),
-    limit: z.coerce
-      .number()
-      .int('Limit phải từ 1 đến 50')
-      .min(1, 'Limit phải từ 1 đến 50')
-      .max(50, 'Limit phải từ 1 đến 50')
-      .optional(),
-    type: notificationTypeEnum.optional(),
-    is_read: z.enum(['true', 'false']).optional(),
-  }).passthrough(),
+  query: z
+    .object({
+      page: z.coerce
+        .number()
+        .int('Page phải là số nguyên dương')
+        .min(1, 'Page phải là số nguyên dương')
+        .optional(),
+      limit: z.coerce
+        .number()
+        .int('Limit phải từ 1 đến 50')
+        .min(1, 'Limit phải từ 1 đến 50')
+        .max(50, 'Limit phải từ 1 đến 50')
+        .optional(),
+      type: notificationTypeEnum.optional(),
+      is_read: z.enum(['true', 'false']).optional(),
+    })
+    .passthrough(),
 })
 
 /**
@@ -56,4 +58,3 @@ export const deleteNotificationSchema = z.object({
 
 // Type exports
 export type GetNotificationsQuery = z.infer<typeof getNotificationsSchema>['query']
-

@@ -1,8 +1,5 @@
 import { Document } from 'mongoose'
-import {
-  IConversation,
-  MESSAGE_ROLE,
-} from '../database/models/conversation.model'
+import { IConversation, MESSAGE_ROLE } from '../database/models/conversation.model'
 import type { MessageRole } from '../database/models/conversation.model'
 import { ChatMessage } from '../@types/conversation.type'
 import { nanoid } from 'nanoid'
@@ -11,9 +8,7 @@ import { nanoid } from 'nanoid'
  * Helper function để update lastActivity khi có message mới
  * Có thể tái sử dụng cho các middleware khác
  */
-export function updateConversationLastActivity(
-  conversation: Document & IConversation
-): void {
+export function updateConversationLastActivity(conversation: Document & IConversation): void {
   if (conversation.isModified('messages')) {
     conversation.lastActivity = new Date()
   }
@@ -44,7 +39,7 @@ export function convertToChattMessage(messages: any[]): ChatMessage[] {
 export const createMessage = (
   content: string,
   role: MessageRole,
-  customId?: string
+  customId?: string,
 ): ChatMessage => {
   return {
     id: customId || nanoid(),
@@ -81,9 +76,7 @@ export function validateConversationTitle(title: string): {
 /**
  * Validate message content
  */
-export const validateMessageContent = (
-  content: string
-): { isValid: boolean; error?: string } => {
+export const validateMessageContent = (content: string): { isValid: boolean; error?: string } => {
   if (!content || content.trim().length === 0) {
     return { isValid: false, error: 'Tin nhắn không được để trống' }
   }
@@ -138,17 +131,17 @@ export const getLastMessage = (conversation: any): ChatMessage | null => {
  * Đếm số lượng messages của user và assistant
  */
 export const getMessageStats = (
-  conversation: any
+  conversation: any,
 ): { userMessages: number; assistantMessages: number; total: number } => {
   if (!conversation.messages) {
     return { userMessages: 0, assistantMessages: 0, total: 0 }
   }
 
   const userMessages = conversation.messages.filter(
-    (msg: ChatMessage) => msg.role === MESSAGE_ROLE.USER
+    (msg: ChatMessage) => msg.role === MESSAGE_ROLE.USER,
   ).length
   const assistantMessages = conversation.messages.filter(
-    (msg: ChatMessage) => msg.role === MESSAGE_ROLE.ASSISTANT
+    (msg: ChatMessage) => msg.role === MESSAGE_ROLE.ASSISTANT,
   ).length
 
   return {
@@ -161,10 +154,7 @@ export const getMessageStats = (
 /**
  * Lấy context messages để gửi cho AI (giới hạn số lượng)
  */
-export const getContextMessages = (
-  conversation: any,
-  maxMessages: number = 20
-): ChatMessage[] => {
+export const getContextMessages = (conversation: any, maxMessages: number = 20): ChatMessage[] => {
   if (!conversation.messages || conversation.messages.length === 0) {
     return []
   }
@@ -188,7 +178,7 @@ export const sanitizeUserInput = (input: string): string => {
  * Kiểm tra spam hoặc tin nhắn không phù hợp
  */
 export const detectSpamOrInappropriate = (
-  message: string
+  message: string,
 ): { isSpam: boolean; reason?: string } => {
   const lowerMessage = message.toLowerCase()
 

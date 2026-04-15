@@ -1,5 +1,10 @@
 /// <reference types="jest" />
-import { addCategorySchema, updateCategorySchema, getCategorySchema, categoryIdParamSchema } from '@schemas/category.schema'
+import {
+  addCategorySchema,
+  updateCategorySchema,
+  getCategorySchema,
+  categoryIdParamSchema,
+} from '@schemas/category.schema'
 
 const VALID_ID = '507f1f77bcf86cd799439011'
 
@@ -80,4 +85,3 @@ describe('categoryIdParamSchema', () => {
     expect(result.success).toBe(false)
   })
 })
-

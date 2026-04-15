@@ -48,4 +48,3 @@ export const getHistory = async (req: Request, res: Response) => {
     },
   })
 }
-

@@ -1,14 +1,14 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import { cn } from '@/utils';
-import { cva } from 'class-variance-authority';
+import React from 'react'
+import { View, Text } from 'react-native'
+import { cn } from '@/utils'
+import { cva } from 'class-variance-authority'
 
 interface BadgeProps {
-  children: React.ReactNode;
-  variant?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error';
-  size?: 'sm' | 'md' | 'lg';
-  className?: string;
-  textClassName?: string;
+  children: React.ReactNode
+  variant?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error'
+  size?: 'sm' | 'md' | 'lg'
+  className?: string
+  textClassName?: string
 }
 
 const badgeVariants = cva('inline-flex items-center justify-center rounded-full border', {
@@ -31,7 +31,7 @@ const badgeVariants = cva('inline-flex items-center justify-center rounded-full 
     variant: 'default',
     size: 'md',
   },
-});
+})
 
 const badgeTextVariants = cva('font-sans-medium text-center', {
   variants: {
@@ -53,7 +53,7 @@ const badgeTextVariants = cva('font-sans-medium text-center', {
     variant: 'default',
     size: 'md',
   },
-});
+})
 
 export default function Badge({
   children,
@@ -70,5 +70,5 @@ export default function Badge({
         children
       )}
     </View>
-  );
+  )
 }

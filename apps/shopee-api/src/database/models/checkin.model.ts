@@ -44,11 +44,10 @@ const CheckInSchema = new Schema<ICheckIn>(
       createdAt: 'created_at',
       updatedAt: 'updated_at',
     },
-  }
+  },
 )
 
 // Unique compound index to prevent duplicate check-ins
 CheckInSchema.index({ user_id: 1, date: 1 }, { unique: true })
 
 export const CheckInModel = mongoose.model<ICheckIn>('checkins', CheckInSchema)
-

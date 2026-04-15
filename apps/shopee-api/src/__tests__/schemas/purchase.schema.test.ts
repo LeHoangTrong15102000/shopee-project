@@ -1,5 +1,10 @@
 /// <reference types="jest" />
-import { addToCartSchema, updatePurchaseSchema, buyProductsSchema, deletePurchasesSchema } from '@schemas/purchase.schema'
+import {
+  addToCartSchema,
+  updatePurchaseSchema,
+  buyProductsSchema,
+  deletePurchasesSchema,
+} from '@schemas/purchase.schema'
 
 const VALID_ID = '507f1f77bcf86cd799439011'
 const VALID_ID_2 = '507f1f77bcf86cd799439012'
@@ -112,4 +117,3 @@ describe('deletePurchasesSchema', () => {
     expect(result.success).toBe(false)
   })
 })
-

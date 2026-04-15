@@ -23,7 +23,15 @@ export const getPaymentMethods = async (req: Request, res: Response) => {
 export const createOrder = async (req: Request, res: Response) => {
   try {
     const user_id = req.jwtDecoded.id
-    const { items, shipping_address_id, shipping_method_id, payment_method, voucher_code, coins_used, note } = req.body
+    const {
+      items,
+      shipping_address_id,
+      shipping_method_id,
+      payment_method,
+      voucher_code,
+      coins_used,
+      note,
+    } = req.body
 
     const order = await orderService.createOrder(user_id, {
       items,
@@ -58,7 +66,7 @@ export const getOrders = async (req: Request, res: Response) => {
     const result = await orderService.getOrders(
       user_id,
       status as OrderStatusType | 'all' | undefined,
-      { page: Number(page), limit: Number(limit) }
+      { page: Number(page), limit: Number(limit) },
     )
 
     return responseSuccess(res, {
@@ -215,10 +223,21 @@ export const adminGetOrder = async (req: Req, res: Response) => {
 }
 
 export const adminGetOrders = async (req: Request, res: Response) => {
-  const { page, limit, sort_by, order, status, payment_method, user_id, search, start_date, end_date } = req.query as any
+  const {
+    page,
+    limit,
+    sort_by,
+    order,
+    status,
+    payment_method,
+    user_id,
+    search,
+    start_date,
+    end_date,
+  } = req.query as any
   const data = await orderService.adminGetOrders(
     { status, payment_method, user_id, search, start_date, end_date },
-    { page: Number(page) || 1, limit: Number(limit) || 20, sort_by, order }
+    { page: Number(page) || 1, limit: Number(limit) || 20, sort_by, order },
   )
   return responseSuccess(res, { message: 'Lấy danh sách đơn hàng thành công', data })
 }
@@ -240,4 +259,3 @@ export const adminGetOrderCountByStatus = async (_req: Request, res: Response) =
   const data = await orderService.adminGetOrderCountByStatus()
   return responseSuccess(res, { message: 'Lấy thống kê đơn hàng theo trạng thái thành công', data })
 }
-

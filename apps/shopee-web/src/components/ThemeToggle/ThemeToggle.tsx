@@ -1,7 +1,7 @@
-import { AnimatePresence, motion } from 'framer-motion';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import { useTheme } from 'src/hooks/useTheme';
-import Button from 'src/components/Button';
+import { AnimatePresence, motion } from 'framer-motion'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import { useTheme } from 'src/hooks/useTheme'
+import Button from 'src/components/Button'
 
 // Icons
 const SunIcon = () => (
@@ -12,24 +12,24 @@ const SunIcon = () => (
       clipRule="evenodd"
     />
   </svg>
-);
+)
 
 const MoonIcon = () => (
   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
     <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
   </svg>
-);
+)
 
 interface ThemeToggleProps {
-  className?: string;
-  colorClassName?: string;
+  className?: string
+  colorClassName?: string
 }
 
 const ThemeToggle = ({ className = '', colorClassName }: ThemeToggleProps) => {
-  const { resolvedTheme, toggleTheme } = useTheme();
-  const prefersReducedMotion = useReducedMotion();
-  const isDark = resolvedTheme === 'dark';
-  const colorClasses = colorClassName ?? 'text-white/90 hover:text-white';
+  const { resolvedTheme, toggleTheme } = useTheme()
+  const prefersReducedMotion = useReducedMotion()
+  const isDark = resolvedTheme === 'dark'
+  const colorClasses = colorClassName ?? 'text-white/90 hover:text-white'
 
   return (
     <Button
@@ -52,7 +52,7 @@ const ThemeToggle = ({ className = '', colorClassName }: ThemeToggleProps) => {
         </motion.div>
       </AnimatePresence>
     </Button>
-  );
-};
+  )
+}
 
-export default ThemeToggle;
+export default ThemeToggle

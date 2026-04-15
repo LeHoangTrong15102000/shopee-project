@@ -1,18 +1,18 @@
-import { useTranslation } from 'react-i18next';
-import { Product as ProductType } from 'src/types/product.type';
+import { useTranslation } from 'react-i18next'
+import { Product as ProductType } from 'src/types/product.type'
 
 interface ProductSpecificationsProps {
-  product: ProductType;
+  product: ProductType
 }
 
 const ProductSpecifications = ({ product }: ProductSpecificationsProps) => {
-  const { t } = useTranslation('product');
+  const { t } = useTranslation('product')
 
   const specs = [
     { label: t('specs.category'), value: product.category?.name || '-' },
     { label: t('specs.stock'), value: product.quantity?.toLocaleString() || '-' },
     { label: t('specs.shipsFrom'), value: product.location || t('shipping.defaultLocation') },
-  ];
+  ]
 
   return (
     <div className="mb-6">
@@ -38,7 +38,7 @@ const ProductSpecifications = ({ product }: ProductSpecificationsProps) => {
         </tbody>
       </table>
     </div>
-  );
-};
+  )
+}
 
-export default ProductSpecifications;
+export default ProductSpecifications

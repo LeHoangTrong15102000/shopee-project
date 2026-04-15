@@ -1,18 +1,18 @@
-import { useEffect, useRef, type ReactNode } from 'react';
-import ReactDOM from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useFocusTrap } from 'src/hooks/useFocusTrap';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
+import { useEffect, useRef, type ReactNode } from 'react'
+import ReactDOM from 'react-dom'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useFocusTrap } from 'src/hooks/useFocusTrap'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
 
 interface BaseModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  children: ReactNode;
-  className?: string;
-  overlayClassName?: string;
-  closeOnBackdrop?: boolean;
-  closeOnEscape?: boolean;
-  ariaLabelledBy?: string;
+  isOpen: boolean
+  onClose: () => void
+  children: ReactNode
+  className?: string
+  overlayClassName?: string
+  closeOnBackdrop?: boolean
+  closeOnEscape?: boolean
+  ariaLabelledBy?: string
 }
 
 const BaseModal = ({
@@ -25,27 +25,27 @@ const BaseModal = ({
   closeOnEscape = true,
   ariaLabelledBy,
 }: BaseModalProps) => {
-  const modalRef = useRef<HTMLDivElement>(null);
-  const reducedMotion = useReducedMotion();
-  useFocusTrap({ isOpen, containerRef: modalRef, onClose: closeOnEscape ? onClose : undefined });
+  const modalRef = useRef<HTMLDivElement>(null)
+  const reducedMotion = useReducedMotion()
+  useFocusTrap({ isOpen, containerRef: modalRef, onClose: closeOnEscape ? onClose : undefined })
 
   // Scroll lock
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden'
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = ''
     }
     return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
 
   const handleBackdropClick = () => {
-    if (closeOnBackdrop) onClose();
-  };
+    if (closeOnBackdrop) onClose()
+  }
 
-  const animationDuration = reducedMotion ? 0 : 0.2;
+  const animationDuration = reducedMotion ? 0 : 0.2
 
   return ReactDOM.createPortal(
     <AnimatePresence>
@@ -80,7 +80,7 @@ const BaseModal = ({
       )}
     </AnimatePresence>,
     document.body,
-  );
-};
+  )
+}
 
-export default BaseModal;
+export default BaseModal

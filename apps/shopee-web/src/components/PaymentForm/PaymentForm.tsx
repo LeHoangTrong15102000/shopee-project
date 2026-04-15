@@ -1,22 +1,22 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import type { TFunction } from 'i18next';
-import Button from 'src/components/Button';
-import CreditCardForm, { PaymentFormData } from './CreditCardForm';
-import BankTransferPayment from './BankTransferPayment';
-import EWalletPayment from './EWalletPayment';
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
+import Button from 'src/components/Button'
+import CreditCardForm, { PaymentFormData } from './CreditCardForm'
+import BankTransferPayment from './BankTransferPayment'
+import EWalletPayment from './EWalletPayment'
 
-type PaymentMethodTab = 'credit_card' | 'bank_transfer' | 'e_wallet';
+type PaymentMethodTab = 'credit_card' | 'bank_transfer' | 'e_wallet'
 
 interface PaymentFormProps {
-  onSubmit: (data: PaymentFormData) => Promise<void>;
-  onCancel?: () => void;
-  isProcessing?: boolean;
-  amount?: number;
+  onSubmit: (data: PaymentFormData) => Promise<void>
+  onCancel?: () => void
+  isProcessing?: boolean
+  amount?: number
 }
 
 const createPaymentSchema = (t: TFunction<'payment'>) =>
@@ -39,7 +39,7 @@ const createPaymentSchema = (t: TFunction<'payment'>) =>
       .min(1, t('creditCard.validation.cvvRequired'))
       .regex(/^[0-9]{3,4}$/, t('creditCard.validation.cvv')),
     saveCard: z.boolean().optional(),
-  });
+  })
 
 const PaymentTabIcon = ({ type }: { type: string }) => {
   const icons: Record<string, React.ReactNode> = {
@@ -76,9 +76,9 @@ const PaymentTabIcon = ({ type }: { type: string }) => {
         />
       </svg>
     ),
-  };
-  return <>{icons[type] || null}</>;
-};
+  }
+  return <>{icons[type] || null}</>
+}
 
 function SecureBadge({ label }: { label: string }) {
   return (
@@ -92,7 +92,7 @@ function SecureBadge({ label }: { label: string }) {
       </svg>
       <span>{label}</span>
     </div>
-  );
+  )
 }
 
 function SuccessFeedback({ title, message }: { title: string; message: string }) {
@@ -115,7 +115,7 @@ function SuccessFeedback({ title, message }: { title: string; message: string })
       <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{title}</h3>
       <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{message}</p>
     </motion.div>
-  );
+  )
 }
 
 function ErrorFeedback({
@@ -124,10 +124,10 @@ function ErrorFeedback({
   retryLabel,
   onRetry,
 }: {
-  title: string;
-  message: string;
-  retryLabel: string;
-  onRetry: () => void;
+  title: string
+  message: string
+  retryLabel: string
+  onRetry: () => void
 }) {
   return (
     <motion.div
@@ -155,7 +155,7 @@ function ErrorFeedback({
         {retryLabel}
       </Button>
     </motion.div>
-  );
+  )
 }
 
 function PaymentForm({
@@ -164,20 +164,20 @@ function PaymentForm({
   isProcessing = false,
   amount = 150000,
 }: PaymentFormProps) {
-  const { t } = useTranslation('payment');
-  const [activeTab, setActiveTab] = useState<PaymentMethodTab>('credit_card');
+  const { t } = useTranslation('payment')
+  const [activeTab, setActiveTab] = useState<PaymentMethodTab>('credit_card')
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>(
     'idle',
-  );
-  const [errorMessage, setErrorMessage] = useState('');
+  )
+  const [errorMessage, setErrorMessage] = useState('')
 
-  const paymentSchema = createPaymentSchema(t);
+  const paymentSchema = createPaymentSchema(t)
 
   const paymentTabs: { id: PaymentMethodTab; label: string }[] = [
     { id: 'credit_card', label: t('tabs.creditCard') },
     { id: 'bank_transfer', label: t('tabs.bankTransfer') },
     { id: 'e_wallet', label: t('tabs.eWallet') },
-  ];
+  ]
 
   const {
     register,
@@ -193,27 +193,27 @@ function PaymentForm({
       cvv: '',
       saveCard: false,
     },
-  });
+  })
 
   const handleFormSubmit = async (data: PaymentFormData) => {
-    setPaymentStatus('processing');
-    setErrorMessage('');
+    setPaymentStatus('processing')
+    setErrorMessage('')
     try {
-      await onSubmit(data);
-      setPaymentStatus('success');
+      await onSubmit(data)
+      setPaymentStatus('success')
     } catch (error) {
-      setPaymentStatus('error');
-      setErrorMessage(error instanceof Error ? error.message : t('status.error'));
+      setPaymentStatus('error')
+      setErrorMessage(error instanceof Error ? error.message : t('status.error'))
     }
-  };
+  }
 
   const handleRetry = () => {
-    setPaymentStatus('idle');
-    setErrorMessage('');
-  };
+    setPaymentStatus('idle')
+    setErrorMessage('')
+  }
 
   if (paymentStatus === 'success') {
-    return <SuccessFeedback title={t('status.success')} message={t('status.processing')} />;
+    return <SuccessFeedback title={t('status.success')} message={t('status.processing')} />
   }
 
   if (paymentStatus === 'error') {
@@ -224,10 +224,10 @@ function PaymentForm({
         retryLabel={t('buttons.retry')}
         onRetry={handleRetry}
       />
-    );
+    )
   }
 
-  const isLoading = paymentStatus === 'processing' || isProcessing;
+  const isLoading = paymentStatus === 'processing' || isProcessing
 
   return (
     <div className="space-y-6">
@@ -314,8 +314,8 @@ function PaymentForm({
               amount={amount}
               onPaymentConfirmed={() => setPaymentStatus('success')}
               onPaymentExpired={() => {
-                setErrorMessage(t('bankTransfer.expired'));
-                setPaymentStatus('error');
+                setErrorMessage(t('bankTransfer.expired'))
+                setPaymentStatus('error')
               }}
             />
           </motion.div>
@@ -332,15 +332,15 @@ function PaymentForm({
               amount={amount}
               onPaymentComplete={() => setPaymentStatus('success')}
               onPaymentFailed={(error) => {
-                setErrorMessage(error);
-                setPaymentStatus('error');
+                setErrorMessage(error)
+                setPaymentStatus('error')
               }}
             />
           </motion.div>
         )}
       </AnimatePresence>
     </div>
-  );
+  )
 }
 
-export default PaymentForm;
+export default PaymentForm

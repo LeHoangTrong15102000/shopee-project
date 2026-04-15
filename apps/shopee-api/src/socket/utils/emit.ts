@@ -76,7 +76,7 @@ export const emitToChatExcludeSender = (
   chatId: string,
   senderSocketId: string,
   event: string,
-  data: any
+  data: any,
 ): void => {
   try {
     const io = getIORequired()
@@ -141,4 +141,3 @@ export const emitError = (socketId: string, error: SocketErrorPayload): void => 
     Logger.apiError('Failed to emit error to socket', { socketId, error, err })
   }
 }
-

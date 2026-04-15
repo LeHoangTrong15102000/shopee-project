@@ -30,10 +30,7 @@ const upload = (image: formidable.File, folder: string) => {
     const newName = uuidv4() + '.' + getExtension(image.originalFilename ?? '')
     const newPath = dir + '/' + newName
     mv(tmpPath, newPath, function (err: Error | null) {
-      if (err)
-        return reject(
-          new ErrorHandler(STATUS.INTERNAL_SERVER_ERROR, 'Lỗi đổi tên file')
-        )
+      if (err) return reject(new ErrorHandler(STATUS.INTERNAL_SERVER_ERROR, 'Lỗi đổi tên file'))
       resolve(newName)
     })
   })
@@ -58,13 +55,11 @@ export const uploadFile = (req: Request, folder = '') => {
           errorEntity.image = 'Kích thước image phải <= 1MB'
         }
         if (!isEmpty(errorEntity)) {
-          return reject(
-            new ErrorHandler(STATUS.UNPROCESSABLE_ENTITY, errorEntity)
-          )
+          return reject(new ErrorHandler(STATUS.UNPROCESSABLE_ENTITY, errorEntity))
         }
         if (!image) {
           return reject(
-            new ErrorHandler(STATUS.UNPROCESSABLE_ENTITY, { image: 'Không tìm thấy image' })
+            new ErrorHandler(STATUS.UNPROCESSABLE_ENTITY, { image: 'Không tìm thấy image' }),
           )
         }
         upload(image, folder)
@@ -90,7 +85,11 @@ export const uploadManyFile = (req: Request, folder = '') => {
       }
       try {
         const imagesFiles = files.images
-        const images = Array.isArray(imagesFiles) ? imagesFiles : imagesFiles ? [imagesFiles] : undefined
+        const images = Array.isArray(imagesFiles)
+          ? imagesFiles
+          : imagesFiles
+            ? [imagesFiles]
+            : undefined
         const errorEntity: UploadError = {}
         if (!images) {
           errorEntity.images = 'Không tìm thấy images'
@@ -98,13 +97,11 @@ export const uploadManyFile = (req: Request, folder = '') => {
           errorEntity.image = 'image không đúng định dạng'
         }
         if (!isEmpty(errorEntity)) {
-          return reject(
-            new ErrorHandler(STATUS.UNPROCESSABLE_ENTITY, errorEntity)
-          )
+          return reject(new ErrorHandler(STATUS.UNPROCESSABLE_ENTITY, errorEntity))
         }
         if (!images) {
           return reject(
-            new ErrorHandler(STATUS.UNPROCESSABLE_ENTITY, { images: 'Không tìm thấy images' })
+            new ErrorHandler(STATUS.UNPROCESSABLE_ENTITY, { images: 'Không tìm thấy images' }),
           )
         }
         const chainUpload = images.map((image) => {

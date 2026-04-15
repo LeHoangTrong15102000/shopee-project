@@ -1,93 +1,93 @@
-import { useState } from 'react';
-import { Purchase } from 'src/types/purchases.type';
+import { useState } from 'react'
+import { Purchase } from 'src/types/purchases.type'
 
 export interface OrderFilters {
-  searchQuery: string;
-  dateRange: { from: string; to: string } | null;
-  priceRange: { min: number; max: number } | null;
+  searchQuery: string
+  dateRange: { from: string; to: string } | null
+  priceRange: { min: number; max: number } | null
 }
 
 export interface UseOrderFilterReturn {
-  filters: OrderFilters;
-  setSearchQuery: (query: string) => void;
-  setDateRange: (range: { from: string; to: string } | null) => void;
-  setPriceRange: (range: { min: number; max: number } | null) => void;
-  clearAllFilters: () => void;
-  activeFilterCount: number;
-  filterPurchases: (purchases: Purchase[]) => Purchase[];
+  filters: OrderFilters
+  setSearchQuery: (query: string) => void
+  setDateRange: (range: { from: string; to: string } | null) => void
+  setPriceRange: (range: { min: number; max: number } | null) => void
+  clearAllFilters: () => void
+  activeFilterCount: number
+  filterPurchases: (purchases: Purchase[]) => Purchase[]
 }
 
 const initialFilters: OrderFilters = {
   searchQuery: '',
   dateRange: null,
   priceRange: null,
-};
+}
 
 export function useOrderFilter(): UseOrderFilterReturn {
-  const [filters, setFilters] = useState<OrderFilters>(initialFilters);
+  const [filters, setFilters] = useState<OrderFilters>(initialFilters)
 
   const setSearchQuery = (query: string) => {
-    setFilters((prev) => ({ ...prev, searchQuery: query }));
-  };
+    setFilters((prev) => ({ ...prev, searchQuery: query }))
+  }
 
   const setDateRange = (range: { from: string; to: string } | null) => {
-    setFilters((prev) => ({ ...prev, dateRange: range }));
-  };
+    setFilters((prev) => ({ ...prev, dateRange: range }))
+  }
 
   const setPriceRange = (range: { min: number; max: number } | null) => {
-    setFilters((prev) => ({ ...prev, priceRange: range }));
-  };
+    setFilters((prev) => ({ ...prev, priceRange: range }))
+  }
 
   const clearAllFilters = () => {
-    setFilters(initialFilters);
-  };
+    setFilters(initialFilters)
+  }
 
   const activeFilterCount = (() => {
-    let count = 0;
-    if (filters.searchQuery.trim()) count++;
-    if (filters.dateRange) count++;
-    if (filters.priceRange) count++;
-    return count;
-  })();
+    let count = 0
+    if (filters.searchQuery.trim()) count++
+    if (filters.dateRange) count++
+    if (filters.priceRange) count++
+    return count
+  })()
 
   const filterPurchases = (purchases: Purchase[]): Purchase[] => {
-    if (!purchases) return [];
+    if (!purchases) return []
 
     return purchases.filter((purchase) => {
       // Search query filter - match against product name (case-insensitive)
       if (filters.searchQuery.trim()) {
-        const normalizedQuery = filters.searchQuery.toLowerCase().trim();
+        const normalizedQuery = filters.searchQuery.toLowerCase().trim()
         if (!purchase.product.name.toLowerCase().includes(normalizedQuery)) {
-          return false;
+          return false
         }
       }
 
       // Date range filter - filter by purchase createdAt date
       if (filters.dateRange) {
-        const purchaseDate = new Date(purchase.createdAt);
-        const fromDate = new Date(filters.dateRange.from);
-        const toDate = new Date(filters.dateRange.to);
+        const purchaseDate = new Date(purchase.createdAt)
+        const fromDate = new Date(filters.dateRange.from)
+        const toDate = new Date(filters.dateRange.to)
 
         // Set time to start/end of day for accurate comparison
-        fromDate.setHours(0, 0, 0, 0);
-        toDate.setHours(23, 59, 59, 999);
+        fromDate.setHours(0, 0, 0, 0)
+        toDate.setHours(23, 59, 59, 999)
 
         if (purchaseDate < fromDate || purchaseDate > toDate) {
-          return false;
+          return false
         }
       }
 
       // Price range filter - filter by total price (price * buy_count)
       if (filters.priceRange) {
-        const totalPrice = purchase.product.price * purchase.buy_count;
+        const totalPrice = purchase.product.price * purchase.buy_count
         if (totalPrice < filters.priceRange.min || totalPrice > filters.priceRange.max) {
-          return false;
+          return false
         }
       }
 
-      return true;
-    });
-  };
+      return true
+    })
+  }
 
   return {
     filters,
@@ -97,7 +97,7 @@ export function useOrderFilter(): UseOrderFilterReturn {
     clearAllFilters,
     activeFilterCount,
     filterPurchases,
-  };
+  }
 }
 
-export default useOrderFilter;
+export default useOrderFilter

@@ -48,7 +48,7 @@ describe('ViewCounterService', () => {
       expect(mockBulkWrite).toHaveBeenCalled()
       const bulkOps = mockBulkWrite.mock.calls[0][0]
       const productOp = bulkOps.find(
-        (op: any) => op.updateOne.filter._id === 'product-increment-test'
+        (op: any) => op.updateOne.filter._id === 'product-increment-test',
       )
       expect(productOp.updateOne.update.$inc.view).toBe(3)
     })
@@ -104,10 +104,10 @@ describe('ViewCounterService', () => {
       const bulkOps = mockBulkWrite.mock.calls[0][0]
 
       const product1Op = bulkOps.find(
-        (op: any) => op.updateOne.filter._id === 'flush-test-product-1'
+        (op: any) => op.updateOne.filter._id === 'flush-test-product-1',
       )
       const product2Op = bulkOps.find(
-        (op: any) => op.updateOne.filter._id === 'flush-test-product-2'
+        (op: any) => op.updateOne.filter._id === 'flush-test-product-2',
       )
 
       expect(product1Op).toEqual({
@@ -187,4 +187,3 @@ describe('ViewCounterService', () => {
     })
   })
 })
-

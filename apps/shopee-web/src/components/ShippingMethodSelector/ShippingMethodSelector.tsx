@@ -1,40 +1,40 @@
-import { useQuery } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
-import { ShippingMethod } from 'src/types/checkout.type';
-import checkoutApi from 'src/apis/checkout.api';
-import { formatCurrency } from 'src/utils/utils';
-import { getEstimatedDeliveryDate } from 'src/utils/date';
-import { ShippingIcon } from 'src/components/Icons';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
+import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import { motion } from 'framer-motion'
+import { ShippingMethod } from 'src/types/checkout.type'
+import checkoutApi from 'src/apis/checkout.api'
+import { formatCurrency } from 'src/utils/utils'
+import { getEstimatedDeliveryDate } from 'src/utils/date'
+import { ShippingIcon } from 'src/components/Icons'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
 
 interface ShippingMethodSelectorProps {
-  selectedMethodId: string | null;
-  onSelect: (method: ShippingMethod) => void;
-  viewOnly?: boolean;
+  selectedMethodId: string | null
+  onSelect: (method: ShippingMethod) => void
+  viewOnly?: boolean
 }
 
 const isExpressShipping = (estimatedDays: string): boolean => {
-  const match = estimatedDays.match(/(\d+)/);
-  return match ? parseInt(match[1], 10) <= 1 : false;
-};
+  const match = estimatedDays.match(/(\d+)/)
+  return match ? parseInt(match[1], 10) <= 1 : false
+}
 
 function ShippingMethodSelector({
   selectedMethodId,
   onSelect,
   viewOnly = false,
 }: ShippingMethodSelectorProps) {
-  const { t } = useTranslation(['product', 'shipping']);
-  const reducedMotion = useReducedMotion();
+  const { t } = useTranslation(['product', 'shipping'])
+  const reducedMotion = useReducedMotion()
   const { data: methodsData, isLoading } = useQuery({
     queryKey: ['shipping-methods'],
     queryFn: async () => {
-      const res = await checkoutApi.getShippingMethods();
-      return res.data.data;
+      const res = await checkoutApi.getShippingMethods()
+      return res.data.data
     },
-  });
+  })
 
-  const methods = methodsData || [];
+  const methods = methodsData || []
 
   if (isLoading) {
     return (
@@ -43,7 +43,7 @@ function ShippingMethodSelector({
           <div key={i} className="h-20 rounded-lg bg-gray-200 dark:bg-slate-700" />
         ))}
       </div>
-    );
+    )
   }
 
   return (
@@ -72,8 +72,8 @@ function ShippingMethodSelector({
             'aria-checked': selectedMethodId === method._id,
             onKeyDown: (e: React.KeyboardEvent) => {
               if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                onSelect(method);
+                e.preventDefault()
+                onSelect(method)
               }
             },
           })}
@@ -151,7 +151,7 @@ function ShippingMethodSelector({
         </motion.div>
       ))}
     </div>
-  );
+  )
 }
 
-export default ShippingMethodSelector;
+export default ShippingMethodSelector

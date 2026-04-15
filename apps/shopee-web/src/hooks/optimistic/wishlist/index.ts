@@ -1,1 +1,1 @@
-export { useOptimisticWishlist } from './useOptimisticWishlist';
+export { useOptimisticWishlist } from './useOptimisticWishlist'

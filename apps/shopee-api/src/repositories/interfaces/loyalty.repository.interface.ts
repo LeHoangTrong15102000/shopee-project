@@ -85,19 +85,27 @@ export interface ILoyaltyRepository {
   // Loyalty Points
   findPointsByUser(userId: string | Types.ObjectId): Promise<ILoyaltyPointsItem | null>
   createPoints(userId: string | Types.ObjectId): Promise<ILoyaltyPointsItem>
-  updatePoints(userId: string | Types.ObjectId, data: Partial<ILoyaltyPointsItem>): Promise<ILoyaltyPointsItem | null>
+  updatePoints(
+    userId: string | Types.ObjectId,
+    data: Partial<ILoyaltyPointsItem>,
+  ): Promise<ILoyaltyPointsItem | null>
 
   // Transactions
   findTransactionsByUser(
     userId: string | Types.ObjectId,
     filters: TransactionFilterOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IPointsTransactionItem>>
   createTransaction(data: CreateTransactionDTO): Promise<IPointsTransactionItem>
 
   // Rewards
   findRewardById(rewardId: string | Types.ObjectId): Promise<IPointsRewardItem | null>
-  findRewards(filters: RewardFilterOptions, pagination: PaginationOptions): Promise<PaginatedResult<IPointsRewardItem>>
-  updateRewardStock(rewardId: string | Types.ObjectId, decrement: number): Promise<IPointsRewardItem | null>
+  findRewards(
+    filters: RewardFilterOptions,
+    pagination: PaginationOptions,
+  ): Promise<PaginatedResult<IPointsRewardItem>>
+  updateRewardStock(
+    rewardId: string | Types.ObjectId,
+    decrement: number,
+  ): Promise<IPointsRewardItem | null>
 }
-

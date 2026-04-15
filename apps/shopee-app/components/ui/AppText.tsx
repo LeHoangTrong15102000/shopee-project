@@ -1,8 +1,8 @@
-import React from 'react';
-import { Text, TextProps } from 'react-native';
-import { cn } from '@/utils';
-import { cva } from 'class-variance-authority';
-import { useTranslation } from 'react-i18next';
+import React from 'react'
+import { Text, TextProps } from 'react-native'
+import { cn } from '@/utils'
+import { cva } from 'class-variance-authority'
+import { useTranslation } from 'react-i18next'
 
 interface AppTextProps extends TextProps {
   variant?:
@@ -20,13 +20,13 @@ interface AppTextProps extends TextProps {
     | 'caption'
     | 'overline'
     | 'label'
-    | 'labelSmall';
-  weight?: 'regular' | 'medium' | 'semibold' | 'bold';
-  color?: 'default' | 'primary' | 'secondary' | 'muted' | 'success' | 'warning' | 'error';
-  align?: 'left' | 'center' | 'right';
-  children: React.ReactNode;
-  raw?: boolean;
-  className?: string;
+    | 'labelSmall'
+  weight?: 'regular' | 'medium' | 'semibold' | 'bold'
+  color?: 'default' | 'primary' | 'secondary' | 'muted' | 'success' | 'warning' | 'error'
+  align?: 'left' | 'center' | 'right'
+  children: React.ReactNode
+  raw?: boolean
+  className?: string
 }
 
 const textVariants = cva('text-foreground font-sans-regular', {
@@ -75,7 +75,7 @@ const textVariants = cva('text-foreground font-sans-regular', {
     color: 'default',
     align: 'left',
   },
-});
+})
 
 export default function AppText({
   variant = 'body',
@@ -86,21 +86,21 @@ export default function AppText({
   className,
   ...props
 }: AppTextProps) {
-  const { t } = useTranslation();
-  let computedClassName = textVariants({ variant, weight, color, align });
+  const { t } = useTranslation()
+  let computedClassName = textVariants({ variant, weight, color, align })
   if (!props.raw && typeof children === 'string') {
-    children = t((children as string).toString().trim());
+    children = t((children as string).toString().trim())
   }
 
   if (!weight) {
     if (['display1', 'display2', 'display3'].includes(variant)) {
-      computedClassName = cn(computedClassName, 'font-sans-bold');
+      computedClassName = cn(computedClassName, 'font-sans-bold')
     } else if (['heading1', 'heading2', 'heading3', 'heading4', 'heading5'].includes(variant)) {
-      computedClassName = cn(computedClassName, 'font-sans-bold');
+      computedClassName = cn(computedClassName, 'font-sans-bold')
     } else if (['label', 'labelSmall'].includes(variant)) {
-      computedClassName = cn(computedClassName, 'font-sans-medium');
+      computedClassName = cn(computedClassName, 'font-sans-medium')
     } else if (variant === 'overline') {
-      computedClassName = cn(computedClassName, 'font-sans-semibold');
+      computedClassName = cn(computedClassName, 'font-sans-semibold')
     }
   }
 
@@ -108,7 +108,7 @@ export default function AppText({
     <Text {...props} className={cn(computedClassName, className)}>
       {children}
     </Text>
-  );
+  )
 }
 
-AppText.displayName = 'AppText';
+AppText.displayName = 'AppText'

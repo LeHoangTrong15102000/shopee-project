@@ -1,18 +1,18 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router';
-import ComparisonMobileCard from '../ComparisonMobileCard';
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { BrowserRouter } from 'react-router'
+import ComparisonMobileCard from '../ComparisonMobileCard'
 
 vi.mock('src/components/Button', () => ({
   default: ({ children, onClick, className, ...props }: any) => {
-    const { animated, variant, ariaLabel, ...rest } = props;
+    const { animated, variant, ariaLabel, ...rest } = props
     return (
       <button onClick={onClick} className={className} aria-label={ariaLabel} {...rest}>
         {children}
       </button>
-    );
+    )
   },
-}));
+}))
 
 const product1 = {
   _id: 'p1',
@@ -29,7 +29,7 @@ const product1 = {
   category: { _id: 'c1', name: 'Điện tử' },
   createdAt: '',
   updatedAt: '',
-};
+}
 
 const product2 = {
   _id: 'p2',
@@ -46,9 +46,9 @@ const product2 = {
   category: { _id: 'c1', name: 'Điện tử' },
   createdAt: '',
   updatedAt: '',
-};
+}
 
-const wrap = (ui: React.ReactElement) => render(<BrowserRouter>{ui}</BrowserRouter>);
+const wrap = (ui: React.ReactElement) => render(<BrowserRouter>{ui}</BrowserRouter>)
 
 describe('ComparisonMobileCard', () => {
   it('renders product names', () => {
@@ -57,10 +57,10 @@ describe('ComparisonMobileCard', () => {
         compareList={[product1, product2] as any}
         removeFromCompare={vi.fn()}
       />,
-    );
-    expect(screen.getByText('Sản phẩm A')).toBeInTheDocument();
-    expect(screen.getByText('Sản phẩm B')).toBeInTheDocument();
-  });
+    )
+    expect(screen.getByText('Sản phẩm A')).toBeInTheDocument()
+    expect(screen.getByText('Sản phẩm B')).toBeInTheDocument()
+  })
 
   it('renders product images', () => {
     wrap(
@@ -68,10 +68,10 @@ describe('ComparisonMobileCard', () => {
         compareList={[product1, product2] as any}
         removeFromCompare={vi.fn()}
       />,
-    );
-    const images = screen.getAllByRole('img');
-    expect(images.length).toBe(2);
-  });
+    )
+    const images = screen.getAllByRole('img')
+    expect(images.length).toBe(2)
+  })
 
   it('renders formatted prices', () => {
     wrap(
@@ -79,10 +79,10 @@ describe('ComparisonMobileCard', () => {
         compareList={[product1, product2] as any}
         removeFromCompare={vi.fn()}
       />,
-    );
-    expect(screen.getByText(/100\.000/)).toBeInTheDocument();
-    expect(screen.getByText(/150\.000/)).toBeInTheDocument();
-  });
+    )
+    expect(screen.getByText(/100\.000/)).toBeInTheDocument()
+    expect(screen.getByText(/150\.000/)).toBeInTheDocument()
+  })
 
   it('renders ratings', () => {
     wrap(
@@ -90,10 +90,10 @@ describe('ComparisonMobileCard', () => {
         compareList={[product1, product2] as any}
         removeFromCompare={vi.fn()}
       />,
-    );
-    expect(screen.getByText(/4\.5/)).toBeInTheDocument();
-    expect(screen.getAllByText(/\b4\b/).length).toBeGreaterThanOrEqual(1);
-  });
+    )
+    expect(screen.getByText(/4\.5/)).toBeInTheDocument()
+    expect(screen.getAllByText(/\b4\b/).length).toBeGreaterThanOrEqual(1)
+  })
 
   it('renders sold counts', () => {
     wrap(
@@ -101,16 +101,16 @@ describe('ComparisonMobileCard', () => {
         compareList={[product1, product2] as any}
         removeFromCompare={vi.fn()}
       />,
-    );
-    expect(screen.getByText('500')).toBeInTheDocument();
-    expect(screen.getByText('300')).toBeInTheDocument();
-  });
+    )
+    expect(screen.getByText('500')).toBeInTheDocument()
+    expect(screen.getByText('300')).toBeInTheDocument()
+  })
 
   it('calls removeFromCompare when remove button clicked', () => {
-    const remove = vi.fn();
-    wrap(<ComparisonMobileCard compareList={[product1] as any} removeFromCompare={remove} />);
-    const buttons = screen.getAllByRole('button');
-    buttons[0].click();
-    expect(remove).toHaveBeenCalledWith('p1');
-  });
-});
+    const remove = vi.fn()
+    wrap(<ComparisonMobileCard compareList={[product1] as any} removeFromCompare={remove} />)
+    const buttons = screen.getAllByRole('button')
+    buttons[0].click()
+    expect(remove).toHaveBeenCalledWith('p1')
+  })
+})

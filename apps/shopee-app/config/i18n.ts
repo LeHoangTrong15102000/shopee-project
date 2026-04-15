@@ -1,8 +1,8 @@
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import * as Localization from 'expo-localization';
-import en from './locales/en.json';
-import vi from './locales/vi.json';
+import i18n from 'i18next'
+import { initReactI18next } from 'react-i18next'
+import * as Localization from 'expo-localization'
+import en from './locales/en.json'
+import vi from './locales/vi.json'
 export const LANGUAGES = {
   en: {
     code: 'en',
@@ -16,28 +16,28 @@ export const LANGUAGES = {
     nativeName: 'Tiếng Việt',
     schema: vi,
   },
-} as const;
+} as const
 
-export type LanguageCode = keyof typeof LANGUAGES;
+export type LanguageCode = keyof typeof LANGUAGES
 
 const getDeviceLanguage = (): LanguageCode => {
-  const locales = Localization.getLocales();
+  const locales = Localization.getLocales()
 
   if (locales.length > 0) {
-    const deviceLanguage = locales[0].languageCode as LanguageCode;
+    const deviceLanguage = locales[0].languageCode as LanguageCode
 
     if (Object.keys(LANGUAGES).includes(deviceLanguage)) {
-      return deviceLanguage;
+      return deviceLanguage
     }
   }
 
-  return 'en';
-};
+  return 'en'
+}
 
 const resources = {
   en: { translation: en },
   vi: { translation: vi },
-};
+}
 
 i18n.use(initReactI18next).init({
   resources,
@@ -54,22 +54,22 @@ i18n.use(initReactI18next).init({
   keySeparator: '.',
   nsSeparator: ':',
   returnEmptyString: false,
-});
+})
 
 Object.values(LANGUAGES).forEach((lang) => {
   if (Object.keys(lang.schema).length > 0) {
-    i18n.addResourceBundle(lang.code, 'translation', lang.schema, true, true);
+    i18n.addResourceBundle(lang.code, 'translation', lang.schema, true, true)
   }
-});
+})
 
 export const changeLanguage = async (languageCode: LanguageCode): Promise<void> => {
-  await i18n.changeLanguage(languageCode);
-};
+  await i18n.changeLanguage(languageCode)
+}
 
 export const getAvailableLanguages = () => {
   return Object.entries(LANGUAGES).map(([code, info]) => ({
     ...info,
-  }));
-};
+  }))
+}
 
-export default i18n;
+export default i18n

@@ -1,60 +1,60 @@
-import { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from 'react-toastify';
-import { useTranslation } from 'react-i18next';
-import useSocket from 'src/hooks/useSocket';
-import { SocketEvent, InventoryAlertPayload } from 'src/types/socket.types';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import Button from 'src/components/Button';
+import { useEffect, useState, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { toast } from 'react-toastify'
+import { useTranslation } from 'react-i18next'
+import useSocket from 'src/hooks/useSocket'
+import { SocketEvent, InventoryAlertPayload } from 'src/types/socket.types'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import Button from 'src/components/Button'
 
 interface RealTimeStockAlertProps {
-  productIds: string[];
-  onStockChange?: (productId: string, newStock: number) => void;
+  productIds: string[]
+  onStockChange?: (productId: string, newStock: number) => void
 }
 
 interface StockChangeAlert {
-  id: string;
-  productId: string;
-  productName: string;
-  newStock: number;
-  severity: 'warning' | 'critical';
-  timestamp: number;
+  id: string
+  productId: string
+  productName: string
+  newStock: number
+  severity: 'warning' | 'critical'
+  timestamp: number
 }
 
-const AUTO_DISMISS_DELAY = 5000;
+const AUTO_DISMISS_DELAY = 5000
 
 export default function RealTimeStockAlert({ productIds, onStockChange }: RealTimeStockAlertProps) {
-  const { socket, isConnected } = useSocket();
-  const { t } = useTranslation('common');
-  const prefersReducedMotion = useReducedMotion();
-  const [alerts, setAlerts] = useState<StockChangeAlert[]>([]);
-  const productIdsRef = useRef<Set<string>>(new Set(productIds));
+  const { socket, isConnected } = useSocket()
+  const { t } = useTranslation('common')
+  const prefersReducedMotion = useReducedMotion()
+  const [alerts, setAlerts] = useState<StockChangeAlert[]>([])
+  const productIdsRef = useRef<Set<string>>(new Set(productIds))
 
   // Update productIds ref when prop changes
   useEffect(() => {
-    productIdsRef.current = new Set(productIds);
-  }, [productIds]);
+    productIdsRef.current = new Set(productIds)
+  }, [productIds])
 
   // Auto-dismiss alerts after 5 seconds
   useEffect(() => {
-    if (alerts.length === 0) return;
+    if (alerts.length === 0) return
 
     const timers = alerts.map((alert) => {
-      const elapsed = Date.now() - alert.timestamp;
-      const remaining = Math.max(AUTO_DISMISS_DELAY - elapsed, 0);
+      const elapsed = Date.now() - alert.timestamp
+      const remaining = Math.max(AUTO_DISMISS_DELAY - elapsed, 0)
 
       return setTimeout(() => {
-        setAlerts((prev) => prev.filter((a) => a.id !== alert.id));
-      }, remaining);
-    });
+        setAlerts((prev) => prev.filter((a) => a.id !== alert.id))
+      }, remaining)
+    })
 
-    return () => timers.forEach(clearTimeout);
-  }, [alerts]);
+    return () => timers.forEach(clearTimeout)
+  }, [alerts])
 
   // Handle inventory alert from socket
   const handleInventoryAlert = (data: InventoryAlertPayload) => {
     // Only process alerts for products in the cart
-    if (!productIdsRef.current.has(data.product_id)) return;
+    if (!productIdsRef.current.has(data.product_id)) return
 
     const newAlert: StockChangeAlert = {
       id: `${data.product_id}-${Date.now()}`,
@@ -63,21 +63,21 @@ export default function RealTimeStockAlert({ productIds, onStockChange }: RealTi
       newStock: data.current_quantity,
       severity: data.severity,
       timestamp: Date.now(),
-    };
+    }
 
     // Add to local alerts for inline display
     setAlerts((prev) => {
       // Remove existing alert for same product to avoid duplicates
-      const filtered = prev.filter((a) => a.productId !== data.product_id);
-      return [newAlert, ...filtered];
-    });
+      const filtered = prev.filter((a) => a.productId !== data.product_id)
+      return [newAlert, ...filtered]
+    })
 
     // Show toast notification
     if (data.severity === 'critical' || data.current_quantity === 0) {
       toast.error(`🚫 ${t('stock.productOutOfStock', { name: data.product_name })}`, {
         autoClose: AUTO_DISMISS_DELAY,
         position: 'top-right',
-      });
+      })
     } else if (data.current_quantity <= 5) {
       toast.warning(
         `⚠️ ${t('stock.onlyNLeft', { count: data.current_quantity })} - ${data.product_name}`,
@@ -85,7 +85,7 @@ export default function RealTimeStockAlert({ productIds, onStockChange }: RealTi
           autoClose: AUTO_DISMISS_DELAY,
           position: 'top-right',
         },
-      );
+      )
     } else {
       toast.info(
         `📦 ${t('stock.stockChanged', { name: data.product_name, count: data.current_quantity })}`,
@@ -93,26 +93,26 @@ export default function RealTimeStockAlert({ productIds, onStockChange }: RealTi
           autoClose: AUTO_DISMISS_DELAY,
           position: 'top-right',
         },
-      );
+      )
     }
 
     // Callback to parent for query invalidation
-    onStockChange?.(data.product_id, data.current_quantity);
-  };
+    onStockChange?.(data.product_id, data.current_quantity)
+  }
 
   // Subscribe to inventory alerts
   useEffect(() => {
-    if (!socket || !isConnected) return;
+    if (!socket || !isConnected) return
 
-    socket.on(SocketEvent.INVENTORY_ALERT, handleInventoryAlert);
+    socket.on(SocketEvent.INVENTORY_ALERT, handleInventoryAlert)
 
     return () => {
-      socket.off(SocketEvent.INVENTORY_ALERT, handleInventoryAlert);
-    };
-  }, [socket, isConnected, handleInventoryAlert]);
+      socket.off(SocketEvent.INVENTORY_ALERT, handleInventoryAlert)
+    }
+  }, [socket, isConnected, handleInventoryAlert])
 
   // Don't render anything if no alerts
-  if (alerts.length === 0) return null;
+  if (alerts.length === 0) return null
 
   const animationProps = prefersReducedMotion
     ? {}
@@ -121,7 +121,7 @@ export default function RealTimeStockAlert({ productIds, onStockChange }: RealTi
         animate: { opacity: 1, y: 0, scale: 1 },
         exit: { opacity: 0, y: -10, scale: 0.95 },
         transition: { duration: 0.3, ease: 'easeOut' },
-      };
+      }
 
   return (
     <div className="mb-4 space-y-2">
@@ -171,7 +171,7 @@ export default function RealTimeStockAlert({ productIds, onStockChange }: RealTi
         ))}
       </AnimatePresence>
     </div>
-  );
+  )
 }
 
 // Export inline alert component for individual cart items
@@ -182,19 +182,19 @@ export function InlineStockAlert({
   severity,
   onDismiss,
 }: {
-  productId: string;
-  productName: string;
-  newStock: number;
-  severity: 'warning' | 'critical';
-  onDismiss: () => void;
+  productId: string
+  productName: string
+  newStock: number
+  severity: 'warning' | 'critical'
+  onDismiss: () => void
 }) {
-  const prefersReducedMotion = useReducedMotion();
-  const { t } = useTranslation('common');
+  const prefersReducedMotion = useReducedMotion()
+  const { t } = useTranslation('common')
 
   useEffect(() => {
-    const timer = setTimeout(onDismiss, AUTO_DISMISS_DELAY);
-    return () => clearTimeout(timer);
-  }, [onDismiss]);
+    const timer = setTimeout(onDismiss, AUTO_DISMISS_DELAY)
+    return () => clearTimeout(timer)
+  }, [onDismiss])
 
   const animationProps = prefersReducedMotion
     ? {}
@@ -203,9 +203,9 @@ export function InlineStockAlert({
         animate: { opacity: 1, height: 'auto', marginTop: 8 },
         exit: { opacity: 0, height: 0, marginTop: 0 },
         transition: { duration: 0.3, ease: 'easeOut' },
-      };
+      }
 
-  const isCritical = severity === 'critical' || newStock === 0;
+  const isCritical = severity === 'critical' || newStock === 0
 
   return (
     <motion.div {...animationProps} className="overflow-hidden">
@@ -224,5 +224,5 @@ export function InlineStockAlert({
         </span>
       </div>
     </motion.div>
-  );
+  )
 }

@@ -1,20 +1,20 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { Controller, UseFormReturn } from 'react-hook-form';
-import Input from 'src/components/Input';
-import { AddressSchemaFormData, formatPhoneNumber } from '../addressForm.constants';
+import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { Controller, UseFormReturn } from 'react-hook-form'
+import Input from 'src/components/Input'
+import { AddressSchemaFormData, formatPhoneNumber } from '../addressForm.constants'
 
 interface ContactInfoStepProps {
-  form: UseFormReturn<AddressSchemaFormData>;
+  form: UseFormReturn<AddressSchemaFormData>
 }
 
 export default function ContactInfoStep({ form }: ContactInfoStepProps) {
-  const { t } = useTranslation('address');
+  const { t } = useTranslation('address')
   const {
     register,
     control,
     formState: { errors, touchedFields },
-  } = form;
+  } = form
 
   return (
     <motion.div
@@ -66,9 +66,9 @@ export default function ContactInfoStep({ form }: ContactInfoStepProps) {
                 type="tel"
                 placeholder={t('contact.phonePlaceholder')}
                 onChange={(e) => {
-                  const formatted = formatPhoneNumber(e.target.value);
-                  field.onChange(e.target.value.replace(/\s/g, ''));
-                  e.target.value = formatted;
+                  const formatted = formatPhoneNumber(e.target.value)
+                  field.onChange(e.target.value.replace(/\s/g, ''))
+                  e.target.value = formatted
                 }}
                 className={`w-full rounded-lg border px-3 py-2.5 transition-colors focus:outline-hidden ${
                   errors.phone
@@ -85,5 +85,5 @@ export default function ContactInfoStep({ form }: ContactInfoStepProps) {
         </div>
       </div>
     </motion.div>
-  );
+  )
 }

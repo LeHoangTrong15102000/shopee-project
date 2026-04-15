@@ -1,8 +1,8 @@
-import { renderHook } from '@testing-library/react';
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { createElement, ReactNode } from 'react';
-import { useTheme } from '../useTheme';
-import { ThemeProvider, ThemeContext } from 'src/contexts/theme.context';
+import { renderHook } from '@testing-library/react'
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { createElement, ReactNode } from 'react'
+import { useTheme } from '../useTheme'
+import { ThemeProvider, ThemeContext } from 'src/contexts/theme.context'
 
 describe('useTheme', () => {
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe('useTheme', () => {
         removeListener: vi.fn(),
         dispatchEvent: vi.fn(),
       })),
-    });
+    })
 
     const mockLocalStorage = {
       getItem: vi.fn().mockReturnValue(null),
@@ -27,49 +27,49 @@ describe('useTheme', () => {
       clear: vi.fn(),
       length: 0,
       key: vi.fn(),
-    };
+    }
     Object.defineProperty(window, 'localStorage', {
       writable: true,
       value: mockLocalStorage,
-    });
-  });
+    })
+  })
 
   afterEach(() => {
-    vi.restoreAllMocks();
-  });
+    vi.restoreAllMocks()
+  })
 
   it('returns theme context when used within ThemeProvider', () => {
     const wrapper = ({ children }: { children: ReactNode }) =>
-      createElement(ThemeProvider, null, children);
+      createElement(ThemeProvider, null, children)
 
-    const { result } = renderHook(() => useTheme(), { wrapper });
+    const { result } = renderHook(() => useTheme(), { wrapper })
 
-    expect(result.current).toBeDefined();
-    expect(result.current.theme).toBeDefined();
-    expect(result.current.resolvedTheme).toBeDefined();
-  });
+    expect(result.current).toBeDefined()
+    expect(result.current.theme).toBeDefined()
+    expect(result.current.resolvedTheme).toBeDefined()
+  })
 
   it('throws error when used outside ThemeProvider', () => {
-    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     expect(() => {
-      renderHook(() => useTheme());
-    }).toThrow('useTheme must be used within a ThemeProvider');
+      renderHook(() => useTheme())
+    }).toThrow('useTheme must be used within a ThemeProvider')
 
-    consoleError.mockRestore();
-  });
+    consoleError.mockRestore()
+  })
 
   it('returns theme and toggleTheme from context', () => {
     const wrapper = ({ children }: { children: ReactNode }) =>
-      createElement(ThemeProvider, null, children);
+      createElement(ThemeProvider, null, children)
 
-    const { result } = renderHook(() => useTheme(), { wrapper });
+    const { result } = renderHook(() => useTheme(), { wrapper })
 
-    expect(result.current.theme).toBe('system');
-    expect(typeof result.current.toggleTheme).toBe('function');
-    expect(typeof result.current.setTheme).toBe('function');
-    expect(['light', 'dark']).toContain(result.current.resolvedTheme);
-  });
+    expect(result.current.theme).toBe('system')
+    expect(typeof result.current.toggleTheme).toBe('function')
+    expect(typeof result.current.setTheme).toBe('function')
+    expect(['light', 'dark']).toContain(result.current.resolvedTheme)
+  })
 
   it('returns custom context values when provided', () => {
     const mockContextValue = {
@@ -77,16 +77,16 @@ describe('useTheme', () => {
       resolvedTheme: 'dark' as const,
       setTheme: vi.fn(),
       toggleTheme: vi.fn(),
-    };
+    }
 
     const wrapper = ({ children }: { children: ReactNode }) =>
-      createElement(ThemeContext.Provider, { value: mockContextValue }, children);
+      createElement(ThemeContext.Provider, { value: mockContextValue }, children)
 
-    const { result } = renderHook(() => useTheme(), { wrapper });
+    const { result } = renderHook(() => useTheme(), { wrapper })
 
-    expect(result.current.theme).toBe('dark');
-    expect(result.current.resolvedTheme).toBe('dark');
-    expect(result.current.setTheme).toBe(mockContextValue.setTheme);
-    expect(result.current.toggleTheme).toBe(mockContextValue.toggleTheme);
-  });
-});
+    expect(result.current.theme).toBe('dark')
+    expect(result.current.resolvedTheme).toBe('dark')
+    expect(result.current.setTheme).toBe(mockContextValue.setTheme)
+    expect(result.current.toggleTheme).toBe(mockContextValue.toggleTheme)
+  })
+})

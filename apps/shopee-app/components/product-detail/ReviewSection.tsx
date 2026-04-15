@@ -1,19 +1,19 @@
-import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
-import { Star } from 'lucide-react-native';
-import { AppText, AppButton } from '@/components/ui';
-import { useColors } from '@/hooks/useColors';
-import { useTranslation } from 'react-i18next';
-import ReviewCard from './ReviewCard';
-import type { Review, ReviewStats } from '@/apis/product-detail.api';
+import React from 'react'
+import { View, TouchableOpacity } from 'react-native'
+import { Star } from 'lucide-react-native'
+import { AppText, AppButton } from '@/components/ui'
+import { useColors } from '@/hooks/useColors'
+import { useTranslation } from 'react-i18next'
+import ReviewCard from './ReviewCard'
+import type { Review, ReviewStats } from '@/apis/product-detail.api'
 
 interface ReviewSectionProps {
-  reviews: Review[];
-  stats: ReviewStats | undefined;
-  hasNextPage: boolean;
-  onLoadMore: () => void;
-  onWriteReview: () => void;
-  onToggleLike: (reviewId: string) => void;
+  reviews: Review[]
+  stats: ReviewStats | undefined
+  hasNextPage: boolean
+  onLoadMore: () => void
+  onWriteReview: () => void
+  onToggleLike: (reviewId: string) => void
 }
 
 function RatingBar({
@@ -22,14 +22,14 @@ function RatingBar({
   total,
   color,
 }: {
-  rating: number;
-  count: number;
-  total: number;
-  color: string;
+  rating: number
+  count: number
+  total: number
+  color: string
 }) {
-  const pct = total > 0 ? (count / total) * 100 : 0;
-  const colors = useColors();
-  const { t } = useTranslation();
+  const pct = total > 0 ? (count / total) * 100 : 0
+  const colors = useColors()
+  const { t } = useTranslation()
   return (
     <View
       className="flex-row items-center gap-2"
@@ -50,7 +50,7 @@ function RatingBar({
         {count}
       </AppText>
     </View>
-  );
+  )
 }
 export default function ReviewSection({
   reviews,
@@ -60,8 +60,8 @@ export default function ReviewSection({
   onWriteReview,
   onToggleLike,
 }: ReviewSectionProps) {
-  const colors = useColors();
-  const { t } = useTranslation();
+  const colors = useColors()
+  const { t } = useTranslation()
 
   return (
     <View className="px-4 py-3">
@@ -128,5 +128,5 @@ export default function ReviewSection({
         </>
       )}
     </View>
-  );
+  )
 }

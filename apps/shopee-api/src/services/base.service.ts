@@ -1,5 +1,8 @@
 import { Types } from 'mongoose'
-import { PaginatedResult, PaginationOptions } from '@repositories/interfaces/base.repository.interface'
+import {
+  PaginatedResult,
+  PaginationOptions,
+} from '@repositories/interfaces/base.repository.interface'
 
 /**
  * Base service class providing common utilities for all services
@@ -53,7 +56,7 @@ export class ServiceError extends Error {
   constructor(
     public readonly code: string,
     message: string,
-    public readonly statusCode: number = 400
+    public readonly statusCode: number = 400,
   ) {
     super(message)
     this.name = 'ServiceError'
@@ -62,17 +65,16 @@ export class ServiceError extends Error {
 
 export class NotFoundError extends ServiceError {
   constructor(resource: string, id?: string) {
-    super(
-      'NOT_FOUND',
-      id ? `${resource} with id ${id} not found` : `${resource} not found`,
-      404
-    )
+    super('NOT_FOUND', id ? `${resource} with id ${id} not found` : `${resource} not found`, 404)
     this.name = 'NotFoundError'
   }
 }
 
 export class ValidationError extends ServiceError {
-  constructor(message: string, public readonly field?: string) {
+  constructor(
+    message: string,
+    public readonly field?: string,
+  ) {
     super('VALIDATION_ERROR', message, 422)
     this.name = 'ValidationError'
   }
@@ -105,4 +107,3 @@ export class ForbiddenError extends ServiceError {
     this.name = 'ForbiddenError'
   }
 }
-

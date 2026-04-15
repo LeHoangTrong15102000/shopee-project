@@ -9,7 +9,9 @@ import os from 'os'
 
 // Workaround cho Windows path length issues
 const isWindows = os.platform() === 'win32'
-const customCacheDir = isWindows ? path.join(os.tmpdir(), 'vite-cache-shopee') : 'node_modules/.vite'
+const customCacheDir = isWindows
+  ? path.join(os.tmpdir(), 'vite-cache-shopee')
+  : 'node_modules/.vite'
 
 // Tách riêng config cho test và production
 export default defineConfig(({ mode }) => {
@@ -27,7 +29,12 @@ export default defineConfig(({ mode }) => {
       ...(!isTest
         ? [
             compression({ algorithm: 'gzip', threshold: 1024, deleteOriginalAssets: false }),
-            compression({ algorithm: 'brotliCompress', threshold: 1024, deleteOriginalAssets: false, ext: '.br' }),
+            compression({
+              algorithm: 'brotliCompress',
+              threshold: 1024,
+              deleteOriginalAssets: false,
+              ext: '.br',
+            }),
           ]
         : []),
     ] as PluginOption[],
@@ -38,22 +45,22 @@ export default defineConfig(({ mode }) => {
       host: true,
       fs: {
         // Allow serving files from one level up to the project root
-        allow: ['..']
-      }
+        allow: ['..'],
+      },
     },
     preview: {
       port: 4173,
-      host: true
+      host: true,
     },
     // Tối ưu cho Windows - sử dụng temp directory
     optimizeDeps: {
       esbuildOptions: {
         // Tăng buffer size cho Windows
-        target: 'es2020'
-      }
+        target: 'es2020',
+      },
     },
     css: {
-      devSourcemap: true
+      devSourcemap: true,
     },
     resolve: {
       alias: {
@@ -62,7 +69,7 @@ export default defineConfig(({ mode }) => {
         '@shopee/shared-utils': path.resolve(__dirname, '../../libs/shared-utils/src'),
         '@shopee/shared-constants': path.resolve(__dirname, '../../libs/shared-constants/src'),
       },
-      dedupe: ['react', 'react-dom']
+      dedupe: ['react', 'react-dom'],
     },
     // Cấu hình cache để tránh conflict trên Windows - sử dụng system temp
     cacheDir: customCacheDir,
@@ -139,13 +146,13 @@ export default defineConfig(({ mode }) => {
               return 'utils-vendor'
             }
             // Everything else (socket.io, devtools, etc.) goes into default chunks
-          }
-        }
-      }
+          },
+        },
+      },
     },
     ssr: {
-      noExternal: ['@tanstack/react-query']
-    }
+      noExternal: ['@tanstack/react-query'],
+    },
   }
 
   // CHỈ thêm test config khi đang trong test mode
@@ -166,14 +173,14 @@ export default defineConfig(({ mode }) => {
         execArgv: ['--max-old-space-size=8192'],
         include: [
           'src/**/*.test.{ts,tsx}', // Unit tests
-          'test/**/*.test.{ts,tsx}' // Integration & E2E tests
+          'test/**/*.test.{ts,tsx}', // Integration & E2E tests
         ],
         exclude: [
-          'test/integration/websocket.test.tsx' // Temporarily excluded — socket mock issues
+          'test/integration/websocket.test.tsx', // Temporarily excluded — socket mock issues
         ],
         reporters: ['default', 'junit'],
         outputFile: {
-          junit: './test-results/junit-report.xml'
+          junit: './test-results/junit-report.xml',
         },
         // Suppress SSL/TLS errors from socket cleanup in CI
         onConsoleLog(log) {
@@ -195,16 +202,16 @@ export default defineConfig(({ mode }) => {
             'src/@types/**',
             'src/locales/**',
             'src/data/**',
-            'src/vite-env.d.ts'
+            'src/vite-env.d.ts',
           ],
           thresholds: {
             lines: 0,
             functions: 0,
             branches: 0,
-            statements: 0
-          }
-        }
-      }
+            statements: 0,
+          },
+        },
+      },
     }
   }
 

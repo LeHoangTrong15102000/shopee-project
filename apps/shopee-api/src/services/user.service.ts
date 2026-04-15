@@ -5,7 +5,10 @@ import {
   CreateUserDTO,
   UpdateUserDTO,
 } from '@repositories/interfaces/user.repository.interface'
-import { PaginatedResult, PaginationOptions } from '@repositories/interfaces/base.repository.interface'
+import {
+  PaginatedResult,
+  PaginationOptions,
+} from '@repositories/interfaces/base.repository.interface'
 import { BaseService, NotFoundError, ValidationError, ConflictError } from './base.service'
 import { hashValue, compareValue } from '@utils/crypt'
 import { omitBy } from 'lodash'
@@ -119,12 +122,15 @@ export class UserService extends BaseService {
       throw new ValidationError('Invalid user ID format')
     }
 
-    const cleanData = omitBy(data, (value) => value === undefined || value === '') as UpdateProfileDTO
+    const cleanData = omitBy(
+      data,
+      (value) => value === undefined || value === '',
+    ) as UpdateProfileDTO
 
     // Handle password change
     if (cleanData.password) {
       const user = await this.userRepository.findByEmailWithPassword(
-        (await this.userRepository.findById(userId))?.email || ''
+        (await this.userRepository.findById(userId))?.email || '',
       )
       if (!user) {
         throw new NotFoundError('User', userId)
@@ -191,4 +197,3 @@ export class UserService extends BaseService {
     return this.userRepository.search(query, this.normalizePagination(pagination))
   }
 }
-

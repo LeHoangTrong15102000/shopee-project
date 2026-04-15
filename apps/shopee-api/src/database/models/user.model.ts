@@ -14,7 +14,7 @@ const UserSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 // Unique index for email to ensure no duplicate emails

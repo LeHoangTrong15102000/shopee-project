@@ -1,42 +1,42 @@
-import React, { createContext, useContext, useRef, ReactNode } from 'react';
-import Dialog, { DialogOptions, DialogRef } from './Dialog';
+import React, { createContext, useContext, useRef, ReactNode } from 'react'
+import Dialog, { DialogOptions, DialogRef } from './Dialog'
 
 interface DialogContextType {
-  showDialog: (options: DialogOptions) => void;
-  hideDialog: () => void;
-  hideAllDialogs: () => void;
-  showMessage: (title: string, message?: string, onOk?: () => void | Promise<void>) => void;
+  showDialog: (options: DialogOptions) => void
+  hideDialog: () => void
+  hideAllDialogs: () => void
+  showMessage: (title: string, message?: string, onOk?: () => void | Promise<void>) => void
   showConfirm: (
     title: string,
     message?: string,
     onConfirm?: () => void | Promise<void>,
     onCancel?: () => void,
     buttonLayout?: 'horizontal' | 'vertical' | 'auto'
-  ) => void;
-  showLoading: (title?: string, message?: string) => void;
-  hideLoading: () => void;
+  ) => void
+  showLoading: (title?: string, message?: string) => void
+  hideLoading: () => void
 }
 
-const DialogContext = createContext<DialogContextType | undefined>(undefined);
+const DialogContext = createContext<DialogContextType | undefined>(undefined)
 
 interface DialogProviderProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
-  const dialogRef = useRef<DialogRef>(null);
+  const dialogRef = useRef<DialogRef>(null)
 
   const showDialog = (options: DialogOptions) => {
-    dialogRef.current?.show(options);
-  };
+    dialogRef.current?.show(options)
+  }
 
   const hideDialog = () => {
-    dialogRef.current?.hide();
-  };
+    dialogRef.current?.hide()
+  }
 
   const hideAllDialogs = () => {
-    dialogRef.current?.hideAll();
-  };
+    dialogRef.current?.hideAll()
+  }
 
   const showMessage = (title: string, message?: string, onOk?: () => void | Promise<void>) => {
     dialogRef.current?.show({
@@ -51,8 +51,8 @@ export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
           onPress: onOk,
         },
       ],
-    });
-  };
+    })
+  }
 
   const showConfirm = (
     title: string,
@@ -79,8 +79,8 @@ export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
           onPress: onConfirm,
         },
       ],
-    });
-  };
+    })
+  }
 
   const showLoading = (title?: string, message?: string) => {
     dialogRef.current?.show({
@@ -88,12 +88,12 @@ export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
       title: title || 'Loading...',
       message,
       dismissable: false,
-    });
-  };
+    })
+  }
 
   const hideLoading = () => {
-    dialogRef.current?.hide();
-  };
+    dialogRef.current?.hide()
+  }
 
   return (
     <DialogContext.Provider
@@ -109,13 +109,13 @@ export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
       {children}
       <Dialog ref={dialogRef} />
     </DialogContext.Provider>
-  );
-};
+  )
+}
 
 export const useDialog = (): DialogContextType => {
-  const context = useContext(DialogContext);
+  const context = useContext(DialogContext)
   if (!context) {
-    throw new Error('useDialog must be used within a DialogProvider');
+    throw new Error('useDialog must be used within a DialogProvider')
   }
-  return context;
-};
+  return context
+}

@@ -23,7 +23,7 @@ adminProductRouter.get(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   validate(getProductsSchema),
-  asyncHandler(ProductController.getProducts)
+  asyncHandler(ProductController.getProducts),
 )
 /**
  * [Get all products ]
@@ -36,7 +36,7 @@ adminProductRouter.get(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   validate(getAllProductsSchema),
-  asyncHandler(ProductController.getAllProducts)
+  asyncHandler(ProductController.getAllProducts),
 )
 
 adminProductRouter.get(
@@ -44,14 +44,14 @@ adminProductRouter.get(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   validate(productIdParamSchema),
-  asyncHandler(ProductController.getProduct)
+  asyncHandler(ProductController.getProduct),
 )
 adminProductRouter.post(
   '',
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   validate(addProductSchema),
-  asyncHandler(ProductController.addProduct)
+  asyncHandler(ProductController.addProduct),
 )
 adminProductRouter.put(
   '/:product_id',
@@ -59,7 +59,7 @@ adminProductRouter.put(
   authMiddleware.verifyAdmin,
   validate(productIdParamSchema),
   validate(updateProductSchema),
-  asyncHandler(ProductController.updateProduct)
+  asyncHandler(ProductController.updateProduct),
 )
 
 adminProductRouter.delete(
@@ -67,7 +67,7 @@ adminProductRouter.delete(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   validate(productIdParamSchema),
-  asyncHandler(ProductController.deleteProduct)
+  asyncHandler(ProductController.deleteProduct),
 )
 
 adminProductRouter.delete(
@@ -75,19 +75,19 @@ adminProductRouter.delete(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   // Note: listIdRule validation will be handled in cleanup phase
-  asyncHandler(ProductController.deleteManyProducts)
+  asyncHandler(ProductController.deleteManyProducts),
 )
 
 adminProductRouter.post(
   '/upload-image',
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
-  asyncHandler(ProductController.uploadProductImage)
+  asyncHandler(ProductController.uploadProductImage),
 )
 adminProductRouter.post(
   '/upload-images',
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
-  asyncHandler(ProductController.uploadManyProductImages)
+  asyncHandler(ProductController.uploadManyProductImages),
 )
 export default adminProductRouter

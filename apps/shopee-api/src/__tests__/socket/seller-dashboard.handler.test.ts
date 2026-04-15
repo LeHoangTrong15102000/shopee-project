@@ -41,11 +41,11 @@ describe('seller-dashboard.handler', () => {
       expect(mockSocket.on).toHaveBeenCalledTimes(2)
       expect(mockSocket.on).toHaveBeenCalledWith(
         SocketEvent.SUBSCRIBE_SELLER_DASHBOARD,
-        expect.any(Function)
+        expect.any(Function),
       )
       expect(mockSocket.on).toHaveBeenCalledWith(
         SocketEvent.UNSUBSCRIBE_SELLER_DASHBOARD,
-        expect.any(Function)
+        expect.any(Function),
       )
     })
   })
@@ -58,10 +58,7 @@ describe('seller-dashboard.handler', () => {
       handler()
 
       expect(mockSocket.join).toHaveBeenCalledWith('seller:admin-1')
-      expect(mockSocket.emit).not.toHaveBeenCalledWith(
-        SocketEvent.ERROR,
-        expect.anything()
-      )
+      expect(mockSocket.emit).not.toHaveBeenCalledWith(SocketEvent.ERROR, expect.anything())
     })
 
     it('emits ERROR when user is not Admin (roles=[User])', () => {
@@ -132,4 +129,3 @@ describe('seller-dashboard.handler', () => {
     })
   })
 })
-

@@ -1,40 +1,40 @@
-import { Tooltip } from '@heroui/tooltip';
-import { Link } from 'react-router';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useContext } from 'react';
-import { useTranslation } from 'react-i18next';
-import { AppContext } from 'src/contexts/app.context';
-import Popover from '../Popover';
-import authApi from 'src/apis/auth.api';
-import { toast } from 'react-toastify';
-import path from 'src/constant/path';
+import { Tooltip } from '@heroui/tooltip'
+import { Link } from 'react-router'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useContext } from 'react'
+import { useTranslation } from 'react-i18next'
+import { AppContext } from 'src/contexts/app.context'
+import Popover from '../Popover'
+import authApi from 'src/apis/auth.api'
+import { toast } from 'react-toastify'
+import path from 'src/constant/path'
 
-import { purchasesStatus } from 'src/constant/purchase';
-import purchaseApi from 'src/apis/purchases.api';
+import { purchasesStatus } from 'src/constant/purchase'
+import purchaseApi from 'src/apis/purchases.api'
 
-import noproduct from 'src/assets/images/img-product-incart.png';
-import { formatCurrency } from 'src/utils/utils';
-import NavHeader from '../NavHeader';
-import useSearchProducts from 'src/hooks/useSearchProducts';
-import Button from 'src/components/Button';
-const MAX_PURCHASES = 5;
+import noproduct from 'src/assets/images/img-product-incart.png'
+import { formatCurrency } from 'src/utils/utils'
+import NavHeader from '../NavHeader'
+import useSearchProducts from 'src/hooks/useSearchProducts'
+import Button from 'src/components/Button'
+const MAX_PURCHASES = 5
 
 const Header1 = () => {
-  const { t } = useTranslation('cart');
-  const { setIsAuthenticated, isAuthenticated, setProfile } = useContext(AppContext);
-  const queryClient = useQueryClient();
-  const { onSubmitSearch, register } = useSearchProducts();
+  const { t } = useTranslation('cart')
+  const { setIsAuthenticated, isAuthenticated, setProfile } = useContext(AppContext)
+  const queryClient = useQueryClient()
+  const { onSubmitSearch, register } = useSearchProducts()
 
   // useQuery để gọi purchaseList hiển thị Cart product
   const { data: purchasesInCartData } = useQuery({
     queryKey: ['purchases', { status: purchasesStatus.inCart }],
     queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart }),
     enabled: isAuthenticated, // chỉ gọi khi đã isAuthenticated
-  });
+  })
 
   // console.log(purchasesInCartData)
 
-  const purchasesInCart = purchasesInCartData?.data.data; // PurchasesInCart là một cái Purchase[]
+  const purchasesInCart = purchasesInCartData?.data.data // PurchasesInCart là một cái Purchase[]
   // console.log(purchasesInCart)
 
   // useMutation để logout - giữ lại hook call cho side effects
@@ -42,16 +42,16 @@ const Header1 = () => {
   const logoutMutation = useMutation({
     mutationFn: () => authApi.logoutAccount(),
     onSuccess: () => {
-      setIsAuthenticated(false); // khi là false thì nó sẽ đá mình về trang /login
-      setProfile(null);
-      toast.success('Đăng xuất thành công', { autoClose: 1000 });
+      setIsAuthenticated(false) // khi là false thì nó sẽ đá mình về trang /login
+      setProfile(null)
+      toast.success('Đăng xuất thành công', { autoClose: 1000 })
       // navigate('/login')
       queryClient.removeQueries({
         queryKey: ['purchases', { status: purchasesStatus.inCart }],
         exact: true,
-      });
+      })
     },
-  });
+  })
 
   return (
     <div className="bg-[linear-gradient(-180deg,#f53d2d,#f63)] pt-[4px] pb-[25px] text-white">
@@ -235,7 +235,7 @@ const Header1 = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Header1;
+export default Header1

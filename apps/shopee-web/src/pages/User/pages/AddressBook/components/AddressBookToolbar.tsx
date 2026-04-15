@@ -1,23 +1,23 @@
-import { AnimatePresence, motion } from 'framer-motion';
-import Button from 'src/components/Button';
-import ShopeeCheckbox from 'src/components/ShopeeCheckbox';
-import { AddressType } from 'src/types/checkout.type';
-import { useTranslation } from 'react-i18next';
+import { AnimatePresence, motion } from 'framer-motion'
+import Button from 'src/components/Button'
+import ShopeeCheckbox from 'src/components/ShopeeCheckbox'
+import { AddressType } from 'src/types/checkout.type'
+import { useTranslation } from 'react-i18next'
 
-type FilterType = 'all' | AddressType;
+type FilterType = 'all' | AddressType
 
 interface AddressBookToolbarProps {
-  searchQuery: string;
-  onSearchChange: (query: string) => void;
-  filterType: FilterType;
-  onFilterChange: (type: FilterType) => void;
-  addressCounts: Record<FilterType, number>;
-  isSelectionMode: boolean;
-  selectedCount: number;
-  totalSelectableCount: number;
-  onSelectAll: () => void;
-  onBulkDelete: () => void;
-  ADDRESS_TYPE_CONFIG: Record<AddressType, { label: string; icon: React.ReactNode; color: string }>;
+  searchQuery: string
+  onSearchChange: (query: string) => void
+  filterType: FilterType
+  onFilterChange: (type: FilterType) => void
+  addressCounts: Record<FilterType, number>
+  isSelectionMode: boolean
+  selectedCount: number
+  totalSelectableCount: number
+  onSelectAll: () => void
+  onBulkDelete: () => void
+  ADDRESS_TYPE_CONFIG: Record<AddressType, { label: string; icon: React.ReactNode; color: string }>
 }
 
 const AddressBookToolbar = ({
@@ -33,7 +33,7 @@ const AddressBookToolbar = ({
   onBulkDelete,
   ADDRESS_TYPE_CONFIG,
 }: AddressBookToolbarProps) => {
-  const { t } = useTranslation('address');
+  const { t } = useTranslation('address')
   return (
     <div className="mt-6 space-y-4">
       {/* Search Box */}
@@ -80,9 +80,9 @@ const AddressBookToolbar = ({
       {/* Filter Tabs */}
       <div className="flex flex-wrap gap-2">
         {(['all', 'home', 'office', 'other'] as FilterType[]).map((type) => {
-          const isActive = filterType === type;
-          const count = addressCounts[type];
-          const config = type === 'all' ? null : ADDRESS_TYPE_CONFIG[type];
+          const isActive = filterType === type
+          const count = addressCounts[type]
+          const config = type === 'all' ? null : ADDRESS_TYPE_CONFIG[type]
           return (
             <Button
               key={type}
@@ -102,7 +102,7 @@ const AddressBookToolbar = ({
                 {count}
               </span>
             </Button>
-          );
+          )
         })}
       </div>
 
@@ -144,7 +144,7 @@ const AddressBookToolbar = ({
         )}
       </AnimatePresence>
     </div>
-  );
-};
+  )
+}
 
-export default AddressBookToolbar;
+export default AddressBookToolbar

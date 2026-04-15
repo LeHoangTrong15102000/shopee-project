@@ -1,29 +1,29 @@
-import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import ProductRating from 'src/components/ProductRating';
-import ViewerCountBadge from 'src/components/ViewerCountBadge';
-import LivePriceTag from 'src/components/LivePriceTag';
-import { Product as ProductType, ProductSKU } from 'src/types/product.type';
-import { formatCurrency, formatNumberToSocialStyle, rateSale } from 'src/utils/utils';
-import { staggerItem } from 'src/styles/animations';
-import ProductBadges from './ProductBadges';
-import VoucherRow from './VoucherRow';
-import ShopeeProtection from './ShopeeProtection';
-import ShippingInfo from './ShippingInfo';
+import { motion, AnimatePresence, Variants } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import ProductRating from 'src/components/ProductRating'
+import ViewerCountBadge from 'src/components/ViewerCountBadge'
+import LivePriceTag from 'src/components/LivePriceTag'
+import { Product as ProductType, ProductSKU } from 'src/types/product.type'
+import { formatCurrency, formatNumberToSocialStyle, rateSale } from 'src/utils/utils'
+import { staggerItem } from 'src/styles/animations'
+import ProductBadges from './ProductBadges'
+import VoucherRow from './VoucherRow'
+import ShopeeProtection from './ShopeeProtection'
+import ShippingInfo from './ShippingInfo'
 
-const LOW_STOCK_THRESHOLD = 5;
+const LOW_STOCK_THRESHOLD = 5
 
 interface ProductInfoProps {
-  product: ProductType;
-  reducedMotion: boolean;
-  livePrice: number | null;
-  livePriceBeforeDiscount: number | null;
-  priceHasChanged: boolean;
-  previousPrice: number | null;
-  viewerCount: number;
-  isPopular: boolean;
-  infoContainerVariants: Variants;
-  selectedSKU?: ProductSKU | null;
+  product: ProductType
+  reducedMotion: boolean
+  livePrice: number | null
+  livePriceBeforeDiscount: number | null
+  priceHasChanged: boolean
+  previousPrice: number | null
+  viewerCount: number
+  isPopular: boolean
+  infoContainerVariants: Variants
+  selectedSKU?: ProductSKU | null
 }
 
 const ProductInfo = ({
@@ -38,17 +38,17 @@ const ProductInfo = ({
   infoContainerVariants,
   selectedSKU,
 }: ProductInfoProps) => {
-  const { t } = useTranslation('product');
+  const { t } = useTranslation('product')
 
   // Determine effective price and stock based on selected SKU
-  const effectivePrice = selectedSKU?.price ?? livePrice ?? product.price;
+  const effectivePrice = selectedSKU?.price ?? livePrice ?? product.price
   const effectivePriceBeforeDiscount = selectedSKU
     ? product.price_before_discount
-    : (livePriceBeforeDiscount ?? product.price_before_discount);
-  const effectiveStock = selectedSKU?.stock ?? product.quantity;
+    : (livePriceBeforeDiscount ?? product.price_before_discount)
+  const effectiveStock = selectedSKU?.stock ?? product.quantity
   const isLowStock =
-    selectedSKU != null && effectiveStock > 0 && effectiveStock <= LOW_STOCK_THRESHOLD;
-  const isOutOfStock = selectedSKU != null && effectiveStock === 0;
+    selectedSKU != null && effectiveStock > 0 && effectiveStock <= LOW_STOCK_THRESHOLD
+  const isOutOfStock = selectedSKU != null && effectiveStock === 0
 
   return (
     <motion.div
@@ -181,7 +181,7 @@ const ProductInfo = ({
         <ShippingInfo location={product.location || ''} />
       </motion.div>
     </motion.div>
-  );
-};
+  )
+}
 
-export default ProductInfo;
+export default ProductInfo

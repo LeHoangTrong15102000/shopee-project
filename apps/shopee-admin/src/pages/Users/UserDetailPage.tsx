@@ -1,31 +1,31 @@
-import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { type ColumnDef } from '@tanstack/react-table';
-import { format } from 'date-fns';
-import { ArrowLeft } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { Button } from 'src/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
-import { Avatar, AvatarFallback } from 'src/components/ui/avatar';
-import { Badge } from 'src/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from 'src/components/ui/tabs';
-import { DataTable } from 'src/components/shared/DataTable';
-import { PageHeader } from 'src/components/shared/PageHeader';
-import { LoadingState } from 'src/components/shared/LoadingState';
-import { ErrorState } from 'src/components/shared/ErrorState';
-import { StatusBadge } from 'src/components/shared/StatusBadge';
-import usersApi from 'src/apis/users.api';
-import ordersApi from 'src/apis/orders.api';
-import reviewsApi from 'src/apis/reviews.api';
-import loyaltyApi from 'src/apis/loyalty.api';
-import type { Order, Review, LoyaltyTransaction } from 'src/types';
+import { useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { type ColumnDef } from '@tanstack/react-table'
+import { format } from 'date-fns'
+import { ArrowLeft } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { Button } from 'src/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
+import { Avatar, AvatarFallback } from 'src/components/ui/avatar'
+import { Badge } from 'src/components/ui/badge'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from 'src/components/ui/tabs'
+import { DataTable } from 'src/components/shared/DataTable'
+import { PageHeader } from 'src/components/shared/PageHeader'
+import { LoadingState } from 'src/components/shared/LoadingState'
+import { ErrorState } from 'src/components/shared/ErrorState'
+import { StatusBadge } from 'src/components/shared/StatusBadge'
+import usersApi from 'src/apis/users.api'
+import ordersApi from 'src/apis/orders.api'
+import reviewsApi from 'src/apis/reviews.api'
+import loyaltyApi from 'src/apis/loyalty.api'
+import type { Order, Review, LoyaltyTransaction } from 'src/types'
 
 export default function UserDetailPage() {
-  const { t } = useTranslation('users');
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<string>('orders');
+  const { t } = useTranslation('users')
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const [activeTab, setActiveTab] = useState<string>('orders')
 
   const {
     data: user,
@@ -36,25 +36,25 @@ export default function UserDetailPage() {
     queryKey: ['admin-user', id],
     queryFn: () => usersApi.getUser(id!).then((r) => r.data.data),
     enabled: !!id,
-  });
+  })
 
   const { data: ordersData } = useQuery({
     queryKey: ['admin-user-orders', id],
     queryFn: () => ordersApi.getOrders({ user_id: id, limit: 50 }).then((r) => r.data.data),
     enabled: !!id && activeTab === 'orders',
-  });
+  })
 
   const { data: reviewsData } = useQuery({
     queryKey: ['admin-user-reviews', id],
     queryFn: () => reviewsApi.getReviews({ user_id: id, limit: 50 }).then((r) => r.data.data),
     enabled: !!id && activeTab === 'reviews',
-  });
+  })
 
   const { data: loyaltyData } = useQuery({
     queryKey: ['admin-user-loyalty', id],
     queryFn: () => loyaltyApi.getTransactions({ user_id: id, limit: 50 }).then((r) => r.data.data),
     enabled: !!id && activeTab === 'loyalty',
-  });
+  })
   const orderColumns: ColumnDef<Order>[] = [
     {
       accessorKey: '_id',
@@ -76,7 +76,7 @@ export default function UserDetailPage() {
       header: t('detail.date'),
       cell: ({ row }) => format(new Date(row.original.createdAt), 'MMM d, yyyy'),
     },
-  ];
+  ]
 
   const reviewColumns: ColumnDef<Review>[] = [
     {
@@ -100,7 +100,7 @@ export default function UserDetailPage() {
       header: t('detail.date'),
       cell: ({ row }) => format(new Date(row.original.createdAt), 'MMM d, yyyy'),
     },
-  ];
+  ]
 
   const loyaltyColumns: ColumnDef<LoyaltyTransaction>[] = [
     {
@@ -134,12 +134,12 @@ export default function UserDetailPage() {
       header: t('detail.date'),
       cell: ({ row }) => format(new Date(row.original.createdAt), 'MMM d, yyyy'),
     },
-  ];
+  ]
 
-  if (isLoading) return <LoadingState />;
-  if (isError || !user) return <ErrorState message={t('notFound')} onRetry={refetch} />;
+  if (isLoading) return <LoadingState />
+  if (isError || !user) return <ErrorState message={t('notFound')} onRetry={refetch} />
 
-  const initials = (user.name || user.email).slice(0, 2).toUpperCase();
+  const initials = (user.name || user.email).slice(0, 2).toUpperCase()
   return (
     <div className="space-y-6">
       <PageHeader
@@ -229,5 +229,5 @@ export default function UserDetailPage() {
         </TabsContent>
       </Tabs>
     </div>
-  );
+  )
 }

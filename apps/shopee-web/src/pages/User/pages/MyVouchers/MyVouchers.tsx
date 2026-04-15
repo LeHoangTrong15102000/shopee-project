@@ -1,39 +1,39 @@
-import { useState } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from 'react-toastify';
-import classNames from 'classnames';
-import voucherApi from 'src/apis/voucher.api';
-import VoucherCard from 'src/components/VoucherCard';
-import SEO from 'src/components/SEO';
-import { VoucherStatus, VoucherCategory } from 'src/types/voucher.type';
-import { useTranslation } from 'react-i18next';
-import Button from 'src/components/Button';
+import { useState } from 'react'
+import { useQuery, useMutation } from '@tanstack/react-query'
+import { motion, AnimatePresence } from 'framer-motion'
+import { toast } from 'react-toastify'
+import classNames from 'classnames'
+import voucherApi from 'src/apis/voucher.api'
+import VoucherCard from 'src/components/VoucherCard'
+import SEO from 'src/components/SEO'
+import { VoucherStatus, VoucherCategory } from 'src/types/voucher.type'
+import { useTranslation } from 'react-i18next'
+import Button from 'src/components/Button'
 
-type TabStatus = VoucherStatus | 'all';
+type TabStatus = VoucherStatus | 'all'
 
-const STATUS_TAB_KEYS: TabStatus[] = ['all', 'available', 'used', 'expired'];
+const STATUS_TAB_KEYS: TabStatus[] = ['all', 'available', 'used', 'expired']
 
-const CATEGORY_TAB_KEYS: VoucherCategory[] = ['all', 'shop', 'shipping', 'shopee'];
+const CATEGORY_TAB_KEYS: VoucherCategory[] = ['all', 'shop', 'shipping', 'shopee']
 
 const STATUS_KEY_MAP = {
   all: 'vouchers.statusAll',
   available: 'vouchers.statusAvailable',
   used: 'vouchers.statusUsed',
   expired: 'vouchers.statusExpired',
-} as const;
+} as const
 
 const CATEGORY_KEY_MAP = {
   all: 'vouchers.categoryAll',
   shop: 'vouchers.categoryShop',
   shipping: 'vouchers.categoryFreeShipping',
   shopee: 'vouchers.categoryShopee',
-} as const;
+} as const
 
 export default function MyVouchers() {
-  const { t } = useTranslation('user');
-  const [activeStatus, setActiveStatus] = useState<TabStatus>('all');
-  const [activeCategory, setActiveCategory] = useState<VoucherCategory>('all');
+  const { t } = useTranslation('user')
+  const [activeStatus, setActiveStatus] = useState<TabStatus>('all')
+  const [activeCategory, setActiveCategory] = useState<VoucherCategory>('all')
 
   const { data: vouchersData, isLoading } = useQuery({
     queryKey: ['my-vouchers', activeStatus, activeCategory],
@@ -41,30 +41,30 @@ export default function MyVouchers() {
       voucherApi.getMyVouchers({
         status: activeStatus === 'all' ? undefined : activeStatus,
       }),
-  });
+  })
 
   const applyVoucherMutation = useMutation({
     mutationFn: (code: string) => voucherApi.applyVoucher({ code, order_total: 0 }),
     onSuccess: () => {
-      toast.success('Đã sao chép mã voucher!', { autoClose: 1500 });
+      toast.success('Đã sao chép mã voucher!', { autoClose: 1500 })
     },
-  });
+  })
 
-  const vouchers = vouchersData?.data.data.vouchers || [];
+  const vouchers = vouchersData?.data.data.vouchers || []
 
   const filteredVouchers =
     activeCategory === 'all'
       ? vouchers
       : vouchers.filter((v) => {
-          if (activeCategory === 'shipping') return v.discount_type === 'shipping';
-          if (activeCategory === 'shop') return v.discount_type === 'shop';
-          return true;
-        });
+          if (activeCategory === 'shipping') return v.discount_type === 'shipping'
+          if (activeCategory === 'shop') return v.discount_type === 'shop'
+          return true
+        })
 
   const handleApplyVoucher = (code: string) => {
-    navigator.clipboard.writeText(code);
-    toast.success(t('vouchers.copiedCode', { code }), { autoClose: 1500 });
-  };
+    navigator.clipboard.writeText(code)
+    toast.success(t('vouchers.copiedCode', { code }), { autoClose: 1500 })
+  }
 
   return (
     <div className="space-y-4">
@@ -176,5 +176,5 @@ export default function MyVouchers() {
         )}
       </div>
     </div>
-  );
+  )
 }

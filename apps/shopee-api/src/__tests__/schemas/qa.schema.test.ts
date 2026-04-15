@@ -1,12 +1,21 @@
 /// <reference types="jest" />
-import { getQuestionsSchema, askQuestionSchema, answerQuestionSchema, likeQuestionSchema, likeAnswerSchema } from '@schemas/qa.schema'
+import {
+  getQuestionsSchema,
+  askQuestionSchema,
+  answerQuestionSchema,
+  likeQuestionSchema,
+  likeAnswerSchema,
+} from '@schemas/qa.schema'
 
 const VALID_ID = '507f1f77bcf86cd799439011'
 
 describe('askQuestionSchema', () => {
   it('should pass with valid data', () => {
     const result = askQuestionSchema.safeParse({
-      body: { product_id: VALID_ID, question: 'This is a valid question with more than 10 characters' },
+      body: {
+        product_id: VALID_ID,
+        question: 'This is a valid question with more than 10 characters',
+      },
     })
     expect(result.success).toBe(true)
   })
@@ -20,7 +29,10 @@ describe('askQuestionSchema', () => {
 
   it('should fail when product_id is invalid', () => {
     const result = askQuestionSchema.safeParse({
-      body: { product_id: 'invalid', question: 'This is a valid question with more than 10 characters' },
+      body: {
+        product_id: 'invalid',
+        question: 'This is a valid question with more than 10 characters',
+      },
     })
     expect(result.success).toBe(false)
   })
@@ -132,18 +144,23 @@ describe('likeQuestionSchema', () => {
 
 describe('likeAnswerSchema', () => {
   it('should pass with valid questionId and answerId', () => {
-    const result = likeAnswerSchema.safeParse({ params: { questionId: VALID_ID, answerId: VALID_ID } })
+    const result = likeAnswerSchema.safeParse({
+      params: { questionId: VALID_ID, answerId: VALID_ID },
+    })
     expect(result.success).toBe(true)
   })
 
   it('should fail when questionId is invalid', () => {
-    const result = likeAnswerSchema.safeParse({ params: { questionId: 'invalid', answerId: VALID_ID } })
+    const result = likeAnswerSchema.safeParse({
+      params: { questionId: 'invalid', answerId: VALID_ID },
+    })
     expect(result.success).toBe(false)
   })
 
   it('should fail when answerId is invalid', () => {
-    const result = likeAnswerSchema.safeParse({ params: { questionId: VALID_ID, answerId: 'invalid' } })
+    const result = likeAnswerSchema.safeParse({
+      params: { questionId: VALID_ID, answerId: 'invalid' },
+    })
     expect(result.success).toBe(false)
   })
 })
-

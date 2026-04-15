@@ -10,7 +10,7 @@ const TOKEN_EXPIRY_MS = 60 * 60 * 1000 // 1 hour
 export class PasswordResetService extends BaseService {
   constructor(
     private readonly userRepository: IUserRepository,
-    private readonly authRepository: IAuthRepository
+    private readonly authRepository: IAuthRepository,
   ) {
     super()
   }
@@ -75,4 +75,3 @@ export class PasswordResetService extends BaseService {
     return { message: 'Đặt lại mật khẩu thành công' }
   }
 }
-

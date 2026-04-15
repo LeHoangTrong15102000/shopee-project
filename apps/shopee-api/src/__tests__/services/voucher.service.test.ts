@@ -46,7 +46,10 @@ describe('VoucherService', () => {
   describe('getAvailableVouchers', () => {
     it('returns vouchers without is_collected when no userId', async () => {
       const vouchers = [createMockVoucher()]
-      mockVoucherRepository.findAvailable.mockResolvedValue({ data: vouchers, pagination: { page: 1, limit: 10, page_size: 1, total: 1 } })
+      mockVoucherRepository.findAvailable.mockResolvedValue({
+        data: vouchers,
+        pagination: { page: 1, limit: 10, page_size: 1, total: 1 },
+      })
 
       const result = await service.getAvailableVouchers({ page: 1, limit: 10 })
 
@@ -56,10 +59,16 @@ describe('VoucherService', () => {
 
     it('adds is_collected flag when userId provided', async () => {
       const voucher = createMockVoucher()
-      mockVoucherRepository.findAvailable.mockResolvedValue({ data: [voucher], pagination: { page: 1, limit: 10, page_size: 1, total: 1 } })
+      mockVoucherRepository.findAvailable.mockResolvedValue({
+        data: [voucher],
+        pagination: { page: 1, limit: 10, page_size: 1, total: 1 },
+      })
       mockVoucherRepository.getCollectedVoucherIds.mockResolvedValue([voucher._id.toString()])
 
-      const result = await service.getAvailableVouchers({ page: 1, limit: 10 }, new Types.ObjectId().toString())
+      const result = await service.getAvailableVouchers(
+        { page: 1, limit: 10 },
+        new Types.ObjectId().toString(),
+      )
 
       expect(result.data[0].is_collected).toBe(true)
     })
@@ -95,37 +104,55 @@ describe('VoucherService', () => {
     })
 
     it('throws BusinessError when voucher expired', async () => {
-      mockVoucherRepository.findByCode.mockResolvedValue(createMockVoucher({ end_date: new Date('2020-01-01') }))
+      mockVoucherRepository.findByCode.mockResolvedValue(
+        createMockVoucher({ end_date: new Date('2020-01-01') }),
+      )
 
-      await expect(service.applyVoucher({ code: 'TEST10', order_value: 200000 })).rejects.toThrow(BusinessError)
+      await expect(service.applyVoucher({ code: 'TEST10', order_value: 200000 })).rejects.toThrow(
+        BusinessError,
+      )
     })
 
     it('throws BusinessError when voucher not started', async () => {
-      mockVoucherRepository.findByCode.mockResolvedValue(createMockVoucher({ start_date: new Date('2030-01-01') }))
+      mockVoucherRepository.findByCode.mockResolvedValue(
+        createMockVoucher({ start_date: new Date('2030-01-01') }),
+      )
 
-      await expect(service.applyVoucher({ code: 'TEST10', order_value: 200000 })).rejects.toThrow(BusinessError)
+      await expect(service.applyVoucher({ code: 'TEST10', order_value: 200000 })).rejects.toThrow(
+        BusinessError,
+      )
     })
 
     it('throws BusinessError when voucher used up', async () => {
       mockVoucherRepository.findByCode.mockResolvedValue(createMockVoucher({ used_count: 100 }))
 
-      await expect(service.applyVoucher({ code: 'TEST10', order_value: 200000 })).rejects.toThrow(BusinessError)
+      await expect(service.applyVoucher({ code: 'TEST10', order_value: 200000 })).rejects.toThrow(
+        BusinessError,
+      )
     })
 
     it('throws BusinessError when min order value not met', async () => {
       mockVoucherRepository.findByCode.mockResolvedValue(createMockVoucher())
 
-      await expect(service.applyVoucher({ code: 'TEST10', order_value: 50000 })).rejects.toThrow(BusinessError)
+      await expect(service.applyVoucher({ code: 'TEST10', order_value: 50000 })).rejects.toThrow(
+        BusinessError,
+      )
     })
 
     it('throws BusinessError when product restriction fails', async () => {
-      mockVoucherRepository.findByCode.mockResolvedValue(createMockVoucher({ applicable_products: [new Types.ObjectId()] }))
+      mockVoucherRepository.findByCode.mockResolvedValue(
+        createMockVoucher({ applicable_products: [new Types.ObjectId()] }),
+      )
 
-      await expect(service.applyVoucher({ code: 'TEST10', order_value: 200000, product_ids: ['other'] })).rejects.toThrow(BusinessError)
+      await expect(
+        service.applyVoucher({ code: 'TEST10', order_value: 200000, product_ids: ['other'] }),
+      ).rejects.toThrow(BusinessError)
     })
 
     it('applies fixed amount discount', async () => {
-      mockVoucherRepository.findByCode.mockResolvedValue(createMockVoucher({ discount_type: 'fixed_amount', discount_value: 30000 }))
+      mockVoucherRepository.findByCode.mockResolvedValue(
+        createMockVoucher({ discount_type: 'fixed_amount', discount_value: 30000 }),
+      )
 
       const result = await service.applyVoucher({ code: 'TEST10', order_value: 200000 })
 
@@ -133,7 +160,9 @@ describe('VoucherService', () => {
     })
 
     it('caps percentage discount at max_discount', async () => {
-      mockVoucherRepository.findByCode.mockResolvedValue(createMockVoucher({ discount_value: 50, max_discount: 50000 }))
+      mockVoucherRepository.findByCode.mockResolvedValue(
+        createMockVoucher({ discount_value: 50, max_discount: 50000 }),
+      )
 
       const result = await service.applyVoucher({ code: 'TEST10', order_value: 500000 })
 
@@ -149,7 +178,11 @@ describe('VoucherService', () => {
       const voucher = createMockVoucher({ _id: new Types.ObjectId(voucherId) })
       mockVoucherRepository.findById.mockResolvedValue(voucher)
       mockVoucherRepository.findSavedVoucher.mockResolvedValue(null)
-      mockVoucherRepository.saveVoucher.mockResolvedValue({ user: userId, voucher: voucherId, status: 'available' } as any)
+      mockVoucherRepository.saveVoucher.mockResolvedValue({
+        user: userId,
+        voucher: voucherId,
+        status: 'available',
+      } as any)
 
       const result = await service.collectVoucher(userId, voucherId)
 
@@ -200,7 +233,9 @@ describe('VoucherService', () => {
     })
 
     it('throws ValidationError for invalid userId', async () => {
-      await expect(service.getSavedVouchers('invalid-id', { page: 1, limit: 10 })).rejects.toThrow(ValidationError)
+      await expect(service.getSavedVouchers('invalid-id', { page: 1, limit: 10 })).rejects.toThrow(
+        ValidationError,
+      )
     })
   })
 
@@ -221,7 +256,9 @@ describe('VoucherService', () => {
     it('throws NotFoundError when voucher not found', async () => {
       mockVoucherRepository.findByCode.mockResolvedValue(null)
 
-      await expect(service.validateVoucher(userId, 'INVALID', 200000)).rejects.toThrow(NotFoundError)
+      await expect(service.validateVoucher(userId, 'INVALID', 200000)).rejects.toThrow(
+        NotFoundError,
+      )
     })
 
     it('throws BusinessError when user has not collected voucher', async () => {
@@ -232,14 +269,18 @@ describe('VoucherService', () => {
     })
 
     it('throws BusinessError when voucher not started', async () => {
-      mockVoucherRepository.findByCode.mockResolvedValue(createMockVoucher({ start_date: new Date('2030-01-01') }))
+      mockVoucherRepository.findByCode.mockResolvedValue(
+        createMockVoucher({ start_date: new Date('2030-01-01') }),
+      )
       mockVoucherRepository.findSavedVoucher.mockResolvedValue({ status: 'available' } as any)
 
       await expect(service.validateVoucher(userId, 'TEST10', 200000)).rejects.toThrow(BusinessError)
     })
 
     it('throws BusinessError when voucher expired', async () => {
-      mockVoucherRepository.findByCode.mockResolvedValue(createMockVoucher({ end_date: new Date('2020-01-01') }))
+      mockVoucherRepository.findByCode.mockResolvedValue(
+        createMockVoucher({ end_date: new Date('2020-01-01') }),
+      )
       mockVoucherRepository.findSavedVoucher.mockResolvedValue({ status: 'available' } as any)
 
       await expect(service.validateVoucher(userId, 'TEST10', 200000)).rejects.toThrow(BusinessError)
@@ -253,7 +294,9 @@ describe('VoucherService', () => {
     })
 
     it('throws ValidationError for invalid userId', async () => {
-      await expect(service.validateVoucher('invalid-id', 'TEST10', 200000)).rejects.toThrow(ValidationError)
+      await expect(service.validateVoucher('invalid-id', 'TEST10', 200000)).rejects.toThrow(
+        ValidationError,
+      )
     })
   })
 
@@ -267,7 +310,11 @@ describe('VoucherService', () => {
 
       await service.useVoucher(userId, voucherId, 'order123')
 
-      expect(mockVoucherRepository.markVoucherUsed).toHaveBeenCalledWith(userId, voucherId, 'order123')
+      expect(mockVoucherRepository.markVoucherUsed).toHaveBeenCalledWith(
+        userId,
+        voucherId,
+        'order123',
+      )
       expect(mockVoucherRepository.incrementUsedCount).toHaveBeenCalledWith(voucherId)
     })
   })
@@ -275,22 +322,26 @@ describe('VoucherService', () => {
   describe('applyVoucher edge cases', () => {
     it('throws BusinessError when category restriction fails', async () => {
       mockVoucherRepository.findByCode.mockResolvedValue(
-        createMockVoucher({ applicable_categories: [new Types.ObjectId()] })
+        createMockVoucher({ applicable_categories: [new Types.ObjectId()] }),
       )
 
       await expect(
-        service.applyVoucher({ code: 'TEST10', order_value: 200000, category_ids: ['other'] })
+        service.applyVoucher({ code: 'TEST10', order_value: 200000, category_ids: ['other'] }),
       ).rejects.toThrow(BusinessError)
     })
 
     it('throws ValidationError when code is empty', async () => {
-      await expect(service.applyVoucher({ code: '', order_value: 200000 })).rejects.toThrow(ValidationError)
+      await expect(service.applyVoucher({ code: '', order_value: 200000 })).rejects.toThrow(
+        ValidationError,
+      )
     })
 
     it('throws NotFoundError when voucher is inactive', async () => {
       mockVoucherRepository.findByCode.mockResolvedValue(createMockVoucher({ is_active: false }))
 
-      await expect(service.applyVoucher({ code: 'TEST10', order_value: 200000 })).rejects.toThrow(NotFoundError)
+      await expect(service.applyVoucher({ code: 'TEST10', order_value: 200000 })).rejects.toThrow(
+        NotFoundError,
+      )
     })
   })
 
@@ -306,4 +357,3 @@ describe('VoucherService', () => {
     })
   })
 })
-

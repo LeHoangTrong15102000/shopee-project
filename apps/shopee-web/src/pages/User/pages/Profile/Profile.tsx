@@ -1,35 +1,35 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Fragment, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Controller, useForm, FormProvider, useFormContext } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
-import userApi, { BodyUpdateProfile } from 'src/apis/user.api';
-import Button from 'src/components/Button';
-import Input from 'src/components/Input';
-import InputNumber from 'src/components/InputNumber';
-import ProfileCompletion from 'src/components/ProfileCompletion';
-import { UserSchema, baseUserSchema } from 'src/utils/rules';
-import DateSelect from '../../components/DateSelect';
-import { toast } from 'react-toastify';
-import { AppContext } from 'src/contexts/app.context';
-import { setProfileToLS } from 'src/utils/auth';
-import { getAvatarUrl, isAxiosUnprocessableEntityError } from 'src/utils/utils';
-import { ErrorResponseApi } from 'src/types/utils.type';
-import InputFile from 'src/components/InputFile';
-import SEO from 'src/components/SEO';
-import { useReducedMotion } from 'src/hooks/useReducedMotion';
-import AvatarCropModal from 'src/components/AvatarCropModal';
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Fragment, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { Controller, useForm, FormProvider, useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+import { motion } from 'framer-motion'
+import userApi, { BodyUpdateProfile } from 'src/apis/user.api'
+import Button from 'src/components/Button'
+import Input from 'src/components/Input'
+import InputNumber from 'src/components/InputNumber'
+import ProfileCompletion from 'src/components/ProfileCompletion'
+import { UserSchema, baseUserSchema } from 'src/utils/rules'
+import DateSelect from '../../components/DateSelect'
+import { toast } from 'react-toastify'
+import { AppContext } from 'src/contexts/app.context'
+import { setProfileToLS } from 'src/utils/auth'
+import { getAvatarUrl, isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import { ErrorResponseApi } from 'src/types/utils.type'
+import InputFile from 'src/components/InputFile'
+import SEO from 'src/components/SEO'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import AvatarCropModal from 'src/components/AvatarCropModal'
 
 // Khai báo 1 cái component Info
 function Info() {
-  'use no memo';
-  const { t } = useTranslation('user');
+  'use no memo'
+  const { t } = useTranslation('user')
   const {
     register,
     control,
     formState: { errors },
-  } = useFormContext<FormData>();
+  } = useFormContext<FormData>()
   return (
     <Fragment>
       {/* Tên */}
@@ -68,21 +68,21 @@ function Info() {
                   {...field}
                   onChange={(event) => field.onChange(event)}
                 />
-              );
+              )
             }}
           />
         </div>
       </div>
     </Fragment>
-  );
+  )
 }
 
 // Khai báo 1 cái type là FormData để khi mà gửi api thay đổi thông tin
-type FormData = Pick<UserSchema, 'name' | 'address' | 'phone' | 'date_of_birth' | 'avatar'>;
+type FormData = Pick<UserSchema, 'name' | 'address' | 'phone' | 'date_of_birth' | 'avatar'>
 // Type FormError
 type FormDataError = Omit<FormData, 'date_of_birth'> & {
-  date_of_birth: string;
-};
+  date_of_birth: string
+}
 
 const profileSchema = baseUserSchema.pick({
   name: true,
@@ -90,36 +90,36 @@ const profileSchema = baseUserSchema.pick({
   phone: true,
   date_of_birth: true,
   avatar: true,
-});
+})
 // URL.createObjectURL(file)
 
 const Profile = () => {
-  const { t } = useTranslation('user');
-  const { setProfile, profile: profileFromContext } = useContext(AppContext);
-  const [file, setFile] = useState<File>();
-  const [pendingFile, setPendingFile] = useState<File | null>(null);
-  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const { t } = useTranslation('user')
+  const { setProfile, profile: profileFromContext } = useContext(AppContext)
+  const [file, setFile] = useState<File>()
+  const [pendingFile, setPendingFile] = useState<File | null>(null)
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false)
   // file này ban đầu không có giá trị gì hết
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   const previewImage = useMemo(() => {
     // Nếu mà có cái file thì gọi đến
-    return file ? URL.createObjectURL(file) : '';
-  }, [file]);
+    return file ? URL.createObjectURL(file) : ''
+  }, [file])
 
   // Cleanup blob URL when file changes or component unmounts
-  const prevBlobUrl = useRef<string>('');
+  const prevBlobUrl = useRef<string>('')
   useEffect(() => {
     if (prevBlobUrl.current) {
-      URL.revokeObjectURL(prevBlobUrl.current);
+      URL.revokeObjectURL(prevBlobUrl.current)
     }
-    prevBlobUrl.current = previewImage;
+    prevBlobUrl.current = previewImage
     return () => {
       if (prevBlobUrl.current) {
-        URL.revokeObjectURL(prevBlobUrl.current);
+        URL.revokeObjectURL(prevBlobUrl.current)
       }
-    };
-  }, [previewImage]);
+    }
+  }, [previewImage])
 
   // Khai báo useForm
   const methods = useForm<FormData>({
@@ -131,7 +131,7 @@ const Profile = () => {
       avatar: '',
     },
     resolver: zodResolver(profileSchema),
-  });
+  })
   const {
     register,
     handleSubmit,
@@ -140,63 +140,63 @@ const Profile = () => {
     watch,
     setError,
     formState: { errors },
-  } = methods;
+  } = methods
   // theo dõi giá trị của Avatar mỗi lần changed
-  const avatar = watch('avatar'); // dùng watch() theo dõi giá trị của Avatar
-  const reducedMotion = useReducedMotion();
+  const avatar = watch('avatar') // dùng watch() theo dõi giá trị của Avatar
+  const reducedMotion = useReducedMotion()
 
   // useQuery để lấy ra cái getProfile
   const { data: profileData } = useQuery({
     queryKey: ['profile'],
     queryFn: () => userApi.getProfile(),
-  });
-  const profile = profileData?.data.data;
+  })
+  const profile = profileData?.data.data
 
   // Sử dụng useEffect() để đổ dữ liệu vào formProfile
   useEffect(() => {
     // set lại cái value cho thằng form
     if (profile) {
-      setValue('name', profile.name);
-      setValue('address', profile.address);
-      setValue('phone', profile.phone);
-      setValue('avatar', profile.avatar);
+      setValue('name', profile.name)
+      setValue('address', profile.address)
+      setValue('phone', profile.phone)
+      setValue('avatar', profile.avatar)
       setValue(
         'date_of_birth',
         profile.date_of_birth ? new Date(profile.date_of_birth) : new Date(1990, 0, 1),
-      ); // date_of_birth nó sẽ có định dạng string kiểu ISO8601, tại vì ban đầu khi tạo tài khoản thì nó chưa có thuộc tính date_of_birth
+      ) // date_of_birth nó sẽ có định dạng string kiểu ISO8601, tại vì ban đầu khi tạo tài khoản thì nó chưa có thuộc tính date_of_birth
     }
-  }, [profile, setValue]);
+  }, [profile, setValue])
 
   // Khai báo 1 cái mutation update
   const updateProfileMutation = useMutation({
     mutationFn: (body: BodyUpdateProfile) => userApi.updateProfile(body),
-  });
+  })
 
   // uploadAvatar
   const uploadAvatarMutation = useMutation({
     mutationFn: userApi.uploadAvatar,
-  });
+  })
 
   // Func HandleChange File và truyền xuống cho component InputFile
   const handleChangeFile = (file?: File) => {
     if (file) {
-      setPendingFile(file);
-      setIsCropModalOpen(true);
+      setPendingFile(file)
+      setIsCropModalOpen(true)
     }
-  };
+  }
 
   // Handle crop modal close
   const handleCropModalClose = () => {
-    setIsCropModalOpen(false);
-    setPendingFile(null);
-  };
+    setIsCropModalOpen(false)
+    setPendingFile(null)
+  }
 
   // Handle crop confirm
   const handleCropConfirm = (croppedFile: File) => {
-    setFile(croppedFile);
-    setIsCropModalOpen(false);
-    setPendingFile(null);
-  };
+    setFile(croppedFile)
+    setIsCropModalOpen(false)
+    setPendingFile(null)
+  }
 
   // Func Submit xử lý lưu thông tin User
   // Khi mà Submit cái form sẽ nhận được dữ liệu từ Form, Do chung 1 cái handleSubmit
@@ -204,14 +204,14 @@ const Profile = () => {
     // Muốn xử lý những cái sự kiện sau cái update này thì dùng await
     try {
       // Khai báo 1 cái giá trị avatarName để khi mà người dùng có thay đổi avatar
-      let avatarName = avatar;
+      let avatarName = avatar
       if (file) {
         // Nếu như có file thì sẽ gửi lên cái FormData cho nó
-        const formData = new FormData(); // FormData là Api của js
-        formData.append('image', file);
-        const uploadRes = await uploadAvatarMutation.mutateAsync(formData); // Khi nhấn vào lưu thì sẽ nhận về được 1 cái đoạn string
-        avatarName = uploadRes.data.data; // lấy được tên bức ảnh do sv trả về, Sau khi đã chọn được bức ảnh
-        setValue('avatar', avatarName); // Chỉ nên đưa cái name ảnh từ server trả về vào thuộc tính `avatar` của updateProfile
+        const formData = new FormData() // FormData là Api của js
+        formData.append('image', file)
+        const uploadRes = await uploadAvatarMutation.mutateAsync(formData) // Khi nhấn vào lưu thì sẽ nhận về được 1 cái đoạn string
+        avatarName = uploadRes.data.data // lấy được tên bức ảnh do sv trả về, Sau khi đã chọn được bức ảnh
+        setValue('avatar', avatarName) // Chỉ nên đưa cái name ảnh từ server trả về vào thuộc tính `avatar` của updateProfile
       }
       //  Res này khi mà gọi Api thành công thì nó sẽ trả lại Profile có đầy đủ thuộc tính được khai báo Type User
       const res = await updateProfileMutation.mutateAsync(
@@ -219,35 +219,35 @@ const Profile = () => {
         { ...data, date_of_birth: data.date_of_birth?.toISOString(), avatar: avatarName },
         {
           onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['profile'] });
+            queryClient.invalidateQueries({ queryKey: ['profile'] })
           },
         },
-      );
+      )
       if (res) {
         // console.log(res.data.data)
-        setProfile(res.data.data);
-        setProfileToLS(res.data.data);
+        setProfile(res.data.data)
+        setProfileToLS(res.data.data)
         // Reset file state để hiển thị avatar từ server thay vì previewImage
-        setFile(undefined);
-        toast.success(res.data?.message, { autoClose: 1000, position: 'top-center' });
+        setFile(undefined)
+        toast.success(res.data?.message, { autoClose: 1000, position: 'top-center' })
       }
     } catch (error) {
       // Xử lý lỗi từ phía server
       if (isAxiosUnprocessableEntityError<ErrorResponseApi<FormDataError>>(error)) {
         // Lấy lỗi và set vào RHF setError
-        const formError = error.response?.data.data;
+        const formError = error.response?.data.data
         if (formError) {
           Object.keys(formError).forEach((key) => {
             // Ép kiểu cho key luôn
             setError(key as keyof FormDataError, {
               message: formError[key as keyof FormDataError],
               type: 'Server',
-            });
-          });
+            })
+          })
         }
       }
     }
-  });
+  })
 
   return (
     <motion.div
@@ -337,7 +337,7 @@ const Profile = () => {
                     value={field.value}
                     onChange={field.onChange} // khi nhận được cái value từ DateSelect xong rồi thằng field.value nó sẽ lấy ra giá trị mới
                   />
-                );
+                )
               }}
             />
 
@@ -395,7 +395,7 @@ const Profile = () => {
         imageFile={pendingFile}
       />
     </motion.div>
-  );
-};
+  )
+}
 
-export default Profile;
+export default Profile

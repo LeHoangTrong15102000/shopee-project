@@ -18,7 +18,9 @@ describe('Product Emit Utils', () => {
     mockIO = { to: jest.fn().mockReturnValue({ emit: mockEmit }) }
     const { getIORequired } = await import('../../socket/socket.init')
     if (throwError) {
-      ;(getIORequired as jest.Mock).mockImplementation(() => { throw new Error('IO not initialized') })
+      ;(getIORequired as jest.Mock).mockImplementation(() => {
+        throw new Error('IO not initialized')
+      })
     } else {
       ;(getIORequired as jest.Mock).mockReturnValue(mockIO)
     }

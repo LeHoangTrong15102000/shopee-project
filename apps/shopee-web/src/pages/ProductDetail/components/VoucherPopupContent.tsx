@@ -1,20 +1,20 @@
-import { useTranslation } from 'react-i18next';
-import { formatCurrency, formatDiscount } from 'src/utils/utils';
-import useVoucherSave from 'src/hooks/useVoucherSave';
-import Button from 'src/components/Button';
+import { useTranslation } from 'react-i18next'
+import { formatCurrency, formatDiscount } from 'src/utils/utils'
+import useVoucherSave from 'src/hooks/useVoucherSave'
+import Button from 'src/components/Button'
 
-type VoucherSaveData = ReturnType<typeof useVoucherSave>;
+type VoucherSaveData = ReturnType<typeof useVoucherSave>
 
 interface VoucherPopupContentProps {
   /** Pre-fetched voucher data from parent — avoids duplicate hook instance */
-  voucherData?: VoucherSaveData;
+  voucherData?: VoucherSaveData
 }
 
 const VoucherPopupContent = ({ voucherData }: VoucherPopupContentProps) => {
-  const { t } = useTranslation('product');
-  const fallback = useVoucherSave({ enabled: !voucherData });
+  const { t } = useTranslation('product')
+  const fallback = useVoucherSave({ enabled: !voucherData })
   const { vouchers, isLoading, isError, refetch, savedIds, savingIds, handleSave } =
-    voucherData ?? fallback;
+    voucherData ?? fallback
 
   return (
     <div className="w-[min(28rem,calc(100vw-2rem))] rounded-lg border border-gray-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-800">
@@ -67,8 +67,8 @@ const VoucherPopupContent = ({ voucherData }: VoucherPopupContentProps) => {
         {!isLoading && !isError && vouchers.length > 0 && (
           <ul className="divide-y divide-gray-50 dark:divide-slate-700/50" role="list">
             {vouchers.map((voucher) => {
-              const isSaved = savedIds.has(voucher._id);
-              const isSaving = savingIds.has(voucher._id);
+              const isSaved = savedIds.has(voucher._id)
+              const isSaving = savingIds.has(voucher._id)
               return (
                 <li
                   key={voucher._id}
@@ -119,13 +119,13 @@ const VoucherPopupContent = ({ voucherData }: VoucherPopupContentProps) => {
                         : t('voucher.save')}
                   </Button>
                 </li>
-              );
+              )
             })}
           </ul>
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default VoucherPopupContent;
+export default VoucherPopupContent

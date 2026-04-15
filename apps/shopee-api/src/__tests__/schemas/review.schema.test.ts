@@ -55,7 +55,12 @@ describe('createReviewSchema', () => {
 
   it('should fail when images has more than 10 items', () => {
     const result = createReviewSchema.safeParse({
-      body: { purchase_id: VALID_ID, rating: 5, comment: 'Great product!', images: Array(11).fill('url') },
+      body: {
+        purchase_id: VALID_ID,
+        rating: 5,
+        comment: 'Great product!',
+        images: Array(11).fill('url'),
+      },
     })
     expect(result.success).toBe(false)
   })
@@ -154,4 +159,3 @@ describe('canReviewPurchaseSchema', () => {
     expect(result.success).toBe(false)
   })
 })
-

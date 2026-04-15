@@ -1,8 +1,5 @@
 import { Types } from 'mongoose'
-import {
-  ConversationModel,
-  CONVERSATION_STATUS,
-} from '@database/models/conversation.model'
+import { ConversationModel, CONVERSATION_STATUS } from '@database/models/conversation.model'
 import {
   IConversationRepository,
   IConversationItem,
@@ -18,7 +15,7 @@ export class ConversationRepository implements IConversationRepository {
   async findByUser(
     userId: string | Types.ObjectId,
     filters: ConversationFilterOptions,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IConversationListItem>> {
     const { page, limit } = pagination
     const skip = (page - 1) * limit
@@ -51,7 +48,7 @@ export class ConversationRepository implements IConversationRepository {
 
   async findByIdAndUser(
     conversationId: string | Types.ObjectId,
-    userId: string | Types.ObjectId
+    userId: string | Types.ObjectId,
   ): Promise<IConversationItem | null> {
     return ConversationModel.findOne({
       _id: conversationId,
@@ -74,7 +71,7 @@ export class ConversationRepository implements IConversationRepository {
   async addMessages(
     conversationId: string | Types.ObjectId,
     userId: string | Types.ObjectId,
-    messages: IMessageItem[]
+    messages: IMessageItem[],
   ): Promise<IConversationItem | null> {
     const conversation = await ConversationModel.findOne({
       _id: conversationId,
@@ -91,7 +88,7 @@ export class ConversationRepository implements IConversationRepository {
   async update(
     conversationId: string | Types.ObjectId,
     userId: string | Types.ObjectId,
-    data: UpdateConversationDTO
+    data: UpdateConversationDTO,
   ): Promise<IConversationItem | null> {
     const conversation = await ConversationModel.findOne({
       _id: conversationId,
@@ -108,7 +105,7 @@ export class ConversationRepository implements IConversationRepository {
 
   async delete(
     conversationId: string | Types.ObjectId,
-    userId: string | Types.ObjectId
+    userId: string | Types.ObjectId,
   ): Promise<boolean> {
     const result = await ConversationModel.deleteOne({
       _id: conversationId,
@@ -117,4 +114,3 @@ export class ConversationRepository implements IConversationRepository {
     return result.deletedCount > 0
   }
 }
-

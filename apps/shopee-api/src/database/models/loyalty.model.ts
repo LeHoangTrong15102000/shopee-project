@@ -16,7 +16,8 @@ export const POINTS_TRANSACTION_TYPE = {
   BONUS: 'bonus',
 } as const
 
-export type PointsTransactionType = (typeof POINTS_TRANSACTION_TYPE)[keyof typeof POINTS_TRANSACTION_TYPE]
+export type PointsTransactionType =
+  (typeof POINTS_TRANSACTION_TYPE)[keyof typeof POINTS_TRANSACTION_TYPE]
 
 export const REWARD_TYPE = {
   VOUCHER: 'voucher',
@@ -98,7 +99,7 @@ const LoyaltyPointsSchema = new Schema<ILoyaltyPoints>(
       createdAt: 'created_at',
       updatedAt: 'updated_at',
     },
-  }
+  },
 )
 
 const PointsTransactionSchema = new Schema<IPointsTransaction>(
@@ -138,7 +139,7 @@ const PointsTransactionSchema = new Schema<IPointsTransaction>(
       createdAt: 'created_at',
       updatedAt: false,
     },
-  }
+  },
 )
 
 PointsTransactionSchema.index({ user: 1, created_at: -1 })
@@ -192,10 +193,15 @@ const PointsRewardSchema = new Schema<IPointsReward>(
       createdAt: 'created_at',
       updatedAt: 'updated_at',
     },
-  }
+  },
 )
 
-export const LoyaltyPointsModel = mongoose.model<ILoyaltyPoints>('loyalty_points', LoyaltyPointsSchema)
-export const PointsTransactionModel = mongoose.model<IPointsTransaction>('points_transactions', PointsTransactionSchema)
+export const LoyaltyPointsModel = mongoose.model<ILoyaltyPoints>(
+  'loyalty_points',
+  LoyaltyPointsSchema,
+)
+export const PointsTransactionModel = mongoose.model<IPointsTransaction>(
+  'points_transactions',
+  PointsTransactionSchema,
+)
 export const PointsRewardModel = mongoose.model<IPointsReward>('points_rewards', PointsRewardSchema)
-

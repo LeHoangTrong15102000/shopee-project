@@ -1,26 +1,26 @@
-import React from 'react';
-import { View } from 'react-native';
-import { Star } from 'lucide-react-native';
-import { AppText } from '@/components/ui';
-import { useColors } from '@/hooks/useColors';
-import { useTranslation } from 'react-i18next';
-import { formatPrice, getDiscountPercent } from '@/utils/price';
-import type { ProductDetail } from '@/apis/product-detail.api';
+import React from 'react'
+import { View } from 'react-native'
+import { Star } from 'lucide-react-native'
+import { AppText } from '@/components/ui'
+import { useColors } from '@/hooks/useColors'
+import { useTranslation } from 'react-i18next'
+import { formatPrice, getDiscountPercent } from '@/utils/price'
+import type { ProductDetail } from '@/apis/product-detail.api'
 
 interface ProductInfoProps {
-  product: ProductDetail;
+  product: ProductDetail
 }
 
 export default function ProductInfo({ product }: ProductInfoProps) {
-  const colors = useColors();
-  const { t } = useTranslation();
-  const discount = getDiscountPercent(product.price, product.price_before_discount);
-  const hasDiscount = discount > 0;
+  const colors = useColors()
+  const { t } = useTranslation()
+  const discount = getDiscountPercent(product.price, product.price_before_discount)
+  const hasDiscount = discount > 0
 
   const soldText =
     product.sold > 1000
       ? t('PD_SOLD_K', { count: (product.sold / 1000).toFixed(1) })
-      : t('PD_SOLD', { count: product.sold });
+      : t('PD_SOLD', { count: product.sold })
 
   return (
     <View className="gap-2 px-4 py-3">
@@ -68,5 +68,5 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         </AppText>
       </View>
     </View>
-  );
+  )
 }

@@ -1,7 +1,7 @@
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next'
 
 const ProductBadges = () => {
-  const { t } = useTranslation('product');
+  const { t } = useTranslation('product')
 
   return (
     <div className="mb-2 flex items-center gap-2">
@@ -12,7 +12,7 @@ const ProductBadges = () => {
         {t('badges.favorite')}
       </span>
     </div>
-  );
-};
+  )
+}
 
-export default ProductBadges;
+export default ProductBadges

@@ -418,4 +418,3 @@ export interface AdminNewOrderPayload {
   total_amount: number
   created_at: string
 }
-

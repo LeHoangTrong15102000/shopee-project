@@ -28,4 +28,3 @@ export const adminTopRatedSchema = z.object({
 export const adminProductByCategorySchema = z.object({
   query: z.object({}).optional(),
 })
-

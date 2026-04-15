@@ -6,7 +6,10 @@ import {
 } from '@repositories/interfaces/purchase.repository.interface'
 import { IProductRepository } from '@repositories/interfaces/product.repository.interface'
 import { ISKURepository } from '@repositories/interfaces/sku.repository.interface'
-import { PaginatedResult, PaginationOptions } from '@repositories/interfaces/base.repository.interface'
+import {
+  PaginatedResult,
+  PaginationOptions,
+} from '@repositories/interfaces/base.repository.interface'
 import { BaseService, NotFoundError, ValidationError } from './base.service'
 import { STATUS_PURCHASE } from '@constants/purchase'
 
@@ -26,7 +29,7 @@ export class PurchaseService extends BaseService {
   constructor(
     private readonly purchaseRepository: IPurchaseRepository,
     private readonly productRepository: IProductRepository,
-    private readonly skuRepository?: ISKURepository
+    private readonly skuRepository?: ISKURepository,
   ) {
     super()
   }
@@ -49,7 +52,7 @@ export class PurchaseService extends BaseService {
         data.buy_count,
         sku.price,
         product.price_before_discount,
-        data.sku_id
+        data.sku_id,
       )
     } else {
       if (data.buy_count > product.quantity) {
@@ -62,11 +65,16 @@ export class PurchaseService extends BaseService {
       data.product_id,
       data.buy_count,
       product.price,
-      product.price_before_discount
+      product.price_before_discount,
     )
   }
 
-  async updateCartItem(userId: string, productId: string, buyCount: number, skuId?: string): Promise<IPurchase> {
+  async updateCartItem(
+    userId: string,
+    productId: string,
+    buyCount: number,
+    skuId?: string,
+  ): Promise<IPurchase> {
     const cartItem = await this.purchaseRepository.findCartItem(userId, productId)
     if (!cartItem) {
       throw new NotFoundError('Cart item')
@@ -90,7 +98,12 @@ export class PurchaseService extends BaseService {
       }
     }
 
-    const updated = await this.purchaseRepository.updateCartItem(cartItem._id!.toString(), buyCount, skuId, skuPrice)
+    const updated = await this.purchaseRepository.updateCartItem(
+      cartItem._id!.toString(),
+      buyCount,
+      skuId,
+      skuPrice,
+    )
     if (!updated) {
       throw new NotFoundError('Cart item')
     }
@@ -114,7 +127,11 @@ export class PurchaseService extends BaseService {
     let deletedCount = 0
     for (const purchaseId of purchaseIds) {
       const purchase = await this.purchaseRepository.findById(purchaseId)
-      if (purchase && purchase.user?.toString() === userId && purchase.status === STATUS_PURCHASE.IN_CART) {
+      if (
+        purchase &&
+        purchase.user?.toString() === userId &&
+        purchase.status === STATUS_PURCHASE.IN_CART
+      ) {
         const removed = await this.purchaseRepository.removeFromCart(purchaseId)
         if (removed) deletedCount++
       }
@@ -187,7 +204,7 @@ export class PurchaseService extends BaseService {
 
   async getPurchasesByStatus(
     status: PurchaseStatus,
-    pagination: PaginationOptions
+    pagination: PaginationOptions,
   ): Promise<PaginatedResult<IPurchase>> {
     return this.purchaseRepository.findByStatus(status, this.normalizePagination(pagination))
   }
@@ -208,4 +225,3 @@ export class PurchaseService extends BaseService {
     return this.purchaseRepository.getUserStats(userId)
   }
 }
-

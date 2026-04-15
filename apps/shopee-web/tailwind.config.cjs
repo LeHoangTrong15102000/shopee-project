@@ -30,10 +30,10 @@ module.exports = {
     // HeroUI theme content path — required for Tailwind to generate HeroUI component classes.
     // With Tailwind v4 + @tailwindcss/vite, content detection is automatic from the module graph,
     // but this explicit path ensures all HeroUI theme classes are available.
-    './node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}'
+    './node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}',
   ],
   corePlugins: {
-    container: false // xóa cái container ra khỏi tailwind
+    container: false, // xóa cái container ra khỏi tailwind
   },
   theme: {
     extend: {
@@ -50,7 +50,7 @@ module.exports = {
           700: '#D73211',
           800: '#B02A0E',
           900: '#8A210B',
-          950: '#431407'
+          950: '#431407',
         },
         white: '#ffffff',
         // Dark mode colors
@@ -63,107 +63,107 @@ module.exports = {
           bg: 'rgb(var(--color-input-bg))',
           border: 'rgb(var(--color-input-border))',
           text: 'rgb(var(--color-input-text))',
-          placeholder: 'rgb(var(--color-input-placeholder))'
+          placeholder: 'rgb(var(--color-input-placeholder))',
         },
         modal: {
           bg: 'rgb(var(--color-modal-bg))',
           overlay: 'rgb(var(--color-modal-overlay))',
-          border: 'rgb(var(--color-modal-border))'
+          border: 'rgb(var(--color-modal-border))',
         },
         card: {
           bg: 'rgb(var(--color-card-bg))',
           border: 'rgb(var(--color-card-border))',
-          hover: 'rgb(var(--color-card-hover))'
+          hover: 'rgb(var(--color-card-hover))',
         },
         tooltip: {
           bg: 'rgb(var(--color-tooltip-bg))',
-          text: 'rgb(var(--color-tooltip-text))'
+          text: 'rgb(var(--color-tooltip-text))',
         },
         badge: {
           bg: 'rgb(var(--color-badge-bg))',
-          text: 'rgb(var(--color-badge-text))'
-        }
+          text: 'rgb(var(--color-badge-text))',
+        },
       },
 
       keyframes: {
         loader: {
           to: {
             opacity: 0.1,
-            transform: 'translate3d(0, -1rem, 0)'
-          }
+            transform: 'translate3d(0, -1rem, 0)',
+          },
         },
         'slide-top': {
           '0%': {
             '-webkit-transform': 'translateY(20px)s',
-            transform: 'translateY(20px)'
+            transform: 'translateY(20px)',
           },
           '100%': {
             ' -webkit-transform': 'translateY(0px)',
-            transform: 'translateY(0px)'
-          }
+            transform: 'translateY(0px)',
+          },
         },
         'slide-top-sm': {
           '0%': {
             '-webkit-transform': 'translateY(6px)s',
-            transform: 'translateY(6px)'
+            transform: 'translateY(6px)',
           },
           '100%': {
             ' -webkit-transform': 'translateY(0px)',
-            transform: 'translateY(0px)'
-          }
+            transform: 'translateY(0px)',
+          },
         },
 
         'slide-right': {
           '0%': {
             '-webkit-transform': 'translateX(-1000px)',
-            transform: 'translateX(-1000px)'
+            transform: 'translateX(-1000px)',
           },
           '100%': {
             '-webkit-transform': 'translateX(0px)',
-            transform: 'translateX(0px)'
-          }
+            transform: 'translateX(0px)',
+          },
         },
         'bell-shake': {
           '0%, 50%, 100%': {
-            transform: 'rotate(0deg)'
+            transform: 'rotate(0deg)',
           },
           '10%, 30%': {
-            transform: 'rotate(-10deg)'
+            transform: 'rotate(-10deg)',
           },
           '20%, 40%': {
-            transform: 'rotate(10deg)'
-          }
+            transform: 'rotate(10deg)',
+          },
         },
         'fade-in': {
           '0%': {
             opacity: '0',
-            transform: 'translateY(-10px)'
+            transform: 'translateY(-10px)',
           },
           '100%': {
             opacity: '1',
-            transform: 'translateY(0)'
-          }
+            transform: 'translateY(0)',
+          },
         },
         'fade-in-up': {
           '0%': {
             opacity: '0',
-            transform: 'translateY(10px)'
+            transform: 'translateY(10px)',
           },
           '100%': {
             opacity: '1',
-            transform: 'translateY(0)'
-          }
+            transform: 'translateY(0)',
+          },
         },
         'scale-in': {
           '0%': {
             opacity: '0',
-            transform: 'scale(0.95)'
+            transform: 'scale(0.95)',
           },
           '100%': {
             opacity: '1',
-            transform: 'scale(1)'
-          }
-        }
+            transform: 'scale(1)',
+          },
+        },
       },
       animation: {
         loader: 'loader 0.6s infinite alternate',
@@ -173,9 +173,9 @@ module.exports = {
         'bell-shake': 'bell-shake 1s ease-in-out infinite',
         'fade-in': 'fade-in 0.3s ease-out forwards',
         'fade-in-up': 'fade-in-up 0.3s ease-out forwards',
-        'scale-in': 'scale-in 0.2s ease-out forwards'
-      }
-    }
+        'scale-in': 'scale-in 0.2s ease-out forwards',
+      },
+    },
   },
   plugins: [
     // tạo ra 1 cái container mới
@@ -186,8 +186,8 @@ module.exports = {
           marginLeft: 'auto',
           marginRight: 'auto',
           paddingLeft: theme('spacing.4'),
-          paddingRight: theme('spacing.4')
-        }
+          paddingRight: theme('spacing.4'),
+        },
       })
     }),
     // Utility class để ẩn scrollbar
@@ -197,9 +197,9 @@ module.exports = {
           '-ms-overflow-style': 'none',
           'scrollbar-width': 'none',
           '&::-webkit-scrollbar': {
-            display: 'none'
-          }
-        }
+            display: 'none',
+          },
+        },
       })
     }),
     // @tailwindcss/line-clamp đã được tích hợp mặc định từ Tailwind CSS v3.3+
@@ -208,19 +208,19 @@ module.exports = {
         light: {
           colors: {
             background: '#f5f5f5',
-            foreground: '#11181C'
-          }
+            foreground: '#11181C',
+          },
         },
         dark: {
           colors: {
             background: '#0f172a',
-            foreground: '#ECEDEE'
-          }
-        }
-      }
-    })
+            foreground: '#ECEDEE',
+          },
+        },
+      },
+    }),
   ],
   variants: {
-    extends: {}
-  }
+    extends: {},
+  },
 }

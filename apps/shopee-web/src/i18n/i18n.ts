@@ -1,29 +1,29 @@
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import COMMON_VI from 'src/locales/vi/common.json';
-import HOME_VI from 'src/locales/vi/home.json';
-import PRODUCT_VI from 'src/locales/vi/product.json';
-import NAV_VI from 'src/locales/vi/nav.json';
-import AUTH_VI from 'src/locales/vi/auth.json';
-import CART_VI from 'src/locales/vi/cart.json';
-import USER_VI from 'src/locales/vi/user.json';
-import PAYMENT_VI from 'src/locales/vi/payment.json';
-import NOTIFICATION_VI from 'src/locales/vi/notification.json';
-import CHAT_VI from 'src/locales/vi/chat.json';
-import ORDER_VI from 'src/locales/vi/order.json';
-import CHECKOUT_VI from 'src/locales/vi/checkout.json';
-import ADDRESS_VI from 'src/locales/vi/address.json';
-import QA_VI from 'src/locales/vi/qa.json';
-import SHIPPING_VI from 'src/locales/vi/shipping.json';
-import CHECKIN_VI from 'src/locales/vi/checkin.json';
-import WISHLIST_VI from 'src/locales/vi/wishlist.json';
-import COMPARE_VI from 'src/locales/vi/compare.json';
-import VALIDATION_VI from 'src/locales/vi/validation.json';
+import i18n from 'i18next'
+import { initReactI18next } from 'react-i18next'
+import COMMON_VI from 'src/locales/vi/common.json'
+import HOME_VI from 'src/locales/vi/home.json'
+import PRODUCT_VI from 'src/locales/vi/product.json'
+import NAV_VI from 'src/locales/vi/nav.json'
+import AUTH_VI from 'src/locales/vi/auth.json'
+import CART_VI from 'src/locales/vi/cart.json'
+import USER_VI from 'src/locales/vi/user.json'
+import PAYMENT_VI from 'src/locales/vi/payment.json'
+import NOTIFICATION_VI from 'src/locales/vi/notification.json'
+import CHAT_VI from 'src/locales/vi/chat.json'
+import ORDER_VI from 'src/locales/vi/order.json'
+import CHECKOUT_VI from 'src/locales/vi/checkout.json'
+import ADDRESS_VI from 'src/locales/vi/address.json'
+import QA_VI from 'src/locales/vi/qa.json'
+import SHIPPING_VI from 'src/locales/vi/shipping.json'
+import CHECKIN_VI from 'src/locales/vi/checkin.json'
+import WISHLIST_VI from 'src/locales/vi/wishlist.json'
+import COMPARE_VI from 'src/locales/vi/compare.json'
+import VALIDATION_VI from 'src/locales/vi/validation.json'
 
 export const locales = {
   en: 'English',
   vi: 'Tiếng Việt',
-} as const;
+} as const
 
 export const resources = {
   vi: {
@@ -47,9 +47,9 @@ export const resources = {
     compare: COMPARE_VI,
     validation: VALIDATION_VI,
   },
-} as const;
+} as const
 
-export const defaultNS = 'home';
+export const defaultNS = 'home'
 
 const allNamespaces = [
   'common',
@@ -71,13 +71,13 @@ const allNamespaces = [
   'wishlist',
   'compare',
   'validation',
-] as const;
+] as const
 
 // Khởi tạo i18n chỉ khi không phải test environment
 // Sử dụng import.meta.env của Vite thay vì process.env
 const isTestEnvironment =
   import.meta.env.MODE === 'test' ||
-  (typeof window !== 'undefined' && window.location.href.includes('vitest'));
+  (typeof window !== 'undefined' && window.location.href.includes('vitest'))
 
 /**
  * Read persisted language from localStorage, validate against known locales.
@@ -85,18 +85,18 @@ const isTestEnvironment =
  */
 function getStoredLanguage(): string {
   try {
-    const stored = localStorage.getItem('lng');
+    const stored = localStorage.getItem('lng')
     if (stored && stored in locales) {
-      return stored;
+      return stored
     }
   } catch {
     // localStorage unavailable (incognito / security policy)
   }
-  return 'vi';
+  return 'vi'
 }
 
 if (!isTestEnvironment) {
-  const storedLng = getStoredLanguage();
+  const storedLng = getStoredLanguage()
 
   // Always init synchronously with VI resources so React can render immediately.
   // If stored language is non-default, EN bundles load in background then switch.
@@ -107,8 +107,8 @@ if (!isTestEnvironment) {
     fallbackLng: 'vi',
     defaultNS,
     interpolation: { escapeValue: false },
-  });
-  document.documentElement.lang = storedLng;
+  })
+  document.documentElement.lang = storedLng
 
   if (storedLng !== 'vi') {
     // Load EN bundles in background, then switch language
@@ -175,16 +175,16 @@ if (!isTestEnvironment) {
             wishlist: wishlistModule.default,
             compare: compareModule.default,
             validation: validationModule.default,
-          };
+          }
           Object.entries(enResources).forEach(([ns, bundle]) => {
-            i18n.addResourceBundle('en', ns, bundle, true, true);
-          });
-          i18n.changeLanguage(storedLng);
+            i18n.addResourceBundle('en', ns, bundle, true, true)
+          })
+          i18n.changeLanguage(storedLng)
         },
       )
       .catch((err) => {
-        console.error('Failed to load EN translations:', err);
-      });
+        console.error('Failed to load EN translations:', err)
+      })
   }
 }
 
@@ -196,27 +196,27 @@ if (!isTestEnvironment) {
 export async function loadLanguage(lng: string): Promise<void> {
   if (lng === 'vi') {
     // Vietnamese is already loaded statically
-    await i18n.changeLanguage('vi');
-    document.documentElement.lang = lng;
+    await i18n.changeLanguage('vi')
+    document.documentElement.lang = lng
     try {
-      localStorage.setItem('lng', lng);
+      localStorage.setItem('lng', lng)
     } catch {
       /* incognito */
     }
-    return;
+    return
   }
 
   // Check if all resources are already loaded (cached by i18n)
-  const allLoaded = allNamespaces.every((ns) => i18n.hasResourceBundle(lng, ns));
+  const allLoaded = allNamespaces.every((ns) => i18n.hasResourceBundle(lng, ns))
   if (allLoaded) {
-    await i18n.changeLanguage(lng);
-    document.documentElement.lang = lng;
+    await i18n.changeLanguage(lng)
+    document.documentElement.lang = lng
     try {
-      localStorage.setItem('lng', lng);
+      localStorage.setItem('lng', lng)
     } catch {
       /* incognito */
     }
-    return;
+    return
   }
 
   // Dynamically import English translations
@@ -260,34 +260,34 @@ export async function loadLanguage(lng: string): Promise<void> {
     import('src/locales/en/wishlist.json'),
     import('src/locales/en/compare.json'),
     import('src/locales/en/validation.json'),
-  ]);
+  ])
 
-  i18n.addResourceBundle(lng, 'common', commonModule.default, true, true);
-  i18n.addResourceBundle(lng, 'home', homeModule.default, true, true);
-  i18n.addResourceBundle(lng, 'product', productModule.default, true, true);
-  i18n.addResourceBundle(lng, 'nav', navModule.default, true, true);
-  i18n.addResourceBundle(lng, 'auth', authModule.default, true, true);
-  i18n.addResourceBundle(lng, 'cart', cartModule.default, true, true);
-  i18n.addResourceBundle(lng, 'user', userModule.default, true, true);
-  i18n.addResourceBundle(lng, 'payment', paymentModule.default, true, true);
-  i18n.addResourceBundle(lng, 'notification', notificationModule.default, true, true);
-  i18n.addResourceBundle(lng, 'chat', chatModule.default, true, true);
-  i18n.addResourceBundle(lng, 'order', orderModule.default, true, true);
-  i18n.addResourceBundle(lng, 'checkout', checkoutModule.default, true, true);
-  i18n.addResourceBundle(lng, 'address', addressModule.default, true, true);
-  i18n.addResourceBundle(lng, 'qa', qaModule.default, true, true);
-  i18n.addResourceBundle(lng, 'shipping', shippingModule.default, true, true);
-  i18n.addResourceBundle(lng, 'checkin', checkinModule.default, true, true);
-  i18n.addResourceBundle(lng, 'wishlist', wishlistModule.default, true, true);
-  i18n.addResourceBundle(lng, 'compare', compareModule.default, true, true);
-  i18n.addResourceBundle(lng, 'validation', validationModule.default, true, true);
-  await i18n.changeLanguage(lng);
-  document.documentElement.lang = lng;
+  i18n.addResourceBundle(lng, 'common', commonModule.default, true, true)
+  i18n.addResourceBundle(lng, 'home', homeModule.default, true, true)
+  i18n.addResourceBundle(lng, 'product', productModule.default, true, true)
+  i18n.addResourceBundle(lng, 'nav', navModule.default, true, true)
+  i18n.addResourceBundle(lng, 'auth', authModule.default, true, true)
+  i18n.addResourceBundle(lng, 'cart', cartModule.default, true, true)
+  i18n.addResourceBundle(lng, 'user', userModule.default, true, true)
+  i18n.addResourceBundle(lng, 'payment', paymentModule.default, true, true)
+  i18n.addResourceBundle(lng, 'notification', notificationModule.default, true, true)
+  i18n.addResourceBundle(lng, 'chat', chatModule.default, true, true)
+  i18n.addResourceBundle(lng, 'order', orderModule.default, true, true)
+  i18n.addResourceBundle(lng, 'checkout', checkoutModule.default, true, true)
+  i18n.addResourceBundle(lng, 'address', addressModule.default, true, true)
+  i18n.addResourceBundle(lng, 'qa', qaModule.default, true, true)
+  i18n.addResourceBundle(lng, 'shipping', shippingModule.default, true, true)
+  i18n.addResourceBundle(lng, 'checkin', checkinModule.default, true, true)
+  i18n.addResourceBundle(lng, 'wishlist', wishlistModule.default, true, true)
+  i18n.addResourceBundle(lng, 'compare', compareModule.default, true, true)
+  i18n.addResourceBundle(lng, 'validation', validationModule.default, true, true)
+  await i18n.changeLanguage(lng)
+  document.documentElement.lang = lng
   try {
-    localStorage.setItem('lng', lng);
+    localStorage.setItem('lng', lng)
   } catch {
     /* incognito */
   }
 }
 
-export default i18n;
+export default i18n

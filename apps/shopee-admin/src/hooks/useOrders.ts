@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import i18n from 'src/i18n/i18n'
 import ordersApi from 'src/apis/orders.api'
@@ -18,6 +18,7 @@ export function useOrders(page: number, status: OrderStatus | 'all') {
       ordersApi
         .getOrders({ page: page + 1, limit: 10, ...(status !== 'all' && { status }) })
         .then((r) => r.data.data),
+    placeholderData: keepPreviousData,
   })
 }
 

@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import i18n from 'src/i18n/i18n'
 import productsApi from 'src/apis/products.api'
@@ -16,6 +16,7 @@ export function useProducts(page: number, filters?: { category?: string; name?: 
     queryKey: PRODUCT_KEYS.list(page, filters),
     queryFn: () =>
       productsApi.getProducts({ page: page + 1, limit: 10, ...filters }).then((r) => r.data.data),
+    placeholderData: keepPreviousData,
   })
 }
 

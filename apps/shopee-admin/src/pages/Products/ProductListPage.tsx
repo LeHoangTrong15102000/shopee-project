@@ -86,6 +86,10 @@ export default function ProductListPage() {
           src={row.original.image}
           alt={row.original.name}
           className="size-10 rounded object-cover"
+          loading="lazy"
+          decoding="async"
+          width={40}
+          height={40}
         />
       ),
       enableSorting: false,

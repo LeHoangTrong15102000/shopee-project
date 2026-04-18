@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   type ColumnDef,
@@ -77,7 +77,15 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [globalFilter, setGlobalFilter] = useState('')
+  const [searchValue, setSearchValue] = useState('')
   const { t } = useTranslation('common')
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setGlobalFilter(searchValue)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchValue])
 
   const table = useReactTable({
     data,
@@ -137,13 +145,16 @@ export function DataTable<TData, TValue>({
           <div className="relative max-w-sm flex-1">
             <Input
               placeholder={searchPlaceholder ?? t('search.placeholder')}
-              value={globalFilter}
-              onChange={(e) => setGlobalFilter(e.target.value)}
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
               className="pr-8"
             />
-            {globalFilter && (
+            {searchValue && (
               <button
-                onClick={() => setGlobalFilter('')}
+                onClick={() => {
+                  setSearchValue('')
+                  setGlobalFilter('')
+                }}
                 aria-label={t('search.clearSearch')}
                 className="absolute right-2 top-1/2 -translate-y-1/2 p-3 text-muted-foreground hover:text-foreground"
               >

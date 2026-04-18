@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import i18n from 'src/i18n/i18n'
 import notificationsApi from 'src/apis/notifications.api'
@@ -28,6 +28,7 @@ export function useNotifications(page: number) {
     queryKey: NOTIFICATION_KEYS.list(page),
     queryFn: () =>
       notificationsApi.getNotifications({ page: page + 1, limit: 10 }).then((r) => r.data.data),
+    placeholderData: keepPreviousData,
   })
 }
 

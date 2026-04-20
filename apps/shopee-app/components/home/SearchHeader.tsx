@@ -12,19 +12,14 @@ export default function SearchHeader() {
   return (
     <View className="pt-safe-offset-3 flex-row items-center gap-3 bg-primary px-4 pb-3">
       <Pressable
-        onPress={() => {
-          // Navigate to search screen (placeholder)
-        }}
+        onPress={() => router.push('/search')}
         className="flex-1 flex-row items-center gap-2 rounded-sm bg-white px-3 py-2">
         <Search size={18} color="#999" />
         <AppText raw variant="bodySmall" style={{ color: '#999' }}>
           {t('SEARCH_PLACEHOLDER')}
         </AppText>
       </Pressable>
-      <Pressable
-        onPress={() => {
-          // Navigate to cart (placeholder)
-        }}>
+      <Pressable onPress={() => router.push('/(tabs)/cart')}>
         <ShoppingCart size={24} color="#FFFFFF" />
       </Pressable>
     </View>

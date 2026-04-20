@@ -76,6 +76,18 @@ function AppContent() {
                 <Stack.Screen name="(auth)" options={{ headerShown: false }} />
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen name="product/[id]" options={{ headerShown: false }} />
+                <Stack.Screen name="search" options={{ headerShown: false }} />
+                <Stack.Screen name="checkout" options={{ headerShown: false }} />
+                <Stack.Screen name="order-success" options={{ headerShown: false }} />
+                <Stack.Screen name="orders" options={{ headerShown: false }} />
+                <Stack.Screen name="order/[id]" options={{ headerShown: false }} />
+                <Stack.Screen name="addresses" options={{ headerShown: false }} />
+                <Stack.Screen name="address-form" options={{ headerShown: false }} />
+                <Stack.Screen name="wishlist" options={{ headerShown: false }} />
+                <Stack.Screen name="profile-edit" options={{ headerShown: false }} />
+                <Stack.Screen name="change-password" options={{ headerShown: false }} />
+                <Stack.Screen name="vouchers" options={{ headerShown: false }} />
+                <Stack.Screen name="checkin" options={{ headerShown: false }} />
               </Stack>
             </ThemeProvider>
             <StatusBar style="auto" />

@@ -16,10 +16,10 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="mall"
+        name="cart"
         options={{
-          title: 'Mall',
-          tabBarLabel: 'TAB_MALL',
+          title: 'Cart',
+          tabBarLabel: 'TAB_CART',
         }}
       />
       <Tabs.Screen
@@ -41,6 +41,13 @@ export default function TabsLayout() {
         options={{
           title: 'Account',
           tabBarLabel: 'TAB_ACCOUNT',
+        }}
+      />
+      {/* Mall is not a primary tab — accessible via MallScreen content */}
+      <Tabs.Screen
+        name="mall"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

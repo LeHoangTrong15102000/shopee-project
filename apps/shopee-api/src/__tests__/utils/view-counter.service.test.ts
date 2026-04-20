@@ -186,4 +186,54 @@ describe('ViewCounterService', () => {
       expect(viewCounterService.getBufferSize()).toBe(0)
     })
   })
+
+  describe('error handling in async flush paths', () => {
+    it('should log error silently when threshold flush fails', async () => {
+      const { Logger } = require('@utils/logger')
+      const flushError = new Error('threshold-flush-error')
+
+      // Flush any existing buffer so it starts empty
+      await viewCounterService.flushViews()
+      mockBulkWrite.mockClear()
+
+      // Next bulkWrite call will reject (consumed by threshold flush)
+      mockBulkWrite.mockRejectedValueOnce(flushError)
+
+      // Add 100 unique products to trigger the threshold auto-flush
+      for (let i = 0; i < 100; i++) {
+        viewCounterService.incrementView(`err-threshold-product-${i}`)
+      }
+
+      // Allow the microtask queue to drain so .catch() runs
+      await Promise.resolve()
+      await Promise.resolve()
+
+      // Logger.apiError should have been called from the .catch() at line 29
+      expect(Logger.apiError).toHaveBeenCalled()
+
+      // Clean up remaining buffer (restored by error handling in flushViews)
+      await viewCounterService.flushViews()
+    })
+
+    it('should log error silently when periodic flush fails', async () => {
+      const { Logger } = require('@utils/logger')
+
+      // Ensure buffer has something for the timer to flush
+      viewCounterService.incrementView('periodic-err-product')
+      // Next bulkWrite will reject
+      mockBulkWrite.mockRejectedValueOnce(new Error('periodic-flush-error'))
+
+      // Advance timers to trigger the 30-second setInterval
+      jest.advanceTimersByTime(30 * 1000)
+
+      // Allow .catch() handler to run
+      await Promise.resolve()
+      await Promise.resolve()
+
+      expect(Logger.apiError).toHaveBeenCalled()
+
+      // Clean up
+      await viewCounterService.flushViews()
+    })
+  })
 })

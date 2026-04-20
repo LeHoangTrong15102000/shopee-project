@@ -153,4 +153,31 @@ describe('HealthController', () => {
       )
     })
   })
+
+  describe('metricsCheck', () => {
+    it('should return metrics with database health and pool stats', async () => {
+      const mockDbHealth = {
+        status: 'healthy',
+        connected: true,
+        readyState: 1,
+        readyStateText: 'connected',
+        latencyMs: 5,
+      }
+      const mockPoolStats = { poolSize: 10, readyState: 1, host: 'cluster0.example.net' }
+
+      mockCheckDatabaseHealth.mockResolvedValue(mockDbHealth)
+      mockGetConnectionPoolStats.mockReturnValue(mockPoolStats)
+
+      const req = createMockRequest() as Request
+      const res = createMockResponse() as Response
+      // responseSuccess uses res.status().send(), so add send mock
+      ;(res.status as jest.Mock).mockReturnValue({ send: jest.fn().mockReturnValue(res) })
+
+      await metricsCheck(req, res)
+
+      expect(mockCheckDatabaseHealth).toHaveBeenCalled()
+      expect(mockGetConnectionPoolStats).toHaveBeenCalled()
+      expect(res.status).toHaveBeenCalledWith(200)
+    })
+  })
 })

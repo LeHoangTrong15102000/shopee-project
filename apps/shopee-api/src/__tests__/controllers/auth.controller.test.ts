@@ -364,5 +364,74 @@ describe('Auth Controller', () => {
         status: STATUS.UNAUTHORIZED,
       })
     })
+
+    it('should rethrow generic errors from refreshToken', async () => {
+      mockAuthService.refreshToken.mockRejectedValue(new Error('DB error'))
+
+      const req = createMockRequest({
+        jwtDecoded: {
+          id: 'user_id_123',
+          email: 'test@example.com',
+          roles: ['User'],
+          created_at: new Date().toISOString(),
+        },
+      })
+      const res = createMockResponse()
+
+      await expect(
+        authController.refreshTokenController(req as Request, res as Response),
+      ).rejects.toThrow('DB error')
+    })
+  })
+
+  describe('registerController generic error rethrow', () => {
+    it('should rethrow non-ConflictError errors from register', async () => {
+      mockAuthService.register.mockRejectedValue(new Error('Unexpected failure'))
+      const req = createMockRequest({ body: { email: 'test@example.com', password: 'pass123' } })
+      const res = createMockResponse()
+
+      await expect(
+        authController.registerController(req as Request, res as Response),
+      ).rejects.toThrow('Unexpected failure')
+    })
+  })
+
+  describe('loginController generic error rethrow', () => {
+    it('should rethrow non-invalid-credentials errors from login', async () => {
+      mockAuthService.login.mockRejectedValue(new Error('DB connection error'))
+      const req = createMockRequest({
+        body: { email: 'test@example.com', password: 'pass123' },
+        ip: '127.0.0.1',
+      })
+      const res = createMockResponse()
+
+      await expect(
+        authController.loginController(req as Request, res as Response),
+      ).rejects.toThrow('DB connection error')
+    })
+  })
+
+  describe('getClientIP x-forwarded-for header branch', () => {
+    it('should extract first IP from x-forwarded-for header', async () => {
+      // The login path calls getClientIP internally
+      mockAuthService.login.mockResolvedValue({
+        access_token: 'tok',
+        refresh_token: 'ref',
+        expires: 900,
+        expires_refresh_token: 604800,
+        user: { _id: 'uid', email: 'test@example.com', roles: ['User'] } as any,
+      } as any)
+
+      const req = createMockRequest({
+        body: { email: 'test@example.com', password: 'pass123' },
+        headers: { 'x-forwarded-for': '10.0.0.1, 192.168.0.1' },
+      })
+      const res = createMockResponse()
+
+      await authController.loginController(req as Request, res as Response)
+
+      // Verify login was called (it internally resolved the IP)
+      expect(mockAuthService.login).toHaveBeenCalled()
+    })
   })
 })

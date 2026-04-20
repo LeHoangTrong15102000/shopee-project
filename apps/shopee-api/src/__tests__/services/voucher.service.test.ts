@@ -33,6 +33,13 @@ const mockVoucherRepository = {
   saveVoucher: jest.fn(),
   getCollectedVoucherIds: jest.fn(),
   markVoucherUsed: jest.fn(),
+  // Admin methods (typed as any on the interface but must exist on the mock)
+  findAllWithFilters: jest.fn(),
+  create: jest.fn(),
+  updateById: jest.fn(),
+  deleteById: jest.fn(),
+  getUsageStats: jest.fn(),
+  getOverviewStats: jest.fn(),
 } as unknown as jest.Mocked<IVoucherRepository>
 
 describe('VoucherService', () => {
@@ -354,6 +361,204 @@ describe('VoucherService', () => {
       mockVoucherRepository.findByCode.mockResolvedValue(createMockVoucher({ is_active: false }))
 
       await expect(service.getVoucherByCode('TEST10')).rejects.toThrow(NotFoundError)
+    })
+  })
+
+  // ─── collectVoucher missing branch ──────────────────────────────────────────
+
+  describe('collectVoucher additional branches', () => {
+    const userId = new Types.ObjectId().toString()
+    const voucherId = new Types.ObjectId().toString()
+
+    it('throws BusinessError when voucher is used up', async () => {
+      mockVoucherRepository.findById.mockResolvedValue(
+        createMockVoucher({ used_count: 100, usage_limit: 100 }),
+      )
+
+      await expect(service.collectVoucher(userId, voucherId)).rejects.toThrow(BusinessError)
+    })
+  })
+
+  // ─── Admin Methods ──────────────────────────────────────────────────────────
+
+  describe('adminGetVouchers', () => {
+    it('delegates to findAllWithFilters', async () => {
+      const paginated = { data: [], pagination: { page: 1, limit: 10, page_size: 1, total: 0 } }
+      ;(mockVoucherRepository as any).findAllWithFilters.mockResolvedValue(paginated)
+
+      const result = await service.adminGetVouchers({ is_active: 'true' }, { page: 1, limit: 10 })
+
+      expect((mockVoucherRepository as any).findAllWithFilters).toHaveBeenCalledWith(
+        { is_active: 'true' },
+        { page: 1, limit: 10 },
+      )
+      expect(result).toEqual(paginated)
+    })
+  })
+
+  describe('adminGetById', () => {
+    it('returns voucher when found', async () => {
+      const voucher = createMockVoucher()
+      mockVoucherRepository.findById.mockResolvedValue(voucher)
+
+      const result = await service.adminGetById(voucher._id.toString())
+
+      expect(result).toEqual(voucher)
+    })
+
+    it('throws ValidationError for invalid id', async () => {
+      await expect(service.adminGetById('not-valid')).rejects.toThrow(ValidationError)
+    })
+
+    it('throws NotFoundError when voucher not found', async () => {
+      mockVoucherRepository.findById.mockResolvedValue(null)
+
+      await expect(service.adminGetById(new Types.ObjectId().toString())).rejects.toThrow(
+        NotFoundError,
+      )
+    })
+  })
+
+  describe('adminCreate', () => {
+    it('creates voucher when code does not exist', async () => {
+      const newVoucher = createMockVoucher()
+      mockVoucherRepository.findByCode.mockResolvedValue(null)
+      ;(mockVoucherRepository as any).create.mockResolvedValue(newVoucher)
+
+      const result = await service.adminCreate({ code: 'NEW10', discount_value: 10 })
+
+      expect((mockVoucherRepository as any).create).toHaveBeenCalled()
+      expect(result).toEqual(newVoucher)
+    })
+
+    it('throws BusinessError when code already exists', async () => {
+      mockVoucherRepository.findByCode.mockResolvedValue(createMockVoucher())
+
+      await expect(service.adminCreate({ code: 'TEST10' })).rejects.toThrow(BusinessError)
+    })
+  })
+
+  describe('adminUpdate', () => {
+    it('updates voucher when found', async () => {
+      const id = new Types.ObjectId().toString()
+      const updated = createMockVoucher({ discount_value: 20 })
+      mockVoucherRepository.findById.mockResolvedValue(createMockVoucher())
+      ;(mockVoucherRepository as any).updateById.mockResolvedValue(updated)
+
+      const result = await service.adminUpdate(id, { discount_value: 20 })
+
+      expect((mockVoucherRepository as any).updateById).toHaveBeenCalledWith(id, {
+        discount_value: 20,
+      })
+      expect(result).toEqual(updated)
+    })
+
+    it('throws ValidationError for invalid id', async () => {
+      await expect(service.adminUpdate('bad-id', {})).rejects.toThrow(ValidationError)
+    })
+
+    it('throws NotFoundError when voucher not found', async () => {
+      mockVoucherRepository.findById.mockResolvedValue(null)
+
+      await expect(service.adminUpdate(new Types.ObjectId().toString(), {})).rejects.toThrow(
+        NotFoundError,
+      )
+    })
+  })
+
+  describe('adminDelete', () => {
+    it('deletes voucher when found', async () => {
+      const id = new Types.ObjectId().toString()
+      mockVoucherRepository.findById.mockResolvedValue(createMockVoucher())
+      ;(mockVoucherRepository as any).deleteById.mockResolvedValue(undefined)
+
+      await service.adminDelete(id)
+
+      expect((mockVoucherRepository as any).deleteById).toHaveBeenCalledWith(id)
+    })
+
+    it('throws ValidationError for invalid id', async () => {
+      await expect(service.adminDelete('bad-id')).rejects.toThrow(ValidationError)
+    })
+
+    it('throws NotFoundError when voucher not found', async () => {
+      mockVoucherRepository.findById.mockResolvedValue(null)
+
+      await expect(service.adminDelete(new Types.ObjectId().toString())).rejects.toThrow(
+        NotFoundError,
+      )
+    })
+  })
+
+  describe('adminToggle', () => {
+    it('toggles is_active from true to false', async () => {
+      const id = new Types.ObjectId().toString()
+      const voucher = createMockVoucher({ is_active: true })
+      const toggled = { ...voucher, is_active: false }
+      mockVoucherRepository.findById.mockResolvedValue(voucher)
+      ;(mockVoucherRepository as any).updateById.mockResolvedValue(toggled)
+
+      const result = await service.adminToggle(id)
+
+      expect((mockVoucherRepository as any).updateById).toHaveBeenCalledWith(id, {
+        is_active: false,
+      })
+      expect(result.is_active).toBe(false)
+    })
+
+    it('throws ValidationError for invalid id', async () => {
+      await expect(service.adminToggle('bad-id')).rejects.toThrow(ValidationError)
+    })
+
+    it('throws NotFoundError when voucher not found', async () => {
+      mockVoucherRepository.findById.mockResolvedValue(null)
+
+      await expect(service.adminToggle(new Types.ObjectId().toString())).rejects.toThrow(
+        NotFoundError,
+      )
+    })
+  })
+
+  describe('adminGetUsage', () => {
+    it('returns usage stats when voucher found', async () => {
+      const id = new Types.ObjectId().toString()
+      const usageData = { data: [], pagination: { page: 1, limit: 10, page_size: 1, total: 0 } }
+      mockVoucherRepository.findById.mockResolvedValue(createMockVoucher())
+      ;(mockVoucherRepository as any).getUsageStats.mockResolvedValue(usageData)
+
+      const result = await service.adminGetUsage(id, { page: 1, limit: 10 })
+
+      expect((mockVoucherRepository as any).getUsageStats).toHaveBeenCalledWith(id, {
+        page: 1,
+        limit: 10,
+      })
+      expect(result).toEqual(usageData)
+    })
+
+    it('throws ValidationError for invalid id', async () => {
+      await expect(service.adminGetUsage('bad-id', { page: 1, limit: 10 })).rejects.toThrow(
+        ValidationError,
+      )
+    })
+
+    it('throws NotFoundError when voucher not found', async () => {
+      mockVoucherRepository.findById.mockResolvedValue(null)
+
+      await expect(
+        service.adminGetUsage(new Types.ObjectId().toString(), { page: 1, limit: 10 }),
+      ).rejects.toThrow(NotFoundError)
+    })
+  })
+
+  describe('adminGetStats', () => {
+    it('delegates to getOverviewStats', async () => {
+      const stats = { total: 10, active: 5, expired: 3, upcoming: 2, total_used: 100 }
+      ;(mockVoucherRepository as any).getOverviewStats.mockResolvedValue(stats)
+
+      const result = await service.adminGetStats()
+
+      expect((mockVoucherRepository as any).getOverviewStats).toHaveBeenCalled()
+      expect(result).toEqual(stats)
     })
   })
 })

@@ -167,5 +167,151 @@ describe('LoyaltyService', () => {
         loyaltyService.deductPoints(mockPoints.user.toString(), -10, 'Test'),
       ).rejects.toThrow(ValidationError)
     })
+
+    it('should create points when user has none', async () => {
+      mockLoyaltyRepository.findPointsByUser.mockResolvedValue(null)
+      mockLoyaltyRepository.createPoints.mockResolvedValue(mockPoints as any)
+      mockLoyaltyRepository.updatePoints.mockResolvedValue(mockPoints as any)
+      mockLoyaltyRepository.createTransaction.mockResolvedValue({} as any)
+
+      const result = await loyaltyService.deductPoints(mockPoints.user.toString(), 500, 'Test')
+      expect(mockLoyaltyRepository.createPoints).toHaveBeenCalled()
+    })
+  })
+
+  describe('getPoints - validation', () => {
+    it('should throw ValidationError for invalid userId', async () => {
+      await expect(loyaltyService.getPoints('invalid-id')).rejects.toThrow(ValidationError)
+    })
+  })
+
+  describe('getTransactions - validation', () => {
+    it('should throw ValidationError for invalid userId', async () => {
+      await expect(loyaltyService.getTransactions('invalid-id', {}, { page: 1, limit: 10 })).rejects.toThrow(ValidationError)
+    })
+  })
+
+  describe('redeemPoints - new points creation', () => {
+    it('should create points when user has none and then check', async () => {
+      mockLoyaltyRepository.findRewardById.mockResolvedValue(mockReward as any)
+      mockLoyaltyRepository.findPointsByUser.mockResolvedValue(null)
+      mockLoyaltyRepository.createPoints.mockResolvedValue({ ...mockPoints, available_points: 500 } as any)
+
+      await expect(
+        loyaltyService.redeemPoints(mockPoints.user.toString(), mockReward._id.toString()),
+      ).rejects.toThrow(BusinessError)
+    })
+  })
+
+  describe('adminGetRewards', () => {
+    it('should call findRewardsWithFilters', async () => {
+      ;(mockLoyaltyRepository as any).findRewardsWithFilters = jest.fn().mockResolvedValue({ data: [], pagination: {} })
+      const result = await loyaltyService.adminGetRewards({}, { page: 1, limit: 10 })
+      expect((mockLoyaltyRepository as any).findRewardsWithFilters).toHaveBeenCalled()
+    })
+  })
+
+  describe('adminCreateReward', () => {
+    it('should create reward', async () => {
+      ;(mockLoyaltyRepository as any).createReward = jest.fn().mockResolvedValue(mockReward)
+      const result = await loyaltyService.adminCreateReward({ name: 'New Reward' })
+      expect((mockLoyaltyRepository as any).createReward).toHaveBeenCalled()
+    })
+  })
+
+  describe('adminUpdateReward', () => {
+    it('should update reward successfully', async () => {
+      mockLoyaltyRepository.findRewardById.mockResolvedValue(mockReward as any)
+      ;(mockLoyaltyRepository as any).updateReward = jest.fn().mockResolvedValue({ ...mockReward, name: 'Updated' })
+
+      const result = await loyaltyService.adminUpdateReward(mockReward._id.toString(), { name: 'Updated' })
+      expect((mockLoyaltyRepository as any).updateReward).toHaveBeenCalled()
+    })
+
+    it('should throw NotFoundError when reward not found', async () => {
+      mockLoyaltyRepository.findRewardById.mockResolvedValue(null)
+      await expect(
+        loyaltyService.adminUpdateReward(mockReward._id.toString(), {}),
+      ).rejects.toThrow(NotFoundError)
+    })
+
+    it('should throw ValidationError for invalid id', async () => {
+      await expect(loyaltyService.adminUpdateReward('invalid', {})).rejects.toThrow(ValidationError)
+    })
+  })
+
+  describe('adminDeleteReward', () => {
+    it('should delete reward successfully', async () => {
+      mockLoyaltyRepository.findRewardById.mockResolvedValue(mockReward as any)
+      ;(mockLoyaltyRepository as any).deleteReward = jest.fn().mockResolvedValue(undefined)
+
+      const result = await loyaltyService.adminDeleteReward(mockReward._id.toString())
+      expect(result.deleted).toBe(true)
+    })
+
+    it('should throw NotFoundError when reward not found', async () => {
+      mockLoyaltyRepository.findRewardById.mockResolvedValue(null)
+      await expect(loyaltyService.adminDeleteReward(mockReward._id.toString())).rejects.toThrow(NotFoundError)
+    })
+  })
+
+  describe('adminToggleReward', () => {
+    it('should toggle reward active status', async () => {
+      mockLoyaltyRepository.findRewardById.mockResolvedValue(mockReward as any)
+      ;(mockLoyaltyRepository as any).updateReward = jest.fn().mockResolvedValue({ ...mockReward, is_active: false })
+
+      const result = await loyaltyService.adminToggleReward(mockReward._id.toString())
+      expect((mockLoyaltyRepository as any).updateReward).toHaveBeenCalledWith(mockReward._id.toString(), { is_active: false })
+    })
+
+    it('should throw NotFoundError when reward not found', async () => {
+      mockLoyaltyRepository.findRewardById.mockResolvedValue(null)
+      await expect(loyaltyService.adminToggleReward(mockReward._id.toString())).rejects.toThrow(NotFoundError)
+    })
+  })
+
+  describe('adminAdjustPoints', () => {
+    it('should add points and recalculate tier', async () => {
+      mockLoyaltyRepository.findPointsByUser.mockResolvedValue(mockPoints as any)
+      mockLoyaltyRepository.updatePoints.mockResolvedValue(mockPoints as any)
+      mockLoyaltyRepository.createTransaction.mockResolvedValue({} as any)
+
+      const result = await loyaltyService.adminAdjustPoints(mockPoints.user.toString(), 1000, 'earn', 'Bonus')
+      expect(result).toHaveProperty('transaction')
+      expect(result).toHaveProperty('new_available_points')
+    })
+
+    it('should throw BusinessError when deducting more than available', async () => {
+      mockLoyaltyRepository.findPointsByUser.mockResolvedValue({ ...mockPoints, available_points: 100 } as any)
+      await expect(
+        loyaltyService.adminAdjustPoints(mockPoints.user.toString(), -500, 'deduct', 'Deduction'),
+      ).rejects.toThrow(BusinessError)
+    })
+
+    it('should create points if user has none', async () => {
+      mockLoyaltyRepository.findPointsByUser.mockResolvedValue(null)
+      mockLoyaltyRepository.createPoints.mockResolvedValue(mockPoints as any)
+      mockLoyaltyRepository.updatePoints.mockResolvedValue(mockPoints as any)
+      mockLoyaltyRepository.createTransaction.mockResolvedValue({} as any)
+
+      const result = await loyaltyService.adminAdjustPoints(mockPoints.user.toString(), 500, 'earn', 'Bonus')
+      expect(mockLoyaltyRepository.createPoints).toHaveBeenCalled()
+    })
+  })
+
+  describe('adminGetTransactions', () => {
+    it('should call findAllTransactions', async () => {
+      ;(mockLoyaltyRepository as any).findAllTransactions = jest.fn().mockResolvedValue({ data: [], pagination: {} })
+      await loyaltyService.adminGetTransactions({}, { page: 1, limit: 10 })
+      expect((mockLoyaltyRepository as any).findAllTransactions).toHaveBeenCalled()
+    })
+  })
+
+  describe('adminGetStats', () => {
+    it('should call getLoyaltyStats', async () => {
+      ;(mockLoyaltyRepository as any).getLoyaltyStats = jest.fn().mockResolvedValue({ total_users: 100 })
+      const result = await loyaltyService.adminGetStats()
+      expect((mockLoyaltyRepository as any).getLoyaltyStats).toHaveBeenCalled()
+    })
   })
 })

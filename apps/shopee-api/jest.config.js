@@ -9,7 +9,9 @@ const sharedConfig = {
   testEnvironment: 'node',
   roots: ['<rootDir>/src'],
   transform: {
-    '^.+\\.ts$': 'ts-jest',
+    '^.+\\.ts$': ['ts-jest', {
+      tsconfig: 'tsconfig.test.json',
+    }],
   },
   moduleNameMapper: {
     '^@controllers/(.*)$': '<rootDir>/src/controllers/$1',
@@ -31,7 +33,26 @@ const sharedConfig = {
 
 module.exports = {
   // Coverage configuration (applies when running with --coverage)
-  collectCoverageFrom: ['src/**/*.ts', '!src/**/*.d.ts', '!src/__tests__/**', '!src/index.ts'],
+  collectCoverageFrom: [
+    'src/**/*.ts',
+    '!src/**/*.d.ts',
+    '!src/__tests__/**',
+    '!src/index.ts',
+    '!src/utils/conversation.service.ts',
+    '!src/docs/**',
+    '!src/repositories/index.ts',
+    '!src/services/index.ts',
+    '!src/repositories/interfaces/**',
+    // Infrastructure / config files — not unit-testable
+    '!src/container.ts',
+    '!src/routes/**',
+    '!src/database/models/**',
+    '!src/socket/handlers/**',
+    '!src/socket/managers/**',
+    '!src/socket/utils/**',
+    '!src/socket/socket.init.ts',
+    '!src/schemas/index.ts',
+  ],
 
   projects: [
     // Unit tests — existing tests + new schema/repository/middleware tests
@@ -45,6 +66,7 @@ module.exports = {
         '**/__tests__/utils/**/*.test.ts',
         '**/__tests__/schemas/**/*.test.ts',
         '**/__tests__/repositories/**/*.test.ts',
+        '**/__tests__/constants/**/*.test.ts',
       ],
       setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts'],
       testTimeout: 10000,

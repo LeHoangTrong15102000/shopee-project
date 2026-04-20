@@ -1,5 +1,9 @@
 /// <reference types="jest" />
-import { getNotificationsSchema, markAsReadSchema } from '@schemas/notification.schema'
+import {
+  getNotificationsSchema,
+  markAsReadSchema,
+  deleteNotificationSchema,
+} from '@schemas/notification.schema'
 
 const VALID_ID = '507f1f77bcf86cd799439011'
 
@@ -65,6 +69,22 @@ describe('markAsReadSchema', () => {
   it('should fail with invalid ID', () => {
     const result = markAsReadSchema.safeParse({
       params: { id: 'invalid' },
+    })
+    expect(result.success).toBe(false)
+  })
+})
+
+describe('deleteNotificationSchema', () => {
+  it('should pass with valid notification ID', () => {
+    const result = deleteNotificationSchema.safeParse({
+      params: { id: VALID_ID },
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('should fail with invalid notification ID', () => {
+    const result = deleteNotificationSchema.safeParse({
+      params: { id: 'not-an-id' },
     })
     expect(result.success).toBe(false)
   })

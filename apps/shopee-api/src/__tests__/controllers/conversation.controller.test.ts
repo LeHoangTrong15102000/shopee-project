@@ -257,6 +257,72 @@ describe('Conversation Controller', () => {
     })
   })
 
+  describe('getConversation - error path', () => {
+    it('should propagate service errors', async () => {
+      mockConversationService.getConversation.mockRejectedValue(new Error('Not found'))
+      const req = createMockRequest({ params: { id: 'bad_id' } })
+      const res = createMockResponse()
+
+      await expect(getConversation(req as Request, res as Response)).rejects.toThrow('Not found')
+    })
+  })
+
+  describe('createConversation - error path', () => {
+    it('should propagate service errors', async () => {
+      mockConversationService.createConversation.mockRejectedValue(new Error('Duplicate'))
+      const req = createMockRequest({ body: { message: 'Hello' } })
+      const res = createMockResponse()
+
+      await expect(createConversation(req as Request, res as Response)).rejects.toThrow('Duplicate')
+    })
+  })
+
+  describe('sendMessage - error path', () => {
+    it('should propagate service errors when conversation not found', async () => {
+      mockConversationService.sendMessage.mockRejectedValue(new Error('Conversation not found'))
+      const req = createMockRequest({ params: { id: 'bad_id' }, body: { message: 'Hi' } })
+      const res = createMockResponse()
+
+      await expect(sendMessage(req as Request, res as Response)).rejects.toThrow(
+        'Conversation not found',
+      )
+    })
+  })
+
+  describe('updateConversation - error path', () => {
+    it('should propagate service errors', async () => {
+      mockConversationService.updateConversation.mockRejectedValue(new Error('Update failed'))
+      const req = createMockRequest({ params: { id: 'bad_id' }, body: { title: 'X' } })
+      const res = createMockResponse()
+
+      await expect(updateConversation(req as Request, res as Response)).rejects.toThrow(
+        'Update failed',
+      )
+    })
+  })
+
+  describe('deleteConversation - error path', () => {
+    it('should propagate service errors', async () => {
+      mockConversationService.deleteConversation.mockRejectedValue(new Error('Delete failed'))
+      const req = createMockRequest({ params: { id: 'bad_id' } })
+      const res = createMockResponse()
+
+      await expect(deleteConversation(req as Request, res as Response)).rejects.toThrow(
+        'Delete failed',
+      )
+    })
+  })
+
+  describe('testChatbot - error path', () => {
+    it('should propagate service errors', async () => {
+      mockConversationService.testChatbot.mockRejectedValue(new Error('Chatbot error'))
+      const req = createMockRequest({ body: { message: 'test' } })
+      const res = createMockResponse()
+
+      await expect(testChatbot(req as Request, res as Response)).rejects.toThrow('Chatbot error')
+    })
+  })
+
   describe('testChatbotStream', () => {
     it('should return 400 when message is missing', async () => {
       const req = createMockRequest({ query: {} })
@@ -266,6 +332,133 @@ describe('Conversation Controller', () => {
 
       expect(res.status).toHaveBeenCalledWith(400)
       expect(res.json).toHaveBeenCalledWith({ message: 'Tham số message không được để trống' })
+    })
+
+    it('should setup SSE headers and call generateStreamingResponse when message provided', async () => {
+      const { chatBotService } = require('../../utils/chatbot.service')
+      chatBotService.generateStreamingResponse.mockResolvedValue(undefined)
+
+      const req = createMockRequest({ query: { message: 'Hello stream' } })
+      const res = createMockResponse() as any
+      res.writeHead = jest.fn()
+      res.write = jest.fn()
+      res.end = jest.fn()
+      res.headersSent = false
+
+      await testChatbotStream(req as Request, res as Response)
+
+      expect(res.writeHead).toHaveBeenCalledWith(
+        200,
+        expect.objectContaining({ 'Content-Type': 'text/event-stream' }),
+      )
+      expect(chatBotService.generateStreamingResponse).toHaveBeenCalled()
+    })
+
+    it('should return 500 when streaming throws and headers not sent', async () => {
+      const { chatBotService } = require('../../utils/chatbot.service')
+      chatBotService.generateStreamingResponse.mockRejectedValue(new Error('Stream error'))
+
+      const req = createMockRequest({ query: { message: 'Hello' } })
+      const res = createMockResponse() as any
+      res.writeHead = jest.fn()
+      res.write = jest.fn()
+      res.end = jest.fn()
+      res.headersSent = false
+
+      await testChatbotStream(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(500)
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'Lỗi server khi test streaming' }),
+      )
+    })
+
+    it('should not call res.status when headers already sent on error', async () => {
+      const { chatBotService } = require('../../utils/chatbot.service')
+      chatBotService.generateStreamingResponse.mockRejectedValue(new Error('Stream error'))
+
+      const req = createMockRequest({ query: { message: 'Hello' } })
+      const res = createMockResponse() as any
+      res.writeHead = jest.fn()
+      res.write = jest.fn()
+      res.end = jest.fn()
+      res.headersSent = true
+
+      await testChatbotStream(req as Request, res as Response)
+
+      // headers already sent — should NOT call res.status(500)
+      expect(res.status).not.toHaveBeenCalledWith(500)
+    })
+
+    it('should invoke onChunk callback when generateStreamingResponse streams a chunk', async () => {
+      const { chatBotService } = require('../../utils/chatbot.service')
+      chatBotService.generateStreamingResponse.mockImplementation(
+        (_history: any, _msg: any, onChunk: Function) => {
+          onChunk('Hello ')
+          onChunk('world')
+          return Promise.resolve()
+        },
+      )
+
+      const req = createMockRequest({ query: { message: 'Test chunk' } })
+      const res = createMockResponse() as any
+      res.writeHead = jest.fn()
+      res.write = jest.fn()
+      res.end = jest.fn()
+      res.headersSent = false
+
+      await testChatbotStream(req as Request, res as Response)
+
+      // write should have been called for initial event + 2 chunks
+      expect(res.write).toHaveBeenCalledTimes(3)
+    })
+
+    it('should invoke onComplete callback when streaming finishes', async () => {
+      const { chatBotService } = require('../../utils/chatbot.service')
+      chatBotService.generateStreamingResponse.mockImplementation(
+        (_history: any, _msg: any, _onChunk: Function, onComplete: Function) => {
+          onComplete()
+          return Promise.resolve()
+        },
+      )
+
+      const req = createMockRequest({ query: { message: 'Test complete' } })
+      const res = createMockResponse() as any
+      res.writeHead = jest.fn()
+      res.write = jest.fn()
+      res.end = jest.fn()
+      res.headersSent = false
+
+      await testChatbotStream(req as Request, res as Response)
+
+      // onComplete calls res.write (type: complete) and res.end
+      expect(res.end).toHaveBeenCalled()
+    })
+
+    it('should invoke onError callback and send error event', async () => {
+      const { chatBotService } = require('../../utils/chatbot.service')
+      chatBotService.generateStreamingResponse.mockImplementation(
+        (_history: any, _msg: any, _onChunk: Function, _onComplete: Function, onError: Function) => {
+          onError('Something went wrong')
+          return Promise.resolve()
+        },
+      )
+
+      const req = createMockRequest({ query: { message: 'Test error' } })
+      const res = createMockResponse() as any
+      res.writeHead = jest.fn()
+      res.write = jest.fn()
+      res.end = jest.fn()
+      res.headersSent = false
+
+      await testChatbotStream(req as Request, res as Response)
+
+      // onError calls res.write (type: error) and res.end
+      expect(res.end).toHaveBeenCalled()
+      const writtenContent = (res.write as jest.Mock).mock.calls
+        .map((call: any[]) => call[0])
+        .join('')
+      expect(writtenContent).toContain('"type":"error"')
     })
   })
 })

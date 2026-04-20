@@ -147,5 +147,87 @@ describe('ConversationService', () => {
       const result = await service.testChatbot('Hello')
       expect(result).toBe('AI response')
     })
+
+    it('throws ValidationError when message is empty', async () => {
+      await expect(service.testChatbot('')).rejects.toThrow(ValidationError)
+    })
+  })
+
+  describe('getConversations - validation', () => {
+    it('should throw ValidationError for invalid userId', async () => {
+      await expect(service.getConversations('invalid', {}, { page: 1, limit: 10 })).rejects.toThrow(ValidationError)
+    })
+  })
+
+  describe('getConversation - validation', () => {
+    it('should throw ValidationError for invalid userId', async () => {
+      await expect(service.getConversation('invalid', validObjectId.toString())).rejects.toThrow(ValidationError)
+    })
+
+    it('should throw ValidationError for invalid conversationId', async () => {
+      await expect(service.getConversation(validObjectId.toString(), 'invalid')).rejects.toThrow(ValidationError)
+    })
+  })
+
+  describe('createConversation - validation', () => {
+    it('should throw ValidationError for invalid userId', async () => {
+      await expect(service.createConversation('invalid', 'Hello')).rejects.toThrow(ValidationError)
+    })
+
+    it('should throw ValidationError for empty message', async () => {
+      await expect(service.createConversation(validObjectId.toString(), '')).rejects.toThrow(ValidationError)
+    })
+  })
+
+  describe('sendMessage - validation', () => {
+    it('should throw ValidationError for invalid userId', async () => {
+      await expect(service.sendMessage('invalid', validObjectId.toString(), 'hi')).rejects.toThrow(ValidationError)
+    })
+
+    it('should throw ValidationError for invalid conversationId', async () => {
+      await expect(service.sendMessage(validObjectId.toString(), 'invalid', 'hi')).rejects.toThrow(ValidationError)
+    })
+
+    it('should throw ValidationError for empty message', async () => {
+      await expect(service.sendMessage(validObjectId.toString(), validObjectId.toString(), '')).rejects.toThrow(ValidationError)
+    })
+
+    it('should throw BusinessError when conversation is archived', async () => {
+      mockConversationRepository.findByIdAndUser.mockResolvedValue({
+        ...mockConversation,
+        status: 'archived',
+      } as any)
+      const { BusinessError } = await import('@services/base.service')
+      await expect(
+        service.sendMessage(validObjectId.toString(), validObjectId.toString(), 'hi'),
+      ).rejects.toThrow(BusinessError)
+    })
+  })
+
+  describe('updateConversation - validation', () => {
+    it('should throw ValidationError for invalid userId', async () => {
+      await expect(service.updateConversation('invalid', validObjectId.toString(), {})).rejects.toThrow(ValidationError)
+    })
+
+    it('should throw ValidationError for invalid conversationId', async () => {
+      await expect(service.updateConversation(validObjectId.toString(), 'invalid', {})).rejects.toThrow(ValidationError)
+    })
+
+    it('should throw NotFoundError when conversation not found', async () => {
+      mockConversationRepository.update.mockResolvedValue(null)
+      await expect(
+        service.updateConversation(validObjectId.toString(), validObjectId.toString(), {}),
+      ).rejects.toThrow(NotFoundError)
+    })
+  })
+
+  describe('deleteConversation - validation', () => {
+    it('should throw ValidationError for invalid userId', async () => {
+      await expect(service.deleteConversation('invalid', validObjectId.toString())).rejects.toThrow(ValidationError)
+    })
+
+    it('should throw ValidationError for invalid conversationId', async () => {
+      await expect(service.deleteConversation(validObjectId.toString(), 'invalid')).rejects.toThrow(ValidationError)
+    })
   })
 })

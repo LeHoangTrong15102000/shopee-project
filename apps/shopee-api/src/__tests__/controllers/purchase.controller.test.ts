@@ -22,6 +22,9 @@ jest.mock('../../socket/utils/seller-emit', () => ({
 jest.mock('../../socket/utils/seller-metrics.service', () => ({
   emitCurrentSellerMetrics: jest.fn(),
 }))
+jest.mock('../../socket/utils/order-emit', () => ({
+  emitAdminNewOrderNotification: jest.fn(),
+}))
 
 jest.mock('../../container', () => ({
   purchaseService: {
@@ -39,13 +42,57 @@ jest.mock('@controllers/product.controller', () => ({
   default: {},
 }))
 
+// Mock flash-sale dynamic imports used in buyProducts
+jest.mock('../../socket/managers/flash-sale.manager', () => ({
+  getActiveFlashSales: jest.fn().mockReturnValue([]),
+  decrementStock: jest.fn(),
+}))
+jest.mock('../../socket/utils/flash-sale-emit', () => ({
+  emitFlashSaleStockUpdate: jest.fn(),
+}))
+
+// Mock database models and session
+jest.mock('@database/models/product.model', () => ({
+  ProductModel: {
+    findById: jest.fn(),
+    findByIdAndUpdate: jest.fn(),
+  },
+}))
+jest.mock('@database/models/purchase.model', () => {
+  const mockModel: any = jest.fn().mockImplementation(() => ({
+    save: jest.fn().mockResolvedValue({ _id: 'purchase_new' }),
+  }))
+  mockModel.findOneAndUpdate = jest.fn()
+  mockModel.findById = jest.fn()
+  return { PurchaseModel: mockModel }
+})
+jest.mock('@database/models/sku.model', () => ({
+  SKUModel: {
+    findById: jest.fn(),
+    findOneAndUpdate: jest.fn(),
+  },
+}))
+jest.mock('@database/database', () => ({
+  connectMongoDB: jest.fn(),
+  startSession: jest.fn().mockResolvedValue({
+    startTransaction: jest.fn(),
+    commitTransaction: jest.fn(),
+    abortTransaction: jest.fn(),
+    endSession: jest.fn(),
+  }),
+}))
+
 import { purchaseService } from '../../container'
 import {
   addToCart,
   updatePurchase,
+  buyProducts,
   getPurchases,
   deletePurchases,
 } from '@controllers/purchase.controller'
+import { ProductModel } from '@database/models/product.model'
+import { PurchaseModel } from '@database/models/purchase.model'
+import { SKUModel } from '@database/models/sku.model'
 
 const mockPurchaseService = purchaseService as jest.Mocked<typeof purchaseService>
 
@@ -60,6 +107,7 @@ const createMockRequest = (
     email: 'test@example.com',
     roles: ['User'],
     created_at: new Date().toISOString(),
+    name: 'Test User',
   },
 })
 
@@ -98,6 +146,7 @@ describe('Purchase Controller', () => {
       expect(mockPurchaseService.addToCart).toHaveBeenCalledWith('user_1', {
         product_id: 'product_1',
         buy_count: 2,
+        sku_id: undefined,
       })
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
@@ -124,6 +173,14 @@ describe('Purchase Controller', () => {
       await expect(addToCart(req as Request, res as Response)).rejects.toMatchObject({
         status: STATUS.NOT_ACCEPTABLE,
       })
+    })
+
+    it('should rethrow generic errors', async () => {
+      mockPurchaseService.addToCart.mockRejectedValue(new Error('Database error'))
+      const req = createMockRequest({ body: { product_id: 'p1', buy_count: 1 } })
+      const res = createMockResponse()
+
+      await expect(addToCart(req as Request, res as Response)).rejects.toThrow('Database error')
     })
   })
 
@@ -157,6 +214,224 @@ describe('Purchase Controller', () => {
         status: STATUS.NOT_FOUND,
       })
     })
+
+    it('should throw error when quantity exceeded on update', async () => {
+      mockPurchaseService.updateCartItem.mockRejectedValue(new ValidationError('Quantity exceeded'))
+      const req = createMockRequest({ body: { product_id: 'p1', buy_count: 9999 } })
+      const res = createMockResponse()
+
+      await expect(updatePurchase(req as Request, res as Response)).rejects.toMatchObject({
+        status: STATUS.NOT_ACCEPTABLE,
+      })
+    })
+
+    it('should rethrow generic errors on update', async () => {
+      mockPurchaseService.updateCartItem.mockRejectedValue(new Error('DB error'))
+      const req = createMockRequest({ body: { product_id: 'p1', buy_count: 1 } })
+      const res = createMockResponse()
+
+      await expect(updatePurchase(req as Request, res as Response)).rejects.toThrow('DB error')
+    })
+  })
+
+  describe('buyProducts', () => {
+    const mockProduct = {
+      _id: 'product_1',
+      name: 'Test Product',
+      price: 100000,
+      price_before_discount: 120000,
+      quantity: 50,
+    }
+    const mockSKU = {
+      _id: 'sku_1',
+      value: 'Size S',
+      price: 90000,
+      stock: 20,
+    }
+    const mockPopulatedPurchase = {
+      _id: 'purchase_1',
+      user: 'user_1',
+      product: mockProduct,
+      buy_count: 2,
+      price: 100000,
+      status: 1,
+    }
+
+    const buildProductFindByIdChain = (returnVal: any) => {
+      const mockLean = jest.fn().mockResolvedValue(returnVal)
+      const mockSession = jest.fn().mockReturnValue({ lean: mockLean })
+      ;(ProductModel.findById as jest.Mock).mockReturnValue({ session: mockSession })
+    }
+
+    const buildPurchaseFindOneAndUpdateChain = (returnVal: any) => {
+      const mockLean = jest.fn().mockResolvedValue(returnVal)
+      const mockPopulate = jest.fn().mockReturnValue({ lean: mockLean })
+      ;(PurchaseModel.findOneAndUpdate as jest.Mock).mockReturnValue({ populate: mockPopulate })
+    }
+
+    const buildPurchaseFindByIdChain = (returnVal: any) => {
+      const mockLean = jest.fn().mockResolvedValue(returnVal)
+      const mockPopulate = jest.fn().mockReturnValue({ lean: mockLean })
+      const mockSession = jest.fn().mockReturnValue({ populate: mockPopulate })
+      ;(PurchaseModel.findById as jest.Mock).mockReturnValue({ session: mockSession })
+    }
+
+    it('should buy products without SKU (legacy flow)', async () => {
+      buildProductFindByIdChain(mockProduct)
+      buildPurchaseFindOneAndUpdateChain(mockPopulatedPurchase)
+      ;(ProductModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({})
+
+      const req = createMockRequest({
+        body: [{ product_id: 'product_1', buy_count: 2 }],
+      })
+      const res = createMockResponse()
+
+      await buyProducts(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+    })
+
+    it('should buy products with SKU flow', async () => {
+      buildProductFindByIdChain(mockProduct)
+
+      const mockSKULean = jest.fn().mockResolvedValue(mockSKU)
+      const mockSKUSession = jest.fn().mockReturnValue({ lean: mockSKULean })
+      ;(SKUModel.findById as jest.Mock).mockReturnValue({ session: mockSKUSession })
+
+      buildPurchaseFindOneAndUpdateChain(mockPopulatedPurchase)
+
+      const mockSKUDecLean = jest.fn().mockResolvedValue({ ...mockSKU, stock: 18 })
+      ;(SKUModel.findOneAndUpdate as jest.Mock).mockReturnValue({ lean: mockSKUDecLean })
+      ;(ProductModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({})
+
+      const req = createMockRequest({
+        body: [{ product_id: 'product_1', buy_count: 2, sku_id: 'sku_1' }],
+      })
+      const res = createMockResponse()
+
+      await buyProducts(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+    })
+
+    it('should create new purchase when findOneAndUpdate returns null', async () => {
+      buildProductFindByIdChain(mockProduct)
+      buildPurchaseFindOneAndUpdateChain(null)
+
+      const mockSaveResult = { _id: 'purchase_new_2' }
+      ;(PurchaseModel as any).mockImplementation(() => ({
+        save: jest.fn().mockResolvedValue(mockSaveResult),
+      }))
+      buildPurchaseFindByIdChain(mockPopulatedPurchase)
+      ;(ProductModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({})
+
+      const req = createMockRequest({
+        body: [{ product_id: 'product_1', buy_count: 1 }],
+      })
+      const res = createMockResponse()
+
+      await buyProducts(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+    })
+
+    it('should throw NotFoundError when product is not found', async () => {
+      buildProductFindByIdChain(null)
+
+      const req = createMockRequest({
+        body: [{ product_id: 'nonexistent', buy_count: 1 }],
+      })
+      const res = createMockResponse()
+
+      await expect(buyProducts(req as Request, res as Response)).rejects.toThrow()
+    })
+
+    it('should throw NotFoundError when SKU is not found', async () => {
+      buildProductFindByIdChain(mockProduct)
+
+      const mockSKULean = jest.fn().mockResolvedValue(null)
+      const mockSKUSession = jest.fn().mockReturnValue({ lean: mockSKULean })
+      ;(SKUModel.findById as jest.Mock).mockReturnValue({ session: mockSKUSession })
+
+      const req = createMockRequest({
+        body: [{ product_id: 'product_1', buy_count: 1, sku_id: 'sku_bad' }],
+      })
+      const res = createMockResponse()
+
+      await expect(buyProducts(req as Request, res as Response)).rejects.toThrow()
+    })
+
+    it('should throw error when SKU stock exceeded', async () => {
+      buildProductFindByIdChain(mockProduct)
+
+      const lowStockSKU = { ...mockSKU, stock: 1 }
+      const mockSKULean = jest.fn().mockResolvedValue(lowStockSKU)
+      const mockSKUSession = jest.fn().mockReturnValue({ lean: mockSKULean })
+      ;(SKUModel.findById as jest.Mock).mockReturnValue({ session: mockSKUSession })
+
+      const req = createMockRequest({
+        body: [{ product_id: 'product_1', buy_count: 10, sku_id: 'sku_1' }],
+      })
+      const res = createMockResponse()
+
+      await expect(buyProducts(req as Request, res as Response)).rejects.toMatchObject({
+        status: STATUS.NOT_ACCEPTABLE,
+      })
+    })
+
+    it('should throw error when product quantity exceeded (legacy)', async () => {
+      const lowQtyProduct = { ...mockProduct, quantity: 1 }
+      buildProductFindByIdChain(lowQtyProduct)
+
+      const req = createMockRequest({
+        body: [{ product_id: 'product_1', buy_count: 10 }],
+      })
+      const res = createMockResponse()
+
+      await expect(buyProducts(req as Request, res as Response)).rejects.toMatchObject({
+        status: STATUS.NOT_ACCEPTABLE,
+      })
+    })
+
+    it('should throw error when SKU decrement finds insufficient stock', async () => {
+      buildProductFindByIdChain(mockProduct)
+
+      const mockSKULean = jest.fn().mockResolvedValue(mockSKU)
+      const mockSKUSession = jest.fn().mockReturnValue({ lean: mockSKULean })
+      ;(SKUModel.findById as jest.Mock).mockReturnValue({ session: mockSKUSession })
+
+      buildPurchaseFindOneAndUpdateChain(mockPopulatedPurchase)
+
+      // findOneAndUpdate for decrement returns null (concurrent race)
+      ;(SKUModel.findOneAndUpdate as jest.Mock).mockResolvedValue(null)
+
+      const req = createMockRequest({
+        body: [{ product_id: 'product_1', buy_count: 2, sku_id: 'sku_1' }],
+      })
+      const res = createMockResponse()
+
+      await expect(buyProducts(req as Request, res as Response)).rejects.toMatchObject({
+        status: STATUS.NOT_ACCEPTABLE,
+      })
+    })
+
+    it('should handle multiple items in the cart', async () => {
+      buildProductFindByIdChain(mockProduct)
+      buildPurchaseFindOneAndUpdateChain(mockPopulatedPurchase)
+      ;(ProductModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({})
+
+      const req = createMockRequest({
+        body: [
+          { product_id: 'product_1', buy_count: 1 },
+          { product_id: 'product_1', buy_count: 2 },
+        ],
+      })
+      const res = createMockResponse()
+
+      await buyProducts(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+    })
   })
 
   describe('getPurchases', () => {
@@ -180,6 +455,47 @@ describe('Purchase Controller', () => {
 
       expect(mockPurchaseService.getPurchases).toHaveBeenCalledWith('user_1', 2)
     })
+
+    it('should handle purchase with product as object (image processing)', async () => {
+      const purchaseWithProduct = {
+        ...mockPurchase,
+        product: { _id: 'p1', name: 'Test', image: 'img.jpg', images: ['img.jpg'] },
+      }
+      mockPurchaseService.getPurchases.mockResolvedValue([purchaseWithProduct] as any)
+
+      const req = createMockRequest({ query: {} })
+      const res = createMockResponse()
+
+      await getPurchases(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+    })
+
+    it('should handle purchase with product as string (skip image processing)', async () => {
+      const purchaseWithStringProduct = {
+        ...mockPurchase,
+        product: 'product_id_string',
+      }
+      mockPurchaseService.getPurchases.mockResolvedValue([purchaseWithStringProduct] as any)
+
+      const req = createMockRequest({ query: {} })
+      const res = createMockResponse()
+
+      await getPurchases(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+    })
+
+    it('should handle STATUS_PURCHASE.ALL (status 0 means all)', async () => {
+      mockPurchaseService.getPurchases.mockResolvedValue([mockPurchase] as any)
+      const req = createMockRequest({ query: { status: '0' } })
+      const res = createMockResponse()
+
+      await getPurchases(req as Request, res as Response)
+
+      // Status 0 is STATUS_PURCHASE.ALL, so purchaseStatus should be undefined
+      expect(mockPurchaseService.getPurchases).toHaveBeenCalledWith('user_1', undefined)
+    })
   })
 
   describe('deletePurchases', () => {
@@ -196,6 +512,16 @@ describe('Purchase Controller', () => {
         'purchase_1',
         'purchase_2',
       ])
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+    })
+
+    it('should handle zero deleted count', async () => {
+      mockPurchaseService.removeFromCart.mockResolvedValue(0 as any)
+      const req = createMockRequest({ body: [] })
+      const res = createMockResponse()
+
+      await deletePurchases(req as Request, res as Response)
+
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
   })

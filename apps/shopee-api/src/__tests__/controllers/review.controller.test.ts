@@ -21,7 +21,13 @@ jest.mock('../../services/base.service', () => {
       this.name = 'BusinessError'
     }
   }
-  return { ValidationError, NotFoundError, BusinessError }
+  class ForbiddenError extends Error {
+    constructor(m: string) {
+      super(m)
+      this.name = 'ForbiddenError'
+    }
+  }
+  return { ValidationError, NotFoundError, BusinessError, ForbiddenError }
 })
 
 jest.mock('../../container', () => ({
@@ -32,6 +38,8 @@ jest.mock('../../container', () => ({
     createReviewComment: jest.fn(),
     getReviewComments: jest.fn(),
     canReviewPurchase: jest.fn(),
+    updateReview: jest.fn(),
+    deleteReview: jest.fn(),
   },
 }))
 
@@ -53,8 +61,10 @@ import {
   createReviewComment,
   getReviewComments,
   canReviewPurchase,
+  updateReview,
+  deleteReview,
 } from '../../controllers/review.controller'
-import { ValidationError, NotFoundError, BusinessError } from '@services/base.service'
+import { ValidationError, NotFoundError, BusinessError, ForbiddenError } from '@services/base.service'
 
 const mockReviewService = reviewService as jest.Mocked<typeof reviewService>
 
@@ -456,6 +466,147 @@ describe('Review Controller', () => {
 
       expect(res.status).toHaveBeenCalledWith(STATUS.INTERNAL_SERVER_ERROR)
       expect(res.json).toHaveBeenCalledWith({ message: 'Lỗi server khi kiểm tra quyền đánh giá' })
+    })
+  })
+
+  describe('updateReview', () => {
+    it('should update review successfully', async () => {
+      const updatedReview = {
+        _id: 'review123',
+        rating: 4,
+        comment: 'Updated comment',
+        images: ['img1.jpg'],
+      }
+      ;(mockReviewService as any).updateReview.mockResolvedValue(updatedReview as any)
+
+      const req = createMockRequest({
+        params: { review_id: 'review123' },
+        body: { rating: 4, comment: 'Updated comment', images: ['img1.jpg'] },
+      })
+      const res = createMockResponse()
+
+      await updateReview(req as any, res as Response)
+
+      expect((mockReviewService as any).updateReview).toHaveBeenCalledWith(
+        'user123',
+        'review123',
+        { rating: 4, comment: 'Updated comment', images: ['img1.jpg'] },
+      )
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Cập nhật đánh giá thành công',
+        data: updatedReview,
+      })
+    })
+
+    it('should return 400 on ValidationError', async () => {
+      ;(mockReviewService as any).updateReview.mockRejectedValue(new ValidationError('Invalid rating'))
+
+      const req = createMockRequest({
+        params: { review_id: 'review123' },
+        body: { rating: 10, comment: 'Test' },
+      })
+      const res = createMockResponse()
+
+      await updateReview(req as any, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.BAD_REQUEST)
+    })
+
+    it('should return 404 on NotFoundError', async () => {
+      ;(mockReviewService as any).updateReview.mockRejectedValue(new NotFoundError('Review not found'))
+
+      const req = createMockRequest({ params: { review_id: 'r1' }, body: { rating: 5 } })
+      const res = createMockResponse()
+
+      await updateReview(req as any, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.NOT_FOUND)
+    })
+
+    it('should return 403 on ForbiddenError', async () => {
+      ;(mockReviewService as any).updateReview.mockRejectedValue(
+        new ForbiddenError('Không có quyền cập nhật'),
+      )
+
+      const req = createMockRequest({ params: { review_id: 'r1' }, body: { rating: 5 } })
+      const res = createMockResponse()
+
+      await updateReview(req as any, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.FORBIDDEN)
+    })
+
+    it('should return 500 on generic error', async () => {
+      ;(mockReviewService as any).updateReview.mockRejectedValue(new Error('Database error'))
+
+      const req = createMockRequest({ params: { review_id: 'r1' }, body: { rating: 5 } })
+      const res = createMockResponse()
+
+      await updateReview(req as any, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.INTERNAL_SERVER_ERROR)
+    })
+  })
+
+  describe('deleteReview', () => {
+    it('should delete review successfully', async () => {
+      ;(mockReviewService as any).deleteReview.mockResolvedValue(undefined as any)
+
+      const req = createMockRequest({ params: { review_id: 'review123' } })
+      const res = createMockResponse()
+
+      await deleteReview(req as any, res as Response)
+
+      expect((mockReviewService as any).deleteReview).toHaveBeenCalledWith('user123', 'review123')
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+      expect(res.json).toHaveBeenCalledWith({ message: 'Xóa đánh giá thành công' })
+    })
+
+    it('should return 400 on ValidationError', async () => {
+      ;(mockReviewService as any).deleteReview.mockRejectedValue(new ValidationError('Invalid id'))
+
+      const req = createMockRequest({ params: { review_id: 'invalid' } })
+      const res = createMockResponse()
+
+      await deleteReview(req as any, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.BAD_REQUEST)
+    })
+
+    it('should return 404 on NotFoundError', async () => {
+      ;(mockReviewService as any).deleteReview.mockRejectedValue(new NotFoundError('Review not found'))
+
+      const req = createMockRequest({ params: { review_id: 'notfound' } })
+      const res = createMockResponse()
+
+      await deleteReview(req as any, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.NOT_FOUND)
+    })
+
+    it('should return 403 on ForbiddenError', async () => {
+      ;(mockReviewService as any).deleteReview.mockRejectedValue(
+        new ForbiddenError('Không có quyền xóa'),
+      )
+
+      const req = createMockRequest({ params: { review_id: 'r1' } })
+      const res = createMockResponse()
+
+      await deleteReview(req as any, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.FORBIDDEN)
+    })
+
+    it('should return 500 on generic error', async () => {
+      ;(mockReviewService as any).deleteReview.mockRejectedValue(new Error('Database error'))
+
+      const req = createMockRequest({ params: { review_id: 'r1' } })
+      const res = createMockResponse()
+
+      await deleteReview(req as any, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.INTERNAL_SERVER_ERROR)
     })
   })
 })

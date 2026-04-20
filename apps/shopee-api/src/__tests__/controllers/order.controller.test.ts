@@ -17,6 +17,12 @@ jest.mock('../../container', () => ({
     getOrderById: jest.fn(),
     cancelOrder: jest.fn(),
     confirmReceived: jest.fn(),
+    returnOrder: jest.fn(),
+    adminUpdateStatus: jest.fn(),
+    adminGetOrder: jest.fn(),
+    adminGetOrders: jest.fn(),
+    adminBulkUpdateStatus: jest.fn(),
+    adminGetOrderCountByStatus: jest.fn(),
   },
 }))
 
@@ -29,6 +35,12 @@ import {
   getOrderById,
   cancelOrder,
   confirmReceived,
+  returnOrder,
+  adminUpdateStatus,
+  adminGetOrder,
+  adminGetOrders,
+  adminBulkUpdateStatus,
+  adminGetOrderCountByStatus,
 } from '@controllers/order.controller'
 
 const mockOrderService = orderService as jest.Mocked<typeof orderService>
@@ -303,6 +315,236 @@ describe('Order Controller', () => {
       await expect(confirmReceived(req as any, res as Response)).rejects.toMatchObject({
         status: STATUS.NOT_FOUND,
       })
+    })
+
+    it('should throw BAD_REQUEST on ValidationError', async () => {
+      mockOrderService.confirmReceived.mockRejectedValue(new ValidationError('Invalid state'))
+      const req = createMockRequest({ params: { id: 'order_1' } })
+      const res = createMockResponse()
+
+      await expect(confirmReceived(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
+    })
+  })
+
+  describe('returnOrder', () => {
+    it('should return order successfully', async () => {
+      const returned = { ...mockOrder, status: 'return_requested' }
+      mockOrderService.returnOrder.mockResolvedValue(returned as any)
+      const req = createMockRequest({ params: { id: 'order_1' }, body: { reason: 'Hàng lỗi' } })
+      const res = createMockResponse()
+
+      await returnOrder(req as any, res as Response)
+
+      expect(mockOrderService.returnOrder).toHaveBeenCalledWith('user_1', 'order_1', 'Hàng lỗi')
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+    })
+
+    it('should throw BAD_REQUEST on BusinessError', async () => {
+      mockOrderService.returnOrder.mockRejectedValue(new BusinessError('Không thể trả hàng'))
+      const req = createMockRequest({ params: { id: 'order_1' }, body: { reason: 'test' } })
+      const res = createMockResponse()
+
+      await expect(returnOrder(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
+    })
+
+    it('should throw NOT_FOUND when order not found', async () => {
+      mockOrderService.returnOrder.mockRejectedValue(new NotFoundError('Order', 'order_999'))
+      const req = createMockRequest({ params: { id: 'order_999' }, body: { reason: 'test' } })
+      const res = createMockResponse()
+
+      await expect(returnOrder(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.NOT_FOUND,
+      })
+    })
+
+    it('should rethrow generic errors', async () => {
+      mockOrderService.returnOrder.mockRejectedValue(new Error('DB error'))
+      const req = createMockRequest({ params: { id: 'order_1' }, body: { reason: 'test' } })
+      const res = createMockResponse()
+
+      await expect(returnOrder(req as any, res as Response)).rejects.toThrow('DB error')
+    })
+  })
+
+  describe('adminUpdateStatus', () => {
+    it('should update order status successfully', async () => {
+      const updated = { ...mockOrder, status: 'shipped' }
+      mockOrderService.adminUpdateStatus.mockResolvedValue(updated as any)
+      const req = createMockRequest({
+        params: { id: 'order_1' },
+        body: { status: 'shipped', reason: 'Đã giao hàng' },
+      })
+      const res = createMockResponse()
+
+      await adminUpdateStatus(req as any, res as Response)
+
+      expect(mockOrderService.adminUpdateStatus).toHaveBeenCalledWith('order_1', 'shipped', {
+        reason: 'Đã giao hàng',
+      })
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+    })
+
+    it('should throw BAD_REQUEST on ValidationError', async () => {
+      mockOrderService.adminUpdateStatus.mockRejectedValue(new ValidationError('Invalid status'))
+      const req = createMockRequest({
+        params: { id: 'order_1' },
+        body: { status: 'invalid' },
+      })
+      const res = createMockResponse()
+
+      await expect(adminUpdateStatus(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
+    })
+
+    it('should throw NOT_FOUND when order not found', async () => {
+      mockOrderService.adminUpdateStatus.mockRejectedValue(new NotFoundError('Order', 'o1'))
+      const req = createMockRequest({ params: { id: 'o1' }, body: { status: 'shipped' } })
+      const res = createMockResponse()
+
+      await expect(adminUpdateStatus(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.NOT_FOUND,
+      })
+    })
+  })
+
+  describe('adminGetOrder', () => {
+    it('should get order by id as admin', async () => {
+      mockOrderService.adminGetOrder.mockResolvedValue(mockOrder as any)
+      const req = createMockRequest({ params: { id: 'order_1' } })
+      const res = createMockResponse()
+
+      await adminGetOrder(req as any, res as Response)
+
+      expect(mockOrderService.adminGetOrder).toHaveBeenCalledWith('order_1')
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+    })
+
+    it('should throw NOT_FOUND when order not found', async () => {
+      mockOrderService.adminGetOrder.mockRejectedValue(new NotFoundError('Order', 'o999'))
+      const req = createMockRequest({ params: { id: 'o999' } })
+      const res = createMockResponse()
+
+      await expect(adminGetOrder(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.NOT_FOUND,
+      })
+    })
+
+    it('should throw BAD_REQUEST on ValidationError', async () => {
+      mockOrderService.adminGetOrder.mockRejectedValue(new ValidationError('Invalid id'))
+      const req = createMockRequest({ params: { id: 'invalid' } })
+      const res = createMockResponse()
+
+      await expect(adminGetOrder(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
+    })
+  })
+
+  describe('adminGetOrders', () => {
+    it('should return admin orders list', async () => {
+      const mockAdminResult = {
+        data: [mockOrder],
+        pagination: { page: 1, limit: 20, total: 1, page_size: 1 },
+      }
+      mockOrderService.adminGetOrders.mockResolvedValue(mockAdminResult as any)
+      const req = createMockRequest({
+        query: { page: '1', limit: '20', status: 'pending' },
+      })
+      const res = createMockResponse()
+
+      await adminGetOrders(req as any, res as Response)
+
+      expect(mockOrderService.adminGetOrders).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 'pending' }),
+        expect.objectContaining({ page: 1, limit: 20 }),
+      )
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+    })
+
+    it('should use default pagination values', async () => {
+      const mockAdminResult = {
+        data: [],
+        pagination: { page: 1, limit: 20, total: 0, page_size: 0 },
+      }
+      mockOrderService.adminGetOrders.mockResolvedValue(mockAdminResult as any)
+      const req = createMockRequest({ query: {} })
+      const res = createMockResponse()
+
+      await adminGetOrders(req as any, res as Response)
+
+      expect(mockOrderService.adminGetOrders).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.objectContaining({ page: 1, limit: 20 }),
+      )
+    })
+  })
+
+  describe('adminBulkUpdateStatus', () => {
+    it('should bulk update order statuses', async () => {
+      const bulkResult = { updated: 3, failed: 0 }
+      mockOrderService.adminBulkUpdateStatus.mockResolvedValue(bulkResult as any)
+      const req = createMockRequest({
+        body: { order_ids: ['o1', 'o2', 'o3'], status: 'shipped', reason: 'Batch update' },
+      })
+      const res = createMockResponse()
+
+      await adminBulkUpdateStatus(req as any, res as Response)
+
+      expect(mockOrderService.adminBulkUpdateStatus).toHaveBeenCalledWith(
+        ['o1', 'o2', 'o3'],
+        'shipped',
+        'Batch update',
+      )
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+    })
+
+    it('should throw BAD_REQUEST on ValidationError', async () => {
+      mockOrderService.adminBulkUpdateStatus.mockRejectedValue(
+        new ValidationError('Invalid status'),
+      )
+      const req = createMockRequest({ body: { order_ids: ['o1'], status: 'invalid' } })
+      const res = createMockResponse()
+
+      await expect(adminBulkUpdateStatus(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
+    })
+
+    it('should throw BAD_REQUEST on BusinessError', async () => {
+      mockOrderService.adminBulkUpdateStatus.mockRejectedValue(new BusinessError('Cannot update'))
+      const req = createMockRequest({ body: { order_ids: ['o1'], status: 'shipped' } })
+      const res = createMockResponse()
+
+      await expect(adminBulkUpdateStatus(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.BAD_REQUEST,
+      })
+    })
+
+    it('should rethrow generic errors', async () => {
+      mockOrderService.adminBulkUpdateStatus.mockRejectedValue(new Error('DB error'))
+      const req = createMockRequest({ body: { order_ids: ['o1'], status: 'shipped' } })
+      const res = createMockResponse()
+
+      await expect(adminBulkUpdateStatus(req as any, res as Response)).rejects.toThrow('DB error')
+    })
+  })
+
+  describe('adminGetOrderCountByStatus', () => {
+    it('should return order counts by status', async () => {
+      const statusCounts = { pending: 5, shipped: 10, delivered: 20, cancelled: 2 }
+      mockOrderService.adminGetOrderCountByStatus.mockResolvedValue(statusCounts as any)
+      const req = createMockRequest()
+      const res = createMockResponse()
+
+      await adminGetOrderCountByStatus(req as any, res as Response)
+
+      expect(mockOrderService.adminGetOrderCountByStatus).toHaveBeenCalled()
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
   })
 })

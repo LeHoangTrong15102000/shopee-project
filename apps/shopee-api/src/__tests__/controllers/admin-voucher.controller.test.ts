@@ -143,4 +143,42 @@ describe('Admin Voucher Controller', () => {
     expect(mockVoucherService.adminGetStats).toHaveBeenCalled()
     expect(res.status).toHaveBeenCalledWith(200)
   })
+
+  // Cover the handleError fallthrough (line 14) — re-throw unknown errors
+  it('adminGetVoucherById rethrows unknown errors', async () => {
+    ;(mockVoucherService.adminGetById as jest.Mock).mockRejectedValue(new Error('Unknown'))
+    const req = createMockRequest({ params: { id: 'x' } })
+    const res = createMockResponse()
+    await expect(adminGetVoucherById(req as Request, res as Response)).rejects.toThrow('Unknown')
+  })
+
+  it('adminUpdateVoucher rethrows unknown errors', async () => {
+    ;(mockVoucherService.adminUpdate as jest.Mock).mockRejectedValue(new Error('DB failure'))
+    const req = createMockRequest({ params: { id: 'v1' }, body: {} })
+    const res = createMockResponse()
+    await expect(adminUpdateVoucher(req as Request, res as Response)).rejects.toThrow('DB failure')
+  })
+
+  it('adminDeleteVoucher rethrows unknown errors', async () => {
+    ;(mockVoucherService.adminDelete as jest.Mock).mockRejectedValue(new Error('Delete error'))
+    const req = createMockRequest({ params: { id: 'v1' } })
+    const res = createMockResponse()
+    await expect(adminDeleteVoucher(req as Request, res as Response)).rejects.toThrow('Delete error')
+  })
+
+  it('adminToggleVoucher rethrows unknown errors', async () => {
+    ;(mockVoucherService.adminToggle as jest.Mock).mockRejectedValue(new Error('Toggle error'))
+    const req = createMockRequest({ params: { id: 'v1' } })
+    const res = createMockResponse()
+    await expect(adminToggleVoucher(req as Request, res as Response)).rejects.toThrow('Toggle error')
+  })
+
+  it('adminGetVoucherUsage rethrows unknown errors', async () => {
+    ;(mockVoucherService.adminGetUsage as jest.Mock).mockRejectedValue(new Error('Usage error'))
+    const req = createMockRequest({ params: { id: 'v1' }, query: {} })
+    const res = createMockResponse()
+    await expect(adminGetVoucherUsage(req as Request, res as Response)).rejects.toThrow(
+      'Usage error',
+    )
+  })
 })

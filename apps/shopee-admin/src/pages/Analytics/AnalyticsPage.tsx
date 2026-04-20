@@ -43,7 +43,7 @@ export default function AnalyticsPage() {
   const { data: byCategory, isLoading: loadingCategory } = useStatsByCategory({
     enabled: activeTab === 'by-category',
   })
-  const { data: chatbot } = useChatbotOverview({ enabled: activeTab === 'chatbot' })
+  const { data: chatbot, isLoading: loadingChatbot } = useChatbotOverview({ enabled: activeTab === 'chatbot' })
   const { data: chatbotPerf, isLoading: loadingChatbotPerf } = useChatbotPerformance(period, {
     enabled: activeTab === 'chatbot',
   })
@@ -142,6 +142,7 @@ export default function AnalyticsPage() {
           />
         </TabsContent>
         <TabsContent value="chatbot">
+          {loadingChatbot && <ChartSkeleton columns={1} />}
           {chatbot && (
             <div className="space-y-6">
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

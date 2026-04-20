@@ -193,15 +193,17 @@ export default function InventoryPage() {
               {t('actions.updateStock')}: {updateProduct?.name}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-1.5">
-            <Label htmlFor="inv-qty">{t('actions.newQuantity')}</Label>
-            <Input
-              id="inv-qty"
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(+e.target.value)}
-              min={0}
-            />
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="inv-qty">{t('actions.newQuantity')}</Label>
+              <Input
+                id="inv-qty"
+                type="number"
+                value={quantity}
+                onChange={(e) => setQuantity(+e.target.value)}
+                min={0}
+              />
+            </div>
           </div>
           <DialogFooter>
             <Button
@@ -223,15 +225,17 @@ export default function InventoryPage() {
               {t('actions.bulkUpdate')} ({selected.length} products)
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-1.5">
-            <Label htmlFor="inv-bulk-qty">{t('actions.setQuantity')}</Label>
-            <Input
-              id="inv-bulk-qty"
-              type="number"
-              value={bulkQty}
-              onChange={(e) => setBulkQty(+e.target.value)}
-              min={0}
-            />
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="inv-bulk-qty">{t('actions.setQuantity')}</Label>
+              <Input
+                id="inv-bulk-qty"
+                type="number"
+                value={bulkQty}
+                onChange={(e) => setBulkQty(+e.target.value)}
+                min={0}
+              />
+            </div>
           </div>
           <DialogFooter>
             <Button

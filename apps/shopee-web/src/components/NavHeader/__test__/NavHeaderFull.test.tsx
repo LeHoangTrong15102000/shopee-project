@@ -266,4 +266,29 @@ describe('NavHeaderFull', () => {
     fireEvent.click(inventoryBadge)
     expect(mockClearInventoryAlerts).toHaveBeenCalledTimes(1)
   })
+
+  it('does not render InventoryAlertBadge when isAdmin=true but isAuthenticated=false', () => {
+    render(<NavHeaderFull {...defaultProps} isAdmin={true} isAuthenticated={false} />)
+    const inventoryBadge = screen.queryByTestId('inventory-alert-badge')
+    expect(inventoryBadge).not.toBeInTheDocument()
+  })
+
+  it('shows the exact count "9" when unreadCount is exactly 9', () => {
+    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} unreadCount={9} />)
+    expect(screen.getByText('9')).toBeInTheDocument()
+    expect(screen.queryByText('9+')).not.toBeInTheDocument()
+  })
+
+  it('renders NotificationPopover inside the notification bell popover', () => {
+    render(<NavHeaderFull {...defaultProps} isAuthenticated={true} />)
+    const notificationPopover = screen.getByTestId('notification-popover')
+    expect(notificationPopover).toBeInTheDocument()
+    expect(notificationPopover).toHaveTextContent('Authenticated')
+  })
+
+  it('renders AppDownloadPopover inside the download app popover', () => {
+    render(<NavHeaderFull {...defaultProps} />)
+    const appDownloadPopovers = screen.getAllByTestId('app-download-popover')
+    expect(appDownloadPopovers.length).toBeGreaterThanOrEqual(1)
+  })
 })

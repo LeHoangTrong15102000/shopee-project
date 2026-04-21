@@ -783,3 +783,205 @@ describe('ProductQA', () => {
     })
   })
 })
+
+describe('ProductQA – extended', () => {
+  let queryClient: QueryClient
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockState.isAuthenticated = false
+    mockState.isLoading = false
+    mockState.hasNextPage = false
+    mockState.isFetchingNextPage = false
+    mockState.questionsData = {
+      data: {
+        data: {
+          questions: [],
+          pagination: { page: 1, limit: 5, total: 0, total_pages: 0 },
+        },
+      },
+    }
+
+    queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+  })
+
+  const renderComponent = (props = {}) => {
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <ProductQA productId="test-product-id" {...props} />
+      </QueryClientProvider>,
+    )
+  }
+
+  const singleQuestion = {
+    _id: 'q1',
+    question: 'Is this product good?',
+    user: { _id: 'u1', name: 'John Doe', avatar: null },
+    likes_count: 5,
+    is_liked: false,
+    answers: [],
+    createdAt: '2026-03-18T10:00:00Z',
+  }
+
+  const singleQuestionWithAnswer = {
+    _id: 'q1',
+    question: 'Is this product good?',
+    user: { _id: 'u1', name: 'John Doe', avatar: null },
+    likes_count: 5,
+    is_liked: false,
+    answers: [
+      {
+        _id: 'a1',
+        answer: 'Yes, great product!',
+        user: { _id: 'u2', name: 'Seller', avatar: null, is_seller: false },
+        likes_count: 2,
+        is_liked: false,
+        createdAt: '2026-03-18T11:00:00Z',
+      },
+    ],
+    createdAt: '2026-03-18T10:00:00Z',
+  }
+
+  describe('Like when unauthenticated', () => {
+    it('like question when unauthenticated calls toast.warning', async () => {
+      const user = userEvent.setup()
+      mockState.isAuthenticated = false
+      mockState.questionsData = {
+        data: {
+          data: {
+            questions: [singleQuestion],
+            pagination: { page: 1, limit: 5, total: 1, total_pages: 1 },
+          },
+        },
+      }
+
+      renderComponent()
+
+      await waitFor(() => {
+        expect(screen.getByText('Is this product good?')).toBeTruthy()
+      })
+
+      // Like question button has aria-label t('likeQuestionAria') → "likeQuestionAria"
+      const likeBtn = screen.getByRole('button', { name: 'likeQuestionAria' })
+      await user.click(likeBtn)
+
+      expect(mockToastWarning).toHaveBeenCalledTimes(1)
+    })
+
+    it('like answer when unauthenticated calls toast.warning', async () => {
+      const user = userEvent.setup()
+      mockState.isAuthenticated = false
+      mockState.questionsData = {
+        data: {
+          data: {
+            questions: [singleQuestionWithAnswer],
+            pagination: { page: 1, limit: 5, total: 1, total_pages: 1 },
+          },
+        },
+      }
+
+      renderComponent()
+
+      await waitFor(() => {
+        expect(screen.getByText('Yes, great product!')).toBeTruthy()
+      })
+
+      // Like answer button has aria-label t('likeAnswerAria') → "likeAnswerAria"
+      const likeAnswerBtn = screen.getByRole('button', { name: 'likeAnswerAria' })
+      await user.click(likeAnswerBtn)
+
+      expect(mockToastWarning).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('Ask question with empty text', () => {
+    it('does not call mutation when question text is empty', async () => {
+      const user = userEvent.setup()
+      mockState.isAuthenticated = true
+
+      renderComponent()
+
+      await waitFor(() => {
+        expect(screen.getByText('submitQuestion')).toBeTruthy()
+      })
+
+      const submitBtn = screen.getByText('submitQuestion') as HTMLButtonElement
+      // Button should be disabled when textarea is empty
+      expect(submitBtn.disabled).toBe(true)
+
+      // Attempt to click the disabled button — mutation should NOT fire
+      await user.click(submitBtn)
+
+      // toast.success is only called on mutation success; it should not have been called
+      expect(mockToastSuccess).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Cancel reply button', () => {
+    it('hides the reply form when cancel is clicked', async () => {
+      const user = userEvent.setup()
+      mockState.isAuthenticated = true
+      mockState.questionsData = {
+        data: {
+          data: {
+            questions: [singleQuestion],
+            pagination: { page: 1, limit: 5, total: 1, total_pages: 1 },
+          },
+        },
+      }
+
+      renderComponent()
+
+      await waitFor(() => {
+        expect(screen.getByText('Reply (0)')).toBeTruthy()
+      })
+
+      // Open the reply form
+      const replyBtn = screen.getByText('Reply (0)')
+      await user.click(replyBtn)
+
+      await waitFor(() => {
+        expect(document.querySelector('#reply-form-q1')).toBeTruthy()
+      })
+
+      // Click cancel (cancelReply key → "cancelReply" from t mock)
+      const cancelBtn = screen.getByText('cancelReply')
+      await user.click(cancelBtn)
+
+      await waitFor(() => {
+        expect(document.querySelector('#reply-form-q1')).toBeNull()
+      })
+    })
+  })
+
+  describe('Sort dropdown', () => {
+    it('renders sort dropdown with correct options', async () => {
+      renderComponent()
+
+      await waitFor(() => {
+        const sortSelect = document.querySelector<HTMLSelectElement>('#sort-select')
+        expect(sortSelect).toBeTruthy()
+      })
+
+      const sortSelect = document.querySelector<HTMLSelectElement>('#sort-select')!
+      const options = Array.from(sortSelect.options).map((o) => o.value)
+      expect(options).toContain('newest')
+      expect(options).toContain('most_liked')
+      expect(options).toContain('most_answered')
+    })
+
+    it('sort dropdown defaults to "newest"', async () => {
+      renderComponent()
+
+      await waitFor(() => {
+        const sortSelect = document.querySelector<HTMLSelectElement>('#sort-select')
+        expect(sortSelect).toBeTruthy()
+      })
+
+      const sortSelect = document.querySelector<HTMLSelectElement>('#sort-select')!
+      expect(sortSelect.value).toBe('newest')
+    })
+  })
+})

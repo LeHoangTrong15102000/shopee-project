@@ -179,4 +179,103 @@ describe('OrderDetail', () => {
     render(<OrderDetail />, { wrapper })
     expect(screen.getByText('Không tìm thấy đơn hàng')).toBeInTheDocument()
   })
+
+  it('renders note section with label when order.note is present', () => {
+    mockUseOrderDetailReturn = {
+      ...defaultOrderDetailReturn,
+      order: { ...defaultOrderDetailReturn.order, note: 'Please pack carefully' },
+    }
+    render(<OrderDetail />, { wrapper })
+    expect(screen.getByText('Ghi chú:')).toBeInTheDocument()
+    expect(screen.getByText('Please pack carefully')).toBeInTheDocument()
+  })
+
+  it('does not render note section when order.note is absent', () => {
+    mockUseOrderDetailReturn = {
+      ...defaultOrderDetailReturn,
+      order: { ...defaultOrderDetailReturn.order, note: undefined },
+    }
+    render(<OrderDetail />, { wrapper })
+    expect(screen.queryByText('Ghi chú:')).not.toBeInTheDocument()
+  })
+
+  it('renders CancelOrderModal when showCancelModal is true', () => {
+    // CancelOrderModal is mocked to return null at the module level;
+    // this test verifies the showCancelModal: true branch mounts without error.
+    mockUseOrderDetailReturn = { ...defaultOrderDetailReturn, showCancelModal: true }
+    render(<OrderDetail />, { wrapper })
+    expect(screen.getByText('John Doe')).toBeInTheDocument()
+  })
+
+  it('renders ReturnOrderModal when showReturnModal is true', () => {
+    mockUseOrderDetailReturn = { ...defaultOrderDetailReturn, showReturnModal: true }
+    render(<OrderDetail />, { wrapper })
+    // ReturnOrderModal is mocked to return null; confirm page renders without crashing
+    expect(screen.getByText('John Doe')).toBeInTheDocument()
+  })
+
+  it('translates bank_transfer payment method', () => {
+    mockUseOrderDetailReturn = {
+      ...defaultOrderDetailReturn,
+      order: { ...defaultOrderDetailReturn.order, paymentMethod: 'bank_transfer' },
+    }
+    render(<OrderDetail />, { wrapper })
+    expect(screen.getByText('Chuyển khoản ngân hàng')).toBeInTheDocument()
+  })
+
+  it('translates e_wallet payment method', () => {
+    mockUseOrderDetailReturn = {
+      ...defaultOrderDetailReturn,
+      order: { ...defaultOrderDetailReturn.order, paymentMethod: 'e_wallet' },
+    }
+    render(<OrderDetail />, { wrapper })
+    expect(screen.getByText('Ví điện tử')).toBeInTheDocument()
+  })
+
+  it('translates credit_card payment method', () => {
+    mockUseOrderDetailReturn = {
+      ...defaultOrderDetailReturn,
+      order: { ...defaultOrderDetailReturn.order, paymentMethod: 'credit_card' },
+    }
+    render(<OrderDetail />, { wrapper })
+    expect(screen.getByText('Thẻ tín dụng')).toBeInTheDocument()
+  })
+
+  it('falls back to raw value for unknown payment method', () => {
+    mockUseOrderDetailReturn = {
+      ...defaultOrderDetailReturn,
+      order: { ...defaultOrderDetailReturn.order, paymentMethod: 'unknown_method' },
+    }
+    render(<OrderDetail />, { wrapper })
+    expect(screen.getByText('unknown_method')).toBeInTheDocument()
+  })
+
+  it('renders order timeline component', () => {
+    render(<OrderDetail />, { wrapper })
+    expect(screen.getByTestId('order-timeline')).toBeInTheDocument()
+  })
+
+  it('renders OrderActionButtons component', () => {
+    render(<OrderDetail />, { wrapper })
+    expect(screen.getByTestId('action-buttons')).toBeInTheDocument()
+  })
+
+  it('renders OrderSummarySection component', () => {
+    render(<OrderDetail />, { wrapper })
+    expect(screen.getByTestId('order-summary')).toBeInTheDocument()
+  })
+
+  it('renders OrderDetailItems component', () => {
+    render(<OrderDetail />, { wrapper })
+    expect(screen.getByTestId('order-items')).toBeInTheDocument()
+  })
+
+  it('renders order timeline for delivered status order', () => {
+    mockUseOrderDetailReturn = {
+      ...defaultOrderDetailReturn,
+      order: { ...defaultOrderDetailReturn.order, status: 'delivered' },
+    }
+    render(<OrderDetail />, { wrapper })
+    expect(screen.getByTestId('order-timeline')).toBeInTheDocument()
+  })
 })

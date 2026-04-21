@@ -750,4 +750,34 @@ describe('LocationStep', () => {
       expect(provinceSelect.value).toBe('')
     })
   })
+
+  describe('Additional Edge Cases', () => {
+    it('province select has correct number of options (2 provinces + 1 default)', () => {
+      const form = createMockForm()
+      render(<LocationStep {...defaultProps} form={form} />)
+
+      const provinceSelect = screen.getAllByRole('combobox')[0]
+      const options = provinceSelect.querySelectorAll('option')
+      // 1 default "Chọn tỉnh/thành" + 2 province options from mock
+      expect(options).toHaveLength(3)
+    })
+
+    it('both loading spinners have animate-spin class when both district and ward are loading', () => {
+      const form = createMockForm()
+      const { container } = render(
+        <LocationStep
+          {...defaultProps}
+          form={form}
+          isLoadingDistricts={true}
+          isLoadingWards={true}
+        />,
+      )
+
+      const spinners = container.querySelectorAll('.animate-spin')
+      expect(spinners).toHaveLength(2)
+      spinners.forEach((spinner) => {
+        expect(spinner.classList.contains('animate-spin')).toBe(true)
+      })
+    })
+  })
 })

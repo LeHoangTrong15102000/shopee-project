@@ -5,6 +5,8 @@ import BenefitsPanel from '../components/BenefitsPanel'
 import CircularProgressRing from '../components/CircularProgressRing'
 import ProfileCompletionTip from '../components/ProfileCompletionTip'
 import CongratulatoryPanel from '../components/CongratulatoryPanel'
+import ProfileCompletion from '../ProfileCompletion'
+import type { User } from 'src/types/user.type'
 
 vi.mock('framer-motion', () => ({
   motion: new Proxy(
@@ -13,8 +15,9 @@ vi.mock('framer-motion', () => ({
       get:
         (_target, prop) =>
         ({ children, ...props }: any) => {
-          const Tag = typeof prop === 'string' ? prop : 'div'
-          return <Tag {...props}>{children}</Tag>
+          const { initial, animate, exit, transition, variants, ...rest } = props
+          const Tag = (typeof prop === 'string' ? prop : 'div') as any
+          return <Tag {...rest}>{children}</Tag>
         },
     },
   ),
@@ -24,6 +27,62 @@ vi.mock('framer-motion', () => ({
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: 'vi' } }),
 }))
+
+const emptyUser: User = {
+  _id: 'u1',
+  roles: ['User'],
+  email: 'test@example.com',
+  createdAt: '2024-01-01',
+  updatedAt: '2024-01-01',
+}
+
+const fullUser: User = {
+  ...emptyUser,
+  name: 'Nguyễn Test',
+  phone: '0901234567',
+  address: '123 Đường ABC',
+  date_of_birth: '1990-01-15T00:00:00.000Z',
+  avatar: 'avatar.jpg',
+}
+
+describe('ProfileCompletion (Main Component)', () => {
+  it('renders profile completion title', () => {
+    render(<BrowserRouter><ProfileCompletion user={emptyUser} /></BrowserRouter>)
+    expect(screen.getByText('profileCompletion.title')).toBeInTheDocument()
+  })
+
+  it('renders remaining text for incomplete profile', () => {
+    render(<BrowserRouter><ProfileCompletion user={emptyUser} /></BrowserRouter>)
+    expect(screen.getByText('profileCompletion.remaining')).toBeInTheDocument()
+  })
+
+  it('renders complete message for 100% profile', () => {
+    render(<BrowserRouter><ProfileCompletion user={fullUser} /></BrowserRouter>)
+    expect(screen.getByText('profileCompletion.complete')).toBeInTheDocument()
+  })
+
+  it('renders progress progressbar', () => {
+    const { container } = render(<BrowserRouter><ProfileCompletion user={emptyUser} /></BrowserRouter>)
+    expect(container.querySelector('[role="progressbar"]')).toBeInTheDocument()
+  })
+
+  it('renders compact version when compact=true', () => {
+    const { container } = render(
+      <BrowserRouter><ProfileCompletion user={emptyUser} compact={true} /></BrowserRouter>
+    )
+    expect(container.querySelector('[role="progressbar"]')).toBeInTheDocument()
+  })
+
+  it('compact shows completed text at 100%', () => {
+    render(<BrowserRouter><ProfileCompletion user={fullUser} compact={true} /></BrowserRouter>)
+    expect(screen.getByText('profileCompletion.completed')).toBeInTheDocument()
+  })
+
+  it('renders with null user', () => {
+    render(<BrowserRouter><ProfileCompletion user={null} /></BrowserRouter>)
+    expect(screen.getByText('profileCompletion.title')).toBeInTheDocument()
+  })
+})
 
 describe('ProfileCompletion Components', () => {
   describe('CongratulatoryPanel', () => {

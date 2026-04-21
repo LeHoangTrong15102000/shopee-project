@@ -146,4 +146,72 @@ describe('OrderPreview', () => {
     render(<OrderPreview {...defaultProps} voucherCode="SAVE10" voucherDiscount={20000} />)
     expect(screen.getByText(/SAVE10/)).toBeInTheDocument()
   })
+
+  it('shows noShipping message when selectedShippingMethod is null', () => {
+    render(<OrderPreview {...defaultProps} selectedShippingMethod={null} />)
+    expect(screen.getByText('Chưa chọn phương thức vận chuyển')).toBeInTheDocument()
+  })
+
+  it('shows noPayment message when selectedPaymentMethod is null', () => {
+    render(<OrderPreview {...defaultProps} selectedPaymentMethod={null} />)
+    expect(screen.getByText('Chưa chọn phương thức thanh toán')).toBeInTheDocument()
+  })
+
+  it('shows default badge when address isDefault is true', () => {
+    render(<OrderPreview {...defaultProps} selectedAddress={{ ...mockAddress, isDefault: true }} />)
+    expect(screen.getByText('Mặc định')).toBeInTheDocument()
+  })
+
+  it('shows line-through original price when price_before_discount > price', () => {
+    // mockItems[0] has price_before_discount 150000 > price 100000
+    const { container } = render(<OrderPreview {...defaultProps} />)
+    const lineThroughEls = container.querySelectorAll('.line-through')
+    expect(lineThroughEls.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('renders coins discount row when coinsUsed > 0', () => {
+    render(<OrderPreview {...defaultProps} coinsUsed={5000} />)
+    expect(screen.getByText(/Shopee Xu/)).toBeInTheDocument()
+    expect(screen.getByText(/5000 xu/)).toBeInTheDocument()
+  })
+
+  it('renders voucher discount row when voucherDiscount > 0', () => {
+    render(<OrderPreview {...defaultProps} voucherDiscount={15000} />)
+    expect(screen.getByText(/Voucher giảm giá/)).toBeInTheDocument()
+  })
+
+  it('renders savings line when totalDiscount > 0', () => {
+    render(<OrderPreview {...defaultProps} voucherDiscount={10000} />)
+    expect(screen.getByText(/Tiết kiệm/)).toBeInTheDocument()
+  })
+
+  it('displays multiple items correctly', () => {
+    const secondItem = {
+      ...mockItems[0],
+      _id: 'purchase-2',
+      product: {
+        ...mockItems[0].product,
+        _id: 'product-2',
+        name: 'Test Product 2',
+        image: 'test-image-2.jpg',
+      },
+      price: 200000,
+      price_before_discount: 200000,
+      buy_count: 1,
+    }
+    render(<OrderPreview {...defaultProps} items={[...mockItems, secondItem]} />)
+    expect(screen.getByText('Test Product 1')).toBeInTheDocument()
+    expect(screen.getByText('Test Product 2')).toBeInTheDocument()
+  })
+
+  it('shows processing text on place order button when isPlacingOrder is true', () => {
+    render(<OrderPreview {...defaultProps} isPlacingOrder={true} />)
+    // The Button mock renders 'Đang xử lý...' when isLoading is true
+    expect(screen.getByText('Đang xử lý...')).toBeInTheDocument()
+  })
+
+  it('does not render note section when note is empty string', () => {
+    render(<OrderPreview {...defaultProps} note="" />)
+    expect(screen.queryByText('Ghi chú đơn hàng')).not.toBeInTheDocument()
+  })
 })

@@ -290,4 +290,47 @@ describe('DailyCheckInPage', () => {
     const multipliers = container.querySelectorAll('.text-sm.font-bold')
     expect(multipliers.length).toBe(4)
   })
+
+  it('DailyCheckIn component mock renders with correct class', () => {
+    const Wrapper = createWrapper()
+    render(React.createElement(DailyCheckInPage), { wrapper: Wrapper })
+
+    const component = screen.getByTestId('daily-checkin-component')
+    expect(component).toBeInTheDocument()
+    expect(component.className).toMatch(/w-full/)
+    expect(component.className).toMatch(/max-w-md/)
+  })
+
+  it('all 4 reward milestone days display (3, 7, 14, 30)', () => {
+    const Wrapper = createWrapper()
+    render(React.createElement(DailyCheckInPage), { wrapper: Wrapper })
+
+    // t('milestone', { count: N }) returns "${N} ngày"
+    expect(screen.getByText('3 ngày')).toBeInTheDocument()
+    expect(screen.getByText('7 ngày')).toBeInTheDocument()
+    expect(screen.getByText('14 ngày')).toBeInTheDocument()
+    expect(screen.getByText('30 ngày')).toBeInTheDocument()
+  })
+
+  it('all 4 multiplier values display (x1.5, x2, x2.5, x3)', () => {
+    const Wrapper = createWrapper()
+    render(React.createElement(DailyCheckInPage), { wrapper: Wrapper })
+
+    // t('rewards.multiplier', { value: V }) returns "x${V} xu"
+    expect(screen.getByText('x1.5 xu')).toBeInTheDocument()
+    expect(screen.getByText('x2 xu')).toBeInTheDocument()
+    expect(screen.getByText('x2.5 xu')).toBeInTheDocument()
+    expect(screen.getByText('x3 xu')).toBeInTheDocument()
+  })
+
+  it('tips section contains all 3 tips', () => {
+    const Wrapper = createWrapper()
+    render(React.createElement(DailyCheckInPage), { wrapper: Wrapper })
+
+    expect(screen.getByText('• Điểm danh liên tục để nhận thưởng cao hơn')).toBeInTheDocument()
+    expect(
+      screen.getByText('• Chuỗi điểm danh sẽ bị reset nếu bạn bỏ lỡ 1 ngày'),
+    ).toBeInTheDocument()
+    expect(screen.getByText('• Xu có thể dùng để đổi voucher giảm giá')).toBeInTheDocument()
+  })
 })

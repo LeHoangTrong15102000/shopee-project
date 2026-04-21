@@ -46,12 +46,38 @@ describe('EWalletFlowViews', () => {
       render(<WaitingView walletName="ZaloPay" />)
       expect(screen.getByText(/ZaloPay/)).toBeInTheDocument()
     })
+
+    it('renders "eWallet.waitingPayment" text', () => {
+      render(<WaitingView walletName="MoMo" />)
+      expect(screen.getByText('Đang chờ thanh toán...')).toBeInTheDocument()
+    })
+
+    it('renders "eWallet.processingTransaction" text', () => {
+      render(<WaitingView walletName="MoMo" />)
+      expect(screen.getByText('Đang xử lý giao dịch')).toBeInTheDocument()
+    })
   })
 
   describe('SuccessView', () => {
     it('renders success with formatted amount', () => {
       render(<SuccessView amount={200000} />)
       expect(screen.getByText(/200/)).toBeInTheDocument()
+    })
+
+    it('renders "eWallet.paymentSuccess" heading', () => {
+      render(<SuccessView amount={100000} />)
+      expect(screen.getByText('Thanh toán thành công!')).toBeInTheDocument()
+    })
+
+    it('renders "eWallet.orderProcessing" text', () => {
+      render(<SuccessView amount={100000} />)
+      expect(screen.getByText('Đơn hàng của bạn đang được xử lý')).toBeInTheDocument()
+    })
+
+    it('renders with zero amount', () => {
+      render(<SuccessView amount={0} />)
+      expect(screen.getByText('Thanh toán thành công!')).toBeInTheDocument()
+      expect(screen.getByText(/0/)).toBeInTheDocument()
     })
   })
 
@@ -76,6 +102,17 @@ describe('EWalletFlowViews', () => {
       fireEvent.click(buttons[1])
       expect(onCancel).toHaveBeenCalled()
     })
+
+    it('renders "eWallet.paymentFailed" heading', () => {
+      render(<FailedView message="some error" onRetry={vi.fn()} onCancel={vi.fn()} />)
+      expect(screen.getByText('Thanh toán thất bại')).toBeInTheDocument()
+    })
+
+    it('renders both button texts (retry and choose other method)', () => {
+      render(<FailedView message="some error" onRetry={vi.fn()} onCancel={vi.fn()} />)
+      expect(screen.getByText('Thử lại')).toBeInTheDocument()
+      expect(screen.getByText('Chọn phương thức khác')).toBeInTheDocument()
+    })
   })
 
   describe('TimeoutView', () => {
@@ -98,6 +135,18 @@ describe('EWalletFlowViews', () => {
       const buttons = screen.getAllByRole('button')
       fireEvent.click(buttons[1])
       expect(onCancel).toHaveBeenCalled()
+    })
+
+    it('renders "eWallet.qrExpired" heading', () => {
+      render(<TimeoutView onRegenerateQR={vi.fn()} onCancel={vi.fn()} />)
+      expect(screen.getByText('Mã QR đã hết hạn')).toBeInTheDocument()
+    })
+
+    it('renders "eWallet.qrExpiredMessage" text', () => {
+      render(<TimeoutView onRegenerateQR={vi.fn()} onCancel={vi.fn()} />)
+      expect(
+        screen.getByText('Mã QR thanh toán đã hết hạn. Vui lòng tạo mã mới để tiếp tục.'),
+      ).toBeInTheDocument()
     })
   })
 })

@@ -339,4 +339,97 @@ describe('ComparisonTableDesktop', () => {
     )
     expect(screen.getByText(/200\.000/)).toBeInTheDocument()
   })
+
+  it('renders BestBadge for best rating when bestValues.bestRating matches product.rating', () => {
+    // product1 has rating 4.5 which equals bestValues.bestRating
+    wrap(
+      <ComparisonTableDesktop
+        compareList={[product1, product2] as any}
+        bestValues={bestValues}
+        removeFromCompare={removeFromCompare}
+        handleAddToCart={handleAddToCart}
+        reduceMotion={true}
+      />,
+    )
+    // The BestBadge for highest rated uses the 'highestRated' translation key
+    expect(screen.getByText(/highestRated|Đánh giá cao nhất/)).toBeInTheDocument()
+  })
+
+  it('renders BestBadge for best sold count when bestValues.bestSold matches product.sold', () => {
+    // product1 has sold 500 which equals bestValues.bestSold
+    wrap(
+      <ComparisonTableDesktop
+        compareList={[product1, product2] as any}
+        bestValues={bestValues}
+        removeFromCompare={removeFromCompare}
+        handleAddToCart={handleAddToCart}
+        reduceMotion={true}
+      />,
+    )
+    expect(screen.getByText(/bestSeller|Bán chạy nhất/)).toBeInTheDocument()
+  })
+
+  it('renders BestBadge for best stock quantity when bestValues.bestStock matches product.quantity', () => {
+    // product1 has quantity 50 which equals bestValues.bestStock
+    wrap(
+      <ComparisonTableDesktop
+        compareList={[product1, product2] as any}
+        bestValues={bestValues}
+        removeFromCompare={removeFromCompare}
+        handleAddToCart={handleAddToCart}
+        reduceMotion={true}
+      />,
+    )
+    expect(screen.getByText(/Còn nhiều nhất|Most in stock/)).toBeInTheDocument()
+  })
+
+  it('applies green highlight class to rating cell of best-rated product', () => {
+    wrap(
+      <ComparisonTableDesktop
+        compareList={[product1, product2] as any}
+        bestValues={bestValues}
+        removeFromCompare={removeFromCompare}
+        handleAddToCart={handleAddToCart}
+        reduceMotion={false}
+      />,
+    )
+    const cells = screen.getAllByRole('cell')
+    // There should be at least one cell with bg-green-50 for the best rating row
+    const greenCells = cells.filter((c) => c.classList.contains('bg-green-50'))
+    expect(greenCells.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('renders table with a single product in compareList', () => {
+    wrap(
+      <ComparisonTableDesktop
+        compareList={[product1] as any}
+        bestValues={null}
+        removeFromCompare={removeFromCompare}
+        handleAddToCart={handleAddToCart}
+        reduceMotion={false}
+      />,
+    )
+    expect(screen.getByRole('table')).toBeInTheDocument()
+    expect(screen.getByText('Sản phẩm A')).toBeInTheDocument()
+    // Only one header column for the single product
+    const columnHeaders = screen.getAllByRole('columnheader')
+    // One for attribute column + one for the product
+    expect(columnHeaders).toHaveLength(2)
+  })
+
+  it('renders table with no product columns when compareList is empty', () => {
+    wrap(
+      <ComparisonTableDesktop
+        compareList={[] as any}
+        bestValues={null}
+        removeFromCompare={removeFromCompare}
+        handleAddToCart={handleAddToCart}
+        reduceMotion={false}
+      />,
+    )
+    expect(screen.getByRole('table')).toBeInTheDocument()
+    // Only the attribute column header is present, no product columns
+    const columnHeaders = screen.getAllByRole('columnheader')
+    expect(columnHeaders).toHaveLength(1)
+  })
 })

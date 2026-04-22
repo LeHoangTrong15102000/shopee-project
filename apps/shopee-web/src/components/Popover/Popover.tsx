@@ -1,4 +1,4 @@
-import { useState, useRef, useId, useEffect, type ElementType } from 'react'
+import { useState, useRef, useId, useEffect, useCallback, type ElementType } from 'react'
 import {
   useFloating,
   FloatingPortal,
@@ -7,6 +7,7 @@ import {
   offset,
   flip,
   useMergeRefs,
+  autoUpdate,
   type Placement,
 } from '@floating-ui/react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
@@ -57,11 +58,12 @@ const Popover = ({
       }),
     ],
     placement: placement,
+    whileElementsMounted: autoUpdate,
   })
 
   const mergedFloatingRef = useMergeRefs([refs.setFloating, floatingRef])
 
-  const showPopover = () => {
+  const showPopover = useCallback(() => {
     // Cancel any pending hide when mouse re-enters trigger or popup
     if (hideTimeoutRef.current) {
       clearTimeout(hideTimeoutRef.current)
@@ -73,47 +75,44 @@ const Popover = ({
     requestAnimationFrame(() => {
       justOpenedViaHover.current = false
     })
-  }
+  }, [])
 
-  const hidePopover = () => {
+  const hidePopover = useCallback(() => {
     // Delay hide to allow mouse to travel from trigger to popup (or vice versa)
     hideTimeoutRef.current = setTimeout(() => {
       setIsOpen(false)
       hideTimeoutRef.current = null
     }, 150)
-  }
+  }, [])
 
-  const togglePopover = () => {
+  const togglePopover = useCallback(() => {
     // Skip toggle if mouseenter just opened the popover (touch device tap fires both)
     if (justOpenedViaHover.current) return
     setIsOpen((prev) => !prev)
-  }
+  }, [])
 
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape' && isOpen) {
-      event.preventDefault()
-      setIsOpen(false)
-      // Return focus to trigger element
-      if (refs.reference.current && 'focus' in refs.reference.current) {
-        ;(refs.reference.current as HTMLElement).focus()
-      }
-    }
-  }
-
-  const handleTriggerKeyDown = (event: React.KeyboardEvent) => {
+  const handleTriggerKeyDown = useCallback((event: React.KeyboardEvent) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
       openedViaKeyboard.current = true
       setIsOpen((prev) => !prev)
     }
-  }
+  }, [])
 
   useEffect(() => {
-    if (isOpen) {
-      document.addEventListener('keydown', handleKeyDown)
-      return () => document.removeEventListener('keydown', handleKeyDown)
+    if (!isOpen) return
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        setIsOpen(false)
+        if (refs.reference.current && 'focus' in refs.reference.current) {
+          ;(refs.reference.current as HTMLElement).focus()
+        }
+      }
     }
-  }, [isOpen, handleKeyDown])
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen, refs.reference])
 
   // Cleanup hide timeout on unmount
   useEffect(() => {
@@ -201,8 +200,8 @@ const Popover = ({
             >
               {/* Invisible hover bridge — fills the gap between trigger and popup so mouse doesn't lose contact */}
               <div
-                className="absolute left-0 right-0 h-3"
-                style={{ top: '-12px' }}
+                className="absolute left-0 right-0"
+                style={{ top: '-14px', height: '14px' }}
                 aria-hidden="true"
               />
               {enableArrow && (

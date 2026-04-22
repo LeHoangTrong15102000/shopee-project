@@ -19,6 +19,7 @@ vi.mock('@floating-ui/react', () => ({
   shift: vi.fn(),
   offset: vi.fn(),
   flip: vi.fn(),
+  autoUpdate: vi.fn(),
   useMergeRefs: (refs: any[]) => refs[0],
 }))
 

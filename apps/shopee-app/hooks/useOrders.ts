@@ -7,18 +7,19 @@ import {
   returnOrder,
   getOrderTracking,
 } from '@/apis/order.api'
+import { type OrderStatusType } from '@/constants/order'
 
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 
 export const orderKeys = {
-  all: (status?: number) => ['orders', status] as const,
+  all: (status?: OrderStatusType) => ['orders', status] as const,
   detail: (id: string) => ['order', id] as const,
   tracking: (id: string) => ['order-tracking', id] as const,
 }
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
 
-export function useOrders(status?: number) {
+export function useOrders(status?: OrderStatusType) {
   return useInfiniteQuery({
     queryKey: orderKeys.all(status),
     queryFn: ({ pageParam }) =>

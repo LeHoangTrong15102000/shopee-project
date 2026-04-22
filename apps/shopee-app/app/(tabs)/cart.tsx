@@ -15,9 +15,8 @@ import CartItemRow from '@/components/cart/CartItem'
 import CartSummaryBar from '@/components/cart/CartSummaryBar'
 import CartSkeleton from '@/components/cart/CartSkeleton'
 import { useDialog } from '@/components/ui/DialogProvider'
-import { DialogProvider } from '@/components/ui/DialogProvider'
 
-function CartContent() {
+export default function CartScreen() {
   const colors = useColors()
   const router = useRouter()
   const { showConfirm } = useDialog()
@@ -154,13 +153,5 @@ function CartContent() {
         </>
       )}
     </SafeAreaView>
-  )
-}
-
-export default function CartScreen() {
-  return (
-    <DialogProvider>
-      <CartContent />
-    </DialogProvider>
   )
 }

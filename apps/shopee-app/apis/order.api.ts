@@ -1,4 +1,5 @@
 import http from '@/utils/http'
+import { type OrderStatusType } from '@/constants/order'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -25,7 +26,7 @@ export interface OrderItem {
 
 export interface Order {
   _id: string
-  status: number
+  status: OrderStatusType
   items: OrderItem[]
   total_price: number
   address: string
@@ -53,7 +54,7 @@ export interface TrackingStep {
 
 // ─── Order API ────────────────────────────────────────────────────────────────
 
-export async function getOrders(params: { status?: number; page?: number; limit?: number } = {}) {
+export async function getOrders(params: { status?: OrderStatusType; page?: number; limit?: number } = {}) {
   const res = await http.get<ApiResponse<OrdersPage>>('orders', { params })
   return res.data
 }

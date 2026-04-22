@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router'
 import { AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { formatPrice, getDiscountPercent } from '@/utils/price'
-import { Product } from '@/services/product.api'
+import { Product } from '@/types/product.type'
 import type { ProductDetail } from '@/apis/product-detail.api'
 
 const CARD_GAP = 8

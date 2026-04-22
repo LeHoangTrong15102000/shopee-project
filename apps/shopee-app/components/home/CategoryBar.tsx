@@ -2,7 +2,7 @@ import React from 'react'
 import { ScrollView } from 'react-native'
 import { Chip } from '@/components/ui'
 import { useTranslation } from 'react-i18next'
-import { Category } from '@/services/product.api'
+import { Category } from '@/types/product.type'
 
 interface CategoryBarProps {
   categories: Category[]

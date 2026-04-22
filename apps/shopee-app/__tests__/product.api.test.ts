@@ -1,6 +1,6 @@
 import { setupServer } from 'msw/node'
 import { handlers } from '../__mocks__/msw/handlers'
-import { getProducts, getCategories } from '../services/product.api'
+import { getProducts, getCategories } from '../apis/product.api'
 import { http, HttpResponse } from 'msw'
 
 const server = setupServer(...handlers)

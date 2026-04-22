@@ -11,11 +11,10 @@ import {
   useSetDefaultAddress,
 } from '@/hooks/useAddresses'
 import { useDialog } from '@/components/ui/DialogProvider'
-import { DialogProvider } from '@/components/ui/DialogProvider'
 import AddressCard from '@/components/address/AddressCard'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
 
-function AddressListContent() {
+export default function AddressListScreen() {
   const colors = useColors()
   const router = useRouter()
   const { mode } = useLocalSearchParams<{ mode?: string }>()
@@ -43,59 +42,6 @@ function AddressListContent() {
   }
 
   return (
-    <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
-      {addresses.length === 0 && !isLoading ? (
-        <View className="flex-1 items-center justify-center">
-          <EmptyState icon={MapPin} message="Chưa có địa chỉ nào" />
-        </View>
-      ) : (
-        <FlatList
-          data={addresses}
-          keyExtractor={(item: any) => item._id}
-          renderItem={({ item }: { item: any }) => (
-            <AddressCard
-              address={item}
-              selectable={isSelectMode}
-              onSelect={isSelectMode ? handleSelect : undefined}
-              onEdit={
-                !isSelectMode ? (id) => router.push({ pathname: '/address-form', params: { id } }) : undefined
-              }
-              onDelete={!isSelectMode ? handleDelete : undefined}
-              onSetDefault={!isSelectMode ? (id) => setDefault(id) : undefined}
-            />
-          )}
-        />
-      )}
-
-      {/* FAB for adding new address */}
-      {!isSelectMode && (
-        <TouchableOpacity
-          onPress={() => router.push('/address-form')}
-          style={{
-            position: 'absolute',
-            bottom: 24,
-            right: 24,
-            width: 56,
-            height: 56,
-            borderRadius: 28,
-            backgroundColor: colors.primary,
-            alignItems: 'center',
-            justifyContent: 'center',
-            elevation: 4,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.25,
-            shadowRadius: 4,
-          }}>
-          <Plus size={24} color="#fff" />
-        </TouchableOpacity>
-      )}
-    </SafeAreaView>
-  )
-}
-
-export default function AddressListScreen() {
-  return (
     <>
       <Stack.Screen
         options={{
@@ -103,9 +49,54 @@ export default function AddressListScreen() {
           title: 'Địa chỉ của tôi',
         }}
       />
-      <DialogProvider>
-        <AddressListContent />
-      </DialogProvider>
+      <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
+        {addresses.length === 0 && !isLoading ? (
+          <View className="flex-1 items-center justify-center">
+            <EmptyState icon={MapPin} message="Chưa có địa chỉ nào" />
+          </View>
+        ) : (
+          <FlatList
+            data={addresses}
+            keyExtractor={(item: any) => item._id}
+            renderItem={({ item }: { item: any }) => (
+              <AddressCard
+                address={item}
+                selectable={isSelectMode}
+                onSelect={isSelectMode ? handleSelect : undefined}
+                onEdit={
+                  !isSelectMode ? (id) => router.push({ pathname: '/address-form', params: { id } }) : undefined
+                }
+                onDelete={!isSelectMode ? handleDelete : undefined}
+                onSetDefault={!isSelectMode ? (id) => setDefault(id) : undefined}
+              />
+            )}
+          />
+        )}
+
+        {/* FAB for adding new address */}
+        {!isSelectMode && (
+          <TouchableOpacity
+            onPress={() => router.push('/address-form')}
+            style={{
+              position: 'absolute',
+              bottom: 24,
+              right: 24,
+              width: 56,
+              height: 56,
+              borderRadius: 28,
+              backgroundColor: colors.primary,
+              alignItems: 'center',
+              justifyContent: 'center',
+              elevation: 4,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.25,
+              shadowRadius: 4,
+            }}>
+            <Plus size={24} color="#fff" />
+          </TouchableOpacity>
+        )}
+      </SafeAreaView>
     </>
   )
 }

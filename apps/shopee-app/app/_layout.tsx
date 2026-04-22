@@ -13,6 +13,7 @@ import { useAuthStore } from '@/store/authStore'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { ToastProvider } from '@/components/ui/ToastProvider'
+import { DialogProvider } from '@/components/ui/DialogProvider'
 import { View } from 'react-native'
 import { useEffect, useState } from 'react'
 
@@ -71,25 +72,27 @@ function AppContent() {
       <GestureHandlerRootView>
         <SafeAreaProvider>
           <BottomSheetModalProvider>
-            <ThemeProvider value={navigationTheme}>
-              <Stack>
-                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="product/[id]" options={{ headerShown: false }} />
-                <Stack.Screen name="search" options={{ headerShown: false }} />
-                <Stack.Screen name="checkout" options={{ headerShown: false }} />
-                <Stack.Screen name="order-success" options={{ headerShown: false }} />
-                <Stack.Screen name="orders" options={{ headerShown: false }} />
-                <Stack.Screen name="order/[id]" options={{ headerShown: false }} />
-                <Stack.Screen name="addresses" options={{ headerShown: false }} />
-                <Stack.Screen name="address-form" options={{ headerShown: false }} />
-                <Stack.Screen name="wishlist" options={{ headerShown: false }} />
-                <Stack.Screen name="profile-edit" options={{ headerShown: false }} />
-                <Stack.Screen name="change-password" options={{ headerShown: false }} />
-                <Stack.Screen name="vouchers" options={{ headerShown: false }} />
-                <Stack.Screen name="checkin" options={{ headerShown: false }} />
-              </Stack>
-            </ThemeProvider>
+            <DialogProvider>
+              <ThemeProvider value={navigationTheme}>
+                <Stack>
+                  <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                  <Stack.Screen name="product/[id]" options={{ headerShown: false }} />
+                  <Stack.Screen name="search" options={{ headerShown: false }} />
+                  <Stack.Screen name="checkout" options={{ headerShown: false }} />
+                  <Stack.Screen name="order-success" options={{ headerShown: false }} />
+                  <Stack.Screen name="orders" options={{ headerShown: false }} />
+                  <Stack.Screen name="order/[id]" options={{ headerShown: false }} />
+                  <Stack.Screen name="addresses" options={{ headerShown: false }} />
+                  <Stack.Screen name="address-form" options={{ headerShown: false }} />
+                  <Stack.Screen name="wishlist" options={{ headerShown: false }} />
+                  <Stack.Screen name="profile-edit" options={{ headerShown: false }} />
+                  <Stack.Screen name="change-password" options={{ headerShown: false }} />
+                  <Stack.Screen name="vouchers" options={{ headerShown: false }} />
+                  <Stack.Screen name="checkin" options={{ headerShown: false }} />
+                </Stack>
+              </ThemeProvider>
+            </DialogProvider>
             <StatusBar style="auto" />
             <LanguageHelper />
             <InsetsHelper />

@@ -1,8 +1,9 @@
 import React from 'react'
 import { View } from 'react-native'
-import { CheckCircle, Clock, Package, Truck, XCircle } from 'lucide-react-native'
+import { CheckCircle, Clock, Package, Truck, XCircle, RotateCcw } from 'lucide-react-native'
 import { AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
+import { ORDER_STATUS } from '@/constants/order'
 
 interface TimelineStep {
   label: string
@@ -22,7 +23,7 @@ export default function OrderTimeline({
 }: OrderTimelineProps) {
   const colors = useColors()
 
-  if (status === 'cancelled') {
+  if (status === ORDER_STATUS.CANCELLED) {
     const steps: TimelineStep[] = [
       {
         label: 'Đặt hàng',
@@ -85,8 +86,83 @@ export default function OrderTimeline({
     )
   }
 
-  const statusOrder = ['pending', 'shipping', 'delivered']
-  const currentIdx = statusOrder.indexOf(status)
+  if (status === ORDER_STATUS.RETURNED) {
+    const steps: TimelineStep[] = [
+      {
+        label: 'Đặt hàng',
+        timestamp: createdAt,
+        completed: true,
+        icon: <Clock size={16} color="#fff" />,
+      },
+      {
+        label: 'Đã giao hàng',
+        completed: true,
+        icon: <Package size={16} color="#fff" />,
+      },
+      {
+        label: 'Trả hàng',
+        completed: true,
+        icon: <RotateCcw size={16} color="#fff" />,
+      },
+    ]
+
+    return (
+      <View className="px-4 py-3">
+        {steps.map((step, index) => (
+          <View key={index} className="flex-row gap-3">
+            <View className="items-center">
+              <View
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 14,
+                  backgroundColor: index === 2 ? colors.warning : colors.primary,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                {step.icon}
+              </View>
+              {index < steps.length - 1 && (
+                <View
+                  style={{
+                    width: 2,
+                    flex: 1,
+                    minHeight: 24,
+                    backgroundColor: colors.primary,
+                    marginVertical: 2,
+                  }}
+                />
+              )}
+            </View>
+            <View style={{ paddingBottom: index < steps.length - 1 ? 16 : 0, flex: 1 }}>
+              <AppText
+                raw
+                variant="bodySmall"
+                weight="semibold"
+                style={{ color: colors.foreground }}>
+                {step.label}
+              </AppText>
+              {step.timestamp && (
+                <AppText raw variant="labelSmall" color="muted" style={{ marginTop: 2 }}>
+                  {new Date(step.timestamp).toLocaleString('vi-VN')}
+                </AppText>
+              )}
+            </View>
+          </View>
+        ))}
+      </View>
+    )
+  }
+
+  // Normal flow: pending → confirmed → processing → shipping → delivered
+  const statusOrder = [
+    ORDER_STATUS.PENDING,
+    ORDER_STATUS.CONFIRMED,
+    ORDER_STATUS.PROCESSING,
+    ORDER_STATUS.SHIPPING,
+    ORDER_STATUS.DELIVERED,
+  ]
+  const currentIdx = statusOrder.indexOf(status as any)
 
   const steps: TimelineStep[] = [
     {
@@ -96,14 +172,24 @@ export default function OrderTimeline({
       icon: <Clock size={16} color={currentIdx >= 0 ? '#fff' : colors.neutrals400} />,
     },
     {
-      label: 'Đang vận chuyển',
+      label: 'Đã xác nhận',
       completed: currentIdx >= 1,
-      icon: <Truck size={16} color={currentIdx >= 1 ? '#fff' : colors.neutrals400} />,
+      icon: <CheckCircle size={16} color={currentIdx >= 1 ? '#fff' : colors.neutrals400} />,
+    },
+    {
+      label: 'Đang xử lý',
+      completed: currentIdx >= 2,
+      icon: <Package size={16} color={currentIdx >= 2 ? '#fff' : colors.neutrals400} />,
+    },
+    {
+      label: 'Đang vận chuyển',
+      completed: currentIdx >= 3,
+      icon: <Truck size={16} color={currentIdx >= 3 ? '#fff' : colors.neutrals400} />,
     },
     {
       label: 'Đã giao hàng',
-      completed: currentIdx >= 2,
-      icon: <Package size={16} color={currentIdx >= 2 ? '#fff' : colors.neutrals400} />,
+      completed: currentIdx >= 4,
+      icon: <Package size={16} color={currentIdx >= 4 ? '#fff' : colors.neutrals400} />,
     },
   ]
 

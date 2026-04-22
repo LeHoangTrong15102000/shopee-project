@@ -3,8 +3,8 @@ import { View, Image, TouchableOpacity } from 'react-native'
 import { AppText, Badge, AppButton } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { formatPrice } from '@/utils/price'
-
-import { type Order, type OrderItem } from '@/apis/order.api'
+import { type Order } from '@/apis/order.api'
+import { ORDER_STATUS, type OrderStatusType } from '@/constants/order'
 
 interface OrderCardProps {
   order: Order
@@ -14,18 +14,22 @@ interface OrderCardProps {
   onReturn?: (id: string) => void
 }
 
-function getStatusBadge(status: number): { label: string; variant: 'default' | 'warning' | 'primary' | 'success' | 'error' } {
+function getStatusBadge(status: OrderStatusType): { label: string; variant: 'default' | 'warning' | 'primary' | 'success' | 'error' } {
   switch (status) {
-    case 1:
+    case ORDER_STATUS.PENDING:
       return { label: 'Chờ xác nhận', variant: 'warning' }
-    case 2:
+    case ORDER_STATUS.CONFIRMED:
+      return { label: 'Đã xác nhận', variant: 'primary' }
+    case ORDER_STATUS.PROCESSING:
+      return { label: 'Đang xử lý', variant: 'default' }
+    case ORDER_STATUS.SHIPPING:
       return { label: 'Đang giao', variant: 'primary' }
-    case 3:
+    case ORDER_STATUS.DELIVERED:
       return { label: 'Đã giao', variant: 'success' }
-    case -1:
+    case ORDER_STATUS.CANCELLED:
       return { label: 'Đã hủy', variant: 'error' }
-    default:
-      return { label: `Trạng thái ${status}`, variant: 'default' }
+    case ORDER_STATUS.RETURNED:
+      return { label: 'Trả hàng', variant: 'default' }
   }
 }
 
@@ -40,6 +44,11 @@ export default function OrderCard({
   const statusInfo = getStatusBadge(order.status)
   const firstItem = order.items?.[0]
   const extraCount = (order.items?.length ?? 0) - 1
+
+  const canCancel = order.status === ORDER_STATUS.PENDING || order.status === ORDER_STATUS.CONFIRMED
+  const canConfirmReceived = order.status === ORDER_STATUS.SHIPPING
+  const canReturn = order.status === ORDER_STATUS.DELIVERED
+  const hasActions = canCancel || canConfirmReceived || canReturn
 
   return (
     <TouchableOpacity
@@ -91,9 +100,9 @@ export default function OrderCard({
       </View>
 
       {/* Action buttons */}
-      {(order.status === 1 || order.status === 2 || order.status === 3) && (
+      {hasActions && (
         <View className="mt-3 flex-row justify-end gap-2">
-          {order.status === 1 && onCancel && (
+          {canCancel && onCancel && (
             <AppButton
               variant="outline"
               size="sm"
@@ -101,7 +110,7 @@ export default function OrderCard({
               Hủy đơn
             </AppButton>
           )}
-          {order.status === 2 && onConfirmReceived && (
+          {canConfirmReceived && onConfirmReceived && (
             <AppButton
               variant="primary"
               size="sm"
@@ -109,7 +118,7 @@ export default function OrderCard({
               Đã nhận hàng
             </AppButton>
           )}
-          {order.status === 3 && onReturn && (
+          {canReturn && onReturn && (
             <AppButton
               variant="outline"
               size="sm"

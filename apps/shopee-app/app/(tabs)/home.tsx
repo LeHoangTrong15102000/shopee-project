@@ -17,7 +17,7 @@ import {
   CategorySkeleton,
   ProductCardSkeleton,
 } from '@/components/home'
-import { Product } from '@/services/product.api'
+import { Product } from '@/types/product.type'
 
 export default function HomeScreen() {
   const { t } = useTranslation()

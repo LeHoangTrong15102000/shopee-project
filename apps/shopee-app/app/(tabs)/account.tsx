@@ -24,11 +24,10 @@ import { useAppStore } from '@/store/appStore'
 import { useAuthStore } from '@/store/authStore'
 import { useProfile } from '@/hooks/useProfile'
 import { useDialog } from '@/components/ui/DialogProvider'
-import { DialogProvider } from '@/components/ui/DialogProvider'
 import ProfileHeader from '@/components/account/ProfileHeader'
 import OrderShortcuts from '@/components/account/OrderShortcuts'
 
-function AccountContent() {
+export default function AccountScreen() {
   const colors = useColors()
   const router = useRouter()
   const { showConfirm } = useDialog()
@@ -158,13 +157,5 @@ function AccountContent() {
         </View>
       </ScrollView>
     </SafeAreaView>
-  )
-}
-
-export default function AccountScreen() {
-  return (
-    <DialogProvider>
-      <AccountContent />
-    </DialogProvider>
   )
 }

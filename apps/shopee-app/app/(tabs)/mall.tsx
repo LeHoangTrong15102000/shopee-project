@@ -15,7 +15,7 @@ import { useProducts } from '@/hooks/useProducts'
 import { AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import ProductCard, { CARD_GAP, CARD_PADDING } from '@/components/home/ProductCard'
-import { Product } from '@/services/product.api'
+import { Product } from '@/types/product.type'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 

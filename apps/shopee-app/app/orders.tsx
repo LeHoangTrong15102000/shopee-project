@@ -7,13 +7,13 @@ import { AppText, EmptyState } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { useOrders, useCancelOrder, useConfirmReceived, useReturnOrder } from '@/hooks/useOrders'
 import { useDialog } from '@/components/ui/DialogProvider'
-import { DialogProvider } from '@/components/ui/DialogProvider'
 import OrderStatusTabs, { type OrderStatusTab } from '@/components/orders/OrderStatusTabs'
 import OrderCard from '@/components/orders/OrderCard'
 import OrderSkeleton from '@/components/orders/OrderSkeleton'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
+import { ORDER_STATUS, type OrderStatusType } from '@/constants/order'
 
-function OrdersContent() {
+export default function OrdersScreen() {
   const colors = useColors()
   const router = useRouter()
   const params = useLocalSearchParams()
@@ -22,13 +22,13 @@ function OrdersContent() {
   const initialStatus = (params.status as OrderStatusTab) ?? 'all'
   const [activeTab, setActiveTab] = useState<OrderStatusTab>(initialStatus)
 
-  const statusMap: Record<string, number> = {
-    pending: 1,
-    shipping: 2,
-    delivered: 3,
-    cancelled: -1,
+  const tabToStatus: Record<string, OrderStatusType | undefined> = {
+    pending: ORDER_STATUS.PENDING,
+    shipping: ORDER_STATUS.SHIPPING,
+    delivered: ORDER_STATUS.DELIVERED,
+    cancelled: ORDER_STATUS.CANCELLED,
   }
-  const statusFilter = activeTab === 'all' ? undefined : statusMap[activeTab]
+  const statusFilter: OrderStatusType | undefined = activeTab === 'all' ? undefined : tabToStatus[activeTab]
 
   const { data, isLoading, isRefetching, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useOrders(statusFilter)
@@ -85,54 +85,6 @@ function OrdersContent() {
   }
 
   return (
-    <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
-      <OrderStatusTabs activeTab={activeTab} onTabChange={setActiveTab} />
-
-      {isLoading ? (
-        <OrderSkeleton />
-      ) : allOrders.length === 0 ? (
-        <View className="flex-1 items-center justify-center">
-          <EmptyState icon={ShoppingBag} message="Không có đơn hàng nào" />
-        </View>
-      ) : (
-        <FlatList
-          data={allOrders}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <OrderCard
-              order={item}
-              onPress={(id) => router.push({ pathname: '/order/[id]', params: { id } })}
-              onCancel={handleCancel}
-              onConfirmReceived={handleConfirmReceived}
-              onReturn={handleReturn}
-            />
-          )}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefetching}
-              onRefresh={refetch}
-              tintColor={colors.primary}
-            />
-          }
-          onEndReached={loadMore}
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={
-            isFetchingNextPage ? (
-              <ActivityIndicator
-                size="small"
-                color={colors.primary}
-                style={{ marginVertical: 16 }}
-              />
-            ) : null
-          }
-        />
-      )}
-    </SafeAreaView>
-  )
-}
-
-export default function OrdersScreen() {
-  return (
     <>
       <Stack.Screen
         options={{
@@ -140,9 +92,49 @@ export default function OrdersScreen() {
           title: 'Đơn hàng của tôi',
         }}
       />
-      <DialogProvider>
-        <OrdersContent />
-      </DialogProvider>
+      <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
+        <OrderStatusTabs activeTab={activeTab} onTabChange={setActiveTab} />
+
+        {isLoading ? (
+          <OrderSkeleton />
+        ) : allOrders.length === 0 ? (
+          <View className="flex-1 items-center justify-center">
+            <EmptyState icon={ShoppingBag} message="Không có đơn hàng nào" />
+          </View>
+        ) : (
+          <FlatList
+            data={allOrders}
+            keyExtractor={(item) => item._id}
+            renderItem={({ item }) => (
+              <OrderCard
+                order={item}
+                onPress={(id) => router.push({ pathname: '/order/[id]', params: { id } })}
+                onCancel={handleCancel}
+                onConfirmReceived={handleConfirmReceived}
+                onReturn={handleReturn}
+              />
+            )}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefetching}
+                onRefresh={refetch}
+                tintColor={colors.primary}
+              />
+            }
+            onEndReached={loadMore}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={
+              isFetchingNextPage ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.primary}
+                  style={{ marginVertical: 16 }}
+                />
+              ) : null
+            }
+          />
+        )}
+      </SafeAreaView>
     </>
   )
 }

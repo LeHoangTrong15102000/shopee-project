@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { getProducts, Product } from '@/services/product.api'
+import { getProducts } from '@/apis/product.api'
+import { type Product } from '@/types/product.type'
 
 const PRODUCTS_PER_PAGE = 10
 

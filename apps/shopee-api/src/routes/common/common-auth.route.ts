@@ -29,23 +29,27 @@ commonAuthRouter.post(
 
 commonAuthRouter.post(
   '/register',
+  bruteForceProtectionMiddleware, // Prevent registration spam and abuse
   validate(registerSchema),
   asyncHandler(authController.registerController),
 )
 commonAuthRouter.post(
   '/refresh-access-token',
+  bruteForceProtectionMiddleware, // Prevent token refresh abuse
   authMiddleware.verifyRefreshToken,
   asyncHandler(authController.refreshTokenController),
 )
 
 commonAuthRouter.post(
   '/forgot-password',
+  bruteForceProtectionMiddleware, // Prevent password reset abuse
   validate(forgotPasswordSchema),
   asyncHandler(passwordResetController.forgotPassword),
 )
 
 commonAuthRouter.post(
   '/reset-password',
+  bruteForceProtectionMiddleware, // Prevent password reset abuse
   validate(resetPasswordSchema),
   asyncHandler(passwordResetController.resetPassword),
 )

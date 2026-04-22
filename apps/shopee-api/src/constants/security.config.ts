@@ -13,7 +13,8 @@ export const LOGIN_LOCKOUT_TIME = 15 * 60 * 1000
 export const MAX_REQUEST_SIZE = '10mb'
 
 // Số vòng salt cho bcrypt (càng cao càng an toàn nhưng chậm hơn)
-export const BCRYPT_SALT_ROUNDS = 12
+// Increased from 12 to 13 for enhanced security (8192 iterations vs 4096)
+export const BCRYPT_SALT_ROUNDS = 13
 
 // Thời gian window cho rate limiting login (15 phút)
 export const LOGIN_RATE_LIMIT_WINDOW = 15 * 60 * 1000

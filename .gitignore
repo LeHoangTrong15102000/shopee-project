@@ -47,3 +47,9 @@ apps/shopee-app/ios/
 /.augment
 /.claude
 /openspec
+.gitnexus
+AGENTS.md
+CLAUDE.md
+
+# Ad-hoc scripts
+apps/shopee-api/analyze-coverage.js

@@ -37,29 +37,25 @@ export const handleImageProduct = <T extends { image?: string; images?: string[]
 }
 
 const addProduct = async (req: Request, res: Response) => {
-  try {
-    const form: ProductBody = req.body
-    const createData = {
-      name: form.name,
-      description: form.description,
-      category: Array.isArray(form.category) ? form.category[0] : form.category,
-      image: form.image,
-      images: form.images,
-      price: form.price,
-      price_before_discount: form.price_before_discount ?? form.price,
-      quantity: form.quantity,
-      variants: form.variants,
-      skus: form.skus,
-    }
-    const product = await productService.createProduct(createData)
-    const response = {
-      message: 'Tạo sản phẩm thành công',
-      data: product,
-    }
-    return responseSuccess(res, response)
-  } catch (error) {
-    throw error
+  const form: ProductBody = req.body
+  const createData = {
+    name: form.name,
+    description: form.description,
+    category: Array.isArray(form.category) ? form.category[0] : form.category,
+    image: form.image,
+    images: form.images,
+    price: form.price,
+    price_before_discount: form.price_before_discount ?? form.price,
+    quantity: form.quantity,
+    variants: form.variants,
+    skus: form.skus,
   }
+  const product = await productService.createProduct(createData)
+  const response = {
+    message: 'Tạo sản phẩm thành công',
+    data: product,
+  }
+  return responseSuccess(res, response)
 }
 
 const getProducts = async (req: Request, res: Response) => {
@@ -254,7 +250,7 @@ const deleteManyProducts = async (req: Request, res: Response) => {
 const searchProduct = async (req: Request, res: Response) => {
   let { searchText } = req.query as { searchText: string }
   searchText = decodeURI(searchText)
-  let condition: FilterQuery<IProduct> = { $text: { $search: `\"${searchText}\"` } }
+  let condition: FilterQuery<IProduct> = { $text: { $search: `"${searchText}"` } }
   if (!isAdmin(req)) {
     condition = Object.assign(condition, { visible: true })
   }

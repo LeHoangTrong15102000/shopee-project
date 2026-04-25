@@ -166,12 +166,12 @@ const Dialog = forwardRef<DialogRef>((_, ref) => {
         {
           text: 'Cancel',
           variant: 'outline',
-          onPress: () => {},
+          onPress: () => undefined,
         },
         {
           text: 'Confirm',
           variant: 'primary',
-          onPress: () => {},
+          onPress: () => undefined,
         },
       ]
     }
@@ -180,7 +180,7 @@ const Dialog = forwardRef<DialogRef>((_, ref) => {
       {
         text: 'OK',
         variant: 'primary',
-        onPress: () => {},
+        onPress: () => undefined,
       },
     ]
   }

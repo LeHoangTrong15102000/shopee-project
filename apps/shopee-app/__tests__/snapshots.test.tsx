@@ -15,7 +15,7 @@ jest.mock('@/hooks/useColors', () => ({
 
 describe('Snapshot tests', () => {
   it('InlineError matches snapshot', () => {
-    const tree = render(<InlineError message="Error occurred" onRetry={() => {}} />)
+    const tree = render(<InlineError message="Error occurred" onRetry={() => undefined} />)
     expect(tree.toJSON()).toMatchSnapshot()
   })
 
@@ -25,7 +25,7 @@ describe('Snapshot tests', () => {
         icon={ShoppingBag}
         message="Nothing here"
         actionLabel="Go back"
-        onAction={() => {}}
+        onAction={() => undefined}
       />
     )
     expect(tree.toJSON()).toMatchSnapshot()

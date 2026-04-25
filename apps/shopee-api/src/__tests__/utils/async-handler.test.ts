@@ -48,7 +48,7 @@ describe('async-handler', () => {
 
   describe('asyncHandlers', () => {
     it('should wrap array of handlers and return array of same length', () => {
-      const handlers = [async () => {}, async () => {}, async () => {}]
+      const handlers = [async () => undefined, async () => undefined, async () => undefined]
 
       const wrapped = asyncHandlers(handlers)
 

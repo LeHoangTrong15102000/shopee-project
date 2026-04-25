@@ -178,7 +178,7 @@ function renderWithProviders(ui: React.ReactElement) {
 
 describe('ProductDetailScreen', () => {
   it('shows skeleton while loading', () => {
-    server.use(http.get(`${API_BASE}/products/:id`, () => new Promise(() => {})))
+    server.use(http.get(`${API_BASE}/products/:id`, () => new Promise(() => undefined)))
     const { getByText } = renderWithProviders(<ProductDetailScreen productId="p1" />)
     expect(getByText('Loading...')).toBeTruthy()
   })

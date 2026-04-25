@@ -33,7 +33,7 @@ export const sanitizeString = (value: string): string => {
   if (typeof value !== 'string') return value
 
   // Escape các ký tự đặc biệt có thể gây injection
-  let sanitized = value
+  const sanitized = value
     .replace(/\$/g, '&#36;') // Escape ký tự $
     .replace(/\{/g, '&#123;') // Escape ký tự {
     .replace(/\}/g, '&#125;') // Escape ký tự }
@@ -65,7 +65,7 @@ const isDangerousKey = (key: string): boolean => {
  * @param depth - Độ sâu hiện tại (để tránh infinite recursion)
  * @returns Object đã được sanitize
  */
-export const sanitizeObject = (obj: unknown, depth: number = 0): unknown => {
+export const sanitizeObject = (obj: unknown, depth = 0): unknown => {
   // Giới hạn độ sâu để tránh stack overflow
   const MAX_DEPTH = 20
   if (depth > MAX_DEPTH) return obj
@@ -96,7 +96,7 @@ export const sanitizeObject = (obj: unknown, depth: number = 0): unknown => {
     }
 
     // Sanitize key (loại bỏ ký tự nguy hiểm trong key name)
-    const sanitizedKey = key.replace(/[$\.]/g, '_')
+    const sanitizedKey = key.replace(/[$.]/g, '_')
 
     // Recursive sanitize value
     sanitized[sanitizedKey] = sanitizeObject((obj as Record<string, unknown>)[key], depth + 1)

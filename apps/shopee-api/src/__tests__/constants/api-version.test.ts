@@ -69,7 +69,7 @@ describe('api-version constants', () => {
       const headers = getDeprecationHeaders(endpoint)
       expect(headers).toHaveProperty('Deprecation', '2025-01-01')
       expect(headers).toHaveProperty('Sunset', '2025-07-01')
-      expect(headers).toHaveProperty('Link', '<\/api\/v1\/products>; rel="successor-version"')
+      expect(headers).toHaveProperty('Link', '</api/v1/products>; rel="successor-version"')
       expect(headers).toHaveProperty('X-Deprecation-Notice', 'Use /api/v1/products instead')
     })
 

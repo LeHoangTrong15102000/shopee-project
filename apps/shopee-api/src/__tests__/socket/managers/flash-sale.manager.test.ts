@@ -69,7 +69,7 @@ describe('Flash Sale Manager', () => {
       flashSaleManager = await import('../../../socket/managers/flash-sale.manager')
 
       flashSaleManager.startFlashSale('sale-timer', new Date(Date.now() + 3600000), [])
-      const interval = setInterval(() => {}, 1000)
+      const interval = setInterval(() => undefined, 1000)
       flashSaleManager.setFlashSaleTimer('sale-timer', interval)
       flashSaleManager.endFlashSale('sale-timer')
 

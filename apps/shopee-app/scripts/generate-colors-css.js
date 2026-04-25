@@ -87,7 +87,9 @@ function writeIfChanged(filePath, content) {
   try {
     const existing = readFileSync(filePath, 'utf8')
     if (existing === content) return false
-  } catch (_) {}
+  } catch {
+    // File does not exist yet; continue and create it.
+  }
   mkdirSync(dirname(filePath), { recursive: true })
   writeFileSync(filePath, content, 'utf8')
   return true

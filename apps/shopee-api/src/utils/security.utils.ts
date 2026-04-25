@@ -5,7 +5,7 @@ import crypto from 'crypto'
  * Dùng cho refresh token, reset password token, verification token, etc.
  * @param length - Độ dài của token (mặc định 32 bytes = 64 ký tự hex)
  */
-export const generateSecureToken = (length: number = 32): string => {
+export const generateSecureToken = (length = 32): string => {
   return crypto.randomBytes(length).toString('hex')
 }
 
@@ -110,7 +110,7 @@ export const isValidPassword = (password: string): { isValid: boolean; errors: s
   }
 
   // Kiểm tra ký tự đặc biệt
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+  if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
     errors.push('Password phải có ít nhất 1 ký tự đặc biệt')
   }
 
@@ -131,7 +131,7 @@ export const isValidPassword = (password: string): { isValid: boolean; errors: s
  * @param password - Password cần kiểm tra
  * @param minLength - Độ dài tối thiểu (mặc định 6)
  */
-export const isValidPasswordSimple = (password: string, minLength: number = 6): boolean => {
+export const isValidPasswordSimple = (password: string, minLength = 6): boolean => {
   if (!password || typeof password !== 'string') {
     return false
   }

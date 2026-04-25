@@ -6,6 +6,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import {
   Heart,
   MapPin,
@@ -28,6 +29,7 @@ import ProfileHeader from '@/components/account/ProfileHeader'
 import OrderShortcuts from '@/components/account/OrderShortcuts'
 
 export default function AccountScreen() {
+  const { t } = useTranslation()
   const colors = useColors()
   const router = useRouter()
   const { showConfirm } = useDialog()
@@ -40,8 +42,8 @@ export default function AccountScreen() {
 
   const handleLogout = () => {
     showConfirm(
-      'Đăng xuất',
-      'Bạn có chắc chắn muốn đăng xuất?',
+      t('account.dialog.logoutTitle'),
+      t('account.dialog.logoutMessage'),
       () => {
         logout()
         router.replace('/(auth)/sign-in')
@@ -53,27 +55,27 @@ export default function AccountScreen() {
 
   const utilityMenuItems = [
     {
-      title: 'Yêu thích',
+      title: t('account.menu.wishlist'),
       icon: () => <Heart size={20} color={colors.primary} />,
       onPress: () => router.push('/wishlist'),
     },
     {
-      title: 'Địa chỉ',
+      title: t('account.menu.addresses'),
       icon: () => <MapPin size={20} color={colors.secondary} />,
       onPress: () => router.push('/addresses'),
     },
     {
-      title: 'Thông báo',
+      title: t('account.menu.notifications'),
       icon: () => <Bell size={20} color={colors.warning} />,
       onPress: () => router.push('/(tabs)/notifications'),
     },
     {
-      title: 'Điểm danh',
+      title: t('account.menu.checkin'),
       icon: () => <Calendar size={20} color={colors.success} />,
       onPress: () => router.push('/checkin'),
     },
     {
-      title: 'Voucher của tôi',
+      title: t('account.menu.vouchers'),
       icon: () => <Tag size={20} color={colors.error} />,
       onPress: () => router.push('/vouchers'),
     },
@@ -81,7 +83,7 @@ export default function AccountScreen() {
 
   const settingsMenuItems = [
     {
-      title: 'Giao diện tối',
+      title: t('account.settings.darkMode'),
       icon: () => <Moon size={20} color={colors.foreground} />,
       value: (
         <Switch
@@ -93,26 +95,26 @@ export default function AccountScreen() {
       onPress: toggleTheme,
     },
     {
-      title: 'Ngôn ngữ',
+      title: t('account.settings.language'),
       icon: () => <Globe size={20} color={colors.foreground} />,
-      onPress: () => {},
+      onPress: () => undefined,
     },
     {
-      title: 'Đổi mật khẩu',
+      title: t('account.settings.changePassword'),
       icon: () => <Lock size={20} color={colors.foreground} />,
       onPress: () => router.push('/change-password'),
     },
     {
-      title: 'Về ứng dụng',
+      title: t('account.settings.about'),
       icon: () => <Info size={20} color={colors.foreground} />,
-      onPress: () => {},
+      onPress: () => undefined,
     },
   ]
 
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
       <View className="border-b border-neutrals900 px-4 py-4">
-        <AppText variant="heading2">Tài khoản</AppText>
+        <AppText variant="heading2">{t('account.header.title')}</AppText>
       </View>
 
       <ScrollView
@@ -130,14 +132,14 @@ export default function AccountScreen() {
 
         <View className="px-4 py-4">
           <AppText raw variant="bodySmall" weight="semibold" color="muted" className="mb-3">
-            TIỆN ÍCH
+            {t('account.section.utilities')}
           </AppText>
           <MenuList data={utilityMenuItems} />
         </View>
 
         <View className="border-t border-neutrals900 px-4 py-4">
           <AppText raw variant="bodySmall" weight="semibold" color="muted" className="mb-3">
-            CÀI ĐẶT
+            {t('account.section.settings')}
           </AppText>
           <MenuList data={settingsMenuItems} />
         </View>
@@ -150,7 +152,7 @@ export default function AccountScreen() {
             <View className="flex-row items-center gap-2">
               <LogOut size={16} color={colors.error} />
               <AppText raw variant="body" style={{ color: colors.error }}>
-                Đăng xuất
+                {t('account.button.logout')}
               </AppText>
             </View>
           </AppButton>

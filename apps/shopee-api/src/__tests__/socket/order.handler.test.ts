@@ -15,7 +15,7 @@ import { registerOrderHandlers, getOrderRoomName } from '../../socket/handlers/o
 
 describe('Order Handler', () => {
   let mockSocket: jest.Mocked<Socket>
-  let eventHandlers: Map<string, Function>
+  let eventHandlers: Map<string, (...args: unknown[]) => unknown>
 
   beforeEach(() => {
     eventHandlers = new Map()
@@ -23,7 +23,7 @@ describe('Order Handler', () => {
     mockSocket = {
       id: 'test-socket-id',
       user: { id: 'user-123', email: 'test@test.com', roles: ['User'] },
-      on: jest.fn((event: string, handler: Function) => {
+      on: jest.fn((event: string, handler: (...args: unknown[]) => unknown) => {
         eventHandlers.set(event, handler)
       }),
       emit: jest.fn(),

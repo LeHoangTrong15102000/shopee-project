@@ -138,7 +138,7 @@ describe('chatbot.service', () => {
 
     it('should call onChunk for each text event on successful stream', async () => {
       const mockStreamInstance = {
-        on: jest.fn((event: string, callback: Function) => {
+        on: jest.fn((event: string, callback: (...args: unknown[]) => void) => {
           if (event === 'text') {
             callback('Hello ')
             callback('World!')
@@ -163,7 +163,7 @@ describe('chatbot.service', () => {
 
     it('should call onError when stream emits error', async () => {
       const mockStreamInstance = {
-        on: jest.fn((event: string, callback: Function) => {
+        on: jest.fn((event: string, callback: (...args: unknown[]) => void) => {
           if (event === 'error') {
             callback(new Error('Stream failed'))
           }

@@ -393,7 +393,7 @@ describe('Conversation Controller', () => {
     it('should invoke onChunk callback when generateStreamingResponse streams a chunk', async () => {
       const { chatBotService } = require('../../utils/chatbot.service')
       chatBotService.generateStreamingResponse.mockImplementation(
-        (_history: any, _msg: any, onChunk: Function) => {
+        (_history: any, _msg: any, onChunk: (chunk: string) => void) => {
           onChunk('Hello ')
           onChunk('world')
           return Promise.resolve()
@@ -416,7 +416,7 @@ describe('Conversation Controller', () => {
     it('should invoke onComplete callback when streaming finishes', async () => {
       const { chatBotService } = require('../../utils/chatbot.service')
       chatBotService.generateStreamingResponse.mockImplementation(
-        (_history: any, _msg: any, _onChunk: Function, onComplete: Function) => {
+        (_history: any, _msg: any, _onChunk: (chunk: string) => void, onComplete: () => void) => {
           onComplete()
           return Promise.resolve()
         },
@@ -438,7 +438,13 @@ describe('Conversation Controller', () => {
     it('should invoke onError callback and send error event', async () => {
       const { chatBotService } = require('../../utils/chatbot.service')
       chatBotService.generateStreamingResponse.mockImplementation(
-        (_history: any, _msg: any, _onChunk: Function, _onComplete: Function, onError: Function) => {
+        (
+          _history: any,
+          _msg: any,
+          _onChunk: (chunk: string) => void,
+          _onComplete: () => void,
+          onError: (errorMessage: string) => void,
+        ) => {
           onError('Something went wrong')
           return Promise.resolve()
         },

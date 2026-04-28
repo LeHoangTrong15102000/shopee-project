@@ -3,21 +3,25 @@ import { View, ScrollView, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack } from 'expo-router'
 import { Flame, Coins } from 'lucide-react-native'
+import { useTranslation } from 'react-i18next'
 import { AppText, AppButton } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { useCheckinStreak, useCheckIn } from '@/hooks/useCheckin'
 import { useToast } from '@/components/ui/ToastProvider'
 import CheckinCalendar from '@/components/checkin/CheckinCalendar'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
+import { CheckinStreak } from '@/apis/checkin.api'
+import { handleMutationError } from '@/utils/mutationErrorHandler'
 
 export default function CheckinScreen() {
+  const { t } = useTranslation()
   const colors = useColors()
-  const { showSuccess, showError } = useToast()
+  const { showSuccess } = useToast()
 
   const { data: streakData, isLoading } = useCheckinStreak()
   const { mutate: doCheckIn, isPending: isCheckingIn } = useCheckIn()
 
-  const streak = (streakData as any)?.data
+  const streak = streakData?.data as CheckinStreak | undefined
   const checkedInToday = streak?.checked_in_today ?? false
   const todayReward = streak?.today_reward ?? 10
   const streakCount = streak?.streak ?? 0
@@ -25,13 +29,11 @@ export default function CheckinScreen() {
 
   const handleCheckIn = () => {
     doCheckIn(undefined, {
-      onSuccess: (result: any) => {
+      onSuccess: (result) => {
         const earned = result?.data?.coins_earned ?? todayReward
-        showSuccess(`Điểm danh thành công! +${earned} Xu`)
+        showSuccess(t('checkin.toast.success', { earned }))
       },
-      onError: () => {
-        showError('Điểm danh thất bại, thử lại sau')
-      },
+      onError: handleMutationError,
     })
   }
 
@@ -45,7 +47,7 @@ export default function CheckinScreen() {
       <Stack.Screen
         options={{
           header: (props) => <CustomScreenHeader {...props} />,
-          title: 'Điểm danh hàng ngày',
+          title: t('checkin.header.title'),
         }}
       />
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
@@ -67,7 +69,7 @@ export default function CheckinScreen() {
               <View className="flex-row items-center gap-2">
                 <Flame size={28} color="#fff" />
                 <AppText raw variant="heading2" style={{ color: '#fff', fontWeight: 'bold' }}>
-                  {streakCount} ngày liên tiếp
+                  {t('checkin.streak.label', { streakCount })}
                 </AppText>
               </View>
 
@@ -83,7 +85,7 @@ export default function CheckinScreen() {
                 }}>
                 <Coins size={18} color="#fff" />
                 <AppText raw variant="body" style={{ color: '#fff' }}>
-                  Hôm nay nhận:{' '}
+                  {t('checkin.reward.label')}{' '}
                   <AppText raw variant="body" style={{ color: '#fff', fontWeight: 'bold' }}>
                     +{todayReward} Xu
                   </AppText>
@@ -111,7 +113,7 @@ export default function CheckinScreen() {
                 onPress={handleCheckIn}
                 loading={isCheckingIn}
                 disabled={checkedInToday || isCheckingIn}>
-                {checkedInToday ? 'Đã điểm danh hôm nay' : 'Điểm danh'}
+                {checkedInToday ? t('checkin.button.checkedIn') : t('checkin.button.checkIn')}
               </AppButton>
             </View>
           </ScrollView>

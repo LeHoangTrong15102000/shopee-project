@@ -2,6 +2,7 @@ import React from 'react'
 import { View, FlatList, Pressable } from 'react-native'
 import { TrendingUp } from 'lucide-react-native'
 import { useColors } from '@/hooks/useColors'
+import { useTranslation } from 'react-i18next'
 import { AppText } from '@/components/ui'
 import { type SearchSuggestion } from '@/apis/search.api'
 
@@ -12,6 +13,7 @@ interface SearchSuggestionsProps {
 
 export default function SearchSuggestions({ suggestions, onSelect }: SearchSuggestionsProps) {
   const colors = useColors()
+  const { t } = useTranslation()
 
   if (suggestions.length === 0) return null
 
@@ -26,7 +28,7 @@ export default function SearchSuggestions({ suggestions, onSelect }: SearchSugge
             onPress={() => onSelect(item.keyword)}
             className="flex-row items-center gap-3 py-3"
             accessibilityRole="button"
-            accessibilityLabel={`Search for ${item.keyword}`}>
+            accessibilityLabel={t('a11y.searchFor', { keyword: item.keyword })}>
             <TrendingUp size={16} color={colors.neutrals400} />
             <AppText raw variant="body" className="flex-1">
               {item.keyword}

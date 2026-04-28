@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, TouchableOpacity } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 
@@ -9,11 +10,6 @@ interface PaymentMethod {
   description?: string
 }
 
-const DEFAULT_METHODS: PaymentMethod[] = [
-  { _id: 'cod', name: 'Thanh toán khi nhận hàng', description: 'COD' },
-  { _id: 'bank_transfer', name: 'Chuyển khoản ngân hàng' },
-]
-
 interface PaymentMethodSelectorProps {
   methods?: PaymentMethod[]
   selectedId: string | null
@@ -21,19 +17,27 @@ interface PaymentMethodSelectorProps {
 }
 
 export default function PaymentMethodSelector({
-  methods = DEFAULT_METHODS,
+  methods,
   selectedId,
   onSelect,
 }: PaymentMethodSelectorProps) {
+  const { t } = useTranslation()
   const colors = useColors()
+
+  const defaultMethods: PaymentMethod[] = [
+    { _id: 'cod', name: t('paymentMethod.cod.name'), description: t('paymentMethod.cod.description') },
+    { _id: 'bank_transfer', name: t('paymentMethod.bankTransfer.name') },
+  ]
+
+  const resolvedMethods = methods ?? defaultMethods
 
   return (
     <View className="border-b border-neutrals900 px-4 py-4">
       <AppText raw variant="body" weight="semibold" className="mb-3">
-        Phương thức thanh toán
+        {t('paymentMethod.title')}
       </AppText>
       <View className="gap-2">
-        {methods.map((method) => {
+        {resolvedMethods.map((method) => {
           const isSelected = method._id === selectedId
           return (
             <TouchableOpacity
@@ -79,3 +83,4 @@ export default function PaymentMethodSelector({
     </View>
   )
 }
+

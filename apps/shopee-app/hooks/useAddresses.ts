@@ -7,6 +7,7 @@ import {
   setDefaultAddress,
   type CreateAddressBody,
 } from '@/apis/address.api'
+import { handleMutationError } from '@/utils/mutationErrorHandler'
 
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 
@@ -31,6 +32,7 @@ export function useCreateAddress() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: addressKeys.all() })
     },
+    onError: handleMutationError,
   })
 }
 
@@ -42,6 +44,7 @@ export function useUpdateAddress() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: addressKeys.all() })
     },
+    onError: handleMutationError,
   })
 }
 
@@ -52,6 +55,7 @@ export function useDeleteAddress() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: addressKeys.all() })
     },
+    onError: handleMutationError,
   })
 }
 
@@ -62,5 +66,6 @@ export function useSetDefaultAddress() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: addressKeys.all() })
     },
+    onError: handleMutationError,
   })
 }

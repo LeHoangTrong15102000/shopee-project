@@ -142,5 +142,519 @@
   "PD_RELATED_PRODUCTS": "Sản phẩm liên quan",
   "PD_VIEW_PRODUCT": "Xem {{name}}",
   "PD_RETRY": "Thử lại",
-  "PD_GO_BACK": "Quay lại"
+  "PD_GO_BACK": "Quay lại",
+
+  "account": {
+    "dialog": {
+      "logoutTitle": "Đăng xuất",
+      "logoutMessage": "Bạn có chắc chắn muốn đăng xuất?"
+    },
+    "menu": {
+      "wishlist": "Yêu thích",
+      "addresses": "Địa chỉ",
+      "notifications": "Thông báo",
+      "checkin": "Điểm danh",
+      "vouchers": "Voucher của tôi"
+    },
+    "settings": {
+      "darkMode": "Giao diện tối",
+      "language": "Ngôn ngữ",
+      "changePassword": "Đổi mật khẩu",
+      "about": "Về ứng dụng"
+    },
+    "header": {
+      "title": "Tài khoản"
+    },
+    "section": {
+      "utilities": "TIỆN ÍCH",
+      "settings": "CÀI ĐẶT"
+    },
+    "button": {
+      "logout": "Đăng xuất"
+    }
+  },
+  "cart": {
+    "dialog": {
+      "removeTitle": "Xóa sản phẩm",
+      "removeMessage": "Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?"
+    },
+    "header": {
+      "title": "Giỏ hàng"
+    },
+    "empty": {
+      "message": "Giỏ hàng của bạn đang trống",
+      "action": "Mua sắm ngay"
+    }
+  },
+  "mall": {
+    "banner": {
+      "superSale": "Siêu Sale Shopee Mall",
+      "flashSale": "Flash Sale hàng ngày",
+      "freeShipping": "Miễn phí vận chuyển"
+    },
+    "section": {
+      "authentic": "Hàng chính hãng, đảm bảo chất lượng",
+      "categories": "Danh mục nổi bật",
+      "featured": "Sản phẩm nổi bật"
+    }
+  },
+  "notifications": {
+    "header": {
+      "title": "Thông báo"
+    },
+    "button": {
+      "markAllRead": "Đọc tất cả"
+    },
+    "empty": {
+      "message": "Không có thông báo nào"
+    }
+  },
+  "live": {
+    "comingSoon": {
+      "message": "Tính năng đang được phát triển, sẽ sớm ra mắt!"
+    }
+  },
+  "addresses": {
+    "dialog": {
+      "deleteTitle": "Xóa địa chỉ",
+      "deleteMessage": "Bạn có chắc chắn muốn xóa địa chỉ này?"
+    },
+    "header": {
+      "title": "Địa chỉ của tôi"
+    },
+    "empty": {
+      "message": "Chưa có địa chỉ nào"
+    }
+  },
+  "addressForm": {
+    "validation": {
+      "nameRequired": "Tên không được để trống",
+      "phoneInvalid": "Số điện thoại phải gồm 10 chữ số",
+      "streetRequired": "Địa chỉ không được để trống",
+      "cityRequired": "Tỉnh/thành phố không được để trống"
+    },
+    "toast": {
+      "updateSuccess": "Cập nhật địa chỉ thành công",
+      "updateError": "Cập nhật thất bại, thử lại sau",
+      "createSuccess": "Thêm địa chỉ thành công",
+      "createError": "Thêm địa chỉ thất bại, thử lại sau"
+    },
+    "header": {
+      "editTitle": "Sửa địa chỉ",
+      "createTitle": "Thêm địa chỉ"
+    },
+    "field": {
+      "nameLabel": "Họ tên người nhận",
+      "namePlaceholder": "Nhập họ tên",
+      "phoneLabel": "Số điện thoại",
+      "phonePlaceholder": "Nhập số điện thoại",
+      "streetLabel": "Số nhà, tên đường",
+      "streetPlaceholder": "Nhập địa chỉ chi tiết",
+      "wardLabel": "Phường/Xã",
+      "wardPlaceholder": "Nhập phường/xã",
+      "districtLabel": "Quận/Huyện",
+      "districtPlaceholder": "Nhập quận/huyện",
+      "cityLabel": "Tỉnh/Thành phố",
+      "cityPlaceholder": "Nhập tỉnh/thành phố"
+    },
+    "button": {
+      "save": "Lưu"
+    }
+  },
+  "changePassword": {
+    "validation": {
+      "currentRequired": "Vui lòng nhập mật khẩu hiện tại",
+      "newMinLength": "Mật khẩu mới phải có ít nhất 8 ký tự",
+      "confirmRequired": "Vui lòng xác nhận mật khẩu",
+      "confirmMismatch": "Mật khẩu xác nhận không khớp"
+    },
+    "toast": {
+      "success": "Đổi mật khẩu thành công",
+      "incorrectPassword": "Mật khẩu hiện tại không đúng",
+      "error": "Đổi mật khẩu thất bại, thử lại sau"
+    },
+    "header": {
+      "title": "Đổi mật khẩu"
+    },
+    "hint": {
+      "minLength": "Mật khẩu mới phải có ít nhất 8 ký tự"
+    },
+    "field": {
+      "currentLabel": "Mật khẩu hiện tại",
+      "currentPlaceholder": "Nhập mật khẩu hiện tại",
+      "newLabel": "Mật khẩu mới",
+      "newPlaceholder": "Nhập mật khẩu mới",
+      "confirmLabel": "Xác nhận mật khẩu mới",
+      "confirmPlaceholder": "Nhập lại mật khẩu mới"
+    },
+    "button": {
+      "submit": "Đổi mật khẩu"
+    }
+  },
+  "checkin": {
+    "toast": {
+      "success": "Điểm danh thành công! +{{earned}} Xu",
+      "error": "Điểm danh thất bại, thử lại sau"
+    },
+    "header": {
+      "title": "Điểm danh hàng ngày"
+    },
+    "streak": {
+      "label": "{{streakCount}} ngày liên tiếp"
+    },
+    "reward": {
+      "label": "Hôm nay nhận:"
+    },
+    "button": {
+      "checkedIn": "Đã điểm danh hôm nay",
+      "checkIn": "Điểm danh"
+    }
+  },
+  "checkout": {
+    "header": {
+      "title": "Thanh toán"
+    },
+    "summary": {
+      "total": "Tổng thanh toán"
+    },
+    "button": {
+      "placeOrder": "Đặt hàng",
+      "placing": "Đang đặt hàng..."
+    }
+  },
+  "orderDetail": {
+    "error": {
+      "notFound": "Không tìm thấy đơn hàng"
+    },
+    "dialog": {
+      "cancelTitle": "Hủy đơn hàng",
+      "cancelMessage": "Bạn có chắc chắn muốn hủy đơn hàng này?",
+      "confirmTitle": "Xác nhận đã nhận hàng",
+      "confirmMessage": "Bạn đã nhận được đơn hàng này?",
+      "returnTitle": "Trả hàng",
+      "returnMessage": "Bạn có muốn yêu cầu trả hàng?"
+    },
+    "status": {
+      "pending": "Chờ xác nhận",
+      "confirmed": "Đã xác nhận",
+      "processing": "Đang xử lý",
+      "shipping": "Đang giao",
+      "delivered": "Đã giao",
+      "cancelled": "Đã hủy",
+      "returned": "Trả hàng",
+      "unknown": "Trạng thái {{status}}"
+    },
+    "header": {
+      "title": "Chi tiết đơn hàng"
+    },
+    "section": {
+      "orderId": "Mã đơn hàng: #{{orderId}}",
+      "shippingAddress": "Địa chỉ giao hàng",
+      "products": "Sản phẩm",
+      "payment": "Chi tiết thanh toán",
+      "status": "Trạng thái đơn hàng"
+    },
+    "payment": {
+      "subtotal": "Tạm tính",
+      "total": "Tổng cộng"
+    },
+    "button": {
+      "cancel": "Hủy đơn hàng",
+      "confirmReceived": "Đã nhận hàng",
+      "return": "Trả hàng"
+    }
+  },
+  "orderSuccess": {
+    "title": "Đặt hàng thành công!",
+    "orderId": "Mã đơn hàng: #{{orderId}}",
+    "button": {
+      "viewOrder": "Xem đơn hàng",
+      "continueShopping": "Tiếp tục mua sắm"
+    }
+  },
+  "orders": {
+    "dialog": {
+      "cancelTitle": "Hủy đơn hàng",
+      "cancelMessage": "Bạn có chắc chắn muốn hủy đơn hàng này?",
+      "confirmTitle": "Xác nhận đã nhận hàng",
+      "confirmMessage": "Bạn đã nhận được đơn hàng này?",
+      "returnTitle": "Trả hàng",
+      "returnMessage": "Bạn có muốn yêu cầu trả hàng?"
+    },
+    "header": {
+      "title": "Đơn hàng của tôi"
+    },
+    "empty": {
+      "message": "Không có đơn hàng nào"
+    }
+  },
+  "profileEdit": {
+    "validation": {
+      "nameRequired": "Tên không được để trống",
+      "phoneInvalid": "Số điện thoại phải gồm 10 chữ số"
+    },
+    "toast": {
+      "permissionDenied": "Cần quyền truy cập thư viện ảnh",
+      "uploadError": "Tải ảnh lên thất bại",
+      "success": "Cập nhật hồ sơ thành công",
+      "error": "Cập nhật thất bại, thử lại sau"
+    },
+    "header": {
+      "title": "Sửa hồ sơ"
+    },
+    "avatar": {
+      "hint": "Nhấn để thay đổi ảnh đại diện"
+    },
+    "field": {
+      "nameLabel": "Tên",
+      "namePlaceholder": "Nhập tên của bạn",
+      "phoneLabel": "Số điện thoại",
+      "phonePlaceholder": "Nhập số điện thoại",
+      "addressLabel": "Địa chỉ",
+      "addressPlaceholder": "Nhập địa chỉ",
+      "birthdayLabel": "Ngày sinh",
+      "birthdayPlaceholder": "Chọn ngày sinh"
+    },
+    "button": {
+      "save": "Lưu"
+    }
+  },
+  "search": {
+    "button": {
+      "filter": "Lọc"
+    },
+    "empty": {
+      "message": "Không tìm thấy sản phẩm"
+    }
+  },
+  "vouchers": {
+    "tab": {
+      "available": "Voucher có sẵn",
+      "saved": "Voucher của tôi"
+    },
+    "empty": {
+      "available": "Chưa có voucher nào",
+      "saved": "Bạn chưa lưu voucher nào"
+    }
+  },
+  "wishlist": {
+    "button": {
+      "remove": "Bỏ yêu thích"
+    },
+    "header": {
+      "title": "Yêu thích"
+    },
+    "empty": {
+      "message": "Chưa có sản phẩm yêu thích",
+      "action": "Khám phá sản phẩm"
+    }
+  },
+  "orderShortcuts": {
+    "status": {
+      "pending": "Chờ xác nhận",
+      "shipping": "Đang giao",
+      "delivered": "Đã giao",
+      "cancelled": "Đã hủy"
+    },
+    "title": "Đơn hàng của tôi",
+    "button": {
+      "viewAll": "Xem tất cả"
+    }
+  },
+  "profileHeader": {
+    "defaultName": "Người dùng",
+    "button": {
+      "edit": "Sửa hồ sơ"
+    }
+  },
+  "addressCard": {
+    "badge": {
+      "default": "Mặc định"
+    },
+    "button": {
+      "edit": "Sửa",
+      "delete": "Xóa",
+      "setDefault": "Đặt mặc định"
+    }
+  },
+  "cartSummary": {
+    "checkbox": {
+      "all": "Tất cả"
+    },
+    "total": {
+      "label": "Tổng ({{totalSelected}} sản phẩm)"
+    },
+    "button": {
+      "checkout": "Mua hàng"
+    }
+  },
+  "checkoutAddress": {
+    "title": "Địa chỉ giao hàng",
+    "button": {
+      "add": "Thêm địa chỉ giao hàng",
+      "change": "Thay đổi"
+    }
+  },
+  "coinsToggle": {
+    "label": "Dùng Shopee Xu",
+    "balance": "Số dư: {{coinBalance}} Xu ({{formattedPrice}})"
+  },
+  "paymentMethod": {
+    "cod": {
+      "name": "Thanh toán khi nhận hàng",
+      "description": "COD"
+    },
+    "bankTransfer": {
+      "name": "Chuyển khoản ngân hàng"
+    },
+    "title": "Phương thức thanh toán"
+  },
+  "priceBreakdown": {
+    "title": "Chi tiết thanh toán",
+    "subtotal": "Tạm tính",
+    "shipping": "Phí vận chuyển",
+    "voucherDiscount": "Giảm giá voucher",
+    "coinsDiscount": "Giảm giá Xu",
+    "total": "Tổng cộng"
+  },
+  "shippingMethod": {
+    "title": "Phương thức vận chuyển"
+  },
+  "voucherInput": {
+    "title": "Mã giảm giá",
+    "placeholder": "Nhập mã voucher",
+    "button": {
+      "apply": "Áp dụng"
+    },
+    "applied": "Đã áp dụng: -{{formattedDiscount}}"
+  },
+  "notificationItem": {
+    "time": {
+      "justNow": "Vừa xong",
+      "minutesAgo": "{{minutes}} phút trước",
+      "hoursAgo": "{{hours}} giờ trước",
+      "daysAgo": "{{days}} ngày trước"
+    }
+  },
+  "orderCard": {
+    "status": {
+      "all": "Tất cả",
+      "pending": "Chờ xác nhận",
+      "confirmed": "Đã xác nhận",
+      "processing": "Đang xử lý",
+      "shipping": "Đang giao",
+      "delivered": "Đã giao",
+      "cancelled": "Đã hủy",
+      "returned": "Trả hàng"
+    },
+    "moreProducts": "+{{extraCount}} sản phẩm khác",
+    "total": "Tổng cộng",
+    "button": {
+      "cancel": "Hủy đơn",
+      "confirmReceived": "Đã nhận hàng",
+      "return": "Trả hàng"
+    }
+  },
+  "orderTimeline": {
+    "step": {
+      "placed": "Đặt hàng",
+      "confirmed": "Đã xác nhận",
+      "processing": "Đang xử lý",
+      "shipping": "Đang vận chuyển",
+      "delivered": "Đã giao hàng",
+      "cancelled": "Đã hủy",
+      "returned": "Trả hàng"
+    }
+  },
+  "sort": {
+    "title": "Sắp xếp theo",
+    "popular": "Phổ biến nhất",
+    "newest": "Mới nhất",
+    "priceAsc": "Giá: Thấp đến cao",
+    "priceDesc": "Giá: Cao đến thấp"
+  },
+  "filter": {
+    "title": "Lọc",
+    "priceRange": "Khoảng giá",
+    "priceFrom": "Từ",
+    "priceTo": "Đến",
+    "ratingFrom": "Đánh giá tối thiểu",
+    "button": {
+      "reset": "Đặt lại",
+      "apply": "Áp dụng"
+    }
+  },
+  "searchHistory": {
+    "title": "Lịch sử tìm kiếm",
+    "button": {
+      "clearAll": "Xóa tất cả"
+    }
+  },
+  "voucherCard": {
+    "discount": {
+      "percent": "Giảm {{value}}%",
+      "fixed": "Giảm {{value}}"
+    },
+    "minSpend": "Đơn tối thiểu {{amount}}",
+    "expiry": "HSD: {{date}}",
+    "status": {
+      "used": "Đã dùng",
+      "expired": "Hết hạn"
+    },
+    "button": {
+      "save": "Lưu",
+      "saved": "Đã lưu"
+    }
+  },
+  "a11y": {
+    "goBack": "Quay lại",
+    "clearSearch": "Xóa tìm kiếm",
+    "searchFor": "Tìm kiếm {{keyword}}",
+    "likeQuestion": "Thích câu hỏi",
+    "unlikeQuestion": "Bỏ thích câu hỏi",
+    "likeReview": "Thích đánh giá",
+    "unlikeReview": "Bỏ thích đánh giá",
+    "collapseReview": "Thu gọn đánh giá",
+    "expandReview": "Xem thêm đánh giá",
+    "rateStars": "Đánh giá {{count}} sao",
+    "deleteCartItem": "Xóa sản phẩm",
+    "deleteNotification": "Xóa thông báo",
+    "closeFullscreen": "Đóng toàn màn hình",
+    "decreaseQuantity": "Giảm số lượng",
+    "increaseQuantity": "Tăng số lượng",
+    "quantityValue": "Số lượng: {{value}}",
+    "dismissNotification": "Đóng thông báo",
+    "productImage": "Ảnh sản phẩm {{index}} / {{total}}",
+    "viewThumbnail": "Xem ảnh {{index}}"
+  },
+  "errors": {
+    "sessionExpiredTitle": "Phiên đăng nhập đã hết hạn",
+    "sessionExpiredMessage": "Vui lòng đăng nhập lại",
+    "networkTitle": "Lỗi kết nối",
+    "networkMessage": "Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng.",
+    "genericTitle": "Đã xảy ra lỗi",
+    "genericMessage": "Vui lòng thử lại sau",
+    "validationTitle": "Lỗi xác thực"
+  },
+  "languagePicker": {
+    "title": "Chọn ngôn ngữ"
+  },
+  "about": {
+    "header": {
+      "title": "Về ứng dụng"
+    },
+    "tagline": "Điểm mua sắm một cửa của bạn",
+    "section": {
+      "appInfo": "THÔNG TIN ỨNG DỤNG",
+      "legal": "PHÁP LÝ"
+    },
+    "field": {
+      "version": "Phiên bản",
+      "build": "Bản dựng"
+    },
+    "link": {
+      "privacyPolicy": "Chính sách bảo mật",
+      "termsOfService": "Điều khoản dịch vụ"
+    }
+  }
 }

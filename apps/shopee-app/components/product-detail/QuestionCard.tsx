@@ -55,7 +55,7 @@ export default function QuestionCard({ question, onAnswer, onToggleLike }: Quest
         <TouchableOpacity
           onPress={() => onToggleLike(question._id)}
           accessibilityRole="button"
-          accessibilityLabel={question.is_liked ? 'Unlike question' : 'Like question'}
+          accessibilityLabel={question.is_liked ? t('a11y.unlikeQuestion') : t('a11y.likeQuestion')}
           accessibilityState={{ selected: question.is_liked }}
           className="flex-row items-center gap-1">
           <ThumbsUp

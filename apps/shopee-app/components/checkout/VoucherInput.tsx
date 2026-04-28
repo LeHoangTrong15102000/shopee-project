@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { View, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { formatPrice } from '@/utils/price'
@@ -19,6 +20,7 @@ export default function VoucherInput({
   errorMessage,
   initialCode = '',
 }: VoucherInputProps) {
+  const { t } = useTranslation()
   const colors = useColors()
   const [code, setCode] = useState(initialCode)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -49,7 +51,7 @@ export default function VoucherInput({
   return (
     <View className="border-b border-neutrals900 px-4 py-4">
       <AppText raw variant="body" weight="semibold" className="mb-3">
-        Mã giảm giá
+        {t('voucherInput.title')}
       </AppText>
       <View
         className="flex-row items-center rounded-lg border overflow-hidden"
@@ -57,7 +59,7 @@ export default function VoucherInput({
         <TextInput
           value={code}
           onChangeText={handleChangeText}
-          placeholder="Nhập mã voucher"
+          placeholder={t('voucherInput.placeholder')}
           placeholderTextColor={colors.neutrals600}
           className="flex-1 px-3 py-3 font-sans-medium text-foreground bg-background"
           autoCapitalize="characters"
@@ -75,7 +77,7 @@ export default function VoucherInput({
             <ActivityIndicator size="small" color="#fff" />
           ) : (
             <AppText raw variant="bodySmall" weight="semibold" style={{ color: '#fff' }}>
-              Áp dụng
+              {t('voucherInput.button.apply')}
             </AppText>
           )}
         </TouchableOpacity>
@@ -87,7 +89,7 @@ export default function VoucherInput({
       )}
       {hasApplied && !errorMessage && (
         <AppText raw variant="labelSmall" style={{ color: colors.success, marginTop: 4 }}>
-          Đã áp dụng: -{formatPrice(appliedDiscount!)}
+          {t('voucherInput.applied', { formattedDiscount: formatPrice(appliedDiscount!) })}
         </AppText>
       )}
     </View>

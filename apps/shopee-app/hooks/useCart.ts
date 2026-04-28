@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getCart, updateCartItem, deleteCartItems } from '@/apis/cart.api'
+import { handleMutationError } from '@/utils/mutationErrorHandler'
 
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 
@@ -24,6 +25,7 @@ export function useUpdateCartItem() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: cartKeys.all() })
     },
+    onError: handleMutationError,
   })
 }
 
@@ -34,5 +36,6 @@ export function useDeleteCartItems() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: cartKeys.all() })
     },
+    onError: handleMutationError,
   })
 }

@@ -2,10 +2,12 @@ import React from 'react'
 import { View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Play } from 'lucide-react-native'
+import { useTranslation } from 'react-i18next'
 import { AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 
 export default function LiveScreen() {
+  const { t } = useTranslation()
   const colors = useColors()
 
   return (
@@ -32,9 +34,10 @@ export default function LiveScreen() {
           variant="body"
           color="muted"
           style={{ textAlign: 'center', lineHeight: 22 }}>
-          Tính năng đang được phát triển, sẽ sớm ra mắt!
+          {t('live.comingSoon.message')}
         </AppText>
       </View>
     </SafeAreaView>
   )
 }
+

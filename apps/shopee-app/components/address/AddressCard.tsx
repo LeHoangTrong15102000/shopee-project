@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, TouchableOpacity } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { AppText, Badge, AppButton } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { type Address } from '@/apis/address.api'
@@ -21,6 +22,7 @@ export default function AddressCard({
   onSelect,
   selectable,
 }: AddressCardProps) {
+  const { t } = useTranslation()
   const colors = useColors()
 
   const fullAddress = [address.street, address.ward, address.district, address.city]
@@ -42,7 +44,7 @@ export default function AddressCard({
           </AppText>
           {address.is_default && (
             <Badge variant="primary" size="sm">
-              Mặc định
+              {t('addressCard.badge.default')}
             </Badge>
           )}
         </View>
@@ -56,21 +58,21 @@ export default function AddressCard({
         {onEdit && (
           <TouchableOpacity onPress={() => onEdit(address._id)}>
             <AppText raw variant="labelSmall" color="primary">
-              Sửa
+              {t('addressCard.button.edit')}
             </AppText>
           </TouchableOpacity>
         )}
         {onDelete && (
           <TouchableOpacity onPress={() => onDelete(address._id)}>
             <AppText raw variant="labelSmall" style={{ color: colors.error }}>
-              Xóa
+              {t('addressCard.button.delete')}
             </AppText>
           </TouchableOpacity>
         )}
         {!address.is_default && onSetDefault && (
           <TouchableOpacity onPress={() => onSetDefault(address._id)}>
             <AppText raw variant="labelSmall" color="muted">
-              Đặt mặc định
+              {t('addressCard.button.setDefault')}
             </AppText>
           </TouchableOpacity>
         )}

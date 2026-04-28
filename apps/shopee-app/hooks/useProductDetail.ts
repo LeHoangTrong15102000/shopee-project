@@ -25,6 +25,7 @@ import {
 } from '@/apis/product-detail.api'
 import { useToast } from '@/components/ui/ToastProvider'
 import { useTranslation } from 'react-i18next'
+import { handleMutationError } from '@/utils/mutationErrorHandler'
 
 // ─── Query Data Types ─────────────────────────────────────────────────────────
 
@@ -96,7 +97,7 @@ export function useRelatedProducts(categoryId: string | undefined, excludeProduc
 
 export function useToggleWishlist(productId: string) {
   const queryClient = useQueryClient()
-  const { showSuccess, showError } = useToast()
+  const { showSuccess } = useToast()
   const { t } = useTranslation()
 
   return useMutation({
@@ -111,9 +112,9 @@ export function useToggleWishlist(productId: string) {
       })
       return { previous }
     },
-    onError: (_err, _vars, context) => {
+    onError: (error, _vars, context) => {
       queryClient.setQueryData(['wishlist', productId], context?.previous)
-      showError(t('PD_WISHLIST_ERROR'))
+      handleMutationError(error)
     },
     onSuccess: (_data, inWishlist) => {
       showSuccess(inWishlist ? t('PD_WISHLIST_REMOVED') : t('PD_WISHLIST_ADDED'))
@@ -125,28 +126,25 @@ export function useToggleWishlist(productId: string) {
 }
 
 export function useAddToCart() {
-  const { showSuccess, showError } = useToast()
+  const { showSuccess } = useToast()
   const { t } = useTranslation()
 
   return useMutation({
     mutationFn: (body: { product_id: string; buy_count: number }) => addToCartApi(body),
     onSuccess: () => showSuccess(t('PD_ADD_TO_CART_SUCCESS')),
-    onError: () => showError(t('PD_ADD_TO_CART_ERROR')),
+    onError: handleMutationError,
   })
 }
 
 export function useBuyNow() {
-  const { showError } = useToast()
-  const { t } = useTranslation()
-
   return useMutation({
     mutationFn: (body: { product_id: string; buy_count: number }) => buyNowApi(body),
-    onError: () => showError(t('PD_BUY_NOW_ERROR')),
+    onError: handleMutationError,
   })
 }
 export function useCreateReview(productId: string) {
   const queryClient = useQueryClient()
-  const { showSuccess, showError } = useToast()
+  const { showSuccess } = useToast()
   const { t } = useTranslation()
 
   return useMutation({
@@ -160,14 +158,12 @@ export function useCreateReview(productId: string) {
       queryClient.invalidateQueries({ queryKey: ['reviews', productId] })
       showSuccess(t('PD_REVIEW_SUCCESS'))
     },
-    onError: () => showError(t('PD_REVIEW_ERROR')),
+    onError: handleMutationError,
   })
 }
 
 export function useToggleReviewLike(productId: string) {
   const queryClient = useQueryClient()
-  const { showError } = useToast()
-  const { t } = useTranslation()
 
   return useMutation({
     mutationFn: (reviewId: string) => toggleReviewLikeApi(reviewId),
@@ -200,9 +196,9 @@ export function useToggleReviewLike(productId: string) {
       )
       return { previous }
     },
-    onError: (_err, _vars, context) => {
+    onError: (error, _vars, context) => {
       queryClient.setQueryData(['reviews', productId], context?.previous)
-      showError(t('PD_REVIEW_LIKE_ERROR'))
+      handleMutationError(error)
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['reviews', productId] })
@@ -212,7 +208,7 @@ export function useToggleReviewLike(productId: string) {
 
 export function useAskQuestion(productId: string) {
   const queryClient = useQueryClient()
-  const { showSuccess, showError } = useToast()
+  const { showSuccess } = useToast()
   const { t } = useTranslation()
 
   return useMutation({
@@ -221,13 +217,13 @@ export function useAskQuestion(productId: string) {
       queryClient.invalidateQueries({ queryKey: ['questions', productId] })
       showSuccess(t('PD_QUESTION_SUCCESS'))
     },
-    onError: () => showError(t('PD_QUESTION_ERROR')),
+    onError: handleMutationError,
   })
 }
 
 export function useAnswerQuestion(productId: string) {
   const queryClient = useQueryClient()
-  const { showSuccess, showError } = useToast()
+  const { showSuccess } = useToast()
   const { t } = useTranslation()
 
   return useMutation({
@@ -237,14 +233,12 @@ export function useAnswerQuestion(productId: string) {
       queryClient.invalidateQueries({ queryKey: ['questions', productId] })
       showSuccess(t('PD_ANSWER_SUCCESS'))
     },
-    onError: () => showError(t('PD_ANSWER_ERROR')),
+    onError: handleMutationError,
   })
 }
 
 export function useLikeQuestion(productId: string) {
   const queryClient = useQueryClient()
-  const { showError } = useToast()
-  const { t } = useTranslation()
 
   return useMutation({
     mutationFn: (questionId: string) => likeQuestionApi(questionId),
@@ -277,9 +271,9 @@ export function useLikeQuestion(productId: string) {
       )
       return { previous }
     },
-    onError: (_err, _vars, context) => {
+    onError: (error, _vars, context) => {
       queryClient.setQueryData(['questions', productId], context?.previous)
-      showError(t('PD_LIKE_ERROR'))
+      handleMutationError(error)
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['questions', productId] })

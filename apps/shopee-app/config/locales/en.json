@@ -142,5 +142,519 @@
   "PD_RELATED_PRODUCTS": "Related Products",
   "PD_VIEW_PRODUCT": "View {{name}}",
   "PD_RETRY": "Retry",
-  "PD_GO_BACK": "Go Back"
+  "PD_GO_BACK": "Go Back",
+
+  "account": {
+    "dialog": {
+      "logoutTitle": "Logout",
+      "logoutMessage": "Are you sure you want to logout?"
+    },
+    "menu": {
+      "wishlist": "Wishlist",
+      "addresses": "Addresses",
+      "notifications": "Notifications",
+      "checkin": "Check-in",
+      "vouchers": "My Vouchers"
+    },
+    "settings": {
+      "darkMode": "Dark Mode",
+      "language": "Language",
+      "changePassword": "Change Password",
+      "about": "About"
+    },
+    "header": {
+      "title": "Account"
+    },
+    "section": {
+      "utilities": "UTILITIES",
+      "settings": "SETTINGS"
+    },
+    "button": {
+      "logout": "Logout"
+    }
+  },
+  "cart": {
+    "dialog": {
+      "removeTitle": "Remove Product",
+      "removeMessage": "Are you sure you want to remove this product from your cart?"
+    },
+    "header": {
+      "title": "Cart"
+    },
+    "empty": {
+      "message": "Your cart is empty",
+      "action": "Shop Now"
+    }
+  },
+  "mall": {
+    "banner": {
+      "superSale": "Shopee Mall Super Sale",
+      "flashSale": "Daily Flash Sale",
+      "freeShipping": "Free Shipping"
+    },
+    "section": {
+      "authentic": "Authentic products, quality guaranteed",
+      "categories": "Featured Categories",
+      "featured": "Featured Products"
+    }
+  },
+  "notifications": {
+    "header": {
+      "title": "Notifications"
+    },
+    "button": {
+      "markAllRead": "Mark All as Read"
+    },
+    "empty": {
+      "message": "No notifications"
+    }
+  },
+  "live": {
+    "comingSoon": {
+      "message": "Feature under development, coming soon!"
+    }
+  },
+  "addresses": {
+    "dialog": {
+      "deleteTitle": "Delete Address",
+      "deleteMessage": "Are you sure you want to delete this address?"
+    },
+    "header": {
+      "title": "My Addresses"
+    },
+    "empty": {
+      "message": "No addresses yet"
+    }
+  },
+  "addressForm": {
+    "validation": {
+      "nameRequired": "Name is required",
+      "phoneInvalid": "Phone number must be 10 digits",
+      "streetRequired": "Address is required",
+      "cityRequired": "City/Province is required"
+    },
+    "toast": {
+      "updateSuccess": "Address updated successfully",
+      "updateError": "Update failed, please try again",
+      "createSuccess": "Address added successfully",
+      "createError": "Failed to add address, please try again"
+    },
+    "header": {
+      "editTitle": "Edit Address",
+      "createTitle": "Add Address"
+    },
+    "field": {
+      "nameLabel": "Recipient Name",
+      "namePlaceholder": "Enter name",
+      "phoneLabel": "Phone Number",
+      "phonePlaceholder": "Enter phone number",
+      "streetLabel": "Street Address",
+      "streetPlaceholder": "Enter detailed address",
+      "wardLabel": "Ward",
+      "wardPlaceholder": "Enter ward",
+      "districtLabel": "District",
+      "districtPlaceholder": "Enter district",
+      "cityLabel": "City/Province",
+      "cityPlaceholder": "Enter city/province"
+    },
+    "button": {
+      "save": "Save"
+    }
+  },
+  "changePassword": {
+    "validation": {
+      "currentRequired": "Please enter current password",
+      "newMinLength": "New password must be at least 8 characters",
+      "confirmRequired": "Please confirm password",
+      "confirmMismatch": "Passwords do not match"
+    },
+    "toast": {
+      "success": "Password changed successfully",
+      "incorrectPassword": "Current password is incorrect",
+      "error": "Failed to change password, please try again"
+    },
+    "header": {
+      "title": "Change Password"
+    },
+    "hint": {
+      "minLength": "New password must be at least 8 characters"
+    },
+    "field": {
+      "currentLabel": "Current Password",
+      "currentPlaceholder": "Enter current password",
+      "newLabel": "New Password",
+      "newPlaceholder": "Enter new password",
+      "confirmLabel": "Confirm New Password",
+      "confirmPlaceholder": "Re-enter new password"
+    },
+    "button": {
+      "submit": "Change Password"
+    }
+  },
+  "checkin": {
+    "toast": {
+      "success": "Check-in successful! +{{earned}} Coins",
+      "error": "Check-in failed, please try again"
+    },
+    "header": {
+      "title": "Daily Check-in"
+    },
+    "streak": {
+      "label": "{{streakCount}} days streak"
+    },
+    "reward": {
+      "label": "Today's reward:"
+    },
+    "button": {
+      "checkedIn": "Checked in today",
+      "checkIn": "Check In"
+    }
+  },
+  "checkout": {
+    "header": {
+      "title": "Checkout"
+    },
+    "summary": {
+      "total": "Total Payment"
+    },
+    "button": {
+      "placeOrder": "Place Order",
+      "placing": "Placing Order..."
+    }
+  },
+  "orderDetail": {
+    "error": {
+      "notFound": "Order not found"
+    },
+    "dialog": {
+      "cancelTitle": "Cancel Order",
+      "cancelMessage": "Are you sure you want to cancel this order?",
+      "confirmTitle": "Confirm Receipt",
+      "confirmMessage": "Have you received this order?",
+      "returnTitle": "Return",
+      "returnMessage": "Do you want to request a return?"
+    },
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "processing": "Processing",
+      "shipping": "Shipping",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "returned": "Returned",
+      "unknown": "Status {{status}}"
+    },
+    "header": {
+      "title": "Order Details"
+    },
+    "section": {
+      "orderId": "Order ID: #{{orderId}}",
+      "shippingAddress": "Shipping Address",
+      "products": "Products",
+      "payment": "Payment Details",
+      "status": "Order Status"
+    },
+    "payment": {
+      "subtotal": "Subtotal",
+      "total": "Total"
+    },
+    "button": {
+      "cancel": "Cancel Order",
+      "confirmReceived": "Confirm Receipt",
+      "return": "Return"
+    }
+  },
+  "orderSuccess": {
+    "title": "Order Placed Successfully!",
+    "orderId": "Order ID: #{{orderId}}",
+    "button": {
+      "viewOrder": "View Order",
+      "continueShopping": "Continue Shopping"
+    }
+  },
+  "orders": {
+    "dialog": {
+      "cancelTitle": "Cancel Order",
+      "cancelMessage": "Are you sure you want to cancel this order?",
+      "confirmTitle": "Confirm Receipt",
+      "confirmMessage": "Have you received this order?",
+      "returnTitle": "Return",
+      "returnMessage": "Do you want to request a return?"
+    },
+    "header": {
+      "title": "My Orders"
+    },
+    "empty": {
+      "message": "No orders yet"
+    }
+  },
+  "profileEdit": {
+    "validation": {
+      "nameRequired": "Name is required",
+      "phoneInvalid": "Phone number must be 10 digits"
+    },
+    "toast": {
+      "permissionDenied": "Photo library access required",
+      "uploadError": "Failed to upload image",
+      "success": "Profile updated successfully",
+      "error": "Update failed, please try again"
+    },
+    "header": {
+      "title": "Edit Profile"
+    },
+    "avatar": {
+      "hint": "Tap to change avatar"
+    },
+    "field": {
+      "nameLabel": "Name",
+      "namePlaceholder": "Enter your name",
+      "phoneLabel": "Phone Number",
+      "phonePlaceholder": "Enter phone number",
+      "addressLabel": "Address",
+      "addressPlaceholder": "Enter address",
+      "birthdayLabel": "Birthday",
+      "birthdayPlaceholder": "Select birthday"
+    },
+    "button": {
+      "save": "Save"
+    }
+  },
+  "search": {
+    "button": {
+      "filter": "Filter"
+    },
+    "empty": {
+      "message": "No products found"
+    }
+  },
+  "vouchers": {
+    "tab": {
+      "available": "Available Vouchers",
+      "saved": "My Vouchers"
+    },
+    "empty": {
+      "available": "No vouchers available",
+      "saved": "You haven't saved any vouchers"
+    }
+  },
+  "wishlist": {
+    "button": {
+      "remove": "Remove from wishlist"
+    },
+    "header": {
+      "title": "Wishlist"
+    },
+    "empty": {
+      "message": "No wishlist items",
+      "action": "Explore Products"
+    }
+  },
+  "orderShortcuts": {
+    "status": {
+      "pending": "Pending",
+      "shipping": "Shipping",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "title": "My Orders",
+    "button": {
+      "viewAll": "View All"
+    }
+  },
+  "profileHeader": {
+    "defaultName": "User",
+    "button": {
+      "edit": "Edit Profile"
+    }
+  },
+  "addressCard": {
+    "badge": {
+      "default": "Default"
+    },
+    "button": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "setDefault": "Set as Default"
+    }
+  },
+  "cartSummary": {
+    "checkbox": {
+      "all": "All"
+    },
+    "total": {
+      "label": "Total ({{totalSelected}} items)"
+    },
+    "button": {
+      "checkout": "Checkout"
+    }
+  },
+  "checkoutAddress": {
+    "title": "Shipping Address",
+    "button": {
+      "add": "Add Shipping Address",
+      "change": "Change"
+    }
+  },
+  "coinsToggle": {
+    "label": "Use Shopee Coins",
+    "balance": "Balance: {{coinBalance}} Coins ({{formattedPrice}})"
+  },
+  "paymentMethod": {
+    "cod": {
+      "name": "Cash on Delivery",
+      "description": "COD"
+    },
+    "bankTransfer": {
+      "name": "Bank Transfer"
+    },
+    "title": "Payment Method"
+  },
+  "priceBreakdown": {
+    "title": "Payment Details",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping Fee",
+    "voucherDiscount": "Voucher Discount",
+    "coinsDiscount": "Coins Discount",
+    "total": "Total"
+  },
+  "shippingMethod": {
+    "title": "Shipping Method"
+  },
+  "voucherInput": {
+    "title": "Discount Code",
+    "placeholder": "Enter voucher code",
+    "button": {
+      "apply": "Apply"
+    },
+    "applied": "Applied: -{{formattedDiscount}}"
+  },
+  "notificationItem": {
+    "time": {
+      "justNow": "Just now",
+      "minutesAgo": "{{minutes}} minutes ago",
+      "hoursAgo": "{{hours}} hours ago",
+      "daysAgo": "{{days}} days ago"
+    }
+  },
+  "orderCard": {
+    "status": {
+      "all": "All",
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "processing": "Processing",
+      "shipping": "Shipping",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "returned": "Returned"
+    },
+    "moreProducts": "+{{extraCount}} more items",
+    "total": "Total",
+    "button": {
+      "cancel": "Cancel",
+      "confirmReceived": "Confirm Receipt",
+      "return": "Return"
+    }
+  },
+  "orderTimeline": {
+    "step": {
+      "placed": "Order Placed",
+      "confirmed": "Confirmed",
+      "processing": "Processing",
+      "shipping": "Shipping",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "returned": "Returned"
+    }
+  },
+  "sort": {
+    "title": "Sort By",
+    "popular": "Most Popular",
+    "newest": "Newest",
+    "priceAsc": "Price: Low to High",
+    "priceDesc": "Price: High to Low"
+  },
+  "filter": {
+    "title": "Filter",
+    "priceRange": "Price Range",
+    "priceFrom": "From",
+    "priceTo": "To",
+    "ratingFrom": "Minimum Rating",
+    "button": {
+      "reset": "Reset",
+      "apply": "Apply"
+    }
+  },
+  "searchHistory": {
+    "title": "Search History",
+    "button": {
+      "clearAll": "Clear All"
+    }
+  },
+  "voucherCard": {
+    "discount": {
+      "percent": "{{value}}% off",
+      "fixed": "{{value}} off"
+    },
+    "minSpend": "Min. spend {{amount}}",
+    "expiry": "Exp: {{date}}",
+    "status": {
+      "used": "Used",
+      "expired": "Expired"
+    },
+    "button": {
+      "save": "Save",
+      "saved": "Saved"
+    }
+  },
+  "a11y": {
+    "goBack": "Go back",
+    "clearSearch": "Clear search",
+    "searchFor": "Search for {{keyword}}",
+    "likeQuestion": "Like question",
+    "unlikeQuestion": "Unlike question",
+    "likeReview": "Like review",
+    "unlikeReview": "Unlike review",
+    "collapseReview": "Collapse review text",
+    "expandReview": "Expand review text",
+    "rateStars": "Rate {{count}} stars",
+    "deleteCartItem": "Delete item",
+    "deleteNotification": "Delete notification",
+    "closeFullscreen": "Close fullscreen",
+    "decreaseQuantity": "Decrease quantity",
+    "increaseQuantity": "Increase quantity",
+    "quantityValue": "Quantity: {{value}}",
+    "dismissNotification": "Dismiss notification",
+    "productImage": "Product image {{index}} of {{total}}",
+    "viewThumbnail": "View image {{index}}"
+  },
+  "errors": {
+    "sessionExpiredTitle": "Session Expired",
+    "sessionExpiredMessage": "Please sign in again",
+    "networkTitle": "Connection Error",
+    "networkMessage": "Unable to connect to server. Please check your network connection.",
+    "genericTitle": "Error",
+    "genericMessage": "Please try again later",
+    "validationTitle": "Validation Error"
+  },
+  "languagePicker": {
+    "title": "Select Language"
+  },
+  "about": {
+    "header": {
+      "title": "About"
+    },
+    "tagline": "Your one-stop shopping destination",
+    "section": {
+      "appInfo": "APP INFO",
+      "legal": "LEGAL"
+    },
+    "field": {
+      "version": "Version",
+      "build": "Build"
+    },
+    "link": {
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service"
+    }
+  }
 }

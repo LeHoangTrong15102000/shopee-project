@@ -107,7 +107,7 @@ export default function Avatar({
     }
 
     if (icon) {
-      return React.cloneElement(icon as any, {
+      return React.cloneElement(icon as React.ReactElement<{ size?: number; color?: string }>, {
         size: getIconSize(size),
         color:
           variant === 'default'

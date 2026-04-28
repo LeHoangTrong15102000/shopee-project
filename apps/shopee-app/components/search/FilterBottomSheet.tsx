@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { View, TextInput, Pressable } from 'react-native'
 import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
+import { useTranslation } from 'react-i18next'
 import { useColors } from '@/hooks/useColors'
 import { AppText, AppButton } from '@/components/ui'
 import { Star } from 'lucide-react-native'
@@ -22,6 +23,7 @@ export default function FilterBottomSheet({
   initialFilters,
   onApply,
 }: FilterBottomSheetProps) {
+  const { t } = useTranslation()
   const colors = useColors()
   const [minPrice, setMinPrice] = useState(initialFilters.minPrice?.toString() ?? '')
   const [maxPrice, setMaxPrice] = useState(initialFilters.maxPrice?.toString() ?? '')
@@ -59,17 +61,17 @@ export default function FilterBottomSheet({
       <BottomSheetView>
         <View className="px-4 pb-8 pt-2">
           <AppText raw variant="heading3" weight="semibold" className="mb-4">
-            Bộ lọc
+            {t('filter.title')}
           </AppText>
 
           <AppText raw variant="label" weight="medium" className="mb-2">
-            Khoảng giá
+            {t('filter.priceRange')}
           </AppText>
           <View className="mb-4 flex-row items-center gap-3">
             <TextInput
               value={minPrice}
               onChangeText={setMinPrice}
-              placeholder="Từ"
+              placeholder={t('filter.priceFrom')}
               keyboardType="numeric"
               placeholderTextColor={colors.neutrals600}
               className="flex-1 rounded-lg border border-neutrals700 bg-background px-3 py-2 text-foreground"
@@ -78,7 +80,7 @@ export default function FilterBottomSheet({
             <TextInput
               value={maxPrice}
               onChangeText={setMaxPrice}
-              placeholder="Đến"
+              placeholder={t('filter.priceTo')}
               keyboardType="numeric"
               placeholderTextColor={colors.neutrals600}
               className="flex-1 rounded-lg border border-neutrals700 bg-background px-3 py-2 text-foreground"
@@ -86,7 +88,7 @@ export default function FilterBottomSheet({
           </View>
 
           <AppText raw variant="label" weight="medium" className="mb-2">
-            Đánh giá từ
+            {t('filter.ratingFrom')}
           </AppText>
           <View className="mb-6 flex-row gap-2">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -118,10 +120,10 @@ export default function FilterBottomSheet({
 
           <View className="flex-row gap-3">
             <AppButton variant="outline" onPress={handleReset} className="flex-1">
-              Đặt lại
+              {t('filter.button.reset')}
             </AppButton>
             <AppButton variant="primary" onPress={handleApply} className="flex-1">
-              Áp dụng
+              {t('filter.button.apply')}
             </AppButton>
           </View>
         </View>

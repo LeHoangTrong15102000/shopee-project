@@ -1,3 +1,38 @@
+// Mock react-i18next with actual English translations so t() returns real strings
+jest.mock('react-i18next', () => {
+  const en = require('./config/locales/en.json')
+
+  function resolve(obj, key) {
+    // Support nested dot-notation keys like 'cart.empty.action'
+    // and interpolation like '{{count}}'
+    const parts = key.split('.')
+    let current = obj
+    for (const part of parts) {
+      if (current == null || typeof current !== 'object') return key
+      current = current[part]
+    }
+    if (typeof current === 'string') return current
+    return key
+  }
+
+  const t = (key, opts) => {
+    let str = resolve(en, key)
+    if (opts && typeof str === 'string') {
+      Object.entries(opts).forEach(([k, v]) => {
+        str = str.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), String(v))
+      })
+    }
+    return str
+  }
+
+  return {
+    useTranslation: () => ({ t, i18n: { language: 'en', changeLanguage: jest.fn() } }),
+    Trans: ({ children }) => children,
+    initReactI18next: { type: '3rdParty', init: jest.fn() },
+    I18nextProvider: ({ children }) => children,
+  }
+})
+
 // Pre-define expo globals to prevent lazy require issues in expo/src/winter/runtime.native.ts
 // Expo SDK 54 lazily polyfills these globals, but the lazy require can fail in jest
 const expoGlobals = {

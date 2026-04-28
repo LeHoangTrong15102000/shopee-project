@@ -11,17 +11,20 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useRouter } from 'expo-router'
 import { Heart, Star } from 'lucide-react-native'
+import { useTranslation } from 'react-i18next'
 import { AppText, EmptyState } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { useWishlist, useRemoveFromWishlist } from '@/hooks/useWishlist'
 import { formatPrice, getDiscountPercent } from '@/utils/price'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
+import { WishlistItem } from '@/apis/wishlist.api'
 
 const CARD_GAP = 8
 const CARD_PADDING = 16
 const CARD_WIDTH = (Dimensions.get('window').width - CARD_PADDING * 2 - CARD_GAP) / 2
 
 export default function WishlistScreen() {
+  const { t } = useTranslation()
   const colors = useColors()
   const router = useRouter()
 
@@ -38,7 +41,7 @@ export default function WishlistScreen() {
   }
 
   const renderItem = useCallback(
-    ({ item }: { item: any }) => {
+    ({ item }: { item: WishlistItem }) => {
       const product = item.product
       const discount = getDiscountPercent(product.price, product.price_before_discount)
 
@@ -72,7 +75,7 @@ export default function WishlistScreen() {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
-              accessibilityLabel="Bỏ yêu thích">
+              accessibilityLabel={t('wishlist.button.remove')}>
               <Heart size={16} color={colors.primary} fill={colors.primary} />
             </TouchableOpacity>
 
@@ -121,7 +124,7 @@ export default function WishlistScreen() {
       <Stack.Screen
         options={{
           header: (props) => <CustomScreenHeader {...props} />,
-          title: 'Yêu thích',
+          title: t('wishlist.header.title'),
         }}
       />
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
@@ -133,8 +136,8 @@ export default function WishlistScreen() {
           <View className="flex-1 items-center justify-center">
             <EmptyState
               icon={Heart}
-              message="Chưa có sản phẩm yêu thích"
-              actionLabel="Khám phá sản phẩm"
+              message={t('wishlist.empty.message')}
+              actionLabel={t('wishlist.empty.action')}
               onAction={() => router.push('/(tabs)/home')}
             />
           </View>

@@ -11,6 +11,7 @@ import {
   ScrollView,
 } from 'react-native'
 import { X } from 'lucide-react-native'
+import { useTranslation } from 'react-i18next'
 import { useColors } from '@/hooks/useColors'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
@@ -21,6 +22,7 @@ interface ImageGalleryProps {
 
 export default function ImageGallery({ images }: ImageGalleryProps) {
   const colors = useColors()
+  const { t } = useTranslation()
   const [activeIndex, setActiveIndex] = useState(0)
   const [fullscreenVisible, setFullscreenVisible] = useState(false)
   const flatListRef = useRef<FlatList>(null)
@@ -51,7 +53,7 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
             activeOpacity={0.95}
             onPress={() => setFullscreenVisible(true)}
             accessibilityRole="image"
-            accessibilityLabel={`Product image ${index + 1} of ${images.length}, tap to zoom`}>
+            accessibilityLabel={t('a11y.productImage', { index: index + 1, total: images.length }) + ', tap to zoom'}>
             <Image
               source={{ uri: item }}
               style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
@@ -93,7 +95,7 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
             <TouchableOpacity
               onPress={() => scrollToIndex(index)}
               accessibilityRole="button"
-              accessibilityLabel={`View image ${index + 1}`}
+              accessibilityLabel={t('a11y.viewThumbnail', { index: index + 1 })}
               style={{
                 borderWidth: index === activeIndex ? 2 : 1,
                 borderColor: index === activeIndex ? colors.primary : colors.neutrals700,
@@ -124,7 +126,7 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
             onPress={() => setFullscreenVisible(false)}
             className="absolute right-4 top-14 z-10 rounded-full bg-black/50 p-2"
             accessibilityRole="button"
-            accessibilityLabel="Close fullscreen">
+            accessibilityLabel={t('a11y.closeFullscreen')}>
             <X size={24} color={colors.foreground} />
           </TouchableOpacity>
           <FlatList
@@ -152,7 +154,7 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
                   source={{ uri: item }}
                   style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
                   resizeMode="contain"
-                  accessibilityLabel={`Product image ${index + 1} of ${images.length}`}
+                  accessibilityLabel={t('a11y.productImage', { index: index + 1, total: images.length })}
                 />
               </ScrollView>
             )}

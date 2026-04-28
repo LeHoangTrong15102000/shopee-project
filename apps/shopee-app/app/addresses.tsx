@@ -2,6 +2,7 @@ import React from 'react'
 import { View, FlatList, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import { Plus, MapPin } from 'lucide-react-native'
 import { AppText, EmptyState } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
@@ -13,8 +14,10 @@ import {
 import { useDialog } from '@/components/ui/DialogProvider'
 import AddressCard from '@/components/address/AddressCard'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
+import { Address } from '@/apis/address.api'
 
 export default function AddressListScreen() {
+  const { t } = useTranslation()
   const colors = useColors()
   const router = useRouter()
   const { mode } = useLocalSearchParams<{ mode?: string }>()
@@ -29,8 +32,8 @@ export default function AddressListScreen() {
 
   const handleDelete = (id: string) => {
     showConfirm(
-      'Xóa địa chỉ',
-      'Bạn có chắc chắn muốn xóa địa chỉ này?',
+      t('addresses.dialog.deleteTitle'),
+      t('addresses.dialog.deleteMessage'),
       () => deleteAddress(id),
       undefined,
       'horizontal'
@@ -46,19 +49,19 @@ export default function AddressListScreen() {
       <Stack.Screen
         options={{
           header: (props) => <CustomScreenHeader {...props} />,
-          title: 'Địa chỉ của tôi',
+          title: t('addresses.header.title'),
         }}
       />
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
         {addresses.length === 0 && !isLoading ? (
           <View className="flex-1 items-center justify-center">
-            <EmptyState icon={MapPin} message="Chưa có địa chỉ nào" />
+            <EmptyState icon={MapPin} message={t('addresses.empty.message')} />
           </View>
         ) : (
           <FlatList
             data={addresses}
-            keyExtractor={(item: any) => item._id}
-            renderItem={({ item }: { item: any }) => (
+            keyExtractor={(item: Address) => item._id}
+            renderItem={({ item }: { item: Address }) => (
               <AddressCard
                 address={item}
                 selectable={isSelectMode}

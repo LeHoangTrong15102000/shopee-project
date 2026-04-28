@@ -3,13 +3,14 @@ import { View, FlatList, ActivityIndicator } from 'react-native'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { SlidersHorizontal, ArrowUpDown } from 'lucide-react-native'
+import { useTranslation } from 'react-i18next'
 import { AppText, AppButton, EmptyState, Chip } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import ProductCard, { CARD_GAP } from '@/components/home/ProductCard'
 import SearchBar from '@/components/search/SearchBar'
 import SearchHistory from '@/components/search/SearchHistory'
 import SearchSuggestions from '@/components/search/SearchSuggestions'
-import SortBottomSheet, { SORT_OPTIONS, type SortOption } from '@/components/search/SortBottomSheet'
+import SortBottomSheet, { type SortOption } from '@/components/search/SortBottomSheet'
 import FilterBottomSheet, { type FilterOptions } from '@/components/search/FilterBottomSheet'
 import {
   useSearchProducts,
@@ -25,12 +26,17 @@ import { Search } from 'lucide-react-native'
 type SearchMode = 'idle' | 'typing' | 'results'
 
 export default function SearchScreen() {
+  const { t } = useTranslation()
   const colors = useColors()
   const router = useRouter()
   const [keyword, setKeyword] = useState('')
   const [submittedKeyword, setSubmittedKeyword] = useState('')
   const [mode, setMode] = useState<SearchMode>('idle')
-  const [selectedSort, setSelectedSort] = useState<SortOption>(SORT_OPTIONS[0])
+  const [selectedSort, setSelectedSort] = useState<SortOption>(() => ({
+    label: t('sort.popular'),
+    sortBy: 'sold',
+    order: 'desc',
+  }))
   const [filters, setFilters] = useState<FilterOptions>({})
   const sortSheetRef = useRef<BottomSheetModal>(null)
   const filterSheetRef = useRef<BottomSheetModal>(null)
@@ -144,7 +150,7 @@ export default function SearchScreen() {
               selected={Object.keys(filters).some((k) => filters[k as keyof FilterOptions] != null)}
               onPress={() => filterSheetRef.current?.present()}
               icon={<SlidersHorizontal />}>
-              Lọc
+              {t('search.button.filter')}
             </Chip>
           </View>
 
@@ -153,7 +159,7 @@ export default function SearchScreen() {
               <ActivityIndicator size="large" color={colors.primary} />
             </View>
           ) : allProducts.length === 0 ? (
-            <EmptyState icon={Search} message="Không tìm thấy sản phẩm" />
+            <EmptyState icon={Search} message={t('search.empty.message')} />
           ) : (
             <FlatList
               data={allProducts}

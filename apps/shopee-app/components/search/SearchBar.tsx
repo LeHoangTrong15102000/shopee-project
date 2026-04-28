@@ -41,7 +41,7 @@ export default function SearchBar({
         onPress={onBack}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         accessibilityRole="button"
-        accessibilityLabel="Go back">
+        accessibilityLabel={t('a11y.goBack')}>
         <ArrowLeft size={24} color="#FFFFFF" />
       </Pressable>
 
@@ -63,7 +63,7 @@ export default function SearchBar({
             onPress={onClear}
             hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
             accessibilityRole="button"
-            accessibilityLabel="Clear search">
+            accessibilityLabel={t('a11y.clearSearch')}>
             <X size={16} color="#999" />
           </Pressable>
         )}

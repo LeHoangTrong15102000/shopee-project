@@ -22,6 +22,7 @@ import { useAuthStore } from '@/store/authStore'
 import authApi from '@/apis/auth.api'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AppColors, AppSpacing } from '@/config/colors'
+import { AxiosError } from 'axios'
 
 export default function SignInScreen() {
   const { t } = useTranslation()
@@ -49,8 +50,8 @@ export default function SignInScreen() {
       const { access_token, refresh_token, user } = res.data.data
       login({ accessToken: access_token, refreshToken: refresh_token, user })
       router.replace('/(tabs)/home')
-    } catch (error: any) {
-      const message = error?.response?.data?.message
+    } catch (error: unknown) {
+      const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message
       showError(t('AUTH_LOGIN_ERROR'), message)
     } finally {
       setLoading(false)

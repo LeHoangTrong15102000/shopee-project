@@ -33,7 +33,7 @@ export default function QuantitySelector({
           onPress={() => !isMin && !disabled && onChange(value - 1)}
           disabled={isMin || disabled}
           accessibilityRole="button"
-          accessibilityLabel="Decrease quantity"
+          accessibilityLabel={t('a11y.decreaseQuantity')}
           accessibilityState={{ disabled: isMin || disabled }}
           hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
           className="items-center justify-center rounded-l-lg"
@@ -48,7 +48,7 @@ export default function QuantitySelector({
         <View
           className="items-center justify-center"
           accessibilityRole="text"
-          accessibilityLabel={`Quantity: ${value}`}
+          accessibilityLabel={t('a11y.quantityValue', { value })}
           style={{
             width: 48,
             height: 36,
@@ -65,7 +65,7 @@ export default function QuantitySelector({
           onPress={() => !isMax && !disabled && onChange(value + 1)}
           disabled={isMax || disabled}
           accessibilityRole="button"
-          accessibilityLabel="Increase quantity"
+          accessibilityLabel={t('a11y.increaseQuantity')}
           accessibilityState={{ disabled: isMax || disabled }}
           hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
           className="items-center justify-center rounded-r-lg"

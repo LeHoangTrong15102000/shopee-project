@@ -68,7 +68,7 @@ export default function ReviewForm({ onSubmit, loading, bottomSheetRef }: Review
               key={s}
               onPress={() => setRating(s)}
               accessibilityRole="button"
-              accessibilityLabel={`Rate ${s} stars`}
+              accessibilityLabel={t('a11y.rateStars', { count: s })}
               accessibilityState={{ selected: s <= rating }}
               hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
               <Star

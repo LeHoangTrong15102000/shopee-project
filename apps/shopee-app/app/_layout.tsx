@@ -90,6 +90,7 @@ function AppContent() {
                   <Stack.Screen name="change-password" options={{ headerShown: false }} />
                   <Stack.Screen name="vouchers" options={{ headerShown: false }} />
                   <Stack.Screen name="checkin" options={{ headerShown: false }} />
+                  <Stack.Screen name="about" options={{ headerShown: false }} />
                 </Stack>
               </ThemeProvider>
             </DialogProvider>

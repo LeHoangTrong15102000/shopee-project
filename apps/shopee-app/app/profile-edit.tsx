@@ -13,28 +13,36 @@ import { Camera } from 'lucide-react-native'
 import * as ImagePicker from 'expo-image-picker'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { z } from 'zod'
+import { useTranslation } from 'react-i18next'
 import { AppText, AppInput, AppButton } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { useForm } from '@/hooks/useForm'
 import { useProfile, useUpdateProfile, useUploadAvatar } from '@/hooks/useProfile'
 import { useToast } from '@/components/ui/ToastProvider'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
+import { DateTimePickerEvent } from '@react-native-community/datetimepicker'
+import { handleMutationError } from '@/utils/mutationErrorHandler'
 
-const profileSchema = z.object({
-  name: z.string().min(1, 'Tên không được để trống'),
-  phone: z
-    .string()
-    .regex(/^[0-9]{10}$/, 'Số điện thoại phải gồm 10 chữ số')
-    .or(z.literal('')),
-  address: z.string().optional(),
-})
-
-type ProfileFormData = z.infer<typeof profileSchema>
+type ProfileFormData = {
+  name: string
+  phone: string
+  address?: string
+}
 
 export default function ProfileEditScreen() {
+  const { t } = useTranslation()
   const colors = useColors()
   const router = useRouter()
-  const { showSuccess, showError } = useToast()
+  const { showSuccess } = useToast()
+
+  const profileSchema = z.object({
+    name: z.string().min(1, t('profileEdit.validation.nameRequired')),
+    phone: z
+      .string()
+      .regex(/^[0-9]{10}$/, t('profileEdit.validation.phoneInvalid'))
+      .or(z.literal('')),
+    address: z.string().optional(),
+  })
 
   const { data: profileData } = useProfile()
   const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile()
@@ -72,7 +80,7 @@ export default function ProfileEditScreen() {
   const handlePickAvatar = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync()
     if (!permission.granted) {
-      showError('Cần quyền truy cập thư viện ảnh')
+      handleMutationError(new Error(t('profileEdit.toast.permissionDenied')))
       return
     }
 
@@ -91,10 +99,10 @@ export default function ProfileEditScreen() {
         uri: asset.uri,
         type: asset.mimeType ?? 'image/jpeg',
         name: 'avatar.jpg',
-      } as any)
+      } as unknown as Blob)
       uploadAvatar(formData, {
-        onError: () => {
-          showError('Tải ảnh lên thất bại')
+        onError: (error) => {
+          handleMutationError(error)
           setAvatarUri(null)
         },
       })
@@ -111,12 +119,10 @@ export default function ProfileEditScreen() {
       },
       {
         onSuccess: () => {
-          showSuccess('Cập nhật hồ sơ thành công')
+          showSuccess(t('profileEdit.toast.success'))
           router.back()
         },
-        onError: () => {
-          showError('Cập nhật thất bại, thử lại sau')
-        },
+        onError: handleMutationError,
       }
     )
   })
@@ -134,7 +140,7 @@ export default function ProfileEditScreen() {
       <Stack.Screen
         options={{
           header: (props) => <CustomScreenHeader {...props} />,
-          title: 'Sửa hồ sơ',
+          title: t('profileEdit.header.title'),
         }}
       />
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
@@ -197,31 +203,31 @@ export default function ProfileEditScreen() {
               </View>
             </TouchableOpacity>
             <AppText raw variant="bodySmall" color="muted" style={{ marginTop: 8 }}>
-              Nhấn để thay đổi ảnh đại diện
+              {t('profileEdit.avatar.hint')}
             </AppText>
           </View>
 
           {/* Form Fields */}
           <View className="gap-4">
             <AppInput
-              label="Tên"
-              placeholder="Nhập tên của bạn"
+              label={t('profileEdit.field.nameLabel')}
+              placeholder={t('profileEdit.field.namePlaceholder')}
               required
               errorText={formState.errors.name?.message}
               {...register('name')}
             />
 
             <AppInput
-              label="Số điện thoại"
-              placeholder="Nhập số điện thoại"
+              label={t('profileEdit.field.phoneLabel')}
+              placeholder={t('profileEdit.field.phonePlaceholder')}
               keyboardType="phone-pad"
               errorText={formState.errors.phone?.message}
               {...register('phone')}
             />
 
             <AppInput
-              label="Địa chỉ"
-              placeholder="Nhập địa chỉ"
+              label={t('profileEdit.field.addressLabel')}
+              placeholder={t('profileEdit.field.addressPlaceholder')}
               errorText={formState.errors.address?.message}
               {...register('address')}
             />
@@ -229,7 +235,7 @@ export default function ProfileEditScreen() {
             {/* Date of Birth */}
             <View>
               <AppText raw variant="body" weight="medium" className="mb-1.5">
-                Ngày sinh
+                {t('profileEdit.field.birthdayLabel')}
               </AppText>
               <TouchableOpacity
                 onPress={() => setShowDatePicker(true)}
@@ -244,7 +250,7 @@ export default function ProfileEditScreen() {
                 <AppText raw variant="body" color={dateOfBirth ? 'foreground' : 'muted'}>
                   {dateOfBirth
                     ? dateOfBirth.toLocaleDateString('vi-VN')
-                    : 'Chọn ngày sinh'}
+                    : t('profileEdit.field.birthdayPlaceholder')}
                 </AppText>
               </TouchableOpacity>
             </View>
@@ -255,7 +261,7 @@ export default function ProfileEditScreen() {
                 mode="date"
                 display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                 maximumDate={new Date()}
-                onChange={(_event: any, selectedDate?: Date) => {
+                onChange={(_event: DateTimePickerEvent, selectedDate?: Date) => {
                   setShowDatePicker(Platform.OS === 'ios')
                   if (selectedDate) {
                     setDateOfBirth(selectedDate)
@@ -268,7 +274,7 @@ export default function ProfileEditScreen() {
               <AppButton
                 variant="outline"
                 onPress={() => setShowDatePicker(false)}>
-                Xong
+                {t('profileEdit.button.save')}
               </AppButton>
             )}
           </View>
@@ -279,7 +285,7 @@ export default function ProfileEditScreen() {
             loading={isUpdating}
             disabled={isUpdating || isUploadingAvatar}
             className="mt-8">
-            Lưu
+            {t('profileEdit.button.save')}
           </AppButton>
         </ScrollView>
       </SafeAreaView>

@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, TouchableOpacity } from 'react-native'
 import { useRouter } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import { Clock, Truck, CheckCircle, XCircle } from 'lucide-react-native'
 import { AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
@@ -12,27 +13,28 @@ interface ShortcutItem {
 }
 
 export default function OrderShortcuts() {
+  const { t } = useTranslation()
   const colors = useColors()
   const router = useRouter()
 
   const shortcuts: ShortcutItem[] = [
     {
-      label: 'Chờ xác nhận',
+      label: t('orderShortcuts.status.pending'),
       icon: <Clock size={24} color={colors.primary} />,
       status: 'pending',
     },
     {
-      label: 'Đang giao',
+      label: t('orderShortcuts.status.shipping'),
       icon: <Truck size={24} color={colors.secondary} />,
       status: 'shipping',
     },
     {
-      label: 'Đã giao',
+      label: t('orderShortcuts.status.delivered'),
       icon: <CheckCircle size={24} color={colors.success} />,
       status: 'delivered',
     },
     {
-      label: 'Đã hủy',
+      label: t('orderShortcuts.status.cancelled'),
       icon: <XCircle size={24} color={colors.error} />,
       status: 'cancelled',
     },
@@ -42,11 +44,11 @@ export default function OrderShortcuts() {
     <View className="border-b border-neutrals900 bg-background px-4 py-4">
       <View className="mb-3 flex-row items-center justify-between">
         <AppText raw variant="body" weight="semibold">
-          Đơn hàng của tôi
+          {t('orderShortcuts.title')}
         </AppText>
         <TouchableOpacity onPress={() => router.push('/orders')}>
           <AppText raw variant="bodySmall" color="primary">
-            Xem tất cả
+            {t('orderShortcuts.button.viewAll')}
           </AppText>
         </TouchableOpacity>
       </View>

@@ -1,19 +1,19 @@
 import React, { useState, useCallback } from 'react'
-import { View, FlatList, RefreshControl, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router'
-import { ShoppingBag } from 'lucide-react-native'
-import { AppText, EmptyState } from '@/components/ui'
+import { useTranslation } from 'react-i18next'
 import { useColors } from '@/hooks/useColors'
 import { useOrders, useCancelOrder, useConfirmReceived, useReturnOrder } from '@/hooks/useOrders'
 import { useDialog } from '@/components/ui/DialogProvider'
 import OrderStatusTabs, { type OrderStatusTab } from '@/components/orders/OrderStatusTabs'
-import OrderCard from '@/components/orders/OrderCard'
+import OrderList from '@/components/orders/OrderList'
+import EmptyOrderState from '@/components/orders/EmptyOrderState'
 import OrderSkeleton from '@/components/orders/OrderSkeleton'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
 import { ORDER_STATUS, type OrderStatusType } from '@/constants/order'
 
 export default function OrdersScreen() {
+  const { t } = useTranslation()
   const colors = useColors()
   const router = useRouter()
   const params = useLocalSearchParams()
@@ -42,46 +42,44 @@ export default function OrdersScreen() {
   const handleCancel = useCallback(
     (orderId: string) => {
       showConfirm(
-        'Hủy đơn hàng',
-        'Bạn có chắc chắn muốn hủy đơn hàng này?',
+        t('orders.dialog.cancelTitle'),
+        t('orders.dialog.cancelMessage'),
         () => cancelOrder(orderId),
         undefined,
         'horizontal'
       )
     },
-    [showConfirm, cancelOrder]
+    [t, showConfirm, cancelOrder]
   )
 
   const handleConfirmReceived = useCallback(
     (orderId: string) => {
       showConfirm(
-        'Xác nhận đã nhận hàng',
-        'Bạn đã nhận được đơn hàng này?',
+        t('orders.dialog.confirmTitle'),
+        t('orders.dialog.confirmMessage'),
         () => confirmReceived(orderId),
         undefined,
         'horizontal'
       )
     },
-    [showConfirm, confirmReceived]
+    [t, showConfirm, confirmReceived]
   )
 
   const handleReturn = useCallback(
     (orderId: string) => {
       showConfirm(
-        'Trả hàng',
-        'Bạn có muốn yêu cầu trả hàng?',
+        t('orders.dialog.returnTitle'),
+        t('orders.dialog.returnMessage'),
         () => returnOrder(orderId),
         undefined,
         'horizontal'
       )
     },
-    [showConfirm, returnOrder]
+    [t, showConfirm, returnOrder]
   )
 
   const loadMore = () => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage()
-    }
+    if (hasNextPage && !isFetchingNextPage) fetchNextPage()
   }
 
   return (
@@ -89,7 +87,7 @@ export default function OrdersScreen() {
       <Stack.Screen
         options={{
           header: (props) => <CustomScreenHeader {...props} />,
-          title: 'Đơn hàng của tôi',
+          title: t('orders.header.title'),
         }}
       />
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
@@ -98,40 +96,18 @@ export default function OrdersScreen() {
         {isLoading ? (
           <OrderSkeleton />
         ) : allOrders.length === 0 ? (
-          <View className="flex-1 items-center justify-center">
-            <EmptyState icon={ShoppingBag} message="Không có đơn hàng nào" />
-          </View>
+          <EmptyOrderState />
         ) : (
-          <FlatList
-            data={allOrders}
-            keyExtractor={(item) => item._id}
-            renderItem={({ item }) => (
-              <OrderCard
-                order={item}
-                onPress={(id) => router.push({ pathname: '/order/[id]', params: { id } })}
-                onCancel={handleCancel}
-                onConfirmReceived={handleConfirmReceived}
-                onReturn={handleReturn}
-              />
-            )}
-            refreshControl={
-              <RefreshControl
-                refreshing={isRefetching}
-                onRefresh={refetch}
-                tintColor={colors.primary}
-              />
-            }
-            onEndReached={loadMore}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={
-              isFetchingNextPage ? (
-                <ActivityIndicator
-                  size="small"
-                  color={colors.primary}
-                  style={{ marginVertical: 16 }}
-                />
-              ) : null
-            }
+          <OrderList
+            orders={allOrders}
+            isRefetching={isRefetching}
+            isFetchingNextPage={isFetchingNextPage}
+            onRefresh={refetch}
+            onLoadMore={loadMore}
+            onPress={(id) => router.push({ pathname: '/order/[id]', params: { id } })}
+            onCancel={handleCancel}
+            onConfirmReceived={handleConfirmReceived}
+            onReturn={handleReturn}
           />
         )}
       </SafeAreaView>

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getCheckinStreak, checkIn } from '@/apis/checkin.api'
+import { handleMutationError } from '@/utils/mutationErrorHandler'
 
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 
@@ -24,5 +25,6 @@ export function useCheckIn() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: checkinKeys.streak() })
     },
+    onError: handleMutationError,
   })
 }

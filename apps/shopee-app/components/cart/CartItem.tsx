@@ -2,6 +2,7 @@ import React, { useRef } from 'react'
 import { View, Image, Pressable } from 'react-native'
 import { Swipeable } from 'react-native-gesture-handler'
 import { Trash2 } from 'lucide-react-native'
+import { useTranslation } from 'react-i18next'
 import { AppText, Checkbox } from '@/components/ui'
 import QuantitySelector from '@/components/product-detail/QuantitySelector'
 import { useColors } from '@/hooks/useColors'
@@ -24,6 +25,7 @@ export default function CartItemRow({
   onDelete,
 }: CartItemProps) {
   const colors = useColors()
+  const { t } = useTranslation()
   const swipeRef = useRef<Swipeable>(null)
   const discount = getDiscountPercent(item.price, item.price_before_discount)
 
@@ -35,7 +37,7 @@ export default function CartItemRow({
       }}
       className="items-center justify-center bg-error px-5"
       accessibilityRole="button"
-      accessibilityLabel="Delete item">
+      accessibilityLabel={t('a11y.deleteCartItem')}>
       <Trash2 size={24} color="#ffffff" />
     </Pressable>
   )

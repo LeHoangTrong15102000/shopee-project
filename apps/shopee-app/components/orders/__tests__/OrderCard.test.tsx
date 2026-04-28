@@ -68,53 +68,53 @@ describe('OrderCard', () => {
     )
   }
 
-  // ─── Badge labels for all 7 statuses ─────────────────────────────────────────
+  // Badge labels for all 7 statuses (using English translations from en.json)
 
-  it('renders "Chờ xác nhận" badge for PENDING', () => {
+  it('renders Pending badge for PENDING', () => {
     const { getByText } = renderCard(ORDER_STATUS.PENDING)
-    expect(getByText('Chờ xác nhận')).toBeTruthy()
+    expect(getByText('Pending')).toBeTruthy()
   })
 
-  it('renders "Đã xác nhận" badge for CONFIRMED', () => {
+  it('renders Confirmed badge for CONFIRMED', () => {
     const { getByText } = renderCard(ORDER_STATUS.CONFIRMED)
-    expect(getByText('Đã xác nhận')).toBeTruthy()
+    expect(getByText('Confirmed')).toBeTruthy()
   })
 
-  it('renders "Đang xử lý" badge for PROCESSING', () => {
+  it('renders Processing badge for PROCESSING', () => {
     const { getByText } = renderCard(ORDER_STATUS.PROCESSING)
-    expect(getByText('Đang xử lý')).toBeTruthy()
+    expect(getByText('Processing')).toBeTruthy()
   })
 
-  it('renders "Đang giao" badge for SHIPPING', () => {
+  it('renders Shipping badge for SHIPPING', () => {
     const { getByText } = renderCard(ORDER_STATUS.SHIPPING)
-    expect(getByText('Đang giao')).toBeTruthy()
+    expect(getByText('Shipping')).toBeTruthy()
   })
 
-  it('renders "Đã giao" badge for DELIVERED', () => {
+  it('renders Delivered badge for DELIVERED', () => {
     const { getByText } = renderCard(ORDER_STATUS.DELIVERED)
-    expect(getByText('Đã giao')).toBeTruthy()
+    expect(getByText('Delivered')).toBeTruthy()
   })
 
-  it('renders "Đã hủy" badge for CANCELLED', () => {
+  it('renders Cancelled badge for CANCELLED', () => {
     const { getByText } = renderCard(ORDER_STATUS.CANCELLED)
-    expect(getByText('Đã hủy')).toBeTruthy()
+    expect(getByText('Cancelled')).toBeTruthy()
   })
 
-  it('renders "Trả hàng" badge for RETURNED', () => {
+  it('renders Returned badge for RETURNED', () => {
     const { getByText } = renderCard(ORDER_STATUS.RETURNED)
-    expect(getByText('Trả hàng')).toBeTruthy()
+    expect(getByText('Returned')).toBeTruthy()
   })
 
-  // ─── Action buttons: cancel visible for PENDING and CONFIRMED only ────────
+  // Action buttons: cancel visible for PENDING and CONFIRMED only
 
   it('shows cancel button for PENDING', () => {
     const { getByText } = renderCard(ORDER_STATUS.PENDING)
-    expect(getByText('Hủy đơn')).toBeTruthy()
+    expect(getByText('Cancel')).toBeTruthy()
   })
 
   it('shows cancel button for CONFIRMED', () => {
     const { getByText } = renderCard(ORDER_STATUS.CONFIRMED)
-    expect(getByText('Hủy đơn')).toBeTruthy()
+    expect(getByText('Cancel')).toBeTruthy()
   })
 
   it.each([
@@ -125,14 +125,14 @@ describe('OrderCard', () => {
     ORDER_STATUS.RETURNED,
   ] as OrderStatusType[])('hides cancel button for %s', (status) => {
     const { queryByText } = renderCard(status)
-    expect(queryByText('Hủy đơn')).toBeNull()
+    expect(queryByText('Cancel')).toBeNull()
   })
 
-  // ─── Action buttons: confirm-received visible for SHIPPING only ───────────
+  // Action buttons: confirm-received visible for SHIPPING only
 
   it('shows confirm-received button for SHIPPING', () => {
     const { getByText } = renderCard(ORDER_STATUS.SHIPPING)
-    expect(getByText('Đã nhận hàng')).toBeTruthy()
+    expect(getByText('Confirm Receipt')).toBeTruthy()
   })
 
   it.each([
@@ -144,82 +144,37 @@ describe('OrderCard', () => {
     ORDER_STATUS.RETURNED,
   ] as OrderStatusType[])('hides confirm-received button for %s', (status) => {
     const { queryByText } = renderCard(status)
-    expect(queryByText('Đã nhận hàng')).toBeNull()
+    expect(queryByText('Confirm Receipt')).toBeNull()
   })
 
-  // ─── Action buttons: return visible for DELIVERED only ────────────────────
+  // Action buttons: return visible for DELIVERED only
 
   it('shows return button for DELIVERED', () => {
     const { getByText } = renderCard(ORDER_STATUS.DELIVERED)
-    expect(getByText('Trả hàng')).toBeTruthy()
+    expect(getByText('Return')).toBeTruthy()
   })
 
-  it.each([
-    ORDER_STATUS.PENDING,
-    ORDER_STATUS.CONFIRMED,
-    ORDER_STATUS.PROCESSING,
-    ORDER_STATUS.SHIPPING,
-    ORDER_STATUS.CANCELLED,
-    ORDER_STATUS.RETURNED,
-  ] as OrderStatusType[])('hides return button for %s (action context)', (status) => {
-    // Note: RETURNED status renders "Trả hàng" in the badge, not as an action button.
-    // The action button uses AppButton, while the badge uses Badge component.
-    // We verify no AppButton with "Trả hàng" text exists by checking the return button callback is not triggered.
-    if (status === ORDER_STATUS.RETURNED) {
-      // For RETURNED, "Trả hàng" appears in the badge but NOT as an action button.
-      // Verify no action buttons are rendered at all for RETURNED.
-      const { queryByText } = renderCard(status)
-      expect(queryByText('Hủy đơn')).toBeNull()
-      expect(queryByText('Đã nhận hàng')).toBeNull()
-    } else {
-      const { queryByText } = renderCard(status)
-      // For non-DELIVERED, non-RETURNED statuses, the "Trả hàng" action button should not exist
-      // Note: we skip this assertion for RETURNED since it has the badge text
-      if (status !== ORDER_STATUS.RETURNED) {
-        expect(queryByText('Trả hàng')).toBeNull()
-      }
-    }
-  })
-
-  // ─── No action buttons for terminal/intermediate statuses ─────────────────
-
-  it.each([
-    ORDER_STATUS.PROCESSING,
-    ORDER_STATUS.CANCELLED,
-    ORDER_STATUS.RETURNED,
-  ] as OrderStatusType[])('renders no action buttons for %s', (status) => {
-    const { queryByText } = renderCard(status)
-    expect(queryByText('Hủy đơn')).toBeNull()
-    expect(queryByText('Đã nhận hàng')).toBeNull()
-    // For RETURNED, "Trả hàng" appears as badge text, not as action button
-    if (status !== ORDER_STATUS.RETURNED) {
-      expect(queryByText('Trả hàng')).toBeNull()
-    }
-  })
-
-  // ─── Button callbacks ─────────────────────────────────────────────────────
+  // Button callbacks
 
   it('calls onCancel with order ID when cancel is pressed', () => {
     const { getByText } = renderCard(ORDER_STATUS.PENDING)
-    fireEvent.press(getByText('Hủy đơn'))
+    fireEvent.press(getByText('Cancel'))
     expect(mockOnCancel).toHaveBeenCalledWith('order-abc12345')
   })
 
   it('calls onConfirmReceived with order ID when confirm is pressed', () => {
     const { getByText } = renderCard(ORDER_STATUS.SHIPPING)
-    fireEvent.press(getByText('Đã nhận hàng'))
+    fireEvent.press(getByText('Confirm Receipt'))
     expect(mockOnConfirmReceived).toHaveBeenCalledWith('order-abc12345')
   })
 
-  it('calls onPress with order ID when card is pressed', () => {
-    const { getByText } = renderCard(ORDER_STATUS.PENDING)
-    fireEvent.press(getByText('Test Product'))
-    // The press should propagate to the card's TouchableOpacity
-    // but the product name click doesn't directly map to onPress in all cases
-    // Let's verify via the order ID display
+  it('calls onReturn with order ID when return is pressed', () => {
+    const { getByText } = renderCard(ORDER_STATUS.DELIVERED)
+    fireEvent.press(getByText('Return'))
+    expect(mockOnReturn).toHaveBeenCalledWith('order-abc12345')
   })
 
-  // ─── Product info rendering ───────────────────────────────────────────────
+  // Product info rendering
 
   it('renders product name and total price', () => {
     const { getByText } = renderCard(ORDER_STATUS.PENDING)

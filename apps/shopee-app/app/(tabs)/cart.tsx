@@ -8,6 +8,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ShoppingCart } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import { AppText, EmptyState, AppButton } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { useCart, useUpdateCartItem, useDeleteCartItems } from '@/hooks/useCart'
@@ -17,6 +18,7 @@ import CartSkeleton from '@/components/cart/CartSkeleton'
 import { useDialog } from '@/components/ui/DialogProvider'
 
 export default function CartScreen() {
+  const { t } = useTranslation()
   const colors = useColors()
   const router = useRouter()
   const { showConfirm } = useDialog()
@@ -63,8 +65,8 @@ export default function CartScreen() {
   const handleDelete = useCallback(
     (purchaseId: string) => {
       showConfirm(
-        'Xóa sản phẩm',
-        'Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?',
+        t('cart.dialog.removeTitle'),
+        t('cart.dialog.removeMessage'),
         () => {
           deleteItems([purchaseId], {
             onSuccess: () => {
@@ -80,7 +82,7 @@ export default function CartScreen() {
         'horizontal'
       )
     },
-    [showConfirm, deleteItems]
+    [showConfirm, deleteItems, t]
   )
 
   const selectedItems = cartItems.filter((item) => selectedIds.has(item._id))
@@ -95,7 +97,7 @@ export default function CartScreen() {
     return (
       <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
         <View className="border-b border-neutrals900 px-4 py-4">
-          <AppText variant="heading2">Giỏ hàng</AppText>
+          <AppText variant="heading2">{t('cart.header.title')}</AppText>
         </View>
         <CartSkeleton />
       </SafeAreaView>
@@ -106,7 +108,7 @@ export default function CartScreen() {
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
       <View className="border-b border-neutrals900 px-4 py-4">
         <AppText raw variant="heading2">
-          Giỏ hàng ({cartItems.length})
+          {t('cart.header.title')} ({cartItems.length})
         </AppText>
       </View>
 
@@ -114,8 +116,8 @@ export default function CartScreen() {
         <View className="flex-1 items-center justify-center">
           <EmptyState
             icon={ShoppingCart}
-            message="Giỏ hàng của bạn đang trống"
-            actionLabel="Mua sắm ngay"
+            message={t('cart.empty.message')}
+            actionLabel={t('cart.empty.action')}
             onAction={() => router.push('/(tabs)/home')}
           />
         </View>

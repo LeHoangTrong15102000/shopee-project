@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { AccessibilityInfo, Pressable, TouchableOpacity, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -41,6 +42,7 @@ const Toast: React.FC<ToastProps> = ({
 }) => {
   const colors = useColors()
   const insets = useSafeAreaInsets()
+  const { t } = useTranslation()
 
   const translateY = useSharedValue(position === 'top' ? -100 : 100)
   const opacity = useSharedValue(0)
@@ -216,7 +218,7 @@ const Toast: React.FC<ToastProps> = ({
             className="ml-2 p-2"
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             accessibilityRole="button"
-            accessibilityLabel="Dismiss notification">
+            accessibilityLabel={t('a11y.dismissNotification')}>
             <Icon name="X" className="h-4 w-4 text-neutrals100" />
           </TouchableOpacity>
         )}

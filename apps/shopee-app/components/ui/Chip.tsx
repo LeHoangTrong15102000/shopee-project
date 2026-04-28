@@ -152,7 +152,7 @@ export default function Chip({
   const content = (
     <>
       {icon &&
-        React.cloneElement(icon as any, {
+        React.cloneElement(icon as React.ReactElement<{ size?: number; color?: string }>, {
           size: getIconSize(size),
           color: getIconColor(),
         })}

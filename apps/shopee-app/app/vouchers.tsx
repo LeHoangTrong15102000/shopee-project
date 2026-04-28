@@ -3,31 +3,34 @@ import { View, FlatList, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack } from 'expo-router'
 import { Ticket } from 'lucide-react-native'
+import { useTranslation } from 'react-i18next'
 import { AppText, Chip, EmptyState } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { useAvailableVouchers, useSavedVouchers, useCollectVoucher } from '@/hooks/useVouchers'
 import VoucherCard from '@/components/vouchers/VoucherCard'
 import VoucherSkeleton from '@/components/vouchers/VoucherSkeleton'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
+import { Voucher } from '@/apis/voucher.api'
 
 type TabKey = 'available' | 'saved'
 
-const TABS: { key: TabKey; label: string }[] = [
-  { key: 'available', label: 'Voucher có sẵn' },
-  { key: 'saved', label: 'Voucher của tôi' },
-]
-
 export default function VoucherScreen() {
+  const { t } = useTranslation()
   const colors = useColors()
   const [activeTab, setActiveTab] = useState<TabKey>('available')
   const [collectingId, setCollectingId] = useState<string | null>(null)
+
+  const TABS: { key: TabKey; label: string }[] = [
+    { key: 'available', label: t('vouchers.tab.available') },
+    { key: 'saved', label: t('vouchers.tab.saved') },
+  ]
 
   const { data: availableData, isLoading: isLoadingAvailable } = useAvailableVouchers()
   const { data: savedData, isLoading: isLoadingSaved } = useSavedVouchers()
   const { mutate: collectVoucher } = useCollectVoucher()
 
-  const availableVouchers = (availableData as any)?.data ?? []
-  const savedVouchers = (savedData as any)?.data ?? []
+  const availableVouchers = (availableData?.data ?? []) as Voucher[]
+  const savedVouchers = (savedData?.data ?? []) as Voucher[]
 
   const handleCollect = (id: string) => {
     setCollectingId(id)
@@ -44,7 +47,7 @@ export default function VoucherScreen() {
       <Stack.Screen
         options={{
           header: (props) => <CustomScreenHeader {...props} />,
-          title: 'Kho Voucher',
+          title: t('account.menu.vouchers'),
         }}
       />
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
@@ -71,17 +74,17 @@ export default function VoucherScreen() {
               icon={Ticket}
               message={
                 activeTab === 'available'
-                  ? 'Chưa có voucher nào'
-                  : 'Bạn chưa lưu voucher nào'
+                  ? t('vouchers.empty.available')
+                  : t('vouchers.empty.saved')
               }
             />
           </View>
         ) : (
           <FlatList
             data={vouchers}
-            keyExtractor={(item: any) => item._id}
+            keyExtractor={(item: Voucher) => item._id}
             contentContainerStyle={{ paddingVertical: 8 }}
-            renderItem={({ item }: { item: any }) => (
+            renderItem={({ item }: { item: Voucher }) => (
               <VoucherCard
                 voucher={item}
                 showActions={activeTab === 'available'}

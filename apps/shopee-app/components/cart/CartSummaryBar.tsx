@@ -1,5 +1,6 @@
 import React from 'react'
 import { View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { AppText, Checkbox, AppButton } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { formatPrice } from '@/utils/price'
@@ -19,6 +20,7 @@ export default function CartSummaryBar({
   onToggleAll,
   onCheckout,
 }: CartSummaryBarProps) {
+  const { t } = useTranslation()
   const colors = useColors()
 
   return (
@@ -28,13 +30,13 @@ export default function CartSummaryBar({
       <Checkbox
         checked={allSelected}
         variant="primary"
-        label="Tất cả"
+        label={t('cartSummary.checkbox.all')}
         onValueChange={onToggleAll}
       />
 
       <View className="flex-1">
         <AppText raw variant="bodySmall" color="muted">
-          Tổng ({totalSelected} sản phẩm)
+          {t('cartSummary.total.label', { totalSelected })}
         </AppText>
         <AppText raw variant="body" weight="bold" color="primary">
           {formatPrice(totalAmount)}
@@ -46,7 +48,7 @@ export default function CartSummaryBar({
         disabled={totalSelected === 0}
         onPress={onCheckout}
         className="px-6">
-        Mua hàng
+        {t('cartSummary.button.checkout')}
       </AppButton>
     </View>
   )

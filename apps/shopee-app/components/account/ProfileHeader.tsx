@@ -2,6 +2,7 @@ import React from 'react'
 import { View, Image, TouchableOpacity } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useRouter } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import { AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { type User } from '@/types/user.type'
@@ -12,10 +13,11 @@ interface ProfileHeaderProps {
 }
 
 export default function ProfileHeader({ user, isLoading }: ProfileHeaderProps) {
+  const { t } = useTranslation()
   const colors = useColors()
   const router = useRouter()
 
-  const displayName = user?.name || user?.email || 'Người dùng'
+  const displayName = user?.name || user?.email || t('profileHeader.defaultName')
   const initials = displayName.charAt(0).toUpperCase()
 
   return (
@@ -61,7 +63,7 @@ export default function ProfileHeader({ user, isLoading }: ProfileHeaderProps) {
             onPress={() => router.push('/profile-edit')}
             style={{ marginTop: 6, alignSelf: 'flex-start' }}>
             <AppText raw variant="labelSmall" style={{ color: 'rgba(255,255,255,0.9)', textDecorationLine: 'underline' }}>
-              Sửa hồ sơ
+              {t('profileHeader.button.edit')}
             </AppText>
           </TouchableOpacity>
         </View>

@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { Tag } from 'lucide-react-native'
+import { useTranslation } from 'react-i18next'
 import { AppText, Badge } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { formatPrice } from '@/utils/price'
@@ -31,15 +32,17 @@ export default function VoucherCard({
   showActions = false,
 }: VoucherCardProps) {
   const colors = useColors()
+  const { t, i18n } = useTranslation()
   const isExpiredOrUsed = voucher.is_expired || voucher.is_used
 
   const discountText =
     voucher.discount_type === 'percent'
-      ? `Giảm ${voucher.discount_value}%`
-      : `Giảm ${formatPrice(voucher.discount_value)}`
+      ? t('voucherCard.discount.percent', { value: voucher.discount_value })
+      : t('voucherCard.discount.fixed', { value: formatPrice(voucher.discount_value) })
 
+  const locale = i18n.language === 'vi' ? 'vi-VN' : 'en-US'
   const expiryDate = voucher.expire_date
-    ? new Date(voucher.expire_date).toLocaleDateString('vi-VN')
+    ? new Date(voucher.expire_date).toLocaleDateString(locale)
     : null
 
   return (
@@ -64,18 +67,20 @@ export default function VoucherCard({
           </AppText>
           {voucher.min_spend && voucher.min_spend > 0 && (
             <AppText raw variant="labelSmall" color="muted">
-              Đơn tối thiểu {formatPrice(voucher.min_spend)}
+              {t('voucherCard.minSpend', { amount: formatPrice(voucher.min_spend) })}
             </AppText>
           )}
           {expiryDate && (
             <AppText raw variant="labelSmall" color="muted">
-              HSD: {expiryDate}
+              {t('voucherCard.expiry', { date: expiryDate })}
             </AppText>
           )}
           {(voucher.is_expired || voucher.is_used) && (
             <View style={{ marginTop: 4 }}>
               <Badge variant="error" size="sm">
-                {voucher.is_used ? 'Đã dùng' : 'Hết hạn'}
+                {voucher.is_used
+                  ? t('voucherCard.status.used')
+                  : t('voucherCard.status.expired')}
               </Badge>
             </View>
           )}
@@ -86,6 +91,11 @@ export default function VoucherCard({
           <TouchableOpacity
             onPress={() => !voucher.is_saved && onCollect?.(voucher._id)}
             disabled={voucher.is_saved || isCollecting}
+            accessibilityRole="button"
+            accessibilityLabel={
+              voucher.is_saved ? t('voucherCard.button.saved') : t('voucherCard.button.save')
+            }
+            accessibilityState={{ disabled: voucher.is_saved || isCollecting }}
             style={{
               paddingHorizontal: 12,
               paddingVertical: 6,
@@ -101,7 +111,7 @@ export default function VoucherCard({
                 raw
                 variant="labelSmall"
                 style={{ color: voucher.is_saved ? colors.neutrals400 : colors.primary }}>
-                {voucher.is_saved ? 'Đã lưu' : 'Lưu'}
+                {voucher.is_saved ? t('voucherCard.button.saved') : t('voucherCard.button.save')}
               </AppText>
             )}
           </TouchableOpacity>

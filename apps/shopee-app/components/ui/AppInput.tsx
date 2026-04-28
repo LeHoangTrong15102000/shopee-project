@@ -1,5 +1,5 @@
 import React, { forwardRef, useId, useState } from 'react'
-import { Text, TextInput, TextInputProps, View } from 'react-native'
+import { Text, TextInput, TextInputProps, View, NativeSyntheticEvent, TextInputFocusEventData } from 'react-native'
 import { cn } from '@/utils'
 import { cva } from 'class-variance-authority'
 import { useColors } from '@/hooks/useColors.ts'
@@ -132,14 +132,14 @@ const AppInput = forwardRef<TextInput, AppInputProps>(
       }
     })
 
-    const handleFocus = (e: any) => {
+    const handleFocus = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
       setFocused(true)
       scale.value = withSpring(1.02, { damping: 15, stiffness: 300 })
       borderOpacity.value = withTiming(1, { duration: 200 })
       props.onFocus?.(e)
     }
 
-    const handleBlur = (e: any) => {
+    const handleBlur = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
       setFocused(false)
       scale.value = withSpring(1, { damping: 15, stiffness: 300 })
       borderOpacity.value = withTiming(0, { duration: 200 })

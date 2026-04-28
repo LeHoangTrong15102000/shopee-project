@@ -3,30 +3,41 @@ import { View, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { z } from 'zod'
+import { useTranslation } from 'react-i18next'
 import { AppText, AppInput, AppButton } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { useForm } from '@/hooks/useForm'
 import { useAddresses, useCreateAddress, useUpdateAddress } from '@/hooks/useAddresses'
 import { useToast } from '@/components/ui/ToastProvider'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
+import { Address } from '@/apis/address.api'
+import { handleMutationError } from '@/utils/mutationErrorHandler'
 
-const addressSchema = z.object({
-  name: z.string().min(1, 'Tên không được để trống'),
-  phone: z.string().regex(/^[0-9]{10}$/, 'Số điện thoại phải gồm 10 chữ số'),
-  street: z.string().min(1, 'Địa chỉ không được để trống'),
-  ward: z.string().optional(),
-  district: z.string().optional(),
-  city: z.string().min(1, 'Tỉnh/thành phố không được để trống'),
-})
-
-type AddressFormData = z.infer<typeof addressSchema>
+type AddressFormData = {
+  name: string
+  phone: string
+  street: string
+  ward?: string
+  district?: string
+  city: string
+}
 
 export default function AddressFormScreen() {
+  const { t } = useTranslation()
   const colors = useColors()
   const router = useRouter()
-  const { showSuccess, showError } = useToast()
+  const { showSuccess } = useToast()
   const { id } = useLocalSearchParams<{ id?: string }>()
   const isEditMode = !!id
+
+  const addressSchema = z.object({
+    name: z.string().min(1, t('addressForm.validation.nameRequired')),
+    phone: z.string().regex(/^[0-9]{10}$/, t('addressForm.validation.phoneInvalid')),
+    street: z.string().min(1, t('addressForm.validation.streetRequired')),
+    ward: z.string().optional(),
+    district: z.string().optional(),
+    city: z.string().min(1, t('addressForm.validation.cityRequired')),
+  })
 
   const { data: addressesData } = useAddresses()
   const { mutate: createAddress, isPending: isCreating } = useCreateAddress()
@@ -50,7 +61,7 @@ export default function AddressFormScreen() {
   // Pre-fill in edit mode
   useEffect(() => {
     if (isEditMode && addressesData?.data) {
-      const addr = addressesData.data.find((a: any) => a._id === id)
+      const addr = addressesData.data.find((a: Address) => a._id === id)
       if (addr) {
         reset({
           name: addr.name ?? '',
@@ -70,19 +81,19 @@ export default function AddressFormScreen() {
         { id: id!, body: data },
         {
           onSuccess: () => {
-            showSuccess('Cập nhật địa chỉ thành công')
+            showSuccess(t('addressForm.toast.updateSuccess'))
             router.back()
           },
-          onError: () => showError('Cập nhật thất bại, thử lại sau'),
+          onError: handleMutationError,
         }
       )
     } else {
       createAddress(data, {
         onSuccess: () => {
-          showSuccess('Thêm địa chỉ thành công')
+          showSuccess(t('addressForm.toast.createSuccess'))
           router.back()
         },
-        onError: () => showError('Thêm địa chỉ thất bại, thử lại sau'),
+        onError: handleMutationError,
       })
     }
   })
@@ -92,23 +103,23 @@ export default function AddressFormScreen() {
       <Stack.Screen
         options={{
           header: (props) => <CustomScreenHeader {...props} />,
-          title: isEditMode ? 'Sửa địa chỉ' : 'Thêm địa chỉ',
+          title: isEditMode ? t('addressForm.header.editTitle') : t('addressForm.header.createTitle'),
         }}
       />
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 16 }}>
           <View className="gap-4">
             <AppInput
-              label="Họ tên người nhận"
-              placeholder="Nhập họ tên"
+              label={t('addressForm.field.nameLabel')}
+              placeholder={t('addressForm.field.namePlaceholder')}
               required
               errorText={formState.errors.name?.message}
               {...register('name')}
             />
 
             <AppInput
-              label="Số điện thoại"
-              placeholder="Nhập số điện thoại"
+              label={t('addressForm.field.phoneLabel')}
+              placeholder={t('addressForm.field.phonePlaceholder')}
               keyboardType="phone-pad"
               required
               errorText={formState.errors.phone?.message}
@@ -116,30 +127,30 @@ export default function AddressFormScreen() {
             />
 
             <AppInput
-              label="Số nhà, tên đường"
-              placeholder="Nhập địa chỉ chi tiết"
+              label={t('addressForm.field.streetLabel')}
+              placeholder={t('addressForm.field.streetPlaceholder')}
               required
               errorText={formState.errors.street?.message}
               {...register('street')}
             />
 
             <AppInput
-              label="Phường/Xã"
-              placeholder="Nhập phường/xã"
+              label={t('addressForm.field.wardLabel')}
+              placeholder={t('addressForm.field.wardPlaceholder')}
               errorText={formState.errors.ward?.message}
               {...register('ward')}
             />
 
             <AppInput
-              label="Quận/Huyện"
-              placeholder="Nhập quận/huyện"
+              label={t('addressForm.field.districtLabel')}
+              placeholder={t('addressForm.field.districtPlaceholder')}
               errorText={formState.errors.district?.message}
               {...register('district')}
             />
 
             <AppInput
-              label="Tỉnh/Thành phố"
-              placeholder="Nhập tỉnh/thành phố"
+              label={t('addressForm.field.cityLabel')}
+              placeholder={t('addressForm.field.cityPlaceholder')}
               required
               errorText={formState.errors.city?.message}
               {...register('city')}
@@ -152,7 +163,7 @@ export default function AddressFormScreen() {
             loading={isLoading}
             disabled={isLoading}
             className="mt-8">
-            Lưu
+            {t('addressForm.button.save')}
           </AppButton>
         </ScrollView>
       </SafeAreaView>

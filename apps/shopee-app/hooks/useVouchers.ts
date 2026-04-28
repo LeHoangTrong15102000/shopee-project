@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getVouchers, collectVoucher, getSavedVouchers } from '@/apis/voucher.api'
+import { handleMutationError } from '@/utils/mutationErrorHandler'
 
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 
@@ -26,6 +27,7 @@ export function useCollectVoucher() {
       queryClient.invalidateQueries({ queryKey: voucherKeys.available() })
       queryClient.invalidateQueries({ queryKey: voucherKeys.saved() })
     },
+    onError: handleMutationError,
   })
 }
 

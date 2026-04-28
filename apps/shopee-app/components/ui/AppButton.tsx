@@ -1,4 +1,4 @@
-import { AccessibilityInfo, ActivityIndicator, Pressable, PressableProps, Text } from 'react-native'
+import { AccessibilityInfo, ActivityIndicator, Pressable, PressableProps, Text, GestureResponderEvent } from 'react-native'
 import { cn } from '@/utils'
 import { cva } from 'class-variance-authority'
 import React, { JSX, ReactNode, useEffect, useState } from 'react'
@@ -158,7 +158,7 @@ export default function AppButton(props: AppButtonProps) {
     opacity.value = withTiming(1, { duration: 150 })
   }
 
-  const handlePress = (event: any) => {
+  const handlePress = (event: GestureResponderEvent) => {
     if (loading || disabled) return
     onPress?.(event)
   }
@@ -187,7 +187,7 @@ export default function AppButton(props: AppButtonProps) {
       )}
       {!loading &&
         props.icon &&
-        React.cloneElement(props.icon as any, {
+        React.cloneElement(props.icon as React.ReactElement<{ size?: number; color?: string }>, {
           size: getIconSize(size),
           color: getIconColor(),
         })}

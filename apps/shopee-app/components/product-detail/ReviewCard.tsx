@@ -13,7 +13,7 @@ interface ReviewCardProps {
 
 export default function ReviewCard({ review, onToggleLike }: ReviewCardProps) {
   const colors = useColors()
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [expanded, setExpanded] = useState(false)
 
   const locale = i18n.language === 'vi' ? 'vi-VN' : 'en-US'
@@ -55,7 +55,7 @@ export default function ReviewCard({ review, onToggleLike }: ReviewCardProps) {
         numberOfLines={expanded ? undefined : 3}
         onPress={() => setExpanded(!expanded)}
         accessibilityRole="button"
-        accessibilityHint={expanded ? 'Collapse review text' : 'Expand review text'}>
+        accessibilityHint={expanded ? t('a11y.collapseReview') : t('a11y.expandReview')}>
         {review.comment}
       </AppText>
 
@@ -63,7 +63,7 @@ export default function ReviewCard({ review, onToggleLike }: ReviewCardProps) {
         <TouchableOpacity
           onPress={() => onToggleLike(review._id)}
           accessibilityRole="button"
-          accessibilityLabel={review.is_liked ? 'Unlike review' : 'Like review'}
+          accessibilityLabel={review.is_liked ? t('a11y.unlikeReview') : t('a11y.likeReview')}
           accessibilityState={{ selected: !!review.is_liked }}
           className="flex-row items-center gap-1">
           <ThumbsUp

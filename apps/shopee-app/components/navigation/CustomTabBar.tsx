@@ -58,7 +58,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
   const colors = useColors()
   const { t } = useTranslation()
   const { data: unreadData } = useUnreadCount()
-  const unreadCount = (unreadData as any)?.data?.count ?? 0
+  const unreadCount = unreadData?.data?.count ?? 0
 
   return (
     <View className="pb-safe-offset-0 flex-row border-t border-neutrals900 bg-background py-2">

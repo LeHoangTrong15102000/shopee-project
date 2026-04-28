@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, TouchableOpacity } from 'react-native'
+import { View, TouchableOpacity, NativeSyntheticEvent, TextLayoutEventData } from 'react-native'
 import { AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { useTranslation } from 'react-i18next'
@@ -24,7 +24,7 @@ export default function ProductDescription({ description }: ProductDescriptionPr
         variant="bodySmall"
         color="muted"
         numberOfLines={expanded ? undefined : 4}
-        onTextLayout={(e: any) => {
+        onTextLayout={(e: NativeSyntheticEvent<TextLayoutEventData>) => {
           if (e.nativeEvent.lines.length > 4 && !needsTruncation) {
             setNeedsTruncation(true)
           }

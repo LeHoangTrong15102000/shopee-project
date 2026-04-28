@@ -8,6 +8,7 @@ import {
   getOrderTracking,
 } from '@/apis/order.api'
 import { type OrderStatusType } from '@/constants/order'
+import { handleMutationError } from '@/utils/mutationErrorHandler'
 
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 
@@ -48,6 +49,7 @@ export function useCancelOrder() {
       queryClient.invalidateQueries({ queryKey: ['orders'] })
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) })
     },
+    onError: handleMutationError,
   })
 }
 
@@ -59,6 +61,7 @@ export function useConfirmReceived() {
       queryClient.invalidateQueries({ queryKey: ['orders'] })
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) })
     },
+    onError: handleMutationError,
   })
 }
 
@@ -70,6 +73,7 @@ export function useReturnOrder() {
       queryClient.invalidateQueries({ queryKey: ['orders'] })
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) })
     },
+    onError: handleMutationError,
   })
 }
 

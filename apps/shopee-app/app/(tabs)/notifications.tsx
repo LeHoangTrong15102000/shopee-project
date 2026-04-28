@@ -8,6 +8,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Bell } from 'lucide-react-native'
+import { useTranslation } from 'react-i18next'
 import { AppText, EmptyState } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import {
@@ -20,6 +21,7 @@ import NotificationItem from '@/components/notifications/NotificationItem'
 import NotificationSkeleton from '@/components/notifications/NotificationSkeleton'
 
 export default function NotificationsScreen() {
+  const { t } = useTranslation()
   const colors = useColors()
 
   const { data, isLoading, isRefetching, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -55,7 +57,7 @@ export default function NotificationsScreen() {
     return (
       <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
         <View className="border-b border-neutrals900 px-4 py-4">
-          <AppText variant="heading2">Thông báo</AppText>
+          <AppText variant="heading2">{t('notifications.header.title')}</AppText>
         </View>
         <NotificationSkeleton />
       </SafeAreaView>
@@ -66,12 +68,12 @@ export default function NotificationsScreen() {
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
       <View className="flex-row items-center justify-between border-b border-neutrals900 px-4 py-4">
         <AppText raw variant="heading2">
-          Thông báo
+          {t('notifications.header.title')}
         </AppText>
         {allNotifications.some((n) => !n.is_read) && (
           <TouchableOpacity onPress={() => markAllRead()}>
             <AppText raw variant="bodySmall" color="primary">
-              Đọc tất cả
+              {t('notifications.button.markAllRead')}
             </AppText>
           </TouchableOpacity>
         )}
@@ -79,7 +81,7 @@ export default function NotificationsScreen() {
 
       {allNotifications.length === 0 ? (
         <View className="flex-1 items-center justify-center">
-          <EmptyState icon={Bell} message="Không có thông báo nào" />
+          <EmptyState icon={Bell} message={t('notifications.empty.message')} />
         </View>
       ) : (
         <FlatList
@@ -112,3 +114,4 @@ export default function NotificationsScreen() {
     </SafeAreaView>
   )
 }
+

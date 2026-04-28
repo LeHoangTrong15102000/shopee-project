@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getProfile, updateProfile, uploadAvatar, type UpdateProfileBody } from '@/apis/user.api'
+import { handleMutationError } from '@/utils/mutationErrorHandler'
 
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 
@@ -24,6 +25,7 @@ export function useUpdateProfile() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: profileKeys.all() })
     },
+    onError: handleMutationError,
   })
 }
 
@@ -34,5 +36,6 @@ export function useUploadAvatar() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: profileKeys.all() })
     },
+    onError: handleMutationError,
   })
 }

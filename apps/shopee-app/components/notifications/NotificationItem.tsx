@@ -2,6 +2,7 @@ import React from 'react'
 import { View, TouchableOpacity } from 'react-native'
 import { Swipeable } from 'react-native-gesture-handler'
 import { Trash2 } from 'lucide-react-native'
+import { useTranslation } from 'react-i18next'
 import { AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 
@@ -19,30 +20,31 @@ interface NotificationItemProps {
   onDelete: (id: string) => void
 }
 
-function getRelativeTime(dateStr: string): string {
-  const now = Date.now()
-  const date = new Date(dateStr).getTime()
-  const diff = now - date
-  const minutes = Math.floor(diff / 60000)
-  const hours = Math.floor(diff / 3600000)
-  const days = Math.floor(diff / 86400000)
-
-  if (minutes < 1) return 'Vừa xong'
-  if (minutes < 60) return `${minutes} phút trước`
-  if (hours < 24) return `${hours} giờ trước`
-  if (days < 7) return `${days} ngày trước`
-  return new Date(dateStr).toLocaleDateString('vi-VN')
-}
-
 export default function NotificationItem({ item, onPress, onDelete }: NotificationItemProps) {
+  const { t } = useTranslation()
   const colors = useColors()
+
+  const getRelativeTime = (dateStr: string): string => {
+    const now = Date.now()
+    const date = new Date(dateStr).getTime()
+    const diff = now - date
+    const minutes = Math.floor(diff / 60000)
+    const hours = Math.floor(diff / 3600000)
+    const days = Math.floor(diff / 86400000)
+
+    if (minutes < 1) return t('notificationItem.time.justNow')
+    if (minutes < 60) return t('notificationItem.time.minutesAgo', { minutes })
+    if (hours < 24) return t('notificationItem.time.hoursAgo', { hours })
+    if (days < 7) return t('notificationItem.time.daysAgo', { days })
+    return new Date(dateStr).toLocaleDateString('vi-VN')
+  }
 
   const renderRightActions = () => (
     <TouchableOpacity
       onPress={() => onDelete(item._id)}
       className="items-center justify-center bg-error px-5"
       accessibilityRole="button"
-      accessibilityLabel="Delete notification">
+      accessibilityLabel={t('a11y.deleteNotification')}>
       <Trash2 size={20} color="#fff" />
     </TouchableOpacity>
   )

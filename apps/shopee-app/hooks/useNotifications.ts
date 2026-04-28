@@ -8,6 +8,7 @@ import {
   type Notification,
 } from '@/apis/notification.api'
 import type { InfiniteData } from '@tanstack/react-query'
+import { handleMutationError } from '@/utils/mutationErrorHandler'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -80,6 +81,7 @@ export function useMarkAsRead() {
       queryClient.invalidateQueries({ queryKey: notificationKeys.all() })
       queryClient.invalidateQueries({ queryKey: notificationKeys.unread() })
     },
+    onError: handleMutationError,
   })
 }
 
@@ -115,6 +117,7 @@ export function useMarkAllRead() {
       queryClient.invalidateQueries({ queryKey: notificationKeys.all() })
       queryClient.invalidateQueries({ queryKey: notificationKeys.unread() })
     },
+    onError: handleMutationError,
   })
 }
 
@@ -126,5 +129,6 @@ export function useDeleteNotification() {
       queryClient.invalidateQueries({ queryKey: notificationKeys.all() })
       queryClient.invalidateQueries({ queryKey: notificationKeys.unread() })
     },
+    onError: handleMutationError,
   })
 }

@@ -8,6 +8,7 @@ import { useColors } from '@/hooks/useColors'
 import { useTranslation } from 'react-i18next'
 import { useToast } from '@/components/ui/ToastProvider'
 import { AppText, AppButton } from '@/components/ui'
+import { AxiosError } from 'axios'
 import {
   useProductDetailQuery,
   useProductReviews,
@@ -130,7 +131,7 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
   }
 
   // ─── 404 redirect (must be before early returns to respect Rules of Hooks) ──
-  const is404 = productQuery.isError && (productQuery.error as any)?.response?.status === 404
+  const is404 = productQuery.isError && (productQuery.error as AxiosError)?.response?.status === 404
   useEffect(() => {
     if (is404) {
       showError(t('PD_PRODUCT_NOT_FOUND'))
@@ -146,7 +147,7 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
           <TouchableOpacity
             onPress={() => router.back()}
             accessibilityRole="button"
-            accessibilityLabel="Go back">
+            accessibilityLabel={t('a11y.goBack')}>
             <ChevronLeft size={24} color={colors.foreground} />
           </TouchableOpacity>
         </View>
@@ -191,7 +192,7 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
           <TouchableOpacity
             onPress={() => router.back()}
             accessibilityRole="button"
-            accessibilityLabel="Go back"
+            accessibilityLabel={t('a11y.goBack')}
             className="rounded-full bg-background/70 p-2">
             <ChevronLeft size={24} color={colors.foreground} />
           </TouchableOpacity>

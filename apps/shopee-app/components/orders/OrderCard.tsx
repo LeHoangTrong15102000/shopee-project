@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, Image, TouchableOpacity } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { AppText, Badge, AppButton } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { formatPrice } from '@/utils/price'
@@ -14,22 +15,24 @@ interface OrderCardProps {
   onReturn?: (id: string) => void
 }
 
-function getStatusBadge(status: OrderStatusType): { label: string; variant: 'default' | 'warning' | 'primary' | 'success' | 'error' } {
+function useStatusBadge(status: OrderStatusType): { label: string; variant: 'default' | 'warning' | 'primary' | 'success' | 'error' } {
+  const { t } = useTranslation()
+
   switch (status) {
     case ORDER_STATUS.PENDING:
-      return { label: 'Chờ xác nhận', variant: 'warning' }
+      return { label: t('orderCard.status.pending'), variant: 'warning' }
     case ORDER_STATUS.CONFIRMED:
-      return { label: 'Đã xác nhận', variant: 'primary' }
+      return { label: t('orderCard.status.confirmed'), variant: 'primary' }
     case ORDER_STATUS.PROCESSING:
-      return { label: 'Đang xử lý', variant: 'default' }
+      return { label: t('orderCard.status.processing'), variant: 'default' }
     case ORDER_STATUS.SHIPPING:
-      return { label: 'Đang giao', variant: 'primary' }
+      return { label: t('orderCard.status.shipping'), variant: 'primary' }
     case ORDER_STATUS.DELIVERED:
-      return { label: 'Đã giao', variant: 'success' }
+      return { label: t('orderCard.status.delivered'), variant: 'success' }
     case ORDER_STATUS.CANCELLED:
-      return { label: 'Đã hủy', variant: 'error' }
+      return { label: t('orderCard.status.cancelled'), variant: 'error' }
     case ORDER_STATUS.RETURNED:
-      return { label: 'Trả hàng', variant: 'default' }
+      return { label: t('orderCard.status.returned'), variant: 'default' }
   }
 }
 
@@ -40,8 +43,9 @@ export default function OrderCard({
   onConfirmReceived,
   onReturn,
 }: OrderCardProps) {
+  const { t } = useTranslation()
   const colors = useColors()
-  const statusInfo = getStatusBadge(order.status)
+  const statusInfo = useStatusBadge(order.status)
   const firstItem = order.items?.[0]
   const extraCount = (order.items?.length ?? 0) - 1
 
@@ -85,14 +89,14 @@ export default function OrderCard({
 
       {extraCount > 0 && (
         <AppText raw variant="labelSmall" color="muted" style={{ marginTop: 4 }}>
-          +{extraCount} sản phẩm khác
+          {t('orderCard.moreProducts', { extraCount })}
         </AppText>
       )}
 
       {/* Total */}
       <View className="mt-2 flex-row items-center justify-between">
         <AppText raw variant="bodySmall" color="muted">
-          Tổng cộng
+          {t('orderCard.total')}
         </AppText>
         <AppText raw variant="body" weight="semibold" color="primary">
           {formatPrice(order.total_price)}
@@ -107,7 +111,7 @@ export default function OrderCard({
               variant="outline"
               size="sm"
               onPress={() => onCancel(order._id)}>
-              Hủy đơn
+              {t('orderCard.button.cancel')}
             </AppButton>
           )}
           {canConfirmReceived && onConfirmReceived && (
@@ -115,7 +119,7 @@ export default function OrderCard({
               variant="primary"
               size="sm"
               onPress={() => onConfirmReceived(order._id)}>
-              Đã nhận hàng
+              {t('orderCard.button.confirmReceived')}
             </AppButton>
           )}
           {canReturn && onReturn && (
@@ -123,7 +127,7 @@ export default function OrderCard({
               variant="outline"
               size="sm"
               onPress={() => onReturn(order._id)}>
-              Trả hàng
+              {t('orderCard.button.return')}
             </AppButton>
           )}
         </View>

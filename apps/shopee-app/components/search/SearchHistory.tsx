@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, FlatList, Pressable } from 'react-native'
 import { Clock, X } from 'lucide-react-native'
+import { useTranslation } from 'react-i18next'
 import { useColors } from '@/hooks/useColors'
 import { AppText, AppButton } from '@/components/ui'
 import { type SearchHistoryItem } from '@/apis/search.api'
@@ -18,6 +19,7 @@ export default function SearchHistory({
   onDelete,
   onClearAll,
 }: SearchHistoryProps) {
+  const { t } = useTranslation()
   const colors = useColors()
 
   if (items.length === 0) return null
@@ -26,11 +28,11 @@ export default function SearchHistory({
     <View className="px-4 py-2">
       <View className="mb-3 flex-row items-center justify-between">
         <AppText raw variant="heading5" weight="semibold">
-          Lịch sử tìm kiếm
+          {t('searchHistory.title')}
         </AppText>
         <Pressable onPress={onClearAll}>
           <AppText raw variant="bodySmall" color="primary">
-            Xóa tất cả
+            {t('searchHistory.button.clearAll')}
           </AppText>
         </Pressable>
       </View>

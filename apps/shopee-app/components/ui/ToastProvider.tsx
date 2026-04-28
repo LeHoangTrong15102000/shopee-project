@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useCallback } from 'react'
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { View } from 'react-native'
 import Toast, { ToastProps, ToastType } from './Toast'
+import { setToastInstance } from '@/utils/toast'
 
 interface ToastOptions {
   title: string
@@ -134,6 +135,16 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
     dismissToast,
     dismissAll,
   }
+
+  // Initialize toast singleton for use outside React components
+  useEffect(() => {
+    setToastInstance({
+      showError,
+      showSuccess,
+      showWarning,
+      showInfo,
+    })
+  }, [showError, showSuccess, showWarning, showInfo])
 
   return (
     <ToastContext.Provider value={contextValue}>

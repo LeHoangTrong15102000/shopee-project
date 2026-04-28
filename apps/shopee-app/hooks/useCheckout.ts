@@ -7,12 +7,14 @@ import {
   type CheckoutSummaryBody,
   type CreateOrderBody,
 } from '@/apis/checkout.api'
+import { handleMutationError } from '@/utils/mutationErrorHandler'
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
 
 export function useCheckoutSummary() {
   return useMutation({
     mutationFn: (body: CheckoutSummaryBody) => getCheckoutSummary(body),
+    onError: handleMutationError,
   })
 }
 
@@ -35,5 +37,6 @@ export function usePaymentMethods() {
 export function useCreateOrder() {
   return useMutation({
     mutationFn: (body: CreateOrderBody) => createOrder(body),
+    onError: handleMutationError,
   })
 }

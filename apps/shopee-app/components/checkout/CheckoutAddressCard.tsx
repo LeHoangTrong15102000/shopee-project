@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, TouchableOpacity } from 'react-native'
 import { MapPin } from 'lucide-react-native'
+import { useTranslation } from 'react-i18next'
 import { AppText, AppButton } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { type Address } from '@/apis/address.api'
@@ -11,6 +12,7 @@ interface CheckoutAddressCardProps {
 }
 
 export default function CheckoutAddressCard({ address, onChangeAddress }: CheckoutAddressCardProps) {
+  const { t } = useTranslation()
   const colors = useColors()
 
   if (!address) {
@@ -19,11 +21,11 @@ export default function CheckoutAddressCard({ address, onChangeAddress }: Checko
         <View className="flex-row items-center gap-2 mb-2">
           <MapPin size={16} color={colors.primary} />
           <AppText raw variant="body" weight="semibold">
-            Địa chỉ giao hàng
+            {t('checkoutAddress.title')}
           </AppText>
         </View>
         <AppButton variant="outline" onPress={onChangeAddress} className="w-full">
-          Thêm địa chỉ giao hàng
+          {t('checkoutAddress.button.add')}
         </AppButton>
       </View>
     )
@@ -39,12 +41,12 @@ export default function CheckoutAddressCard({ address, onChangeAddress }: Checko
         <View className="flex-row items-center gap-2">
           <MapPin size={16} color={colors.primary} />
           <AppText raw variant="body" weight="semibold">
-            Địa chỉ giao hàng
+            {t('checkoutAddress.title')}
           </AppText>
         </View>
         <TouchableOpacity onPress={onChangeAddress}>
           <AppText raw variant="bodySmall" color="primary">
-            Thay đổi
+            {t('checkoutAddress.button.change')}
           </AppText>
         </TouchableOpacity>
       </View>

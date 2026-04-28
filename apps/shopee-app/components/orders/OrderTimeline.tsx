@@ -1,9 +1,10 @@
 import React from 'react'
 import { View } from 'react-native'
 import { CheckCircle, Clock, Package, Truck, XCircle, RotateCcw } from 'lucide-react-native'
+import { useTranslation } from 'react-i18next'
 import { AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
-import { ORDER_STATUS } from '@/constants/order'
+import { ORDER_STATUS, type OrderStatusType } from '@/constants/order'
 
 interface TimelineStep {
   label: string
@@ -21,18 +22,19 @@ export default function OrderTimeline({
   status,
   createdAt,
 }: OrderTimelineProps) {
+  const { t } = useTranslation()
   const colors = useColors()
 
   if (status === ORDER_STATUS.CANCELLED) {
     const steps: TimelineStep[] = [
       {
-        label: 'Đặt hàng',
+        label: t('orderTimeline.step.placed'),
         timestamp: createdAt,
         completed: true,
         icon: <Clock size={16} color="#fff" />,
       },
       {
-        label: 'Đã hủy',
+        label: t('orderTimeline.step.cancelled'),
         completed: true,
         icon: <XCircle size={16} color="#fff" />,
       },
@@ -89,18 +91,18 @@ export default function OrderTimeline({
   if (status === ORDER_STATUS.RETURNED) {
     const steps: TimelineStep[] = [
       {
-        label: 'Đặt hàng',
+        label: t('orderTimeline.step.placed'),
         timestamp: createdAt,
         completed: true,
         icon: <Clock size={16} color="#fff" />,
       },
       {
-        label: 'Đã giao hàng',
+        label: t('orderTimeline.step.delivered'),
         completed: true,
         icon: <Package size={16} color="#fff" />,
       },
       {
-        label: 'Trả hàng',
+        label: t('orderTimeline.step.returned'),
         completed: true,
         icon: <RotateCcw size={16} color="#fff" />,
       },
@@ -162,32 +164,32 @@ export default function OrderTimeline({
     ORDER_STATUS.SHIPPING,
     ORDER_STATUS.DELIVERED,
   ]
-  const currentIdx = statusOrder.indexOf(status as any)
+  const currentIdx = statusOrder.indexOf(status as OrderStatusType)
 
   const steps: TimelineStep[] = [
     {
-      label: 'Đặt hàng',
+      label: t('orderTimeline.step.placed'),
       timestamp: createdAt,
       completed: currentIdx >= 0,
       icon: <Clock size={16} color={currentIdx >= 0 ? '#fff' : colors.neutrals400} />,
     },
     {
-      label: 'Đã xác nhận',
+      label: t('orderTimeline.step.confirmed'),
       completed: currentIdx >= 1,
       icon: <CheckCircle size={16} color={currentIdx >= 1 ? '#fff' : colors.neutrals400} />,
     },
     {
-      label: 'Đang xử lý',
+      label: t('orderTimeline.step.processing'),
       completed: currentIdx >= 2,
       icon: <Package size={16} color={currentIdx >= 2 ? '#fff' : colors.neutrals400} />,
     },
     {
-      label: 'Đang vận chuyển',
+      label: t('orderTimeline.step.shipping'),
       completed: currentIdx >= 3,
       icon: <Truck size={16} color={currentIdx >= 3 ? '#fff' : colors.neutrals400} />,
     },
     {
-      label: 'Đã giao hàng',
+      label: t('orderTimeline.step.delivered'),
       completed: currentIdx >= 4,
       icon: <Package size={16} color={currentIdx >= 4 ? '#fff' : colors.neutrals400} />,
     },

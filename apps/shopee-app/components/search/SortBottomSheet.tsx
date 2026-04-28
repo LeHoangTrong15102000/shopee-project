@@ -1,6 +1,7 @@
 import React, { useRef, useCallback } from 'react'
 import { View, FlatList, Pressable } from 'react-native'
 import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
+import { useTranslation } from 'react-i18next'
 import { useColors } from '@/hooks/useColors'
 import { AppText, AppButton } from '@/components/ui'
 import { Check } from 'lucide-react-native'
@@ -10,13 +11,6 @@ export type SortOption = {
   sortBy: string
   order: string
 }
-
-export const SORT_OPTIONS: SortOption[] = [
-  { label: 'Phổ biến', sortBy: 'sold', order: 'desc' },
-  { label: 'Mới nhất', sortBy: 'createdAt', order: 'desc' },
-  { label: 'Giá tăng dần', sortBy: 'price', order: 'asc' },
-  { label: 'Giá giảm dần', sortBy: 'price', order: 'desc' },
-]
 
 interface SortBottomSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal>
@@ -29,7 +23,15 @@ export default function SortBottomSheet({
   selectedSort,
   onSelect,
 }: SortBottomSheetProps) {
+  const { t } = useTranslation()
   const colors = useColors()
+
+  const SORT_OPTIONS: SortOption[] = [
+    { label: t('sort.popular'), sortBy: 'sold', order: 'desc' },
+    { label: t('sort.newest'), sortBy: 'createdAt', order: 'desc' },
+    { label: t('sort.priceAsc'), sortBy: 'price', order: 'asc' },
+    { label: t('sort.priceDesc'), sortBy: 'price', order: 'desc' },
+  ]
 
   const renderBackdrop = useCallback(
     (props: any) => (
@@ -48,7 +50,7 @@ export default function SortBottomSheet({
       <BottomSheetView>
         <View className="px-4 pb-8 pt-2">
           <AppText raw variant="heading3" weight="semibold" className="mb-4">
-            Sắp xếp theo
+            {t('sort.title')}
           </AppText>
           {SORT_OPTIONS.map((option) => {
             const isSelected =
@@ -75,3 +77,4 @@ export default function SortBottomSheet({
     </BottomSheetModal>
   )
 }
+

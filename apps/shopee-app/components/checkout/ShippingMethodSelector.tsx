@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, TouchableOpacity } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { formatPrice } from '@/utils/price'
@@ -22,12 +23,13 @@ export default function ShippingMethodSelector({
   selectedId,
   onSelect,
 }: ShippingMethodSelectorProps) {
+  const { t } = useTranslation()
   const colors = useColors()
 
   return (
     <View className="border-b border-neutrals900 px-4 py-4">
       <AppText raw variant="body" weight="semibold" className="mb-3">
-        Phương thức vận chuyển
+        {t('shippingMethod.title')}
       </AppText>
       <View className="gap-2">
         {methods.map((method) => {

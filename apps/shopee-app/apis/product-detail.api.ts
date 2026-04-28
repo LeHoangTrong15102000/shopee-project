@@ -2,6 +2,13 @@ import http from '@/utils/http'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
+export interface ShopSummary {
+  _id: string
+  name: string
+  avatar: string
+  rating: number
+}
+
 export interface ProductDetail {
   _id: string
   name: string
@@ -15,6 +22,7 @@ export interface ProductDetail {
   quantity: number
   sold: number
   view: number
+  shopSummary?: ShopSummary
   createdAt: string
   updatedAt: string
 }

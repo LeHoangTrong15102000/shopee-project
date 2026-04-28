@@ -4,6 +4,7 @@ import commonProductRouter from './common-product.route'
 import commonCategoryRouter from './common-category.route'
 import qaRouter from './qa.route'
 import healthRouter from './health.route'
+import { shopRouter } from './shop.route'
 
 const commonRoutes = {
   prefix: '/',
@@ -32,6 +33,10 @@ const commonRoutes = {
     {
       path: 'qa',
       route: qaRouter,
+    },
+    {
+      path: 'shops',
+      route: shopRouter,
     },
   ],
 }

@@ -16,6 +16,7 @@ import { registerPresenceHandlers } from './handlers/presence.handler'
 import { registerOrderHandlers } from './handlers/order.handler'
 import { registerFlashSaleHandlers } from './handlers/flash-sale.handler'
 import { registerSellerDashboardHandlers } from './handlers/seller-dashboard.handler'
+import { registerShopChatHandlers } from './handlers/shop-chat.handler'
 import {
   startPeriodicSellerMetrics,
   stopPeriodicSellerMetrics,
@@ -86,6 +87,7 @@ export const initializeSocket = (httpServer: HTTPServer): SocketIOServer => {
     registerOrderHandlers(socket)
     registerFlashSaleHandlers(socket)
     registerSellerDashboardHandlers(socket)
+    registerShopChatHandlers(socket)
 
     // Send pending notifications on connect
     sendPendingNotifications(socket)

@@ -1,6 +1,6 @@
 import React from 'react'
 import { View } from 'react-native'
-import { Heart, MapPin, Bell, Calendar, Tag, Coins, Store, HelpCircle } from 'lucide-react-native'
+import { Heart, MapPin, Bell, Calendar, Tag, Coins, Store, HelpCircle, MessageCircle } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
 import { MenuList, AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
@@ -14,6 +14,7 @@ interface UtilityMenuProps {
   onXuHistory: () => void
   onFollowedShops: () => void
   onHelp: () => void
+  onChat: () => void
 }
 
 export default function UtilityMenu({
@@ -25,11 +26,17 @@ export default function UtilityMenu({
   onXuHistory,
   onFollowedShops,
   onHelp,
+  onChat,
 }: UtilityMenuProps) {
   const { t } = useTranslation()
   const colors = useColors()
 
   const items = [
+    {
+      title: t('account.menu.chat'),
+      icon: () => <MessageCircle size={20} color={colors.primary} />,
+      onPress: onChat,
+    },
     {
       title: t('account.menu.wishlist'),
       icon: () => <Heart size={20} color={colors.primary} />,

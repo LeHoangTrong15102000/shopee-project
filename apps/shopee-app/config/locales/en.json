@@ -150,6 +150,7 @@
       "logoutMessage": "Are you sure you want to logout?"
     },
     "menu": {
+      "chat": "Messages",
       "wishlist": "Wishlist",
       "addresses": "Addresses",
       "notifications": "Notifications",

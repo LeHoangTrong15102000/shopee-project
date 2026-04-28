@@ -7,6 +7,7 @@ const ProductSchema = new Schema(
     images: [{ type: String, maxlength: 1000 }],
     description: { type: String },
     category: { type: mongoose.SchemaTypes.ObjectId, ref: 'categories' },
+    shop_id: { type: mongoose.SchemaTypes.ObjectId, ref: 'shops', index: true },
     price: { type: Number, default: 0 },
     rating: { type: Number, default: 0 },
     price_before_discount: { type: Number, default: 0 },

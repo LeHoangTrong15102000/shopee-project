@@ -16,7 +16,10 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "expo start",
-        "cwd": "apps/shopee-app"
+        "cwd": "apps/shopee-app",
+        "env": {
+          "EXPO_NO_DEPENDENCY_VALIDATION": "1"
+        }
       }
     },
     "android": {

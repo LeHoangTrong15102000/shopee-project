@@ -12,6 +12,7 @@ import { userOrderRouter } from './order.route'
 import { userCheckoutRouter } from './checkout.route'
 import conversationRouter from './conversation.route'
 import { userPriceRouter } from './price.route'
+import { shopChatRouter } from './shop-chat.route'
 
 const userRoutes = {
   prefix: '/',
@@ -76,6 +77,10 @@ const userRoutes = {
     {
       path: '',
       route: userPriceRouter,
+    },
+    {
+      path: 'shop-conversations',
+      route: shopChatRouter,
     },
   ],
 }

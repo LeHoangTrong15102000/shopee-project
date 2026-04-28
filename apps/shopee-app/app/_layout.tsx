@@ -10,6 +10,7 @@ import { queryClient } from '@/config/queryClient'
 import { useColors } from '@/hooks/useColors.ts'
 import { useAppStore } from '@/store/appStore'
 import { useAuthStore } from '@/store/authStore'
+import { useChatStore } from '@/store/chatStore'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { ToastProvider } from '@/components/ui/ToastProvider'
@@ -49,6 +50,18 @@ function AppContent() {
     }
   }, [isAuthenticated, segments, isReady])
 
+  // Connect/disconnect WebSocket on auth state change
+  const connectChat = useChatStore((state) => state.connect)
+  const disconnectChat = useChatStore((state) => state.disconnect)
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      connectChat()
+    } else {
+      disconnectChat()
+    }
+  }, [isAuthenticated])
+
   const navigationTheme = {
     ...(theme === 'dark' ? DarkTheme : DefaultTheme),
     dark: theme === 'dark',
@@ -82,7 +95,7 @@ function AppContent() {
                   <Stack.Screen name="checkout" options={{ headerShown: false }} />
                   <Stack.Screen name="order-success" options={{ headerShown: false }} />
                   <Stack.Screen name="orders" options={{ headerShown: false }} />
-                  <Stack.Screen name="order/[id]" options={{ headerShown: false }} />
+                  <Stack.Screen name="order/[id]/index" options={{ headerShown: false }} />
                   <Stack.Screen name="addresses" options={{ headerShown: false }} />
                   <Stack.Screen name="address-form" options={{ headerShown: false }} />
                   <Stack.Screen name="wishlist" options={{ headerShown: false }} />
@@ -102,6 +115,10 @@ function AppContent() {
                   <Stack.Screen name="settings/index" options={{ headerShown: false }} />
                   <Stack.Screen name="settings/notifications" options={{ headerShown: false }} />
                   <Stack.Screen name="settings/privacy" options={{ headerShown: false }} />
+                  <Stack.Screen name="shop/[id]" options={{ headerShown: false }} />
+                  <Stack.Screen name="chat/index" options={{ headerShown: false }} />
+                  <Stack.Screen name="chat/[id]" options={{ headerShown: false }} />
+                  <Stack.Screen name="order/[id]/tracking" options={{ headerShown: false }} />
                 </Stack>
               </ThemeProvider>
             </DialogProvider>

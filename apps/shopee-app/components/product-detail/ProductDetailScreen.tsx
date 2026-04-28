@@ -38,6 +38,7 @@ import ReviewForm from './ReviewForm'
 import QASection from './QASection'
 import QuestionForm from './QuestionForm'
 import RelatedProducts from './RelatedProducts'
+import ShopSummaryCard from './ShopSummaryCard'
 
 interface ProductDetailScreenProps {
   productId: string
@@ -251,6 +252,10 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
           <View className="mt-2" style={{ height: 8, backgroundColor: colors.neutrals800 }} />
 
           <ProductDescription description={product.description} />
+
+          {product.shopSummary && (
+            <ShopSummaryCard shopSummary={product.shopSummary} />
+          )}
 
           <View style={{ height: 8, backgroundColor: colors.neutrals800 }} />
 

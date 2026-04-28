@@ -150,6 +150,7 @@
       "logoutMessage": "Bạn có chắc chắn muốn đăng xuất?"
     },
     "menu": {
+      "chat": "Tin nhắn",
       "wishlist": "Yêu thích",
       "addresses": "Địa chỉ",
       "notifications": "Thông báo",

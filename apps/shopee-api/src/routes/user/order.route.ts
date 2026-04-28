@@ -3,8 +3,13 @@ import authMiddleware from '@middleware/auth.middleware'
 import * as orderController from '@controllers/order.controller'
 import { asyncHandler } from '@utils/async-handler'
 import { validate, returnOrderSchema } from '@schemas/index'
+import { GpsTrackingService } from '@services/gps-tracking.service'
+import { NotFoundError, ValidationError } from '@services/base.service'
+import { STATUS } from '@constants/status'
 
 export const userOrderRouter = Router()
+
+const gpsTrackingService = new GpsTrackingService()
 
 // Get shipping methods
 userOrderRouter.get('/shipping/methods', asyncHandler(orderController.getShippingMethods))
@@ -49,4 +54,26 @@ userOrderRouter.put(
   authMiddleware.verifyAccessToken,
   validate(returnOrderSchema),
   asyncHandler(orderController.returnOrder),
+)
+
+// GET /orders/:id/tracking — GPS realtime tracking
+userOrderRouter.get(
+  '/:id/tracking',
+  authMiddleware.verifyAccessToken,
+  asyncHandler(async (req, res) => {
+    try {
+      const tracking = await gpsTrackingService.getOrderTracking(req.params.id)
+      res.status(STATUS.OK).json({ message: 'Lấy thông tin tracking thành công', data: tracking })
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        res.status(STATUS.BAD_REQUEST).json({ message: error.message })
+        return
+      }
+      if (error instanceof NotFoundError) {
+        res.status(STATUS.NOT_FOUND).json({ message: 'Không tìm thấy thông tin tracking' })
+        return
+      }
+      res.status(STATUS.INTERNAL_SERVER_ERROR).json({ message: 'Lỗi server' })
+    }
+  }),
 )

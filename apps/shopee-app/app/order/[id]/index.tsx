@@ -196,6 +196,17 @@ export default function OrderDetailScreen() {
             isConfirming={isConfirming}
           />
 
+          {order.status === ORDER_STATUS.SHIPPING && (
+            <View className="px-4 pb-4">
+              <AppButton
+                variant="primary"
+                onPress={() => router.push(`/order/${order._id}/tracking`)}
+                className="w-full">
+                Theo dõi đơn hàng
+              </AppButton>
+            </View>
+          )}
+
           {isDelivered && (
             <View className="gap-2 px-4 pb-4">
               <AppButton

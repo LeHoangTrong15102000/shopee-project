@@ -63,6 +63,7 @@ export default function AccountScreen() {
         <OrderShortcuts />
 
         <UtilityMenu
+          onChat={() => router.push('/chat/index')}
           onWishlist={() => router.push('/wishlist')}
           onAddresses={() => router.push('/addresses')}
           onNotifications={() => router.push('/(tabs)/notifications')}

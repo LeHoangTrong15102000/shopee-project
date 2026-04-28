@@ -253,4 +253,122 @@ describe('VoucherListPage', () => {
     expect(screen.getByLabelText('form.code')).toHaveValue('ALLFIELDS')
     expect(screen.getByLabelText('form.minOrder')).toHaveValue(50000)
   })
+
+  it('opens edit dialog via dropdown menu', async () => {
+    const { user } = renderWithProviders(<VoucherListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.edit')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.edit'))
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+      expect(screen.getByText('actions.editVoucher')).toBeInTheDocument()
+    })
+  })
+
+  it('submits edit voucher form and dialog closes', async () => {
+    const { user } = renderWithProviders(<VoucherListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.edit')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.edit'))
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+    const valueInput = screen.getByLabelText('form.value')
+    await user.clear(valueInput)
+    await user.type(valueInput, '99')
+    await user.click(screen.getByRole('button', { name: /buttons.save/i }))
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('opens delete confirm dialog via dropdown menu', async () => {
+    const { user } = renderWithProviders(<VoucherListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.delete')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.delete'))
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+      expect(screen.getByText('toast.deleteTitle')).toBeInTheDocument()
+    })
+  })
+
+  it('confirms deletion and dialog closes', async () => {
+    const { user } = renderWithProviders(<VoucherListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.delete')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.delete'))
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    })
+    await user.click(screen.getByRole('button', { name: /buttons.confirm/i }))
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('navigates to detail page via dropdown view action', async () => {
+    const { user } = renderWithProviders(<VoucherListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.view')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.view'))
+    expect(mockNavigate).toHaveBeenCalledWith(expect.stringContaining('/vouchers/'))
+  })
+
+  it('toggle voucher activation via dropdown menu', async () => {
+    const { user } = renderWithProviders(<VoucherListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      const toggleItem = screen.queryByText('actions.deactivate') || screen.queryByText('actions.activate')
+      expect(toggleItem).toBeInTheDocument()
+    })
+    const toggleItem = screen.queryByText('actions.deactivate') || screen.queryByText('actions.activate')
+    await user.click(toggleItem!)
+  })
 })

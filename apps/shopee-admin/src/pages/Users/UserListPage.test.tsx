@@ -222,4 +222,165 @@ describe('UserListPage', () => {
       expect(screen.getByText('Nguyễn Văn A')).toBeInTheDocument()
     })
   })
+
+  it('opens edit user dialog via dropdown menu', async () => {
+    const { user } = renderWithProviders(<UserListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.edit')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.edit'))
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+      expect(screen.getByText('actions.editUser')).toBeInTheDocument()
+    })
+  })
+
+  it('submits edit user form and dialog closes', async () => {
+    const { user } = renderWithProviders(<UserListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.edit')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.edit'))
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+    const nameInput = screen.getByLabelText('form.name')
+    await user.clear(nameInput)
+    await user.type(nameInput, 'Updated Name')
+    await user.click(screen.getByRole('button', { name: /buttons.save/i }))
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('opens delete confirm dialog via dropdown menu', async () => {
+    const { user } = renderWithProviders(<UserListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.delete')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.delete'))
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+      expect(screen.getByText('toast.deleteTitle')).toBeInTheDocument()
+    })
+  })
+
+  it('confirms delete and dialog closes', async () => {
+    const { user } = renderWithProviders(<UserListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.delete')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.delete'))
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    })
+    await user.click(screen.getByRole('button', { name: /buttons.confirm/i }))
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('navigates to user detail via dropdown view action', async () => {
+    const { user } = renderWithProviders(<UserListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.view')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.view'))
+    expect(mockNavigate).toHaveBeenCalledWith(expect.stringContaining('/users/'))
+  })
+
+  it('closes delete dialog via cancel button (onOpenChange false branch)', async () => {
+    const { user } = renderWithProviders(<UserListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.delete')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.delete'))
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    })
+    // Click cancel to trigger onOpenChange(false) -> setDeleteUser(null)
+    await user.click(screen.getByRole('button', { name: /buttons.cancel/i }))
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('shows user email in delete dialog description when user has no name', async () => {
+    server.use(
+      http.get(`${API_URL}/admin/users`, () => {
+        return HttpResponse.json({
+          data: {
+            items: [
+              {
+                _id: 'user-no-name',
+                name: '',
+                email: 'noname@example.com',
+                roles: ['user'],
+                createdAt: '2024-01-01T00:00:00.000Z',
+                updatedAt: '2024-01-01T00:00:00.000Z',
+              },
+            ],
+            pagination: { page: 1, limit: 20, page_size: 1, total: 1 },
+          },
+        })
+      }),
+    )
+    const { user } = renderWithProviders(<UserListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.delete')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.delete'))
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    })
+  })
 })

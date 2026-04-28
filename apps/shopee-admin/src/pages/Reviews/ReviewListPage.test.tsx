@@ -155,4 +155,146 @@ describe('ReviewListPage', () => {
       expect(screen.getByText('stats.fiveStarReviews')).toBeInTheDocument()
     })
   })
+
+  it('navigates to review detail via dropdown view action', async () => {
+    const { user } = renderWithProviders(<ReviewListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.view')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.view'))
+    expect(mockNavigate).toHaveBeenCalledWith(expect.stringContaining('/reviews/'))
+  })
+
+  it('opens delete dialog via dropdown menu', async () => {
+    const { user } = renderWithProviders(<ReviewListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.delete')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.delete'))
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    })
+  })
+
+  it('confirms delete and dialog closes', async () => {
+    const { user } = renderWithProviders(<ReviewListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.delete')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.delete'))
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    })
+    await user.click(screen.getByRole('button', { name: /buttons.confirm/i }))
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('clicks approve action in dropdown menu', async () => {
+    const { user } = renderWithProviders(<ReviewListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.approve')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.approve'))
+  })
+
+  it('clicks flag action in dropdown menu', async () => {
+    const { user } = renderWithProviders(<ReviewListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.flag')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.flag'))
+  })
+
+  it('closes delete dialog via cancel button (onOpenChange false branch)', async () => {
+    const { user } = renderWithProviders(<ReviewListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.delete')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.delete'))
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    })
+    // Click cancel to trigger onOpenChange(false) -> setDeleteId(null)
+    await user.click(screen.getByRole('button', { name: /buttons.cancel/i }))
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('renders user name or email in table cell', async () => {
+    server.use(
+      http.get(`${API_URL}/admin/reviews`, () => {
+        return HttpResponse.json({
+          data: {
+            reviews: [
+              {
+                _id: 'review-no-name',
+                user: { _id: 'user-1', name: '', email: 'noname@example.com' },
+                product: { _id: 'prod-1', name: 'Test Product', image: '' },
+                rating: 4,
+                comment: 'Good product',
+                helpful_count: 0,
+                images: [],
+                comments: [],
+                createdAt: '2024-01-01T00:00:00.000Z',
+                updatedAt: '2024-01-01T00:00:00.000Z',
+              },
+            ],
+            pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
+          },
+        })
+      }),
+    )
+    renderWithProviders(<ReviewListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByText('noname@example.com')).toBeInTheDocument()
+    })
+  })
 })

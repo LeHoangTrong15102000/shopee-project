@@ -27,4 +27,15 @@ describe('ErrorState', () => {
     render(<ErrorState />)
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
+
+  it('applies custom className to wrapper', () => {
+    const { container } = render(<ErrorState className="my-error-class" />)
+    const alertEl = container.querySelector('[role="alert"]')
+    expect(alertEl).toHaveClass('my-error-class')
+  })
+
+  it('renders default fallback message when no message prop provided', () => {
+    render(<ErrorState />)
+    expect(screen.getByText('states.somethingWentWrong')).toBeInTheDocument()
+  })
 })

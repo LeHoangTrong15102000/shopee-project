@@ -24,4 +24,22 @@ describe('LoadingState', () => {
     expect(statusEl).toBeInTheDocument()
     expect(statusEl!.children.length).toBe(7)
   })
+
+  it('applies custom className to spinner wrapper', () => {
+    const { container } = render(<LoadingState className="my-custom-class" />)
+    const statusEl = container.querySelector('[role="status"]')
+    expect(statusEl).toHaveClass('my-custom-class')
+  })
+
+  it('applies custom className to skeleton wrapper', () => {
+    const { container } = render(<LoadingState variant="skeleton" className="skeleton-wrapper" />)
+    const statusEl = container.querySelector('[role="status"]')
+    expect(statusEl).toHaveClass('skeleton-wrapper')
+  })
+
+  it('renders fullPage spinner with fixed positioning class', () => {
+    const { container } = render(<LoadingState fullPage />)
+    const statusEl = container.querySelector('[role="status"]')
+    expect(statusEl).toHaveClass('fixed')
+  })
 })

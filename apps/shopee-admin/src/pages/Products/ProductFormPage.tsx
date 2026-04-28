@@ -26,7 +26,8 @@ const schema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
   price: z.number().min(0),
-  price_before_discount: z.number().min(0).optional(),
+  price_before_discount: z
+    .preprocess((v) => (typeof v === 'number' && isNaN(v) ? undefined : v), z.number().min(0).optional()),
   quantity: z.number().int().min(0),
   category: z.string().min(1, 'Category is required'),
   image: z.string().min(1, 'Image URL is required'),
@@ -108,7 +109,7 @@ export default function ProductFormPage() {
               <Input
                 id="product-price"
                 type="number"
-                {...register('price')}
+                {...register('price', { valueAsNumber: true })}
                 aria-invalid={!!errors.price}
                 aria-describedby={errors.price ? 'product-price-error' : undefined}
               />
@@ -123,12 +124,12 @@ export default function ProductFormPage() {
               <Input
                 id="product-price-before"
                 type="number"
-                {...register('price_before_discount')}
+                {...register('price_before_discount', { valueAsNumber: true })}
               />
             </div>
             <div>
               <Label htmlFor="product-quantity">{t('form.quantity')}</Label>
-              <Input id="product-quantity" type="number" {...register('quantity')} />
+              <Input id="product-quantity" type="number" {...register('quantity', { valueAsNumber: true })} />
             </div>
             <div>
               <Label htmlFor="product-category">{t('form.category')}</Label>

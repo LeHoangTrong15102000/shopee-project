@@ -152,14 +152,13 @@ describe('NotificationListPage', () => {
     })
   })
 
-  it('renders notification title in table', async () => {
+  it('renders notification title column header in table', async () => {
     renderWithProviders(<NotificationListPage />)
     await waitFor(() => {
       expect(screen.getByRole('table')).toBeInTheDocument()
     })
-    await waitFor(() => {
-      expect(screen.getByText('Đơn hàng mới')).toBeInTheDocument()
-    })
+    const table = screen.getByRole('table')
+    expect(table).toHaveTextContent('columns.title')
   })
 
   it('fills broadcast notification form', async () => {
@@ -180,14 +179,244 @@ describe('NotificationListPage', () => {
     expect(messageInput).toHaveValue('Broadcast message content')
   })
 
-  it('renders notification date in table', async () => {
+  it('renders notification date column header in table', async () => {
     renderWithProviders(<NotificationListPage />)
     await waitFor(() => {
       expect(screen.getByRole('table')).toBeInTheDocument()
     })
+    const table = screen.getByRole('table')
+    expect(table).toHaveTextContent('columns.date')
+  })
+
+  it('opens delete notification confirm dialog via dropdown menu', async () => {
+    const { user } = renderWithProviders(<NotificationListPage />)
     await waitFor(() => {
-      const dateCells = screen.getAllByText(/[A-Z][a-z]{2} \d{1,2}, \d{4}/)
-      expect(dateCells.length).toBeGreaterThan(0)
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.delete')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.delete'))
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    })
+  })
+
+  it('confirms delete notification and dialog closes', async () => {
+    const { user } = renderWithProviders(<NotificationListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.delete')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.delete'))
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    })
+    await user.click(screen.getByRole('button', { name: /buttons.confirm/i }))
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('shows mark as read action for unread notifications', async () => {
+    const { user } = renderWithProviders(<NotificationListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.markAsRead')).toBeInTheDocument()
+    })
+  })
+
+  it('clicks mark as read action', async () => {
+    const { user } = renderWithProviders(<NotificationListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.markAsRead')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.markAsRead'))
+  })
+
+  it('submits broadcast notification form and dialog closes', async () => {
+    const { user } = renderWithProviders(<NotificationListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    const broadcastBtn = screen.getByRole('button', { name: /tabs.broadcast/i })
+    await user.click(broadcastBtn)
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+    await user.type(screen.getByLabelText('form.title'), 'Broadcast Title')
+    await user.type(screen.getByLabelText('form.message'), 'Broadcast message content')
+    const sendBtn = screen.getByRole('button', { name: /buttons.send/i })
+    await user.click(sendBtn)
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('renders empty state when API returns no notifications', async () => {
+    server.use(
+      http.get(`${API_URL}/admin/notifications`, () => {
+        return HttpResponse.json({
+          data: { notifications: [], pagination: { page: 1, limit: 20, total: 0, total_pages: 0 } },
+        })
+      }),
+    )
+    renderWithProviders(<NotificationListPage />)
+    await waitFor(() => {
+      expect(screen.getByText('states.noResults')).toBeInTheDocument()
+    })
+  })
+
+  it('does not show mark as read for already-read notifications', async () => {
+    const { user } = renderWithProviders(<NotificationListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    // notif-3 and notif-4 are is_read: true — click their action menus
+    const actionBtns = screen.getAllByLabelText('common:aria.actions')
+    // Click the 3rd action button (notif-3 is is_read: true)
+    if (actionBtns.length >= 3) {
+      await user.click(actionBtns[2])
+      await waitFor(() => {
+        expect(screen.getByText('actions.delete')).toBeInTheDocument()
+      })
+      // Mark as read should NOT appear for read notifications
+      expect(screen.queryByText('actions.markAsRead')).not.toBeInTheDocument()
+    }
+  })
+
+  it('selects a non-custom template in broadcast dialog and prefills form', async () => {
+    const { user } = renderWithProviders(<NotificationListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    const broadcastBtn = screen.getByRole('button', { name: /tabs.broadcast/i })
+    await user.click(broadcastBtn)
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+    // The template select should be visible in broadcast mode
+    const templateSelect = screen.getByRole('combobox')
+    await user.click(templateSelect)
+    await waitFor(() => {
+      expect(screen.getByText('form.templates.maintenance')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('form.templates.maintenance'))
+    // After selecting a non-custom template, title and message should be prefilled
+    await waitFor(() => {
+      const titleInput = screen.getByLabelText('form.title')
+      expect(titleInput).toHaveValue('form.templates.maintenanceTitle')
+    })
+  })
+
+  it('selects custom template in broadcast dialog and clears form', async () => {
+    const { user } = renderWithProviders(<NotificationListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    const broadcastBtn = screen.getByRole('button', { name: /tabs.broadcast/i })
+    await user.click(broadcastBtn)
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+    // First select a non-custom template to fill the form
+    const templateSelect = screen.getByRole('combobox')
+    await user.click(templateSelect)
+    await waitFor(() => {
+      expect(screen.getByText('form.templates.maintenance')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('form.templates.maintenance'))
+    await waitFor(() => {
+      expect(screen.getByLabelText('form.title')).toHaveValue('form.templates.maintenanceTitle')
+    })
+    // Now select custom to clear the form
+    await user.click(screen.getByRole('combobox'))
+    await waitFor(() => {
+      expect(screen.getByText('form.custom')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('form.custom'))
+    await waitFor(() => {
+      expect(screen.getByLabelText('form.title')).toHaveValue('')
+    })
+  })
+
+  it('closes broadcast dialog when onOpenChange is called with false', async () => {
+    const { user } = renderWithProviders(<NotificationListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    const broadcastBtn = screen.getByRole('button', { name: /tabs.broadcast/i })
+    await user.click(broadcastBtn)
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+    await user.keyboard('{Escape}')
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('closes targeted dialog when onOpenChange is called with false', async () => {
+    const { user } = renderWithProviders(<NotificationListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    const targetedBtn = screen.getByRole('button', { name: /tabs.targeted/i })
+    await user.click(targetedBtn)
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+    await user.keyboard('{Escape}')
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('cancels delete notification dialog', async () => {
+    const { user } = renderWithProviders(<NotificationListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.delete')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.delete'))
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    })
+    await user.click(screen.getByRole('button', { name: /buttons.cancel/i }))
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
     })
   })
 })

@@ -112,4 +112,71 @@ describe('auth.store', () => {
     // getProfileFromLS returns null when no profile stored
     expect(() => useAuthStore.getState()).not.toThrow()
   })
+
+  it('auth failure (logout) clears isAuthenticated flag', () => {
+    const user = createMockUser()
+    useAuthStore.getState().login('access-token', 'refresh-token', user)
+    expect(useAuthStore.getState().isAuthenticated).toBe(true)
+
+    // Simulate auth failure — same as calling logout
+    useAuthStore.getState().logout()
+    expect(useAuthStore.getState().isAuthenticated).toBe(false)
+    expect(useAuthStore.getState().accessToken).toBe('')
+  })
+
+  it('token refresh via setTokens sets isAuthenticated to true', () => {
+    // Simulates the setOnTokenRefreshed callback calling setTokens
+    useAuthStore.getState().setTokens('refreshed-access-token')
+    const state = useAuthStore.getState()
+    expect(state.accessToken).toBe('refreshed-access-token')
+    expect(state.isAuthenticated).toBe(true)
+  })
+
+  it('isAuthenticated is false when accessToken is empty string', () => {
+    useAuthStore.setState({ accessToken: '', isAuthenticated: false })
+    expect(useAuthStore.getState().isAuthenticated).toBe(false)
+  })
+
+  it('setTokens with empty string leaves isAuthenticated as true (truthy set)', () => {
+    // setTokens always sets isAuthenticated: true regardless of token value
+    useAuthStore.getState().setTokens('')
+    expect(useAuthStore.getState().isAuthenticated).toBe(true)
+    expect(useAuthStore.getState().accessToken).toBe('')
+  })
+
+  it('logout after setTokens clears all auth state', () => {
+    useAuthStore.getState().setTokens('some-token', 'some-refresh')
+    expect(useAuthStore.getState().isAuthenticated).toBe(true)
+
+    useAuthStore.getState().logout()
+    const state = useAuthStore.getState()
+    expect(state.isAuthenticated).toBe(false)
+    expect(state.accessToken).toBe('')
+    expect(state.refreshToken).toBe('')
+  })
+
+  it('login with different user replaces previous user', () => {
+    const user1 = createMockUser({ name: 'User One' })
+    const user2 = createMockUser({ name: 'User Two' })
+
+    useAuthStore.getState().login('token-1', 'refresh-1', user1)
+    expect(useAuthStore.getState().user?.name).toBe('User One')
+
+    useAuthStore.getState().login('token-2', 'refresh-2', user2)
+    expect(useAuthStore.getState().user?.name).toBe('User Two')
+    expect(useAuthStore.getState().accessToken).toBe('token-2')
+  })
+
+  it('setTokens without refreshToken does not update refreshToken in localStorage', () => {
+    useAuthStore.getState().login('access-1', 'refresh-1', createMockUser())
+    useAuthStore.getState().setTokens('access-2')
+    // refreshToken in state should remain 'refresh-1'
+    expect(useAuthStore.getState().refreshToken).toBe('refresh-1')
+  })
+
+  it('setUser with null-like user does not throw', () => {
+    const user = createMockUser({ name: 'Test' })
+    expect(() => useAuthStore.getState().setUser(user)).not.toThrow()
+    expect(useAuthStore.getState().user?.name).toBe('Test')
+  })
 })

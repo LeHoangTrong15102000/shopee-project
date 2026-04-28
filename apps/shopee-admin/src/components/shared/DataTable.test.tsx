@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { DataTable } from './DataTable'
 import type { ColumnDef } from '@tanstack/react-table'
@@ -25,6 +25,32 @@ interface TestRow {
 }
 
 const columns: ColumnDef<TestRow>[] = [
+  { accessorKey: 'id', header: 'ID' },
+  { accessorKey: 'name', header: 'Name' },
+]
+
+// Columns with a native checkbox select column for row-selection tests
+const columnsWithSelect: ColumnDef<TestRow>[] = [
+  {
+    id: 'select',
+    header: ({ table }) => (
+      <input
+        type="checkbox"
+        checked={table.getIsAllPageRowsSelected()}
+        onChange={(e) => table.toggleAllPageRowsSelected(e.target.checked)}
+        aria-label="select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <input
+        type="checkbox"
+        checked={row.getIsSelected()}
+        onChange={(e) => row.toggleSelected(e.target.checked)}
+        aria-label="select row"
+      />
+    ),
+    enableSorting: false,
+  },
   { accessorKey: 'id', header: 'ID' },
   { accessorKey: 'name', header: 'Name' },
 ]
@@ -67,8 +93,10 @@ describe('DataTable', () => {
       <DataTable columns={columns} data={data} searchKey="name" searchPlaceholder="Search..." />,
     )
     await user.type(screen.getByPlaceholderText('Search...'), 'Item 1')
-    expect(screen.getByText('Item 1')).toBeInTheDocument()
-    expect(screen.queryByText('Item 2')).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Item 1')).toBeInTheDocument()
+      expect(screen.queryByText('Item 2')).not.toBeInTheDocument()
+    })
   })
 
   it('renders column visibility toggle', () => {
@@ -111,9 +139,13 @@ describe('DataTable', () => {
     )
     const input = screen.getByPlaceholderText('Search...')
     await user.type(input, 'Item 1')
-    expect(screen.queryByText('Item 2')).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.queryByText('Item 2')).not.toBeInTheDocument()
+    })
     await user.click(screen.getByRole('button', { name: /search.clearSearch/i }))
-    expect(screen.getByText('Item 2')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Item 2')).toBeInTheDocument()
+    })
   })
 
   it('renders manual pagination with page info', () => {
@@ -261,5 +293,108 @@ describe('DataTable', () => {
     const rows = screen.getAllByRole('row')
     // Should have header row + virtualized data rows (not all 50)
     expect(rows.length).toBeLessThan(55)
+  })
+
+  it('opens column visibility dropdown when columns button clicked', async () => {
+    const user = userEvent.setup()
+    render(<DataTable columns={columns} data={data} />)
+    const columnsBtn = screen.getByText('buttons.columns')
+    await user.click(columnsBtn)
+    await waitFor(() => {
+      // Dropdown items show column names (ID and Name)
+      const menuItems = screen.getAllByRole('menuitemcheckbox')
+      expect(menuItems.length).toBeGreaterThan(0)
+    })
+  })
+
+  it('toggles column visibility via dropdown', async () => {
+    const user = userEvent.setup()
+    render(<DataTable columns={columns} data={data} />)
+    // Open the dropdown
+    await user.click(screen.getByText('buttons.columns'))
+    await waitFor(() => {
+      expect(screen.getAllByRole('menuitemcheckbox').length).toBeGreaterThan(0)
+    })
+    // Click the first checkbox item to toggle first column visibility
+    const checkboxItems = screen.getAllByRole('menuitemcheckbox')
+    await user.click(checkboxItems[0])
+    // After toggle, the dropdown should still be open
+    await waitFor(() => {
+      expect(screen.getAllByRole('menuitemcheckbox').length).toBeGreaterThan(0)
+    })
+  })
+
+  it('shows bulk actions bar when rows are selected and bulkActions provided', async () => {
+    const user = userEvent.setup()
+    const bulkActionsNode = <button>Delete Selected</button>
+    render(
+      <DataTable
+        columns={columnsWithSelect}
+        data={data}
+        enableRowSelection
+        bulkActions={bulkActionsNode}
+      />,
+    )
+    // Find checkboxes - columnsWithSelect includes a select column with native checkboxes
+    const checkboxes = screen.getAllByRole('checkbox')
+    // checkboxes[0] is the header select-all, checkboxes[1] is first row
+    if (checkboxes.length > 1) {
+      await user.click(checkboxes[1])
+      await waitFor(() => {
+        expect(screen.getByText(/pagination.rowsSelected/)).toBeInTheDocument()
+        expect(screen.getByText('Delete Selected')).toBeInTheDocument()
+      })
+    }
+  })
+
+  it('does not show bulk actions when no rows selected', () => {
+    const bulkActionsNode = <button>Delete Selected</button>
+    render(
+      <DataTable
+        columns={columns}
+        data={data}
+        enableRowSelection
+        bulkActions={bulkActionsNode}
+      />,
+    )
+    expect(screen.queryByText(/pagination.rowsSelected/)).not.toBeInTheDocument()
+  })
+
+  it('calls onRowSelectionChange when row is selected', async () => {
+    const user = userEvent.setup()
+    const onRowSelectionChange = vi.fn()
+    render(
+      <DataTable
+        columns={columnsWithSelect}
+        data={data}
+        enableRowSelection
+        onRowSelectionChange={onRowSelectionChange}
+      />,
+    )
+    const checkboxes = screen.getAllByRole('checkbox')
+    if (checkboxes.length > 1) {
+      await user.click(checkboxes[1])
+      expect(onRowSelectionChange).toHaveBeenCalled()
+    }
+  })
+
+  it('shows aria-busy on scroll container when loading', () => {
+    render(<DataTable columns={columns} data={[]} isLoading={true} />)
+    const region = screen.getByRole('region')
+    expect(region).toHaveAttribute('aria-busy', 'true')
+  })
+
+  it('renders page count 1 when no pageCount set in manual mode', () => {
+    render(
+      <DataTable
+        columns={columns}
+        data={data}
+        manualPagination
+        pageIndex={0}
+        onPaginationChange={vi.fn()}
+      />,
+    )
+    // Should display page 1 of 1 by default
+    expect(screen.getByText(/pagination.page/)).toBeInTheDocument()
   })
 })

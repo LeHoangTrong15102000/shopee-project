@@ -58,4 +58,64 @@ describe('UserDetailPage', () => {
     })
     expect(screen.getByText('detail.roles')).toBeInTheDocument()
   })
+
+  it('renders all profile fields after loading', async () => {
+    renderWithProviders(<UserDetailPage />)
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    expect(screen.getByText('detail.phone')).toBeInTheDocument()
+    expect(screen.getByText('detail.address')).toBeInTheDocument()
+    expect(screen.getByText('detail.dateOfBirth')).toBeInTheDocument()
+    expect(screen.getByText('detail.created')).toBeInTheDocument()
+  })
+
+  it('renders tabs for orders, reviews, and loyalty', async () => {
+    renderWithProviders(<UserDetailPage />)
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    expect(screen.getByRole('tab', { name: 'detail.orders' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'detail.reviews' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'detail.loyalty' })).toBeInTheDocument()
+  })
+
+  it('switches to reviews tab', async () => {
+    const { user } = renderWithProviders(<UserDetailPage />)
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    const reviewsTab = screen.getByRole('tab', { name: 'detail.reviews' })
+    await user.click(reviewsTab)
+    expect(reviewsTab).toHaveAttribute('aria-selected', 'true')
+  })
+
+  it('switches to loyalty tab', async () => {
+    const { user } = renderWithProviders(<UserDetailPage />)
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    const loyaltyTab = screen.getByRole('tab', { name: 'detail.loyalty' })
+    await user.click(loyaltyTab)
+    expect(loyaltyTab).toHaveAttribute('aria-selected', 'true')
+  })
+
+  it('navigates back to /users when back button clicked', async () => {
+    const { user } = renderWithProviders(<UserDetailPage />)
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    await user.click(screen.getByRole('button', { name: /detail.backToUsers/i }))
+    expect(mockNavigate).toHaveBeenCalledWith('/users')
+  })
+
+  it('renders orders tab table by default', async () => {
+    renderWithProviders(<UserDetailPage />)
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+  })
 })

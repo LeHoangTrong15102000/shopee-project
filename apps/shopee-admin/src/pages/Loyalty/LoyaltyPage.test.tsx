@@ -297,4 +297,135 @@ describe('LoyaltyPage', () => {
       expect(screen.getByRole('table')).toBeInTheDocument()
     })
   })
+
+  it('shows transactions error state when transactions API fails', async () => {
+    server.use(
+      http.get(`${API_URL}/admin/loyalty/transactions`, () => {
+        return HttpResponse.json({ message: 'Server error' }, { status: 500 })
+      }),
+    )
+    const { user } = renderWithProviders(<LoyaltyPage />)
+    await waitFor(() => {
+      expect(screen.getByText('tabs.transactions')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('tabs.transactions'))
+    await waitFor(() => {
+      expect(screen.getByText('transactionsError')).toBeInTheDocument()
+    })
+  })
+
+  it('renders transaction user email when user is an object', async () => {
+    server.use(
+      http.get(`${API_URL}/admin/loyalty/transactions`, () => {
+        return HttpResponse.json({
+          message: 'Thành công',
+          data: {
+            transactions: [
+              {
+                _id: 'tx-obj',
+                user: { _id: 'user-1', email: 'object@example.com' },
+                type: 'earn',
+                points: 100,
+                description: 'Test',
+                createdAt: '2024-01-01T00:00:00.000Z',
+              },
+            ],
+            pagination: { page: 1, limit: 10, total: 1 },
+          },
+        })
+      }),
+    )
+    const { user } = renderWithProviders(<LoyaltyPage />)
+    await waitFor(() => {
+      expect(screen.getByText('tabs.transactions')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('tabs.transactions'))
+    await waitFor(() => {
+      expect(screen.getByText('object@example.com')).toBeInTheDocument()
+    })
+  })
+
+  it('renders negative points in red and positive in green in transactions tab', async () => {
+    const { user } = renderWithProviders(<LoyaltyPage />)
+    await waitFor(() => {
+      expect(screen.getByText('tabs.transactions')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('tabs.transactions'))
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    // Both positive (+100) and negative (-500) are in mock data
+    await waitFor(() => {
+      const cells = screen.getAllByRole('cell')
+      const hasPositive = cells.some((c) => c.textContent?.includes('+100'))
+      const hasNegative = cells.some((c) => c.textContent?.includes('-500'))
+      expect(hasPositive).toBe(true)
+      expect(hasNegative).toBe(true)
+    })
+  })
+
+  it('saves edited reward and closes dialog', async () => {
+    const { user } = renderWithProviders(<LoyaltyPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByRole('button', { name: /aria.editItem/i }).length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByRole('button', { name: /aria.editItem/i })[0])
+    await waitFor(() => {
+      expect(screen.getByText('rewards.editReward')).toBeInTheDocument()
+    })
+    // Update name
+    const nameInput = screen.getByLabelText('rewards.name')
+    await user.clear(nameInput)
+    await user.type(nameInput, 'Updated Reward')
+    const saveBtn = screen.getByRole('button', { name: /buttons.save/i })
+    await user.click(saveBtn)
+    await waitFor(() => {
+      expect(screen.queryByText('rewards.editReward')).not.toBeInTheDocument()
+    })
+  })
+
+  it('confirms delete reward and dialog closes', async () => {
+    const { user } = renderWithProviders(<LoyaltyPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByRole('button', { name: /aria.deleteItem/i }).length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByRole('button', { name: /aria.deleteItem/i })[0])
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    })
+    await user.click(screen.getByRole('button', { name: /buttons.confirm/i }))
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('fills and submits adjust points form', async () => {
+    const { user } = renderWithProviders(<LoyaltyPage />)
+    await waitFor(() => {
+      expect(screen.getByText('tabs.stats')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('tabs.stats'))
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /actions.adjustPoints/i })).toBeInTheDocument()
+    })
+    await user.click(screen.getByRole('button', { name: /actions.adjustPoints/i }))
+    await waitFor(() => {
+      expect(screen.getByLabelText('actions.userId')).toBeInTheDocument()
+    })
+    await user.type(screen.getByLabelText('actions.userId'), 'user-abc')
+    await user.clear(screen.getByLabelText('actions.pointsAmount'))
+    await user.type(screen.getByLabelText('actions.pointsAmount'), '200')
+    await user.type(screen.getByLabelText('rewards.description'), 'Adjustment reason')
+    const adjustBtn = screen.getByRole('button', { name: /buttons.adjust/i })
+    await user.click(adjustBtn)
+    await waitFor(() => {
+      expect(screen.queryByLabelText('actions.userId')).not.toBeInTheDocument()
+    })
+  })
 })

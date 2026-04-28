@@ -1,6 +1,9 @@
 import { screen, waitFor } from '@testing-library/react'
 import { renderWithProviders } from 'src/test-utils'
 import QAPage from './QAPage'
+import { server } from '../../../vitest.setup'
+import { http, HttpResponse } from 'msw'
+import { API_URL } from 'src/msw/msw-utils'
 
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
 const mockNavigate = vi.fn()
@@ -153,6 +156,155 @@ describe('QAPage', () => {
       await user.click(trigger)
       await waitFor(() => {
         expect(screen.getByText('noAnswers')).toBeInTheDocument()
+      })
+    }
+  })
+
+  it('shows error state on API failure', async () => {
+    server.use(
+      http.get(`${API_URL}/admin/qa/questions`, () => {
+        return HttpResponse.json({ message: 'Server error' }, { status: 500 })
+      }),
+    )
+    renderWithProviders(<QAPage />)
+    await waitFor(() => {
+      expect(screen.getByText('error')).toBeInTheDocument()
+    })
+  })
+
+  it('confirms delete question and dialog closes', async () => {
+    const { user } = renderWithProviders(<QAPage />)
+    await waitFor(() => {
+      expect(screen.getAllByRole('button', { name: /aria.deleteItem/i }).length).toBeGreaterThan(0)
+    })
+    const deleteButtons = screen.getAllByRole('button', { name: /aria.deleteItem/i })
+    await user.click(deleteButtons[0])
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+      expect(screen.getByText('toast.deleteQuestionTitle')).toBeInTheDocument()
+    })
+    await user.click(screen.getByRole('button', { name: /buttons.confirm/i }))
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('opens delete answer dialog when answer delete button clicked', async () => {
+    const { user } = renderWithProviders(<QAPage />)
+    await waitFor(() => {
+      expect(screen.getByText('Sản phẩm có bảo hành không?')).toBeInTheDocument()
+    })
+    const trigger = screen.getByText('Sản phẩm có bảo hành không?').closest('button')
+    if (trigger) {
+      await user.click(trigger)
+      await waitFor(() => {
+        expect(screen.getByText('Có bảo hành 12 tháng')).toBeInTheDocument()
+      })
+      const answerDeleteBtns = screen.getAllByRole('button', { name: /aria.deleteItem/i })
+      // After expanding qa-1: idx 0 = qa-1 question delete, idx 1 = qa-1 answer delete,
+      // idx 2 = qa-2 question delete, idx 3 = qa-3 question delete
+      await user.click(answerDeleteBtns[1])
+      await waitFor(() => {
+        expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+        expect(screen.getByText('toast.deleteAnswerTitle')).toBeInTheDocument()
+      })
+    }
+  })
+
+  it('confirms delete answer and dialog closes', async () => {
+    const { user } = renderWithProviders(<QAPage />)
+    await waitFor(() => {
+      expect(screen.getByText('Sản phẩm có bảo hành không?')).toBeInTheDocument()
+    })
+    const trigger = screen.getByText('Sản phẩm có bảo hành không?').closest('button')
+    if (trigger) {
+      await user.click(trigger)
+      await waitFor(() => {
+        expect(screen.getByText('Có bảo hành 12 tháng')).toBeInTheDocument()
+      })
+      const answerDeleteBtns = screen.getAllByRole('button', { name: /aria.deleteItem/i })
+      // idx 1 is the answer delete button (idx 0 is the question delete for qa-1)
+      await user.click(answerDeleteBtns[1])
+      await waitFor(() => {
+        expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+      })
+      await user.click(screen.getByRole('button', { name: /buttons.confirm/i }))
+      await waitFor(() => {
+        expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+      })
+    }
+  })
+
+  it('renders question content text when expanded', async () => {
+    const { user } = renderWithProviders(<QAPage />)
+    await waitFor(() => {
+      expect(screen.getByText('Sản phẩm có bảo hành không?')).toBeInTheDocument()
+    })
+    const trigger = screen.getByText('Sản phẩm có bảo hành không?').closest('button')
+    if (trigger) {
+      await user.click(trigger)
+      await waitFor(() => {
+        expect(screen.getByText('Có bảo hành 12 tháng')).toBeInTheDocument()
+      })
+    }
+  })
+
+  it('collapses question when clicking trigger again', async () => {
+    const { user } = renderWithProviders(<QAPage />)
+    await waitFor(() => {
+      expect(screen.getByText('Sản phẩm có bảo hành không?')).toBeInTheDocument()
+    })
+    const trigger = screen.getByText('Sản phẩm có bảo hành không?').closest('button')
+    if (trigger) {
+      await user.click(trigger)
+      await waitFor(() => {
+        expect(screen.getByText('Có bảo hành 12 tháng')).toBeInTheDocument()
+      })
+      await user.click(trigger)
+      await waitFor(() => {
+        expect(screen.queryByText('Có bảo hành 12 tháng')).not.toBeInTheDocument()
+      })
+    }
+  })
+
+  it('closes question delete dialog via cancel button (onOpenChange false branch)', async () => {
+    const { user } = renderWithProviders(<QAPage />)
+    await waitFor(() => {
+      expect(screen.getAllByRole('button', { name: /aria.deleteItem/i }).length).toBeGreaterThan(0)
+    })
+    const deleteButtons = screen.getAllByRole('button', { name: /aria.deleteItem/i })
+    await user.click(deleteButtons[0])
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    })
+    // Click cancel to trigger onOpenChange(false) -> setDeleteQ(null)
+    await user.click(screen.getByRole('button', { name: /buttons.cancel/i }))
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('closes answer delete dialog via cancel button (onOpenChange false branch)', async () => {
+    const { user } = renderWithProviders(<QAPage />)
+    await waitFor(() => {
+      expect(screen.getByText('Sản phẩm có bảo hành không?')).toBeInTheDocument()
+    })
+    const trigger = screen.getByText('Sản phẩm có bảo hành không?').closest('button')
+    if (trigger) {
+      await user.click(trigger)
+      await waitFor(() => {
+        expect(screen.getByText('Có bảo hành 12 tháng')).toBeInTheDocument()
+      })
+      const answerDeleteBtns = screen.getAllByRole('button', { name: /aria.deleteItem/i })
+      await user.click(answerDeleteBtns[1])
+      await waitFor(() => {
+        expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+        expect(screen.getByText('toast.deleteAnswerTitle')).toBeInTheDocument()
+      })
+      // Click cancel to trigger onOpenChange(false) -> setDeleteA(null)
+      await user.click(screen.getByRole('button', { name: /buttons.cancel/i }))
+      await waitFor(() => {
+        expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
       })
     }
   })

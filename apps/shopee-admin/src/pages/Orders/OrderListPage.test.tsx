@@ -208,4 +208,150 @@ describe('OrderListPage', () => {
       expect(dateCells.length).toBeGreaterThan(0)
     })
   })
+
+  it('navigates to order detail when view button clicked', async () => {
+    const { user } = renderWithProviders(<OrderListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+    })
+    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
+    await waitFor(() => {
+      expect(screen.getByText('actions.viewDetails')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('actions.viewDetails'))
+    expect(mockNavigate).toHaveBeenCalledWith(expect.stringContaining('/orders/'))
+  })
+
+  it('shows clear filters button after setting date filter', async () => {
+    const { user } = renderWithProviders(<OrderListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    const filterBtn = screen.getByRole('button', { name: /buttons.filters/i })
+    await user.click(filterBtn)
+    await waitFor(() => {
+      expect(screen.getByLabelText('filters.startDate')).toBeInTheDocument()
+    })
+    await user.type(screen.getByLabelText('filters.startDate'), '2024-01-01')
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /buttons.clearFilters/i })).toBeInTheDocument()
+    })
+  })
+
+  it('renders empty state when API returns no orders', async () => {
+    server.use(
+      http.get(`${API_URL}/admin/orders`, () => {
+        return HttpResponse.json({
+          data: { orders: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } },
+        })
+      }),
+    )
+    renderWithProviders(<OrderListPage />)
+    await waitFor(() => {
+      expect(screen.getByText('states.noResults')).toBeInTheDocument()
+    })
+  })
+
+  it('renders customer column header', async () => {
+    renderWithProviders(<OrderListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    const table = screen.getByRole('table')
+    expect(table).toHaveTextContent('columns.customer')
+  })
+
+  it('renders customer name from mock data', async () => {
+    renderWithProviders(<OrderListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByText(/Nguyễn Văn A/).length).toBeGreaterThan(0)
+    })
+  })
+
+  it('clears filters when clear filters button is clicked', async () => {
+    const { user } = renderWithProviders(<OrderListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    const filterBtn = screen.getByRole('button', { name: /buttons.filters/i })
+    await user.click(filterBtn)
+    await waitFor(() => {
+      expect(screen.getByLabelText('filters.startDate')).toBeInTheDocument()
+    })
+    await user.type(screen.getByLabelText('filters.startDate'), '2024-01-01')
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /buttons.clearFilters/i })).toBeInTheDocument()
+    })
+    await user.click(screen.getByRole('button', { name: /buttons.clearFilters/i }))
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: /buttons.clearFilters/i })).not.toBeInTheDocument()
+    })
+  })
+
+  it('filters orders by end date input', async () => {
+    const { user } = renderWithProviders(<OrderListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    const filterBtn = screen.getByRole('button', { name: /buttons.filters/i })
+    await user.click(filterBtn)
+    await waitFor(() => {
+      expect(screen.getByLabelText('filters.endDate')).toBeInTheDocument()
+    })
+    const endDateInput = screen.getByLabelText('filters.endDate')
+    await user.type(endDateInput, '2024-01-01')
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /buttons.clearFilters/i })).toBeInTheDocument()
+    })
+    expect(endDateInput).toHaveValue('2024-01-01')
+  })
+
+  it('selects all rows via header checkbox and shows bulk action controls', async () => {
+    const { user } = renderWithProviders(<OrderListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getAllByRole('row').length).toBeGreaterThan(1)
+    })
+    const selectAllCheckbox = screen.getByLabelText('common:aria.selectAll')
+    await user.click(selectAllCheckbox)
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /buttons.apply/i })).toBeInTheDocument()
+    })
+  })
+
+  it('renders filter payment method label in filter panel', async () => {
+    const { user } = renderWithProviders(<OrderListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    const filterBtn = screen.getByRole('button', { name: /buttons.filters/i })
+    await user.click(filterBtn)
+    await waitFor(() => {
+      expect(screen.getByLabelText('filters.paymentMethod')).toBeInTheDocument()
+    })
+  })
+
+  it('toggles filter panel closed when filter button clicked again', async () => {
+    const { user } = renderWithProviders(<OrderListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    const filterBtn = screen.getByRole('button', { name: /buttons.filters/i })
+    await user.click(filterBtn)
+    await waitFor(() => {
+      expect(screen.getByLabelText('filters.startDate')).toBeInTheDocument()
+    })
+    await user.click(filterBtn)
+    await waitFor(() => {
+      expect(screen.queryByLabelText('filters.startDate')).not.toBeInTheDocument()
+    })
+  })
 })

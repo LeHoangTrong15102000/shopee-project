@@ -262,4 +262,128 @@ describe('InventoryPage', () => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     })
   })
+
+  it('shows error state on out-of-stock tab when out-of-stock API fails', async () => {
+    server.use(
+      http.get(`${API_URL}/admin/inventory/out-of-stock`, () => {
+        return HttpResponse.json({ message: 'Server error' }, { status: 500 })
+      }),
+    )
+    const { user } = renderWithProviders(<InventoryPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('tablist')).toBeInTheDocument()
+    })
+    const outOfStockTab = screen.getByRole('tab', { name: /outOfStockCount/i })
+    await user.click(outOfStockTab)
+    await waitFor(() => {
+      expect(screen.getByText('outOfStockError')).toBeInTheDocument()
+    })
+  })
+
+  it('renders out-of-stock product data rows after switching tab', async () => {
+    const { user } = renderWithProviders(<InventoryPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('tablist')).toBeInTheDocument()
+    })
+    const outOfStockTab = screen.getByRole('tab', { name: /outOfStockCount/i })
+    await user.click(outOfStockTab)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByText('MacBook Pro M3')).toBeInTheDocument()
+    })
+    expect(screen.getByText('iPad Air')).toBeInTheDocument()
+  })
+
+  it('applies text-destructive class to zero-quantity stock cells in out-of-stock tab', async () => {
+    const { user } = renderWithProviders(<InventoryPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('tablist')).toBeInTheDocument()
+    })
+    const outOfStockTab = screen.getByRole('tab', { name: /outOfStockCount/i })
+    await user.click(outOfStockTab)
+    await waitFor(() => {
+      expect(screen.getByText('MacBook Pro M3')).toBeInTheDocument()
+    })
+    const cells = screen.getAllByRole('cell')
+    const destructiveCells = cells.filter((cell) =>
+      cell.firstElementChild?.classList.contains('text-destructive'),
+    )
+    expect(destructiveCells.length).toBeGreaterThan(0)
+  })
+
+  it('renders product images with alt text in the table', async () => {
+    renderWithProviders(<InventoryPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByText('iPhone 15 Pro')).toBeInTheDocument()
+    })
+    const images = screen.getAllByRole('img')
+    expect(images.length).toBeGreaterThan(0)
+    const altTexts = images.map((img) => img.getAttribute('alt'))
+    expect(altTexts).toContain('iPhone 15 Pro')
+  })
+
+  it('shows dialog title containing product name when update dialog opens', async () => {
+    const { user } = renderWithProviders(<InventoryPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(
+        screen.getAllByRole('button', { name: /actions.updateStock/i }).length,
+      ).toBeGreaterThan(0)
+    })
+    const updateButtons = screen.getAllByRole('button', { name: /actions.updateStock/i })
+    await user.click(updateButtons[0])
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+    const dialogTitle = screen.getByRole('heading', { level: 2 })
+    expect(dialogTitle.textContent).toContain('iPhone 15 Pro')
+  })
+
+  it('bulk update flow: select rows, open bulk dialog, fill quantity and submit', async () => {
+    const { user } = renderWithProviders(<InventoryPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByText('iPhone 15 Pro')).toBeInTheDocument()
+    })
+
+    // Select the first data row via its row-selection checkbox
+    const rowCheckboxes = screen.getAllByRole('checkbox', {
+      name: /common:aria.selectRow/i,
+    })
+    expect(rowCheckboxes.length).toBeGreaterThan(0)
+    await user.click(rowCheckboxes[0])
+
+    // Bulk update button should now appear
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /actions.bulkUpdate/i })).toBeInTheDocument()
+    })
+
+    // Click the bulk update button to open the dialog
+    await user.click(screen.getByRole('button', { name: /actions.bulkUpdate/i }))
+    await waitFor(() => {
+      expect(screen.getByLabelText('actions.setQuantity')).toBeInTheDocument()
+    })
+
+    // Fill in the bulk quantity
+    const bulkInput = screen.getByLabelText('actions.setQuantity')
+    await user.clear(bulkInput)
+    await user.type(bulkInput, '20')
+    expect(bulkInput).toHaveValue(20)
+
+    // Submit the bulk update
+    const updateAllBtn = screen.getByRole('button', { name: /actions.updateAll/i })
+    await user.click(updateAllBtn)
+    await waitFor(() => {
+      expect(screen.queryByLabelText('actions.setQuantity')).not.toBeInTheDocument()
+    })
+  })
 })

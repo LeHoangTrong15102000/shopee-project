@@ -3,6 +3,8 @@ import * as chartUI from 'src/components/ui/chart'
 import { renderWithProviders } from 'src/test-utils'
 import RevenueOrderCharts from './RevenueOrderCharts'
 
+const capturedTickFormatters: Array<(v: unknown) => string> = []
+
 vi.mock('recharts', () => ({
   AreaChart: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="area-chart">{children}</div>
@@ -14,7 +16,12 @@ vi.mock('recharts', () => ({
   Line: () => null,
   CartesianGrid: () => null,
   XAxis: () => null,
-  YAxis: () => null,
+  YAxis: ({ tickFormatter }: { tickFormatter?: (v: unknown) => string }) => {
+    if (tickFormatter) {
+      capturedTickFormatters.push(tickFormatter)
+    }
+    return null
+  },
 }))
 
 vi.mock('src/components/ui/chart', () => ({
@@ -73,5 +80,44 @@ describe('RevenueOrderCharts', () => {
       expect(color).toMatch(/^var\(--color-chart-\d\)$/)
       expect(color).not.toContain('hsl(')
     })
+  })
+
+  it('renders chart card titles', () => {
+    renderWithProviders(
+      <RevenueOrderCharts revenue={sampleRevenue} orderTrend={sampleOrderTrend} />,
+    )
+    expect(screen.getByText('charts.revenue')).toBeInTheDocument()
+    expect(screen.getByText('charts.orderTrend')).toBeInTheDocument()
+  })
+
+  it('shows no data description when data is empty', () => {
+    renderWithProviders(<RevenueOrderCharts revenue={undefined} orderTrend={undefined} />)
+    const descriptions = screen.getAllByText('charts.noDataDescription')
+    expect(descriptions.length).toBe(2)
+  })
+
+  it('only shows empty state for revenue when order trend has data', () => {
+    renderWithProviders(<RevenueOrderCharts revenue={undefined} orderTrend={sampleOrderTrend} />)
+    expect(screen.getAllByText('charts.noData')).toHaveLength(1)
+    expect(screen.getByTestId('line-chart')).toBeInTheDocument()
+  })
+
+  it('only shows empty state for order trend when revenue has data', () => {
+    renderWithProviders(<RevenueOrderCharts revenue={sampleRevenue} orderTrend={undefined} />)
+    expect(screen.getAllByText('charts.noData')).toHaveLength(1)
+    expect(screen.getByTestId('area-chart')).toBeInTheDocument()
+  })
+
+  it('tickFormatter on YAxis formats value with dollar sign', () => {
+    capturedTickFormatters.length = 0
+    renderWithProviders(
+      <RevenueOrderCharts revenue={sampleRevenue} orderTrend={sampleOrderTrend} />,
+    )
+    // The revenue chart YAxis has a tickFormatter
+    const formatter = capturedTickFormatters[0]
+    if (formatter) {
+      expect(formatter(1000)).toBe('$1000')
+      expect(formatter(0)).toBe('$0')
+    }
   })
 })

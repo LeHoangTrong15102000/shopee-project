@@ -1,6 +1,9 @@
 import { screen, waitFor } from '@testing-library/react'
 import { renderWithProviders } from 'src/test-utils'
 import SettingsPage from './SettingsPage'
+import { server } from '../../../vitest.setup'
+import { http, HttpResponse } from 'msw'
+import { API_URL } from 'src/msw/msw-utils'
 
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
 const mockNavigate = vi.fn()
@@ -145,5 +148,144 @@ describe('SettingsPage', () => {
     await user.type(screen.getByLabelText('password.confirmPassword'), 'newpass123')
     const changeBtn = screen.getByRole('button', { name: /password.change/i })
     await user.click(changeBtn)
+  })
+
+  it('shows error state when profile API fails', async () => {
+    server.use(
+      http.get(`${API_URL}/me`, () => {
+        return HttpResponse.json({ message: 'Server error' }, { status: 500 })
+      }),
+    )
+    renderWithProviders(<SettingsPage />)
+    await waitFor(() => {
+      expect(screen.getByText('error')).toBeInTheDocument()
+    })
+  })
+
+  it('shows error toast when profile update fails', async () => {
+    server.use(
+      http.put(`${API_URL}/me`, () => {
+        return HttpResponse.json({ message: 'Update failed' }, { status: 500 })
+      }),
+    )
+    const { user } = renderWithProviders(<SettingsPage />)
+    await waitFor(() => {
+      expect(screen.getByLabelText('profile.name')).toBeInTheDocument()
+    })
+    const nameInput = screen.getByLabelText('profile.name')
+    await user.clear(nameInput)
+    await user.type(nameInput, 'Test User')
+    const saveButton = screen.getByRole('button', { name: /profile.save/i })
+    await user.click(saveButton)
+    await waitFor(() => {
+      expect(saveButton).toBeInTheDocument()
+    })
+  })
+
+  it('shows error toast when password change fails', async () => {
+    server.use(
+      http.put(`${API_URL}/me`, () => {
+        return HttpResponse.json({ message: 'Password change failed' }, { status: 500 })
+      }),
+    )
+    const { user } = renderWithProviders(<SettingsPage />)
+    await waitFor(() => {
+      expect(screen.getByText('tabs.changePassword')).toBeInTheDocument()
+    })
+    await user.click(screen.getByRole('tab', { name: /tabs.changePassword/i }))
+    await waitFor(() => {
+      expect(screen.getByLabelText('password.currentPassword')).toBeInTheDocument()
+    })
+    await user.type(screen.getByLabelText('password.currentPassword'), 'oldpass123')
+    await user.type(screen.getByLabelText('password.newPassword'), 'newpass123')
+    await user.type(screen.getByLabelText('password.confirmPassword'), 'newpass123')
+    const changeBtn = screen.getByRole('button', { name: /password.change/i })
+    await user.click(changeBtn)
+    await waitFor(() => {
+      expect(changeBtn).toBeInTheDocument()
+    })
+  })
+
+  it('shows profile name validation error when name is cleared and form submitted', async () => {
+    const { user } = renderWithProviders(<SettingsPage />)
+    await waitFor(() => {
+      expect(screen.getByLabelText('profile.name')).toBeInTheDocument()
+    })
+    const nameInput = screen.getByLabelText('profile.name')
+    await user.clear(nameInput)
+    const saveButton = screen.getByRole('button', { name: /profile.save/i })
+    await user.click(saveButton)
+    await waitFor(() => {
+      expect(screen.getByText('Name is required')).toBeInTheDocument()
+    })
+  })
+
+  it('shows avatar URL validation error when invalid URL is entered', async () => {
+    const { user } = renderWithProviders(<SettingsPage />)
+    await waitFor(() => {
+      expect(screen.getByLabelText('profile.avatarUrl')).toBeInTheDocument()
+    })
+    const avatarInput = screen.getByLabelText('profile.avatarUrl')
+    await user.clear(avatarInput)
+    await user.type(avatarInput, 'not-a-valid-url')
+    const saveButton = screen.getByRole('button', { name: /profile.save/i })
+    await user.click(saveButton)
+    await waitFor(() => {
+      expect(screen.getByText('Must be a valid URL')).toBeInTheDocument()
+    })
+  })
+
+  it('shows password validation errors when password form submitted empty', async () => {
+    const { user } = renderWithProviders(<SettingsPage />)
+    await waitFor(() => {
+      expect(screen.getByText('tabs.changePassword')).toBeInTheDocument()
+    })
+    await user.click(screen.getByRole('tab', { name: /tabs.changePassword/i }))
+    await waitFor(() => {
+      expect(screen.getByLabelText('password.currentPassword')).toBeInTheDocument()
+    })
+    const changeBtn = screen.getByRole('button', { name: /password.change/i })
+    await user.click(changeBtn)
+    await waitFor(() => {
+      expect(screen.getByText('Current password is required')).toBeInTheDocument()
+    })
+  })
+
+  it('shows new password too short validation error', async () => {
+    const { user } = renderWithProviders(<SettingsPage />)
+    await waitFor(() => {
+      expect(screen.getByText('tabs.changePassword')).toBeInTheDocument()
+    })
+    await user.click(screen.getByRole('tab', { name: /tabs.changePassword/i }))
+    await waitFor(() => {
+      expect(screen.getByLabelText('password.currentPassword')).toBeInTheDocument()
+    })
+    await user.type(screen.getByLabelText('password.currentPassword'), 'oldpass123')
+    await user.type(screen.getByLabelText('password.newPassword'), 'abc')
+    await user.type(screen.getByLabelText('password.confirmPassword'), 'abc')
+    const changeBtn = screen.getByRole('button', { name: /password.change/i })
+    await user.click(changeBtn)
+    await waitFor(() => {
+      expect(screen.getByText('New password must be at least 6 characters')).toBeInTheDocument()
+    })
+  })
+
+  it('shows confirm password mismatch validation error', async () => {
+    const { user } = renderWithProviders(<SettingsPage />)
+    await waitFor(() => {
+      expect(screen.getByText('tabs.changePassword')).toBeInTheDocument()
+    })
+    await user.click(screen.getByRole('tab', { name: /tabs.changePassword/i }))
+    await waitFor(() => {
+      expect(screen.getByLabelText('password.currentPassword')).toBeInTheDocument()
+    })
+    await user.type(screen.getByLabelText('password.currentPassword'), 'oldpass123')
+    await user.type(screen.getByLabelText('password.newPassword'), 'newpass123')
+    await user.type(screen.getByLabelText('password.confirmPassword'), 'differentpass')
+    const changeBtn = screen.getByRole('button', { name: /password.change/i })
+    await user.click(changeBtn)
+    await waitFor(() => {
+      expect(screen.getByText('Passwords do not match')).toBeInTheDocument()
+    })
   })
 })

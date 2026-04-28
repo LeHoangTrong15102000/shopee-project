@@ -119,14 +119,12 @@ describe('CategoryListPage', () => {
   it('renders edit and delete buttons in table rows', async () => {
     renderWithProviders(<CategoryListPage />)
     await waitFor(() => {
-      expect(screen.getByRole('table')).toBeInTheDocument()
+      expect(screen.getByText('Điện thoại')).toBeInTheDocument()
     })
-    await waitFor(() => {
-      const editButtons = screen.getAllByRole('button', { name: /aria.editItem/i })
-      const deleteButtons = screen.getAllByRole('button', { name: /aria.deleteItem/i })
-      expect(editButtons.length).toBeGreaterThan(0)
-      expect(deleteButtons.length).toBeGreaterThan(0)
-    })
+    const editButtons = screen.getAllByRole('button', { name: /aria.editItem/i })
+    const deleteButtons = screen.getAllByRole('button', { name: /aria.deleteItem/i })
+    expect(editButtons.length).toBeGreaterThan(0)
+    expect(deleteButtons.length).toBeGreaterThan(0)
   })
 
   it('renders column headers', async () => {
@@ -141,14 +139,12 @@ describe('CategoryListPage', () => {
   it('renders edit and delete action buttons in rows', async () => {
     renderWithProviders(<CategoryListPage />)
     await waitFor(() => {
-      expect(screen.getByRole('table')).toBeInTheDocument()
+      expect(screen.getByText('Điện thoại')).toBeInTheDocument()
     })
-    await waitFor(() => {
-      const editButtons = screen.getAllByRole('button', { name: /aria.editItem/i })
-      const deleteButtons = screen.getAllByRole('button', { name: /aria.deleteItem/i })
-      expect(editButtons.length).toBeGreaterThan(0)
-      expect(deleteButtons.length).toBeGreaterThan(0)
-    })
+    const editButtons = screen.getAllByRole('button', { name: /aria.editItem/i })
+    const deleteButtons = screen.getAllByRole('button', { name: /aria.deleteItem/i })
+    expect(editButtons.length).toBeGreaterThan(0)
+    expect(deleteButtons.length).toBeGreaterThan(0)
   })
 
   it('submits create category form', async () => {
@@ -173,10 +169,7 @@ describe('CategoryListPage', () => {
   it('clicks edit button opens edit dialog', async () => {
     const { user } = renderWithProviders(<CategoryListPage />)
     await waitFor(() => {
-      expect(screen.getByRole('table')).toBeInTheDocument()
-    })
-    await waitFor(() => {
-      expect(screen.getAllByRole('button', { name: /aria.editItem/i }).length).toBeGreaterThan(0)
+      expect(screen.getByText('Điện thoại')).toBeInTheDocument()
     })
     const editButtons = screen.getAllByRole('button', { name: /aria.editItem/i })
     await user.click(editButtons[0])
@@ -189,15 +182,129 @@ describe('CategoryListPage', () => {
   it('clicks delete button opens confirm dialog', async () => {
     const { user } = renderWithProviders(<CategoryListPage />)
     await waitFor(() => {
-      expect(screen.getByRole('table')).toBeInTheDocument()
-    })
-    await waitFor(() => {
-      expect(screen.getAllByRole('button', { name: /aria.deleteItem/i }).length).toBeGreaterThan(0)
+      expect(screen.getByText('Điện thoại')).toBeInTheDocument()
     })
     const deleteButtons = screen.getAllByRole('button', { name: /aria.deleteItem/i })
     await user.click(deleteButtons[0])
     await waitFor(() => {
       expect(screen.getByText('toast.deleteTitle')).toBeInTheDocument()
     })
+  })
+
+  it('confirms delete category and dialog closes', async () => {
+    const { user } = renderWithProviders(<CategoryListPage />)
+    await waitFor(() => {
+      expect(screen.getByText('Điện thoại')).toBeInTheDocument()
+    })
+    const deleteButtons = screen.getAllByRole('button', { name: /aria.deleteItem/i })
+    await user.click(deleteButtons[0])
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    })
+    await user.click(screen.getByRole('button', { name: /buttons.confirm/i }))
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('prefills edit dialog with category name', async () => {
+    const { user } = renderWithProviders(<CategoryListPage />)
+    await waitFor(() => {
+      expect(screen.getByText('Điện thoại')).toBeInTheDocument()
+    })
+    const editButtons = screen.getAllByRole('button', { name: /aria.editItem/i })
+    await user.click(editButtons[0])
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+    const nameInput = screen.getByLabelText('form.name')
+    expect(nameInput).toHaveValue('Điện thoại')
+  })
+
+  it('submits edit form and dialog closes', async () => {
+    const { user } = renderWithProviders(<CategoryListPage />)
+    await waitFor(() => {
+      expect(screen.getByText('Điện thoại')).toBeInTheDocument()
+    })
+    const editButtons = screen.getAllByRole('button', { name: /aria.editItem/i })
+    await user.click(editButtons[0])
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+    // The edit dialog uses buttons.save (not buttons.update)
+    const saveBtn = screen.getByRole('button', { name: /buttons.save/i })
+    await user.click(saveBtn)
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('renders empty state when API returns no categories', async () => {
+    server.use(
+      http.get(`${API_URL}/admin/categories`, () => {
+        return HttpResponse.json({
+          data: { categories: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } },
+        })
+      }),
+    )
+    renderWithProviders(<CategoryListPage />)
+    await waitFor(() => {
+      expect(screen.getByText('states.noResults')).toBeInTheDocument()
+    })
+  })
+
+  it('renders actual category name Điện thoại from mock data', async () => {
+    renderWithProviders(<CategoryListPage />)
+    await waitFor(() => {
+      expect(screen.getByText('Điện thoại')).toBeInTheDocument()
+    })
+  })
+
+  it('closes edit dialog when onOpenChange is called with false', async () => {
+    const { user } = renderWithProviders(<CategoryListPage />)
+    await waitFor(() => {
+      expect(screen.getByText('Điện thoại')).toBeInTheDocument()
+    })
+    const editButtons = screen.getAllByRole('button', { name: /aria.editItem/i })
+    await user.click(editButtons[0])
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+    // Press Escape to close dialog — triggers onOpenChange(false)
+    await user.keyboard('{Escape}')
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('closes delete confirm dialog when cancelled', async () => {
+    const { user } = renderWithProviders(<CategoryListPage />)
+    await waitFor(() => {
+      expect(screen.getByText('Điện thoại')).toBeInTheDocument()
+    })
+    const deleteButtons = screen.getAllByRole('button', { name: /aria.deleteItem/i })
+    await user.click(deleteButtons[0])
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    })
+    // Cancel the delete
+    await user.click(screen.getByRole('button', { name: /buttons.cancel/i }))
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('create button is disabled when name is empty', async () => {
+    const { user } = renderWithProviders(<CategoryListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    const addBtn = screen.getByRole('button', { name: /actions.addCategory/i })
+    await user.click(addBtn)
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+    const createBtn = screen.getByRole('button', { name: /buttons.create/i })
+    expect(createBtn).toBeDisabled()
   })
 })

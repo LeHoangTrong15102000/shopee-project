@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       react({
         babel: {
-          plugins: [['babel-plugin-react-compiler', {}]],
+          plugins: isTest ? [] : [['babel-plugin-react-compiler', {}]],
         },
       }),
       ...(!isTest
@@ -113,12 +113,13 @@ export default defineConfig(({ mode }) => {
             'src/locales/**',
             'src/i18n/**',
             'src/router.tsx',
+            'src/utils/csv-export.worker.ts',
           ],
           thresholds: {
-            lines: 85,
-            functions: 76,
-            branches: 70,
-            statements: 84,
+            lines: 90,
+            functions: 90,
+            branches: 85,
+            statements: 90,
           },
         },
       },

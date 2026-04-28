@@ -32,4 +32,17 @@ describe('EmptyState', () => {
     render(<EmptyState />)
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
+
+  it('applies custom className to wrapper', () => {
+    const { container } = render(<EmptyState className="my-empty-class" />)
+    const statusEl = container.querySelector('[role="status"]')
+    expect(statusEl).toHaveClass('my-empty-class')
+  })
+
+  it('renders default icon when no icon prop provided', () => {
+    const { container } = render(<EmptyState />)
+    // Default Inbox icon renders as an svg
+    const svgEl = container.querySelector('svg')
+    expect(svgEl).toBeInTheDocument()
+  })
 })

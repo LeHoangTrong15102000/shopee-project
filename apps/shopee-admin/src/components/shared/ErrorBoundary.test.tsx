@@ -48,4 +48,34 @@ describe('ErrorBoundary', () => {
     )
     expect(screen.getByRole('button', { name: /errorBoundary.reload/i })).toBeInTheDocument()
   })
+
+  it('calls window.location.reload when reload button clicked', async () => {
+    const userEvent = (await import('@testing-library/user-event')).default
+    const user = userEvent.setup()
+    const reloadMock = vi.fn()
+    Object.defineProperty(window, 'location', {
+      value: { ...window.location, reload: reloadMock },
+      writable: true,
+    })
+    render(
+      <ErrorBoundary>
+        <ThrowError />
+      </ErrorBoundary>,
+    )
+    await user.click(screen.getByRole('button', { name: /errorBoundary.reload/i }))
+    expect(reloadMock).toHaveBeenCalled()
+  })
+
+  it('shows default message when error has no message', () => {
+    function ThrowEmptyError() {
+      throw new Error()
+    }
+    render(
+      <ErrorBoundary>
+        <ThrowEmptyError />
+      </ErrorBoundary>,
+    )
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+    expect(screen.getByText('errorBoundary.title')).toBeInTheDocument()
+  })
 })

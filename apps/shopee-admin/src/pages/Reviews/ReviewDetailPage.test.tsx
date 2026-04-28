@@ -205,4 +205,215 @@ describe('ReviewDetailPage', () => {
       expect(toast.success).toHaveBeenCalled()
     })
   })
+
+  it('navigates back to /reviews when back button clicked', async () => {
+    const { user } = renderWithProviders(<ReviewDetailPage />)
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    await user.click(screen.getByRole('button', { name: /buttons.back/i }))
+    expect(mockNavigate).toHaveBeenCalledWith('/reviews')
+  })
+
+  it('renders review images when present', async () => {
+    server.use(
+      http.get(`${API_URL}/admin/reviews/:id`, () => {
+        return HttpResponse.json({
+          data: {
+            _id: 'review-1',
+            user: { _id: 'user-1', name: 'Nguyễn Văn A', email: 'user@example.com' },
+            product: {
+              _id: 'product-1',
+              name: 'iPhone 15',
+              image: 'https://example.com/iphone.jpg',
+            },
+            rating: 5,
+            comment: 'Sản phẩm rất tốt',
+            images: ['https://example.com/img1.jpg', 'https://example.com/img2.jpg'],
+            comments: [],
+            createdAt: '2024-01-01T00:00:00.000Z',
+            updatedAt: '2024-01-01T00:00:00.000Z',
+          },
+        })
+      }),
+    )
+    renderWithProviders(<ReviewDetailPage />)
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByAltText('Review image 1')).toBeInTheDocument()
+      expect(screen.getByAltText('Review image 2')).toBeInTheDocument()
+    })
+  })
+
+  it('opens delete comment dialog and confirms deletion', async () => {
+    server.use(
+      http.get(`${API_URL}/admin/reviews/:id`, () => {
+        return HttpResponse.json({
+          data: {
+            _id: 'review-1',
+            user: { _id: 'user-1', name: 'Nguyễn Văn A', email: 'user@example.com' },
+            product: {
+              _id: 'product-1',
+              name: 'iPhone 15',
+              image: 'https://example.com/iphone.jpg',
+            },
+            rating: 5,
+            comment: 'Sản phẩm rất tốt',
+            images: [],
+            comments: [
+              {
+                _id: 'comment-1',
+                user: { _id: 'user-2', name: 'Admin', email: 'admin@shopee.com' },
+                content: 'Cảm ơn bạn đã đánh giá!',
+                createdAt: '2024-01-02T00:00:00.000Z',
+              },
+            ],
+            createdAt: '2024-01-01T00:00:00.000Z',
+            updatedAt: '2024-01-01T00:00:00.000Z',
+          },
+        })
+      }),
+    )
+    const { user } = renderWithProviders(<ReviewDetailPage />)
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByText('Cảm ơn bạn đã đánh giá!')).toBeInTheDocument()
+    })
+    const deleteBtn = screen.getByLabelText(/aria.deleteItem/i)
+    await user.click(deleteBtn)
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+      expect(screen.getByText('toast.deleteCommentTitle')).toBeInTheDocument()
+    })
+    await user.click(screen.getByRole('button', { name: /buttons.confirm/i }))
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('renders product image when available', async () => {
+    renderWithProviders(<ReviewDetailPage />)
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByAltText('iPhone 15')).toBeInTheDocument()
+    })
+  })
+
+  it('closes delete comment dialog via cancel button (onOpenChange false branch)', async () => {
+    server.use(
+      http.get(`${API_URL}/admin/reviews/:id`, () => {
+        return HttpResponse.json({
+          data: {
+            _id: 'review-1',
+            user: { _id: 'user-1', name: 'Nguyễn Văn A', email: 'user@example.com' },
+            product: {
+              _id: 'product-1',
+              name: 'iPhone 15',
+              image: 'https://example.com/iphone.jpg',
+            },
+            rating: 5,
+            comment: 'Sản phẩm rất tốt',
+            images: [],
+            comments: [
+              {
+                _id: 'comment-1',
+                user: { _id: 'user-2', name: 'Admin', email: 'admin@shopee.com' },
+                content: 'Cảm ơn bạn đã đánh giá!',
+                createdAt: '2024-01-02T00:00:00.000Z',
+              },
+            ],
+            createdAt: '2024-01-01T00:00:00.000Z',
+            updatedAt: '2024-01-01T00:00:00.000Z',
+          },
+        })
+      }),
+    )
+    const { user } = renderWithProviders(<ReviewDetailPage />)
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByText('Cảm ơn bạn đã đánh giá!')).toBeInTheDocument()
+    })
+    const deleteBtn = screen.getByLabelText(/aria.deleteItem/i)
+    await user.click(deleteBtn)
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    })
+    // Click cancel to trigger onOpenChange(false) -> setDeleteCommentId(null)
+    await user.click(screen.getByRole('button', { name: /buttons.cancel/i }))
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('renders notAvailable when user has no name', async () => {
+    server.use(
+      http.get(`${API_URL}/admin/reviews/:id`, () => {
+        return HttpResponse.json({
+          data: {
+            _id: 'review-1',
+            user: { _id: 'user-1', name: '', email: 'noname@example.com' },
+            product: {
+              _id: 'product-1',
+              name: 'iPhone 15',
+              image: 'https://example.com/iphone.jpg',
+            },
+            rating: 5,
+            comment: 'Sản phẩm rất tốt',
+            images: [],
+            comments: [],
+            createdAt: '2024-01-01T00:00:00.000Z',
+            updatedAt: '2024-01-01T00:00:00.000Z',
+          },
+        })
+      }),
+    )
+    renderWithProviders(<ReviewDetailPage />)
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByText('states.notAvailable')).toBeInTheDocument()
+    })
+  })
+
+  it('renders product section without image when image is empty', async () => {
+    server.use(
+      http.get(`${API_URL}/admin/reviews/:id`, () => {
+        return HttpResponse.json({
+          data: {
+            _id: 'review-1',
+            user: { _id: 'user-1', name: 'Nguyễn Văn A', email: 'user@example.com' },
+            product: {
+              _id: 'product-1',
+              name: 'iPhone 15',
+              image: '',
+            },
+            rating: 5,
+            comment: 'Sản phẩm rất tốt',
+            images: [],
+            comments: [],
+            createdAt: '2024-01-01T00:00:00.000Z',
+            updatedAt: '2024-01-01T00:00:00.000Z',
+          },
+        })
+      }),
+    )
+    renderWithProviders(<ReviewDetailPage />)
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByText('iPhone 15')).toBeInTheDocument()
+    })
+    // No product image should be rendered when image is empty
+    expect(screen.queryByAltText('iPhone 15')).not.toBeInTheDocument()
+  })
 })

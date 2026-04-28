@@ -1,14 +1,16 @@
-import { Request, Response } from 'express'
-import { ShopChatService } from '@services/shop-chat.service'
-import { NotFoundError, ValidationError } from '@services/base.service'
 import { STATUS } from '@constants/status'
+import { NotFoundError, ValidationError } from '@services/base.service'
+import { ShopChatService } from '@services/shop-chat.service'
+import { Request, Response } from 'express'
 
 const shopChatService = new ShopChatService()
 
 export const getConversations = async (req: Request, res: Response): Promise<void> => {
   const userId = req.jwtDecoded.id
   const conversations = await shopChatService.getConversations(userId)
-  res.status(STATUS.OK).json({ message: 'Lấy danh sách cuộc trò chuyện thành công', data: conversations })
+  res
+    .status(STATUS.OK)
+    .json({ message: 'Lấy danh sách cuộc trò chuyện thành công', data: conversations })
 }
 
 export const getMessages = async (req: Request, res: Response): Promise<void> => {
@@ -16,7 +18,7 @@ export const getMessages = async (req: Request, res: Response): Promise<void> =>
     const { id } = req.params
     const cursor = req.query.cursor as string | undefined
     const limit = Number(req.query.limit) || 20
-    const result = await shopChatService.getMessages(id, cursor, limit)
+    const result = await shopChatService.getMessages(String(id), cursor, limit)
     res.status(STATUS.OK).json({ message: 'Lấy tin nhắn thành công', data: result })
   } catch (error) {
     if (error instanceof ValidationError) {
@@ -36,7 +38,14 @@ export const sendMessage = async (req: Request, res: Response): Promise<void> =>
       res.status(STATUS.BAD_REQUEST).json({ message: 'content là bắt buộc' })
       return
     }
-    const message = await shopChatService.sendMessage(id, userId, 'user', content, type, imageUrl)
+    const message = await shopChatService.sendMessage(
+      String(id),
+      userId,
+      'user',
+      content,
+      type,
+      imageUrl,
+    )
     res.status(201).json({ message: 'Gửi tin nhắn thành công', data: message })
   } catch (error) {
     if (error instanceof ValidationError) {

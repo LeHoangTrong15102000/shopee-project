@@ -29,9 +29,9 @@ async function acquireThrottleLock(productId: string): Promise<boolean> {
       const result = await redisClient.set(
         `throttle:activity:${productId}`,
         '1',
-        'NX',
         'EX',
         THROTTLE_SECONDS,
+        'NX',
       )
       // result is 'OK' if key was set (lock acquired), null if key already existed (throttled)
       return result === 'OK'

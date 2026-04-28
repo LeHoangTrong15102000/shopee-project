@@ -1,209 +1,197 @@
 import { Request, Response, NextFunction } from 'express'
+import { RateLimiterRedis, RateLimiterMemory, RateLimiterAbstract } from 'rate-limiter-flexible'
+import { redisClient } from '@utils/redis.client'
 import { Logger } from '@utils/logger'
 
-// In-memory store for rate limiting (production nên dùng Redis)
-const requestCounts = new Map<string, { count: number; resetTime: number }>()
-
 interface RateLimitOptions {
-  windowMs: number // Thời gian window (ms)
-  maxRequests: number // Số request tối đa trong window
-  message?: string // Custom message khi limit
-  skipSuccessfulRequests?: boolean // Có skip requests thành công không
+  windowMs: number
+  maxRequests: number
+  message?: string
+  keyPrefix: string
 }
 
 /**
- * Rate limiting middleware cho chatbot APIs
+ * Build a rate limiter: RateLimiterRedis when Redis is available,
+ * RateLimiterMemory otherwise (test env or Redis unavailable at startup).
  */
-export const createChatbotRateLimit = (options: RateLimitOptions) => {
-  const {
-    windowMs,
-    maxRequests,
-    message = 'Bạn đã gửi quá nhiều tin nhắn. Vui lòng chờ ít phút rồi thử lại.',
-    skipSuccessfulRequests = false,
-  } = options
+function buildLimiter(opts: RateLimitOptions): RateLimiterAbstract {
+  const points = opts.maxRequests
+  const duration = Math.floor(opts.windowMs / 1000)
 
-  return (req: Request, res: Response, next: NextFunction) => {
-    try {
-      // Tạo key dựa trên user ID hoặc IP
-      const userId = req.jwtDecoded?.id
-      const clientIP = req.ip || req.connection.remoteAddress
-      const key = userId || clientIP || 'anonymous'
+  if (redisClient) {
+    return new RateLimiterRedis({
+      storeClient: redisClient,
+      keyPrefix: opts.keyPrefix,
+      points,
+      duration,
+      insuranceLimiter: new RateLimiterMemory({ points, duration }),
+    })
+  }
 
-      const now = Date.now()
-      const userLimit = requestCounts.get(key)
+  return new RateLimiterMemory({ keyPrefix: opts.keyPrefix, points, duration })
+}
 
-      // Reset counter nếu đã hết window
-      if (!userLimit || now > userLimit.resetTime) {
-        requestCounts.set(key, {
-          count: 1,
-          resetTime: now + windowMs,
+/**
+ * Factory that creates an Express middleware from a RateLimiterAbstract instance.
+ */
+function createMiddleware(limiter: RateLimiterAbstract, message: string) {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    const userId = req.jwtDecoded?.id
+    const clientIP = req.ip || (req as any).connection?.remoteAddress
+    const key = userId || clientIP || 'anonymous'
+
+    limiter
+      .consume(key)
+      .then((rateLimiterRes) => {
+        res.set({
+          'X-RateLimit-Limit': String(limiter.points),
+          'X-RateLimit-Remaining': String(rateLimiterRes.remainingPoints),
+          'X-RateLimit-Reset': new Date(Date.now() + rateLimiterRes.msBeforeNext).toISOString(),
         })
-
-        Logger.chatbotDebug('Rate limit reset', {
-          key,
-          newResetTime: new Date(now + windowMs).toISOString(),
-        })
-
         next()
-        return
-      }
-
-      // Kiểm tra có vượt limit không
-      if (userLimit.count >= maxRequests) {
-        const timeUntilReset = Math.ceil((userLimit.resetTime - now) / 1000)
-
-        Logger.chatbotWarn('Rate limit exceeded', {
-          key,
-          currentCount: userLimit.count,
-          maxRequests,
-          timeUntilReset,
-        })
-
-        res.status(429).json({
-          message,
-          error: 'Rate limit exceeded',
-          retryAfter: timeUntilReset,
-          limit: maxRequests,
-          remaining: 0,
-        })
-        return
-      }
-
-      // Tăng counter
-      userLimit.count += 1
-      requestCounts.set(key, userLimit)
-
-      // Thêm headers thông tin rate limit
-      res.set({
-        'X-RateLimit-Limit': maxRequests.toString(),
-        'X-RateLimit-Remaining': (maxRequests - userLimit.count).toString(),
-        'X-RateLimit-Reset': new Date(userLimit.resetTime).toISOString(),
       })
-
-      Logger.chatbotDebug('Rate limit check passed', {
-        key,
-        currentCount: userLimit.count,
-        remaining: maxRequests - userLimit.count,
+      .catch(() => {
+        res.status(429).json({ success: false, message: 'Too many requests' })
       })
-
-      next()
-    } catch (error) {
-      Logger.chatbotError('Rate limiter error', error)
-      // Trong trường hợp lỗi, cho phép request đi qua
-      next()
-    }
   }
 }
 
-/**
- * Rate limit configurations cho different endpoints
- */
+// ============ Limiter instances ============
+
+const testChatbotLimiter = buildLimiter({
+  keyPrefix: 'rl:testChatbot',
+  windowMs: 15 * 60 * 1000,
+  maxRequests: 10,
+})
+
+const conversationLimiter = buildLimiter({
+  keyPrefix: 'rl:conversation',
+  windowMs: 5 * 60 * 1000,
+  maxRequests: 20,
+})
+
+const sendMessageLimiter = buildLimiter({
+  keyPrefix: 'rl:sendMessage',
+  windowMs: 1 * 60 * 1000,
+  maxRequests: 5,
+})
+
+const apiLimiter = buildLimiter({
+  keyPrefix: 'rl:api',
+  windowMs: 1 * 60 * 1000,
+  maxRequests: 100,
+})
+
+const authLimiter = buildLimiter({
+  keyPrefix: 'rl:auth',
+  windowMs: 15 * 60 * 1000,
+  maxRequests: 10,
+})
+
+const productsLimiter = buildLimiter({
+  keyPrefix: 'rl:products',
+  windowMs: 1 * 60 * 1000,
+  maxRequests: 60,
+})
+
+const purchaseLimiter = buildLimiter({
+  keyPrefix: 'rl:purchase',
+  windowMs: 1 * 60 * 1000,
+  maxRequests: 30,
+})
+
+const healthLimiter = buildLimiter({
+  keyPrefix: 'rl:health',
+  windowMs: 1 * 60 * 1000,
+  maxRequests: 120,
+})
+
+// ============ Exported middleware map ============
+
 export const rateLimitConfigs = {
-  // Cho test chatbot (không cần auth)
-  testChatbot: createChatbotRateLimit({
-    windowMs: 15 * 60 * 1000, // 15 phút
-    maxRequests: 10, // 10 requests per 15 min
-    message: 'Bạn đã test chatbot quá nhiều lần. Vui lòng chờ 15 phút rồi thử lại.',
-  }),
-
-  // Cho conversation APIs (cần auth)
-  conversation: createChatbotRateLimit({
-    windowMs: 5 * 60 * 1000, // 5 phút
-    maxRequests: 20, // 20 requests per 5 min
-    message: 'Bạn đang gửi tin nhắn quá nhanh. Vui lòng chờ ít phút rồi thử lại.',
-  }),
-
-  // Cho sending messages (strict hơn)
-  sendMessage: createChatbotRateLimit({
-    windowMs: 1 * 60 * 1000, // 1 phút
-    maxRequests: 5, // 5 messages per minute
-    message: 'Bạn đang gửi tin nhắn quá nhanh. Vui lòng chờ 1 phút rồi thử lại.',
-  }),
-
-  // General API rate limit
-  api: createChatbotRateLimit({
-    windowMs: 1 * 60 * 1000, // 1 phút
-    maxRequests: 100, // 100 requests per minute
-    message: 'Quá nhiều yêu cầu. Vui lòng thử lại sau.',
-  }),
-
-  // Auth endpoints (login, register) - strict
-  auth: createChatbotRateLimit({
-    windowMs: 15 * 60 * 1000, // 15 phút
-    maxRequests: 10, // 10 attempts per 15 min
-    message: 'Quá nhiều lần thử đăng nhập. Vui lòng chờ 15 phút.',
-  }),
-
-  // Product listing - relaxed
-  products: createChatbotRateLimit({
-    windowMs: 1 * 60 * 1000, // 1 phút
-    maxRequests: 60, // 60 requests per minute
-    message: 'Quá nhiều yêu cầu. Vui lòng thử lại sau.',
-  }),
-
-  // Purchase/checkout - moderate
-  purchase: createChatbotRateLimit({
-    windowMs: 1 * 60 * 1000, // 1 phút
-    maxRequests: 30, // 30 requests per minute
-    message: 'Quá nhiều yêu cầu mua hàng. Vui lòng thử lại sau.',
-  }),
-
-  // Health check - very relaxed (for monitoring)
-  health: createChatbotRateLimit({
-    windowMs: 1 * 60 * 1000, // 1 phút
-    maxRequests: 120, // 120 requests per minute
-    message: 'Quá nhiều yêu cầu health check.',
-  }),
+  testChatbot: createMiddleware(
+    testChatbotLimiter,
+    'Bạn đã test chatbot quá nhiều lần. Vui lòng chờ 15 phút rồi thử lại.',
+  ),
+  conversation: createMiddleware(
+    conversationLimiter,
+    'Bạn đang gửi tin nhắn quá nhanh. Vui lòng chờ ít phút rồi thử lại.',
+  ),
+  sendMessage: createMiddleware(
+    sendMessageLimiter,
+    'Bạn đang gửi tin nhắn quá nhanh. Vui lòng chờ 1 phút rồi thử lại.',
+  ),
+  api: createMiddleware(apiLimiter, 'Quá nhiều yêu cầu. Vui lòng thử lại sau.'),
+  auth: createMiddleware(authLimiter, 'Quá nhiều lần thử đăng nhập. Vui lòng chờ 15 phút.'),
+  products: createMiddleware(productsLimiter, 'Quá nhiều yêu cầu. Vui lòng thử lại sau.'),
+  purchase: createMiddleware(purchaseLimiter, 'Quá nhiều yêu cầu mua hàng. Vui lòng thử lại sau.'),
+  health: createMiddleware(healthLimiter, 'Quá nhiều yêu cầu health check.'),
 }
 
-/**
- * Cleanup expired entries (chạy định kỳ)
- */
-export const cleanupExpiredRateLimits = () => {
-  const now = Date.now()
-
-  requestCounts.forEach((limit, key) => {
-    if (now > limit.resetTime) {
-      requestCounts.delete(key)
-    }
-  })
-
-  Logger.chatbotDebug('Rate limit cleanup completed', {
-    activeKeys: requestCounts.size,
-  })
-}
+const allLimiters: RateLimiterAbstract[] = [
+  testChatbotLimiter,
+  conversationLimiter,
+  sendMessageLimiter,
+  apiLimiter,
+  authLimiter,
+  productsLimiter,
+  purchaseLimiter,
+  healthLimiter,
+]
 
 /**
- * Get rate limit stats (for monitoring)
+ * Get rate limit stats (for monitoring).
  */
 export const getRateLimitStats = () => {
-  const now = Date.now()
-  const activeKeys: Array<[string, { count: number; resetTime: number }]> = []
-  requestCounts.forEach((limit, key) => {
-    if (now <= limit.resetTime) {
-      activeKeys.push([key, limit])
-    }
-  })
-
-  return {
-    totalActiveKeys: activeKeys.length,
-    averageRequestsPerKey:
-      activeKeys.length > 0
-        ? activeKeys.reduce((sum, [, limit]) => sum + limit.count, 0) / activeKeys.length
-        : 0,
-    topUsers: activeKeys
-      .sort((a, b) => b[1].count - a[1].count)
-      .slice(0, 5)
-      .map(([key, limit]) => ({ key, count: limit.count })),
-  }
+  return allLimiters.map((limiter) => ({
+    keyPrefix: limiter.keyPrefix,
+    points: limiter.points,
+    duration: limiter.duration,
+  }))
 }
 
-// Chạy cleanup mỗi 10 phút
-setInterval(cleanupExpiredRateLimits, 10 * 60 * 1000)
+/**
+ * Reset all rate limit counters — used for testing.
+ */
+export const resetAllRateLimits = async (): Promise<void> => {
+  // RateLimiterMemory exposes _storage; for Redis limiters the insurance
+  // limiter is memory-backed and is what tests exercise.
+  // Calling delete on a non-existent key is a no-op, so we just clear the
+  // internal storage of each memory limiter directly.
+  for (const limiter of allLimiters) {
+    if (limiter instanceof RateLimiterMemory) {
+      // Access internal storage to clear all keys
+      const storage = (limiter as any)._storage
+      if (storage && typeof storage.clear === 'function') {
+        storage.clear()
+      }
+    } else if (limiter instanceof RateLimiterRedis) {
+      // Clear the insurance limiter (memory-backed)
+      const insurance = (limiter as any).insuranceLimiter
+      if (insurance instanceof RateLimiterMemory) {
+        const storage = (insurance as any)._storage
+        if (storage && typeof storage.clear === 'function') {
+          storage.clear()
+        }
+      }
+    }
+  }
+  Logger.chatbotDebug('Rate limits reset')
+}
 
 /**
- * Reset all rate limit counters — dùng cho testing
+ * Legacy factory kept for backward compatibility.
+ * New code should use rateLimitConfigs directly.
  */
-export const resetAllRateLimits = (): void => {
-  requestCounts.clear()
+export const createChatbotRateLimit = (options: {
+  windowMs: number
+  maxRequests: number
+  message?: string
+}) => {
+  const limiter = buildLimiter({
+    keyPrefix: 'rl:custom',
+    windowMs: options.windowMs,
+    maxRequests: options.maxRequests,
+  })
+  return createMiddleware(limiter, options.message ?? 'Too many requests')
 }

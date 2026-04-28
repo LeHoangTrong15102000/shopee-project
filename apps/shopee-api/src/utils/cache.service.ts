@@ -1,116 +1,100 @@
 /**
- * Cache Service - In-memory cache implementation
- * Có thể dễ dàng swap sang Redis sau này bằng cách thay đổi implementation
+ * Cache Service — Redis-backed implementation.
+ *
+ * All keys are prefixed with `cache:` to namespace them from rate-limit keys.
+ * When Redis is unavailable, operations degrade gracefully:
+ *   - get returns null
+ *   - set/del/flush are no-ops
  */
 
-interface CacheEntry<T> {
-  data: T
-  expireAt: number
-}
+import { redisClient } from '@utils/redis.client'
+import { Logger } from '@utils/logger'
+
+const KEY_PREFIX = 'cache:'
 
 class CacheService {
-  private cache: Map<string, CacheEntry<any>> = new Map()
-  private cleanupInterval: ReturnType<typeof setInterval> | null = null
-
-  constructor() {
-    // Tự động dọn dẹp cache hết hạn mỗi phút
-    this.cleanupInterval = setInterval(() => {
-      this.cleanup()
-    }, 60 * 1000)
-  }
-
   /**
-   * Lấy data từ cache
-   * @param key - Cache key
-   * @returns Data hoặc null nếu không tìm thấy hoặc đã hết hạn
+   * Get a value from cache.
+   * Returns null on miss, expired key, or Redis error.
    */
-  get<T>(key: string): T | null {
-    const entry = this.cache.get(key)
-
-    if (!entry) {
+  async get<T>(key: string): Promise<T | null> {
+    if (!redisClient) return null
+    try {
+      const raw = await redisClient.get(KEY_PREFIX + key)
+      if (raw === null) return null
+      return JSON.parse(raw) as T
+    } catch (err) {
+      Logger.apiError('Cache get error', { key, err })
       return null
     }
+  }
 
-    // Kiểm tra TTL
-    if (Date.now() > entry.expireAt) {
-      this.cache.delete(key)
-      return null
+  /**
+   * Store a value in cache with a TTL (seconds).
+   * No-op if Redis is unavailable.
+   */
+  async set<T>(key: string, data: T, ttlSeconds = 300): Promise<void> {
+    if (!redisClient) return
+    try {
+      await redisClient.setex(KEY_PREFIX + key, ttlSeconds, JSON.stringify(data))
+    } catch (err) {
+      Logger.apiError('Cache set error', { key, err })
     }
-
-    return entry.data as T
   }
 
   /**
-   * Lưu data vào cache
-   * @param key - Cache key
-   * @param data - Data cần lưu
-   * @param ttlSeconds - Thời gian sống (giây), mặc định 5 phút
+   * Delete one or more cache entries.
+   * Supports wildcard patterns (e.g. "products:*") via SCAN + DEL.
+   * Returns the number of keys deleted.
    */
-  set<T>(key: string, data: T, ttlSeconds: number = 300): void {
-    const expireAt = Date.now() + ttlSeconds * 1000
-    this.cache.set(key, { data, expireAt })
-  }
-
-  /**
-   * Xóa một hoặc nhiều cache entries theo pattern
-   * @param pattern - Key hoặc pattern (hỗ trợ wildcard *)
-   */
-  del(pattern: string): number {
-    let deletedCount = 0
-
-    if (pattern.includes('*')) {
-      // Xóa theo pattern (wildcard)
-      const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$')
-      for (const key of this.cache.keys()) {
-        if (regex.test(key)) {
-          this.cache.delete(key)
-          deletedCount++
-        }
+  async del(pattern: string): Promise<number> {
+    if (!redisClient) return 0
+    try {
+      if (pattern.includes('*')) {
+        return await this._scanDel(KEY_PREFIX + pattern)
       }
-    } else {
-      // Xóa theo key chính xác
-      if (this.cache.delete(pattern)) {
-        deletedCount = 1
+      return await redisClient.del(KEY_PREFIX + pattern)
+    } catch (err) {
+      Logger.apiError('Cache del error', { pattern, err })
+      return 0
+    }
+  }
+
+  /**
+   * Delete all keys matching `cache:*`.
+   * Uses SCAN to avoid blocking Redis with FLUSHDB.
+   */
+  async flush(): Promise<void> {
+    if (!redisClient) return
+    try {
+      await this._scanDel(KEY_PREFIX + '*')
+    } catch (err) {
+      Logger.apiError('Cache flush error', err)
+    }
+  }
+
+  /**
+   * No-op — Redis TTL handles expiry automatically.
+   * Kept for interface compatibility.
+   */
+  cleanup(): void {
+    // intentional no-op
+  }
+
+  // ---- private helpers ----
+
+  private async _scanDel(pattern: string): Promise<number> {
+    if (!redisClient) return 0
+    let cursor = '0'
+    let deleted = 0
+    do {
+      const [nextCursor, keys] = await redisClient.scan(cursor, 'MATCH', pattern, 'COUNT', 100)
+      cursor = nextCursor
+      if (keys.length > 0) {
+        deleted += await redisClient.del(...keys)
       }
-    }
-
-    return deletedCount
-  }
-
-  /**
-   * Xóa toàn bộ cache
-   */
-  flush(): void {
-    this.cache.clear()
-  }
-
-  /**
-   * Dọn dẹp các entries đã hết hạn
-   */
-  private cleanup(): void {
-    const now = Date.now()
-    for (const [key, entry] of this.cache.entries()) {
-      if (now > entry.expireAt) {
-        this.cache.delete(key)
-      }
-    }
-  }
-
-  /**
-   * Lấy số lượng entries trong cache
-   */
-  size(): number {
-    return this.cache.size
-  }
-
-  /**
-   * Hủy cleanup interval khi không cần thiết
-   */
-  destroy(): void {
-    if (this.cleanupInterval) {
-      clearInterval(this.cleanupInterval)
-      this.cleanupInterval = null
-    }
+    } while (cursor !== '0')
+    return deleted
   }
 }
 
@@ -121,7 +105,7 @@ export const cacheService = new CacheService()
 
 export const CacheKeys = {
   /**
-   * Key cho danh sách sản phẩm
+   * Key for product list
    * Format: products:list:{page}:{limit}:{category}:{sort_by}:{order}:{rating_filter}:{price_min}:{price_max}:{name}
    */
   productsList: (params: {
@@ -150,7 +134,7 @@ export const CacheKeys = {
   },
 
   /**
-   * Key cho chi tiết sản phẩm
+   * Key for product detail
    * Format: products:detail:{id}
    */
   productDetail: (id: string): string => {
@@ -158,14 +142,14 @@ export const CacheKeys = {
   },
 
   /**
-   * Pattern để xóa tất cả cache products
+   * Pattern to delete all product cache entries
    */
   productsPattern: (): string => {
     return 'products:*'
   },
 
   /**
-   * Key cho danh sách categories
+   * Key for category list
    * Format: categories:list:{exclude}
    */
   categoriesList: (exclude?: string): string => {
@@ -173,18 +157,18 @@ export const CacheKeys = {
   },
 
   /**
-   * Pattern để xóa tất cả cache categories
+   * Pattern to delete all category cache entries
    */
   categoriesPattern: (): string => {
     return 'categories:*'
   },
 }
 
-// TTL constants (giây)
+// TTL constants (seconds)
 export const CacheTTL = {
-  PRODUCTS_LIST: 5 * 60, // 5 phút
-  PRODUCT_DETAIL: 10 * 60, // 10 phút
-  CATEGORIES_LIST: 30 * 60, // 30 phút
+  PRODUCTS_LIST: 5 * 60,    // 5 minutes
+  PRODUCT_DETAIL: 10 * 60,  // 10 minutes
+  CATEGORIES_LIST: 30 * 60, // 30 minutes
 }
 
 export default cacheService

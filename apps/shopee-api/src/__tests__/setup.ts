@@ -4,6 +4,11 @@
  */
 
 /// <reference types="jest" />
+
+// Explicitly set NODE_ENV=test to ensure redis.client.ts returns null
+// (Jest sets this by default, but being explicit guards against edge cases)
+process.env.NODE_ENV = 'test'
+
 import { Request, Response } from 'express'
 
 // Mock MongoDB connection
@@ -18,9 +23,10 @@ jest.mock('@database/database', () => ({
 // Mock config
 jest.mock('@constants/config', () => ({
   config: {
-    SECRET_KEY: 'test-secret-key',
+    SECRET_KEY: 'test-secret-key-that-is-at-least-32-chars',
     EXPIRE_ACCESS_TOKEN: 900, // 15 minutes — stateless JWT
-    EXPIRE_REFRESH_TOKEN: 8640000,
+    EXPIRE_REFRESH_TOKEN: 2592000, // 30 days
+    AUTH_STRICT_MODE: false,
   },
   FOLDER_UPLOAD: 'upload',
   FOLDERS: {

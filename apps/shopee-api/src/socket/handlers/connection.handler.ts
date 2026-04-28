@@ -1,4 +1,6 @@
 import { Socket } from 'socket.io'
+import { RateLimiterRedis, RateLimiterMemory, RateLimiterAbstract } from 'rate-limiter-flexible'
+import { redisClient } from '@utils/redis.client'
 import { SocketEvent, SocketErrorPayload } from '../../@types/socket.type'
 import { SOCKET_CONFIG, SOCKET_ERRORS } from '@constants/socket'
 import { Logger } from '@utils/logger'
@@ -7,44 +9,52 @@ import { broadcastPresenceUpdate } from './presence.handler'
 import { ROLE } from '@constants/role.enum'
 import { getIORequired } from '../socket.init'
 
-interface RateLimitState {
-  count: number
-  resetTime: number
+// ============ Socket rate limiter ============
+
+const SOCKET_POINTS = SOCKET_CONFIG.RATE_LIMIT.MAX_EVENTS_PER_SECOND // 10
+const SOCKET_DURATION = Math.floor(SOCKET_CONFIG.RATE_LIMIT.WINDOW_MS / 1000) // 1 second
+
+function buildSocketLimiter(): RateLimiterAbstract {
+  if (redisClient) {
+    return new RateLimiterRedis({
+      storeClient: redisClient,
+      keyPrefix: 'rl:socket',
+      points: SOCKET_POINTS,
+      duration: SOCKET_DURATION,
+      insuranceLimiter: new RateLimiterMemory({
+        points: SOCKET_POINTS,
+        duration: SOCKET_DURATION,
+      }),
+    })
+  }
+  return new RateLimiterMemory({
+    keyPrefix: 'rl:socket',
+    points: SOCKET_POINTS,
+    duration: SOCKET_DURATION,
+  })
 }
 
-const rateLimitMap = new Map<string, RateLimitState>()
+const socketRateLimiter = buildSocketLimiter()
 
 /**
  * Creates a rate limiter middleware for socket events.
  * Returns a function that wraps event handlers with rate limiting logic.
- * Uses sliding window algorithm to track events per socket.
  */
 export const createRateLimiter = (socket: Socket): ((callback: () => void) => void) => {
-  const { MAX_EVENTS_PER_SECOND, WINDOW_MS } = SOCKET_CONFIG.RATE_LIMIT
-
   return (callback: () => void): void => {
-    const now = Date.now()
-    const socketId = socket.id
-    let state = rateLimitMap.get(socketId)
-
-    if (!state || now >= state.resetTime) {
-      state = { count: 0, resetTime: now + WINDOW_MS }
-      rateLimitMap.set(socketId, state)
-    }
-
-    state.count++
-
-    if (state.count > MAX_EVENTS_PER_SECOND) {
-      Logger.apiWarn(`Rate limit exceeded for socket ${socketId}, user ${socket.user?.id}`)
-      const payload: SocketErrorPayload = {
-        code: SOCKET_ERRORS.RATE_LIMITED,
-        message: 'Too many requests. Please slow down.',
-      }
-      socket.emit(SocketEvent.RATE_LIMITED, payload)
-      return
-    }
-
-    callback()
+    socketRateLimiter
+      .consume(socket.id)
+      .then(() => {
+        callback()
+      })
+      .catch(() => {
+        Logger.apiWarn(`Rate limit exceeded for socket ${socket.id}, user ${socket.user?.id}`)
+        const payload: SocketErrorPayload = {
+          code: SOCKET_ERRORS.RATE_LIMITED,
+          message: 'Too many requests. Please slow down.',
+        }
+        socket.emit(SocketEvent.RATE_LIMITED, payload)
+      })
   }
 }
 
@@ -57,7 +67,6 @@ export const handleConnect = (socket: Socket): void => {
     addUserSocket(userId, socket.id)
     broadcastPresenceUpdate(socket, userId, 'online')
 
-    // Auto-join cart room for cross-device cart sync
     const cartRoom = `${SOCKET_CONFIG.ROOM_PREFIX.CART}${userId}`
     socket.join(cartRoom)
     Logger.apiInfo('User joined cart room', {
@@ -66,7 +75,6 @@ export const handleConnect = (socket: Socket): void => {
       room: cartRoom,
     })
 
-    // Auto-join Admin users to seller dashboard room
     const roles = socket.user?.roles ?? []
     if (roles.includes(ROLE.ADMIN)) {
       const sellerRoom = `${SOCKET_CONFIG.ROOM_PREFIX.SELLER}${userId}`
@@ -82,7 +90,7 @@ export const handleConnect = (socket: Socket): void => {
 
 /**
  * Handles socket disconnection and performs cleanup.
- * Removes rate limit tracking data to prevent memory leaks.
+ * Deletes the Redis rate-limit key for this socket to prevent key accumulation.
  */
 export const handleDisconnect = (socket: Socket, reason: string): void => {
   const userId = socket.user?.id ?? 'unknown'
@@ -98,7 +106,7 @@ export const handleDisconnect = (socket: Socket, reason: string): void => {
     }
   }
 
-  // Viewer count cleanup: emit updated viewer count for product rooms
+  // Viewer count cleanup
   try {
     const productPrefix = SOCKET_CONFIG.ROOM_PREFIX.PRODUCT
     const productRooms = Array.from(socket.rooms).filter((room) => room.startsWith(productPrefix))
@@ -107,8 +115,6 @@ export const handleDisconnect = (socket: Socket, reason: string): void => {
       const io = getIORequired()
       for (const roomName of productRooms) {
         const productId = roomName.slice(productPrefix.length)
-        // Room size will be decremented after disconnect completes,
-        // so we subtract 1 from current size (or use 0 if already 0)
         const currentSize = io.sockets.adapter.rooms.get(roomName)?.size ?? 0
         const viewerCount = Math.max(0, currentSize - 1)
 
@@ -131,12 +137,14 @@ export const handleDisconnect = (socket: Socket, reason: string): void => {
     })
   }
 
-  rateLimitMap.delete(socket.id)
+  // Clean up Redis rate-limit key for this socket
+  socketRateLimiter.delete(socket.id).catch(() => {
+    // Ignore errors on cleanup — key may have already expired
+  })
 }
 
 /**
  * Handles socket errors by logging and emitting a sanitized error to the client.
- * Internal error details are not exposed to prevent information leakage.
  */
 export const handleError = (socket: Socket, error: Error): void => {
   const userId = socket.user?.id ?? 'unknown'
@@ -152,7 +160,6 @@ export const handleError = (socket: Socket, error: Error): void => {
 
 /**
  * Registers all connection lifecycle handlers on a socket instance.
- * Should be called when a new socket connection is established.
  */
 export const registerConnectionHandlers = (socket: Socket): void => {
   socket.on(SocketEvent.DISCONNECT, (reason: string) => {
@@ -163,3 +170,4 @@ export const registerConnectionHandlers = (socket: Socket): void => {
     handleError(socket, error)
   })
 }
+

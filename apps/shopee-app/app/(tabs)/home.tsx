@@ -17,6 +17,8 @@ import {
   CategorySkeleton,
   ProductCardSkeleton,
 } from '@/components/home'
+import FlashSaleSection from '@/components/home/FlashSaleSection'
+import RecentlyViewedSection from '@/components/home/RecentlyViewedSection'
 import { Product } from '@/types/product.type'
 
 export default function HomeScreen() {
@@ -70,6 +72,12 @@ export default function HomeScreen() {
     <>
       {/* Banner */}
       {productsLoading ? <BannerSkeleton /> : <BannerCarousel />}
+
+      {/* Flash Sale */}
+      {!productsLoading && <FlashSaleSection />}
+
+      {/* Recently Viewed */}
+      {!productsLoading && <RecentlyViewedSection />}
 
       {/* Categories */}
       {categoriesLoading ? (

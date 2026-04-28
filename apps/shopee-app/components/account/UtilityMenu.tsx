@@ -1,6 +1,6 @@
 import React from 'react'
 import { View } from 'react-native'
-import { Heart, MapPin, Bell, Calendar, Tag, Coins } from 'lucide-react-native'
+import { Heart, MapPin, Bell, Calendar, Tag, Coins, Store, HelpCircle } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
 import { MenuList, AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
@@ -12,6 +12,8 @@ interface UtilityMenuProps {
   onCheckin: () => void
   onVouchers: () => void
   onXuHistory: () => void
+  onFollowedShops: () => void
+  onHelp: () => void
 }
 
 export default function UtilityMenu({
@@ -21,6 +23,8 @@ export default function UtilityMenu({
   onCheckin,
   onVouchers,
   onXuHistory,
+  onFollowedShops,
+  onHelp,
 }: UtilityMenuProps) {
   const { t } = useTranslation()
   const colors = useColors()
@@ -55,6 +59,16 @@ export default function UtilityMenu({
       title: t('account.menu.vouchers'),
       icon: () => <Tag size={20} color={colors.error} />,
       onPress: onVouchers,
+    },
+    {
+      title: t('account.menu.followedShops'),
+      icon: () => <Store size={20} color={colors.foreground} />,
+      onPress: onFollowedShops,
+    },
+    {
+      title: t('account.menu.help'),
+      icon: () => <HelpCircle size={20} color={colors.foreground} />,
+      onPress: onHelp,
     },
   ]
 

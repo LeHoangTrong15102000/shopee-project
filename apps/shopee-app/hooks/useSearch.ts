@@ -27,6 +27,10 @@ export function useSearchProducts(params: {
   maxPrice?: number
   rating?: number
   category?: string
+  // NOTE: inStock is forwarded to the API as a query param. The backend may not
+  // support this filter yet — if ignored server-side, the UI still reflects the
+  // user's intent and the param is ready for when the backend adds support.
+  inStock?: boolean
   enabled?: boolean
 }) {
   const { enabled = true, ...searchParams } = params

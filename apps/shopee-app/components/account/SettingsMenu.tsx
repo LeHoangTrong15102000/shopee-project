@@ -1,6 +1,6 @@
 import React from 'react'
 import { View } from 'react-native'
-import { Moon, Globe, Lock, Info } from 'lucide-react-native'
+import { Moon, Globe, Lock, Info, Settings } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
 import { MenuList, AppText, Switch } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
@@ -11,6 +11,7 @@ interface SettingsMenuProps {
   onLanguage: () => void
   onChangePassword: () => void
   onAbout: () => void
+  onSettings: () => void
 }
 
 export default function SettingsMenu({
@@ -19,6 +20,7 @@ export default function SettingsMenu({
   onLanguage,
   onChangePassword,
   onAbout,
+  onSettings,
 }: SettingsMenuProps) {
   const { t } = useTranslation()
   const colors = useColors()
@@ -41,6 +43,11 @@ export default function SettingsMenu({
       title: t('account.settings.changePassword'),
       icon: () => <Lock size={20} color={colors.foreground} />,
       onPress: onChangePassword,
+    },
+    {
+      title: t('account.settings.settings'),
+      icon: () => <Settings size={20} color={colors.foreground} />,
+      onPress: onSettings,
     },
     {
       title: t('account.settings.about'),

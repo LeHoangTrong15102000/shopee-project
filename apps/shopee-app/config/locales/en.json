@@ -155,12 +155,15 @@
       "notifications": "Notifications",
       "checkin": "Check-in",
       "xu_history": "Xu History",
-      "vouchers": "My Vouchers"
+      "vouchers": "My Vouchers",
+      "followedShops": "Followed Shops",
+      "help": "Help"
     },
     "settings": {
       "darkMode": "Dark Mode",
       "language": "Language",
       "changePassword": "Change Password",
+      "settings": "Settings",
       "about": "About"
     },
     "header": {
@@ -422,7 +425,15 @@
   },
   "search": {
     "button": {
-      "filter": "Filter"
+      "filter": "Filter",
+      "clearFilters": "Clear filters"
+    },
+    "activeFilter": {
+      "price": "Price: {{min}} - {{max}}",
+      "priceMin": "Price from {{min}}",
+      "priceMax": "Price up to {{max}}",
+      "rating": "{{stars}}+ stars",
+      "inStock": "In stock"
     },
     "empty": {
       "message": "No products found"
@@ -580,6 +591,7 @@
     "priceFrom": "From",
     "priceTo": "To",
     "ratingFrom": "Minimum Rating",
+    "inStock": "In stock only",
     "button": {
       "reset": "Reset",
       "apply": "Apply"
@@ -639,6 +651,55 @@
   },
   "languagePicker": {
     "title": "Select Language"
+  },
+  "categories": {
+    "header": {
+      "title": "Categories"
+    },
+    "viewAll": "View all"
+  },
+  "flashSale": {
+    "header": {
+      "title": "Flash Sale"
+    },
+    "countdown": "Ends in",
+    "viewAll": "View all"
+  },
+  "recentlyViewed": {
+    "header": {
+      "title": "Recently Viewed"
+    },
+    "viewAll": "View all",
+    "empty": "You haven't viewed any products yet"
+  },
+  "followedShops": {
+    "header": {
+      "title": "Followed Shops"
+    },
+    "empty": "You haven't followed any shops yet"
+  },
+  "settings": {
+    "header": {
+      "title": "Settings"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "orderUpdates": "Order Updates",
+      "promotions": "Promotions",
+      "system": "System Notifications"
+    },
+    "privacy": {
+      "title": "Privacy",
+      "comingSoon": "This feature is coming soon!"
+    }
+  },
+  "help": {
+    "header": {
+      "title": "Help"
+    },
+    "searchPlaceholder": "Search questions...",
+    "contactButton": "Contact Support",
+    "noResults": "No results found"
   },
   "about": {
     "header": {

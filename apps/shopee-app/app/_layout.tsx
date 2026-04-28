@@ -94,6 +94,14 @@ function AppContent() {
                   <Stack.Screen name="write-review" options={{ headerShown: false }} />
                   <Stack.Screen name="return-request" options={{ headerShown: false }} />
                   <Stack.Screen name="xu-history" options={{ headerShown: false }} />
+                  <Stack.Screen name="categories" options={{ headerShown: false }} />
+                  <Stack.Screen name="flash-sale" options={{ headerShown: false }} />
+                  <Stack.Screen name="recently-viewed" options={{ headerShown: false }} />
+                  <Stack.Screen name="followed-shops" options={{ headerShown: false }} />
+                  <Stack.Screen name="help" options={{ headerShown: false }} />
+                  <Stack.Screen name="settings/index" options={{ headerShown: false }} />
+                  <Stack.Screen name="settings/notifications" options={{ headerShown: false }} />
+                  <Stack.Screen name="settings/privacy" options={{ headerShown: false }} />
                 </Stack>
               </ThemeProvider>
             </DialogProvider>

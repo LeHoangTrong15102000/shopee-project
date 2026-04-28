@@ -52,6 +52,9 @@ export async function searchProducts(params: {
   maxPrice?: number
   rating?: number
   category?: string
+  // NOTE: Backend may not support this filter yet — sent as a query param for
+  // forward compatibility. Server will ignore it if unrecognised.
+  inStock?: boolean
 }) {
   const res = await http.get<ApiResponse<SearchResult>>('products', { params })
   return res.data

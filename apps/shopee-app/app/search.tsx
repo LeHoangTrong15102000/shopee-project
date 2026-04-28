@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react'
-import { View, FlatList, ActivityIndicator } from 'react-native'
+import { View, FlatList, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { SlidersHorizontal, ArrowUpDown } from 'lucide-react-native'
@@ -24,6 +24,12 @@ import { useRouter } from 'expo-router'
 import { Search } from 'lucide-react-native'
 
 type SearchMode = 'idle' | 'typing' | 'results'
+
+function formatPrice(value: number): string {
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`
+  if (value >= 1_000) return `${(value / 1_000).toFixed(0)}K`
+  return String(value)
+}
 
 export default function SearchScreen() {
   const { t } = useTranslation()
@@ -54,10 +60,17 @@ export default function SearchScreen() {
     minPrice: filters.minPrice,
     maxPrice: filters.maxPrice,
     rating: filters.rating,
+    inStock: filters.inStock,
     enabled: mode === 'results',
   })
 
   const allProducts = searchResults.data?.pages.flatMap((p) => p.data.products) ?? []
+
+  const hasActiveFilters =
+    filters.minPrice != null ||
+    filters.maxPrice != null ||
+    filters.rating != null ||
+    filters.inStock === true
 
   const handleChangeText = (text: string) => {
     setKeyword(text)
@@ -110,6 +123,19 @@ export default function SearchScreen() {
   const history = historyData?.data ?? []
   const suggestions = suggestionsData?.data ?? []
 
+  const getPriceChipLabel = () => {
+    const { minPrice, maxPrice } = filters
+    if (minPrice != null && maxPrice != null) {
+      return t('search.activeFilter.price', {
+        min: formatPrice(minPrice),
+        max: formatPrice(maxPrice),
+      })
+    }
+    if (minPrice != null) return t('search.activeFilter.priceMin', { min: formatPrice(minPrice) })
+    if (maxPrice != null) return t('search.activeFilter.priceMax', { max: formatPrice(maxPrice) })
+    return null
+  }
+
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
       <SearchBar
@@ -135,6 +161,7 @@ export default function SearchScreen() {
 
       {mode === 'results' && (
         <View style={{ flex: 1 }}>
+          {/* Sort / Filter bar */}
           <View className="flex-row gap-2 border-b border-neutrals900 px-4 py-2">
             <Chip
               variant="outline"
@@ -147,12 +174,75 @@ export default function SearchScreen() {
             <Chip
               variant="outline"
               size="sm"
-              selected={Object.keys(filters).some((k) => filters[k as keyof FilterOptions] != null)}
+              selected={hasActiveFilters}
               onPress={() => filterSheetRef.current?.present()}
               icon={<SlidersHorizontal />}>
               {t('search.button.filter')}
             </Chip>
           </View>
+
+          {/* Active filter chips */}
+          {hasActiveFilters && (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingHorizontal: 16,
+                paddingVertical: 8,
+                gap: 8,
+                borderBottomWidth: 1,
+                borderBottomColor: colors.neutrals900,
+              }}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ gap: 8, flexDirection: 'row' }}
+                style={{ flex: 1 }}>
+                {getPriceChipLabel() != null && (
+                  <Chip
+                    variant="primary"
+                    size="sm"
+                    closable
+                    onClose={() =>
+                      setFilters((prev) => {
+                        const next = { ...prev }
+                        delete next.minPrice
+                        delete next.maxPrice
+                        return next
+                      })
+                    }>
+                    {getPriceChipLabel()!}
+                  </Chip>
+                )}
+                {filters.rating != null && (
+                  <Chip
+                    variant="primary"
+                    size="sm"
+                    closable
+                    onClose={() => setFilters((prev) => ({ ...prev, rating: undefined }))}>
+                    {t('search.activeFilter.rating', { stars: filters.rating })}
+                  </Chip>
+                )}
+                {filters.inStock === true && (
+                  <Chip
+                    variant="primary"
+                    size="sm"
+                    closable
+                    onClose={() => setFilters((prev) => ({ ...prev, inStock: undefined }))}>
+                    {t('search.activeFilter.inStock')}
+                  </Chip>
+                )}
+              </ScrollView>
+              <TouchableOpacity
+                onPress={() => setFilters({})}
+                accessibilityRole="button"
+                accessibilityLabel={t('search.button.clearFilters')}>
+                <AppText raw variant="labelSmall" style={{ color: colors.primary }}>
+                  {t('search.button.clearFilters')}
+                </AppText>
+              </TouchableOpacity>
+            </View>
+          )}
 
           {searchResults.isLoading ? (
             <View className="flex-1 items-center justify-center">

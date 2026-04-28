@@ -69,6 +69,8 @@ export default function AccountScreen() {
           onCheckin={() => router.push('/checkin')}
           onVouchers={() => router.push('/vouchers')}
           onXuHistory={() => router.push('/xu-history')}
+          onFollowedShops={() => router.push('/followed-shops')}
+          onHelp={() => router.push('/help')}
         />
 
         <SettingsMenu
@@ -77,6 +79,7 @@ export default function AccountScreen() {
           onLanguage={() => languagePickerRef.current?.present()}
           onChangePassword={() => router.push('/change-password')}
           onAbout={() => router.push('/about')}
+          onSettings={() => router.push('/settings')}
         />
 
         <View className="px-4 py-4 pb-8">

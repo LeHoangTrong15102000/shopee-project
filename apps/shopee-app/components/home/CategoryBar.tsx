@@ -1,8 +1,10 @@
 import React from 'react'
-import { ScrollView } from 'react-native'
-import { Chip } from '@/components/ui'
+import { ScrollView, TouchableOpacity } from 'react-native'
+import { Chip, AppText } from '@/components/ui'
 import { useTranslation } from 'react-i18next'
+import { useRouter } from 'expo-router'
 import { Category } from '@/types/product.type'
+import { useColors } from '@/hooks/useColors'
 
 interface CategoryBarProps {
   categories: Category[]
@@ -12,6 +14,8 @@ interface CategoryBarProps {
 
 export default function CategoryBar({ categories, selectedCategory, onSelect }: CategoryBarProps) {
   const { t } = useTranslation()
+  const router = useRouter()
+  const colors = useColors()
 
   return (
     <ScrollView
@@ -30,6 +34,16 @@ export default function CategoryBar({ categories, selectedCategory, onSelect }: 
           {cat.name}
         </Chip>
       ))}
+      <TouchableOpacity
+        onPress={() => router.push('/categories')}
+        className="items-center justify-center px-2"
+        accessibilityRole="link"
+        accessibilityLabel={t('categories.viewAll')}>
+        <AppText raw variant="bodySmall" style={{ color: colors.primary }}>
+          {t('categories.viewAll')}
+        </AppText>
+      </TouchableOpacity>
     </ScrollView>
   )
 }
+

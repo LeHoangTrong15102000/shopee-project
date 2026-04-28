@@ -3,13 +3,14 @@ import { View, TextInput, Pressable } from 'react-native'
 import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
 import { useTranslation } from 'react-i18next'
 import { useColors } from '@/hooks/useColors'
-import { AppText, AppButton } from '@/components/ui'
+import { AppText, AppButton, Switch } from '@/components/ui'
 import { Star } from 'lucide-react-native'
 
 export interface FilterOptions {
   minPrice?: number
   maxPrice?: number
   rating?: number
+  inStock?: boolean
 }
 
 interface FilterBottomSheetProps {
@@ -28,6 +29,7 @@ export default function FilterBottomSheet({
   const [minPrice, setMinPrice] = useState(initialFilters.minPrice?.toString() ?? '')
   const [maxPrice, setMaxPrice] = useState(initialFilters.maxPrice?.toString() ?? '')
   const [selectedRating, setSelectedRating] = useState<number | undefined>(initialFilters.rating)
+  const [inStock, setInStock] = useState(initialFilters.inStock ?? false)
 
   const renderBackdrop = useCallback(
     (props: any) => (
@@ -41,6 +43,7 @@ export default function FilterBottomSheet({
       minPrice: minPrice ? parseFloat(minPrice) : undefined,
       maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
       rating: selectedRating,
+      inStock: inStock || undefined,
     })
     bottomSheetRef.current?.dismiss()
   }
@@ -49,6 +52,7 @@ export default function FilterBottomSheet({
     setMinPrice('')
     setMaxPrice('')
     setSelectedRating(undefined)
+    setInStock(false)
   }
 
   return (
@@ -116,6 +120,19 @@ export default function FilterBottomSheet({
                 </AppText>
               </Pressable>
             ))}
+          </View>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 24,
+            }}>
+            <AppText raw variant="label" weight="medium">
+              {t('filter.inStock')}
+            </AppText>
+            <Switch value={inStock} onValueChange={setInStock} />
           </View>
 
           <View className="flex-row gap-3">

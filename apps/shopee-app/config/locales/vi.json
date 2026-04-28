@@ -155,12 +155,15 @@
       "notifications": "Thông báo",
       "checkin": "Điểm danh",
       "xu_history": "Lịch sử Xu",
-      "vouchers": "Voucher của tôi"
+      "vouchers": "Voucher của tôi",
+      "followedShops": "Shop đã theo dõi",
+      "help": "Trợ giúp"
     },
     "settings": {
       "darkMode": "Giao diện tối",
       "language": "Ngôn ngữ",
       "changePassword": "Đổi mật khẩu",
+      "settings": "Cài đặt",
       "about": "Về ứng dụng"
     },
     "header": {
@@ -422,7 +425,15 @@
   },
   "search": {
     "button": {
-      "filter": "Lọc"
+      "filter": "Lọc",
+      "clearFilters": "Xóa bộ lọc"
+    },
+    "activeFilter": {
+      "price": "Giá: {{min}} - {{max}}",
+      "priceMin": "Giá từ {{min}}",
+      "priceMax": "Giá đến {{max}}",
+      "rating": "{{stars}}+ sao",
+      "inStock": "Hàng có sẵn"
     },
     "empty": {
       "message": "Không tìm thấy sản phẩm"
@@ -580,6 +591,7 @@
     "priceFrom": "Từ",
     "priceTo": "Đến",
     "ratingFrom": "Đánh giá tối thiểu",
+    "inStock": "Chỉ xem hàng có sẵn",
     "button": {
       "reset": "Đặt lại",
       "apply": "Áp dụng"
@@ -639,6 +651,55 @@
   },
   "languagePicker": {
     "title": "Chọn ngôn ngữ"
+  },
+  "categories": {
+    "header": {
+      "title": "Danh mục"
+    },
+    "viewAll": "Xem tất cả"
+  },
+  "flashSale": {
+    "header": {
+      "title": "Flash Sale"
+    },
+    "countdown": "Kết thúc sau",
+    "viewAll": "Xem tất cả"
+  },
+  "recentlyViewed": {
+    "header": {
+      "title": "Đã xem gần đây"
+    },
+    "viewAll": "Xem tất cả",
+    "empty": "Bạn chưa xem sản phẩm nào"
+  },
+  "followedShops": {
+    "header": {
+      "title": "Shop đã theo dõi"
+    },
+    "empty": "Bạn chưa theo dõi shop nào"
+  },
+  "settings": {
+    "header": {
+      "title": "Cài đặt"
+    },
+    "notifications": {
+      "title": "Thông báo",
+      "orderUpdates": "Cập nhật đơn hàng",
+      "promotions": "Khuyến mãi",
+      "system": "Thông báo hệ thống"
+    },
+    "privacy": {
+      "title": "Quyền riêng tư",
+      "comingSoon": "Tính năng đang được phát triển, sẽ sớm ra mắt!"
+    }
+  },
+  "help": {
+    "header": {
+      "title": "Trợ giúp"
+    },
+    "searchPlaceholder": "Tìm kiếm câu hỏi...",
+    "contactButton": "Liên hệ hỗ trợ",
+    "noResults": "Không tìm thấy kết quả"
   },
   "about": {
     "header": {

@@ -24,6 +24,7 @@ import {
   useAnswerQuestion,
   useLikeQuestion,
 } from '@/hooks/useProductDetail'
+import { useRecentlyViewedStore } from '@/store/recentlyViewedStore'
 
 import ProductDetailSkeleton from './ProductDetailSkeleton'
 import ImageGallery from './ImageGallery'
@@ -85,6 +86,28 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
   const questions = questionsQuery.data?.pages.flatMap((p) => p.data.questions) ?? []
   const relatedProducts = relatedQuery.data?.data.products ?? []
   const inWishlist = wishlistQuery.data?.data.in_wishlist ?? false
+
+  // ─── Track recently viewed ──────────────────────────────────────────────────
+  const addRecentlyViewed = useRecentlyViewedStore((state) => state.addProduct)
+  useEffect(() => {
+    if (product) {
+      addRecentlyViewed({
+        _id: product._id,
+        name: product.name,
+        image: product.image,
+        images: product.images,
+        price: product.price,
+        price_before_discount: product.price_before_discount,
+        rating: product.rating,
+        quantity: product.quantity,
+        sold: product.sold,
+        view: product.view,
+        category: product.category,
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt,
+      })
+    }
+  }, [product?._id, addRecentlyViewed])
 
   // ─── Handlers ──────────────────────────────────────────────────────────────
   const handleAddToCart = () => {

@@ -104,6 +104,91 @@ vi.mock('@tanstack/react-virtual', () => ({
   }),
 }))
 
+// Mock motion/react so motion.div, motion.span etc. render as plain HTML elements
+// and AnimatePresence renders children directly — avoids animation timing issues in tests
+vi.mock('motion/react', async () => {
+  const React = await import('react')
+  const createMotionComponent = (tag: string) =>
+    React.forwardRef(({ children, ...props }: React.HTMLAttributes<HTMLElement> & { [key: string]: unknown }, ref: React.Ref<HTMLElement>) => {
+      // Strip motion-specific props before passing to DOM element
+      const {
+        initial: _i, animate: _a, exit: _e, transition: _t, variants: _v,
+        whileHover: _wh, whileTap: _wt, whileFocus: _wf, whileDrag: _wd,
+        whileInView: _wiv, layout: _l, layoutId: _lid, onAnimationStart: _oas,
+        onAnimationComplete: _oac, style: _style, ...domProps
+      } = props as Record<string, unknown>
+      return React.createElement(tag, { ...domProps, ref }, children)
+    })
+  const componentCache = new Map<string, ReturnType<typeof createMotionComponent>>()
+  const motionProxy = new Proxy({} as Record<string, ReturnType<typeof createMotionComponent>>, {
+    get: (_target, prop: string) => {
+      if (!componentCache.has(prop)) {
+        componentCache.set(prop, createMotionComponent(prop))
+      }
+      return componentCache.get(prop)!
+    },
+  })
+
+  // Create a mock MotionValue that holds a value and notifies listeners
+  const createMotionValue = (initial: unknown) => {
+    let _val = initial
+    const listeners: Array<(v: unknown) => void> = []
+    return {
+      get: () => _val,
+      set: (v: unknown) => {
+        _val = v
+        listeners.forEach((fn) => fn(v))
+      },
+      // jump() instantly sets the value without animation (used by AnimatedNumber)
+      jump: (v: unknown) => {
+        _val = v
+        listeners.forEach((fn) => fn(v))
+      },
+      on: (_event: string, fn: (v: unknown) => void) => {
+        listeners.push(fn)
+        return () => {
+          const idx = listeners.indexOf(fn)
+          if (idx !== -1) listeners.splice(idx, 1)
+        }
+      },
+    }
+  }
+
+  return {
+    motion: motionProxy,
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => React.createElement(React.Fragment, null, children),
+    useReducedMotion: () => true,
+    useSpring: (value: number) => createMotionValue(value),
+    useTransform: (source: { get: () => unknown }, fnOrFrom: unknown, to?: unknown[]) => {
+      // Handle both useTransform(mv, fn) and useTransform(mv, [from], [to]) forms
+      const fn = typeof fnOrFrom === 'function'
+        ? (fnOrFrom as (v: unknown) => unknown)
+        : (_v: unknown) => (to ? to[to.length - 1] : _v)
+      const initial = fn(source.get())
+      const mv = createMotionValue(initial)
+      // Subscribe to source changes
+      if (source && typeof source.on === 'function') {
+        source.on('change', (v: unknown) => mv.set(fn(v)))
+      }
+      return mv
+    },
+    useMotionValue: (initial: number) => createMotionValue(initial),
+    useMotionValueEvent: (_mv: unknown, _event: string, _fn: unknown) => {
+      // No-op in tests — AnimatedNumber initializes displayText with the correct value
+    },
+    MotionConfig: ({ children }: { children: React.ReactNode }) => React.createElement(React.Fragment, null, children),
+  }
+})
+
+// Mock lottie-react to avoid canvas/animation issues in jsdom
+vi.mock('lottie-react', async () => {
+  const React = await import('react')
+  return {
+    default: ({ fallback }: { fallback?: unknown; [key: string]: unknown }) =>
+      (fallback as React.ReactElement) ?? null,
+  }
+})
+
 // Mock react-i18next
 vi.mock('react-i18next', async () => {
   const actual = await vi.importActual('react-i18next')

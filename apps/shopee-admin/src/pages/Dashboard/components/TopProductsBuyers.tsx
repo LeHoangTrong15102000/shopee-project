@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
+import { CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
 import {
   Table,
   TableBody,
@@ -9,6 +9,7 @@ import {
   TableRow,
 } from 'src/components/ui/table'
 import { formatCurrency } from 'src/utils/format'
+import { MotionCard } from 'src/components/shared/MotionCard'
 
 interface TopProductsBuyersProps {
   topProducts: Array<{ _id: string; name: string; revenue: number; sold: number }> | undefined
@@ -22,7 +23,7 @@ export default function TopProductsBuyers({ topProducts, topBuyers }: TopProduct
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <Card>
+      <MotionCard>
         <CardHeader>
           <CardTitle>{t('tables.topProductsByRevenue')}</CardTitle>
         </CardHeader>
@@ -46,9 +47,9 @@ export default function TopProductsBuyers({ topProducts, topBuyers }: TopProduct
             </TableBody>
           </Table>
         </CardContent>
-      </Card>
+      </MotionCard>
 
-      <Card>
+      <MotionCard>
         <CardHeader>
           <CardTitle>{t('tables.topBuyers')}</CardTitle>
         </CardHeader>
@@ -77,7 +78,7 @@ export default function TopProductsBuyers({ topProducts, topBuyers }: TopProduct
             </TableBody>
           </Table>
         </CardContent>
-      </Card>
+      </MotionCard>
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import { Button as ButtonPrimitive } from '@base-ui/react/button'
 import { cva, type VariantProps } from 'class-variance-authority'
+import { motion, useReducedMotion } from 'motion/react'
 
 import { cn } from 'src/lib/utils'
 
@@ -44,12 +45,23 @@ function Button({
   className,
   variant = 'default',
   size = 'default',
+  disabled,
   ...props
 }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+  const prefersReducedMotion = useReducedMotion()
   return (
     <ButtonPrimitive
       data-slot="button"
+      disabled={disabled}
       className={cn(buttonVariants({ variant, size, className }))}
+      render={
+        prefersReducedMotion || disabled ? undefined : (
+          <motion.button
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+          />
+        )
+      }
       {...props}
     />
   )

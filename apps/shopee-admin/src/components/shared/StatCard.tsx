@@ -1,6 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
+import { CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
 import { TrendingUp, TrendingDown } from 'lucide-react'
 import { cn } from 'src/lib/utils'
+import { AnimatedNumber } from './AnimatedNumber'
+import { MotionCard } from './MotionCard'
 
 interface StatCardProps {
   label: string
@@ -12,10 +14,19 @@ interface StatCardProps {
 }
 
 export function StatCard({ label, value, trend, formatter, icon, className }: StatCardProps) {
-  const displayValue = formatter ? formatter(value) : value
+  const isNumeric = typeof value === 'number'
+
+  const displayValue = isNumeric ? (
+    <AnimatedNumber
+      value={value}
+      formatter={formatter ? (n) => formatter(n) : undefined}
+    />
+  ) : (
+    formatter ? formatter(value) : value
+  )
 
   return (
-    <Card className={cn('', className)}>
+    <MotionCard className={cn('', className)}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
         {icon && <div className="text-muted-foreground">{icon}</div>}
@@ -37,6 +48,7 @@ export function StatCard({ label, value, trend, formatter, icon, className }: St
           </div>
         )}
       </CardContent>
-    </Card>
+    </MotionCard>
   )
 }
+

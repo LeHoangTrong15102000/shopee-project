@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
 import {
   LayoutDashboard,
   Users,
@@ -64,6 +65,7 @@ export function CommandPalette() {
   const { t } = useTranslation('layout')
   const { t: tc } = useTranslation('common')
   const debouncedQuery = useDebounce(query, 300)
+  const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -134,34 +136,45 @@ export function CommandPalette() {
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <Command shouldFilter={!debouncedQuery || debouncedQuery.length < 2}>
-        <CommandInput
-          placeholder={tc('search.placeholder')}
-          value={query}
-          onValueChange={setQuery}
-        />
-        <CommandList>
-          <CommandEmpty>{tc('search.noResults')}</CommandEmpty>
-          <CommandGroup heading={tc('search.pages')}>
-            {pages.map((p) => (
-              <CommandItem key={p.href} onSelect={() => select(p.href)}>
-                <p.icon className="mr-2 size-4" />
-                {t(p.titleKey)}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-          {results.length > 0 && (
-            <CommandGroup heading={tc('search.searchResults')}>
-              {results.map((r) => (
-                <CommandItem key={r.id} onSelect={() => select(r.href)}>
-                  <span className="mr-2 text-xs text-muted-foreground capitalize">[{r.type}]</span>
-                  {r.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          )}
-        </CommandList>
-      </Command>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={prefersReducedMotion ? false : { scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={prefersReducedMotion ? undefined : { scale: 0.95, opacity: 0 }}
+            transition={{ duration: 0.15, ease: 'easeOut' as const }}
+          >
+            <Command shouldFilter={!debouncedQuery || debouncedQuery.length < 2}>
+              <CommandInput
+                placeholder={tc('search.placeholder')}
+                value={query}
+                onValueChange={setQuery}
+              />
+              <CommandList>
+                <CommandEmpty>{tc('search.noResults')}</CommandEmpty>
+                <CommandGroup heading={tc('search.pages')}>
+                  {pages.map((p) => (
+                    <CommandItem key={p.href} onSelect={() => select(p.href)}>
+                      <p.icon className="mr-2 size-4" />
+                      {t(p.titleKey)}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+                {results.length > 0 && (
+                  <CommandGroup heading={tc('search.searchResults')}>
+                    {results.map((r) => (
+                      <CommandItem key={r.id} onSelect={() => select(r.href)}>
+                        <span className="mr-2 text-xs text-muted-foreground capitalize">[{r.type}]</span>
+                        {r.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
+              </CommandList>
+            </Command>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </CommandDialog>
   )
 }

@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Moon, Sun, LogOut, Settings, Check } from 'lucide-react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { Button } from 'src/components/ui/button'
 import { SidebarTrigger } from 'src/components/ui/sidebar'
 import { Separator } from 'src/components/ui/separator'
@@ -94,6 +95,7 @@ export function AppHeader() {
   const { t, i18n } = useTranslation('layout')
   const { user, logout } = useAuthStore()
   const { theme, toggleTheme } = useThemeStore()
+  const prefersReducedMotion = useReducedMotion()
 
   const segments = location.pathname.split('/').filter(Boolean)
 
@@ -146,7 +148,22 @@ export function AppHeader() {
           onClick={toggleTheme}
           aria-label={t('header.toggleTheme')}
         >
-          {theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
+          <AnimatePresence mode="wait" initial={false}>
+            {prefersReducedMotion ? (
+              theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />
+            ) : (
+              <motion.span
+                key={theme}
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+                style={{ display: 'flex' }}
+              >
+                {theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
+              </motion.span>
+            )}
+          </AnimatePresence>
         </Button>
 
         <DropdownMenu>

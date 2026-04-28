@@ -1,6 +1,7 @@
 import { useLocation, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useRef, useEffect, useCallback, type ComponentType } from 'react'
+import { motion, useReducedMotion } from 'motion/react'
 import {
   LayoutDashboard,
   Users,
@@ -177,6 +178,7 @@ export function AppSidebar() {
   const { t } = useTranslation('layout')
   const { data: unreadCount } = useNotificationUnreadCount()
   const prefetchTimerRef = useRef<ReturnType<typeof setTimeout>>(null)
+  const prefersReducedMotion = useReducedMotion()
 
   const handlePrefetch = (href: string) => {
     if (prefetchedRoutes.has(href) || !routePrefetchMap[href]) return
@@ -230,12 +232,30 @@ export function AppSidebar() {
                           isActive={isActive}
                           tooltip={title}
                         >
-                          <AnimatedIcon icon={item.icon} isActive={isActive} className="size-4" />
-                          <span>{title}</span>
-                          {hint && (
-                            <kbd className="ml-auto text-[10px] text-muted-foreground opacity-60 group-data-[collapsible=icon]:hidden">
-                              {hint}
-                            </kbd>
+                          {!isActive && !prefersReducedMotion ? (
+                            <motion.span
+                              className="flex items-center gap-2 w-full"
+                              whileHover={{ scale: 1.02 }}
+                              transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                            >
+                              <AnimatedIcon icon={item.icon} isActive={isActive} className="size-4" />
+                              <span>{title}</span>
+                              {hint && (
+                                <kbd className="ml-auto text-[10px] text-muted-foreground opacity-60 group-data-[collapsible=icon]:hidden">
+                                  {hint}
+                                </kbd>
+                              )}
+                            </motion.span>
+                          ) : (
+                            <>
+                              <AnimatedIcon icon={item.icon} isActive={isActive} className="size-4" />
+                              <span>{title}</span>
+                              {hint && (
+                                <kbd className="ml-auto text-[10px] text-muted-foreground opacity-60 group-data-[collapsible=icon]:hidden">
+                                  {hint}
+                                </kbd>
+                              )}
+                            </>
                           )}
                         </SidebarMenuButton>
                         {item.titleKey === 'menu.notifications' &&

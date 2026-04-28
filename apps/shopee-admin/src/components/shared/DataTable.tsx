@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { motion, useReducedMotion } from 'motion/react'
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -78,7 +79,18 @@ export function DataTable<TData, TValue>({
   const [rowSelection, setRowSelection] = useState({})
   const [globalFilter, setGlobalFilter] = useState('')
   const [searchValue, setSearchValue] = useState('')
+  const [dataKey, setDataKey] = useState(0)
   const { t } = useTranslation('common')
+  const prefersReducedMotion = useReducedMotion()
+
+  // Track data identity changes (not sort/filter) to replay stagger animation
+  const prevDataRef = useRef(data)
+  useEffect(() => {
+    if (prevDataRef.current !== data) {
+      prevDataRef.current = data
+      setDataKey((k) => k + 1)
+    }
+  }, [data])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -230,21 +242,25 @@ export function DataTable<TData, TValue>({
             ) : rows.length ? (
               <>
                 <tr style={{ height: `${rowVirtualizer.getVirtualItems()[0]?.start ?? 0}px` }} />
-                {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                {rowVirtualizer.getVirtualItems().map((virtualRow, i) => {
                   const row = rows[virtualRow.index]
                   return (
-                    <TableRow
-                      key={row.id}
+                    <motion.tr
+                      key={`${dataKey}-${row.id}`}
                       data-index={virtualRow.index}
-                      data-state={row.getIsSelected() && 'selected'}
+                      data-state={row.getIsSelected() ? 'selected' : undefined}
                       ref={(node) => rowVirtualizer.measureElement(node)}
+                      initial={prefersReducedMotion ? false : { opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.15, delay: Math.min(i * 0.03, 0.3), ease: 'easeOut' as const }}
+                      className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </TableCell>
                       ))}
-                    </TableRow>
+                    </motion.tr>
                   )
                 })}
                 <tr

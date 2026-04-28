@@ -1,6 +1,8 @@
 import { Loader2 } from 'lucide-react'
 import { Skeleton } from 'src/components/ui/skeleton'
 import { cn } from 'src/lib/utils'
+import { LottiePlayer } from 'src/components/shared/LottiePlayer'
+import loadingLottie from 'src/assets/lottie/loading.json'
 
 interface LoadingStateProps {
   variant?: 'spinner' | 'skeleton'
@@ -35,7 +37,12 @@ export function LoadingState({
       role="status"
       aria-live="polite"
     >
-      <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      <LottiePlayer
+        animationData={loadingLottie}
+        fallback={<Loader2 className="size-8 animate-spin text-muted-foreground" />}
+        width={48}
+        height={48}
+      />
     </div>
   )
 }

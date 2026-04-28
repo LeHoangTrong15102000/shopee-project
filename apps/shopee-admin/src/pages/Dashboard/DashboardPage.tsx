@@ -5,6 +5,7 @@ import { StatCard } from 'src/components/shared/StatCard'
 import { PeriodSelect } from 'src/components/shared/PeriodSelect'
 import { PageHeader } from 'src/components/shared/PageHeader'
 import { ErrorState } from 'src/components/shared/ErrorState'
+import { StaggerList, StaggerItem } from 'src/components/shared/StaggerList'
 import { Skeleton } from 'src/components/ui/skeleton'
 import { Card, CardContent, CardHeader } from 'src/components/ui/card'
 import {
@@ -58,9 +59,9 @@ export default function DashboardPage() {
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {loadingOverview ? (
-          Array.from({ length: 4 }).map((_, i) => (
+      {loadingOverview ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
             <Card key={i}>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <Skeleton className="h-4 w-24" />
@@ -71,37 +72,48 @@ export default function DashboardPage() {
                 <Skeleton className="mt-2 h-3 w-16" />
               </CardContent>
             </Card>
-          ))
-        ) : (
-          <>
-            <StatCard
-              label={t('stats.totalRevenue')}
-              value={overview?.total_revenue ?? 0}
-              trend={overview?.revenue_change}
-              formatter={formatCurrency}
-              icon={<DollarSign className="size-4" />}
-            />
-            <StatCard
-              label={t('stats.totalOrders')}
-              value={overview?.total_orders ?? 0}
-              trend={overview?.orders_change}
-              icon={<ShoppingCart className="size-4" />}
-            />
-            <StatCard
-              label={t('stats.totalUsers')}
-              value={overview?.total_users ?? 0}
-              trend={overview?.users_change}
-              icon={<Users className="size-4" />}
-            />
-            <StatCard
-              label={t('stats.totalProducts')}
-              value={overview?.total_products ?? 0}
-              trend={overview?.products_change}
-              icon={<Package className="size-4" />}
-            />
-          </>
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <StaggerList
+          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+          staggerDelay={0.075}
+        >
+            <StaggerItem>
+              <StatCard
+                label={t('stats.totalRevenue')}
+                value={overview?.total_revenue ?? 0}
+                trend={overview?.revenue_change}
+                formatter={formatCurrency}
+                icon={<DollarSign className="size-4" />}
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <StatCard
+                label={t('stats.totalOrders')}
+                value={overview?.total_orders ?? 0}
+                trend={overview?.orders_change}
+                icon={<ShoppingCart className="size-4" />}
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <StatCard
+                label={t('stats.totalUsers')}
+                value={overview?.total_users ?? 0}
+                trend={overview?.users_change}
+                icon={<Users className="size-4" />}
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <StatCard
+                label={t('stats.totalProducts')}
+                value={overview?.total_products ?? 0}
+                trend={overview?.products_change}
+                icon={<Package className="size-4" />}
+              />
+            </StaggerItem>
+          </StaggerList>
+      )}
 
       <Suspense fallback={<ChartSkeleton columns={2} />}>
         <RevenueOrderCharts revenue={revenue} orderTrend={orderTrend} />

@@ -146,6 +146,42 @@
   }
 }
 
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@utility login-bg {
+  background: linear-gradient(
+    135deg,
+    oklch(0.97 0.011 37),
+    oklch(0.96 0.02 33),
+    oklch(0.98 0.008 260),
+    oklch(0.97 0.011 37)
+  );
+  background-size: 300% 300%;
+  animation: gradient-shift 12s ease infinite;
+}
+
+.dark .login-bg {
+  background: linear-gradient(
+    135deg,
+    oklch(0.18 0.02 33),
+    oklch(0.16 0.015 260),
+    oklch(0.19 0.01 163),
+    oklch(0.18 0.02 33)
+  );
+  background-size: 300% 300%;
+  animation: gradient-shift 12s ease infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

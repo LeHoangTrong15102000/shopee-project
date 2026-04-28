@@ -49,6 +49,7 @@ export default function RevenueOrderCharts({ revenue, orderTrend }: RevenueOrder
                   fill="var(--color-revenue)"
                   fillOpacity={0.3}
                   stroke="var(--color-revenue)"
+                  isAnimationActive={true}
                 />
               </AreaChart>
             </ChartContainer>
@@ -84,6 +85,7 @@ export default function RevenueOrderCharts({ revenue, orderTrend }: RevenueOrder
                   stroke="var(--color-orders)"
                   strokeWidth={2}
                   dot={false}
+                  isAnimationActive={true}
                 />
               </LineChart>
             </ChartContainer>

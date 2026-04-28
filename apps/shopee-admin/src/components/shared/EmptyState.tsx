@@ -2,6 +2,8 @@ import { Inbox } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'src/components/ui/button'
 import { cn } from 'src/lib/utils'
+import { LottiePlayer } from 'src/components/shared/LottiePlayer'
+import noResultsLottie from 'src/assets/lottie/no-results.json'
 
 interface EmptyStateProps {
   title?: string
@@ -21,7 +23,16 @@ export function EmptyState({ title, description, icon, action, className }: Empt
       role="status"
       aria-live="polite"
     >
-      <div className="mb-4 text-muted-foreground">{icon ?? <Inbox className="size-12" />}</div>
+      <div className="mb-4 text-muted-foreground">
+        {icon ?? (
+          <LottiePlayer
+            animationData={noResultsLottie}
+            fallback={<Inbox className="size-12" />}
+            width={80}
+            height={80}
+          />
+        )}
+      </div>
       <p className="text-lg font-medium">{resolvedTitle}</p>
       <p className="mt-1 text-sm text-muted-foreground">{resolvedDescription}</p>
       {action && (

@@ -126,10 +126,10 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
   }
 
   const handleSubmitReview = (data: { rating: number; comment: string }) => {
-    // Review creation disabled — requires purchase_id from a completed purchase.
-    // This function is kept for future implementation when purchase verification is added.
-    // Users should not be able to reach this point as the review button is hidden.
-    console.warn('Review submission attempted without purchase_id')
+    createReview.mutate(
+      { purchase_id: productId, rating: data.rating, comment: data.comment },
+      { onSuccess: () => reviewFormRef.current?.dismiss() }
+    )
   }
 
   const handleSubmitQuestion = (text: string) => {

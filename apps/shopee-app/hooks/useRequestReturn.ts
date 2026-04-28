@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router'
 import { requestReturn, type ReturnPayload } from '@/apis/order.api'
 import { toast } from '@/utils/toast'
 import { orderKeys } from '@/hooks/useOrders'
+import { handleMutationError } from '@/utils/mutationErrorHandler'
 
 export function useRequestReturn() {
   const queryClient = useQueryClient()
@@ -17,8 +18,6 @@ export function useRequestReturn() {
       queryClient.invalidateQueries({ queryKey: ['orders'] })
       router.back()
     },
-    onError: () => {
-      toast.error('Không thể gửi yêu cầu', 'Vui lòng thử lại sau')
-    },
+    onError: handleMutationError,
   })
 }

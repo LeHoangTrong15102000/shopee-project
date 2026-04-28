@@ -11,8 +11,8 @@ export function useProducts(category?: string) {
       getProducts({ page: pageParam, limit: PRODUCTS_PER_PAGE, category }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      const { page, page_size } = lastPage.pagination
-      return page < page_size ? page + 1 : undefined
+      const { page, total_pages } = lastPage.pagination
+      return page < total_pages ? page + 1 : undefined
     },
     select: (data) => ({
       ...data,

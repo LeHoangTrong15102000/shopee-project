@@ -21,12 +21,14 @@ import CheckoutFooter from '@/components/checkout/CheckoutFooter'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
 import { Address } from '@/apis/address.api'
 import { ShippingMethod } from '@/apis/checkout.api'
+import { useQueryClient } from '@tanstack/react-query'
 import { handleMutationError } from '@/utils/mutationErrorHandler'
 
 export default function CheckoutScreen() {
   const { t } = useTranslation()
   const colors = useColors()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const { purchase_ids, selectedAddressId: returnedAddressId } = useLocalSearchParams<{
     purchase_ids: string
     selectedAddressId?: string
@@ -103,6 +105,7 @@ export default function CheckoutScreen() {
       },
       {
         onSuccess: (data) => {
+          queryClient.invalidateQueries({ queryKey: ['cart'] })
           const orderId = (data as { data?: { order_id?: string } })?.data?.order_id
           router.replace({ pathname: '/order-success', params: { orderId } })
         },

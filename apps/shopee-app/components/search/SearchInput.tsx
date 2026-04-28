@@ -46,7 +46,7 @@ export default function SearchInput({
         </Pressable>
       )}
 
-      <View className="flex-1 flex-row items-center rounded-sm bg-white px-3 py-2">
+      <View className="flex-1 flex-row items-center rounded-sm px-3 py-2" style={{ backgroundColor: colors.neutrals900 }}>
         <Search size={16} color="#999" />
         <TextInput
           ref={inputRef}
@@ -57,7 +57,7 @@ export default function SearchInput({
           placeholderTextColor="#999"
           returnKeyType="search"
           className="ml-2 flex-1 text-sm text-foreground"
-          style={{ paddingVertical: 0, color: '#333' }}
+          style={{ paddingVertical: 0, color: colors.foreground }}
         />
         {query.length > 0 && (
           <Pressable

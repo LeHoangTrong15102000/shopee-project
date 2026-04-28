@@ -16,7 +16,7 @@ const TABS = ['Sản phẩm', 'Danh mục', 'Mới nhất'] as const
 type Tab = (typeof TABS)[number]
 
 const TAB_SORT: Record<Tab, string> = {
-  'Sản phẩm': 'popular',
+  'Sản phẩm': 'sold',
   'Danh mục': 'category',
   'Mới nhất': 'createdAt',
 }

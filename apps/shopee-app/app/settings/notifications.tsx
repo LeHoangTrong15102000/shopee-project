@@ -1,19 +1,23 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { AppText, Switch } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
+import { useNotificationSettingsStore } from '@/store/notificationSettingsStore'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
 
 export default function NotificationSettingsScreen() {
   const { t } = useTranslation()
   const colors = useColors()
 
-  const [orderUpdates, setOrderUpdates] = useState(true)
-  const [promotions, setPromotions] = useState(true)
-  const [system, setSystem] = useState(true)
+  const orderUpdates = useNotificationSettingsStore((s) => s.orderUpdates)
+  const promotions = useNotificationSettingsStore((s) => s.promotions)
+  const system = useNotificationSettingsStore((s) => s.system)
+  const setOrderUpdates = useNotificationSettingsStore((s) => s.setOrderUpdates)
+  const setPromotions = useNotificationSettingsStore((s) => s.setPromotions)
+  const setSystem = useNotificationSettingsStore((s) => s.setSystem)
 
   const rows = [
     {

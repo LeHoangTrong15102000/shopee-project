@@ -1,18 +1,19 @@
 import React from 'react'
-import { View, ScrollView, ActivityIndicator } from 'react-native'
+import { View, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
-import { AppText } from '@/components/ui'
+import { AppText, AppButton } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { formatPrice } from '@/utils/price'
 import { useOrderDetail, useCancelOrder, useConfirmReceived, useReturnOrder } from '@/hooks/useOrders'
 import { useDialog } from '@/components/ui/DialogProvider'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
 import OrderDetailHeader from '@/components/order-detail/OrderDetailHeader'
-import OrderItems from '@/components/order-detail/OrderItems'
-import OrderActions from '@/components/order-detail/OrderActions'
 import OrderTimeline from '@/components/order-detail/OrderTimeline'
+import OrderActions from '@/components/order-detail/OrderActions'
+import { ORDER_STATUS } from '@/constants/order'
+import { useReorder } from '@/hooks/useReorder'
 
 export default function OrderDetailScreen() {
   const { t } = useTranslation()
@@ -25,8 +26,11 @@ export default function OrderDetailScreen() {
   const { mutate: cancelOrder, isPending: isCancelling } = useCancelOrder()
   const { mutate: confirmReceived, isPending: isConfirming } = useConfirmReceived()
   const { mutate: returnOrder } = useReturnOrder()
+  const { mutate: reorder, isPending: isReordering } = useReorder()
 
   const order = data?.data
+
+  const isDelivered = order?.status === ORDER_STATUS.DELIVERED
 
   if (isLoading) {
     return (
@@ -78,6 +82,13 @@ export default function OrderDetailScreen() {
 
   const subtotal = order.items?.reduce((sum, item) => sum + item.price * item.buy_count, 0) ?? 0
 
+  const isWithinReturnWindow = (() => {
+    if (!isDelivered) return false
+    const deliveredAt = (order as { deliveredAt?: string }).deliveredAt ?? order.updatedAt
+    const sevenDaysMs = 7 * 24 * 60 * 60 * 1000
+    return Date.now() - new Date(deliveredAt).getTime() < sevenDaysMs
+  })()
+
   return (
     <>
       <Stack.Screen
@@ -101,7 +112,49 @@ export default function OrderDetailScreen() {
             </View>
           )}
 
-          <OrderItems items={order.items ?? []} />
+          <View className="border-b border-neutrals900 px-4 py-3">
+            <AppText raw variant="body" weight="semibold" className="mb-3">
+              {t('orderDetail.section.products')}
+            </AppText>
+            {(order.items ?? []).map((item) => (
+              <View key={item.product._id} className="mb-3">
+                <View className="flex-row items-start gap-3">
+                  <View className="flex-1">
+                    <AppText raw variant="bodySmall" numberOfLines={2}>
+                      {item.product.name}
+                    </AppText>
+                    <View className="mt-1 flex-row items-center justify-between">
+                      <AppText raw variant="labelSmall" color="muted">
+                        x{item.buy_count}
+                      </AppText>
+                      <AppText raw variant="bodySmall" weight="semibold" color="primary">
+                        {formatPrice(item.price * item.buy_count)}
+                      </AppText>
+                    </View>
+                  </View>
+                </View>
+                {isDelivered && (
+                  <TouchableOpacity
+                    onPress={() =>
+                      router.push({
+                        pathname: '/write-review',
+                        params: {
+                          productId: item.product._id,
+                          orderId: order._id,
+                          productName: item.product.name,
+                        },
+                      })
+                    }
+                    className="mt-2 self-end rounded-lg border border-neutrals700 px-3 py-1.5"
+                    accessibilityRole="button">
+                    <AppText raw variant="bodySmall" color="primary">
+                      Đánh giá
+                    </AppText>
+                  </TouchableOpacity>
+                )}
+              </View>
+            ))}
+          </View>
 
           <View className="border-b border-neutrals900 px-4 py-3">
             <AppText raw variant="body" weight="semibold" className="mb-3">
@@ -142,6 +195,28 @@ export default function OrderDetailScreen() {
             isCancelling={isCancelling}
             isConfirming={isConfirming}
           />
+
+          {isDelivered && (
+            <View className="gap-2 px-4 pb-4">
+              <AppButton
+                variant="primary"
+                onPress={() => reorder(order._id)}
+                loading={isReordering}
+                className="w-full">
+                Mua lại
+              </AppButton>
+              {isWithinReturnWindow && (
+                <AppButton
+                  variant="outline"
+                  onPress={() =>
+                    router.push({ pathname: '/return-request', params: { orderId: order._id } })
+                  }
+                  className="w-full">
+                  Trả hàng
+                </AppButton>
+              )}
+            </View>
+          )}
         </ScrollView>
       </SafeAreaView>
     </>

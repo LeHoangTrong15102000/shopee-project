@@ -92,6 +92,10 @@ const authApi = {
       throw error
     }
   },
+
+  forgotPassword: async (email: string): Promise<void> => {
+    await http.post('auth/forgot-password', { email })
+  },
 }
 
 export default authApi

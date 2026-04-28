@@ -142,6 +142,17 @@ export default function SignInScreen() {
                 </FormItem>
               )}
             />
+            <View className="mt-1 items-end">
+              <AppButton
+                variant="link"
+                onPress={() => router.push('/(auth)/forgot-password')}
+                className="min-h-[36px] px-0"
+                textClassname="text-white/70"
+                accessibilityRole="link"
+                accessibilityLabel="Quên mật khẩu?">
+                Quên mật khẩu?
+              </AppButton>
+            </View>
           </Animated.View>
 
           {/* Sign In Button */}

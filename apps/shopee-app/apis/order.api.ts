@@ -83,3 +83,44 @@ export async function getOrderTracking(orderId: string) {
   const res = await http.get<ApiResponse<TrackingStep[]>>(`orders/${orderId}/tracking`)
   return res.data
 }
+
+// ─── Reorder ──────────────────────────────────────────────────────────────────
+
+export interface ReorderResult {
+  addedCount: number
+  skippedItems: string[]
+}
+
+interface AddMultipleResponse {
+  addedCount: number
+  skippedItems: string[]
+}
+
+export async function reorderItems(orderId: string): Promise<ReorderResult> {
+  const orderRes = await http.get<ApiResponse<Order>>(`orders/${orderId}`)
+  const order = orderRes.data.data
+
+  const items = order.items.map((item) => ({
+    product_id: item.product._id,
+    buy_count: item.buy_count,
+  }))
+
+  const res = await http.post<ApiResponse<AddMultipleResponse>>('cart/add-multiple', { items })
+  return {
+    addedCount: res.data.data.addedCount,
+    skippedItems: res.data.data.skippedItems,
+  }
+}
+
+// ─── Return Request ───────────────────────────────────────────────────────────
+
+export type ReturnReason = 'damaged' | 'wrong_item' | 'not_as_described' | 'changed_mind' | 'other'
+
+export interface ReturnPayload {
+  reason: ReturnReason
+  description?: string
+}
+
+export async function requestReturn(orderId: string, payload: ReturnPayload): Promise<void> {
+  await http.put<ApiResponse<unknown>>(`orders/${orderId}/return`, payload)
+}

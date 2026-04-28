@@ -1,6 +1,6 @@
 import React from 'react'
 import { View } from 'react-native'
-import { Heart, MapPin, Bell, Calendar, Tag } from 'lucide-react-native'
+import { Heart, MapPin, Bell, Calendar, Tag, Coins } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
 import { MenuList, AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
@@ -11,6 +11,7 @@ interface UtilityMenuProps {
   onNotifications: () => void
   onCheckin: () => void
   onVouchers: () => void
+  onXuHistory: () => void
 }
 
 export default function UtilityMenu({
@@ -19,6 +20,7 @@ export default function UtilityMenu({
   onNotifications,
   onCheckin,
   onVouchers,
+  onXuHistory,
 }: UtilityMenuProps) {
   const { t } = useTranslation()
   const colors = useColors()
@@ -43,6 +45,11 @@ export default function UtilityMenu({
       title: t('account.menu.checkin'),
       icon: () => <Calendar size={20} color={colors.success} />,
       onPress: onCheckin,
+    },
+    {
+      title: t('account.menu.xu_history'),
+      icon: () => <Coins size={20} color={colors.coin} />,
+      onPress: onXuHistory,
     },
     {
       title: t('account.menu.vouchers'),

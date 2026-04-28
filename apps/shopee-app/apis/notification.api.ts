@@ -12,6 +12,8 @@ export interface Notification {
   title: string
   content: string
   is_read: boolean
+  type?: string
+  referenceId?: string
   createdAt: string
   updatedAt: string
 }

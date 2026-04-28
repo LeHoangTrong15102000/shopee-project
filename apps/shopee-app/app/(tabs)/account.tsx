@@ -68,6 +68,7 @@ export default function AccountScreen() {
           onNotifications={() => router.push('/(tabs)/notifications')}
           onCheckin={() => router.push('/checkin')}
           onVouchers={() => router.push('/vouchers')}
+          onXuHistory={() => router.push('/xu-history')}
         />
 
         <SettingsMenu

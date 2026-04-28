@@ -36,6 +36,13 @@ export async function getCart() {
   return res.data
 }
 
+export async function getDeliveredPurchases() {
+  const res = await http.get<ApiResponse<CartItem[]>>('purchases', {
+    params: { status: 4 },
+  })
+  return res.data
+}
+
 export async function updateCartItem(body: { product_id: string; buy_count: number }) {
   const res = await http.put<ApiResponse<CartItem>>('purchases', body)
   return res.data

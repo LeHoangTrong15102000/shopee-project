@@ -91,6 +91,9 @@ function AppContent() {
                   <Stack.Screen name="vouchers" options={{ headerShown: false }} />
                   <Stack.Screen name="checkin" options={{ headerShown: false }} />
                   <Stack.Screen name="about" options={{ headerShown: false }} />
+                  <Stack.Screen name="write-review" options={{ headerShown: false }} />
+                  <Stack.Screen name="return-request" options={{ headerShown: false }} />
+                  <Stack.Screen name="xu-history" options={{ headerShown: false }} />
                 </Stack>
               </ThemeProvider>
             </DialogProvider>

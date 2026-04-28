@@ -9,6 +9,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Bell } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
+import { useRouter } from 'expo-router'
 import { AppText, EmptyState } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import {
@@ -19,10 +20,13 @@ import {
 } from '@/hooks/useNotifications'
 import NotificationItem from '@/components/notifications/NotificationItem'
 import NotificationSkeleton from '@/components/notifications/NotificationSkeleton'
+import { routeNotification } from '@/utils/notificationRouter'
+import type { Notification } from '@/apis/notification.api'
 
 export default function NotificationsScreen() {
   const { t } = useTranslation()
   const colors = useColors()
+  const router = useRouter()
 
   const { data, isLoading, isRefetching, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useNotifications()
@@ -36,8 +40,12 @@ export default function NotificationsScreen() {
   const handlePress = useCallback(
     (id: string) => {
       markAsRead(id)
+      const notification = allNotifications.find((n) => n._id === id)
+      if (notification) {
+        routeNotification(notification, router)
+      }
     },
-    [markAsRead]
+    [markAsRead, allNotifications, router]
   )
 
   const handleDelete = useCallback(
@@ -114,4 +122,3 @@ export default function NotificationsScreen() {
     </SafeAreaView>
   )
 }
-

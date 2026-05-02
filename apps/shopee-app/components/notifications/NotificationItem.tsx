@@ -45,7 +45,7 @@ export default function NotificationItem({ item, onPress, onDelete }: Notificati
       className="items-center justify-center bg-error px-5"
       accessibilityRole="button"
       accessibilityLabel={t('a11y.deleteNotification')}>
-      <Trash2 size={20} color="#fff" />
+      <Trash2 size={20} color={colors.primaryForeground} />
     </TouchableOpacity>
   )
 

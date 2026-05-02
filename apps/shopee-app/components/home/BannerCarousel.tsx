@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { View, FlatList, Image, Dimensions, ViewToken } from 'react-native'
+import { View, FlatList, Dimensions, ViewToken } from 'react-native'
 import { useColors } from '@/hooks/useColors'
+import { AppImage } from '@/components/ui'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
@@ -53,10 +54,10 @@ export default function BannerCarousel() {
         viewabilityConfig={viewabilityConfig}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <Image
+          <AppImage
             source={{ uri: item.image }}
             style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH * 0.45 }}
-            resizeMode="cover"
+            contentFit="cover"
           />
         )}
         getItemLayout={(_, index) => ({

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { View } from 'react-native'
 import { Heart, MapPin, Bell, Calendar, Tag, Coins, Store, HelpCircle, MessageCircle } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
@@ -31,7 +31,7 @@ export default function UtilityMenu({
   const { t } = useTranslation()
   const colors = useColors()
 
-  const items = [
+  const items = useMemo(() => [
     {
       title: t('account.menu.chat'),
       icon: () => <MessageCircle size={20} color={colors.primary} />,
@@ -77,7 +77,7 @@ export default function UtilityMenu({
       icon: () => <HelpCircle size={20} color={colors.foreground} />,
       onPress: onHelp,
     },
-  ]
+  ], [t, colors.primary, colors.secondary, colors.warning, colors.success, colors.coin, colors.error, colors.foreground, onChat, onWishlist, onAddresses, onNotifications, onCheckin, onXuHistory, onVouchers, onFollowedShops, onHelp])
 
   return (
     <View className="px-4 py-4">

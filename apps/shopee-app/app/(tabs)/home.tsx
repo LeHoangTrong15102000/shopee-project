@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { View, FlatList, ActivityIndicator, RefreshControl } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { ShoppingBag } from 'lucide-react-native'
@@ -68,7 +68,7 @@ export default function HomeScreen() {
     []
   )
 
-  const ListHeader = (
+  const ListHeader = useMemo(() => (
     <>
       {/* Banner */}
       {productsLoading ? <BannerSkeleton /> : <BannerCarousel />}
@@ -107,7 +107,7 @@ export default function HomeScreen() {
         />
       )}
     </>
-  )
+  ), [productsLoading, categoriesLoading, categoriesError, productsError, products.length, categories, selectedCategory, handleCategorySelect, refetchCategories, refetchProducts, t])
 
   const ListFooter = isFetchingNextPage ? (
     <View className="items-center py-4">

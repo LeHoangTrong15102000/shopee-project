@@ -126,19 +126,27 @@ export function useToggleWishlist(productId: string) {
 }
 
 export function useAddToCart() {
+  const queryClient = useQueryClient()
   const { showSuccess } = useToast()
   const { t } = useTranslation()
 
   return useMutation({
     mutationFn: (body: { product_id: string; buy_count: number }) => addToCartApi(body),
-    onSuccess: () => showSuccess(t('PD_ADD_TO_CART_SUCCESS')),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cart'] })
+      showSuccess(t('PD_ADD_TO_CART_SUCCESS'))
+    },
     onError: handleMutationError,
   })
 }
 
 export function useBuyNow() {
+  const { showSuccess } = useToast()
+  const { t } = useTranslation()
+
   return useMutation({
     mutationFn: (body: { product_id: string; buy_count: number }) => buyNowApi(body),
+    onSuccess: () => showSuccess(t('PD_BUY_NOW_SUCCESS')),
     onError: handleMutationError,
   })
 }

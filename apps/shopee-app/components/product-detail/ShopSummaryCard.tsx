@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { View, Image, TouchableOpacity } from 'react-native'
+import { View, TouchableOpacity } from 'react-native'
 import { Star, ChevronRight, MessageCircle } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { AppText, AppButton } from '@/components/ui'
+import { AppText, AppButton, AppImage } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { ShopSummary } from '@/apis/product-detail.api'
 import { createOrGetConversation } from '@/apis/chat.api'
@@ -47,9 +47,10 @@ export default function ShopSummaryCard({ shopSummary }: ShopSummaryCardProps) {
             overflow: 'hidden',
           }}>
           {shopSummary.avatar ? (
-            <Image
+            <AppImage
               source={{ uri: shopSummary.avatar }}
               style={{ width: '100%', height: '100%' }}
+              contentFit="cover"
               accessibilityLabel={`${shopSummary.name} avatar`}
             />
           ) : null}

@@ -1,8 +1,8 @@
 import React from 'react'
-import { View, Image, Dimensions, TouchableOpacity } from 'react-native'
+import { View, Dimensions, TouchableOpacity } from 'react-native'
 import { Star } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { AppText } from '@/components/ui'
+import { AppText, AppImage } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { formatPrice, getDiscountPercent } from '@/utils/price'
 import { Product } from '@/types/product.type'
@@ -31,10 +31,10 @@ export default function ProductCard({ product }: ProductCardProps) {
       style={{ width: CARD_WIDTH }}
       className="overflow-hidden rounded-lg bg-neutrals900">
       <View style={{ width: CARD_WIDTH, height: CARD_WIDTH, position: 'relative' }}>
-        <Image
+        <AppImage
           source={{ uri: product.image }}
           style={{ width: '100%', height: '100%' }}
-          resizeMode="cover"
+          contentFit="cover"
         />
         {hasDiscount && (
           <View className="absolute right-0 top-0 rounded-bl-lg bg-primary px-1.5 py-0.5">

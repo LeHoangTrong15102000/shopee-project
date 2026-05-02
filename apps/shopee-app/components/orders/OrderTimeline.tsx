@@ -31,12 +31,12 @@ export default function OrderTimeline({
         label: t('orderTimeline.step.placed'),
         timestamp: createdAt,
         completed: true,
-        icon: <Clock size={16} color="#fff" />,
+        icon: <Clock size={16} color={colors.primaryForeground} />,
       },
       {
         label: t('orderTimeline.step.cancelled'),
         completed: true,
-        icon: <XCircle size={16} color="#fff" />,
+        icon: <XCircle size={16} color={colors.primaryForeground} />,
       },
     ]
 
@@ -94,17 +94,17 @@ export default function OrderTimeline({
         label: t('orderTimeline.step.placed'),
         timestamp: createdAt,
         completed: true,
-        icon: <Clock size={16} color="#fff" />,
+        icon: <Clock size={16} color={colors.primaryForeground} />,
       },
       {
         label: t('orderTimeline.step.delivered'),
         completed: true,
-        icon: <Package size={16} color="#fff" />,
+        icon: <Package size={16} color={colors.primaryForeground} />,
       },
       {
         label: t('orderTimeline.step.returned'),
         completed: true,
-        icon: <RotateCcw size={16} color="#fff" />,
+        icon: <RotateCcw size={16} color={colors.primaryForeground} />,
       },
     ]
 
@@ -171,27 +171,27 @@ export default function OrderTimeline({
       label: t('orderTimeline.step.placed'),
       timestamp: createdAt,
       completed: currentIdx >= 0,
-      icon: <Clock size={16} color={currentIdx >= 0 ? '#fff' : colors.neutrals400} />,
+      icon: <Clock size={16} color={currentIdx >= 0 ? colors.primaryForeground : colors.neutrals400} />,
     },
     {
       label: t('orderTimeline.step.confirmed'),
       completed: currentIdx >= 1,
-      icon: <CheckCircle size={16} color={currentIdx >= 1 ? '#fff' : colors.neutrals400} />,
+      icon: <CheckCircle size={16} color={currentIdx >= 1 ? colors.primaryForeground : colors.neutrals400} />,
     },
     {
       label: t('orderTimeline.step.processing'),
       completed: currentIdx >= 2,
-      icon: <Package size={16} color={currentIdx >= 2 ? '#fff' : colors.neutrals400} />,
+      icon: <Package size={16} color={currentIdx >= 2 ? colors.primaryForeground : colors.neutrals400} />,
     },
     {
       label: t('orderTimeline.step.shipping'),
       completed: currentIdx >= 3,
-      icon: <Truck size={16} color={currentIdx >= 3 ? '#fff' : colors.neutrals400} />,
+      icon: <Truck size={16} color={currentIdx >= 3 ? colors.primaryForeground : colors.neutrals400} />,
     },
     {
       label: t('orderTimeline.step.delivered'),
       completed: currentIdx >= 4,
-      icon: <Package size={16} color={currentIdx >= 4 ? '#fff' : colors.neutrals400} />,
+      icon: <Package size={16} color={currentIdx >= 4 ? colors.primaryForeground : colors.neutrals400} />,
     },
   ]
 

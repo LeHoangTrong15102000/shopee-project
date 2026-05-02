@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react'
 import {
   View,
   ScrollView,
-  Image,
   TouchableOpacity,
   ActivityIndicator,
   Platform,
+  KeyboardAvoidingView,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useRouter } from 'expo-router'
@@ -14,7 +14,7 @@ import * as ImagePicker from 'expo-image-picker'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
-import { AppText, AppInput, AppButton } from '@/components/ui'
+import { AppText, AppInput, AppButton, AppImage } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { useForm } from '@/hooks/useForm'
 import { useProfile, useUpdateProfile, useUploadAvatar } from '@/hooks/useProfile'
@@ -144,15 +144,17 @@ export default function ProfileEditScreen() {
         }}
       />
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 16 }}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ padding: 16 }}>
           {/* Avatar */}
           <View className="mb-6 items-center">
             <TouchableOpacity onPress={handlePickAvatar} disabled={isUploadingAvatar}>
               <View style={{ position: 'relative' }}>
                 {avatarSource ? (
-                  <Image
+                  <AppImage
                     source={avatarSource}
                     style={{ width: 96, height: 96, borderRadius: 48 }}
+                    contentFit="cover"
                   />
                 ) : (
                   <View
@@ -164,7 +166,7 @@ export default function ProfileEditScreen() {
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}>
-                    <AppText raw variant="heading1" style={{ color: '#fff' }}>
+                    <AppText raw variant="heading1" style={{ color: colors.primaryForeground }}>
                       {displayInitial}
                     </AppText>
                   </View>
@@ -197,7 +199,7 @@ export default function ProfileEditScreen() {
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}>
-                    <Camera size={16} color="#fff" />
+                    <Camera size={16} color={colors.primaryForeground} />
                   </View>
                 )}
               </View>
@@ -288,6 +290,7 @@ export default function ProfileEditScreen() {
             {t('profileEdit.button.save')}
           </AppButton>
         </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </>
   )

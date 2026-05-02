@@ -4,8 +4,9 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { useRouter } from 'expo-router'
 import { CheckCircle } from 'lucide-react-native'
 import { AppText, AppButton, AppInput } from '@/components/ui'
+import { useColors } from '@/hooks/useColors'
 import { useForgotPassword } from '@/hooks/useForgotPassword'
-import { AppColors, AppSpacing } from '@/config/colors'
+import { AppSpacing } from '@/config/colors'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -13,6 +14,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 export default function ForgotPasswordScreen() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
+  const colors = useColors()
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
@@ -30,7 +32,7 @@ export default function ForgotPasswordScreen() {
   if (submitted) {
     return (
       <LinearGradient
-        colors={[AppColors.gradientStart, AppColors.gradientMiddle, AppColors.gradientEnd]}
+        colors={[colors.gradientStart, colors.gradientMiddle, colors.gradientEnd]}
         style={{ flex: 1 }}>
         <View
           style={{
@@ -62,7 +64,7 @@ export default function ForgotPasswordScreen() {
 
   return (
     <LinearGradient
-      colors={[AppColors.gradientStart, AppColors.gradientMiddle, AppColors.gradientEnd]}
+      colors={[colors.gradientStart, colors.gradientMiddle, colors.gradientEnd]}
       style={{ flex: 1 }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

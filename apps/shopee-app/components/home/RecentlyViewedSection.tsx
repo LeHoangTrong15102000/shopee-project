@@ -1,8 +1,8 @@
 import React from 'react'
-import { View, FlatList, TouchableOpacity, Image } from 'react-native'
+import { View, FlatList, TouchableOpacity } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
-import { AppText } from '@/components/ui'
+import { AppText, AppImage } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { useRecentlyViewedStore } from '@/store/recentlyViewedStore'
 import { formatPrice } from '@/utils/price'
@@ -64,10 +64,10 @@ export default function RecentlyViewedSection() {
                 overflow: 'hidden',
                 backgroundColor: colors.neutrals900,
               }}>
-              <Image
+              <AppImage
                 source={{ uri: item.image }}
                 style={{ width: '100%', height: '100%' }}
-                resizeMode="cover"
+                contentFit="cover"
               />
             </View>
             <View style={{ marginTop: 4 }}>

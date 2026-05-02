@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
-import { ScrollView } from 'react-native'
+import { ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
 import { useColors } from '@/hooks/useColors'
 import {
   useCheckoutSummary,
@@ -123,7 +123,8 @@ export default function CheckoutScreen() {
         }}
       />
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingBottom: 100 }}>
           <CheckoutAddressCard
             address={selectedAddress}
             onChangeAddress={() =>
@@ -156,6 +157,7 @@ export default function CheckoutScreen() {
             total={total}
           />
         </ScrollView>
+        </KeyboardAvoidingView>
 
         <CheckoutFooter
           total={total}

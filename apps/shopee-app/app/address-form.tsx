@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { View, ScrollView } from 'react-native'
+import { View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { z } from 'zod'
@@ -107,7 +107,8 @@ export default function AddressFormScreen() {
         }}
       />
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 16 }}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ padding: 16 }}>
           <View className="gap-4">
             <AppInput
               label={t('addressForm.field.nameLabel')}
@@ -166,6 +167,7 @@ export default function AddressFormScreen() {
             {t('addressForm.button.save')}
           </AppButton>
         </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </>
   )

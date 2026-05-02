@@ -1,9 +1,9 @@
 import React from 'react'
-import { View, Image, TouchableOpacity } from 'react-native'
+import { View, TouchableOpacity } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
-import { AppText } from '@/components/ui'
+import { AppText, AppImage } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { type User } from '@/types/user.type'
 
@@ -28,9 +28,9 @@ export default function ProfileHeader({ user, isLoading }: ProfileHeaderProps) {
       style={{ paddingHorizontal: 16, paddingVertical: 24 }}>
       <View className="flex-row items-center gap-4">
         {user?.avatar ? (
-          <Image
+          <AppImage
             source={{ uri: user.avatar }}
-            style={{ width: 64, height: 64, borderRadius: 32, borderWidth: 2, borderColor: '#fff' }}
+            style={{ width: 64, height: 64, borderRadius: 32, borderWidth: 2, borderColor: colors.primaryForeground }}
           />
         ) : (
           <View
@@ -42,27 +42,27 @@ export default function ProfileHeader({ user, isLoading }: ProfileHeaderProps) {
               alignItems: 'center',
               justifyContent: 'center',
               borderWidth: 2,
-              borderColor: '#fff',
+              borderColor: colors.primaryForeground,
             }}>
-            <AppText raw variant="heading2" style={{ color: '#fff' }}>
+            <AppText raw variant="heading2" style={{ color: colors.primaryForeground }}>
               {initials}
             </AppText>
           </View>
         )}
 
         <View className="flex-1">
-          <AppText raw variant="body" weight="bold" style={{ color: '#fff' }} numberOfLines={1}>
+          <AppText raw variant="body" weight="bold" style={{ color: colors.primaryForeground }} numberOfLines={1}>
             {isLoading ? '...' : displayName}
           </AppText>
           {user?.email && (
-            <AppText raw variant="bodySmall" style={{ color: 'rgba(255,255,255,0.8)' }} numberOfLines={1}>
+            <AppText raw variant="bodySmall" style={{ color: colors.primaryForeground + 'CC' }} numberOfLines={1}>
               {user.email}
             </AppText>
           )}
           <TouchableOpacity
             onPress={() => router.push('/profile-edit')}
             style={{ marginTop: 6, alignSelf: 'flex-start' }}>
-            <AppText raw variant="labelSmall" style={{ color: 'rgba(255,255,255,0.9)', textDecorationLine: 'underline' }}>
+            <AppText raw variant="labelSmall" style={{ color: colors.primaryForeground + 'E6', textDecorationLine: 'underline' }}>
               {t('profileHeader.button.edit')}
             </AppText>
           </TouchableOpacity>

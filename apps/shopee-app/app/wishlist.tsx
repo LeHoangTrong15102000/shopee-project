@@ -6,8 +6,8 @@ import {
   RefreshControl,
   ActivityIndicator,
   Dimensions,
-  Image,
 } from 'react-native'
+import AppImage from '@/components/ui/AppImage'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useRouter } from 'expo-router'
 import { Heart, Star } from 'lucide-react-native'
@@ -56,9 +56,10 @@ export default function WishlistScreen() {
               overflow: 'hidden',
               position: 'relative',
             }}>
-            <Image
+            <AppImage
               source={{ uri: product.image }}
-              style={{ width: CARD_WIDTH, height: CARD_WIDTH, resizeMode: 'cover' }}
+              style={{ width: CARD_WIDTH, height: CARD_WIDTH }}
+              contentFit="cover"
             />
 
             {/* Remove from wishlist button */}
@@ -90,7 +91,7 @@ export default function WishlistScreen() {
                   paddingVertical: 2,
                   borderRadius: 4,
                 }}>
-                <AppText raw variant="labelSmall" style={{ color: '#fff', fontSize: 10 }}>
+                <AppText raw variant="labelSmall" style={{ color: colors.primaryForeground, fontSize: 10 }}>
                   -{discount}%
                 </AppText>
               </View>
@@ -106,7 +107,7 @@ export default function WishlistScreen() {
             </AppText>
             {product.rating > 0 && (
               <View className="flex-row items-center gap-1 mt-1">
-                <Star size={10} color="#f59e0b" fill="#f59e0b" />
+                <Star size={10} color={colors.warning} fill={colors.warning} />
                 <AppText raw variant="labelSmall" color="muted">
                   {product.rating.toFixed(1)}
                 </AppText>

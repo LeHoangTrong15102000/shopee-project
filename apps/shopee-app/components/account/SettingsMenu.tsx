@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { View } from 'react-native'
 import { Moon, Globe, Lock, Info, Settings } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
@@ -25,7 +25,7 @@ export default function SettingsMenu({
   const { t } = useTranslation()
   const colors = useColors()
 
-  const items = [
+  const items = useMemo(() => [
     {
       title: t('account.settings.darkMode'),
       icon: () => <Moon size={20} color={colors.foreground} />,
@@ -54,7 +54,7 @@ export default function SettingsMenu({
       icon: () => <Info size={20} color={colors.foreground} />,
       onPress: onAbout,
     },
-  ]
+  ], [t, colors.foreground, isDarkMode, onToggleDarkMode, onLanguage, onChangePassword, onSettings, onAbout])
 
   return (
     <View className="border-t border-neutrals900 px-4 py-4">

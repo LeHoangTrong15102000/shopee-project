@@ -1,7 +1,7 @@
 import React from 'react'
-import { View, Image } from 'react-native'
+import { View } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { AppText } from '@/components/ui'
+import { AppText, AppImage } from '@/components/ui'
 import { formatPrice } from '@/utils/price'
 import type { OrderItem as OrderItemType } from '@/apis/order.api'
 
@@ -19,10 +19,10 @@ export default function OrderItems({ items }: OrderItemsProps) {
       </AppText>
       {items.map((item) => (
         <View key={item.product._id} className="mb-3 flex-row items-start gap-3">
-          <Image
+          <AppImage
             source={{ uri: item.product.image }}
             style={{ width: 56, height: 56, borderRadius: 8 }}
-            resizeMode="cover"
+            contentFit="cover"
           />
           <View className="flex-1">
             <AppText raw variant="bodySmall" numberOfLines={2}>

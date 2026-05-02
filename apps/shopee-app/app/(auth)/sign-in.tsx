@@ -17,11 +17,12 @@ import { FormField, FormItem, FormMessage } from '@/components/ui/Form'
 import AppInput from '@/components/ui/AppInput'
 import AppButton from '@/components/ui/AppButton'
 import { AppText, Icon } from '@/components/ui'
+import { useColors } from '@/hooks/useColors'
 import { useToast } from '@/components/ui/ToastProvider'
 import { useAuthStore } from '@/store/authStore'
 import authApi from '@/apis/auth.api'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { AppColors, AppSpacing } from '@/config/colors'
+import { AppSpacing } from '@/config/colors'
 import { AxiosError } from 'axios'
 
 export default function SignInScreen() {
@@ -29,6 +30,7 @@ export default function SignInScreen() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
   const { showError, showInfo } = useToast()
+  const colors = useColors()
   const login = useAuthStore((state) => state.login)
   const [loading, setLoading] = useState(false)
   const [reduceMotion, setReduceMotion] = useState(false)
@@ -60,7 +62,7 @@ export default function SignInScreen() {
 
   return (
     <LinearGradient
-      colors={[AppColors.gradientStart, AppColors.gradientMiddle, AppColors.gradientEnd]}
+      colors={[colors.gradientStart, colors.gradientMiddle, colors.gradientEnd]}
       style={{ flex: 1 }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

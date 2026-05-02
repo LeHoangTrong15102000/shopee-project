@@ -1,7 +1,7 @@
 import React from 'react'
-import { View, Image, TouchableOpacity } from 'react-native'
+import { View, TouchableOpacity } from 'react-native'
 import { Star, Users } from 'lucide-react-native'
-import { AppText, AppButton } from '@/components/ui'
+import { AppText, AppButton, AppImage } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { Shop } from '@/types/shop.type'
 
@@ -20,10 +20,10 @@ export default function ShopHeader({ shop, isFollowing, onFollow, followLoading 
       {/* Cover image */}
       <View style={{ height: 160, backgroundColor: colors.neutrals800 }}>
         {shop.coverImage ? (
-          <Image
+          <AppImage
             source={{ uri: shop.coverImage }}
             style={{ width: '100%', height: '100%' }}
-            resizeMode="cover"
+            contentFit="cover"
             accessibilityLabel={`${shop.name} cover image`}
           />
         ) : null}
@@ -43,9 +43,10 @@ export default function ShopHeader({ shop, isFollowing, onFollow, followLoading 
               overflow: 'hidden',
             }}>
             {shop.avatar ? (
-              <Image
+              <AppImage
                 source={{ uri: shop.avatar }}
                 style={{ width: '100%', height: '100%' }}
+                contentFit="cover"
                 accessibilityLabel={`${shop.name} avatar`}
               />
             ) : null}

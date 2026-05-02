@@ -98,6 +98,7 @@
   "PD_BUY_NOW": "Buy Now",
   "PD_ADD_TO_CART_SUCCESS": "Added to cart",
   "PD_ADD_TO_CART_ERROR": "Failed to add to cart",
+  "PD_BUY_NOW_SUCCESS": "Purchase placed successfully",
   "PD_BUY_NOW_ERROR": "Failed to purchase",
   "PD_WISHLIST_ADDED": "Added to wishlist",
   "PD_WISHLIST_REMOVED": "Removed from wishlist",

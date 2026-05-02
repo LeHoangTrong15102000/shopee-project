@@ -42,19 +42,19 @@ export default function SearchInput({
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           accessibilityRole="button"
           accessibilityLabel={t('a11y.goBack')}>
-          <ArrowLeft size={24} color="#FFFFFF" />
+          <ArrowLeft size={24} color={colors.primaryForeground} />
         </Pressable>
       )}
 
       <View className="flex-1 flex-row items-center rounded-sm px-3 py-2" style={{ backgroundColor: colors.neutrals900 }}>
-        <Search size={16} color="#999" />
+        <Search size={16} color={colors.neutrals500} />
         <TextInput
           ref={inputRef}
           value={query}
           onChangeText={onQueryChange}
           onSubmitEditing={() => query.trim() && onSubmit?.(query.trim())}
           placeholder={t('SEARCH_PLACEHOLDER')}
-          placeholderTextColor="#999"
+          placeholderTextColor={colors.neutrals500}
           returnKeyType="search"
           className="ml-2 flex-1 text-sm text-foreground"
           style={{ paddingVertical: 0, color: colors.foreground }}
@@ -65,7 +65,7 @@ export default function SearchInput({
             hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
             accessibilityRole="button"
             accessibilityLabel={t('a11y.clearSearch')}>
-            <X size={16} color="#999" />
+            <X size={16} color={colors.neutrals500} />
           </Pressable>
         )}
       </View>

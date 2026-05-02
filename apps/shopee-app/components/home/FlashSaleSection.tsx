@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { View, FlatList, TouchableOpacity, Image } from 'react-native'
+import { View, FlatList, TouchableOpacity } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { Zap } from 'lucide-react-native'
-import { AppText } from '@/components/ui'
+import { AppText, AppImage } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { useFlashSale } from '@/hooks/useFlashSale'
 import { formatPrice, getDiscountPercent } from '@/utils/price'
@@ -47,10 +47,10 @@ function FlashProductCard({ product }: { product: Product }) {
           overflow: 'hidden',
           backgroundColor: colors.neutrals900,
         }}>
-        <Image
+        <AppImage
           source={{ uri: product.image }}
           style={{ width: '100%', height: '100%' }}
-          resizeMode="cover"
+          contentFit="cover"
         />
         {discount > 0 && (
           <View
@@ -63,7 +63,7 @@ function FlashProductCard({ product }: { product: Product }) {
               paddingVertical: 2,
               alignItems: 'center',
             }}>
-            <AppText raw variant="labelSmall" style={{ color: '#fff' }}>
+            <AppText raw variant="labelSmall" style={{ color: colors.primaryForeground }}>
               -{discount}%
             </AppText>
           </View>
@@ -95,11 +95,12 @@ export default function FlashSaleSection() {
   const [secondsLeft, setSecondsLeft] = useState(getSecondsUntilMidnight)
 
   useEffect(() => {
+    if (!products || products.length === 0) return
     const timer = setInterval(() => {
       setSecondsLeft((s) => (s > 0 ? s - 1 : 0))
     }, 1000)
     return () => clearInterval(timer)
-  }, [])
+  }, [products])
 
   if (!products || products.length === 0) return null
 
@@ -117,7 +118,7 @@ export default function FlashSaleSection() {
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <Zap size={18} color={colors.primary} fill={colors.primary} />
           <AppText raw variant="heading4" weight="bold" style={{ color: colors.primary }}>
-            Flash Sale
+            {t('flashSale.header.title')}
           </AppText>
           <View
             style={{
@@ -127,7 +128,7 @@ export default function FlashSaleSection() {
               paddingVertical: 2,
               marginLeft: 4,
             }}>
-            <AppText raw variant="labelSmall" style={{ color: '#fff', fontVariant: ['tabular-nums'] }}>
+            <AppText raw variant="labelSmall" style={{ color: colors.primaryForeground, fontVariant: ['tabular-nums'] }}>
               {formatCountdown(secondsLeft)}
             </AppText>
           </View>

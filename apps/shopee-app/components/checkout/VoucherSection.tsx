@@ -54,7 +54,7 @@ export default function VoucherSection({
             backgroundColor: colors.primary,
             opacity: !code.trim() ? 0.5 : 1,
           }}>
-          <AppText raw variant="bodySmall" weight="semibold" style={{ color: '#fff' }}>
+          <AppText raw variant="bodySmall" weight="semibold" style={{ color: colors.primaryForeground }}>
             {t('voucherInput.button.apply')}
           </AppText>
         </TouchableOpacity>

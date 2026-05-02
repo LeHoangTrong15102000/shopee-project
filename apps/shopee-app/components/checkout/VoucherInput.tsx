@@ -74,9 +74,9 @@ export default function VoucherInput({
             opacity: !code.trim() ? 0.5 : 1,
           }}>
           {isValidating ? (
-            <ActivityIndicator size="small" color="#fff" />
+            <ActivityIndicator size="small" color={colors.primaryForeground} />
           ) : (
-            <AppText raw variant="bodySmall" weight="semibold" style={{ color: '#fff' }}>
+            <AppText raw variant="bodySmall" weight="semibold" style={{ color: colors.primaryForeground }}>
               {t('voucherInput.button.apply')}
             </AppText>
           )}

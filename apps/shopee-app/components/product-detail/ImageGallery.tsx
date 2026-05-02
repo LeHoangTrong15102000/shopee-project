@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react'
 import {
   View,
   FlatList,
-  Image,
   Dimensions,
   Modal,
   TouchableOpacity,
@@ -13,6 +12,7 @@ import {
 import { X } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
 import { useColors } from '@/hooks/useColors'
+import { AppImage } from '@/components/ui'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
@@ -54,10 +54,10 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
             onPress={() => setFullscreenVisible(true)}
             accessibilityRole="image"
             accessibilityLabel={t('a11y.productImage', { index: index + 1, total: images.length }) + ', tap to zoom'}>
-            <Image
+            <AppImage
               source={{ uri: item }}
               style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
-              resizeMode="cover"
+              contentFit="cover"
             />
           </TouchableOpacity>
         )}
@@ -102,10 +102,10 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
                 borderRadius: 6,
                 marginRight: 8,
               }}>
-              <Image
+              <AppImage
                 source={{ uri: item }}
                 style={{ width: 48, height: 48, borderRadius: 4 }}
-                resizeMode="cover"
+                contentFit="cover"
                 accessible={false}
               />
             </TouchableOpacity>
@@ -150,10 +150,10 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
                 bouncesZoom={true}
                 showsVerticalScrollIndicator={false}
                 showsHorizontalScrollIndicator={false}>
-                <Image
+                <AppImage
                   source={{ uri: item }}
                   style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
-                  resizeMode="contain"
+                  contentFit="contain"
                   accessibilityLabel={t('a11y.productImage', { index: index + 1, total: images.length })}
                 />
               </ScrollView>

@@ -6,45 +6,54 @@ import { Home, ShoppingCart, Radio, Bell, User } from 'lucide-react-native'
 import { AppText } from '@/components/ui'
 import { useTranslation } from 'react-i18next'
 import { useUnreadCount } from '@/hooks/useNotifications'
+import { useCartCount } from '@/hooks/useCartCount'
 
 interface TabIconProps {
   name: string
   color: string
   size: number
-  unreadCount?: number
+  badgeCount?: number
 }
 
-const TabIcon: React.FC<TabIconProps> = ({ name, color, size, unreadCount }) => {
+const TabIcon: React.FC<TabIconProps> = ({ name, color, size, badgeCount }) => {
+  const colors = useColors()
+  const badge = badgeCount != null && badgeCount > 0 ? (
+    <View
+      style={{
+        position: 'absolute',
+        top: -4,
+        right: -6,
+        minWidth: 16,
+        height: 16,
+        borderRadius: 8,
+        backgroundColor: colors.primary,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 3,
+      }}>
+      <Text style={{ color: colors.primaryForeground, fontSize: 9, fontWeight: 'bold' }}>
+        {badgeCount > 99 ? '99+' : badgeCount}
+      </Text>
+    </View>
+  ) : null
+
   switch (name) {
     case 'home':
       return <Home size={size} color={color} />
     case 'cart':
-      return <ShoppingCart size={size} color={color} />
+      return (
+        <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+          <ShoppingCart size={size} color={color} />
+          {badge}
+        </View>
+      )
     case 'live':
       return <Radio size={size} color={color} />
     case 'notifications':
       return (
         <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
           <Bell size={size} color={color} />
-          {unreadCount != null && unreadCount > 0 && (
-            <View
-              style={{
-                position: 'absolute',
-                top: -4,
-                right: -6,
-                minWidth: 16,
-                height: 16,
-                borderRadius: 8,
-                backgroundColor: '#EE4D2D',
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingHorizontal: 3,
-              }}>
-              <Text style={{ color: '#fff', fontSize: 9, fontWeight: 'bold' }}>
-                {unreadCount > 99 ? '99+' : unreadCount}
-              </Text>
-            </View>
-          )}
+          {badge}
         </View>
       )
     case 'account':
@@ -59,6 +68,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
   const { t } = useTranslation()
   const { data: unreadData } = useUnreadCount()
   const unreadCount = unreadData?.data?.count ?? 0
+  const cartCount = useCartCount()
 
   return (
     <View className="pb-safe-offset-0 flex-row border-t border-neutrals900 bg-background py-2">
@@ -118,7 +128,11 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
                 name={route.name}
                 color={iconColor}
                 size={24}
-                unreadCount={route.name === 'notifications' ? unreadCount : undefined}
+                badgeCount={
+                  route.name === 'notifications' ? unreadCount
+                  : route.name === 'cart' ? cartCount
+                  : undefined
+                }
               />
             </View>
 

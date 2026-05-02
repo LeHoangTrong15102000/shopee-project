@@ -1,7 +1,7 @@
 import React from 'react'
-import { View, Image, TouchableOpacity } from 'react-native'
+import { View, TouchableOpacity } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { AppText, Badge, AppButton } from '@/components/ui'
+import { AppText, Badge, AppButton, AppImage } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { formatPrice } from '@/utils/price'
 import { type Order } from '@/apis/order.api'
@@ -71,10 +71,10 @@ export default function OrderCard({
       {/* First product */}
       {firstItem && (
         <View className="flex-row items-center gap-3">
-          <Image
+          <AppImage
             source={{ uri: firstItem.product.image }}
             style={{ width: 56, height: 56, borderRadius: 8 }}
-            resizeMode="cover"
+            contentFit="cover"
           />
           <View className="flex-1">
             <AppText raw variant="bodySmall" numberOfLines={2}>

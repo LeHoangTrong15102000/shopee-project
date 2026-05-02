@@ -10,11 +10,11 @@ import { addActivity, getRecentActivities, ActivityEntry } from '../managers/act
  * @param type - Activity type ('purchase' | 'review')
  * @param message - Activity message (e.g., "Ai đó vừa mua sản phẩm này")
  */
-export const emitActivityEvent = (
+export const emitActivityEvent = async (
   productId: string,
   type: 'purchase' | 'review',
   message: string,
-): void => {
+): Promise<void> => {
   try {
     const activity: ActivityEntry = {
       product_id: productId,
@@ -23,7 +23,7 @@ export const emitActivityEvent = (
       timestamp: new Date().toISOString(),
     }
 
-    const shouldBroadcast = addActivity(productId, activity)
+    const shouldBroadcast = await addActivity(productId, activity)
 
     if (shouldBroadcast) {
       const io = getIORequired()

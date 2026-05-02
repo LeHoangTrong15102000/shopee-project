@@ -11,18 +11,20 @@ jest.mock('@utils/logger', () => ({
   },
 }))
 
+jest.mock('@utils/redis.client', () => ({ redisClient: null }))
+
 import { Request, Response } from 'express'
 import {
   requestSizeLimitMiddleware,
   bruteForceProtectionMiddleware,
   recordFailedLogin,
   resetLoginAttempts,
+  resetAllLoginAttempts,
   suspiciousActivityMiddleware,
   validateContentTypeMiddleware,
   suspiciousPatternMiddleware,
   getSuspiciousActivities,
   getLoginAttemptStats,
-  cleanupExpiredLoginAttempts,
   getLoginAttemptKey,
 } from '@middleware/security.middleware'
 import { STATUS } from '@constants/status'
@@ -60,6 +62,21 @@ const createSecurityMockRequest = (
     method: options.method || 'GET',
   }
 }
+
+/** Run an async Express middleware and wait for it to call next() or send a response. */
+const runMiddleware = (
+  mw: (req: Request, res: Response, next: any) => void,
+  req: any,
+  res: any,
+): Promise<void> =>
+  new Promise<void>((resolve) => {
+    const origJson = res.json.bind(res)
+    res.json = jest.fn((...args: any[]) => { origJson(...args); resolve(); return res })
+    mw(req, res, () => resolve())
+  })
+
+/** Flush the microtask queue so fire-and-forget Promises complete. */
+const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve))
 
 describe('Security Middleware', () => {
   describe('getLoginAttemptKey', () => {
@@ -130,90 +147,105 @@ describe('Security Middleware', () => {
   })
 
   describe('bruteForceProtectionMiddleware', () => {
-    beforeEach(() => {
-      resetLoginAttempts('10.0.0.1', 'brute@test.com')
-      resetLoginAttempts('10.0.0.1')
+    beforeEach(async () => {
+      resetAllLoginAttempts()
+      await flushPromises()
     })
 
-    it('should pass normal request without previous attempts', () => {
+    it('should pass normal request without previous attempts', async () => {
       const req = createSecurityMockRequest({
         ip: '10.0.0.1',
         body: { email: 'brute@test.com' },
       }) as Request
       const res = createMockResponse() as Response
-      const next = createMockNext()
 
-      bruteForceProtectionMiddleware(req, res, next)
+      await runMiddleware(bruteForceProtectionMiddleware, req, res)
 
-      expect(next).toHaveBeenCalled()
       expect(res.status).not.toHaveBeenCalled()
     })
 
-    it('should return 429 when account is locked after max attempts', () => {
+    it('should return 429 when account is locked after max attempts', async () => {
       const ip = '10.0.0.2'
       const email = 'locked@test.com'
 
       for (let i = 0; i < 5; i++) {
         recordFailedLogin(ip, email)
       }
+      // Wait for all penalty() Promises to settle
+      await flushPromises()
+      await flushPromises()
 
       const req = createSecurityMockRequest({
         ip,
         body: { email },
       }) as Request
       const res = createMockResponse() as Response
-      const next = createMockNext()
 
-      bruteForceProtectionMiddleware(req, res, next)
+      await runMiddleware(bruteForceProtectionMiddleware, req, res)
 
-      expect(next).not.toHaveBeenCalled()
       expect(res.status).toHaveBeenCalledWith(STATUS.TOO_MANY_REQUESTS)
     })
   })
 
   describe('recordFailedLogin / resetLoginAttempts', () => {
-    it('should track failed login attempts by IP', () => {
-      const ip = '10.0.0.3'
-      resetLoginAttempts(ip)
-
-      recordFailedLogin(ip)
-      recordFailedLogin(ip)
-
-      const stats = getLoginAttemptStats()
-      expect(stats.totalTracked).toBeGreaterThan(0)
+    beforeEach(async () => {
+      resetAllLoginAttempts()
+      await flushPromises()
     })
 
-    it('should track failed login attempts by IP and email', () => {
+    it('should track failed login attempts by IP', async () => {
+      const ip = '10.0.0.3'
+
+      recordFailedLogin(ip)
+      recordFailedLogin(ip)
+      await flushPromises()
+
+      // After recording failures, a subsequent request should still pass
+      // (only 2 attempts, threshold is 5)
+      const req = createSecurityMockRequest({ ip }) as Request
+      const res = createMockResponse() as Response
+      await runMiddleware(bruteForceProtectionMiddleware, req, res)
+      expect(res.status).not.toHaveBeenCalled()
+    })
+
+    it('should track failed login attempts by IP and email', async () => {
       const ip = '10.0.0.4'
       const email = 'track@test.com'
-      resetLoginAttempts(ip, email)
 
       recordFailedLogin(ip, email)
       recordFailedLogin(ip, email)
       recordFailedLogin(ip, email)
+      await flushPromises()
 
-      const stats = getLoginAttemptStats()
-      expect(stats.activeAttempts).toBeGreaterThan(0)
+      // 3 attempts, threshold is 5 — should still pass
+      const req = createSecurityMockRequest({ ip, body: { email } }) as Request
+      const res = createMockResponse() as Response
+      await runMiddleware(bruteForceProtectionMiddleware, req, res)
+      expect(res.status).not.toHaveBeenCalled()
     })
 
-    it('should reset login attempts correctly', () => {
+    it('should reset login attempts correctly', async () => {
       const ip = '10.0.0.5'
       const email = 'reset@test.com'
 
-      recordFailedLogin(ip, email)
-      recordFailedLogin(ip, email)
+      for (let i = 0; i < 5; i++) {
+        recordFailedLogin(ip, email)
+      }
+      await flushPromises()
+      await flushPromises()
+
       resetLoginAttempts(ip, email)
+      await flushPromises()
 
       const req = createSecurityMockRequest({
         ip,
         body: { email },
       }) as Request
       const res = createMockResponse() as Response
-      const next = createMockNext()
 
-      bruteForceProtectionMiddleware(req, res, next)
+      await runMiddleware(bruteForceProtectionMiddleware, req, res)
 
-      expect(next).toHaveBeenCalled()
+      expect(res.status).not.toHaveBeenCalled()
     })
   })
 
@@ -537,72 +569,45 @@ describe('Security Middleware', () => {
     })
   })
 
-  describe('cleanupExpiredLoginAttempts', () => {
-    it('should remove expired login attempts', () => {
-      const ip = '10.0.0.10'
-      const email = 'cleanup@test.com'
-
-      recordFailedLogin(ip, email)
-
-      const statsBefore = getLoginAttemptStats()
-      expect(statsBefore.totalTracked).toBeGreaterThan(0)
-
-      cleanupExpiredLoginAttempts()
-
-      const statsAfter = getLoginAttemptStats()
-      expect(statsAfter.totalTracked).toBeGreaterThanOrEqual(0)
-    })
-  })
-
   describe('getLoginAttemptStats', () => {
     it('should return correct stats structure', () => {
       const stats = getLoginAttemptStats()
 
-      expect(stats).toHaveProperty('totalTracked')
-      expect(stats).toHaveProperty('lockedAccounts')
-      expect(stats).toHaveProperty('activeAttempts')
-      expect(typeof stats.totalTracked).toBe('number')
-      expect(typeof stats.lockedAccounts).toBe('number')
-      expect(typeof stats.activeAttempts).toBe('number')
+      expect(stats).toHaveProperty('limiterType')
+      expect(stats).toHaveProperty('points')
+      expect(stats).toHaveProperty('duration')
+      expect(typeof stats.limiterType).toBe('string')
+      expect(typeof stats.points).toBe('number')
+      expect(typeof stats.duration).toBe('number')
     })
 
-    it('should count locked accounts correctly', () => {
-      const ip = '10.0.0.11'
-      const email = 'stats@test.com'
-      resetLoginAttempts(ip, email)
-
-      for (let i = 0; i < 5; i++) {
-        recordFailedLogin(ip, email)
-      }
-
-      const req = createSecurityMockRequest({
-        ip,
-        body: { email },
-      }) as Request
-      const res = createMockResponse() as Response
-      const next = createMockNext()
-
-      bruteForceProtectionMiddleware(req, res, next)
-
+    it('should report memory limiter type when Redis is unavailable', () => {
       const stats = getLoginAttemptStats()
-      expect(stats.lockedAccounts).toBeGreaterThanOrEqual(1)
+      // In test env, redis.client is mocked to null so limiterType is 'memory'
+      expect(stats.limiterType).toBe('memory')
+    })
+
+    it('should report correct brute force thresholds', () => {
+      const stats = getLoginAttemptStats()
+      expect(stats.points).toBe(5)
+      expect(stats.duration).toBe(900)
     })
   })
 
   describe('getSuspiciousActivities', () => {
-    it('should return array of suspicious activities', () => {
-      const activities = getSuspiciousActivities()
+    it('should return array of suspicious activities', async () => {
+      const activities = await getSuspiciousActivities()
 
       expect(Array.isArray(activities)).toBe(true)
     })
 
-    it('should respect limit parameter', () => {
-      const activities = getSuspiciousActivities(5)
+    it('should respect limit parameter', async () => {
+      const activities = await getSuspiciousActivities(5)
 
       expect(activities.length).toBeLessThanOrEqual(5)
     })
 
-    it('should return activities with correct structure', () => {
+    it('should return activities with correct structure', async () => {
       const req = createSecurityMockRequest({
         method: 'POST',
         path: '/api/test',
@@ -613,7 +618,7 @@ describe('Security Middleware', () => {
 
       requestSizeLimitMiddleware(req, res, next)
 
-      const activities = getSuspiciousActivities(1)
+      const activities = await getSuspiciousActivities(1)
       if (activities.length > 0) {
         const activity = activities[activities.length - 1]
         expect(activity).toHaveProperty('ip')

@@ -169,7 +169,7 @@ export class ProductService extends BaseService {
     })
 
     if (!filters.exclude) {
-      const cached = cacheService.get<PaginatedResult<IProduct>>(cacheKey)
+      const cached = await cacheService.get<PaginatedResult<IProduct>>(cacheKey)
       if (cached) return cached
     }
 
@@ -194,7 +194,7 @@ export class ProductService extends BaseService {
     }
 
     const cacheKey = CacheKeys.productDetail(productId)
-    const cached = cacheService.get<IProduct & { skus?: ISKU[] }>(cacheKey)
+    const cached = await cacheService.get<IProduct & { skus?: ISKU[] }>(cacheKey)
     if (cached) return cached
 
     await this.productRepository.incrementView(productId)

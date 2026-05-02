@@ -32,7 +32,7 @@ export class CategoryService extends BaseService {
 
   async getCategories(excludeId?: string): Promise<ICategory[]> {
     const cacheKey = CacheKeys.categoriesList(excludeId)
-    const cached = cacheService.get<ICategory[]>(cacheKey)
+    const cached = await cacheService.get<ICategory[]>(cacheKey)
     if (cached) return cached
 
     let categories: ICategory[]

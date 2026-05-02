@@ -11,14 +11,14 @@ import { cacheService, CacheKeys, CacheTTL } from '@utils/cache.service'
  * @param ttlSeconds - Thời gian sống của cache (giây)
  */
 export const cacheResponse = (keyGenerator: (req: Request) => string, ttlSeconds: number) => {
-  return (req: Request, res: Response, next: NextFunction): void => {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     // Chỉ cache GET requests
     if (req.method !== 'GET') {
       return next()
     }
 
     const cacheKey = keyGenerator(req)
-    const cachedData = cacheService.get(cacheKey)
+    const cachedData = await cacheService.get(cacheKey)
 
     if (cachedData) {
       // Trả về data từ cache

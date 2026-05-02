@@ -30,7 +30,7 @@ interface PriceHistory {
  * TODO: Implement with actual repository when price tracking models are created
  */
 export class PriceService extends BaseService {
-  async getPriceHistory(productId: string, days: number = 30): Promise<PriceHistory[]> {
+  async getPriceHistory(productId: string, days = 30): Promise<PriceHistory[]> {
     // TODO: Implement with PriceHistoryRepository
     return []
   }

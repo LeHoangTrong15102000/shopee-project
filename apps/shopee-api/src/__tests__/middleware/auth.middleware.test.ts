@@ -14,6 +14,15 @@ jest.mock('@utils/jwt', () => ({
   verifyToken: jest.fn(),
 }))
 
+// Mock UserModel for verifyAdmin tests
+jest.mock('@database/models/user.model', () => ({
+  UserModel: {
+    findById: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) }),
+  },
+}))
+
+import { UserModel } from '@database/models/user.model'
+
 // Interface cho mock request options
 interface MockRequestOptions {
   body?: Record<string, unknown>
@@ -226,6 +235,94 @@ describe('Auth Middleware', () => {
 
       expect(next).toHaveBeenCalled()
       expect(req.jwtDecoded).toBeUndefined()
+    })
+  })
+
+  // =================== Task 6.4: verifyAdmin tests ===================
+
+  describe('verifyAdmin', () => {
+    it('6.4 — should NOT call UserModel.findById when roles present in JWT and includes Admin', async () => {
+      const req = createMockRequest({
+        jwtDecoded: {
+          id: 'admin_user_id',
+          email: 'admin@example.com',
+          roles: ['Admin'],
+          created_at: new Date().toISOString(),
+        },
+      })
+      const res = createMockResponse()
+      const next = createMockNext()
+
+      await authMiddleware.verifyAdmin(req as Request, res as Response, next)
+
+      // Admin should proceed without DB call
+      expect(next).toHaveBeenCalled()
+      expect(UserModel.findById).not.toHaveBeenCalled()
+    })
+
+    it('should deny access when roles present but does not include Admin', async () => {
+      const req = createMockRequest({
+        jwtDecoded: {
+          id: 'regular_user_id',
+          email: 'user@example.com',
+          roles: ['User'],
+          created_at: new Date().toISOString(),
+        },
+      })
+      const res = createMockResponse()
+      const next = createMockNext()
+
+      await authMiddleware.verifyAdmin(req as Request, res as Response, next)
+
+      expect(next).not.toHaveBeenCalled()
+      expect(res.status).toHaveBeenCalledWith(403)
+    })
+
+    it('should fall back to DB lookup when roles array is empty (legacy token)', async () => {
+      ;(UserModel.findById as jest.Mock).mockReturnValue({
+        lean: jest.fn().mockResolvedValue({ roles: ['Admin'] }),
+      })
+
+      const req = createMockRequest({
+        jwtDecoded: {
+          id: 'legacy_user_id',
+          email: 'legacy@example.com',
+          roles: [], // empty — legacy token
+          created_at: new Date().toISOString(),
+        },
+      })
+      const res = createMockResponse()
+      const next = createMockNext()
+
+      await authMiddleware.verifyAdmin(req as Request, res as Response, next)
+
+      // DB lookup should have happened as fallback
+      expect(UserModel.findById).toHaveBeenCalledWith('legacy_user_id')
+      expect(next).toHaveBeenCalled()
+    })
+
+    it('should perform DB lookup when requireFreshRoleCheck flag is set', async () => {
+      ;(UserModel.findById as jest.Mock).mockReturnValue({
+        lean: jest.fn().mockResolvedValue({ roles: ['Admin'] }),
+      })
+
+      const req = createMockRequest({
+        jwtDecoded: {
+          id: 'admin_user_id',
+          email: 'admin@example.com',
+          roles: ['Admin'], // roles present, but fresh check required
+          created_at: new Date().toISOString(),
+        },
+      }) as any
+      req.requireFreshRoleCheck = true
+
+      const res = createMockResponse()
+      const next = createMockNext()
+
+      await authMiddleware.verifyAdmin(req as Request, res as Response, next)
+
+      expect(UserModel.findById).toHaveBeenCalledWith('admin_user_id')
+      expect(next).toHaveBeenCalled()
     })
   })
 })

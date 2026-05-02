@@ -102,14 +102,14 @@ export class ErrorHandler extends Error {
   /**
    * Tạo Unauthorized Error (401)
    */
-  static unauthorized(message: string = 'Bạn không có quyền truy cập'): ErrorHandler {
+  static unauthorized(message = 'Bạn không có quyền truy cập'): ErrorHandler {
     return new UnauthorizedError(message)
   }
 
   /**
    * Tạo Forbidden Error (403)
    */
-  static forbidden(message: string = 'Bạn không có quyền thực hiện hành động này'): ErrorHandler {
+  static forbidden(message = 'Bạn không có quyền thực hiện hành động này'): ErrorHandler {
     return new ForbiddenError(message)
   }
 
@@ -166,7 +166,7 @@ export class NotFoundError extends ErrorHandler {
  * Dùng khi chưa xác thực hoặc token không hợp lệ
  */
 export class UnauthorizedError extends ErrorHandler {
-  constructor(message: string = 'Bạn không có quyền truy cập', code?: ErrorCode) {
+  constructor(message = 'Bạn không có quyền truy cập', code?: ErrorCode) {
     super(STATUS.UNAUTHORIZED, message, true, code || ERROR_CODES.AUTH_UNAUTHORIZED)
     this.name = 'UnauthorizedError'
   }
@@ -177,7 +177,7 @@ export class UnauthorizedError extends ErrorHandler {
  * Dùng khi đã xác thực nhưng không có quyền thực hiện hành động
  */
 export class ForbiddenError extends ErrorHandler {
-  constructor(message: string = 'Bạn không có quyền thực hiện hành động này') {
+  constructor(message = 'Bạn không có quyền thực hiện hành động này') {
     super(STATUS.FORBIDDEN, message, true, ERROR_CODES.AUTH_FORBIDDEN)
     this.name = 'ForbiddenError'
   }
@@ -221,7 +221,7 @@ export class ConflictError extends ErrorHandler {
  * Dùng khi rate limit exceeded
  */
 export class TooManyRequestsError extends ErrorHandler {
-  constructor(message: string = 'Quá nhiều request, vui lòng thử lại sau') {
+  constructor(message = 'Quá nhiều request, vui lòng thử lại sau') {
     super(STATUS.TOO_MANY_REQUESTS, message, true)
     this.name = 'TooManyRequestsError'
   }
@@ -269,6 +269,20 @@ export const responseError = (res: Response, error: ErrorHandler | Error) => {
     }
 
     return res.status(status).send(response)
+  }
+
+  // ServiceError: có statusCode riêng, treat as operational
+  if ('statusCode' in error && typeof (error as any).statusCode === 'number') {
+    const serviceError = error as any
+    const response: ErrorResponse = {
+      message: isProduction() ? serviceError.message : serviceError.message,
+    }
+
+    if (!isProduction() && serviceError.stack) {
+      response.stack = serviceError.stack
+    }
+
+    return res.status(serviceError.statusCode).send(response)
   }
 
   // Lỗi không mong đợi - không leak thông tin trong production

@@ -23,9 +23,10 @@ jest.mock('@utils/jwt', () => ({
 
 jest.mock('@constants/config', () => ({
   config: {
-    SECRET_KEY: 'test-secret-key',
+    SECRET_KEY: 'test-secret-key-that-is-at-least-32-chars',
     EXPIRE_ACCESS_TOKEN: 900, // 15 minutes — stateless JWT
-    EXPIRE_REFRESH_TOKEN: 8640000,
+    EXPIRE_REFRESH_TOKEN: 2592000, // 30 days
+    AUTH_STRICT_MODE: false,
   },
 }))
 
@@ -53,11 +54,15 @@ describe('AuthService', () => {
   beforeEach(() => {
     mockAuthRepository = {
       createRefreshToken: jest.fn(),
+      createRefreshTokenWithJti: jest.fn(),
       deleteRefreshToken: jest.fn(),
       deleteAllUserTokens: jest.fn(),
+      revokeAllUserTokens: jest.fn(),
+      revokeRefreshTokenByJti: jest.fn(),
       isRefreshTokenValid: jest.fn(),
       rotateRefreshToken: jest.fn(),
       findRefreshToken: jest.fn(),
+      findRefreshTokenByJti: jest.fn(),
       deleteExpiredTokens: jest.fn(),
     } as unknown as jest.Mocked<IAuthRepository>
 
@@ -91,7 +96,7 @@ describe('AuthService', () => {
     it('should register new user successfully', async () => {
       mockUserRepository.emailExists.mockResolvedValue(false)
       mockUserRepository.create.mockResolvedValue(mockUser as any)
-      mockAuthRepository.createRefreshToken.mockResolvedValue({} as any)
+      mockAuthRepository.createRefreshTokenWithJti.mockResolvedValue({} as any)
 
       const result = await authService.register(
         { email: 'test@example.com', password: 'password123' },
@@ -100,7 +105,7 @@ describe('AuthService', () => {
 
       expect(mockUserRepository.emailExists).toHaveBeenCalledWith('test@example.com')
       expect(hashValue).toHaveBeenCalledWith('password123')
-      expect(mockAuthRepository.createRefreshToken).toHaveBeenCalled()
+      expect(mockAuthRepository.createRefreshTokenWithJti).toHaveBeenCalled()
       expect(result.access_token).toContain('Bearer')
       expect(result.user.email).toBe('test@example.com')
     })
@@ -121,14 +126,14 @@ describe('AuthService', () => {
     it('should login successfully with correct credentials', async () => {
       mockUserRepository.findByEmailWithPassword.mockResolvedValue(mockUser as any)
       ;(compareValue as jest.Mock).mockReturnValue(true)
-      mockAuthRepository.createRefreshToken.mockResolvedValue({} as any)
+      mockAuthRepository.createRefreshTokenWithJti.mockResolvedValue({} as any)
 
       const result = await authService.login(
         { email: 'test@example.com', password: 'password123' },
         tokenConfig,
       )
 
-      expect(mockAuthRepository.createRefreshToken).toHaveBeenCalled()
+      expect(mockAuthRepository.createRefreshTokenWithJti).toHaveBeenCalled()
       expect(result.access_token).toContain('Bearer')
       expect(result.user.email).toBe('test@example.com')
     })
@@ -209,6 +214,125 @@ describe('AuthService', () => {
       const result = await authService.validateRefreshToken('invalid_refresh_token')
 
       expect(result).toBe(false)
+    })
+  })
+
+  // =================== Task 6.2: Refresh rotation tests ===================
+
+  describe('refreshTokenWithRotation', () => {
+    const oldJti = 'old-jti-uuid'
+    const oldRefreshToken = 'old_refresh_token_jwt'
+
+    it('6.2 — should issue new tokens with new jti and revoke old jti', async () => {
+      // Given: user exists and old token is active
+      mockUserRepository.findById.mockResolvedValue(mockUser as any)
+      mockAuthRepository.findRefreshTokenByJti.mockResolvedValue({
+        _id: new Types.ObjectId(),
+        jti: oldJti,
+        token: oldRefreshToken,
+        user_id: validObjectId,
+        revokedAt: null,
+      } as any)
+      mockAuthRepository.revokeRefreshTokenByJti.mockResolvedValue(true)
+      mockAuthRepository.createRefreshTokenWithJti.mockResolvedValue({} as any)
+
+      const result = await authService.refreshTokenWithRotation(
+        validObjectId.toString(),
+        oldRefreshToken,
+        oldJti,
+        tokenConfig,
+      )
+
+      // New pair should be returned
+      expect(result.access_token).toContain('Bearer')
+      expect(result.refresh_token).toBeDefined()
+
+      // Old token should be revoked
+      expect(mockAuthRepository.revokeRefreshTokenByJti).toHaveBeenCalledWith(oldJti)
+
+      // New token should be persisted with old jti as rotatedFromJti
+      expect(mockAuthRepository.createRefreshTokenWithJti).toHaveBeenCalledWith(
+        expect.anything(),       // userId
+        expect.any(String),      // new refresh token JWT
+        expect.any(String),      // new jti (different from oldJti)
+        expect.any(Date),        // expiresAt
+        oldJti,                  // rotatedFromJti for audit
+      )
+    })
+
+    it('6.3 — should revoke all user tokens and return 401 when replaying already-rotated token', async () => {
+      // Given: user exists but token jti is already revoked (reuse detected)
+      mockUserRepository.findById.mockResolvedValue(mockUser as any)
+      mockAuthRepository.findRefreshTokenByJti.mockResolvedValue({
+        jti: oldJti,
+        token: oldRefreshToken,
+        user_id: validObjectId,
+        revokedAt: new Date(), // already revoked!
+      } as any)
+      mockAuthRepository.revokeAllUserTokens.mockResolvedValue(undefined)
+
+      await expect(
+        authService.refreshTokenWithRotation(
+          validObjectId.toString(),
+          oldRefreshToken,
+          oldJti,
+          tokenConfig,
+        ),
+      ).rejects.toThrow(UnauthorizedError)
+
+      // All user tokens should be revoked
+      expect(mockAuthRepository.revokeAllUserTokens).toHaveBeenCalledWith(validObjectId.toString())
+    })
+
+    it('6.3 — should revoke all user tokens when jti not found in DB (expired/unknown)', async () => {
+      // Given: jti not found in DB at all
+      mockUserRepository.findById.mockResolvedValue(mockUser as any)
+      mockAuthRepository.findRefreshTokenByJti.mockResolvedValue(null)
+      mockAuthRepository.revokeAllUserTokens.mockResolvedValue(undefined)
+
+      await expect(
+        authService.refreshTokenWithRotation(
+          validObjectId.toString(),
+          oldRefreshToken,
+          oldJti,
+          tokenConfig,
+        ),
+      ).rejects.toThrow(UnauthorizedError)
+
+      expect(mockAuthRepository.revokeAllUserTokens).toHaveBeenCalledWith(validObjectId.toString())
+    })
+
+    it('should handle legacy tokens (no jti) by looking up by token string', async () => {
+      mockUserRepository.findById.mockResolvedValue(mockUser as any)
+      mockAuthRepository.findRefreshToken.mockResolvedValue({
+        token: oldRefreshToken,
+        user_id: validObjectId,
+      } as any)
+      mockAuthRepository.deleteRefreshToken.mockResolvedValue(true)
+      mockAuthRepository.createRefreshTokenWithJti.mockResolvedValue({} as any)
+
+      const result = await authService.refreshTokenWithRotation(
+        validObjectId.toString(),
+        oldRefreshToken,
+        undefined, // no jti — legacy token
+        tokenConfig,
+      )
+
+      expect(result.access_token).toContain('Bearer')
+      expect(mockAuthRepository.deleteRefreshToken).toHaveBeenCalledWith(oldRefreshToken)
+    })
+
+    it('should throw UnauthorizedError when user not found', async () => {
+      mockUserRepository.findById.mockResolvedValue(null)
+
+      await expect(
+        authService.refreshTokenWithRotation(
+          validObjectId.toString(),
+          oldRefreshToken,
+          oldJti,
+          tokenConfig,
+        ),
+      ).rejects.toThrow(UnauthorizedError)
     })
   })
 })

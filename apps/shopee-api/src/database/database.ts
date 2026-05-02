@@ -1,7 +1,7 @@
 require('dotenv').config()
-import mongoose, { Connection } from 'mongoose'
-import chalk from 'chalk'
 import { Logger } from '@utils/logger'
+import chalk from 'chalk'
+import mongoose from 'mongoose'
 
 // Connection configuration
 const DB_CONFIG = {
@@ -13,7 +13,7 @@ const DB_CONFIG = {
   heartbeatFrequencyMs: 10000,
 }
 
-const dbURL = `mongodb+srv://${process.env.USERNAME_DB}:${process.env.PASSWORD_DB}@cluster0.qygxawy.mongodb.net/main?retryWrites=true&w=majority`
+const dbURL = process.env.MONGO_URI as string
 const connected = chalk.bold.cyan
 const error = chalk.bold.yellow
 const disconnected = chalk.bold.red

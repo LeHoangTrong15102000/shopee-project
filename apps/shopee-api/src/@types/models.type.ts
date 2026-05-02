@@ -87,4 +87,6 @@ export interface IPayloadToken {
   email: string
   roles: string[]
   created_at: string
+  /** JWT ID — unique per token, used for refresh token reuse detection */
+  jti?: string
 }

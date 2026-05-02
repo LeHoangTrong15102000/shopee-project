@@ -28,7 +28,7 @@ const getSystemPrompt = (): string => {
 /**
  * Fallback responses khi không có Anthropic API key hoặc có lỗi
  */
-const getFallbackResponse = (userMessage: string, errorType: string = 'general'): string => {
+const getFallbackResponse = (userMessage: string, errorType = 'general'): string => {
   const lowerMessage = userMessage.toLowerCase()
 
   // Xử lý theo loại lỗi

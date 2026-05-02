@@ -126,7 +126,7 @@ export class ApiResponse {
    * @param res - Express Response object
    * @param message - Message lỗi
    */
-  static unauthorized(res: Response, message: string = 'Bạn không có quyền truy cập'): Response {
+  static unauthorized(res: Response, message = 'Bạn không có quyền truy cập'): Response {
     return ApiResponse.error(res, message, STATUS.UNAUTHORIZED)
   }
 
@@ -137,7 +137,7 @@ export class ApiResponse {
    */
   static forbidden(
     res: Response,
-    message: string = 'Bạn không có quyền thực hiện hành động này',
+    message = 'Bạn không có quyền thực hiện hành động này',
   ): Response {
     return ApiResponse.error(res, message, STATUS.FORBIDDEN)
   }

@@ -111,6 +111,50 @@ describe('Auth Integration', () => {
     })
   })
 
+  // =================== Task 6.5: Rotation integration tests ===================
+
+  describe('Refresh token rotation flow (6.5)', () => {
+    it('should issue new refresh token on each rotation', async () => {
+      const auth = await getAuthToken(app)
+
+      // First refresh
+      const refresh1 = await supertest(app)
+        .post('/refresh-access-token')
+        .send({ refresh_token: auth.refresh_token })
+      expect(refresh1.status).toBe(200)
+      const newRefreshToken1 = refresh1.body.data.refresh_token
+      expect(newRefreshToken1).toBeDefined()
+      // Should receive a new refresh token (rotation)
+      expect(newRefreshToken1).not.toBe(auth.refresh_token)
+
+      // Second refresh using the new token
+      const refresh2 = await supertest(app)
+        .post('/refresh-access-token')
+        .send({ refresh_token: newRefreshToken1 })
+      expect(refresh2.status).toBe(200)
+      const newRefreshToken2 = refresh2.body.data.refresh_token
+      expect(newRefreshToken2).toBeDefined()
+    })
+
+    it('should return 401 when replaying old refresh token after rotation', async () => {
+      const auth = await getAuthToken(app)
+      const originalRefreshToken = auth.refresh_token
+
+      // Rotate once — consumes originalRefreshToken
+      const refresh1 = await supertest(app)
+        .post('/refresh-access-token')
+        .send({ refresh_token: originalRefreshToken })
+      expect(refresh1.status).toBe(200)
+
+      // Replay the original (already-rotated) refresh token — should fail
+      const replayRes = await supertest(app)
+        .post('/refresh-access-token')
+        .send({ refresh_token: originalRefreshToken })
+      // Reuse of rotated token must be rejected
+      expect(replayRes.status).toBeGreaterThanOrEqual(400)
+    })
+  })
+
   describe('Protected routes', () => {
     it('should return 401 when accessing /me without token', async () => {
       const meRes = await supertest(app).get('/me')

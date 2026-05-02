@@ -94,8 +94,19 @@ const loginController = async (req: Request, res: Response) => {
 
 const refreshTokenController = async (req: Request, res: Response) => {
   try {
-    const { expireAccessTokenConfig } = getExpire()
-    const result = await authService.refreshToken(req.jwtDecoded.id, expireAccessTokenConfig)
+    const { expireAccessTokenConfig, expireRefreshTokenConfig } = getExpire()
+    const oldRefreshToken: string = req.body.refresh_token
+    const decoded = req.jwtDecoded
+
+    const result = await authService.refreshTokenWithRotation(
+      decoded.id,
+      oldRefreshToken,
+      decoded.jti,
+      {
+        expireAccessToken: expireAccessTokenConfig,
+        expireRefreshToken: expireRefreshTokenConfig,
+      },
+    )
 
     const response = {
       message: AUTH_MESSAGES.REFRESH_TOKEN_SUCCESS,

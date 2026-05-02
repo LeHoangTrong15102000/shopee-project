@@ -99,7 +99,7 @@ export const setFlashSaleTimer = (
 export const decrementStock = (
   saleId: string,
   productId: string,
-  quantity: number = 1,
+  quantity = 1,
 ): FlashSaleProduct | null => {
   const entry = flashSaleMap.get(saleId)
   if (!entry) return null

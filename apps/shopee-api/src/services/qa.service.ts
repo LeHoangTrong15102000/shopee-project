@@ -92,7 +92,7 @@ export class QAService extends BaseService {
     userId: string,
     questionId: string,
     answer: string,
-    isSeller: boolean = false,
+    isSeller = false,
   ): Promise<{ answer: IAnswerItem; productId: string }> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')

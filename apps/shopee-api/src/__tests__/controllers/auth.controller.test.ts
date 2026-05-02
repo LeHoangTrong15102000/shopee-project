@@ -20,7 +20,7 @@ jest.mock('../../container', () => ({
     register: jest.fn(),
     login: jest.fn(),
     logout: jest.fn(),
-    refreshToken: jest.fn(),
+    refreshTokenWithRotation: jest.fn(),
   },
 }))
 
@@ -41,6 +41,7 @@ interface MockRequestOptions {
     email: string
     roles: string[]
     created_at: string
+    jti?: string
   }
 }
 
@@ -195,7 +196,7 @@ describe('Auth Controller', () => {
       // Verify service called with server config, not client value
       expect(mockAuthService.register).toHaveBeenCalledWith(expect.any(Object), {
         expireAccessToken: 900,
-        expireRefreshToken: 8640000,
+        expireRefreshToken: 2592000,
       })
     })
 
@@ -324,31 +325,44 @@ describe('Auth Controller', () => {
 
   describe('refreshTokenController', () => {
     it('should refresh token successfully', async () => {
-      const mockResult = { access_token: 'Bearer new_access_token' }
-      mockAuthService.refreshToken.mockResolvedValue(mockResult as any)
+      const mockResult = {
+        access_token: 'Bearer new_access_token',
+        refresh_token: 'new_refresh_token',
+        expires: 900,
+        expires_refresh_token: 2592000,
+      }
+      mockAuthService.refreshTokenWithRotation.mockResolvedValue(mockResult as any)
 
       const req = createMockRequest({
+        body: { refresh_token: 'old_refresh_token' },
         jwtDecoded: {
           id: 'user_id_123',
           email: 'test@example.com',
           roles: ['User'],
           created_at: new Date().toISOString(),
+          jti: 'old-jti-uuid',
         },
       })
       const res = createMockResponse()
 
       await authController.refreshTokenController(req as Request, res as Response)
 
-      expect(mockAuthService.refreshToken).toHaveBeenCalledWith('user_id_123', expect.any(Number))
+      expect(mockAuthService.refreshTokenWithRotation).toHaveBeenCalledWith(
+        'user_id_123',
+        'old_refresh_token',
+        'old-jti-uuid',
+        expect.any(Object),
+      )
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
 
     it('should throw UnauthorizedError when refresh token is invalid', async () => {
-      mockAuthService.refreshToken.mockRejectedValue(
+      mockAuthService.refreshTokenWithRotation.mockRejectedValue(
         new ServiceUnauthorizedError('Refresh token không tồn tại'),
       )
 
       const req = createMockRequest({
+        body: { refresh_token: 'invalid_refresh_token' },
         jwtDecoded: {
           id: 'user_id_123',
           email: 'test@example.com',
@@ -365,10 +379,11 @@ describe('Auth Controller', () => {
       })
     })
 
-    it('should rethrow generic errors from refreshToken', async () => {
-      mockAuthService.refreshToken.mockRejectedValue(new Error('DB error'))
+    it('should rethrow generic errors from refreshTokenWithRotation', async () => {
+      mockAuthService.refreshTokenWithRotation.mockRejectedValue(new Error('DB error'))
 
       const req = createMockRequest({
+        body: { refresh_token: 'some_refresh_token' },
         jwtDecoded: {
           id: 'user_id_123',
           email: 'test@example.com',

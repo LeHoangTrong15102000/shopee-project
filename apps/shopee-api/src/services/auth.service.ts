@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import { IUser, IPayloadToken } from '../@types/models.type'
 import { IAuthRepository } from '@repositories/interfaces/auth.repository.interface'
 import { IUserRepository } from '@repositories/interfaces/user.repository.interface'
@@ -7,6 +8,7 @@ import { signToken } from '@utils/jwt'
 import { config } from '@constants/config'
 import { ROLE } from '@constants/role.enum'
 import { omit } from 'lodash'
+import { Logger } from '@utils/logger'
 
 export interface RegisterDTO {
   email: string
@@ -39,15 +41,30 @@ export class AuthService extends BaseService {
     super()
   }
 
+  /** Generate a unique JWT ID for token reuse detection */
+  private generateJti(): string {
+    return crypto.randomUUID()
+  }
+
   private async generateTokens(
     payload: IPayloadToken,
     tokenConfig: TokenConfig,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  ): Promise<{ accessToken: string; refreshToken: string; refreshJti: string }> {
+    const accessJti = this.generateJti()
+    const refreshJti = this.generateJti()
+
+    const accessPayload: IPayloadToken = { ...payload, jti: accessJti }
+    const refreshPayload: IPayloadToken = { ...payload, jti: refreshJti }
+
     const [accessToken, refreshToken] = await Promise.all([
-      signToken(payload, config.SECRET_KEY, tokenConfig.expireAccessToken),
-      signToken(payload, config.SECRET_KEY, tokenConfig.expireRefreshToken),
+      signToken(accessPayload, config.SECRET_KEY, tokenConfig.expireAccessToken),
+      signToken(refreshPayload, config.SECRET_KEY, tokenConfig.expireRefreshToken),
     ])
-    return { accessToken: accessToken as string, refreshToken: refreshToken as string }
+    return {
+      accessToken: accessToken as string,
+      refreshToken: refreshToken as string,
+      refreshJti,
+    }
   }
 
   async register(data: RegisterDTO, tokenConfig: TokenConfig): Promise<AuthResult> {
@@ -70,10 +87,19 @@ export class AuthService extends BaseService {
       created_at: new Date().toISOString(),
     }
 
-    const { accessToken, refreshToken } = await this.generateTokens(payload, tokenConfig)
+    const { accessToken, refreshToken, refreshJti } = await this.generateTokens(payload, tokenConfig)
 
-    // Only persist refresh token — access token is stateless JWT
-    await this.authRepository.createRefreshToken(user._id!, refreshToken)
+    const expiresAt = new Date(Date.now() + tokenConfig.expireRefreshToken * 1000)
+
+    // Persist refresh token with jti for rotation tracking
+    await this.authRepository.createRefreshTokenWithJti(
+      user._id!,
+      refreshToken,
+      refreshJti,
+      expiresAt,
+    )
+
+    Logger.apiInfo('auth.refresh.rotation', { event: 'register', userId: user._id!.toString() })
 
     return {
       access_token: 'Bearer ' + accessToken,
@@ -102,10 +128,19 @@ export class AuthService extends BaseService {
       created_at: new Date().toISOString(),
     }
 
-    const { accessToken, refreshToken } = await this.generateTokens(payload, tokenConfig)
+    const { accessToken, refreshToken, refreshJti } = await this.generateTokens(payload, tokenConfig)
 
-    // Only persist refresh token — access token is stateless JWT
-    await this.authRepository.createRefreshToken(user._id!, refreshToken)
+    const expiresAt = new Date(Date.now() + tokenConfig.expireRefreshToken * 1000)
+
+    // Persist refresh token with jti for rotation tracking
+    await this.authRepository.createRefreshTokenWithJti(
+      user._id!,
+      refreshToken,
+      refreshJti,
+      expiresAt,
+    )
+
+    Logger.apiInfo('auth.refresh.rotation', { event: 'login', userId: user._id!.toString() })
 
     return {
       access_token: 'Bearer ' + accessToken,
@@ -116,6 +151,105 @@ export class AuthService extends BaseService {
     }
   }
 
+  /**
+   * Refresh token rotation with reuse detection.
+   *
+   * Flow:
+   * 1. The caller (middleware) already verified the JWT signature.
+   * 2. We look up the token's jti in the DB.
+   * 3. If jti is missing or already revoked → reuse detected → revoke ALL user tokens → 401.
+   * 4. Otherwise: revoke old token, issue new access + refresh pair with new jti.
+   */
+  async refreshTokenWithRotation(
+    userId: string,
+    oldRefreshToken: string,
+    oldJti: string | undefined,
+    tokenConfig: TokenConfig,
+  ): Promise<{ access_token: string; refresh_token: string; expires: number; expires_refresh_token: number }> {
+    const user = await this.userRepository.findById(userId)
+    if (!user) {
+      throw new UnauthorizedError('User không tồn tại')
+    }
+
+    if (!oldJti) {
+      // Legacy token without jti — fall back to old token-based lookup
+      const tokenDoc = await this.authRepository.findRefreshToken(oldRefreshToken)
+      if (!tokenDoc) {
+        throw new UnauthorizedError('Refresh token không tồn tại')
+      }
+      // Delete the old (legacy) token
+      await this.authRepository.deleteRefreshToken(oldRefreshToken)
+    } else {
+      // New flow: look up by jti
+      const tokenDoc = await this.authRepository.findRefreshTokenByJti(oldJti)
+
+      if (!tokenDoc) {
+        // jti not found at all — this is a reuse of a rotated-away token
+        Logger.apiWarn('auth.refresh.reuse_detected', {
+          userId,
+          jti: oldJti,
+          reason: 'jti not found',
+        })
+        // Security: revoke ALL tokens for this user (token theft assumed)
+        await this.authRepository.revokeAllUserTokens(userId)
+        throw new UnauthorizedError('Refresh token không hợp lệ — toàn bộ session đã bị thu hồi')
+      }
+
+      if (tokenDoc.revokedAt) {
+        // jti exists but already revoked — reuse detected
+        Logger.apiWarn('auth.refresh.reuse_detected', {
+          userId,
+          jti: oldJti,
+          revokedAt: tokenDoc.revokedAt,
+        })
+        // Security: revoke ALL tokens for this user (token theft assumed)
+        await this.authRepository.revokeAllUserTokens(userId)
+        throw new UnauthorizedError('Refresh token đã hết hạn — toàn bộ session đã bị thu hồi')
+      }
+
+      // Revoke the old token (soft delete) before issuing new one
+      await this.authRepository.revokeRefreshTokenByJti(oldJti)
+    }
+
+    const payload: IPayloadToken = {
+      id: user._id!.toString(),
+      email: user.email,
+      roles: user.roles || [ROLE.USER],
+      created_at: new Date().toISOString(),
+    }
+
+    const { accessToken, refreshToken, refreshJti } = await this.generateTokens(payload, tokenConfig)
+
+    const expiresAt = new Date(Date.now() + tokenConfig.expireRefreshToken * 1000)
+
+    // Persist new refresh token
+    await this.authRepository.createRefreshTokenWithJti(
+      user._id!,
+      refreshToken,
+      refreshJti,
+      expiresAt,
+      oldJti, // rotatedFromJti for audit trail
+    )
+
+    Logger.apiInfo('auth.refresh.rotation', {
+      userId,
+      oldJti,
+      newJti: refreshJti,
+    })
+
+    return {
+      access_token: 'Bearer ' + accessToken,
+      refresh_token: refreshToken,
+      expires: tokenConfig.expireAccessToken,
+      expires_refresh_token: tokenConfig.expireRefreshToken,
+    }
+  }
+
+  /**
+   * Legacy refreshToken — kept for backward compatibility.
+   * Issues new access token only (no refresh token rotation).
+   * @deprecated Use refreshTokenWithRotation instead.
+   */
   async refreshToken(userId: string, expireAccessToken: number): Promise<{ access_token: string }> {
     const user = await this.userRepository.findById(userId)
     if (!user) {
@@ -127,6 +261,7 @@ export class AuthService extends BaseService {
       email: user.email,
       roles: user.roles || [ROLE.USER],
       created_at: new Date().toISOString(),
+      jti: this.generateJti(),
     }
 
     // Generate new stateless access token — no database storage

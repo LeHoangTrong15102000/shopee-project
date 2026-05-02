@@ -1,12 +1,17 @@
-require('dotenv').config()
-export const config = {
-  SECRET_KEY: process.env.SECRET_KEY_JWT || '',
-  EXPIRE_ACCESS_TOKEN: 900, // 15 minutes — short-lived stateless JWT
-  EXPIRE_REFRESH_TOKEN: 100 * 24 * 60 * 60,
-}
-// 60, "2 days", "10h", "7d". A numeric value is interpreted as a seconds count. If you use a string be sure you provide the time units (days, hours, etc), otherwise milliseconds unit is used by default ("120" is equal to "120ms").
+import { validateEnv } from './env.schema'
 
-export const FOLDER_UPLOAD = 'upload'
+// Validate env first — throws and exits with a clear error if invalid
+const env = validateEnv()
+
+export const config = {
+  SECRET_KEY: env.SECRET_KEY_JWT,
+  EXPIRE_ACCESS_TOKEN: env.JWT_ACCESS_TTL,
+  EXPIRE_REFRESH_TOKEN: env.JWT_REFRESH_TTL,
+  AUTH_STRICT_MODE: env.AUTH_STRICT_MODE,
+  REDIS_URL: env.REDIS_URL,
+}
+
+export const FOLDER_UPLOAD = env.UPLOAD_DIR
 
 export const FOLDERS = {
   PRODUCT: 'product',

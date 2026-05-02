@@ -56,7 +56,7 @@ export class ServiceError extends Error {
   constructor(
     public readonly code: string,
     message: string,
-    public readonly statusCode: number = 400,
+    public readonly statusCode = 400,
   ) {
     super(message)
     this.name = 'ServiceError'
@@ -88,7 +88,7 @@ export class ConflictError extends ServiceError {
 }
 
 export class UnauthorizedError extends ServiceError {
-  constructor(message: string = 'Unauthorized') {
+  constructor(message = 'Unauthorized') {
     super('UNAUTHORIZED', message, 401)
     this.name = 'UnauthorizedError'
   }
@@ -102,7 +102,7 @@ export class BusinessError extends ServiceError {
 }
 
 export class ForbiddenError extends ServiceError {
-  constructor(message: string = 'Bạn không có quyền thực hiện hành động này') {
+  constructor(message = 'Bạn không có quyền thực hiện hành động này') {
     super('FORBIDDEN', message, 403)
     this.name = 'ForbiddenError'
   }

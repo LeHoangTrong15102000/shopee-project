@@ -60,7 +60,7 @@ export const asyncHandlers = (handlers: AsyncRequestHandler[]): RequestHandler[]
  */
 export const asyncHandlerWithTimeout = (
   fn: AsyncRequestHandler,
-  timeoutMs: number = 30000,
+  timeoutMs = 30000,
 ): RequestHandler => {
   return (req: Request, res: Response, next: NextFunction): void => {
     const timeoutPromise = new Promise<never>((_, reject) => {
@@ -89,8 +89,8 @@ export const asyncHandlerWithTimeout = (
  */
 export const asyncHandlerWithRetry = (
   fn: AsyncRequestHandler,
-  maxRetries: number = 3,
-  delayMs: number = 1000,
+  maxRetries = 3,
+  delayMs = 1000,
 ): RequestHandler => {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     let lastError: Error | null = null

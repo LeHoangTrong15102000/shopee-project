@@ -9,6 +9,8 @@ declare namespace Express {
       name?: string
       roles: string[]
       created_at: string
+      /** JWT ID — unique per token, used for reuse detection */
+      jti?: string
     }
   }
 }
@@ -45,6 +47,8 @@ interface PayloadToken {
   email: string
   roles: string[]
   created_at: string
+  /** JWT ID — unique per token */
+  jti?: string
 }
 
 interface Token {

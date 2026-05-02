@@ -154,7 +154,7 @@ export const getMessageStats = (
 /**
  * Lấy context messages để gửi cho AI (giới hạn số lượng)
  */
-export const getContextMessages = (conversation: any, maxMessages: number = 20): ChatMessage[] => {
+export const getContextMessages = (conversation: any, maxMessages = 20): ChatMessage[] => {
   if (!conversation.messages || conversation.messages.length === 0) {
     return []
   }

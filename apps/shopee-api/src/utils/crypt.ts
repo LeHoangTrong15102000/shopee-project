@@ -71,6 +71,6 @@ export const hashToken = (token: string): string => {
  * Tạo token ngẫu nhiên an toàn
  * Dùng cho refresh token, reset password token, etc.
  */
-export const generateSecureToken = (length: number = 32): string => {
+export const generateSecureToken = (length = 32): string => {
   return crypto.randomBytes(length).toString('hex')
 }

@@ -111,7 +111,7 @@ const Header1 = () => {
           <div className="col-span-2 flex items-center justify-center md:col-span-1">
             {/* Ban đầu chưa có sản phẩm thì render ra biểu tượng */}
             <Popover
-              className=""
+              className="relative flex items-center"
               renderPopover={
                 <div className="relative max-w-[280px] rounded-xs border border-gray-200 bg-white text-sm shadow-md md:max-w-[400px] dark:border-slate-700 dark:bg-slate-800">
                   {purchasesInCart && purchasesInCart.length > 0 ? (

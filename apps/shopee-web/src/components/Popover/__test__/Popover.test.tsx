@@ -2,26 +2,14 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import Popover from '../Popover'
 
-vi.mock('@floating-ui/react', () => ({
-  useFloating: () => ({
-    x: 0,
-    y: 0,
-    refs: {
-      setReference: vi.fn(),
-      setFloating: vi.fn(),
-      reference: { current: null },
-    },
-    strategy: 'absolute',
-    middlewareData: { arrow: { x: 0 } },
-  }),
-  FloatingPortal: ({ children }: any) => <div data-testid="portal">{children}</div>,
-  arrow: vi.fn(),
-  shift: vi.fn(),
-  offset: vi.fn(),
-  flip: vi.fn(),
-  autoUpdate: vi.fn(),
-  useMergeRefs: (refs: any[]) => refs[0],
-}))
+vi.mock('@floating-ui/react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@floating-ui/react')>()
+  return {
+    ...actual,
+    // Override FloatingPortal to render inline for testing
+    FloatingPortal: ({ children }: any) => <div data-testid="portal">{children}</div>,
+  }
+})
 
 vi.mock('framer-motion', () => ({
   motion: {
@@ -126,7 +114,9 @@ describe('Popover', () => {
         <button>Trigger</button>
       </Popover>,
     )
+    // useClick from floating-ui handles Space on keyup (browser native behavior for buttons)
     fireEvent.keyDown(container.firstChild!, { key: ' ' })
+    fireEvent.keyUp(container.firstChild!, { key: ' ' })
     expect(screen.getByText('Space content')).toBeInTheDocument()
   })
 

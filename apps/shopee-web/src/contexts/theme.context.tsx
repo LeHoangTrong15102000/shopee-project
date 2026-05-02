@@ -62,7 +62,7 @@ const applyTheme = (resolvedTheme: ResolvedTheme) => {
     //    the new theme colors before re-enabling transitions.
     //    setTimeout(fn, 1) was unreliable — the HTML spec clamps it to ~4ms minimum,
     //    and under load it can fire before the browser paints, causing flicker.
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+     
     document.body.offsetHeight // Force synchronous reflow
 
     requestAnimationFrame(() => {

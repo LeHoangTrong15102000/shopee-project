@@ -1,6 +1,12 @@
-import { useState, useRef, useId, useEffect, useCallback, type ElementType } from 'react'
+import { useState, useRef, useId, useEffect, type ElementType } from 'react'
 import {
   useFloating,
+  useFloatingRootContext,
+  useHover,
+  useClick,
+  useDismiss,
+  useInteractions,
+  safePolygon,
   FloatingPortal,
   arrow,
   shift,
@@ -9,6 +15,7 @@ import {
   useMergeRefs,
   autoUpdate,
   type Placement,
+  type OpenChangeReason,
 } from '@floating-ui/react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 
@@ -41,14 +48,37 @@ const Popover = ({
 }: Props) => {
   const [isOpen, setIsOpen] = useState(initialOpen || false)
   const openedViaKeyboard = useRef(false)
-  const justOpenedViaHover = useRef(false)
-  const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const returnFocusOnClose = useRef(false)
   const floatingRef = useRef<HTMLDivElement>(null)
   const id = useId()
   const popoverId = `popover-content-${id}`
   const prefersReducedMotion = useReducedMotion()
   const arrowRef = useRef<HTMLElement>(null)
-  const { x, y, refs, strategy, middlewareData } = useFloating({
+
+  // Manage reference and floating elements as state for useFloatingRootContext
+  const [referenceEl, setReferenceEl] = useState<Element | null>(null)
+  const [floatingEl, setFloatingEl] = useState<HTMLElement | null>(null)
+
+  const handleOpenChange = (open: boolean, event?: Event, reason?: OpenChangeReason) => {
+    // Detect keyboard-triggered opens: useClick fires 'click' reason for keyboard events
+    if (open && reason === 'click' && event instanceof KeyboardEvent) {
+      openedViaKeyboard.current = true
+    }
+    // Return focus to trigger when dismissed via Escape key
+    if (!open && reason === 'escape-key') {
+      returnFocusOnClose.current = true
+    }
+    setIsOpen(open)
+  }
+
+  const rootContext = useFloatingRootContext({
+    open: isOpen,
+    onOpenChange: handleOpenChange,
+    elements: { reference: referenceEl, floating: floatingEl },
+  })
+
+  const { x, y, refs, strategy, middlewareData, context } = useFloating({
+    rootContext,
     middleware: [
       offset(10),
       flip(),
@@ -61,69 +91,35 @@ const Popover = ({
     whileElementsMounted: autoUpdate,
   })
 
-  const mergedFloatingRef = useMergeRefs([refs.setFloating, floatingRef])
+  // Built-in hover interaction — safePolygon handles the gap between trigger and popup
+  const hover = useHover(context, {
+    delay: { open: 0, close: 150 },
+    handleClose: safePolygon({ blockPointerEvents: false }),
+  })
 
-  const showPopover = useCallback(() => {
-    // Cancel any pending hide when mouse re-enters trigger or popup
-    if (hideTimeoutRef.current) {
-      clearTimeout(hideTimeoutRef.current)
-      hideTimeoutRef.current = null
-    }
-    justOpenedViaHover.current = true
-    setIsOpen(true)
-    // Reset after a tick so the subsequent click event sees it as stale
-    requestAnimationFrame(() => {
-      justOpenedViaHover.current = false
-    })
-  }, [])
+  // Handle click and keyboard (Enter/Space) opens — ignoreMouse so hover keeps priority for mouse,
+  // but keyboard (Enter/Space) and touch taps still open the popover
+  const click = useClick(context)
 
-  const hidePopover = useCallback(() => {
-    // Delay hide to allow mouse to travel from trigger to popup (or vice versa)
-    hideTimeoutRef.current = setTimeout(() => {
-      setIsOpen(false)
-      hideTimeoutRef.current = null
-    }, 150)
-  }, [])
+  // Built-in dismiss — handles click-outside (mousedown) and Escape key
+  const dismiss = useDismiss(context, { outsidePressEvent: 'mousedown' })
 
-  const togglePopover = useCallback(() => {
-    // Skip toggle if mouseenter just opened the popover (touch device tap fires both)
-    if (justOpenedViaHover.current) return
-    setIsOpen((prev) => !prev)
-  }, [])
+  const { getReferenceProps, getFloatingProps } = useInteractions([hover, click, dismiss])
 
-  const handleTriggerKeyDown = useCallback((event: React.KeyboardEvent) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault()
-      openedViaKeyboard.current = true
-      setIsOpen((prev) => !prev)
-    }
-  }, [])
+  // Merge refs: floating-ui's setFloating + our local floatingRef for focus management
+  const mergedFloatingRef = useMergeRefs([
+    refs.setFloating,
+    floatingRef,
+    (el: HTMLElement | null) => setFloatingEl(el),
+  ])
 
-  useEffect(() => {
-    if (!isOpen) return
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        setIsOpen(false)
-        if (refs.reference.current && 'focus' in refs.reference.current) {
-          ;(refs.reference.current as HTMLElement).focus()
-        }
-      }
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, refs.reference])
+  // Merge refs: floating-ui's setReference + our state setter for useFloatingRootContext
+  const mergedReferenceRef = useMergeRefs([
+    refs.setReference,
+    (el: Element | null) => setReferenceEl(el),
+  ])
 
-  // Cleanup hide timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (hideTimeoutRef.current) {
-        clearTimeout(hideTimeoutRef.current)
-      }
-    }
-  }, [])
-
-  // Focus first focusable element when opened via keyboard; reset ref on close
+  // Focus first focusable element when opened via keyboard; return focus on Escape close
   useEffect(() => {
     if (isOpen && openedViaKeyboard.current && floatingRef.current) {
       const focusable = floatingRef.current.querySelector<HTMLElement>(
@@ -140,21 +136,15 @@ const Popover = ({
     }
     if (!isOpen) {
       openedViaKeyboard.current = false
+      // Return focus to reference element when dismissed via Escape
+      if (returnFocusOnClose.current) {
+        returnFocusOnClose.current = false
+        const referenceNode = refs.reference.current
+        if (referenceNode && 'focus' in referenceNode) {
+          ;(referenceNode as HTMLElement).focus()
+        }
+      }
     }
-  }, [isOpen])
-
-  // Click outside to close
-  useEffect(() => {
-    if (!isOpen) return
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node
-      const reference = refs.reference.current as HTMLElement | null
-      const floating = floatingRef.current
-      if (reference?.contains(target) || floating?.contains(target)) return
-      setIsOpen(false)
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [isOpen, refs.reference])
 
   // Dùng kĩ thuật render Props, truyền vào cái props 1 dạng function component
@@ -162,11 +152,8 @@ const Popover = ({
   return (
     <Element
       className={className}
-      ref={refs.setReference}
-      onMouseEnter={showPopover}
-      onMouseLeave={hidePopover}
-      onClick={togglePopover}
-      onKeyDown={handleTriggerKeyDown}
+      ref={mergedReferenceRef}
+      {...getReferenceProps()}
       aria-expanded={isOpen}
       aria-haspopup="dialog"
       aria-controls={isOpen ? popoverId : undefined}
@@ -183,8 +170,7 @@ const Popover = ({
               id={popoverId}
               role="dialog"
               aria-label={popoverLabel}
-              onMouseEnter={showPopover}
-              onMouseLeave={hidePopover}
+              {...getFloatingProps()}
               style={{
                 position: strategy,
                 top: y ?? 0,
@@ -198,12 +184,6 @@ const Popover = ({
               exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
               transition={{ duration: prefersReducedMotion ? 0 : 0.15 }}
             >
-              {/* Invisible hover bridge — fills the gap between trigger and popup so mouse doesn't lose contact */}
-              <div
-                className="absolute left-0 right-0"
-                style={{ top: '-14px', height: '14px' }}
-                aria-hidden="true"
-              />
               {enableArrow && (
                 <span
                   ref={arrowRef}

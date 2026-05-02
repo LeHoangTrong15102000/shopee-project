@@ -39,9 +39,8 @@ const CartDropdown = ({ purchasesInCart, isAuthenticated }: CartDropdownProps) =
         </svg>
       </Link>
       {/* Cart */}
-      <div className="relative">
         <Popover
-          className=""
+          className="relative flex items-center"
           renderPopover={
             <div className="relative max-w-[280px] rounded-xs border border-gray-200 bg-white text-sm shadow-md md:max-w-[400px] dark:border-slate-700 dark:bg-slate-800">
               {purchasesInCart && purchasesInCart.length > 0 ? (
@@ -127,7 +126,6 @@ const CartDropdown = ({ purchasesInCart, isAuthenticated }: CartDropdownProps) =
             )}
           </Link>
         </Popover>
-      </div>
     </div>
   )
 }

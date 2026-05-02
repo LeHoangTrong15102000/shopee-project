@@ -4,9 +4,8 @@ import { useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { AppText, AppImage } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
-import { useRecentlyViewedStore } from '@/store/recentlyViewedStore'
+import { useRecentlyViewedStore, RecentlyViewedProduct } from '@/store/recentlyViewedStore'
 import { formatPrice } from '@/utils/price'
-import { Product } from '@/types/product.type'
 
 const CARD_WIDTH = 110
 const CARD_HEIGHT = 110
@@ -49,13 +48,13 @@ export default function RecentlyViewedSection() {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 16 }}
-        renderItem={({ item }: { item: Product }) => (
+        renderItem={({ item }: { item: RecentlyViewedProduct }) => (
           <TouchableOpacity
             onPress={() => router.push(`/product/${item._id}`)}
             activeOpacity={0.8}
             style={{ width: CARD_WIDTH, marginRight: 10 }}
             accessibilityRole="button"
-            accessibilityLabel={`View ${item.name}`}>
+            accessibilityLabel={t('a11y.viewProduct', { name: item.name })}>
             <View
               style={{
                 width: CARD_WIDTH,

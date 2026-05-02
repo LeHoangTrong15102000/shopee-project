@@ -1,10 +1,6 @@
 import http from '@/utils/http'
 import { TrackingUpdate } from '@/types/tracking.type'
-
-interface ApiResponse<T> {
-  message: string
-  data: T
-}
+import { type ApiResponse } from '@/types/api.type'
 
 export async function getOrderTracking(orderId: string): Promise<TrackingUpdate> {
   const res = await http.get<ApiResponse<TrackingUpdate>>(`orders/${orderId}/tracking`)

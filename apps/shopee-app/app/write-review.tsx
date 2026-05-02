@@ -13,7 +13,7 @@ import * as ImagePicker from 'expo-image-picker'
 import { Star, X, ImagePlus } from 'lucide-react-native'
 import { AppText, AppButton, AppInput } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
-import { useCreateReview } from '@/hooks/useCreateReview'
+import { useSubmitShopReview } from '@/hooks/useSubmitShopReview'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
 
 export default function WriteReviewScreen() {
@@ -29,7 +29,7 @@ export default function WriteReviewScreen() {
   const [comment, setComment] = useState('')
   const [images, setImages] = useState<string[]>([])
 
-  const { mutate: submitReview, isPending } = useCreateReview()
+  const { mutate: submitReview, isPending } = useSubmitShopReview()
 
   const handlePickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()

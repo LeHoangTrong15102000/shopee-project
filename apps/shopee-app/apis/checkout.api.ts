@@ -1,11 +1,7 @@
 import http from '@/utils/http'
+import { type ApiResponse } from '@/types/api.type'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
-
-interface ApiResponse<T> {
-  message: string
-  data: T
-}
 
 export interface ShippingMethod {
   _id: string

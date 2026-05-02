@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useRef, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import Dialog, { DialogOptions, DialogRef } from './Dialog'
 
 interface DialogContextType {
@@ -24,6 +25,7 @@ interface DialogProviderProps {
 }
 
 export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
+  const { t } = useTranslation()
   const dialogRef = useRef<DialogRef>(null)
 
   const showDialog = (options: DialogOptions) => {
@@ -46,7 +48,7 @@ export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
       dismissable: true,
       buttons: [
         {
-          text: 'OK',
+          text: t('common.ok'),
           variant: 'primary',
           onPress: onOk,
         },
@@ -69,12 +71,12 @@ export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
       buttonLayout,
       buttons: [
         {
-          text: 'Cancel',
+          text: t('common.cancel'),
           variant: 'outline',
           onPress: onCancel,
         },
         {
-          text: 'Confirm',
+          text: t('common.confirm'),
           variant: 'primary',
           onPress: onConfirm,
         },
@@ -85,7 +87,7 @@ export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
   const showLoading = (title?: string, message?: string) => {
     dialogRef.current?.show({
       type: 'loading',
-      title: title || 'Loading...',
+      title: title || t('common.loading'),
       message,
       dismissable: false,
     })

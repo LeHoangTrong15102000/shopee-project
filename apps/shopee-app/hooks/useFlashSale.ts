@@ -29,6 +29,5 @@ export function useFlashSale() {
         return []
       }
     },
-    select: (data) => data,
   })
 }

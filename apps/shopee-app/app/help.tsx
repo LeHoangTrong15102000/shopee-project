@@ -14,83 +14,9 @@ import { AppText, AppButton } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
 
-interface FaqItem {
-  question: string
-  answer: string
-}
+type FaqSectionKey = 'orders' | 'payment' | 'shipping' | 'returns' | 'account'
 
-interface FaqSection {
-  title: string
-  items: FaqItem[]
-}
-
-const FAQ_DATA: FaqSection[] = [
-  {
-    title: 'Đơn hàng',
-    items: [
-      {
-        question: 'Làm thế nào để theo dõi đơn hàng?',
-        answer: 'Vào mục "Đơn hàng của tôi" trong tài khoản để xem trạng thái đơn hàng.',
-      },
-      {
-        question: 'Tôi có thể hủy đơn hàng không?',
-        answer: 'Bạn có thể hủy đơn hàng khi đơn đang ở trạng thái "Chờ xác nhận".',
-      },
-    ],
-  },
-  {
-    title: 'Thanh toán',
-    items: [
-      {
-        question: 'Các phương thức thanh toán được hỗ trợ?',
-        answer: 'Chúng tôi hỗ trợ thanh toán khi nhận hàng (COD) và chuyển khoản ngân hàng.',
-      },
-      {
-        question: 'Làm thế nào để sử dụng voucher?',
-        answer: 'Nhập mã voucher tại trang thanh toán để được giảm giá.',
-      },
-    ],
-  },
-  {
-    title: 'Vận chuyển',
-    items: [
-      {
-        question: 'Thời gian giao hàng là bao lâu?',
-        answer: 'Thông thường từ 2-5 ngày làm việc tùy khu vực.',
-      },
-      {
-        question: 'Phí vận chuyển được tính như thế nào?',
-        answer: 'Phí vận chuyển được tính dựa trên khoảng cách và trọng lượng đơn hàng.',
-      },
-    ],
-  },
-  {
-    title: 'Trả hàng',
-    items: [
-      {
-        question: 'Chính sách trả hàng như thế nào?',
-        answer: 'Bạn có thể yêu cầu trả hàng trong vòng 7 ngày kể từ khi nhận hàng.',
-      },
-      {
-        question: 'Làm thế nào để yêu cầu trả hàng?',
-        answer: 'Vào chi tiết đơn hàng và nhấn nút "Trả hàng" để gửi yêu cầu.',
-      },
-    ],
-  },
-  {
-    title: 'Tài khoản',
-    items: [
-      {
-        question: 'Làm thế nào để đổi mật khẩu?',
-        answer: 'Vào Tài khoản > Cài đặt > Đổi mật khẩu.',
-      },
-      {
-        question: 'Làm thế nào để cập nhật thông tin cá nhân?',
-        answer: 'Vào Tài khoản > Sửa hồ sơ để cập nhật thông tin.',
-      },
-    ],
-  },
-]
+const FAQ_SECTION_KEYS: FaqSectionKey[] = ['orders', 'payment', 'shipping', 'returns', 'account']
 
 export default function HelpScreen() {
   const { t } = useTranslation()
@@ -98,29 +24,50 @@ export default function HelpScreen() {
   const [searchQuery, setSearchQuery] = useState('')
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
 
-  const toggleSection = (title: string) => {
+  const toggleSection = (key: string) => {
     setExpandedSections((prev) => {
       const next = new Set(prev)
-      if (next.has(title)) {
-        next.delete(title)
+      if (next.has(key)) {
+        next.delete(key)
       } else {
-        next.add(title)
+        next.add(key)
       }
       return next
     })
   }
 
+  const faqSections = useMemo(
+    () =>
+      FAQ_SECTION_KEYS.map((sectionKey) => ({
+        key: sectionKey,
+        title: t(`help.faq.${sectionKey}.title`),
+        items: [
+          {
+            question: t(`help.faq.${sectionKey}.q1`),
+            answer: t(`help.faq.${sectionKey}.a1`),
+          },
+          {
+            question: t(`help.faq.${sectionKey}.q2`),
+            answer: t(`help.faq.${sectionKey}.a2`),
+          },
+        ],
+      })),
+    [t]
+  )
+
   const filteredSections = useMemo(() => {
-    if (!searchQuery.trim()) return FAQ_DATA
+    if (!searchQuery.trim()) return faqSections
     const q = searchQuery.toLowerCase()
-    return FAQ_DATA.map((section) => ({
-      ...section,
-      items: section.items.filter(
-        (item) =>
-          item.question.toLowerCase().includes(q) || item.answer.toLowerCase().includes(q)
-      ),
-    })).filter((section) => section.items.length > 0)
-  }, [searchQuery])
+    return faqSections
+      .map((section) => ({
+        ...section,
+        items: section.items.filter(
+          (item) =>
+            item.question.toLowerCase().includes(q) || item.answer.toLowerCase().includes(q)
+        ),
+      }))
+      .filter((section) => section.items.length > 0)
+  }, [searchQuery, faqSections])
 
   const handleContact = () => {
     Linking.openURL('mailto:support@shopee.vn')
@@ -168,10 +115,10 @@ export default function HelpScreen() {
             </View>
           ) : (
             filteredSections.map((section) => (
-              <View key={section.title} style={{ marginBottom: 4 }}>
+              <View key={section.key} style={{ marginBottom: 4 }}>
                 {/* Section header */}
                 <TouchableOpacity
-                  onPress={() => toggleSection(section.title)}
+                  onPress={() => toggleSection(section.key)}
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -183,11 +130,11 @@ export default function HelpScreen() {
                     borderBottomColor: colors.neutrals800,
                   }}
                   accessibilityRole="button"
-                  accessibilityState={{ expanded: expandedSections.has(section.title) }}>
+                  accessibilityState={{ expanded: expandedSections.has(section.key) }}>
                   <AppText raw variant="body" weight="semibold">
                     {section.title}
                   </AppText>
-                  {expandedSections.has(section.title) ? (
+                  {expandedSections.has(section.key) ? (
                     <ChevronUp size={18} color={colors.neutrals400} />
                   ) : (
                     <ChevronDown size={18} color={colors.neutrals400} />
@@ -195,7 +142,7 @@ export default function HelpScreen() {
                 </TouchableOpacity>
 
                 {/* Section items */}
-                {expandedSections.has(section.title) &&
+                {expandedSections.has(section.key) &&
                   section.items.map((item, idx) => (
                     <View
                       key={idx}

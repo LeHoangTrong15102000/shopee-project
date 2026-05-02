@@ -28,6 +28,7 @@ function formatCountdown(seconds: number): string {
 }
 
 function FlashProductCard({ product }: { product: Product }) {
+  const { t } = useTranslation()
   const colors = useColors()
   const router = useRouter()
   const discount = getDiscountPercent(product.price, product.price_before_discount)
@@ -38,7 +39,7 @@ function FlashProductCard({ product }: { product: Product }) {
       activeOpacity={0.8}
       style={{ width: CARD_WIDTH, marginRight: 10 }}
       accessibilityRole="button"
-      accessibilityLabel={`View ${product.name}`}>
+      accessibilityLabel={t('a11y.viewProduct', { name: product.name })}>
       <View
         style={{
           width: CARD_WIDTH,

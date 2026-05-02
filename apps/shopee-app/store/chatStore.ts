@@ -13,8 +13,10 @@ const BACKOFF_JITTER = 1000
 
 type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting'
 
+// Socket is kept outside Zustand state to avoid storing non-serializable objects in the store
+let socket: Socket | null = null
+
 interface ChatState {
-  socket: Socket | null
   status: ConnectionStatus
   // In-memory buffer: conversationId -> messages received via socket
   messageBuffer: Record<string, Message[]>
@@ -35,8 +37,6 @@ interface ChatState {
   setTyping: (conversationId: string, isTyping: boolean) => void
 }
 
-let reconnectTimer: ReturnType<typeof setTimeout> | null = null
-
 function getBackoffDelay(retryCount: number): number {
   const exponential = Math.min(BACKOFF_BASE * Math.pow(2, retryCount), BACKOFF_MAX)
   const jitter = Math.random() * BACKOFF_JITTER
@@ -44,7 +44,6 @@ function getBackoffDelay(retryCount: number): number {
 }
 
 export const useChatStore = create<ChatState>((set, get) => ({
-  socket: null,
   status: 'disconnected',
   messageBuffer: {},
   typingState: {},
@@ -52,13 +51,31 @@ export const useChatStore = create<ChatState>((set, get) => ({
   lastReconnectedAt: null,
 
   connect: () => {
-    const { socket, status } = get()
+    const { status } = get()
     if (socket && (status === 'connected' || status === 'connecting')) return
 
     const accessToken = useAuthStore.getState().accessToken
     if (!accessToken) return
 
     set({ status: 'connecting' })
+
+    let reconnectTimer: ReturnType<typeof setTimeout> | null = null
+
+    function scheduleReconnect() {
+      if (reconnectTimer) return
+      const retryCount = useChatStore.getState().retryCount
+      const delay = getBackoffDelay(retryCount)
+      useChatStore.setState({ retryCount: retryCount + 1 })
+
+      reconnectTimer = setTimeout(() => {
+        reconnectTimer = null
+        if (socket) {
+          socket.disconnect()
+          socket = null
+        }
+        useChatStore.getState().connect()
+      }, delay)
+    }
 
     const newSocket = io(WS_URL, {
       auth: { token: accessToken },
@@ -98,33 +115,31 @@ export const useChatStore = create<ChatState>((set, get) => ({
       setTimeout(() => get().setTyping(conversationId, false), 3000)
     })
 
-    set({ socket: newSocket })
+    socket = newSocket
   },
 
   disconnect: () => {
-    const { socket } = get()
-    if (reconnectTimer) {
-      clearTimeout(reconnectTimer)
-      reconnectTimer = null
+    if (socket) {
+      socket.disconnect()
+      socket = null
     }
-    socket?.disconnect()
-    set({ socket: null, status: 'disconnected', retryCount: 0 })
+    set({ status: 'disconnected', retryCount: 0 })
   },
 
   joinConversation: (conversationId) => {
-    get().socket?.emit('shop_chat:join', { conversationId })
+    socket?.emit('shop_chat:join', { conversationId })
   },
 
   leaveConversation: (conversationId) => {
-    get().socket?.emit('shop_chat:leave', { conversationId })
+    socket?.emit('shop_chat:leave', { conversationId })
   },
 
   sendTyping: (conversationId) => {
-    get().socket?.emit('typing', { conversationId })
+    socket?.emit('typing', { conversationId })
   },
 
   markRead: (conversationId) => {
-    get().socket?.emit('message:read', { conversationId })
+    socket?.emit('message:read', { conversationId })
   },
 
   appendToBuffer: (conversationId, message) => {
@@ -154,18 +169,3 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }))
   },
 }))
-
-function scheduleReconnect() {
-  if (reconnectTimer) return
-  const retryCount = useChatStore.getState().retryCount
-  const delay = getBackoffDelay(retryCount)
-  useChatStore.setState({ retryCount: retryCount + 1 })
-
-  reconnectTimer = setTimeout(() => {
-    reconnectTimer = null
-    const { socket } = useChatStore.getState()
-    socket?.disconnect()
-    useChatStore.setState({ socket: null })
-    useChatStore.getState().connect()
-  }, delay)
-}

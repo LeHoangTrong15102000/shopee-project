@@ -5,5 +5,6 @@ export function useCategories() {
   return useQuery({
     queryKey: ['categories'],
     queryFn: getCategories,
+    staleTime: 1000 * 60 * 10, // 10 minutes — categories are essentially static
   })
 }

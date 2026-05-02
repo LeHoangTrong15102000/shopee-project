@@ -1,10 +1,6 @@
 import http from '@/utils/http'
 import { Conversation, Message, MessagesResponse } from '@/types/chat.type'
-
-interface ApiResponse<T> {
-  message: string
-  data: T
-}
+import { type ApiResponse } from '@/types/api.type'
 
 export async function getConversations(): Promise<Conversation[]> {
   const res = await http.get<ApiResponse<Conversation[]>>('shop-conversations')

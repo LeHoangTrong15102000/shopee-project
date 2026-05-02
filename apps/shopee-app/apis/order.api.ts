@@ -1,12 +1,8 @@
 import http from '@/utils/http'
 import { type OrderStatusType } from '@/constants/order'
+import { type ApiResponse, type Pagination } from '@/types/api.type'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
-
-interface ApiResponse<T> {
-  message: string
-  data: T
-}
 
 export interface OrderProduct {
   _id: string
@@ -37,12 +33,7 @@ export interface Order {
 
 export interface OrdersPage {
   orders: Order[]
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    total_pages: number
-  }
+  pagination: Pagination
 }
 
 export interface TrackingStep {
@@ -71,11 +62,6 @@ export async function cancelOrder(orderId: string) {
 
 export async function confirmReceived(orderId: string) {
   const res = await http.put<ApiResponse<Order>>(`orders/${orderId}/confirm`)
-  return res.data
-}
-
-export async function returnOrder(orderId: string) {
-  const res = await http.put<ApiResponse<Order>>(`orders/${orderId}/return`)
   return res.data
 }
 

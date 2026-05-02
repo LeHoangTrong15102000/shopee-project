@@ -161,7 +161,7 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
       showError(t('PD_PRODUCT_NOT_FOUND'))
       router.back()
     }
-  }, [is404])
+  }, [is404, showError, t, router])
 
   // ─── Loading state ────────────────────────────────────────────────────────
   if (productQuery.isLoading) {

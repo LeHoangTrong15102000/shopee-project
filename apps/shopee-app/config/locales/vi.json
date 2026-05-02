@@ -1,7 +1,5 @@
 {
   "HOME": "Trang chủ",
-  "WELCOME": "Chào mừng đến với React Native Rapid Boilerplate",
-  "COUNT": "Số lượng {{count}}",
   "APPEARANCE": "Giao diện",
   "LANGUAGE": "Ngôn ngữ",
   "SETTINGS": "Cài đặt",
@@ -23,28 +21,9 @@
   "AUTHENTICATION": "Xác thực",
   "LOGIN": "Đăng nhập",
   "REGISTER": "Đăng ký",
-  "TOP_UP": "Nạp tiền",
-  "SWAP": "Chuyển đổi",
-  "NET_WORTH": "Tổng tài sản",
-  "GET_RECOMMENDATIONS": "Nhận tư vấn từ chuyên gia",
   "GET_RECOMMENDATIONS_SUBTITLE": "Xem phân tích của nhà giao dịch, nhận tin tức mới nhất từ các chuyên gia được chọn lọc trên thị trường. Tự tin hơn và bắt đầu giao dịch.",
-  "TOP_PAIRS": "Cặp hàng đầu",
-  "SWAP_SUCCESS": "Chuyển đổi thành công",
-  "SWAP_DETAILS": "Bạn đã chuyển đổi {{amount}} USDT sang BTC!",
   "ABOUT": "Giới thiệu",
   "ABOUT_TITLE": "Về ứng dụng này",
-  "ABOUT_INTRO": "Một boilerplate React Native sẵn sàng cho sản xuất, được thiết kế để tăng tốc phát triển ứng dụng di động với các phương pháp tốt nhất và công cụ hiện đại.",
-  "PROJECT_INFO": "Thông tin dự án",
-  "PROJECT_BY": "Dự án bởi",
-  "GITHUB_REPO": "Kho lưu trữ GitHub",
-  "AUTHOR_CONTACT": "Liên hệ tác giả",
-  "CONTACT_EMAIL": "Email liên hệ",
-  "AUTHOR_WEBSITE": "Trang web tác giả",
-  "AUTHOR_GITHUB": "Hồ sơ GitHub",
-  "AUTHOR_LINKEDIN": "Hồ sơ LinkedIn",
-  "CONTACT_ME": "Cần trợ giúp?",
-  "CONTACT_ME_DESC": "Hãy liên hệ nếu bạn cần hỗ trợ với boilerplate này hoặc có bất kỳ câu hỏi nào về cách triển khai.",
-  "SEND_EMAIL": "Gửi email",
   "AUTH_SIGN_IN_TITLE": "Đăng nhập",
   "AUTH_SIGN_UP_TITLE": "Đăng ký",
   "AUTH_EMAIL_LABEL": "Email",
@@ -640,7 +619,8 @@
     "quantityValue": "Số lượng: {{value}}",
     "dismissNotification": "Đóng thông báo",
     "productImage": "Ảnh sản phẩm {{index}} / {{total}}",
-    "viewThumbnail": "Xem ảnh {{index}}"
+    "viewThumbnail": "Xem ảnh {{index}}",
+    "viewProduct": "Xem {{name}}"
   },
   "errors": {
     "sessionExpiredTitle": "Phiên đăng nhập đã hết hạn",
@@ -701,7 +681,44 @@
     },
     "searchPlaceholder": "Tìm kiếm câu hỏi...",
     "contactButton": "Liên hệ hỗ trợ",
-    "noResults": "Không tìm thấy kết quả"
+    "noResults": "Không tìm thấy kết quả",
+    "faq": {
+      "orders": {
+        "title": "Đơn hàng",
+        "q1": "Làm thế nào để theo dõi đơn hàng?",
+        "a1": "Vào mục \"Đơn hàng của tôi\" trong tài khoản để xem trạng thái đơn hàng.",
+        "q2": "Tôi có thể hủy đơn hàng không?",
+        "a2": "Bạn có thể hủy đơn hàng khi đơn đang ở trạng thái \"Chờ xác nhận\"."
+      },
+      "payment": {
+        "title": "Thanh toán",
+        "q1": "Các phương thức thanh toán được hỗ trợ?",
+        "a1": "Chúng tôi hỗ trợ thanh toán khi nhận hàng (COD) và chuyển khoản ngân hàng.",
+        "q2": "Làm thế nào để sử dụng voucher?",
+        "a2": "Nhập mã voucher tại trang thanh toán để được giảm giá."
+      },
+      "shipping": {
+        "title": "Vận chuyển",
+        "q1": "Thời gian giao hàng là bao lâu?",
+        "a1": "Thông thường từ 2-5 ngày làm việc tùy khu vực.",
+        "q2": "Phí vận chuyển được tính như thế nào?",
+        "a2": "Phí vận chuyển được tính dựa trên khoảng cách và trọng lượng đơn hàng."
+      },
+      "returns": {
+        "title": "Trả hàng",
+        "q1": "Chính sách trả hàng như thế nào?",
+        "a1": "Bạn có thể yêu cầu trả hàng trong vòng 7 ngày kể từ khi nhận hàng.",
+        "q2": "Làm thế nào để yêu cầu trả hàng?",
+        "a2": "Vào chi tiết đơn hàng và nhấn nút \"Trả hàng\" để gửi yêu cầu."
+      },
+      "account": {
+        "title": "Tài khoản",
+        "q1": "Làm thế nào để đổi mật khẩu?",
+        "a1": "Vào Tài khoản > Cài đặt > Đổi mật khẩu.",
+        "q2": "Làm thế nào để cập nhật thông tin cá nhân?",
+        "a2": "Vào Tài khoản > Sửa hồ sơ để cập nhật thông tin."
+      }
+    }
   },
   "about": {
     "header": {
@@ -719,6 +736,41 @@
     "link": {
       "privacyPolicy": "Chính sách bảo mật",
       "termsOfService": "Điều khoản dịch vụ"
+    }
+  },
+  "common": {
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "ok": "OK",
+    "loading": "Đang tải..."
+  },
+  "shop": {
+    "tabs": {
+      "products": "Sản phẩm",
+      "categories": "Danh mục",
+      "newest": "Mới nhất"
+    },
+    "error": {
+      "loadFailed": "Không thể tải thông tin shop"
+    }
+  },
+  "review": {
+    "toast": {
+      "success": "Đánh giá đã được gửi",
+      "error": "Không thể gửi đánh giá"
+    }
+  },
+  "reorder": {
+    "toast": {
+      "success": "Đã thêm {{count}} sản phẩm vào giỏ hàng",
+      "partialSuccess": "Đã thêm {{count}} sản phẩm vào giỏ hàng",
+      "skipped": "Không thể thêm: {{names}}",
+      "error": "Không thể mua lại"
+    }
+  },
+  "requestReturn": {
+    "toast": {
+      "success": "Yêu cầu trả hàng đã được gửi"
     }
   }
 }

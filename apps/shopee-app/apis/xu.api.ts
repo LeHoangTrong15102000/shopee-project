@@ -1,11 +1,7 @@
 import http from '@/utils/http'
+import { type ApiResponse, type Pagination } from '@/types/api.type'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
-
-interface ApiResponse<T> {
-  message: string
-  data: T
-}
 
 export interface XuTransaction {
   id: string
@@ -36,12 +32,7 @@ interface BackendTransaction {
 interface BackendTransactionsData {
   transactions: BackendTransaction[]
   balance?: number
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    total_pages: number
-  }
+  pagination: Pagination
 }
 
 function mapTransactionType(type: BackendTransaction['type']): XuTransaction['type'] {

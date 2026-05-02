@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { View, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import { AppText, AppButton } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { useShop } from '@/hooks/useShop'
@@ -12,20 +13,22 @@ import ShopHeader from '@/components/shop/ShopHeader'
 import ShopProductGrid from '@/components/shop/ShopProductGrid'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
 
-const TABS = ['Sản phẩm', 'Danh mục', 'Mới nhất'] as const
-type Tab = (typeof TABS)[number]
+type TabKey = 'products' | 'categories' | 'newest'
 
-const TAB_SORT: Record<Tab, string> = {
-  'Sản phẩm': 'sold',
-  'Danh mục': 'category',
-  'Mới nhất': 'createdAt',
+const TAB_KEYS: TabKey[] = ['products', 'categories', 'newest']
+
+const TAB_SORT: Record<TabKey, string> = {
+  products: 'sold',
+  categories: 'category',
+  newest: 'createdAt',
 }
 
 export default function ShopScreen() {
+  const { t } = useTranslation()
   const colors = useColors()
   const router = useRouter()
   const { id } = useLocalSearchParams<{ id: string }>()
-  const [activeTab, setActiveTab] = useState<Tab>('Sản phẩm')
+  const [activeTab, setActiveTab] = useState<TabKey>('products')
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
 
   const { data: shop, isLoading: shopLoading, isError: shopError, refetch: refetchShop } = useShop(id)
@@ -81,10 +84,10 @@ export default function ShopScreen() {
     return (
       <View className="flex-1 items-center justify-center px-4 gap-3">
         <AppText raw variant="body" color="muted" align="center">
-          Không thể tải thông tin cửa hàng
+          {t('shop.error.loadFailed')}
         </AppText>
         <AppButton variant="outline" size="sm" onPress={() => refetchShop()}>
-          Thử lại
+          {t('RETRY')}
         </AppButton>
       </View>
     )
@@ -113,12 +116,12 @@ export default function ShopScreen() {
           <View
             className="flex-row border-b"
             style={{ borderColor: colors.neutrals700, backgroundColor: colors.background }}>
-            {TABS.map((tab) => {
-              const isActive = activeTab === tab
+            {TAB_KEYS.map((tabKey) => {
+              const isActive = activeTab === tabKey
               return (
                 <TouchableOpacity
-                  key={tab}
-                  onPress={() => setActiveTab(tab)}
+                  key={tabKey}
+                  onPress={() => setActiveTab(tabKey)}
                   className="flex-1 items-center py-3"
                   accessibilityRole="tab"
                   accessibilityState={{ selected: isActive }}>
@@ -127,7 +130,7 @@ export default function ShopScreen() {
                     variant="bodySmall"
                     weight={isActive ? 'semibold' : 'regular'}
                     style={{ color: isActive ? colors.primary : colors.neutrals400 }}>
-                    {tab}
+                    {t(`shop.tabs.${tabKey}`)}
                   </AppText>
                   {isActive && (
                     <View

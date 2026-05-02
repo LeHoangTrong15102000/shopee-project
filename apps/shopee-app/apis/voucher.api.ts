@@ -1,11 +1,7 @@
 import http from '@/utils/http'
+import { type ApiResponse, type Pagination } from '@/types/api.type'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
-
-interface ApiResponse<T> {
-  message: string
-  data: T
-}
 
 export interface Voucher {
   _id: string
@@ -21,12 +17,7 @@ export interface Voucher {
 
 export interface VouchersPage {
   vouchers: Voucher[]
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    total_pages: number
-  }
+  pagination: Pagination
 }
 
 // ─── Voucher API ──────────────────────────────────────────────────────────────

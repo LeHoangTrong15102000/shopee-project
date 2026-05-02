@@ -1,10 +1,6 @@
 import http from '@/utils/http'
 import { Shop, ShopProductsResponse } from '@/types/shop.type'
-
-interface ApiResponse<T> {
-  message: string
-  data: T
-}
+import { type ApiResponse } from '@/types/api.type'
 
 export async function getShop(id: string): Promise<Shop> {
   const res = await http.get<ApiResponse<Shop>>(`shops/${id}`)

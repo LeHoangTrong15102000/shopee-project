@@ -6,10 +6,9 @@ import { useTranslation } from 'react-i18next'
 import { Clock } from 'lucide-react-native'
 import { EmptyState } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
-import { useRecentlyViewedStore } from '@/store/recentlyViewedStore'
+import { useRecentlyViewedStore, RecentlyViewedProduct } from '@/store/recentlyViewedStore'
 import ProductCard, { CARD_GAP, CARD_PADDING } from '@/components/home/ProductCard'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
-import { Product } from '@/types/product.type'
 
 export default function RecentlyViewedScreen() {
   const { t } = useTranslation()
@@ -17,7 +16,7 @@ export default function RecentlyViewedScreen() {
   const products = useRecentlyViewedStore((state) => state.products)
 
   const renderProduct = useCallback(
-    ({ item }: { item: Product }) => <ProductCard product={item} />,
+    ({ item }: { item: RecentlyViewedProduct }) => <ProductCard product={item as any} />,
     []
   )
 

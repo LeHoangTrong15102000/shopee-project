@@ -1,11 +1,7 @@
 import http from '@/utils/http'
+import { type ApiResponse, type Pagination } from '@/types/api.type'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
-
-interface ApiResponse<T> {
-  message: string
-  data: T
-}
 
 export interface Notification {
   _id: string
@@ -20,12 +16,7 @@ export interface Notification {
 
 export interface NotificationsPage {
   notifications: Notification[]
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    total_pages: number
-  }
+  pagination: Pagination
 }
 
 // ─── Notification API ─────────────────────────────────────────────────────────

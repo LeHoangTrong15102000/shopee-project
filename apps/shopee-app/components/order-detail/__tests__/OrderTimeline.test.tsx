@@ -1,17 +1,40 @@
 import React from 'react'
 import { render } from '@testing-library/react-native'
-import OrderTimeline from '../OrderTimeline'
+import OrderTimeline from '@/components/orders/OrderTimeline'
 import { ORDER_STATUS } from '@/constants/order'
+
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const map: Record<string, string> = {
+        'orderTimeline.step.placed': 'Order Placed',
+        'orderTimeline.step.confirmed': 'Confirmed',
+        'orderTimeline.step.processing': 'Processing',
+        'orderTimeline.step.shipping': 'Shipping',
+        'orderTimeline.step.delivered': 'Delivered',
+        'orderTimeline.step.cancelled': 'Cancelled',
+        'orderTimeline.step.returned': 'Returned',
+      }
+      return map[key] ?? key
+    },
+  }),
+}))
 
 jest.mock('@/hooks/useColors', () => ({
   useColors: () => ({
     primary: '#EE4D2D',
+    primaryForeground: '#FFFFFF',
     error: '#F44336',
     warning: '#FF9800',
     foreground: '#1a1a1a',
     neutrals400: '#9e9e9e',
     neutrals800: '#424242',
   }),
+}))
+
+jest.mock('@/store/appStore', () => ({
+  useAppStore: (selector: (s: { language: string }) => string) =>
+    selector({ language: 'en' }),
 }))
 
 describe('OrderTimeline', () => {

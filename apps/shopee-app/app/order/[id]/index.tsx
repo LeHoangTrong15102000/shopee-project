@@ -10,7 +10,7 @@ import { useOrderDetail, useCancelOrder, useConfirmReceived, useReturnOrder } fr
 import { useDialog } from '@/components/ui/DialogProvider'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
 import OrderDetailHeader from '@/components/order-detail/OrderDetailHeader'
-import OrderTimeline from '@/components/order-detail/OrderTimeline'
+import OrderTimeline from '@/components/orders/OrderTimeline'
 import OrderActions from '@/components/order-detail/OrderActions'
 import { ORDER_STATUS } from '@/constants/order'
 import { useReorder } from '@/hooks/useReorder'

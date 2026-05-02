@@ -1,4 +1,5 @@
 import http from '@/utils/http'
+import { type ApiResponse, type Pagination } from '@/types/api.type'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -70,18 +71,6 @@ export interface Answer {
   likes_count: number
   is_liked: boolean
   created_at: string
-}
-
-export interface Pagination {
-  page: number
-  limit: number
-  total: number
-  total_pages: number
-}
-
-interface ApiResponse<T> {
-  message: string
-  data: T
 }
 
 // ─── Product Detail API ──────────────────────────────────────────────────────

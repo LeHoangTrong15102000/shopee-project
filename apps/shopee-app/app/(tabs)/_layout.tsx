@@ -1,7 +1,10 @@
 import { Tabs } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import CustomTabBar from '@/components/navigation/CustomTabBar'
 
 export default function TabsLayout() {
+  const { t } = useTranslation()
+
   return (
     <Tabs
       tabBar={(props) => <CustomTabBar {...props} />}
@@ -11,35 +14,35 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="home"
         options={{
-          title: 'Home',
+          title: t('TAB_HOME'),
           tabBarLabel: 'TAB_HOME',
         }}
       />
       <Tabs.Screen
         name="cart"
         options={{
-          title: 'Cart',
+          title: t('TAB_CART'),
           tabBarLabel: 'TAB_CART',
         }}
       />
       <Tabs.Screen
         name="live"
         options={{
-          title: 'Live',
+          title: t('TAB_LIVE'),
           tabBarLabel: 'TAB_LIVE',
         }}
       />
       <Tabs.Screen
         name="notifications"
         options={{
-          title: 'Notifications',
+          title: t('TAB_NOTIFICATIONS'),
           tabBarLabel: 'TAB_NOTIFICATIONS',
         }}
       />
       <Tabs.Screen
         name="account"
         options={{
-          title: 'Account',
+          title: t('TAB_ACCOUNT'),
           tabBarLabel: 'TAB_ACCOUNT',
         }}
       />

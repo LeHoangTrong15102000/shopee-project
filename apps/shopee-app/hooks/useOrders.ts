@@ -4,7 +4,7 @@ import {
   getOrderDetail,
   cancelOrder,
   confirmReceived,
-  returnOrder,
+  requestReturn,
   getOrderTracking,
 } from '@/apis/order.api'
 import { type OrderStatusType } from '@/constants/order'
@@ -46,7 +46,7 @@ export function useCancelOrder() {
   return useMutation({
     mutationFn: (orderId: string) => cancelOrder(orderId),
     onSuccess: (_data, orderId) => {
-      queryClient.invalidateQueries({ queryKey: ['orders'] })
+      queryClient.invalidateQueries({ queryKey: orderKeys.all() })
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) })
     },
     onError: handleMutationError,
@@ -58,7 +58,7 @@ export function useConfirmReceived() {
   return useMutation({
     mutationFn: (orderId: string) => confirmReceived(orderId),
     onSuccess: (_data, orderId) => {
-      queryClient.invalidateQueries({ queryKey: ['orders'] })
+      queryClient.invalidateQueries({ queryKey: orderKeys.all() })
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) })
     },
     onError: handleMutationError,
@@ -68,9 +68,9 @@ export function useConfirmReceived() {
 export function useReturnOrder() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (orderId: string) => returnOrder(orderId),
+    mutationFn: (orderId: string) => requestReturn(orderId, { reason: 'other' }),
     onSuccess: (_data, orderId) => {
-      queryClient.invalidateQueries({ queryKey: ['orders'] })
+      queryClient.invalidateQueries({ queryKey: orderKeys.all() })
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) })
     },
     onError: handleMutationError,

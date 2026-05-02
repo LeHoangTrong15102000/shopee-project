@@ -1,7 +1,5 @@
 {
   "HOME": "Home",
-  "WELCOME": "Welcome to React Native Rapid Boilerplate",
-  "COUNT": "Count {{count}}",
   "APPEARANCE": "Appearance",
   "LANGUAGE": "Language",
   "SETTINGS": "Settings",
@@ -23,28 +21,9 @@
   "AUTHENTICATION": "Authentication",
   "LOGIN": "Login",
   "REGISTER": "Register",
-  "TOP_UP": "Top Up",
-  "SWAP": "Swap",
-  "NET_WORTH": "Net Worth",
-  "GET_RECOMMENDATIONS": "Get Recommendations from Professionals",
   "GET_RECOMMENDATIONS_SUBTITLE": "See traders insight, get latest news from our hand picked professionals on the market. Get some confidence and start trading.",
-  "TOP_PAIRS": "Top Pairs",
-  "SWAP_SUCCESS": "Swap Success",
-  "SWAP_DETAILS": "You have swapped {{amount}} USDT for BTC!",
   "ABOUT": "About",
   "ABOUT_TITLE": "About This App",
-  "ABOUT_INTRO": "A production-ready React Native boilerplate designed to accelerate your mobile app development with best practices and modern tools.",
-  "PROJECT_INFO": "Project Information",
-  "PROJECT_BY": "Project by",
-  "GITHUB_REPO": "GitHub Repository",
-  "AUTHOR_CONTACT": "Author Contact",
-  "CONTACT_EMAIL": "Contact Email",
-  "AUTHOR_WEBSITE": "Author Website",
-  "AUTHOR_GITHUB": "GitHub Profile",
-  "AUTHOR_LINKEDIN": "LinkedIn Profile",
-  "CONTACT_ME": "Need Help?",
-  "CONTACT_ME_DESC": "Feel free to reach out if you need assistance with this boilerplate or have any questions about implementation.",
-  "SEND_EMAIL": "Send Email",
   "AUTH_SIGN_IN_TITLE": "Sign In",
   "AUTH_SIGN_UP_TITLE": "Sign Up",
   "AUTH_EMAIL_LABEL": "Email",
@@ -640,7 +619,8 @@
     "quantityValue": "Quantity: {{value}}",
     "dismissNotification": "Dismiss notification",
     "productImage": "Product image {{index}} of {{total}}",
-    "viewThumbnail": "View image {{index}}"
+    "viewThumbnail": "View image {{index}}",
+    "viewProduct": "View {{name}}"
   },
   "errors": {
     "sessionExpiredTitle": "Session Expired",
@@ -701,7 +681,44 @@
     },
     "searchPlaceholder": "Search questions...",
     "contactButton": "Contact Support",
-    "noResults": "No results found"
+    "noResults": "No results found",
+    "faq": {
+      "orders": {
+        "title": "Orders",
+        "q1": "How do I track my order?",
+        "a1": "Go to \"My Orders\" in your account to see the order status.",
+        "q2": "Can I cancel my order?",
+        "a2": "You can cancel your order while it is in \"Pending\" status."
+      },
+      "payment": {
+        "title": "Payment",
+        "q1": "What payment methods are supported?",
+        "a1": "We support Cash on Delivery (COD) and bank transfer.",
+        "q2": "How do I use a voucher?",
+        "a2": "Enter the voucher code at checkout to get a discount."
+      },
+      "shipping": {
+        "title": "Shipping",
+        "q1": "How long does delivery take?",
+        "a1": "Usually 2–5 business days depending on the area.",
+        "q2": "How is the shipping fee calculated?",
+        "a2": "The shipping fee is calculated based on distance and order weight."
+      },
+      "returns": {
+        "title": "Returns",
+        "q1": "What is the return policy?",
+        "a1": "You can request a return within 7 days of receiving the order.",
+        "q2": "How do I request a return?",
+        "a2": "Go to the order detail and tap \"Return\" to submit a request."
+      },
+      "account": {
+        "title": "Account",
+        "q1": "How do I change my password?",
+        "a1": "Go to Account > Settings > Change Password.",
+        "q2": "How do I update my personal information?",
+        "a2": "Go to Account > Edit Profile to update your information."
+      }
+    }
   },
   "about": {
     "header": {
@@ -719,6 +736,41 @@
     "link": {
       "privacyPolicy": "Privacy Policy",
       "termsOfService": "Terms of Service"
+    }
+  },
+  "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "ok": "OK",
+    "loading": "Loading..."
+  },
+  "shop": {
+    "tabs": {
+      "products": "Products",
+      "categories": "Categories",
+      "newest": "Newest"
+    },
+    "error": {
+      "loadFailed": "Failed to load shop information"
+    }
+  },
+  "review": {
+    "toast": {
+      "success": "Review submitted successfully",
+      "error": "Failed to submit review"
+    }
+  },
+  "reorder": {
+    "toast": {
+      "success": "Added {{count}} item(s) to cart",
+      "partialSuccess": "Added {{count}} item(s) to cart",
+      "skipped": "Could not add: {{names}}",
+      "error": "Failed to reorder"
+    }
+  },
+  "requestReturn": {
+    "toast": {
+      "success": "Return request submitted successfully"
     }
   }
 }

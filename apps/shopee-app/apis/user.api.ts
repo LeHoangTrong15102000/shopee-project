@@ -1,12 +1,8 @@
 import http from '@/utils/http'
 import { User } from '@/types/user.type'
+import { type ApiResponse } from '@/types/api.type'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
-
-interface ApiResponse<T> {
-  message: string
-  data: T
-}
 
 export interface UpdateProfileBody {
   name?: string

@@ -1,6 +1,7 @@
 import React, { forwardRef, useCallback, useImperativeHandle, useState } from 'react'
 import { ActivityIndicator, Text, View } from 'react-native'
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
+import { useTranslation } from 'react-i18next'
 import { useColors } from '@/hooks/useColors'
 import { useInsets } from '@/hooks/useInsets'
 import AppButton from './AppButton'
@@ -40,6 +41,7 @@ interface DialogInstance {
 }
 
 const Dialog = forwardRef<DialogRef>((_, ref) => {
+  const { t } = useTranslation()
   const colors = useColors()
   const insets = useInsets()
 
@@ -164,12 +166,12 @@ const Dialog = forwardRef<DialogRef>((_, ref) => {
     if (type === 'confirm') {
       return [
         {
-          text: 'Cancel',
+          text: t('common.cancel'),
           variant: 'outline',
           onPress: () => undefined,
         },
         {
-          text: 'Confirm',
+          text: t('common.confirm'),
           variant: 'primary',
           onPress: () => undefined,
         },
@@ -178,7 +180,7 @@ const Dialog = forwardRef<DialogRef>((_, ref) => {
 
     return [
       {
-        text: 'OK',
+        text: t('common.ok'),
         variant: 'primary',
         onPress: () => undefined,
       },

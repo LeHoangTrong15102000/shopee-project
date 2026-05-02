@@ -1,3 +1,4 @@
+import { Router } from 'express'
 import adminUserRouter from './admin-user.route'
 import adminAuthRouter from './admin-auth.route'
 import adminCategoryRouter from './admin-category.route'
@@ -13,69 +14,78 @@ import adminLoyaltyRouter from './admin-loyalty.route'
 import adminInventoryRouter from './admin-inventory.route'
 import adminProductAnalyticsRouter from './admin-product-analytics.route'
 import adminQARouter from './admin-qa.route'
+import { adminRateLimit } from '@middleware/rateLimiter.middleware'
+
+// Wrap every admin sub-router with the admin rate limiter (300 req/min per user)
+function withAdminRateLimit(router: Router): Router {
+  const wrapper = Router()
+  wrapper.use(adminRateLimit)
+  wrapper.use(router)
+  return wrapper
+}
 
 const adminRoutes = {
   prefix: '/admin/',
   routes: [
     {
       path: 'users',
-      route: adminUserRouter,
+      route: withAdminRateLimit(adminUserRouter),
     },
     {
       path: 'products',
-      route: adminProductRouter,
+      route: withAdminRateLimit(adminProductRouter),
     },
     {
       path: 'categories',
-      route: adminCategoryRouter,
+      route: withAdminRateLimit(adminCategoryRouter),
     },
     {
       path: 'import',
-      route: adminImportRouter,
+      route: withAdminRateLimit(adminImportRouter),
     },
     {
       path: 'analytics',
-      route: adminAnalyticsRouter,
+      route: withAdminRateLimit(adminAnalyticsRouter),
     },
     {
       path: 'orders',
-      route: adminOrderRouter,
+      route: withAdminRateLimit(adminOrderRouter),
     },
     {
       path: 'notifications',
-      route: adminNotificationRouter,
+      route: withAdminRateLimit(adminNotificationRouter),
     },
     {
       path: 'dashboard',
-      route: adminDashboardRouter,
+      route: withAdminRateLimit(adminDashboardRouter),
     },
     {
       path: 'vouchers',
-      route: adminVoucherRouter,
+      route: withAdminRateLimit(adminVoucherRouter),
     },
     {
       path: 'reviews',
-      route: adminReviewRouter,
+      route: withAdminRateLimit(adminReviewRouter),
     },
     {
       path: 'loyalty',
-      route: adminLoyaltyRouter,
+      route: withAdminRateLimit(adminLoyaltyRouter),
     },
     {
       path: 'inventory',
-      route: adminInventoryRouter,
+      route: withAdminRateLimit(adminInventoryRouter),
     },
     {
       path: 'products/analytics',
-      route: adminProductAnalyticsRouter,
+      route: withAdminRateLimit(adminProductAnalyticsRouter),
     },
     {
       path: 'qa',
-      route: adminQARouter,
+      route: withAdminRateLimit(adminQARouter),
     },
     {
       path: '',
-      route: adminAuthRouter,
+      route: withAdminRateLimit(adminAuthRouter),
     },
   ],
 }

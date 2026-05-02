@@ -3,6 +3,7 @@ import ProductController from '@controllers/product.controller'
 import authMiddleware from '@middleware/auth.middleware'
 import { asyncHandler } from '@utils/async-handler'
 import { validate, getProductsSchema, productIdParamSchema } from '@schemas/index'
+import { expensiveRateLimit } from '@middleware/rateLimiter.middleware'
 
 const commonProductRouter = Router()
 /**
@@ -25,8 +26,12 @@ commonProductRouter.get(
 
 commonProductRouter.get('/search', asyncHandler(ProductController.searchProduct))
 
-// get search suggestions
-commonProductRouter.get('/search/suggestions', asyncHandler(ProductController.getSearchSuggestions))
+// get search suggestions — expensive query, apply stricter rate limit
+commonProductRouter.get(
+  '/search/suggestions',
+  expensiveRateLimit, // 30 req/min per IP (env: RATE_LIMIT_EXPENSIVE_MAX)
+  asyncHandler(ProductController.getSearchSuggestions),
+)
 
 // get search history (optional auth - returns empty if not logged in)
 commonProductRouter.get(

@@ -1,3 +1,12 @@
+// Load .env file FIRST — before any module that reads process.env
+require('dotenv').config()
+
+// Validate environment variables IMMEDIATELY after loading .env
+// This ensures the server exits with a clear error if any required vars are missing
+// BEFORE attempting to connect to DB or initialize any services.
+import { validateEnv } from '@constants/env.schema'
+validateEnv()
+
 import express, { Request, Response, NextFunction } from 'express'
 import http from 'http'
 import cors from 'cors'
@@ -14,6 +23,7 @@ import { corsOptions } from '@constants/cors.config'
 import path from 'path'
 import { isProduction } from '@utils/helper'
 import { sanitizeMiddleware } from '@middleware/sanitize.middleware'
+import { publicRateLimit } from '@middleware/rateLimiter.middleware'
 import { swaggerDocument, swaggerUIHtml } from './docs/swagger'
 import { MAX_REQUEST_SIZE } from '@constants/security.config'
 import {
@@ -27,7 +37,7 @@ import { getDeprecationInfo, getDeprecationHeaders } from '@constants/api-versio
 import { Logger } from '@utils/logger'
 import { initializeSocket } from './socket/socket.init'
 import { viewCounterService } from '@utils/view-counter.service'
-require('dotenv').config()
+import { disconnectRedis } from '@utils/redis.client'
 
 const app: express.Application = express()
 connectMongoDB()
@@ -109,6 +119,9 @@ app.use(suspiciousPatternMiddleware)
 
 // Middleware sanitize input để chống NoSQL injection
 app.use(sanitizeMiddleware)
+
+// Global rate limiting — baseline 200 req/min per IP for all routes
+app.use(publicRateLimit)
 
 // Request logger middleware - log tất cả incoming requests
 app.use(requestLoggerMiddleware)
@@ -239,6 +252,14 @@ const gracefulShutdown = async (signal: string) => {
     console.log(chalk.green('View counter service flushed successfully'))
   } catch (error) {
     Logger.apiError('Failed to flush view counts during shutdown', error)
+  }
+
+  // Disconnect Redis client
+  try {
+    await disconnectRedis()
+    console.log(chalk.green('Redis client disconnected'))
+  } catch (error) {
+    Logger.apiError('Failed to disconnect Redis during shutdown', error)
   }
 
   // Đóng Socket.io connections trước

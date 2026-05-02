@@ -4,6 +4,7 @@ import * as passwordResetController from '@controllers/password-reset.controller
 import authMiddleware from '@middleware/auth.middleware'
 import { asyncHandler } from '@utils/async-handler'
 import { bruteForceProtectionMiddleware } from '@middleware/security.middleware'
+import { authRateLimit } from '@middleware/rateLimiter.middleware'
 import {
   validate,
   loginSchema,
@@ -16,6 +17,7 @@ const commonAuthRouter = Router()
 
 commonAuthRouter.post(
   '/login',
+  authRateLimit, // 15 req/min per IP+email (env: RATE_LIMIT_AUTH_MAX)
   bruteForceProtectionMiddleware, // Chống brute force - max 5 attempts per 15 minutes
   validate(loginSchema),
   asyncHandler(authController.loginController),
@@ -29,6 +31,7 @@ commonAuthRouter.post(
 
 commonAuthRouter.post(
   '/register',
+  authRateLimit, // 15 req/min per IP+email (env: RATE_LIMIT_AUTH_MAX)
   bruteForceProtectionMiddleware, // Prevent registration spam and abuse
   validate(registerSchema),
   asyncHandler(authController.registerController),
@@ -42,6 +45,7 @@ commonAuthRouter.post(
 
 commonAuthRouter.post(
   '/forgot-password',
+  authRateLimit, // 15 req/min per IP+email (env: RATE_LIMIT_AUTH_MAX)
   bruteForceProtectionMiddleware, // Prevent password reset abuse
   validate(forgotPasswordSchema),
   asyncHandler(passwordResetController.forgotPassword),
@@ -49,6 +53,7 @@ commonAuthRouter.post(
 
 commonAuthRouter.post(
   '/reset-password',
+  authRateLimit, // 15 req/min per IP+email (env: RATE_LIMIT_AUTH_MAX)
   bruteForceProtectionMiddleware, // Prevent password reset abuse
   validate(resetPasswordSchema),
   asyncHandler(passwordResetController.resetPassword),

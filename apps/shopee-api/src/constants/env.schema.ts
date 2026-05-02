@@ -54,6 +54,16 @@ const envSchema = z.object({
   REDIS_PASSWORD: z.string().optional(),
   REDIS_USERNAME: z.string().optional(),
   REDIS_TLS_ENABLED: z.coerce.boolean().default(false),
+
+  // Rate limiting — max requests per window per key
+  RATE_LIMIT_PUBLIC_MAX: z.coerce.number().int().positive().default(200),
+  RATE_LIMIT_AUTH_MAX: z.coerce.number().int().positive().default(15),
+  RATE_LIMIT_ADMIN_MAX: z.coerce.number().int().positive().default(300),
+  RATE_LIMIT_EXPENSIVE_MAX: z.coerce.number().int().positive().default(30),
+  // Rate limit window in seconds (shared across all presets)
+  RATE_LIMIT_WINDOW_S: z.coerce.number().int().positive().default(60),
+  // Comma-separated list of IPs that bypass rate limiting (e.g. load balancer, monitoring)
+  RATE_LIMIT_WHITELIST_IPS: z.string().default(''),
 })
 
 export type Env = z.infer<typeof envSchema>
@@ -88,6 +98,12 @@ export function validateEnv(rawEnv: NodeJS.ProcessEnv = process.env): Env {
       REDIS_PASSWORD: undefined,
       REDIS_USERNAME: undefined,
       REDIS_TLS_ENABLED: false,
+      RATE_LIMIT_PUBLIC_MAX: 200,
+      RATE_LIMIT_AUTH_MAX: 15,
+      RATE_LIMIT_ADMIN_MAX: 300,
+      RATE_LIMIT_EXPENSIVE_MAX: 30,
+      RATE_LIMIT_WINDOW_S: 60,
+      RATE_LIMIT_WHITELIST_IPS: '',
     }
   }
 

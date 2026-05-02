@@ -49,6 +49,7 @@ interface SuspiciousActivity {
 
 const suspiciousActivities: SuspiciousActivity[] = []
 const MAX_SUSPICIOUS_LOG = 1000
+const REDIS_SUSPICIOUS_KEY = 'sec:suspicious'
 
 /**
  * Lấy IP thực của client (hỗ trợ proxy)
@@ -79,7 +80,7 @@ const parseSize = (size: string): number => {
 }
 
 /**
- * Log hoạt động đáng ngờ
+ * Log hoạt động đáng ngờ — persists to Redis LIST when available, falls back to in-memory.
  */
 const logSuspiciousActivity = (req: Request, reason: string): void => {
   const activity: SuspiciousActivity = {
@@ -90,10 +91,27 @@ const logSuspiciousActivity = (req: Request, reason: string): void => {
     reason,
     userAgent: req.headers['user-agent'],
   }
-  suspiciousActivities.push(activity)
-  if (suspiciousActivities.length > MAX_SUSPICIOUS_LOG) {
-    suspiciousActivities.shift()
+
+  if (redisClient) {
+    // LPUSH prepends (newest first), LTRIM keeps the list capped at MAX_SUSPICIOUS_LOG
+    redisClient
+      .lpush(REDIS_SUSPICIOUS_KEY, JSON.stringify(activity))
+      .then(() => redisClient!.ltrim(REDIS_SUSPICIOUS_KEY, 0, MAX_SUSPICIOUS_LOG - 1))
+      .catch((err) => {
+        Logger.apiError('Failed to write suspicious activity to Redis', err)
+        // Fall back to in-memory on Redis error
+        suspiciousActivities.push(activity)
+        if (suspiciousActivities.length > MAX_SUSPICIOUS_LOG) {
+          suspiciousActivities.shift()
+        }
+      })
+  } else {
+    suspiciousActivities.push(activity)
+    if (suspiciousActivities.length > MAX_SUSPICIOUS_LOG) {
+      suspiciousActivities.shift()
+    }
   }
+
   Logger.apiWarn('Hoạt động đáng ngờ được phát hiện', activity)
 }
 
@@ -354,9 +372,25 @@ export const suspiciousPatternMiddleware = (
 }
 
 /**
- * Lấy danh sách hoạt động đáng ngờ (cho monitoring)
+ * Lấy danh sách hoạt động đáng ngờ (cho monitoring).
+ * Uses Redis LRANGE when available; falls back to in-memory slice.
  */
-export const getSuspiciousActivities = (limit = 100): SuspiciousActivity[] => {
+export const getSuspiciousActivities = async (limit = 100): Promise<SuspiciousActivity[]> => {
+  if (redisClient) {
+    try {
+      const raw = await redisClient.lrange(REDIS_SUSPICIOUS_KEY, 0, limit - 1)
+      return raw.map((item) => {
+        try {
+          return JSON.parse(item) as SuspiciousActivity
+        } catch {
+          return null
+        }
+      }).filter(Boolean) as SuspiciousActivity[]
+    } catch (err) {
+      Logger.apiError('Failed to read suspicious activities from Redis', err)
+      // Fall through to in-memory
+    }
+  }
   return suspiciousActivities.slice(-limit)
 }
 

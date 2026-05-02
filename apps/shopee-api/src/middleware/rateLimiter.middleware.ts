@@ -31,14 +31,36 @@ function buildLimiter(opts: RateLimitOptions): RateLimiterAbstract {
   return new RateLimiterMemory({ keyPrefix: opts.keyPrefix, points, duration })
 }
 
+// ============ IP whitelist ============
+
+const whitelistSet: Set<string> = (() => {
+  const raw = process.env.RATE_LIMIT_WHITELIST_IPS || ''
+  const ips = raw
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+  return new Set(ips)
+})()
+
 /**
  * Factory that creates an Express middleware from a RateLimiterAbstract instance.
+ * Accepts an optional key resolver; defaults to userId || IP.
  */
-function createMiddleware(limiter: RateLimiterAbstract, message: string) {
+function createMiddleware(
+  limiter: RateLimiterAbstract,
+  message: string,
+  keyResolver?: (req: Request) => string,
+) {
   return (req: Request, res: Response, next: NextFunction): void => {
-    const userId = req.jwtDecoded?.id
-    const clientIP = req.ip || (req as any).connection?.remoteAddress
-    const key = userId || clientIP || 'anonymous'
+    const clientIP = req.ip || (req as any).connection?.remoteAddress || 'anonymous'
+
+    // IP whitelist bypass
+    if (whitelistSet.size > 0 && whitelistSet.has(clientIP)) {
+      next()
+      return
+    }
+
+    const key = keyResolver ? keyResolver(req) : (req.jwtDecoded?.id || clientIP)
 
     limiter
       .consume(key)
@@ -50,11 +72,19 @@ function createMiddleware(limiter: RateLimiterAbstract, message: string) {
         })
         next()
       })
-      .catch(() => {
-        res.status(429).json({ success: false, message: 'Too many requests' })
+      .catch((rateLimiterRes) => {
+        const retryAfterSecs = rateLimiterRes?.msBeforeNext
+          ? Math.ceil(rateLimiterRes.msBeforeNext / 1000)
+          : 60
+        res.set('Retry-After', String(retryAfterSecs))
+        res.status(429).json({ success: false, message })
       })
   }
 }
+
+// ============ Env-driven window ============
+
+const windowMs = (Number(process.env.RATE_LIMIT_WINDOW_S) || 60) * 1000
 
 // ============ Limiter instances ============
 
@@ -106,6 +136,32 @@ const healthLimiter = buildLimiter({
   maxRequests: 120,
 })
 
+// ============ Preset limiter instances (env-driven) ============
+
+const publicLimiterInstance = buildLimiter({
+  keyPrefix: 'rl:public',
+  windowMs,
+  maxRequests: Number(process.env.RATE_LIMIT_PUBLIC_MAX) || 200,
+})
+
+const authPresetLimiterInstance = buildLimiter({
+  keyPrefix: 'rl:authPreset',
+  windowMs,
+  maxRequests: Number(process.env.RATE_LIMIT_AUTH_MAX) || 15,
+})
+
+const adminLimiterInstance = buildLimiter({
+  keyPrefix: 'rl:admin',
+  windowMs,
+  maxRequests: Number(process.env.RATE_LIMIT_ADMIN_MAX) || 300,
+})
+
+const expensiveLimiterInstance = buildLimiter({
+  keyPrefix: 'rl:expensive',
+  windowMs,
+  maxRequests: Number(process.env.RATE_LIMIT_EXPENSIVE_MAX) || 30,
+})
+
 // ============ Exported middleware map ============
 
 export const rateLimitConfigs = {
@@ -128,6 +184,52 @@ export const rateLimitConfigs = {
   health: createMiddleware(healthLimiter, 'Quá nhiều yêu cầu health check.'),
 }
 
+// ============ Preset middleware exports ============
+
+/**
+ * Global baseline limiter — 200 req/min per IP (env: RATE_LIMIT_PUBLIC_MAX).
+ * Register as app.use() in index.ts to cover all routes.
+ */
+export const publicRateLimit = createMiddleware(
+  publicLimiterInstance,
+  'Too many requests. Please try again later.',
+  (req) => req.ip || (req as any).connection?.remoteAddress || 'anonymous',
+)
+
+/**
+ * Auth endpoint limiter — 15 req/min per IP+email (env: RATE_LIMIT_AUTH_MAX).
+ * Apply to POST /auth/login, /register, /forgot-password, /reset-password.
+ */
+export const authRateLimit = createMiddleware(
+  authPresetLimiterInstance,
+  'Too many auth attempts. Please wait before trying again.',
+  (req) => {
+    const ip = req.ip || (req as any).connection?.remoteAddress || 'anonymous'
+    const email = req.body?.email || ''
+    return email ? `${ip}:${email}` : ip
+  },
+)
+
+/**
+ * Admin endpoint limiter — 300 req/min per authenticated user ID (env: RATE_LIMIT_ADMIN_MAX).
+ * Apply at the admin router level.
+ */
+export const adminRateLimit = createMiddleware(
+  adminLimiterInstance,
+  'Too many admin requests. Please slow down.',
+  (req) => req.jwtDecoded?.id || req.ip || 'anonymous',
+)
+
+/**
+ * Expensive endpoint limiter — 30 req/min per IP (env: RATE_LIMIT_EXPENSIVE_MAX).
+ * Apply to search suggestions and other resource-intensive endpoints.
+ */
+export const expensiveRateLimit = createMiddleware(
+  expensiveLimiterInstance,
+  'Too many requests to this endpoint. Please try again later.',
+  (req) => req.ip || (req as any).connection?.remoteAddress || 'anonymous',
+)
+
 const allLimiters: RateLimiterAbstract[] = [
   testChatbotLimiter,
   conversationLimiter,
@@ -137,6 +239,10 @@ const allLimiters: RateLimiterAbstract[] = [
   productsLimiter,
   purchaseLimiter,
   healthLimiter,
+  publicLimiterInstance,
+  authPresetLimiterInstance,
+  adminLimiterInstance,
+  expensiveLimiterInstance,
 ]
 
 /**

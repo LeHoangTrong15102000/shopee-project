@@ -116,21 +116,13 @@ describe('Analytics Controller', () => {
       )
     })
 
-    it('should return 500 on error', async () => {
+    it('should throw on error', async () => {
       mockConversationModel.countDocuments.mockRejectedValue(new Error('Database error'))
 
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await getChatbotOverview(req as Request, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(500)
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: 'Lỗi server khi lấy thống kê chatbot',
-          error: 'Database error',
-        }),
-      )
+      await expect(getChatbotOverview(req as Request, res as Response)).rejects.toThrow('Database error')
     })
   })
 
@@ -198,21 +190,13 @@ describe('Analytics Controller', () => {
       )
     })
 
-    it('should return 500 on error', async () => {
+    it('should throw on error', async () => {
       mockConversationModel.aggregate.mockRejectedValue(new Error('Aggregation error'))
 
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await getChatbotPerformance(req as Request, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(500)
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: 'Lỗi server khi lấy thống kê performance',
-          error: 'Aggregation error',
-        }),
-      )
+      await expect(getChatbotPerformance(req as Request, res as Response)).rejects.toThrow('Aggregation error')
     })
   })
 
@@ -239,7 +223,7 @@ describe('Analytics Controller', () => {
       )
     })
 
-    it('should return 503 on error', async () => {
+    it('should throw on error', async () => {
       const originalUptime = process.uptime
       process.uptime = jest.fn().mockImplementation(() => {
         throw new Error('System error')
@@ -248,16 +232,7 @@ describe('Analytics Controller', () => {
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await getHealthCheck(req as Request, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(503)
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: 'unhealthy',
-          error: 'System error',
-          timestamp: expect.any(String),
-        }),
-      )
+      await expect(getHealthCheck(req as Request, res as Response)).rejects.toThrow('System error')
 
       process.uptime = originalUptime
     })

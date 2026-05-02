@@ -286,238 +286,199 @@ const uploadManyProductImages = async (req: Request, res: Response) => {
 }
 
 const getSearchSuggestions = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { q = '' } = req.query
+  const { q = '' } = req.query
 
-    if (!q || typeof q !== 'string' || q.trim().length === 0) {
-      res.status(200).json({
-        message: 'Lấy gợi ý tìm kiếm thành công',
-        data: {
-          suggestions: [],
-          products: [],
-        },
-      })
-      return
-    }
-
-    const query = q.trim().toLowerCase()
-
-    // Tìm gợi ý từ các từ khóa phổ biến
-    const commonKeywords = [
-      'điện thoại',
-      'điện thoại samsung',
-      'điện thoại iphone',
-      'điện thoại oppo',
-      'laptop',
-      'laptop dell',
-      'laptop hp',
-      'laptop asus',
-      'áo thun',
-      'áo thun nam',
-      'áo thun nữ',
-      'áo thun unisex',
-      'giày',
-      'giày thể thao',
-      'giày nam',
-      'giày nữ',
-      'túi xách',
-      'túi xách nữ',
-      'túi xách da',
-      'đồng hồ',
-      'đồng hồ nam',
-      'đồng hồ nữ',
-      'đồng hồ thông minh',
-    ]
-
-    const suggestions = commonKeywords.filter((keyword) => keyword.includes(query)).slice(0, 8)
-
-    // Tìm top 5 sản phẩm phù hợp
-    const products = await ProductModel.find({
-      name: { $regex: query, $options: 'i' },
-    })
-      .select('_id name image price')
-      .limit(5)
-      .lean()
-
+  if (!q || typeof q !== 'string' || q.trim().length === 0) {
     res.status(200).json({
       message: 'Lấy gợi ý tìm kiếm thành công',
       data: {
-        suggestions,
-        products,
+        suggestions: [],
+        products: [],
       },
     })
-  } catch (error) {
-    res.status(500).json({
-      message: 'Lỗi server khi lấy gợi ý tìm kiếm',
-    })
+    return
   }
+
+  const query = q.trim().toLowerCase()
+
+  // Tìm gợi ý từ các từ khóa phổ biến
+  const commonKeywords = [
+    'điện thoại',
+    'điện thoại samsung',
+    'điện thoại iphone',
+    'điện thoại oppo',
+    'laptop',
+    'laptop dell',
+    'laptop hp',
+    'laptop asus',
+    'áo thun',
+    'áo thun nam',
+    'áo thun nữ',
+    'áo thun unisex',
+    'giày',
+    'giày thể thao',
+    'giày nam',
+    'giày nữ',
+    'túi xách',
+    'túi xách nữ',
+    'túi xách da',
+    'đồng hồ',
+    'đồng hồ nam',
+    'đồng hồ nữ',
+    'đồng hồ thông minh',
+  ]
+
+  const suggestions = commonKeywords.filter((keyword) => keyword.includes(query)).slice(0, 8)
+
+  // Tìm top 5 sản phẩm phù hợp
+  const products = await ProductModel.find({
+    name: { $regex: query, $options: 'i' },
+  })
+    .select('_id name image price')
+    .limit(5)
+    .lean()
+
+  res.status(200).json({
+    message: 'Lấy gợi ý tìm kiếm thành công',
+    data: {
+      suggestions,
+      products,
+    },
+  })
 }
 
 const getSearchHistory = async (req: Request, res: Response): Promise<void> => {
-  try {
-    // Nếu chưa login, trả về empty array
-    if (!req.jwtDecoded?.id) {
-      responseSuccess(res, {
-        message: 'Lấy lịch sử tìm kiếm thành công',
-        data: [],
-      })
-      return
-    }
-
-    const userId = req.jwtDecoded.id
-
-    // Lấy 10 keywords gần nhất của user
-    const searchHistory = await SearchHistoryModel.find({ user: userId })
-      .sort({ lastSearched: -1 })
-      .limit(10)
-      .select('keyword')
-      .lean()
-
-    const keywords = searchHistory.map((item) => item.keyword)
-
+  // Nếu chưa login, trả về empty array
+  if (!req.jwtDecoded?.id) {
     responseSuccess(res, {
       message: 'Lấy lịch sử tìm kiếm thành công',
-      data: keywords,
+      data: [],
     })
-  } catch (error) {
-    res.status(500).json({
-      message: 'Lỗi server khi lấy lịch sử tìm kiếm',
-    })
+    return
   }
+
+  const userId = req.jwtDecoded.id
+
+  // Lấy 10 keywords gần nhất của user
+  const searchHistory = await SearchHistoryModel.find({ user: userId })
+    .sort({ lastSearched: -1 })
+    .limit(10)
+    .select('keyword')
+    .lean()
+
+  const keywords = searchHistory.map((item) => item.keyword)
+
+  responseSuccess(res, {
+    message: 'Lấy lịch sử tìm kiếm thành công',
+    data: keywords,
+  })
 }
 
 const saveSearchHistory = async (req: Request, res: Response): Promise<void> => {
-  try {
-    // Yêu cầu authentication
-    if (!req.jwtDecoded?.id) {
-      throw new ErrorHandler(STATUS.UNAUTHORIZED, 'Vui lòng đăng nhập')
-    }
+  // Yêu cầu authentication
+  if (!req.jwtDecoded?.id) {
+    throw new ErrorHandler(STATUS.UNAUTHORIZED, 'Vui lòng đăng nhập')
+  }
 
-    const { keyword } = req.body
-    const userId = req.jwtDecoded.id
+  const { keyword } = req.body
+  const userId = req.jwtDecoded.id
 
-    if (!keyword || typeof keyword !== 'string' || keyword.trim().length === 0) {
-      res.status(400).json({
-        message: 'Từ khóa không hợp lệ',
-      })
-      return
-    }
+  if (!keyword || typeof keyword !== 'string' || keyword.trim().length === 0) {
+    res.status(400).json({
+      message: 'Từ khóa không hợp lệ',
+    })
+    return
+  }
 
-    const trimmedKeyword = keyword.trim().toLowerCase()
+  const trimmedKeyword = keyword.trim().toLowerCase()
 
-    // Kiểm tra xem keyword đã tồn tại chưa
-    const existingHistory = await SearchHistoryModel.findOne({
+  // Kiểm tra xem keyword đã tồn tại chưa
+  const existingHistory = await SearchHistoryModel.findOne({
+    user: userId,
+    keyword: trimmedKeyword,
+  })
+
+  if (existingHistory) {
+    // Nếu đã tồn tại, tăng searchCount và update lastSearched
+    await SearchHistoryModel.findByIdAndUpdate(existingHistory._id, {
+      $inc: { searchCount: 1 },
+      lastSearched: new Date(),
+    })
+  } else {
+    // Nếu chưa tồn tại, tạo mới
+    await new SearchHistoryModel({
       user: userId,
       keyword: trimmedKeyword,
-    })
+      searchCount: 1,
+      lastSearched: new Date(),
+    }).save()
 
-    if (existingHistory) {
-      // Nếu đã tồn tại, tăng searchCount và update lastSearched
-      await SearchHistoryModel.findByIdAndUpdate(existingHistory._id, {
-        $inc: { searchCount: 1 },
-        lastSearched: new Date(),
-      })
-    } else {
-      // Nếu chưa tồn tại, tạo mới
-      await new SearchHistoryModel({
-        user: userId,
-        keyword: trimmedKeyword,
-        searchCount: 1,
-        lastSearched: new Date(),
-      }).save()
-
-      // Kiểm tra và xóa keyword cũ nhất nếu vượt quá giới hạn
-      const totalKeywords = await SearchHistoryModel.countDocuments({ user: userId })
-      if (totalKeywords > MAX_SEARCH_HISTORY_PER_USER) {
-        // Tìm và xóa keyword cũ nhất
-        const oldestKeyword = await SearchHistoryModel.findOne({ user: userId })
-          .sort({ lastSearched: 1 })
-          .lean()
-        if (oldestKeyword) {
-          await SearchHistoryModel.findByIdAndDelete(oldestKeyword._id)
-        }
+    // Kiểm tra và xóa keyword cũ nhất nếu vượt quá giới hạn
+    const totalKeywords = await SearchHistoryModel.countDocuments({ user: userId })
+    if (totalKeywords > MAX_SEARCH_HISTORY_PER_USER) {
+      // Tìm và xóa keyword cũ nhất
+      const oldestKeyword = await SearchHistoryModel.findOne({ user: userId })
+        .sort({ lastSearched: 1 })
+        .lean()
+      if (oldestKeyword) {
+        await SearchHistoryModel.findByIdAndDelete(oldestKeyword._id)
       }
     }
-
-    responseSuccess(res, {
-      message: 'Lưu lịch sử tìm kiếm thành công',
-    })
-  } catch (error) {
-    if (error instanceof ErrorHandler) {
-      throw error
-    }
-    res.status(500).json({
-      message: 'Lỗi server khi lưu lịch sử tìm kiếm',
-    })
   }
+
+  responseSuccess(res, {
+    message: 'Lưu lịch sử tìm kiếm thành công',
+  })
 }
 
 const deleteSearchHistory = async (req: Request, res: Response): Promise<void> => {
-  try {
-    // Yêu cầu authentication
-    if (!req.jwtDecoded?.id) {
-      throw new ErrorHandler(STATUS.UNAUTHORIZED, 'Vui lòng đăng nhập')
-    }
-
-    const userId = req.jwtDecoded.id
-
-    // Xóa toàn bộ search history của user
-    const result = await SearchHistoryModel.deleteMany({ user: userId })
-
-    responseSuccess(res, {
-      message: 'Xóa lịch sử tìm kiếm thành công',
-      data: { deleted_count: result.deletedCount },
-    })
-  } catch (error) {
-    if (error instanceof ErrorHandler) {
-      throw error
-    }
-    res.status(500).json({
-      message: 'Lỗi server khi xóa lịch sử tìm kiếm',
-    })
+  // Yêu cầu authentication
+  if (!req.jwtDecoded?.id) {
+    throw new ErrorHandler(STATUS.UNAUTHORIZED, 'Vui lòng đăng nhập')
   }
+
+  const userId = req.jwtDecoded.id
+
+  // Xóa toàn bộ search history của user
+  const result = await SearchHistoryModel.deleteMany({ user: userId })
+
+  responseSuccess(res, {
+    message: 'Xóa lịch sử tìm kiếm thành công',
+    data: { deleted_count: result.deletedCount },
+  })
 }
 
 const deleteSearchHistoryItem = async (req: Req, res: Response): Promise<void> => {
-  try {
-    // Yêu cầu authentication
-    if (!req.jwtDecoded?.id) {
-      throw new ErrorHandler(STATUS.UNAUTHORIZED, 'Vui lòng đăng nhập')
-    }
-
-    const userId = req.jwtDecoded.id
-    const { keyword } = req.params
-
-    if (!keyword) {
-      res.status(400).json({
-        message: 'Từ khóa không hợp lệ',
-      })
-      return
-    }
-
-    const decodedKeyword = decodeURIComponent(keyword).trim().toLowerCase()
-
-    // Xóa keyword cụ thể của user
-    const result = await SearchHistoryModel.findOneAndDelete({
-      user: userId,
-      keyword: decodedKeyword,
-    })
-
-    if (!result) {
-      throw new ErrorHandler(STATUS.NOT_FOUND, 'Không tìm thấy từ khóa trong lịch sử')
-    }
-
-    responseSuccess(res, {
-      message: 'Xóa từ khóa khỏi lịch sử thành công',
-    })
-  } catch (error) {
-    if (error instanceof ErrorHandler) {
-      throw error
-    }
-    res.status(500).json({
-      message: 'Lỗi server khi xóa từ khóa khỏi lịch sử',
-    })
+  // Yêu cầu authentication
+  if (!req.jwtDecoded?.id) {
+    throw new ErrorHandler(STATUS.UNAUTHORIZED, 'Vui lòng đăng nhập')
   }
+
+  const userId = req.jwtDecoded.id
+  const { keyword } = req.params
+
+  if (!keyword) {
+    res.status(400).json({
+      message: 'Từ khóa không hợp lệ',
+    })
+    return
+  }
+
+  const decodedKeyword = decodeURIComponent(keyword).trim().toLowerCase()
+
+  // Xóa keyword cụ thể của user
+  const result = await SearchHistoryModel.findOneAndDelete({
+    user: userId,
+    keyword: decodedKeyword,
+  })
+
+  if (!result) {
+    throw new ErrorHandler(STATUS.NOT_FOUND, 'Không tìm thấy từ khóa trong lịch sử')
+  }
+
+  responseSuccess(res, {
+    message: 'Xóa từ khóa khỏi lịch sử thành công',
+  })
 }
 
 const ProductController = {

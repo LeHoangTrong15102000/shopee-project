@@ -82,42 +82,31 @@ describe('Order Tracking Controller', () => {
       expect(res.json).toHaveBeenCalledWith({ message: 'order_id là bắt buộc' })
     })
 
-    it('should return 404 when NotFoundError is thrown', async () => {
+    it('should throw when NotFoundError is thrown', async () => {
       mockOrderService.getTracking.mockRejectedValue(new NotFoundError('Not found'))
 
       const req = createMockRequest({ query: { order_id: 'order-123' } })
       const res = createMockResponse()
 
-      await getTracking(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(404)
-      expect(res.json).toHaveBeenCalledWith({
-        message: 'Không tìm thấy thông tin tracking cho đơn hàng này',
-      })
+      await expect(getTracking(req as any, res as any)).rejects.toThrow('Not found')
     })
 
-    it('should return 400 when ValidationError is thrown', async () => {
+    it('should throw when ValidationError is thrown', async () => {
       mockOrderService.getTracking.mockRejectedValue(new ValidationError('Invalid data'))
 
       const req = createMockRequest({ query: { order_id: 'order-123' } })
       const res = createMockResponse()
 
-      await getTracking(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Invalid data' })
+      await expect(getTracking(req as any, res as any)).rejects.toThrow('Invalid data')
     })
 
-    it('should return 500 when generic error is thrown', async () => {
+    it('should throw when generic error is thrown', async () => {
       mockOrderService.getTracking.mockRejectedValue(new Error('Database error'))
 
       const req = createMockRequest({ query: { order_id: 'order-123' } })
       const res = createMockResponse()
 
-      await getTracking(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(500)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Lỗi server khi lấy thông tin tracking' })
+      await expect(getTracking(req as any, res as any)).rejects.toThrow('Database error')
     })
   })
 
@@ -158,19 +147,16 @@ describe('Order Tracking Controller', () => {
       })
     })
 
-    it('should return 404 when NotFoundError is thrown', async () => {
+    it('should throw when NotFoundError is thrown', async () => {
       mockOrderService.getTrackingByNumber.mockRejectedValue(new NotFoundError('Not found'))
 
       const req = createMockRequest({ params: { trackingNumber: 'TRK123' } })
       const res = createMockResponse()
 
-      await getTrackingByNumber(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(404)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Không tìm thấy thông tin tracking' })
+      await expect(getTrackingByNumber(req as any, res as any)).rejects.toThrow('Not found')
     })
 
-    it('should return 400 when ValidationError is thrown', async () => {
+    it('should throw when ValidationError is thrown', async () => {
       mockOrderService.getTrackingByNumber.mockRejectedValue(
         new ValidationError('Invalid tracking number'),
       )
@@ -178,22 +164,18 @@ describe('Order Tracking Controller', () => {
       const req = createMockRequest({ params: { trackingNumber: 'TRK123' } })
       const res = createMockResponse()
 
-      await getTrackingByNumber(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Invalid tracking number' })
+      await expect(getTrackingByNumber(req as any, res as any)).rejects.toThrow(
+        'Invalid tracking number',
+      )
     })
 
-    it('should return 500 when generic error is thrown', async () => {
+    it('should throw when generic error is thrown', async () => {
       mockOrderService.getTrackingByNumber.mockRejectedValue(new Error('Database error'))
 
       const req = createMockRequest({ params: { trackingNumber: 'TRK123' } })
       const res = createMockResponse()
 
-      await getTrackingByNumber(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(500)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Lỗi server khi lấy thông tin tracking' })
+      await expect(getTrackingByNumber(req as any, res as any)).rejects.toThrow('Database error')
     })
   })
 })

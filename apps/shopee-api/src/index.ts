@@ -18,6 +18,7 @@ import adminRoutes from '@routes/admin/index.route'
 import commonRoutes from '@routes/common/index.route'
 import userRoutes from '@routes/user/index.route'
 import { responseError, ErrorHandler } from '@utils/response'
+import { ServiceError } from '@services/base.service'
 import { FOLDERS, FOLDER_UPLOAD, ROUTE_IMAGE } from '@constants/config'
 import { corsOptions } from '@constants/cors.config'
 import path from 'path'
@@ -201,6 +202,26 @@ app.use((err: any, req: Request, res: Response, _next: NextFunction): void => {
     if (!err.isOperational) {
       Logger.apiWarn('Non-operational error occurred', err.toJSON())
     }
+  } else if (err instanceof ServiceError) {
+    Logger.apiError('Service error occurred', {
+      code: err.code,
+      message: err.message,
+      statusCode: err.statusCode,
+      path: req.path,
+      method: req.method,
+    })
+
+    const response: Record<string, unknown> = {
+      message: err.message,
+      code: err.code,
+    }
+
+    if (process.env.NODE_ENV === 'development' && err.stack) {
+      response.stack = err.stack
+    }
+
+    res.status(err.statusCode).json(response)
+    return
   } else {
     Logger.apiError('Unexpected error occurred', {
       message: err.message,

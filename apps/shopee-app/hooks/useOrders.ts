@@ -5,7 +5,6 @@ import {
   cancelOrder,
   confirmReceived,
   requestReturn,
-  getOrderTracking,
   type ReturnReason,
 } from '@/apis/order.api'
 import { type OrderStatusType } from '@/constants/order'
@@ -16,7 +15,6 @@ import { handleMutationError } from '@/utils/mutationErrorHandler'
 export const orderKeys = {
   all: (status?: OrderStatusType) => ['orders', status] as const,
   detail: (id: string) => ['order', id] as const,
-  tracking: (id: string) => ['order-tracking', id] as const,
 }
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
@@ -76,13 +74,5 @@ export function useReturnOrder() {
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(params.orderId) })
     },
     onError: handleMutationError,
-  })
-}
-
-export function useOrderTracking(orderId: string) {
-  return useQuery({
-    queryKey: orderKeys.tracking(orderId),
-    queryFn: () => getOrderTracking(orderId),
-    enabled: !!orderId,
   })
 }

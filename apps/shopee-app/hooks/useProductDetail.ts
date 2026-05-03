@@ -9,13 +9,9 @@ import {
   getProductDetail,
   getProductReviews,
   getQuestions,
-  checkWishlist,
   getRelatedProducts,
-  addToWishlist,
-  removeFromWishlist,
   addToCart as addToCartApi,
   buyNow as buyNowApi,
-  createReview as createReviewApi,
   toggleReviewLike as toggleReviewLikeApi,
   askQuestion as askQuestionApi,
   answerQuestion as answerQuestionApi,
@@ -23,9 +19,13 @@ import {
   type Review,
   type Question,
 } from '@/apis/product-detail.api'
+import { checkWishlist, addToWishlist, removeFromWishlist } from '@/apis/wishlist.api'
+import { createReview as createReviewApi } from '@/apis/review.api'
 import { useToast } from '@/components/ui/ToastProvider'
 import { useTranslation } from 'react-i18next'
 import { handleMutationError } from '@/utils/mutationErrorHandler'
+import { type Pagination } from '@/types/api.type'
+import { type ReviewStats } from '@/apis/product-detail.api'
 
 // ─── Query Data Types ─────────────────────────────────────────────────────────
 
@@ -33,12 +33,12 @@ type ApiResponse<T> = { message: string; data: T }
 type WishlistData = ApiResponse<{ in_wishlist: boolean }>
 type ReviewsPage = ApiResponse<{
   reviews: Review[]
-  pagination: import('@/apis/product-detail.api').Pagination
-  stats: import('@/apis/product-detail.api').ReviewStats
+  pagination: Pagination
+  stats: ReviewStats
 }>
 type QuestionsPage = ApiResponse<{
   questions: Question[]
-  pagination: import('@/apis/product-detail.api').Pagination
+  pagination: Pagination
 }>
 
 // ─── Query Hooks ─────────────────────────────────────────────────────────────
@@ -157,7 +157,7 @@ export function useCreateReview(productId: string) {
 
   return useMutation({
     mutationFn: (body: {
-      purchase_id: string
+      purchaseId: string
       rating: number
       comment: string
       images?: string[]

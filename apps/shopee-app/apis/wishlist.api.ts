@@ -23,3 +23,18 @@ export async function getWishlist(page: number, limit = 20) {
   })
   return res.data
 }
+
+export async function checkWishlist(productId: string) {
+  const res = await http.get<ApiResponse<{ in_wishlist: boolean }>>(`wishlist/check/${productId}`)
+  return res.data
+}
+
+export async function addToWishlist(productId: string) {
+  const res = await http.post<ApiResponse<unknown>>('wishlist', { product_id: productId })
+  return res.data
+}
+
+export async function removeFromWishlist(productId: string) {
+  const res = await http.delete<ApiResponse<unknown>>(`wishlist/${productId}`)
+  return res.data
+}

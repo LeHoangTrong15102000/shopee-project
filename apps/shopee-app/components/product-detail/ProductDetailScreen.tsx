@@ -127,7 +127,7 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
 
   const handleSubmitReview = (data: { rating: number; comment: string }) => {
     createReview.mutate(
-      { purchase_id: productId, rating: data.rating, comment: data.comment },
+      { purchaseId: productId, rating: data.rating, comment: data.comment },
       { onSuccess: () => reviewFormRef.current?.dismiss() }
     )
   }

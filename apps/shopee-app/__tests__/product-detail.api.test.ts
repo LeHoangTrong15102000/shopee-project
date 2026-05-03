@@ -3,19 +3,17 @@ import { http, HttpResponse } from 'msw'
 import {
   getProductDetail,
   getProductReviews,
-  createReview,
   toggleReviewLike,
   getQuestions,
   askQuestion,
   answerQuestion,
   likeQuestion,
-  checkWishlist,
-  addToWishlist,
-  removeFromWishlist,
   addToCart,
   buyNow,
   getRelatedProducts,
 } from '../apis/product-detail.api'
+import { createReview } from '../apis/review.api'
+import { checkWishlist, addToWishlist, removeFromWishlist } from '../apis/wishlist.api'
 
 const API_BASE = 'https://api-ecom.duthanhduoc.com'
 
@@ -149,7 +147,7 @@ describe('Product Detail API', () => {
 
   it('createReview posts a new review', async () => {
     const result = await createReview({
-      purchase_id: 'pur1',
+      purchaseId: 'pur1',
       rating: 5,
       comment: 'Great product!',
     })

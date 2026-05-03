@@ -204,7 +204,7 @@ describe('useCreateReview', () => {
   it('shows success toast on review creation', async () => {
     const { result } = renderHook(() => useCreateReview('p1'), { wrapper: createWrapper() })
     await act(async () => {
-      result.current.mutate({ purchase_id: 'pur1', rating: 5, comment: 'Great product!' })
+      result.current.mutate({ purchaseId: 'pur1', rating: 5, comment: 'Great product!' })
     })
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
     expect(mockToast.showSuccess).toHaveBeenCalledWith('PD_REVIEW_SUCCESS')

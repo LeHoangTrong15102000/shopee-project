@@ -1,6 +1,5 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getWishlist, type WishlistPage } from '@/apis/wishlist.api'
-import { removeFromWishlist } from '@/apis/product-detail.api'
+import { getWishlist, removeFromWishlist, type WishlistPage } from '@/apis/wishlist.api'
 import type { InfiniteData } from '@tanstack/react-query'
 import { handleMutationError } from '@/utils/mutationErrorHandler'
 

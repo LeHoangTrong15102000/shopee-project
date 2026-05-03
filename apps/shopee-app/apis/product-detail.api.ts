@@ -89,16 +89,6 @@ export async function getProductReviews(productId: string, page: number) {
   return res.data
 }
 
-export async function createReview(body: {
-  purchase_id: string
-  rating: number
-  comment: string
-  images?: string[]
-}) {
-  const res = await http.post<ApiResponse<Review>>('reviews', body)
-  return res.data
-}
-
 export async function toggleReviewLike(reviewId: string) {
   const res = await http.post<ApiResponse<{ is_liked: boolean; helpful_count: number }>>(
     `reviews/like/${reviewId}`
@@ -129,23 +119,6 @@ export async function likeQuestion(questionId: string) {
   const res = await http.post<ApiResponse<{ is_liked: boolean; likes_count: number }>>(
     `qa/questions/${questionId}/like`
   )
-  return res.data
-}
-
-// ─── Wishlist API ────────────────────────────────────────────────────────────
-
-export async function checkWishlist(productId: string) {
-  const res = await http.get<ApiResponse<{ in_wishlist: boolean }>>(`wishlist/check/${productId}`)
-  return res.data
-}
-
-export async function addToWishlist(productId: string) {
-  const res = await http.post<ApiResponse<unknown>>('wishlist', { product_id: productId })
-  return res.data
-}
-
-export async function removeFromWishlist(productId: string) {
-  const res = await http.delete<ApiResponse<unknown>>(`wishlist/${productId}`)
   return res.data
 }
 

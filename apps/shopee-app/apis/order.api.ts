@@ -36,13 +36,6 @@ export interface OrdersPage {
   pagination: Pagination
 }
 
-export interface TrackingStep {
-  status: string
-  label: string
-  timestamp?: string
-  completed: boolean
-}
-
 // ─── Order API ────────────────────────────────────────────────────────────────
 
 export async function getOrders(params: { status?: OrderStatusType; page?: number; limit?: number } = {}) {
@@ -62,11 +55,6 @@ export async function cancelOrder(orderId: string) {
 
 export async function confirmReceived(orderId: string) {
   const res = await http.put<ApiResponse<Order>>(`orders/${orderId}/confirm`)
-  return res.data
-}
-
-export async function getOrderTracking(orderId: string) {
-  const res = await http.get<ApiResponse<TrackingStep[]>>(`orders/${orderId}/tracking`)
   return res.data
 }
 

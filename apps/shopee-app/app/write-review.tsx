@@ -58,7 +58,7 @@ export default function WriteReviewScreen() {
   const handleSubmit = () => {
     if (!rating || !productId || !orderId) return
     submitReview(
-      { productId, orderId, rating, comment, images: images.length > 0 ? images : undefined },
+      { purchaseId: orderId, rating, comment, images: images.length > 0 ? images : undefined },
       { onSuccess: () => router.back() }
     )
   }

@@ -48,7 +48,7 @@ export const handlers = [
       message: 'Lấy các sản phẩm thành công',
       data: {
         products,
-        pagination: { page, limit, page_size: pageSize },
+        pagination: { page, limit, total: filtered.length, total_pages: pageSize },
       },
     })
   }),

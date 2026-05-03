@@ -1,20 +1,8 @@
 import http from '@/utils/http'
 import { type ApiResponse, type Pagination } from '@/types/api.type'
+import { Product } from '../types/product.type'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
-
-export interface Product {
-  _id: string
-  name: string
-  image: string
-  images: string[]
-  price: number
-  price_before_discount: number
-  rating: number
-  sold: number
-  quantity: number
-  category: { _id: string; name: string }
-}
 
 export interface SearchResult {
   products: Product[]

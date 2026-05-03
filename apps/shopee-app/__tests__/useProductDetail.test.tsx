@@ -113,7 +113,7 @@ const server = setupServer(
       message: 'OK',
       data: {
         products: [{ ...mockProduct, _id: 'p2', name: 'Related Product' }],
-        pagination: { page: 1, limit: 10, page_size: 10 },
+        pagination: { page: 1, limit: 10, total: 1, total_pages: 1 },
       },
     })
   )

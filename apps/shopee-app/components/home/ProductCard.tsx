@@ -6,15 +6,22 @@ import { useTranslation } from 'react-i18next'
 import { AppText, AppImage } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { formatPrice, getDiscountPercent } from '@/utils/price'
-import { Product } from '@/types/product.type'
-import type { ProductDetail } from '@/apis/product-detail.api'
-
 const CARD_GAP = 8
 const CARD_PADDING = 16
 const CARD_WIDTH = (Dimensions.get('window').width - CARD_PADDING * 2 - CARD_GAP) / 2
 
+export interface ProductCardProduct {
+  _id: string
+  name: string
+  image: string
+  price: number
+  price_before_discount: number
+  rating: number
+  sold: number
+}
+
 interface ProductCardProps {
-  product: Product | ProductDetail
+  product: ProductCardProduct
 }
 
 export default function ProductCard({ product }: ProductCardProps) {

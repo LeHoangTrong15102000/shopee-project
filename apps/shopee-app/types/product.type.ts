@@ -1,3 +1,5 @@
+import { Pagination } from './api.type'
+
 export interface Category {
   _id: string
   name: string
@@ -23,10 +25,6 @@ export interface ProductListResponse {
   message: string
   data: {
     products: Product[]
-    pagination: {
-      page: number
-      limit: number
-      page_size: number
-    }
+    pagination: Pagination
   }
 }

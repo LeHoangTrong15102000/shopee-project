@@ -16,7 +16,7 @@ export default function RecentlyViewedScreen() {
   const products = useRecentlyViewedStore((state) => state.products)
 
   const renderProduct = useCallback(
-    ({ item }: { item: RecentlyViewedProduct }) => <ProductCard product={item as any} />,
+    ({ item }: { item: RecentlyViewedProduct }) => <ProductCard product={item} />,
     []
   )
 

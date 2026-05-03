@@ -56,7 +56,7 @@ export default function OrderActions({
           variant="outline"
           onPress={onReturn}
           className="w-full">
-          {t('orderDetail.button.return')}
+          {t('orderDetail.actions.return')}
         </AppButton>
       )}
     </View>

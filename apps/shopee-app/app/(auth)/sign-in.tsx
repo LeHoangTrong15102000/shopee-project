@@ -151,8 +151,8 @@ export default function SignInScreen() {
                 className="min-h-[36px] px-0"
                 textClassname="text-white/70"
                 accessibilityRole="link"
-                accessibilityLabel="Quên mật khẩu?">
-                Quên mật khẩu?
+                accessibilityLabel={t('auth.forgotPassword')}>
+                {t('auth.forgotPassword')}
               </AppButton>
             </View>
           </Animated.View>

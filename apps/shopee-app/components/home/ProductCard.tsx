@@ -83,8 +83,8 @@ export default function ProductCard({ product }: ProductCardProps) {
           </View>
           <AppText raw variant="labelSmall" color="muted">
             {product.sold > 1000
-              ? `${(product.sold / 1000).toFixed(1)}k sold`
-              : `${product.sold} sold`}
+              ? `${(product.sold / 1000).toFixed(1)}k ${t('product.sold')}`
+              : `${product.sold} ${t('product.sold')}`}
           </AppText>
         </View>
       </View>

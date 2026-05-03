@@ -124,6 +124,12 @@
   "PD_RETRY": "Thử lại",
   "PD_GO_BACK": "Quay lại",
 
+  "auth": {
+    "forgotPassword": "Quên mật khẩu?"
+  },
+  "product": {
+    "sold": "đã bán"
+  },
   "account": {
     "dialog": {
       "logoutTitle": "Đăng xuất",
@@ -347,6 +353,12 @@
       "cancel": "Hủy đơn hàng",
       "confirmReceived": "Đã nhận hàng",
       "return": "Trả hàng"
+    },
+    "actions": {
+      "review": "Đánh giá",
+      "reorder": "Mua lại",
+      "return": "Trả hàng",
+      "trackOrder": "Theo dõi đơn hàng"
     }
   },
   "orderSuccess": {

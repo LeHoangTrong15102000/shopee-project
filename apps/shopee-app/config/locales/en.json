@@ -124,6 +124,12 @@
   "PD_RETRY": "Retry",
   "PD_GO_BACK": "Go Back",
 
+  "auth": {
+    "forgotPassword": "Forgot password?"
+  },
+  "product": {
+    "sold": "sold"
+  },
   "account": {
     "dialog": {
       "logoutTitle": "Logout",
@@ -347,6 +353,12 @@
       "cancel": "Cancel Order",
       "confirmReceived": "Confirm Receipt",
       "return": "Return"
+    },
+    "actions": {
+      "review": "Review",
+      "reorder": "Reorder",
+      "return": "Return",
+      "trackOrder": "Track Order"
     }
   },
   "orderSuccess": {

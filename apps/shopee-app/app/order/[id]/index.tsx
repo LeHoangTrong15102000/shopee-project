@@ -134,7 +134,7 @@ export default function OrderDetailScreen() {
                     className="mt-2 self-end rounded-lg border border-neutrals700 px-3 py-1.5"
                     accessibilityRole="button">
                     <AppText raw variant="bodySmall" color="primary">
-                      Đánh giá
+                      {t('orderDetail.actions.review')}
                     </AppText>
                   </TouchableOpacity>
                 )}
@@ -188,7 +188,7 @@ export default function OrderDetailScreen() {
                 variant="primary"
                 onPress={() => router.push(`/order/${order._id}/tracking`)}
                 className="w-full">
-                Theo dõi đơn hàng
+                {t('orderDetail.actions.trackOrder')}
               </AppButton>
             </View>
           )}
@@ -200,7 +200,7 @@ export default function OrderDetailScreen() {
                 onPress={() => reorder(order._id)}
                 loading={isReordering}
                 className="w-full">
-                Mua lại
+                {t('orderDetail.actions.reorder')}
               </AppButton>
             </View>
           )}

@@ -162,6 +162,30 @@ describe('DashboardPage', () => {
     )
   })
 
+  it('renders fallback values when overview fields are null', async () => {
+    server.use(
+      http.get(`${API_URL}/admin/dashboard/overview`, () => {
+        return HttpResponse.json({
+          message: 'Thành công',
+          data: {
+            total_revenue: undefined,
+            total_orders: undefined,
+            total_users: undefined,
+            total_products: undefined,
+            revenue_change: 0,
+            orders_change: 0,
+            users_change: 0,
+            products_change: 0,
+          },
+        })
+      }),
+    )
+    renderWithProviders(<DashboardPage />)
+    await waitFor(() => {
+      expect(screen.getByText('stats.totalRevenue')).toBeInTheDocument()
+    })
+  })
+
   it('renders error state when overview API fails', async () => {
     server.use(
       http.get(`${API_URL}/admin/dashboard/overview`, () => {

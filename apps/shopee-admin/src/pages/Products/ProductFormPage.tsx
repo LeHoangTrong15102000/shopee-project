@@ -26,8 +26,7 @@ const schema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
   price: z.number().min(0),
-  price_before_discount: z
-    .preprocess((v) => (typeof v === 'number' && isNaN(v) ? undefined : v), z.number().min(0).optional()),
+  price_before_discount: z.number().min(0).optional(),
   quantity: z.number().int().min(0),
   category: z.string().min(1, 'Category is required'),
   image: z.string().min(1, 'Image URL is required'),
@@ -124,7 +123,7 @@ export default function ProductFormPage() {
               <Input
                 id="product-price-before"
                 type="number"
-                {...register('price_before_discount', { valueAsNumber: true })}
+                {...register('price_before_discount', { setValueAs: (v: string) => { const n = parseFloat(v); return isNaN(n) ? undefined : n } })}
               />
             </div>
             <div>

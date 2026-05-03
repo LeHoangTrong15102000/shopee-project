@@ -43,7 +43,7 @@ const textVariants = cva('text-foreground font-sans-regular', {
       body: 'text-base leading-normal',
       bodyLarge: 'text-lg leading-normal',
       bodySmall: 'text-sm leading-normal',
-      caption: 'text-lg leading-normal',
+      caption: 'text-xs leading-tight',
       overline: 'text-xs leading-normal uppercase tracking-wide',
       label: 'text-sm leading-normal',
       labelSmall: 'text-xs leading-normal',

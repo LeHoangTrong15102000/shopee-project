@@ -22,14 +22,9 @@ import {
 } from '@/hooks/useSearch'
 import { useRouter } from 'expo-router'
 import { Search } from 'lucide-react-native'
+import { formatPrice } from '@/utils/price'
 
 type SearchMode = 'idle' | 'typing' | 'results'
-
-function formatPrice(value: number): string {
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`
-  if (value >= 1_000) return `${(value / 1_000).toFixed(0)}K`
-  return String(value)
-}
 
 export default function SearchScreen() {
   const { t } = useTranslation()
@@ -127,12 +122,12 @@ export default function SearchScreen() {
     const { minPrice, maxPrice } = filters
     if (minPrice != null && maxPrice != null) {
       return t('search.activeFilter.price', {
-        min: formatPrice(minPrice),
-        max: formatPrice(maxPrice),
+        min: formatPrice(minPrice, { compact: true }),
+        max: formatPrice(maxPrice, { compact: true }),
       })
     }
-    if (minPrice != null) return t('search.activeFilter.priceMin', { min: formatPrice(minPrice) })
-    if (maxPrice != null) return t('search.activeFilter.priceMax', { max: formatPrice(maxPrice) })
+    if (minPrice != null) return t('search.activeFilter.priceMin', { min: formatPrice(minPrice, { compact: true }) })
+    if (maxPrice != null) return t('search.activeFilter.priceMax', { max: formatPrice(maxPrice, { compact: true }) })
     return null
   }
 

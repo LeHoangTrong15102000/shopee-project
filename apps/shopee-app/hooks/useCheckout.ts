@@ -4,17 +4,32 @@ import {
   getShippingMethods,
   getPaymentMethods,
   createOrder,
-  type CheckoutSummaryBody,
   type CreateOrderBody,
 } from '@/apis/checkout.api'
 import { handleMutationError } from '@/utils/mutationErrorHandler'
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
 
-export function useCheckoutSummary() {
-  return useMutation({
-    mutationFn: (body: CheckoutSummaryBody) => getCheckoutSummary(body),
-    onError: handleMutationError,
+export interface CheckoutSummaryParams {
+  addressId: string
+  voucherId?: string
+  useCoins: boolean
+  cartItemIds: string[]
+  shippingMethodId?: string
+}
+
+export function useCheckoutSummary(params: CheckoutSummaryParams) {
+  const { addressId, voucherId, useCoins, cartItemIds, shippingMethodId } = params
+  return useQuery({
+    queryKey: ['checkout', 'summary', { addressId, voucherId, useCoins, cartItemIds, shippingMethodId }],
+    queryFn: () =>
+      getCheckoutSummary({
+        purchase_ids: cartItemIds,
+        shipping_method_id: shippingMethodId,
+        voucher_code: voucherId || undefined,
+        coins_used: useCoins ? 1 : 0,
+      }),
+    enabled: !!addressId && cartItemIds.length > 0,
   })
 }
 

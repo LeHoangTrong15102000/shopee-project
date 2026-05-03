@@ -46,7 +46,13 @@ export default function CheckoutScreen() {
   const { data: addressesData } = useAddresses()
   const { data: shippingData } = useShippingMethods()
   const { data: paymentData } = usePaymentMethods()
-  const { mutate: checkoutSummary, data: summaryData, isPending: isSummarizing } = useCheckoutSummary()
+  const { data: summaryData, isPending: isSummarizing } = useCheckoutSummary({
+    addressId: selectedAddressId ?? '',
+    voucherId: voucherCode || undefined,
+    useCoins,
+    cartItemIds: purchaseIds,
+    shippingMethodId: selectedShippingId ?? undefined,
+  })
   const { mutate: createOrder, isPending: isCreating } = useCreateOrder()
 
   const addresses = addressesData?.data ?? []
@@ -72,17 +78,6 @@ export default function CheckoutScreen() {
   }, [shippingMethods])
 
   const coinBalance = summary?.coin_balance ?? 0
-
-  useEffect(() => {
-    if (purchaseIds.length > 0 && selectedShippingId) {
-      checkoutSummary({
-        purchase_ids: purchaseIds,
-        shipping_method_id: selectedShippingId,
-        voucher_code: voucherCode || undefined,
-        coins_used: useCoins ? coinBalance : 0,
-      })
-    }
-  }, [purchaseIds.join(','), selectedShippingId, voucherCode, useCoins, coinBalance])
 
   const selectedAddress = addresses.find((a: Address) => a._id === selectedAddressId) ?? null
   const selectedShipping = shippingMethods.find((s: ShippingMethod) => s._id === selectedShippingId)

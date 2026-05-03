@@ -50,3 +50,20 @@ export async function deleteCartItems(purchaseIds: string[]) {
   })
   return res.data
 }
+
+// ─── Add Multiple ─────────────────────────────────────────────────────────────
+
+export interface AddMultipleResult {
+  addedCount: number
+  skippedItems: string[]
+}
+
+export interface CartItemInput {
+  product_id: string
+  buy_count: number
+}
+
+export async function addMultipleToCart(items: CartItemInput[]): Promise<AddMultipleResult> {
+  const res = await http.post<ApiResponse<AddMultipleResult>>('cart/add-multiple', { items })
+  return res.data.data
+}

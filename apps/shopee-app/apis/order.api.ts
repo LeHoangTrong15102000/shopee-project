@@ -60,30 +60,15 @@ export async function confirmReceived(orderId: string) {
 
 // ─── Reorder ──────────────────────────────────────────────────────────────────
 
-export interface ReorderResult {
-  addedCount: number
-  skippedItems: string[]
-}
+import { type CartItemInput } from '@/apis/cart.api'
 
-interface AddMultipleResponse {
-  addedCount: number
-  skippedItems: string[]
-}
-
-export async function reorderItems(orderId: string): Promise<ReorderResult> {
+export async function getOrderItems(orderId: string): Promise<CartItemInput[]> {
   const orderRes = await http.get<ApiResponse<Order>>(`orders/${orderId}`)
   const order = orderRes.data.data
-
-  const items = order.items.map((item) => ({
+  return order.items.map((item) => ({
     product_id: item.product._id,
     buy_count: item.buy_count,
   }))
-
-  const res = await http.post<ApiResponse<AddMultipleResponse>>('cart/add-multiple', { items })
-  return {
-    addedCount: res.data.data.addedCount,
-    skippedItems: res.data.data.skippedItems,
-  }
 }
 
 // ─── Return Request ───────────────────────────────────────────────────────────

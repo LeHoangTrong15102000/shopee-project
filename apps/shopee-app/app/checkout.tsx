@@ -71,6 +71,8 @@ export default function CheckoutScreen() {
     }
   }, [shippingMethods])
 
+  const coinBalance = summary?.coin_balance ?? 0
+
   useEffect(() => {
     if (purchaseIds.length > 0 && selectedShippingId) {
       checkoutSummary({
@@ -80,7 +82,7 @@ export default function CheckoutScreen() {
         coins_used: useCoins ? coinBalance : 0,
       })
     }
-  }, [purchaseIds.join(','), selectedShippingId, voucherCode, useCoins])
+  }, [purchaseIds.join(','), selectedShippingId, voucherCode, useCoins, coinBalance])
 
   const selectedAddress = addresses.find((a: Address) => a._id === selectedAddressId) ?? null
   const selectedShipping = shippingMethods.find((s: ShippingMethod) => s._id === selectedShippingId)
@@ -90,7 +92,6 @@ export default function CheckoutScreen() {
   const voucherDiscount = summary?.voucher_discount ?? 0
   const coinDiscount = summary?.coins_discount ?? 0
   const total = summary?.total ?? (subtotal + shippingFee - voucherDiscount - coinDiscount)
-  const coinBalance = summary?.coin_balance ?? 0
 
   const handlePlaceOrder = () => {
     if (!selectedAddressId) return

@@ -43,7 +43,7 @@ export default function ShopScreen() {
 
   const handleFollow = () => {
     if (!isAuthenticated) {
-      router.push('/login')
+      router.push('/(auth)/sign-in')
       return
     }
     if (shop) toggleFollow(shop.isFollowing)

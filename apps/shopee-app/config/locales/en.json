@@ -772,5 +772,20 @@
     "toast": {
       "success": "Return request submitted successfully"
     }
+  },
+  "writeReview": {
+    "title": "Write a Review",
+    "ratingLabel": "Your rating",
+    "commentLabel": "Comment",
+    "commentPlaceholder": "Share your experience with this product...",
+    "imageCount": "Images ({{count}}/5)",
+    "submit": "Submit Review",
+    "permissionTitle": "Permission Required",
+    "permissionMessage": "Photo library access is required to select images.",
+    "a11y": {
+      "starRating": "{{count}} stars",
+      "removeImage": "Remove image",
+      "addImage": "Add image"
+    }
   }
 }

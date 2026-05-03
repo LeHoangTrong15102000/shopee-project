@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getOrderTracking } from '@/apis/tracking.api'
-import { useChatStore } from '@/store/chatStore'
+import { useChatStore, getSocket } from '@/store/chatStore'
 import { TrackingUpdate } from '@/types/tracking.type'
 
 const POLLING_INTERVAL = 10000
 
 export function useOrderTracking(orderId: string) {
-  const socket = useChatStore((state) => state.socket)
   const socketStatus = useChatStore((state) => state.status)
   const [liveTracking, setLiveTracking] = useState<TrackingUpdate | null>(null)
   const roomJoinedRef = useRef(false)
@@ -24,9 +23,8 @@ export function useOrderTracking(orderId: string) {
 
   // Subscribe to WebSocket tracking:update events
   useEffect(() => {
+    const socket = getSocket()
     if (!socket || !isSocketConnected) return
-
-    const room = `order:${orderId}`
 
     if (!roomJoinedRef.current) {
       socket.emit('tracking:join', { orderId })
@@ -46,7 +44,7 @@ export function useOrderTracking(orderId: string) {
       socket.emit('tracking:leave', { orderId })
       roomJoinedRef.current = false
     }
-  }, [socket, isSocketConnected, orderId])
+  }, [socketStatus, orderId])
 
   // Merge: live socket data takes precedence over polled data
   const tracking = liveTracking ?? query.data ?? null

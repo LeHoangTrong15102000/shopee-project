@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { AppText, AppButton } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { formatPrice } from '@/utils/price'
-import { useOrderDetail, useCancelOrder, useConfirmReceived, useReturnOrder } from '@/hooks/useOrders'
+import { useOrderDetail, useCancelOrder, useConfirmReceived } from '@/hooks/useOrders'
 import { useDialog } from '@/components/ui/DialogProvider'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
 import OrderDetailHeader from '@/components/order-detail/OrderDetailHeader'
@@ -25,7 +25,6 @@ export default function OrderDetailScreen() {
   const { data, isLoading } = useOrderDetail(id)
   const { mutate: cancelOrder, isPending: isCancelling } = useCancelOrder()
   const { mutate: confirmReceived, isPending: isConfirming } = useConfirmReceived()
-  const { mutate: returnOrder } = useReturnOrder()
   const { mutate: reorder, isPending: isReordering } = useReorder()
 
   const order = data?.data
@@ -71,23 +70,10 @@ export default function OrderDetailScreen() {
   }
 
   const handleReturn = () => {
-    showConfirm(
-      t('orderDetail.dialog.returnTitle'),
-      t('orderDetail.dialog.returnMessage'),
-      () => returnOrder(order._id, { onSuccess: () => router.back() }),
-      undefined,
-      'horizontal'
-    )
+    router.push({ pathname: '/return-request', params: { orderId: order._id } })
   }
 
   const subtotal = order.items?.reduce((sum, item) => sum + item.price * item.buy_count, 0) ?? 0
-
-  const isWithinReturnWindow = (() => {
-    if (!isDelivered) return false
-    const deliveredAt = (order as { deliveredAt?: string }).deliveredAt ?? order.updatedAt
-    const sevenDaysMs = 7 * 24 * 60 * 60 * 1000
-    return Date.now() - new Date(deliveredAt).getTime() < sevenDaysMs
-  })()
 
   return (
     <>
@@ -216,16 +202,6 @@ export default function OrderDetailScreen() {
                 className="w-full">
                 Mua lại
               </AppButton>
-              {isWithinReturnWindow && (
-                <AppButton
-                  variant="outline"
-                  onPress={() =>
-                    router.push({ pathname: '/return-request', params: { orderId: order._id } })
-                  }
-                  className="w-full">
-                  Trả hàng
-                </AppButton>
-              )}
             </View>
           )}
         </ScrollView>

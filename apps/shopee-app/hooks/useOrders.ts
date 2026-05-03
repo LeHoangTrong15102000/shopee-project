@@ -6,6 +6,7 @@ import {
   confirmReceived,
   requestReturn,
   getOrderTracking,
+  type ReturnReason,
 } from '@/apis/order.api'
 import { type OrderStatusType } from '@/constants/order'
 import { handleMutationError } from '@/utils/mutationErrorHandler'
@@ -68,10 +69,11 @@ export function useConfirmReceived() {
 export function useReturnOrder() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (orderId: string) => requestReturn(orderId, { reason: 'other' }),
-    onSuccess: (_data, orderId) => {
+    mutationFn: (params: { orderId: string; reason: ReturnReason; description?: string }) =>
+      requestReturn(params.orderId, { reason: params.reason, description: params.description }),
+    onSuccess: (_data, params) => {
       queryClient.invalidateQueries({ queryKey: orderKeys.all() })
-      queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) })
+      queryClient.invalidateQueries({ queryKey: orderKeys.detail(params.orderId) })
     },
     onError: handleMutationError,
   })

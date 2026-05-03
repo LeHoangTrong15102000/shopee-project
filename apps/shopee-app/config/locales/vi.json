@@ -772,5 +772,20 @@
     "toast": {
       "success": "Yêu cầu trả hàng đã được gửi"
     }
+  },
+  "writeReview": {
+    "title": "Viết đánh giá",
+    "ratingLabel": "Đánh giá của bạn",
+    "commentLabel": "Nhận xét",
+    "commentPlaceholder": "Chia sẻ trải nghiệm của bạn về sản phẩm...",
+    "imageCount": "Hình ảnh ({{count}}/5)",
+    "submit": "Gửi đánh giá",
+    "permissionTitle": "Quyền truy cập",
+    "permissionMessage": "Cần quyền truy cập thư viện ảnh để chọn ảnh.",
+    "a11y": {
+      "starRating": "{{count}} sao",
+      "removeImage": "Xóa ảnh",
+      "addImage": "Thêm ảnh"
+    }
   }
 }

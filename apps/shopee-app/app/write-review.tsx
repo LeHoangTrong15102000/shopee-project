@@ -11,12 +11,14 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import * as ImagePicker from 'expo-image-picker'
 import { Star, X, ImagePlus } from 'lucide-react-native'
+import { useTranslation } from 'react-i18next'
 import { AppText, AppButton, AppInput } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { useSubmitShopReview } from '@/hooks/useSubmitShopReview'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
 
 export default function WriteReviewScreen() {
+  const { t } = useTranslation()
   const colors = useColors()
   const router = useRouter()
   const { productName, productId, orderId } = useLocalSearchParams<{
@@ -34,7 +36,7 @@ export default function WriteReviewScreen() {
   const handlePickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
     if (status !== 'granted') {
-      Alert.alert('Quyền truy cập', 'Cần quyền truy cập thư viện ảnh để chọn ảnh.')
+      Alert.alert(t('writeReview.permissionTitle'), t('writeReview.permissionMessage'))
       return
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -68,7 +70,7 @@ export default function WriteReviewScreen() {
       <Stack.Screen
         options={{
           header: (props) => <CustomScreenHeader {...props} />,
-          title: 'Viết đánh giá',
+          title: t('writeReview.title'),
         }}
       />
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
@@ -81,7 +83,7 @@ export default function WriteReviewScreen() {
           {/* Star picker */}
           <View className="mb-4">
             <AppText raw variant="bodySmall" color="muted" className="mb-2">
-              Đánh giá của bạn
+              {t('writeReview.ratingLabel')}
             </AppText>
             <View className="flex-row gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
@@ -89,7 +91,7 @@ export default function WriteReviewScreen() {
                   key={star}
                   onPress={() => setRating(star)}
                   accessibilityRole="button"
-                  accessibilityLabel={`${star} sao`}>
+                  accessibilityLabel={t('writeReview.a11y.starRating', { count: star })}>
                   <Star
                     size={36}
                     color={star <= rating ? '#F97316' : colors.neutrals600}
@@ -103,9 +105,9 @@ export default function WriteReviewScreen() {
           {/* Comment input */}
           <View className="mb-4">
             <AppInput
-              label="Nhận xét"
+              label={t('writeReview.commentLabel')}
               variant="textarea"
-              placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm..."
+              placeholder={t('writeReview.commentPlaceholder')}
               value={comment}
               onChangeText={setComment}
               style={{ minHeight: 100 }}
@@ -115,7 +117,7 @@ export default function WriteReviewScreen() {
           {/* Image picker */}
           <View className="mb-6">
             <AppText raw variant="bodySmall" color="muted" className="mb-2">
-              Hình ảnh ({images.length}/5)
+              {t('writeReview.imageCount', { count: images.length })}
             </AppText>
             <View className="flex-row flex-wrap gap-2">
               {images.map((uri, index) => (
@@ -139,7 +141,7 @@ export default function WriteReviewScreen() {
                       justifyContent: 'center',
                     }}
                     accessibilityRole="button"
-                    accessibilityLabel="Xóa ảnh">
+                    accessibilityLabel={t('writeReview.a11y.removeImage')}>
                     <X size={12} color="#fff" />
                   </TouchableOpacity>
                 </View>
@@ -158,7 +160,7 @@ export default function WriteReviewScreen() {
                     justifyContent: 'center',
                   }}
                   accessibilityRole="button"
-                  accessibilityLabel="Thêm ảnh">
+                  accessibilityLabel={t('writeReview.a11y.addImage')}>
                   <ImagePlus size={24} color={colors.neutrals600} />
                 </TouchableOpacity>
               )}
@@ -171,7 +173,7 @@ export default function WriteReviewScreen() {
             disabled={!canSubmit}
             loading={isPending}
             className="w-full">
-            Gửi đánh giá
+            {t('writeReview.submit')}
           </AppButton>
         </ScrollView>
       </SafeAreaView>

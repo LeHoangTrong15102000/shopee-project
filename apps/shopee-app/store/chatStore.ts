@@ -16,6 +16,10 @@ type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnect
 // Socket is kept outside Zustand state to avoid storing non-serializable objects in the store
 let socket: Socket | null = null
 
+export function getSocket(): Socket | null {
+  return socket
+}
+
 interface ChatState {
   status: ConnectionStatus
   // In-memory buffer: conversationId -> messages received via socket

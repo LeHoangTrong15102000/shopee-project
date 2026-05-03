@@ -70,7 +70,7 @@ export default function OrdersScreen() {
       showConfirm(
         t('orders.dialog.returnTitle'),
         t('orders.dialog.returnMessage'),
-        () => returnOrder(orderId),
+        () => returnOrder({ orderId, reason: 'other' }), // quick-return from list; full reason selection is on /return-request
         undefined,
         'horizontal'
       )

@@ -1,4 +1,5 @@
 import { Types } from 'mongoose'
+import { ClientSession } from 'mongoose'
 import { OrderModel, IOrder, OrderStatusType } from '@database/models/order.model'
 import { OrderTrackingModel, IOrderTracking } from '@database/models/order-tracking.model'
 import {
@@ -50,9 +51,11 @@ export class OrderRepository implements IOrderRepository {
       .lean<IOrder | null>()
   }
 
-  async create(data: CreateOrderDTO): Promise<IOrder> {
-    const order = await OrderModel.create(data)
+  async create(data: CreateOrderDTO, options?: { session?: ClientSession }): Promise<IOrder> {
+    const sessionOpt = options?.session ? { session: options.session } : undefined
+    const [order] = await OrderModel.create([data], sessionOpt)
     return OrderModel.findById(order._id)
+      .session(options?.session ?? null)
       .populate('items.product')
       .lean<IOrder>() as Promise<IOrder>
   }

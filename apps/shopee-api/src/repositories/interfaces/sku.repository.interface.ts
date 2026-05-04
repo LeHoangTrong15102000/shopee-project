@@ -1,4 +1,5 @@
 import { Types } from 'mongoose'
+import { ClientSession } from 'mongoose'
 import { IBaseRepository } from './base.repository.interface'
 import { ISKU } from '../../@types/models.type'
 
@@ -62,14 +63,22 @@ export interface ISKURepository extends IBaseRepository<ISKU, CreateSKUDTO, Upda
    * Also decrements the parent Product.quantity by the same amount.
    * If Product update fails, SKU stock is rolled back and a BusinessError is thrown.
    */
-  atomicDecrementStock(skuId: string | Types.ObjectId, quantity: number): Promise<ISKU | null>
+  atomicDecrementStock(
+    skuId: string | Types.ObjectId,
+    quantity: number,
+    options?: { session?: ClientSession },
+  ): Promise<ISKU | null>
 
   /**
    * Atomically increment stock (e.g., on order cancellation/return).
    * Also increments the parent Product.quantity by the same amount.
    * If Product update fails, SKU stock is rolled back and a BusinessError is thrown.
    */
-  atomicIncrementStock(skuId: string | Types.ObjectId, quantity: number): Promise<ISKU | null>
+  atomicIncrementStock(
+    skuId: string | Types.ObjectId,
+    quantity: number,
+    options?: { session?: ClientSession },
+  ): Promise<ISKU | null>
 
   /**
    * Bulk atomic decrement stock for multiple SKUs.
@@ -78,6 +87,7 @@ export interface ISKURepository extends IBaseRepository<ISKU, CreateSKUDTO, Upda
    */
   bulkAtomicDecrementStock(
     items: Array<{ skuId: string | Types.ObjectId; quantity: number }>,
+    options?: { session?: ClientSession },
   ): Promise<BulkDecrementResult[]>
 
   /**

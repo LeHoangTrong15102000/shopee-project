@@ -1,4 +1,5 @@
 import { Types, FilterQuery } from 'mongoose'
+import { ClientSession } from 'mongoose'
 import { IBaseRepository, PaginatedResult, PaginationOptions } from './base.repository.interface'
 import { IProduct } from '../../@types/models.type'
 
@@ -104,17 +105,29 @@ export interface IProductRepository extends IBaseRepository<
   /**
    * Update product sold count
    */
-  incrementSold(productId: string | Types.ObjectId, count: number): Promise<void>
+  incrementSold(
+    productId: string | Types.ObjectId,
+    count: number,
+    options?: { session?: ClientSession },
+  ): Promise<void>
 
   /**
    * Update product quantity (decrease after purchase)
    */
-  decrementQuantity(productId: string | Types.ObjectId, count: number): Promise<void>
+  decrementQuantity(
+    productId: string | Types.ObjectId,
+    count: number,
+    options?: { session?: ClientSession },
+  ): Promise<void>
 
   /**
    * Update product quantity (increase on order cancellation/return)
    */
-  incrementQuantity(productId: string | Types.ObjectId, count: number): Promise<void>
+  incrementQuantity(
+    productId: string | Types.ObjectId,
+    count: number,
+    options?: { session?: ClientSession },
+  ): Promise<void>
 
   /**
    * Find products with low stock
@@ -137,6 +150,7 @@ export interface IProductRepository extends IBaseRepository<
       quantity_change: number
       sold_change: number
     }>,
+    options?: { session?: ClientSession },
   ): Promise<number>
 
   /**

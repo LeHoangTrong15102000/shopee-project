@@ -187,8 +187,9 @@ describe('OrderRepository', () => {
     it('should create a new order', async () => {
       const mockLean = jest.fn().mockResolvedValue(mockOrderData)
       const mockPopulate = jest.fn().mockReturnValue({ lean: mockLean })
-      ;(OrderModel.create as jest.Mock).mockResolvedValue({ _id: '507f1f77bcf86cd799439011' })
-      ;(OrderModel.findById as jest.Mock).mockReturnValue({ populate: mockPopulate })
+      const mockSession2 = jest.fn().mockReturnValue({ populate: mockPopulate })
+      ;(OrderModel.create as jest.Mock).mockResolvedValue([{ _id: '507f1f77bcf86cd799439011' }])
+      ;(OrderModel.findById as jest.Mock).mockReturnValue({ session: mockSession2 })
 
       const result = await repository.create({
         user: '507f1f77bcf86cd799439012',
@@ -198,6 +199,25 @@ describe('OrderRepository', () => {
 
       expect(OrderModel.create).toHaveBeenCalled()
       expect(result).toEqual(mockOrderData)
+    })
+
+    // Task 3.8 — session threaded through to OrderModel.create
+    it('passes session inside options array to OrderModel.create when provided', async () => {
+      const mockLean = jest.fn().mockResolvedValue(mockOrderData)
+      const mockPopulate = jest.fn().mockReturnValue({ lean: mockLean })
+      const mockSession2 = jest.fn().mockReturnValue({ populate: mockPopulate })
+      ;(OrderModel.create as jest.Mock).mockResolvedValue([{ _id: '507f1f77bcf86cd799439011' }])
+      ;(OrderModel.findById as jest.Mock).mockReturnValue({ session: mockSession2 })
+
+      const mockSession = { id: 'tx-session-order' } as any
+
+      await repository.create({ user: '507f1f77bcf86cd799439012', items: [], total: 200 } as any, {
+        session: mockSession,
+      })
+
+      // OrderModel.create is called with [data] as first arg and { session } as second arg
+      const createArgs = (OrderModel.create as jest.Mock).mock.calls[0]
+      expect(createArgs[1]).toEqual({ session: mockSession })
     })
   })
 

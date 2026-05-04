@@ -1,4 +1,5 @@
 import { Types, FilterQuery, QueryOptions, UpdateQuery } from 'mongoose'
+import { ClientSession } from 'mongoose'
 import { PurchaseModel } from '@database/models/purchase.model'
 import { IPurchase } from '../@types/models.type'
 import { STATUS_PURCHASE } from '@constants/purchase'
@@ -273,5 +274,22 @@ export class PurchaseRepository implements IPurchaseRepository {
       product: new Types.ObjectId(productId.toString()),
       status,
     })
+  }
+
+  async deleteManyByUserAndProducts(
+    userId: string | Types.ObjectId,
+    productIds: string[],
+    status: PurchaseStatus,
+    options?: { session?: ClientSession },
+  ): Promise<number> {
+    const result = await PurchaseModel.deleteMany(
+      {
+        user: new Types.ObjectId(userId.toString()),
+        product: { $in: productIds.map((id) => new Types.ObjectId(id)) },
+        status,
+      },
+      options?.session ? { session: options.session } : undefined,
+    )
+    return result.deletedCount
   }
 }

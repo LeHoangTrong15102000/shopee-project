@@ -233,9 +233,11 @@ describe('ProductRepository', () => {
     it('should increment sold count', async () => {
       ;(ProductModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(mockProductData)
       await repository.incrementSold('507f1f77bcf86cd799439011', 5)
-      expect(ProductModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', {
-        $inc: { sold: 5 },
-      })
+      expect(ProductModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        '507f1f77bcf86cd799439011',
+        { $inc: { sold: 5 } },
+        undefined,
+      )
     })
   })
 
@@ -246,6 +248,7 @@ describe('ProductRepository', () => {
       expect(ProductModel.findOneAndUpdate).toHaveBeenCalledWith(
         { _id: '507f1f77bcf86cd799439011', quantity: { $gte: 3 } },
         { $inc: { quantity: -3 } },
+        undefined,
       )
     })
   })
@@ -254,9 +257,11 @@ describe('ProductRepository', () => {
     it('should increment quantity', async () => {
       ;(ProductModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(mockProductData)
       await repository.incrementQuantity('507f1f77bcf86cd799439011', 3)
-      expect(ProductModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', {
-        $inc: { quantity: 3 },
-      })
+      expect(ProductModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        '507f1f77bcf86cd799439011',
+        { $inc: { quantity: 3 } },
+        undefined,
+      )
     })
   })
 
@@ -299,6 +304,46 @@ describe('ProductRepository', () => {
 
       expect(ProductModel.bulkWrite).toHaveBeenCalled()
       expect(result).toBe(2)
+    })
+
+    // Task 3.8 — session threaded through to Mongoose bulkWrite
+    it('passes session option to ProductModel.bulkWrite when provided', async () => {
+      ;(ProductModel.bulkWrite as jest.Mock).mockResolvedValue({ modifiedCount: 1 })
+      const mockSession = { id: 'session-abc' } as any
+
+      const updates = [{ product_id: '507f1f77bcf86cd799439011', quantity_change: -2, sold_change: 2 }]
+      await repository.bulkUpdateStock(updates, { session: mockSession })
+
+      const callArgs = (ProductModel.bulkWrite as jest.Mock).mock.calls[0]
+      // Second argument to bulkWrite should include the session
+      expect(callArgs[1]).toEqual(expect.objectContaining({ session: mockSession }))
+    })
+  })
+
+  // Task 3.8 — incrementSold session
+  describe('incrementSold — session option', () => {
+    it('passes session to ProductModel.findByIdAndUpdate when provided', async () => {
+      ;(ProductModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(mockProductData)
+      const mockSession = { id: 'session-xyz' } as any
+
+      await repository.incrementSold('507f1f77bcf86cd799439011', 3, { session: mockSession })
+
+      const callArgs = (ProductModel.findByIdAndUpdate as jest.Mock).mock.calls[0]
+      // Third argument (options) should contain the session
+      expect(callArgs[2]).toEqual(expect.objectContaining({ session: mockSession }))
+    })
+
+    it('does not include session option when session is omitted', async () => {
+      ;(ProductModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(mockProductData)
+
+      await repository.incrementSold('507f1f77bcf86cd799439011', 5)
+
+      const callArgs = (ProductModel.findByIdAndUpdate as jest.Mock).mock.calls[0]
+      // No third arg or third arg does not have session key
+      const opts = callArgs[2] as Record<string, unknown> | undefined
+      if (opts) {
+        expect(opts.session).toBeUndefined()
+      }
     })
   })
 

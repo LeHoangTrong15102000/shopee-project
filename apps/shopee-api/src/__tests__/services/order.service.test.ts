@@ -6,9 +6,17 @@ import { IProductRepository } from '@repositories/interfaces/product.repository.
 import { IAddressRepository } from '@repositories/interfaces/address.repository.interface'
 import { IPurchaseRepository } from '@repositories/interfaces/purchase.repository.interface'
 import { ISKURepository } from '@repositories/interfaces/sku.repository.interface'
+import { IProductSkuSnapshotRepository } from '@repositories/interfaces/product-sku-snapshot.repository.interface'
 import { NotFoundError, BusinessError } from '@services/base.service'
 import { ORDER_STATUS, PAYMENT_METHOD } from '@database/models/order.model'
 import { STATUS_PURCHASE } from '@constants/purchase'
+
+jest.mock('../../utils/transaction.helper', () => ({
+  withTransaction: jest.fn().mockImplementation(async (fn) => {
+    const mockSession = {}
+    return fn(mockSession)
+  }),
+}))
 
 const validObjectId = new Types.ObjectId()
 
@@ -38,7 +46,7 @@ const mockAddressRepository = {
 } as unknown as jest.Mocked<IAddressRepository>
 
 const mockPurchaseRepository = {
-  deleteByUserAndProduct: jest.fn(),
+  deleteManyByUserAndProducts: jest.fn(),
 } as unknown as jest.Mocked<IPurchaseRepository>
 
 describe('OrderService', () => {
@@ -108,18 +116,20 @@ describe('OrderService', () => {
         status: ORDER_STATUS.PENDING,
       } as any)
       mockProductRepository.bulkUpdateStock.mockResolvedValue(1)
-      mockPurchaseRepository.deleteByUserAndProduct.mockResolvedValue(1)
+      mockPurchaseRepository.deleteManyByUserAndProducts.mockResolvedValue(1)
 
       const result = await service.createOrder(validObjectId.toString(), input)
 
       expect(result).toBeDefined()
-      expect(mockProductRepository.bulkUpdateStock).toHaveBeenCalledWith([
-        { product_id: validObjectId.toString(), quantity_change: -2, sold_change: 2 },
-      ])
-      expect(mockPurchaseRepository.deleteByUserAndProduct).toHaveBeenCalledWith(
+      expect(mockProductRepository.bulkUpdateStock).toHaveBeenCalledWith(
+        [{ product_id: validObjectId.toString(), quantity_change: -2, sold_change: 2 }],
+        expect.objectContaining({}),
+      )
+      expect(mockPurchaseRepository.deleteManyByUserAndProducts).toHaveBeenCalledWith(
         validObjectId.toString(),
-        validObjectId.toString(),
+        [validObjectId.toString()],
         STATUS_PURCHASE.IN_CART,
+        expect.objectContaining({}),
       )
     })
 
@@ -342,18 +352,19 @@ describe('OrderService - SKU Stock Sync', () => {
         _id: validObjectId,
         status: ORDER_STATUS.PENDING,
       } as any)
-      mockPurchaseRepository.deleteByUserAndProduct.mockResolvedValue(1)
+      mockPurchaseRepository.deleteManyByUserAndProducts.mockResolvedValue(1)
       mockProductRepository.incrementSold.mockResolvedValue(undefined as any)
 
       const result = await service.createOrder(validObjectId.toString(), input)
 
       expect(result).toBeDefined()
       expect(result.status).toBe(ORDER_STATUS.PENDING)
-      expect(mockSkuRepository.bulkAtomicDecrementStock).toHaveBeenCalledWith([
-        { skuId: skuId.toString(), quantity: 2 },
-      ])
+      expect(mockSkuRepository.bulkAtomicDecrementStock).toHaveBeenCalledWith(
+        [{ skuId: skuId.toString(), quantity: 2 }],
+        expect.objectContaining({}),
+      )
       expect(mockProductRepository.bulkUpdateStock).not.toHaveBeenCalled()
-      expect(mockProductRepository.incrementSold).toHaveBeenCalledWith(productId.toString(), 2)
+      expect(mockProductRepository.incrementSold).toHaveBeenCalledWith(productId.toString(), 2, expect.objectContaining({}))
     })
 
     it('throws descriptive error with product name and variant on insufficient stock', async () => {
@@ -443,13 +454,13 @@ describe('OrderService - SKU Stock Sync', () => {
         _id: validObjectId,
         status: ORDER_STATUS.PENDING,
       } as any)
-      mockPurchaseRepository.deleteByUserAndProduct.mockResolvedValue(1)
+      mockPurchaseRepository.deleteManyByUserAndProducts.mockResolvedValue(1)
       mockProductRepository.incrementSold.mockResolvedValue(undefined as any)
 
       await service.createOrder(validObjectId.toString(), input)
 
       // Should be called once with combined total (2+3=5), not twice
-      expect(mockProductRepository.incrementSold).toHaveBeenCalledWith(productId.toString(), 5)
+      expect(mockProductRepository.incrementSold).toHaveBeenCalledWith(productId.toString(), 5, expect.objectContaining({}))
     })
 
     it('propagates Product sync failure from bulkAtomicDecrementStock', async () => {
@@ -569,6 +580,340 @@ describe('OrderService - SKU Stock Sync', () => {
       expect(result.status).toBe(ORDER_STATUS.RETURNED)
       expect(mockSkuRepository.atomicIncrementStock).toHaveBeenCalledWith(skuId.toString(), 2)
       expect(mockProductRepository.incrementSold).toHaveBeenCalledWith(productId.toString(), -2)
+    })
+  })
+})
+
+// ─── Tasks 5.2, 8.1-8.5, 8.8 — createOrder transaction orchestration ─────────
+
+describe('OrderService - createOrder transaction orchestration', () => {
+  let service: OrderService
+
+  const userId = new Types.ObjectId()
+  const productId = new Types.ObjectId()
+  const skuId = new Types.ObjectId()
+  const orderId = new Types.ObjectId()
+  const addressId = new Types.ObjectId()
+
+  const mockAddress = {
+    full_name: 'Test',
+    phone: '0123456789',
+    province: 'HN',
+    district: 'D1',
+    ward: 'W1',
+    street: '123 St',
+  }
+  const mockProduct = {
+    _id: productId,
+    name: 'Áo Thun',
+    price: 100000,
+    price_before_discount: 120000,
+    image: 'img.jpg',
+    quantity: 10,
+    sold: 5,
+  }
+  const mockSku = {
+    _id: skuId,
+    value: 'Đỏ-M',
+    price: 100000,
+    stock: 5,
+    product: productId,
+    image: '',
+    variant_values: { color: 'Đỏ', size: 'M' },
+  }
+  const mockCreatedOrder = {
+    _id: orderId,
+    status: ORDER_STATUS.PENDING,
+  }
+
+  const mockOrderRepo: jest.Mocked<IOrderRepository> = {
+    findByUser: jest.fn(),
+    findById: jest.fn(),
+    findByIdAndUser: jest.fn(),
+    create: jest.fn(),
+    updateStatus: jest.fn(),
+    findTrackingByOrderAndUser: jest.fn(),
+    findTrackingByNumber: jest.fn(),
+  }
+
+  const mockProductRepo = {
+    findById: jest.fn(),
+    bulkUpdateStock: jest.fn(),
+    updateById: jest.fn(),
+    findAll: jest.fn(),
+    create: jest.fn(),
+    deleteById: jest.fn(),
+    count: jest.fn(),
+    incrementSold: jest.fn(),
+  } as unknown as jest.Mocked<IProductRepository>
+
+  const mockAddressRepo = {
+    findByIdAndUser: jest.fn(),
+  } as unknown as jest.Mocked<IAddressRepository>
+
+  const mockPurchaseRepo = {
+    deleteManyByUserAndProducts: jest.fn(),
+  } as unknown as jest.Mocked<IPurchaseRepository>
+
+  const mockSkuRepo = {
+    findById: jest.fn(),
+    bulkAtomicDecrementStock: jest.fn(),
+    atomicIncrementStock: jest.fn(),
+  } as unknown as jest.Mocked<ISKURepository>
+
+  const mockSnapshotRepo: jest.Mocked<IProductSkuSnapshotRepository> = {
+    create: jest.fn(),
+    createMany: jest.fn(),
+    findByOrder: jest.fn(),
+    findByProduct: jest.fn(),
+    findBySku: jest.fn(),
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    service = new OrderService(
+      mockOrderRepo,
+      mockProductRepo,
+      mockAddressRepo,
+      mockPurchaseRepo,
+      mockSkuRepo,
+      mockSnapshotRepo,
+    )
+  })
+
+  const baseInput: CreateOrderInput = {
+    items: [{ product_id: productId.toString(), buy_count: 2, sku_id: skuId.toString() }],
+    shipping_address_id: addressId.toString(),
+    shipping_method_id: 'standard',
+    payment_method: PAYMENT_METHOD.COD,
+  }
+
+  // Task 8.1 — Happy path: creates order, snapshots, updates sold, clears cart
+  describe('Task 8.1 — happy path (SKU flow)', () => {
+    it('creates order, persists snapshots, increments sold, clears cart — all in one transaction', async () => {
+      mockAddressRepo.findByIdAndUser.mockResolvedValue(mockAddress as any)
+      mockProductRepo.findById.mockResolvedValue(mockProduct as any)
+      mockSkuRepo.findById.mockResolvedValue(mockSku as any)
+      mockSkuRepo.bulkAtomicDecrementStock.mockResolvedValue([
+        { skuId: skuId.toString(), success: true, sku: mockSku as any },
+      ])
+      mockOrderRepo.create.mockResolvedValue(mockCreatedOrder as any)
+      mockSnapshotRepo.createMany.mockResolvedValue([])
+      mockProductRepo.incrementSold.mockResolvedValue(undefined as any)
+      mockPurchaseRepo.deleteManyByUserAndProducts.mockResolvedValue(1)
+
+      const result = await service.createOrder(userId.toString(), baseInput)
+
+      expect(result).toBeDefined()
+      expect(result.status).toBe(ORDER_STATUS.PENDING)
+
+      // Stock decremented
+      expect(mockSkuRepo.bulkAtomicDecrementStock).toHaveBeenCalledWith(
+        [{ skuId: skuId.toString(), quantity: 2 }],
+        expect.objectContaining({}),
+      )
+
+      // Order created
+      expect(mockOrderRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({ status: ORDER_STATUS.PENDING }),
+        expect.objectContaining({}),
+      )
+
+      // Snapshots created
+      expect(mockSnapshotRepo.createMany).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            sku: expect.anything(),
+            product: expect.anything(),
+          }),
+        ]),
+        expect.objectContaining({}),
+      )
+
+      // Product.sold incremented
+      expect(mockProductRepo.incrementSold).toHaveBeenCalledWith(
+        productId.toString(),
+        2,
+        expect.objectContaining({}),
+      )
+
+      // Cart cleared
+      expect(mockPurchaseRepo.deleteManyByUserAndProducts).toHaveBeenCalledWith(
+        userId.toString(),
+        [productId.toString()],
+        STATUS_PURCHASE.IN_CART,
+        expect.objectContaining({}),
+      )
+    })
+  })
+
+  // Task 5.2 — 10-item cart: only 1 deleteManyByUserAndProducts call
+  describe('Task 5.2 — N cart items → 1 bulk delete call', () => {
+    it('calls deleteManyByUserAndProducts exactly once regardless of item count', async () => {
+      const productIds = Array.from({ length: 10 }, () => new Types.ObjectId())
+      const skuIds = Array.from({ length: 10 }, () => new Types.ObjectId())
+
+      const input: CreateOrderInput = {
+        items: productIds.map((pid, i) => ({
+          product_id: pid.toString(),
+          buy_count: 1,
+          sku_id: skuIds[i].toString(),
+        })),
+        shipping_address_id: addressId.toString(),
+        shipping_method_id: 'standard',
+        payment_method: PAYMENT_METHOD.COD,
+      }
+
+      mockAddressRepo.findByIdAndUser.mockResolvedValue(mockAddress as any)
+      // Each product lookup returns a product variant
+      productIds.forEach((pid, i) => {
+        mockProductRepo.findById.mockResolvedValueOnce({ ...mockProduct, _id: pid } as any)
+        mockSkuRepo.findById.mockResolvedValueOnce({ ...mockSku, _id: skuIds[i], product: pid } as any)
+      })
+      mockSkuRepo.bulkAtomicDecrementStock.mockResolvedValue(
+        skuIds.map((sid) => ({ skuId: sid.toString(), success: true, sku: mockSku as any })),
+      )
+      mockOrderRepo.create.mockResolvedValue(mockCreatedOrder as any)
+      mockSnapshotRepo.createMany.mockResolvedValue([])
+      mockProductRepo.incrementSold.mockResolvedValue(undefined as any)
+      mockPurchaseRepo.deleteManyByUserAndProducts.mockResolvedValue(10)
+
+      await service.createOrder(userId.toString(), input)
+
+      // Critical: only ONE delete call for all 10 items
+      expect(mockPurchaseRepo.deleteManyByUserAndProducts).toHaveBeenCalledTimes(1)
+      expect(mockPurchaseRepo.deleteManyByUserAndProducts).toHaveBeenCalledWith(
+        userId.toString(),
+        productIds.map((id) => id.toString()),
+        STATUS_PURCHASE.IN_CART,
+        expect.objectContaining({}),
+      )
+    })
+  })
+
+  // Task 8.2 — SKU decrement fails → error propagates, no order/snapshot/cart-clear
+  describe('Task 8.2 — SKU decrement fails → rollback (no order, no snapshot, cart intact)', () => {
+    it('propagates error and does not create order or snapshots when stock decrement fails', async () => {
+      mockAddressRepo.findByIdAndUser.mockResolvedValue(mockAddress as any)
+      mockProductRepo.findById.mockResolvedValue(mockProduct as any)
+      mockSkuRepo.findById.mockResolvedValue(mockSku as any)
+      mockSkuRepo.bulkAtomicDecrementStock.mockRejectedValue(
+        new BusinessError('SKU không đủ tồn kho'),
+      )
+
+      await expect(service.createOrder(userId.toString(), baseInput)).rejects.toThrow(BusinessError)
+
+      // Nothing after reserveStock should run
+      expect(mockOrderRepo.create).not.toHaveBeenCalled()
+      expect(mockSnapshotRepo.createMany).not.toHaveBeenCalled()
+      expect(mockProductRepo.incrementSold).not.toHaveBeenCalled()
+      expect(mockPurchaseRepo.deleteManyByUserAndProducts).not.toHaveBeenCalled()
+    })
+  })
+
+  // Task 8.3 — snapshotSkus fails → rollback (order reverted by transaction abort)
+  describe('Task 8.3 — snapshotSkus fails → rollback', () => {
+    it('propagates error and does not proceed past snapshot creation when it fails', async () => {
+      mockAddressRepo.findByIdAndUser.mockResolvedValue(mockAddress as any)
+      mockProductRepo.findById.mockResolvedValue(mockProduct as any)
+      mockSkuRepo.findById.mockResolvedValue(mockSku as any)
+      mockSkuRepo.bulkAtomicDecrementStock.mockResolvedValue([
+        { skuId: skuId.toString(), success: true, sku: mockSku as any },
+      ])
+      mockOrderRepo.create.mockResolvedValue(mockCreatedOrder as any)
+      mockSnapshotRepo.createMany.mockRejectedValue(new Error('Snapshot insert failed'))
+
+      await expect(service.createOrder(userId.toString(), baseInput)).rejects.toThrow(
+        'Snapshot insert failed',
+      )
+
+      // Stock and order were attempted, but sold and cart-clear should not run
+      expect(mockSkuRepo.bulkAtomicDecrementStock).toHaveBeenCalled()
+      expect(mockOrderRepo.create).toHaveBeenCalled()
+      expect(mockProductRepo.incrementSold).not.toHaveBeenCalled()
+      expect(mockPurchaseRepo.deleteManyByUserAndProducts).not.toHaveBeenCalled()
+    })
+  })
+
+  // Task 8.4 — incrementSold fails → rollback
+  describe('Task 8.4 — incrementSold fails → rollback', () => {
+    it('propagates error and does not clear cart when incrementSold fails', async () => {
+      mockAddressRepo.findByIdAndUser.mockResolvedValue(mockAddress as any)
+      mockProductRepo.findById.mockResolvedValue(mockProduct as any)
+      mockSkuRepo.findById.mockResolvedValue(mockSku as any)
+      mockSkuRepo.bulkAtomicDecrementStock.mockResolvedValue([
+        { skuId: skuId.toString(), success: true, sku: mockSku as any },
+      ])
+      mockOrderRepo.create.mockResolvedValue(mockCreatedOrder as any)
+      mockSnapshotRepo.createMany.mockResolvedValue([])
+      mockProductRepo.incrementSold.mockRejectedValue(new Error('Product sold update failed'))
+
+      await expect(service.createOrder(userId.toString(), baseInput)).rejects.toThrow(
+        'Product sold update failed',
+      )
+
+      // Everything up to sold ran, but cart-clear did not
+      expect(mockSkuRepo.bulkAtomicDecrementStock).toHaveBeenCalled()
+      expect(mockOrderRepo.create).toHaveBeenCalled()
+      expect(mockSnapshotRepo.createMany).toHaveBeenCalled()
+      expect(mockPurchaseRepo.deleteManyByUserAndProducts).not.toHaveBeenCalled()
+    })
+  })
+
+  // Task 8.5 — cart clear fails → rollback (no data left over due to transaction abort)
+  describe('Task 8.5 — cart clear fails → rollback', () => {
+    it('propagates error when cart clear fails after all other steps succeeded', async () => {
+      mockAddressRepo.findByIdAndUser.mockResolvedValue(mockAddress as any)
+      mockProductRepo.findById.mockResolvedValue(mockProduct as any)
+      mockSkuRepo.findById.mockResolvedValue(mockSku as any)
+      mockSkuRepo.bulkAtomicDecrementStock.mockResolvedValue([
+        { skuId: skuId.toString(), success: true, sku: mockSku as any },
+      ])
+      mockOrderRepo.create.mockResolvedValue(mockCreatedOrder as any)
+      mockSnapshotRepo.createMany.mockResolvedValue([])
+      mockProductRepo.incrementSold.mockResolvedValue(undefined as any)
+      mockPurchaseRepo.deleteManyByUserAndProducts.mockRejectedValue(new Error('Cart delete failed'))
+
+      await expect(service.createOrder(userId.toString(), baseInput)).rejects.toThrow(
+        'Cart delete failed',
+      )
+
+      // All steps up to clearCartItems ran
+      expect(mockSkuRepo.bulkAtomicDecrementStock).toHaveBeenCalled()
+      expect(mockOrderRepo.create).toHaveBeenCalled()
+      expect(mockSnapshotRepo.createMany).toHaveBeenCalled()
+      expect(mockProductRepo.incrementSold).toHaveBeenCalled()
+      expect(mockPurchaseRepo.deleteManyByUserAndProducts).toHaveBeenCalled()
+    })
+  })
+
+  // Task 8.8 — bulkAtomicDecrementStock inside transaction skips manual compensation
+  describe('Task 8.8 — bulkAtomicDecrementStock inside transaction skips manual rollback', () => {
+    it('error from bulkAtomicDecrementStock propagates without triggering internal compensating logic', async () => {
+      // The withTransaction mock passes a session object to fn
+      // When bulkAtomicDecrementStock receives { session }, it sets insideTransaction=true
+      // and skips the manual rollbackSuccessful() call.
+      // The service-level test verifies that the error from bulkAtomicDecrementStock propagates
+      // directly up (no swallowed error or double-compensation).
+      mockAddressRepo.findByIdAndUser.mockResolvedValue(mockAddress as any)
+      mockProductRepo.findById.mockResolvedValue(mockProduct as any)
+      mockSkuRepo.findById.mockResolvedValue(mockSku as any)
+
+      // Simulate the error that would come from inside a transaction — already aborted by Mongoose
+      const txError = new BusinessError('SKU không đủ tồn kho')
+      mockSkuRepo.bulkAtomicDecrementStock.mockRejectedValue(txError)
+
+      await expect(service.createOrder(userId.toString(), baseInput)).rejects.toThrow(
+        BusinessError,
+      )
+
+      // reserveStock wraps the BusinessError with product/SKU context
+      // but still throws — order creation must not proceed
+      expect(mockOrderRepo.create).not.toHaveBeenCalled()
+
+      // The mock for bulkAtomicDecrementStock was called exactly once —
+      // no retry/compensation call was made by the service
+      expect(mockSkuRepo.bulkAtomicDecrementStock).toHaveBeenCalledTimes(1)
     })
   })
 })

@@ -1,4 +1,5 @@
 import { Types } from 'mongoose'
+import { ClientSession } from 'mongoose'
 import { IProductSkuSnapshot } from '../../@types/models.type'
 
 /**
@@ -29,7 +30,10 @@ export interface IProductSkuSnapshotRepository {
   /**
    * Create multiple snapshots (bulk insert)
    */
-  createMany(data: CreateProductSkuSnapshotDTO[]): Promise<IProductSkuSnapshot[]>
+  createMany(
+    data: CreateProductSkuSnapshotDTO[],
+    options?: { session?: ClientSession },
+  ): Promise<IProductSkuSnapshot[]>
 
   /**
    * Find all snapshots for an order

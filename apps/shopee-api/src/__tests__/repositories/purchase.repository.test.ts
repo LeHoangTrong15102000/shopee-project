@@ -416,4 +416,53 @@ describe('PurchaseRepository', () => {
       expect(result).toBe(1)
     })
   })
+
+  // Task 3.8 — session is threaded through to Mongoose operations
+  describe('deleteManyByUserAndProducts — session option', () => {
+    it('passes session to PurchaseModel.deleteMany when provided', async () => {
+      ;(PurchaseModel.deleteMany as jest.Mock).mockResolvedValue({ deletedCount: 2 })
+      const mockSession = { id: 'session-1' } as any
+
+      const result = await repository.deleteManyByUserAndProducts(
+        '507f1f77bcf86cd799439012',
+        ['507f1f77bcf86cd799439013', '507f1f77bcf86cd799439014'],
+        -1,
+        { session: mockSession },
+      )
+
+      expect(result).toBe(2)
+      // Verify deleteMany was called with a second argument containing the session
+      const callArgs = (PurchaseModel.deleteMany as jest.Mock).mock.calls[0]
+      expect(callArgs[1]).toEqual({ session: mockSession })
+    })
+
+    it('calls PurchaseModel.deleteMany without session option when session is omitted', async () => {
+      ;(PurchaseModel.deleteMany as jest.Mock).mockResolvedValue({ deletedCount: 1 })
+
+      await repository.deleteManyByUserAndProducts(
+        '507f1f77bcf86cd799439012',
+        ['507f1f77bcf86cd799439013'],
+        -1,
+      )
+
+      const callArgs = (PurchaseModel.deleteMany as jest.Mock).mock.calls[0]
+      // Second argument should be undefined when no session
+      expect(callArgs[1]).toBeUndefined()
+    })
+
+    it('issues a single deleteMany call regardless of how many product IDs are given', async () => {
+      ;(PurchaseModel.deleteMany as jest.Mock).mockResolvedValue({ deletedCount: 10 })
+      const mockSession = {} as any
+
+      await repository.deleteManyByUserAndProducts(
+        '507f1f77bcf86cd799439012',
+        Array.from({ length: 10 }, () => '507f1f77bcf86cd799439013'),
+        -1,
+        { session: mockSession },
+      )
+
+      // N items → still just 1 deleteMany call (task 5.2 N→1 benchmark)
+      expect(PurchaseModel.deleteMany).toHaveBeenCalledTimes(1)
+    })
+  })
 })

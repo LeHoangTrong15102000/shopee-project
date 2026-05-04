@@ -112,3 +112,26 @@ npm run dev      # Start in watch mode
 npm run test:api # Run all tests
 npm run build    # Compile TypeScript
 ```
+
+## MongoDB Replica Set (required for Mongoose transactions)
+
+Mongoose transactions require MongoDB to run as a replica set — even for local development with a single node.
+
+**First-time setup:**
+```bash
+# Tear down any previous standalone container (removes volumes to allow fresh init)
+docker-compose down -v
+
+# Start MongoDB with replica set mode
+docker-compose up -d
+
+# Verify the replica set initialised correctly
+docker exec shopee-mongodb mongosh \
+  -u root -p shopee_root_password --authenticationDatabase admin \
+  --eval "rs.status()" | grep stateStr
+# Expected output: stateStr: 'PRIMARY'
+```
+
+**Why this is needed:** `createOrder` wraps all DB writes in a single Mongoose transaction (`session.withTransaction`). Without a replica set, MongoDB throws `MongoServerError: Transaction numbers are only allowed on a replica set member or mongos`. The `docker/mongo-init.js` script runs automatically on first container start and initialises `rs0`.
+
+**MONGO_URI format:** See `.env.example` — the URI must include `replicaSet=rs0&authSource=admin`.

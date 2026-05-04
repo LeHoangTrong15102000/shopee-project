@@ -1,4 +1,5 @@
 import { Types } from 'mongoose'
+import { ClientSession } from 'mongoose'
 import {
   IOrderRepository,
   CreateOrderDTO,
@@ -33,6 +34,8 @@ import { STATUS_PURCHASE } from '@constants/purchase'
 import { validateStatusTransition, validateReturnDeadline } from './order/order_state_machine'
 import { STATUS_TO_EVENT, OrderEventType } from './order/order_constants'
 import { emitOrderStatusUpdate } from '../socket/utils/order-emit'
+import { withTransaction } from '@utils/transaction.helper'
+import { Logger } from '@utils/logger'
 
 const SHIPPING_METHODS = [
   { id: 'standard', name: 'Giao hàng tiêu chuẩn', price: 30000, estimated_days: '3-5 ngày' },
@@ -86,6 +89,33 @@ export interface CreateOrderInput {
   note?: string
 }
 
+// Shape returned by validateOrderInput — all expensive lookups happen before the transaction.
+interface ValidatedInput {
+  address: {
+    full_name: string
+    phone: string
+    province: string
+    district: string
+    ward: string
+    street: string
+  }
+  shippingMethod: IShippingMethod
+  orderItems: IOrderItem[]
+  snapshotData: CreateProductSkuSnapshotDTO[]
+  skuItems: Array<{ skuId: string; quantity: number; productName: string; skuValue: string; skuStock: number }>
+  legacyItems: Array<{ product_id: string; buy_count: number }>
+  subtotal: number
+  productIds: string[]
+  shippingFee: number
+  discount: number
+  coinsDiscount: number
+  total: number
+  paymentMethod: PaymentMethodType
+  voucher_code?: string
+  note?: string
+  coinsUsed: number
+}
+
 export class OrderService extends BaseService {
   constructor(
     private readonly orderRepository: IOrderRepository,
@@ -106,9 +136,87 @@ export class OrderService extends BaseService {
     return PAYMENT_METHODS
   }
 
+  // ─── Public createOrder — orchestration only ──────────────────────────────
+
   async createOrder(userId: string, input: CreateOrderInput): Promise<IOrder> {
     if (!this.isValidObjectId(userId)) throw new ValidationError('Invalid user ID format')
 
+    const correlationId = `order-${userId}-${Date.now()}`
+    const startTime = Date.now()
+
+    // Validation runs BEFORE the transaction — fail fast on bad input, no wasted transaction slot.
+    const validated = await this.validateOrderInput(userId, input)
+
+    Logger.dbInfo('[Order.Transaction] Starting transaction', { correlationId })
+
+    try {
+      const order = await withTransaction(async (session) => {
+        Logger.dbInfo('[Order.Transaction] Transaction started', { correlationId })
+
+        // SKU flow: bulk decrement SKU stock (also syncs Product.quantity)
+        if (validated.skuItems.length > 0) {
+          await this.reserveStock(validated.skuItems, session)
+        }
+
+        // Legacy flow: bulk update product stock + sold in transaction
+        if (validated.legacyItems.length > 0) {
+          await this.updateLegacyStock(validated.legacyItems, session)
+        }
+
+        // Create order document
+        const createdOrder = await this.persistOrder(validated, userId, session)
+
+        // Create SKU snapshots (SKU flow only)
+        if (validated.snapshotData.length > 0) {
+          await this.snapshotSkus(createdOrder._id, validated.snapshotData, session)
+        }
+
+        // Update Product.sold for SKU items (Product.quantity already synced at reserveStock)
+        if (validated.skuItems.length > 0) {
+          await this.incrementSoldCounters(validated.skuItems, input.items, session)
+        }
+
+        // Clear cart items — 1 DB call instead of N
+        await this.clearCartItems(userId, validated.productIds, session)
+
+        Logger.dbInfo('[Order.Transaction] Transaction committing', {
+          correlationId,
+          orderId: String(createdOrder._id),
+        })
+
+        return createdOrder
+      })
+
+      const duration = Date.now() - startTime
+      Logger.apiInfo('[Order] order.created', {
+        correlationId,
+        orderId: String(order._id),
+        userId,
+        duration_ms: duration,
+        itemCount: input.items.length,
+      })
+      Logger.performance('order.create.duration', duration, { correlationId, userId })
+
+      return order
+    } catch (err) {
+      const duration = Date.now() - startTime
+      Logger.apiError('[Order] order.creation_failed', {
+        correlationId,
+        userId,
+        duration_ms: duration,
+        error: err instanceof Error ? err.message : String(err),
+      })
+      throw err
+    }
+  }
+
+  // ─── Private helper methods ───────────────────────────────────────────────
+
+  /**
+   * Validate address, shipping method, products, and SKUs.
+   * Runs OUTSIDE the transaction — expensive reads should not hold locks.
+   */
+  private async validateOrderInput(userId: string, input: CreateOrderInput): Promise<ValidatedInput> {
     const address = await this.addressRepository.findByIdAndUser(input.shipping_address_id, userId)
     if (!address) throw new NotFoundError('Address', input.shipping_address_id)
 
@@ -119,7 +227,6 @@ export class OrderService extends BaseService {
     const snapshotData: CreateProductSkuSnapshotDTO[] = []
     let subtotal = 0
 
-    // Collect all SKU items for bulk atomic decrement
     const skuItems: Array<{
       skuId: string
       quantity: number
@@ -128,12 +235,17 @@ export class OrderService extends BaseService {
       skuStock: number
     }> = []
 
+    const legacyItems: Array<{ product_id: string; buy_count: number }> = []
+    const productIds: string[] = []
+
     for (const item of input.items) {
       const product = await this.productRepository.findById(item.product_id)
       if (!product) throw new NotFoundError('Product', item.product_id)
 
+      productIds.push(item.product_id)
+
       if (item.sku_id && this.skuRepository) {
-        // SKU-based flow: collect for bulk operation
+        // SKU-based flow
         const sku = await this.skuRepository.findById(item.sku_id)
         if (!sku) throw new NotFoundError('SKU', item.sku_id)
 
@@ -154,7 +266,6 @@ export class OrderService extends BaseService {
           sku: new Types.ObjectId(item.sku_id),
         })
 
-        // Prepare snapshot data
         if (this.productSkuSnapshotRepository) {
           snapshotData.push({
             product_name: product.name,
@@ -166,7 +277,7 @@ export class OrderService extends BaseService {
             quantity: item.buy_count,
             sku: new Types.ObjectId(item.sku_id),
             product: new Types.ObjectId(item.product_id),
-            order: null, // Will be set after order creation
+            order: null, // Set after order is created
           })
         }
       } else {
@@ -182,26 +293,8 @@ export class OrderService extends BaseService {
           price: product.price,
           price_before_discount: product.price_before_discount,
         })
-      }
-    }
 
-    // Bulk atomic decrement SKU stock with rollback (also syncs Product.quantity)
-    if (skuItems.length > 0 && this.skuRepository) {
-      try {
-        await this.skuRepository.bulkAtomicDecrementStock(
-          skuItems.map((s) => ({ skuId: s.skuId, quantity: s.quantity })),
-        )
-      } catch (err) {
-        if (err instanceof BusinessError) {
-          // Find the failing SKU by matching its ID from the error message
-          const failingSku = skuItems.find((s) => err.message.includes(s.skuId))
-          if (failingSku) {
-            throw new BusinessError(
-              `Sản phẩm ${failingSku.productName} - ${failingSku.skuValue} không đủ số lượng (còn ${failingSku.skuStock}, cần ${failingSku.quantity})`,
-            )
-          }
-        }
-        throw err
+        legacyItems.push({ product_id: item.product_id, buy_count: item.buy_count })
       }
     }
 
@@ -210,10 +303,8 @@ export class OrderService extends BaseService {
     const coinsDiscount = input.coins_used || 0
     const total = Math.max(0, subtotal + shippingFee - discount - coinsDiscount)
 
-    const order = await this.orderRepository.create({
-      user: new Types.ObjectId(userId),
-      items: orderItems,
-      shipping_address: {
+    return {
+      address: {
         full_name: address.full_name,
         phone: address.phone,
         province: address.province,
@@ -221,66 +312,146 @@ export class OrderService extends BaseService {
         ward: address.ward,
         street: address.street,
       },
-      shipping_method: shippingMethod as IShippingMethod,
-      payment_method: input.payment_method,
+      shippingMethod: shippingMethod as IShippingMethod,
+      orderItems,
+      snapshotData,
+      skuItems,
+      legacyItems,
       subtotal,
-      shipping_fee: shippingFee,
+      productIds,
+      shippingFee,
       discount,
-      coins_used: input.coins_used || 0,
-      coins_discount: coinsDiscount,
+      coinsDiscount,
       total,
+      paymentMethod: input.payment_method,
       voucher_code: input.voucher_code,
       note: input.note,
-      status: ORDER_STATUS.PENDING,
-    })
-
-    // Create snapshots with order reference
-    if (this.productSkuSnapshotRepository && snapshotData.length > 0) {
-      const orderId = new Types.ObjectId((order as any)._id)
-      const snapshotsWithOrder = snapshotData.map((s) => ({ ...s, order: orderId }))
-      await this.productSkuSnapshotRepository.createMany(snapshotsWithOrder)
+      coinsUsed: input.coins_used || 0,
     }
+  }
 
-    // Update product stock for legacy (non-SKU) items only
-    const legacyItems = input.items.filter((item) => !item.sku_id)
-    if (legacyItems.length > 0) {
-      const stockUpdates = legacyItems.map((item) => ({
-        product_id: item.product_id,
-        quantity_change: -item.buy_count,
-        sold_change: item.buy_count,
-      }))
-      await this.productRepository.bulkUpdateStock(stockUpdates)
-    }
-
-    // Update Product.sold for SKU items (Product.quantity already synced by bulkAtomicDecrementStock)
-    if (skuItems.length > 0) {
-      const soldByProduct = new Map<string, number>()
-      for (const item of skuItems) {
-        const productId = input.items.find((i) => i.sku_id === item.skuId)!.product_id
-        soldByProduct.set(productId, (soldByProduct.get(productId) || 0) + item.quantity)
-      }
-      for (const [productId, soldCount] of soldByProduct) {
-        try {
-          await this.productRepository.incrementSold(productId, soldCount)
-        } catch (err) {
-          console.error(
-            `[Product.sold Sync Failed] Product ${productId}: ${err instanceof Error ? err.message : 'Unknown error'}`,
+  /**
+   * Bulk decrement SKU stock inside transaction.
+   * Also syncs Product.quantity via SKU repository.
+   */
+  private async reserveStock(
+    skuItems: Array<{ skuId: string; quantity: number; productName: string; skuValue: string; skuStock: number }>,
+    session: ClientSession,
+  ): Promise<void> {
+    if (!this.skuRepository) return
+    try {
+      await this.skuRepository.bulkAtomicDecrementStock(
+        skuItems.map((s) => ({ skuId: s.skuId, quantity: s.quantity })),
+        { session },
+      )
+    } catch (err) {
+      if (err instanceof BusinessError) {
+        const failingSku = skuItems.find((s) => err.message.includes(s.skuId))
+        if (failingSku) {
+          throw new BusinessError(
+            `Sản phẩm ${failingSku.productName} - ${failingSku.skuValue} không đủ số lượng (còn ${failingSku.skuStock}, cần ${failingSku.quantity})`,
           )
         }
       }
+      throw err
     }
-
-    // Clear cart items
-    for (const item of input.items) {
-      await this.purchaseRepository.deleteByUserAndProduct(
-        userId,
-        item.product_id,
-        STATUS_PURCHASE.IN_CART,
-      )
-    }
-
-    return order
   }
+
+  /**
+   * Bulk update product stock for legacy (non-SKU) items inside transaction.
+   */
+  private async updateLegacyStock(
+    legacyItems: Array<{ product_id: string; buy_count: number }>,
+    session: ClientSession,
+  ): Promise<void> {
+    const stockUpdates = legacyItems.map((item) => ({
+      product_id: item.product_id,
+      quantity_change: -item.buy_count,
+      sold_change: item.buy_count,
+    }))
+    await this.productRepository.bulkUpdateStock(stockUpdates, { session })
+  }
+
+  /**
+   * Create the order document inside transaction.
+   */
+  private async persistOrder(
+    validated: ValidatedInput,
+    userId: string,
+    session: ClientSession,
+  ): Promise<IOrder> {
+    return this.orderRepository.create(
+      {
+        user: new Types.ObjectId(userId),
+        items: validated.orderItems,
+        shipping_address: validated.address,
+        shipping_method: validated.shippingMethod,
+        payment_method: validated.paymentMethod,
+        subtotal: validated.subtotal,
+        shipping_fee: validated.shippingFee,
+        discount: validated.discount,
+        coins_used: validated.coinsUsed,
+        coins_discount: validated.coinsDiscount,
+        total: validated.total,
+        voucher_code: validated.voucher_code,
+        note: validated.note,
+        status: ORDER_STATUS.PENDING,
+      },
+      { session },
+    )
+  }
+
+  /**
+   * Create SKU snapshots with order reference inside transaction.
+   */
+  private async snapshotSkus(
+    orderId: any,
+    snapshotData: CreateProductSkuSnapshotDTO[],
+    session: ClientSession,
+  ): Promise<void> {
+    if (!this.productSkuSnapshotRepository) return
+    const orderObjectId = new Types.ObjectId(orderId)
+    const snapshotsWithOrder = snapshotData.map((s) => ({ ...s, order: orderObjectId }))
+    await this.productSkuSnapshotRepository.createMany(snapshotsWithOrder, { session })
+  }
+
+  /**
+   * Increment Product.sold for SKU items inside transaction.
+   * Error propagates — transaction will abort and roll back entire order.
+   */
+  private async incrementSoldCounters(
+    skuItems: Array<{ skuId: string; quantity: number }>,
+    inputItems: Array<{ product_id: string; sku_id?: string }>,
+    session: ClientSession,
+  ): Promise<void> {
+    const soldByProduct = new Map<string, number>()
+    for (const item of skuItems) {
+      const productId = inputItems.find((i) => i.sku_id === item.skuId)!.product_id
+      soldByProduct.set(productId, (soldByProduct.get(productId) || 0) + item.quantity)
+    }
+    for (const [productId, soldCount] of soldByProduct) {
+      // No try/catch — errors propagate and abort the entire transaction (task 6).
+      await this.productRepository.incrementSold(productId, soldCount, { session })
+    }
+  }
+
+  /**
+   * Delete cart items for the given products — single bulk DB call (task 5).
+   */
+  private async clearCartItems(
+    userId: string,
+    productIds: string[],
+    session: ClientSession,
+  ): Promise<void> {
+    await this.purchaseRepository.deleteManyByUserAndProducts(
+      userId,
+      productIds,
+      STATUS_PURCHASE.IN_CART,
+      { session },
+    )
+  }
+
+  // ─── Remaining public methods (unchanged behavior) ─────────────────────────
 
   async getOrders(
     userId: string,
@@ -567,7 +738,7 @@ export class OrderService extends BaseService {
       try {
         await this.productRepository.incrementSold(productId, -soldCount)
       } catch (err) {
-        console.error(
+        Logger.dbError(
           `[Product.sold Sync Failed] Product ${productId}: ${err instanceof Error ? err.message : 'Unknown error'}`,
         )
       }

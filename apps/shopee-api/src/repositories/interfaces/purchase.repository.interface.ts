@@ -1,4 +1,5 @@
 import { Types } from 'mongoose'
+import { ClientSession } from 'mongoose'
 import { IBaseRepository, PaginatedResult, PaginationOptions } from './base.repository.interface'
 import { IPurchase } from '../../@types/models.type'
 import { STATUS_PURCHASE, StatusPurchaseType } from '@constants/purchase'
@@ -153,5 +154,16 @@ export interface IPurchaseRepository extends IBaseRepository<
     userId: string | Types.ObjectId,
     productId: string | Types.ObjectId,
     status: PurchaseStatus,
+  ): Promise<number>
+
+  /**
+   * Bulk delete purchases by user and multiple product IDs with specific status.
+   * Single DB call — replaces the N+1 loop in createOrder.
+   */
+  deleteManyByUserAndProducts(
+    userId: string | Types.ObjectId,
+    productIds: string[],
+    status: PurchaseStatus,
+    options?: { session?: ClientSession },
   ): Promise<number>
 }

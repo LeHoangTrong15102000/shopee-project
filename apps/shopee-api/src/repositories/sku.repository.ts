@@ -1,4 +1,6 @@
 import { Types, FilterQuery, QueryOptions, UpdateQuery } from 'mongoose'
+import { ClientSession } from 'mongoose'
+import { Logger } from '@utils/logger'
 import { SKUModel } from '@database/models/sku.model'
 import { ISKU } from '../@types/models.type'
 import { IProductRepository } from './interfaces/product.repository.interface'
@@ -99,11 +101,14 @@ export class SKURepository implements ISKURepository {
   async atomicDecrementStock(
     skuId: string | Types.ObjectId,
     quantity: number,
+    options?: { session?: ClientSession },
   ): Promise<ISKU | null> {
+    const sessionOpt = options?.session ? { session: options.session } : undefined
+
     const sku = await SKUModel.findOneAndUpdate(
       { _id: skuId, stock: { $gte: quantity } },
       { $inc: { stock: -quantity } },
-      { new: true },
+      { new: true, ...sessionOpt },
     ).lean<ISKU | null>()
 
     if (sku && this.productRepository) {
@@ -113,11 +118,11 @@ export class SKURepository implements ISKURepository {
           ? (sku.product as any)._id
           : sku.product
       try {
-        await this.productRepository.decrementQuantity(productId, quantity)
+        await this.productRepository.decrementQuantity(productId, quantity, options)
       } catch (err) {
         // Compensate: restore SKU stock if Product update fails
-        await SKUModel.findByIdAndUpdate(skuId, { $inc: { stock: quantity } })
-        console.error(
+        await SKUModel.findByIdAndUpdate(skuId, { $inc: { stock: quantity } }, sessionOpt)
+        Logger.dbError(
           `[SKU-Product Sync Failed] Product ${productId}: ${err instanceof Error ? err.message : 'Unknown error'}`,
         )
         throw new BusinessError(`Lỗi đồng bộ tồn kho sản phẩm`)
@@ -130,11 +135,14 @@ export class SKURepository implements ISKURepository {
   async atomicIncrementStock(
     skuId: string | Types.ObjectId,
     quantity: number,
+    options?: { session?: ClientSession },
   ): Promise<ISKU | null> {
+    const sessionOpt = options?.session ? { session: options.session } : undefined
+
     const sku = await SKUModel.findByIdAndUpdate(
       skuId,
       { $inc: { stock: quantity } },
-      { new: true },
+      { new: true, ...sessionOpt },
     ).lean<ISKU | null>()
 
     if (sku && this.productRepository) {
@@ -144,11 +152,11 @@ export class SKURepository implements ISKURepository {
           ? (sku.product as any)._id
           : sku.product
       try {
-        await this.productRepository.incrementQuantity(productId, quantity)
+        await this.productRepository.incrementQuantity(productId, quantity, options)
       } catch (err) {
         // Compensate: restore SKU stock if Product update fails
-        await SKUModel.findByIdAndUpdate(skuId, { $inc: { stock: -quantity } })
-        console.error(
+        await SKUModel.findByIdAndUpdate(skuId, { $inc: { stock: -quantity } }, sessionOpt)
+        Logger.dbError(
           `[SKU-Product Sync Failed] Product ${productId}: ${err instanceof Error ? err.message : 'Unknown error'}`,
         )
         throw new BusinessError(`Lỗi đồng bộ tồn kho sản phẩm`)
@@ -160,10 +168,19 @@ export class SKURepository implements ISKURepository {
 
   async bulkAtomicDecrementStock(
     items: Array<{ skuId: string | Types.ObjectId; quantity: number }>,
+    options?: { session?: ClientSession },
   ): Promise<BulkDecrementResult[]> {
     const results: BulkDecrementResult[] = []
+    const insideTransaction = !!options?.session
 
+    // Manual compensating rollback — only used when NOT inside a Mongoose transaction.
+    // When a session is active, Mongoose aborts the whole transaction on error, so
+    // calling atomicIncrementStock without the session would double-apply the increment.
     const rollbackSuccessful = async () => {
+      if (insideTransaction) {
+        // Let the Mongoose transaction handle rollback — do not manually compensate.
+        return []
+      }
       const rollbackErrors: Array<{ skuId: string | Types.ObjectId; error: string }> = []
       for (const prev of results) {
         if (prev.success) {
@@ -174,7 +191,7 @@ export class SKURepository implements ISKURepository {
             const errMsg =
               rollbackErr instanceof Error ? rollbackErr.message : 'Unknown rollback error'
             rollbackErrors.push({ skuId: prev.skuId, error: errMsg })
-            console.error(`[SKU Rollback Failed] SKU ${prev.skuId}: ${errMsg}`)
+            Logger.dbError(`[SKU Rollback Failed] SKU ${prev.skuId}: ${errMsg}`)
           }
         }
       }
@@ -183,7 +200,7 @@ export class SKURepository implements ISKURepository {
 
     for (const item of items) {
       try {
-        const sku = await this.atomicDecrementStock(item.skuId, item.quantity)
+        const sku = await this.atomicDecrementStock(item.skuId, item.quantity, options)
         results.push({ skuId: item.skuId, success: sku !== null, sku })
         if (!sku) {
           // Insufficient stock — rollback all previously successful decrements

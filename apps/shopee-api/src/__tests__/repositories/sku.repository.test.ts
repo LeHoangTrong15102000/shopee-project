@@ -58,7 +58,7 @@ describe('SKURepository - Stock Sync', () => {
         { $inc: { stock: -2 } },
         { new: true },
       )
-      expect(mockProductRepo.decrementQuantity).toHaveBeenCalledWith(mockSKUData.product, 2)
+      expect(mockProductRepo.decrementQuantity).toHaveBeenCalledWith(mockSKUData.product, 2, undefined)
     })
 
     it('returns null when insufficient stock (no Product update)', async () => {
@@ -82,7 +82,7 @@ describe('SKURepository - Stock Sync', () => {
       )
       expect(SKUModel.findByIdAndUpdate).toHaveBeenCalledWith(mockSKUData._id, {
         $inc: { stock: 2 },
-      })
+      }, undefined)
     })
   })
 
@@ -100,7 +100,7 @@ describe('SKURepository - Stock Sync', () => {
         { $inc: { stock: 2 } },
         { new: true },
       )
-      expect(mockProductRepo.incrementQuantity).toHaveBeenCalledWith(mockSKUData.product, 2)
+      expect(mockProductRepo.incrementQuantity).toHaveBeenCalledWith(mockSKUData.product, 2, undefined)
     })
 
     it('rolls back SKU stock and throws when Product sync fails', async () => {
@@ -128,7 +128,7 @@ describe('SKURepository - Stock Sync', () => {
 
       expect(results).toHaveLength(1)
       expect(results[0].success).toBe(true)
-      expect(mockProductRepo.decrementQuantity).toHaveBeenCalledWith(mockSKUData.product, 3)
+      expect(mockProductRepo.decrementQuantity).toHaveBeenCalledWith(mockSKUData.product, 3, undefined)
     })
 
     it('decrements multiple SKUs and syncs Product.quantity for each', async () => {
@@ -172,7 +172,51 @@ describe('SKURepository - Stock Sync', () => {
 
       await expect(repository.bulkAtomicDecrementStock(items)).rejects.toThrow(BusinessError)
       // Rollback should increment sku1 back (which also syncs Product.quantity)
-      expect(mockProductRepo.incrementQuantity).toHaveBeenCalledWith(sku1.product, 1)
+      expect(mockProductRepo.incrementQuantity).toHaveBeenCalledWith(sku1.product, 1, undefined)
+    })
+
+    // Task 3.8 — session threaded through bulkAtomicDecrementStock
+    it('passes session to atomicDecrementStock so Mongoose operations are within the transaction', async () => {
+      const mockSession = { id: 'tx-session' } as any
+      const mockLean = jest.fn().mockResolvedValue(mockSKUData)
+      SKUModel.findOneAndUpdate.mockReturnValue({ lean: mockLean })
+
+      const items = [{ skuId: mockSKUData._id, quantity: 2 }]
+      await repository.bulkAtomicDecrementStock(items, { session: mockSession })
+
+      // findOneAndUpdate receives { new: true, session: mockSession }
+      const callArgs = SKUModel.findOneAndUpdate.mock.calls[0]
+      const opts = callArgs[2] as Record<string, unknown>
+      expect(opts).toEqual(expect.objectContaining({ session: mockSession }))
+    })
+
+    // Task 8.8 — bulkAtomicDecrementStock inside a transaction does NOT manually compensate
+    it('skips manual rollback compensation when a session is provided (trusts Mongoose transaction)', async () => {
+      const mockSession = { id: 'tx-session' } as any
+      const sku1 = { ...mockSKUData, _id: new Types.ObjectId() }
+      const mockLean1 = jest.fn().mockResolvedValue(sku1)
+      const mockLeanNull = jest.fn().mockResolvedValue(null)
+
+      SKUModel.findOneAndUpdate
+        .mockReturnValueOnce({ lean: mockLean1 }) // sku1 succeeds
+        .mockReturnValueOnce({ lean: mockLeanNull }) // sku2 insufficient stock
+
+      const sku2Id = new Types.ObjectId()
+      const items = [
+        { skuId: sku1._id, quantity: 1 },
+        { skuId: sku2Id, quantity: 99 },
+      ]
+
+      await expect(
+        repository.bulkAtomicDecrementStock(items, { session: mockSession }),
+      ).rejects.toThrow(BusinessError)
+
+      // findByIdAndUpdate (used for compensating rollback) should NOT be called —
+      // the Mongoose transaction handles rollback so manual compensation is skipped.
+      expect(SKUModel.findByIdAndUpdate).not.toHaveBeenCalled()
+      // atomicIncrementStock (manual compensate) is internally called only outside transactions;
+      // so mockProductRepo.incrementQuantity must remain un-called as well.
+      expect(mockProductRepo.incrementQuantity).not.toHaveBeenCalled()
     })
   })
 })

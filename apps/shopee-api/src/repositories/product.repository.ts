@@ -1,4 +1,5 @@
 import { Types, FilterQuery, QueryOptions, UpdateQuery } from 'mongoose'
+import { ClientSession } from 'mongoose'
 import { ProductModel } from '@database/models/product.model'
 import { IProduct } from '../@types/models.type'
 import {
@@ -145,19 +146,36 @@ export class ProductRepository implements IProductRepository {
     viewCounterService.incrementView(productId.toString())
   }
 
-  async incrementSold(productId: string | Types.ObjectId, count: number): Promise<void> {
-    await ProductModel.findByIdAndUpdate(productId, { $inc: { sold: count } })
+  async incrementSold(
+    productId: string | Types.ObjectId,
+    count: number,
+    options?: { session?: ClientSession },
+  ): Promise<void> {
+    await ProductModel.findByIdAndUpdate(productId, { $inc: { sold: count } }, options?.session ? { session: options.session } : undefined)
   }
 
-  async decrementQuantity(productId: string | Types.ObjectId, count: number): Promise<void> {
+  async decrementQuantity(
+    productId: string | Types.ObjectId,
+    count: number,
+    options?: { session?: ClientSession },
+  ): Promise<void> {
     await ProductModel.findOneAndUpdate(
       { _id: productId, quantity: { $gte: count } },
       { $inc: { quantity: -count } },
+      options?.session ? { session: options.session } : undefined,
     )
   }
 
-  async incrementQuantity(productId: string | Types.ObjectId, count: number): Promise<void> {
-    await ProductModel.findByIdAndUpdate(productId, { $inc: { quantity: count } })
+  async incrementQuantity(
+    productId: string | Types.ObjectId,
+    count: number,
+    options?: { session?: ClientSession },
+  ): Promise<void> {
+    await ProductModel.findByIdAndUpdate(
+      productId,
+      { $inc: { quantity: count } },
+      options?.session ? { session: options.session } : undefined,
+    )
   }
 
   async findLowStock(threshold: number): Promise<IProduct[]> {
@@ -185,6 +203,7 @@ export class ProductRepository implements IProductRepository {
       quantity_change: number
       sold_change: number
     }>,
+    options?: { session?: ClientSession },
   ): Promise<number> {
     const bulkOps = updates.map(({ product_id, quantity_change, sold_change }) => ({
       updateOne: {
@@ -192,7 +211,10 @@ export class ProductRepository implements IProductRepository {
         update: { $inc: { quantity: quantity_change, sold: sold_change } },
       },
     }))
-    const result = await ProductModel.bulkWrite(bulkOps)
+    const result = await ProductModel.bulkWrite(
+      bulkOps,
+      options?.session ? { session: options.session } : undefined,
+    )
     return result.modifiedCount
   }
 

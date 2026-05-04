@@ -12,6 +12,7 @@ jest.mock('@database/models/product-sku-snapshot.model', () => {
       {
         insertMany: jest.fn(),
         find: jest.fn(),
+        bulkSave: jest.fn(),
       },
     ),
   }
@@ -44,6 +45,31 @@ describe('ProductSkuSnapshotRepository', () => {
       )
       const result = await repo.createMany(mockData as any)
       expect(result).toHaveLength(2)
+    })
+
+    // Task 3.8 — session threaded through createMany to Mongoose bulkSave
+    it('passes session to bulkSave when provided', async () => {
+      ;(ProductSkuSnapshotModel.bulkSave as jest.Mock).mockResolvedValue(undefined)
+      const mockSession = { id: 'session-snap' } as any
+      const mockData = [{ product: 'p1', sku: 's1', order: 'o1', price: 100, quantity: 2 }]
+
+      await repo.createMany(mockData as any, { session: mockSession })
+
+      expect(ProductSkuSnapshotModel.bulkSave).toHaveBeenCalledWith(
+        expect.any(Array),
+        { session: mockSession },
+      )
+    })
+
+    it('calls bulkSave without session option when session is omitted', async () => {
+      ;(ProductSkuSnapshotModel.bulkSave as jest.Mock).mockResolvedValue(undefined)
+      const mockData = [{ product: 'p1' }]
+
+      await repo.createMany(mockData as any)
+
+      // When no session, the second arg should be undefined
+      const callArgs = (ProductSkuSnapshotModel.bulkSave as jest.Mock).mock.calls[0]
+      expect(callArgs[1]).toBeUndefined()
     })
   })
 

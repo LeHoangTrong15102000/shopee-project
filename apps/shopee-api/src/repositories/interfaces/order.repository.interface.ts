@@ -1,4 +1,5 @@
 import { Types } from 'mongoose'
+import { ClientSession } from 'mongoose'
 import { PaginatedResult, PaginationOptions } from './base.repository.interface'
 import {
   IOrder,
@@ -54,7 +55,7 @@ export interface IOrderRepository {
     userId: string | Types.ObjectId,
   ): Promise<IOrder | null>
 
-  create(data: CreateOrderDTO): Promise<IOrder>
+  create(data: CreateOrderDTO, options?: { session?: ClientSession }): Promise<IOrder>
 
   updateStatus(
     orderId: string | Types.ObjectId,

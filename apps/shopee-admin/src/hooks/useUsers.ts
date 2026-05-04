@@ -1,9 +1,8 @@
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
+import { useQuery, useMutation, keepPreviousData } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import i18n from 'src/i18n/i18n'
 import usersApi from 'src/apis/users.api'
-import { useActivityLogStore } from 'src/stores/activity-log.store'
-import { useAuthStore } from 'src/stores/auth.store'
+import { useAdminMutationContext } from './useAdminMutationContext'
 
 export const USER_KEYS = {
   list: (page: number) => ['admin-users', page] as const,
@@ -19,9 +18,7 @@ export function useUsers(page: number) {
 }
 
 export function useCreateUser(onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: (body: { email: string; password: string; name?: string; roles?: string[] }) =>
       usersApi.createUser(body),
@@ -31,14 +28,15 @@ export function useCreateUser(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: USER_KEYS.all })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.createFailed', { ns: 'users' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.createFailed', { ns: 'users' }))
+    },
   })
 }
 
 export function useUpdateUser(onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: ({
       id,
@@ -58,14 +56,15 @@ export function useUpdateUser(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: USER_KEYS.all })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.updateFailed', { ns: 'users' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.updateFailed', { ns: 'users' }))
+    },
   })
 }
 
 export function useDeleteUser(onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: (id: string) => usersApi.deleteUser(id),
     onSuccess: (_, id) => {
@@ -74,6 +73,9 @@ export function useDeleteUser(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: USER_KEYS.all })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.deleteFailed', { ns: 'users' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.deleteFailed', { ns: 'users' }))
+    },
   })
 }

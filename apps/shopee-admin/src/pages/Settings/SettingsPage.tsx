@@ -240,7 +240,7 @@ export default function SettingsPage() {
                     <CardTitle>{t('system.appVersion')}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-2xl font-bold">1.0.0</p>
+                    <p className="text-2xl font-bold">{import.meta.env.VITE_APP_VERSION}</p>
                   </CardContent>
                 </Card>
                 <Card size="sm">

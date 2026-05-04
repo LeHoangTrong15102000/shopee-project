@@ -17,7 +17,7 @@ import { StatusBadge } from 'src/components/shared/StatusBadge'
 import { LoadingState } from 'src/components/shared/LoadingState'
 import { ErrorState } from 'src/components/shared/ErrorState'
 import { useVoucherDetail, useVoucherUsage } from 'src/hooks/useVoucherDetail'
-import { formatCurrency } from 'src/utils/format'
+import { formatPrice } from '@shopee/shared-utils'
 
 export default function VoucherDetailPage() {
   const { t } = useTranslation('vouchers')
@@ -65,7 +65,7 @@ export default function VoucherDetailPage() {
                     <TableCell>{typeof u.user === 'object' ? u.user.email : u.user}</TableCell>
                     <TableCell className="font-mono text-xs">{u.order.slice(-8)}</TableCell>
                     <TableCell className="text-right">
-                      {formatCurrency(u.discount_amount)}
+                      {formatPrice(u.discount_amount)}
                     </TableCell>
                     <TableCell>{format(new Date(u.createdAt), 'MMM d, yyyy')}</TableCell>
                   </TableRow>
@@ -99,12 +99,12 @@ export default function VoucherDetailPage() {
               <span>
                 {voucher.discount_type === 'percentage'
                   ? `${voucher.discount_value}%`
-                  : formatCurrency(voucher.discount_value)}
+                  : formatPrice(voucher.discount_value)}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">{t('detail.minOrder')}</span>
-              <span>{formatCurrency(voucher.min_order_value)}</span>
+              <span>{formatPrice(voucher.min_order_value)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">{t('detail.usage')}</span>

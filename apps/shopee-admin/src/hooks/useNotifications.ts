@@ -1,9 +1,8 @@
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
+import { useQuery, useMutation, keepPreviousData } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import i18n from 'src/i18n/i18n'
 import notificationsApi from 'src/apis/notifications.api'
-import { useActivityLogStore } from 'src/stores/activity-log.store'
-import { useAuthStore } from 'src/stores/auth.store'
+import { useAdminMutationContext } from './useAdminMutationContext'
 
 export const NOTIFICATION_KEYS = {
   list: (page: number) => ['admin-notifications', page] as const,
@@ -33,9 +32,7 @@ export function useNotifications(page: number) {
 }
 
 export function useCreateNotification(onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: (params: {
       type: 'targeted' | 'broadcast'
@@ -58,12 +55,15 @@ export function useCreateNotification(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: NOTIFICATION_KEYS.all })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.sendFailed', { ns: 'notifications' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.sendFailed', { ns: 'notifications' }))
+    },
   })
 }
 
 export function useDeleteNotification(onSuccess?: () => void) {
-  const qc = useQueryClient()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (id: string) => notificationsApi.deleteNotification(id),
     onSuccess: () => {
@@ -72,12 +72,15 @@ export function useDeleteNotification(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: NOTIFICATION_KEYS.unreadCount })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.deleteFailed', { ns: 'notifications' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.deleteFailed', { ns: 'notifications' }))
+    },
   })
 }
 
 export function useMarkNotificationAsRead() {
-  const qc = useQueryClient()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (id: string) => notificationsApi.markAsRead(id),
     onSuccess: () => {
@@ -85,6 +88,9 @@ export function useMarkNotificationAsRead() {
       qc.invalidateQueries({ queryKey: NOTIFICATION_KEYS.all })
       qc.invalidateQueries({ queryKey: NOTIFICATION_KEYS.unreadCount })
     },
-    onError: () => toast.error(i18n.t('toast.markReadFailed', { ns: 'notifications' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.markReadFailed', { ns: 'notifications' }))
+    },
   })
 }

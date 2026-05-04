@@ -377,8 +377,9 @@ describe('ProductListPage', () => {
       expect(screen.getByRole('button', { name: /buttons.clearFilters/i })).toBeInTheDocument()
     })
     await user.click(screen.getByRole('button', { name: /buttons.clearFilters/i }))
+    // FilterPanel always shows the clear button; verify the price input is cleared
     await waitFor(() => {
-      expect(screen.queryByRole('button', { name: /buttons.clearFilters/i })).not.toBeInTheDocument()
+      expect(screen.getByLabelText('filters.minPrice')).toHaveValue(null)
     })
   })
 

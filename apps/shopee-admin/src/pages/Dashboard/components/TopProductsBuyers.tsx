@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from 'src/components/ui/table'
-import { formatCurrency } from 'src/utils/format'
+import { formatPrice } from '@shopee/shared-utils'
 import { MotionCard } from 'src/components/shared/MotionCard'
 
 interface TopProductsBuyersProps {
@@ -40,7 +40,7 @@ export default function TopProductsBuyers({ topProducts, topBuyers }: TopProduct
               {(topProducts ?? []).map((p) => (
                 <TableRow key={p._id}>
                   <TableCell className="font-medium">{p.name}</TableCell>
-                  <TableCell className="text-right">{formatCurrency(p.revenue)}</TableCell>
+                  <TableCell className="text-right">{formatPrice(p.revenue)}</TableCell>
                   <TableCell className="text-right">{p.sold}</TableCell>
                 </TableRow>
               ))}
@@ -72,7 +72,7 @@ export default function TopProductsBuyers({ topProducts, topBuyers }: TopProduct
                     </div>
                   </TableCell>
                   <TableCell className="text-right">{b.total_orders}</TableCell>
-                  <TableCell className="text-right">{formatCurrency(b.total_spent)}</TableCell>
+                  <TableCell className="text-right">{formatPrice(b.total_spent)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

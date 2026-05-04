@@ -289,8 +289,9 @@ describe('OrderListPage', () => {
       expect(screen.getByRole('button', { name: /buttons.clearFilters/i })).toBeInTheDocument()
     })
     await user.click(screen.getByRole('button', { name: /buttons.clearFilters/i }))
+    // FilterPanel always shows the clear button; verify the date input is cleared
     await waitFor(() => {
-      expect(screen.queryByRole('button', { name: /buttons.clearFilters/i })).not.toBeInTheDocument()
+      expect(screen.getByLabelText('filters.startDate')).toHaveValue('')
     })
   })
 

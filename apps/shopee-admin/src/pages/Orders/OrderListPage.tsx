@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { type ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
-import { Eye, MoreHorizontal, Download, Filter, X } from 'lucide-react'
+import { Eye, MoreHorizontal, Download } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'src/components/ui/button'
 import { Checkbox } from 'src/components/ui/checkbox'
@@ -26,9 +26,10 @@ import { DataTable } from 'src/components/shared/DataTable'
 import { PageHeader } from 'src/components/shared/PageHeader'
 import { StatusBadge } from 'src/components/shared/StatusBadge'
 import { ErrorState } from 'src/components/shared/ErrorState'
+import { FilterPanel } from 'src/components/shared/FilterPanel'
 import { useOrders, useBulkUpdateOrderStatus, useOrderCountByStatus } from 'src/hooks/useOrders'
 import { Badge } from 'src/components/ui/badge'
-import { formatCurrency } from 'src/utils/format'
+import { formatPrice } from '@shopee/shared-utils'
 import type { Order, OrderStatus } from 'src/types'
 import { exportToCSV } from 'src/utils/csv-export'
 
@@ -49,7 +50,6 @@ export default function OrderListPage() {
   const [status, setStatus] = useState<OrderStatus | 'all'>('all')
   const [selected, setSelected] = useState<Order[]>([])
   const [bulkStatus, setBulkStatus] = useState<OrderStatus | ''>('')
-  const [filtersOpen, setFiltersOpen] = useState(false)
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('')
@@ -105,7 +105,7 @@ export default function OrderListPage() {
     {
       accessorKey: 'total_price',
       header: t('columns.total'),
-      cell: ({ row }) => formatCurrency(row.original.total_price),
+      cell: ({ row }) => formatPrice(row.original.total_price),
     },
     {
       accessorKey: 'status',
@@ -188,18 +188,8 @@ export default function OrderListPage() {
           </Button>
         }
       />
-      <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" onClick={() => setFiltersOpen(!filtersOpen)}>
-          <Filter className="mr-2 size-4" /> {tc('buttons.filters')}
-        </Button>
-        {(startDate || endDate || paymentMethod) && (
-          <Button variant="ghost" size="sm" onClick={handleClearFilters}>
-            <X className="mr-1 size-4" /> {tc('buttons.clearFilters')}
-          </Button>
-        )}
-      </div>
-      {filtersOpen && (
-        <div className="grid gap-4 sm:grid-cols-3 rounded-lg border p-4">
+      <FilterPanel onClear={handleClearFilters}>
+        <div className="grid gap-4 sm:grid-cols-3">
           <div>
             <Label htmlFor="filter-start-date">{t('filters.startDate')}</Label>
             <Input
@@ -232,7 +222,7 @@ export default function OrderListPage() {
             </Select>
           </div>
         </div>
-      )}
+      </FilterPanel>
       <Tabs value={status} onValueChange={handleStatusChange}>
         <TabsList className="w-full justify-start overflow-x-auto flex-nowrap scroll-p-1">
           {statuses.map((s) => {

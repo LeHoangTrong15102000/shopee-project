@@ -186,7 +186,6 @@ export function createMockQAQuestion(overrides: Partial<QAQuestion> = {}): QAQue
     _id: uid(),
     user: { _id: 'user-1', name: 'Nguyễn Văn A', email: 'user@example.com' },
     title: 'Sản phẩm có bảo hành không?',
-    question: 'Sản phẩm có bảo hành không?',
     content: 'Sản phẩm có bảo hành không?',
     answers: [],
     answers_count: 0,

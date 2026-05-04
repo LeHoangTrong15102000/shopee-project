@@ -24,7 +24,7 @@ import { StatusBadge } from 'src/components/shared/StatusBadge'
 import { LoadingState } from 'src/components/shared/LoadingState'
 import { ErrorState } from 'src/components/shared/ErrorState'
 import { useOrderDetail, useUpdateOrderStatus } from 'src/hooks/useOrderDetail'
-import { formatCurrency } from 'src/utils/format'
+import { formatPrice } from '@shopee/shared-utils'
 import type { OrderStatus } from 'src/types'
 
 const statusFlow: OrderStatus[] = ['pending', 'processing', 'shipped', 'delivered', 'cancelled']
@@ -76,10 +76,10 @@ export default function OrderDetailPage() {
                   return (
                     <TableRow key={i}>
                       <TableCell className="font-medium">{name}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(item.price)}</TableCell>
+                      <TableCell className="text-right">{formatPrice(item.price)}</TableCell>
                       <TableCell className="text-right">{item.buy_count}</TableCell>
                       <TableCell className="text-right">
-                        {formatCurrency(item.price * item.buy_count)}
+                        {formatPrice(item.price * item.buy_count)}
                       </TableCell>
                     </TableRow>
                   )
@@ -87,7 +87,7 @@ export default function OrderDetailPage() {
               </TableBody>
             </Table>
             <div className="mt-4 flex justify-end text-lg font-bold">
-              {t('detail.total')}: {formatCurrency(order.total_price)}
+              {t('detail.total')}: {formatPrice(order.total_price)}
             </div>
           </CardContent>
         </Card>

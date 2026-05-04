@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis, YAxis } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from 'src/components/ui/chart'
-import { formatCurrency } from 'src/utils/format'
+import { formatPrice } from '@shopee/shared-utils'
 import { useIsMobile } from 'src/hooks/use-mobile'
 import { EmptyState } from 'src/components/shared/EmptyState'
 
@@ -105,7 +105,7 @@ export default function UserCategoryCharts({
                   ))}
                 </Pie>
                 <ChartTooltip
-                  content={<ChartTooltipContent formatter={(v) => formatCurrency(v as number)} />}
+                  content={<ChartTooltipContent formatter={(v) => formatPrice(v as number)} />}
                 />
               </PieChart>
             </ChartContainer>

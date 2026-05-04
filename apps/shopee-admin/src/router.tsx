@@ -52,7 +52,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'users',
+    path: ROUTES.USERS.slice(1),
     element: (
       <SuspenseWrapper>
         <UserListPage />
@@ -60,7 +60,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'users/:id',
+    path: ROUTES.USER_DETAIL.slice(1),
     element: (
       <SuspenseWrapper>
         <UserDetailPage />
@@ -68,7 +68,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'products',
+    path: ROUTES.PRODUCTS.slice(1),
     element: (
       <SuspenseWrapper>
         <ProductListPage />
@@ -76,7 +76,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'products/new',
+    path: ROUTES.PRODUCT_NEW.slice(1),
     element: (
       <SuspenseWrapper>
         <ProductFormPage />
@@ -84,7 +84,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'products/:id/edit',
+    path: ROUTES.PRODUCT_EDIT.slice(1),
     element: (
       <SuspenseWrapper>
         <ProductFormPage />
@@ -92,7 +92,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'products/:id',
+    path: ROUTES.PRODUCT_DETAIL.slice(1),
     element: (
       <SuspenseWrapper>
         <ProductDetailPage />
@@ -100,7 +100,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'categories',
+    path: ROUTES.CATEGORIES.slice(1),
     element: (
       <SuspenseWrapper>
         <CategoryListPage />
@@ -108,7 +108,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'orders',
+    path: ROUTES.ORDERS.slice(1),
     element: (
       <SuspenseWrapper>
         <OrderListPage />
@@ -116,7 +116,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'orders/:id',
+    path: ROUTES.ORDER_DETAIL.slice(1),
     element: (
       <SuspenseWrapper>
         <OrderDetailPage />
@@ -124,7 +124,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'vouchers',
+    path: ROUTES.VOUCHERS.slice(1),
     element: (
       <SuspenseWrapper>
         <VoucherListPage />
@@ -132,7 +132,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'vouchers/:id',
+    path: ROUTES.VOUCHER_DETAIL.slice(1),
     element: (
       <SuspenseWrapper>
         <VoucherDetailPage />
@@ -140,7 +140,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'reviews',
+    path: ROUTES.REVIEWS.slice(1),
     element: (
       <SuspenseWrapper>
         <ReviewListPage />
@@ -148,7 +148,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'reviews/:id',
+    path: ROUTES.REVIEW_DETAIL.slice(1),
     element: (
       <SuspenseWrapper>
         <ReviewDetailPage />
@@ -156,7 +156,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'loyalty',
+    path: ROUTES.LOYALTY.slice(1),
     element: (
       <SuspenseWrapper>
         <LoyaltyPage />
@@ -164,7 +164,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'inventory',
+    path: ROUTES.INVENTORY.slice(1),
     element: (
       <SuspenseWrapper>
         <InventoryPage />
@@ -172,7 +172,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'analytics',
+    path: ROUTES.ANALYTICS.slice(1),
     element: (
       <SuspenseWrapper>
         <AnalyticsPage />
@@ -180,7 +180,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'notifications',
+    path: ROUTES.NOTIFICATIONS.slice(1),
     element: (
       <SuspenseWrapper>
         <NotificationListPage />
@@ -188,7 +188,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'qa',
+    path: ROUTES.QA.slice(1),
     element: (
       <SuspenseWrapper>
         <QAPage />
@@ -196,7 +196,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'import',
+    path: ROUTES.IMPORT.slice(1),
     element: (
       <SuspenseWrapper>
         <ImportPage />
@@ -204,7 +204,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'settings',
+    path: ROUTES.SETTINGS.slice(1),
     element: (
       <SuspenseWrapper>
         <SettingsPage />
@@ -212,7 +212,7 @@ const protectedRoutes: RouteObject[] = [
     ),
   },
   {
-    path: 'activity-log',
+    path: ROUTES.ACTIVITY_LOG.slice(1),
     element: (
       <SuspenseWrapper>
         <ActivityLogPage />

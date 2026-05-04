@@ -29,9 +29,14 @@ import {
   CommandItem,
 } from 'src/components/ui/command'
 import { useDebounce } from '@shopee/shared-utils'
+import { useQuery } from '@tanstack/react-query'
 import usersApi from 'src/apis/users.api'
 import productsApi from 'src/apis/products.api'
 import ordersApi from 'src/apis/orders.api'
+import { PRODUCT_KEYS } from 'src/hooks/useProducts'
+import { ORDER_KEYS } from 'src/hooks/useOrders'
+import { USER_KEYS } from 'src/hooks/useUsers'
+import type { Product, Order, User } from 'src/types'
 
 const pages = [
   { titleKey: 'menu.overview', href: '/', icon: LayoutDashboard },
@@ -50,6 +55,7 @@ const pages = [
   { titleKey: 'menu.settings', href: '/settings', icon: Settings },
   { titleKey: 'menu.activityLog', href: '/activity-log', icon: FileText },
 ]
+
 interface SearchResult {
   id: string
   label: string
@@ -60,12 +66,13 @@ interface SearchResult {
 export function CommandPalette() {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
-  const [results, setResults] = useState<SearchResult[]>([])
   const navigate = useNavigate()
   const { t } = useTranslation('layout')
   const { t: tc } = useTranslation('common')
   const debouncedQuery = useDebounce(query, 300)
   const prefersReducedMotion = useReducedMotion()
+
+  const isSearchEnabled = open && debouncedQuery.length >= 2
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -78,55 +85,46 @@ export function CommandPalette() {
     return () => document.removeEventListener('keydown', down)
   }, [])
 
-  useEffect(() => {
-    if (!debouncedQuery || debouncedQuery.length < 2) {
-      setResults([])
-      return
-    }
-    let cancelled = false
-    ;(async () => {
-      try {
-        const [products, orders, users] = await Promise.allSettled([
-          productsApi.getProducts({ name: debouncedQuery, limit: 5 }).then((r) => r.data.data),
-          ordersApi.getOrders({ search: debouncedQuery, limit: 5 }).then((r) => r.data.data),
-          usersApi.getUsers({ search: debouncedQuery, limit: 5 }).then((r) => r.data.data),
-        ])
-        if (cancelled) return
-        const items: SearchResult[] = []
-        if (products.status === 'fulfilled') {
-          ;(products.value.products ?? []).forEach((p: any) =>
-            items.push({ id: p._id, label: p.name, type: 'product', href: `/products/${p._id}` }),
-          )
-        }
-        if (orders.status === 'fulfilled') {
-          ;(orders.value.orders ?? []).forEach((o: any) =>
-            items.push({
-              id: o._id,
-              label: `Order #${o._id.slice(-8)}`,
-              type: 'order',
-              href: `/orders/${o._id}`,
-            }),
-          )
-        }
-        if (users.status === 'fulfilled') {
-          ;(users.value.items ?? []).forEach((u: any) =>
-            items.push({
-              id: u._id,
-              label: u.name || u.email,
-              type: 'user',
-              href: `/users/${u._id}`,
-            }),
-          )
-        }
-        setResults(items)
-      } catch {
-        if (!cancelled) setResults([])
-      }
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [debouncedQuery])
+  const { data: productsData } = useQuery({
+    queryKey: [...PRODUCT_KEYS.all, 'search', debouncedQuery],
+    queryFn: () => productsApi.getProducts({ name: debouncedQuery, limit: 5 }).then((r) => r.data.data),
+    enabled: isSearchEnabled,
+  })
+
+  const { data: ordersData } = useQuery({
+    queryKey: [...ORDER_KEYS.all, 'search', debouncedQuery],
+    queryFn: () => ordersApi.getOrders({ search: debouncedQuery, limit: 5 }).then((r) => r.data.data),
+    enabled: isSearchEnabled,
+  })
+
+  const { data: usersData } = useQuery({
+    queryKey: [...USER_KEYS.all, 'search', debouncedQuery],
+    queryFn: () => usersApi.getUsers({ search: debouncedQuery, limit: 5 }).then((r) => r.data.data),
+    enabled: isSearchEnabled,
+  })
+
+  const results: SearchResult[] = isSearchEnabled
+    ? [
+        ...(productsData?.products ?? []).map((p: Product) => ({
+          id: p._id,
+          label: p.name,
+          type: 'product' as const,
+          href: `/products/${p._id}`,
+        })),
+        ...(ordersData?.orders ?? []).map((o: Order) => ({
+          id: o._id,
+          label: `Order #${o._id.slice(-8)}`,
+          type: 'order' as const,
+          href: `/orders/${o._id}`,
+        })),
+        ...(usersData?.items ?? []).map((u: User) => ({
+          id: u._id,
+          label: u.name || u.email,
+          type: 'user' as const,
+          href: `/users/${u._id}`,
+        })),
+      ]
+    : []
 
   const select = (href: string) => {
     setOpen(false)

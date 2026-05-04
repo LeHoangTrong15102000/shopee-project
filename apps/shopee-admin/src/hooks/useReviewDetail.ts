@@ -1,9 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import i18n from 'src/i18n/i18n'
 import reviewsApi from 'src/apis/reviews.api'
-import { useActivityLogStore } from 'src/stores/activity-log.store'
-import { useAuthStore } from 'src/stores/auth.store'
+import { useAdminMutationContext } from './useAdminMutationContext'
 
 export const REVIEW_DETAIL_KEYS = {
   detail: (id: string) => ['admin-review', id] as const,
@@ -18,9 +17,7 @@ export function useReviewDetail(id: string | undefined) {
 }
 
 export function useDeleteComment(id: string | undefined, onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: (commentId: string) => reviewsApi.deleteComment(commentId),
     onSuccess: (_, commentId) => {
@@ -29,6 +26,9 @@ export function useDeleteComment(id: string | undefined, onSuccess?: () => void)
       qc.invalidateQueries({ queryKey: REVIEW_DETAIL_KEYS.detail(id!) })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.deleteCommentFailed', { ns: 'reviews' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.deleteCommentFailed', { ns: 'reviews' }))
+    },
   })
 }

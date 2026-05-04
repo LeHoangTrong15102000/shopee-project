@@ -16,7 +16,7 @@ import {
   useChatbotOverview,
   useChatbotPerformance,
 } from 'src/hooks/useAnalytics'
-import { formatCurrency } from 'src/utils/format'
+import { formatPrice } from '@shopee/shared-utils'
 import type { ProductAnalytics } from 'src/types'
 
 const ChatbotChart = lazy(() => import('./ChatbotChart'))
@@ -72,7 +72,7 @@ export default function AnalyticsPage() {
     {
       accessorKey: 'revenue',
       header: t('columns.revenue'),
-      cell: ({ row }) => (row.original.revenue ? formatCurrency(row.original.revenue) : '—'),
+      cell: ({ row }) => (row.original.revenue ? formatPrice(row.original.revenue) : '—'),
     },
   ]
 
@@ -89,7 +89,7 @@ export default function AnalyticsPage() {
     {
       accessorKey: 'average_price',
       header: t('columns.avgPrice'),
-      cell: ({ row }) => formatCurrency(Math.round(row.original.average_price)),
+      cell: ({ row }) => formatPrice(Math.round(row.original.average_price)),
     },
   ]
 

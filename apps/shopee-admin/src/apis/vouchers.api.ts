@@ -1,5 +1,5 @@
 import http from 'src/utils/http'
-import type { SuccessResponse, Voucher, VoucherUsage, DiscountType } from 'src/types'
+import type { SuccessResponse, Voucher, VoucherUsage, DiscountType, PaginationMeta } from 'src/types'
 
 interface VoucherListParams {
   page?: number
@@ -13,7 +13,7 @@ interface VoucherListParams {
 
 interface VoucherListResponse {
   vouchers: Voucher[]
-  pagination: { page: number; limit: number; total: number; totalPages: number }
+  pagination: PaginationMeta
 }
 
 interface VoucherStats {

@@ -79,7 +79,7 @@ export default function QAPage() {
               </CardHeader>
               <CollapsibleContent>
                 <CardContent className="pt-0">
-                  <p className="mb-3 text-sm">{q.content || q.question}</p>
+                  <p className="mb-3 text-sm">{q.content}</p>
                   {(q.answers ?? []).length > 0 ? (
                     <div className="space-y-2 border-t pt-3">
                       {q.answers.map((a) => (
@@ -93,11 +93,10 @@ export default function QAPage() {
                               by{' '}
                               {a.user?.name ||
                                 a.user?.email ||
-                                a.user_name ||
                                 t('common:states.unknown')}{' '}
                               ·{' '}
                               {format(
-                                new Date(a.createdAt || a.created_at || Date.now()),
+                                new Date(a.createdAt || Date.now()),
                                 'MMM d, yyyy',
                               )}
                             </p>

@@ -1,9 +1,8 @@
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
+import { useQuery, useMutation, keepPreviousData } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import i18n from 'src/i18n/i18n'
 import productsApi from 'src/apis/products.api'
-import { useActivityLogStore } from 'src/stores/activity-log.store'
-import { useAuthStore } from 'src/stores/auth.store'
+import { useAdminMutationContext } from './useAdminMutationContext'
 
 export const PRODUCT_KEYS = {
   list: (page: number, filters?: Record<string, string>) =>
@@ -21,9 +20,7 @@ export function useProducts(page: number, filters?: { category?: string; name?: 
 }
 
 export function useDeleteProduct(onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: (id: string) => productsApi.deleteProduct(id),
     onSuccess: (_, id) => {
@@ -32,14 +29,15 @@ export function useDeleteProduct(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: PRODUCT_KEYS.all })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.deleteFailed', { ns: 'products' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.deleteFailed', { ns: 'products' }))
+    },
   })
 }
 
 export function useDeleteManyProducts(onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: (ids: string[]) => productsApi.deleteManyProducts(ids),
     onSuccess: (_, ids) => {
@@ -53,6 +51,9 @@ export function useDeleteManyProducts(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: PRODUCT_KEYS.all })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.deleteMultipleFailed', { ns: 'products' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.deleteMultipleFailed', { ns: 'products' }))
+    },
   })
 }

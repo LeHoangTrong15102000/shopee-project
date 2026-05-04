@@ -1,9 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import i18n from 'src/i18n/i18n'
 import importApi from 'src/apis/import.api'
-import { useActivityLogStore } from 'src/stores/activity-log.store'
-import { useAuthStore } from 'src/stores/auth.store'
+import { useAdminMutationContext } from './useAdminMutationContext'
 
 export const IMPORT_KEYS = {
   stats: ['admin-import-stats'] as const,
@@ -17,9 +16,7 @@ export function useImportStats() {
 }
 
 export function useImportProducts(onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: () => importApi.importProducts(),
     onSuccess: (res) => {
@@ -36,6 +33,9 @@ export function useImportProducts(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: IMPORT_KEYS.stats })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.importFailed', { ns: 'import' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.importFailed', { ns: 'import' }))
+    },
   })
 }

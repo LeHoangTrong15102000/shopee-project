@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { type ColumnDef } from '@tanstack/react-table'
-import { MoreHorizontal, Plus, Eye, Pencil, Trash2, Download, Filter, X } from 'lucide-react'
+import { MoreHorizontal, Plus, Eye, Pencil, Trash2, Download } from 'lucide-react'
 import { Button } from 'src/components/ui/button'
 import { Badge } from 'src/components/ui/badge'
 import { Checkbox } from 'src/components/ui/checkbox'
@@ -25,9 +25,10 @@ import { DataTable } from 'src/components/shared/DataTable'
 import { PageHeader } from 'src/components/shared/PageHeader'
 import { ConfirmDialog } from 'src/components/shared/ConfirmDialog'
 import { ErrorState } from 'src/components/shared/ErrorState'
+import { FilterPanel } from 'src/components/shared/FilterPanel'
 import { useProducts, useDeleteProduct, useDeleteManyProducts } from 'src/hooks/useProducts'
 import { useCategories } from 'src/hooks/useCategories'
-import { formatCurrency } from 'src/utils/format'
+import { formatPrice } from '@shopee/shared-utils'
 import { exportToCSV } from 'src/utils/csv-export'
 import type { Product } from 'src/types'
 
@@ -39,7 +40,6 @@ export default function ProductListPage() {
   const [selected, setSelected] = useState<Product[]>([])
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false)
-  const [filtersOpen, setFiltersOpen] = useState(false)
   const [categoryFilter, setCategoryFilter] = useState('')
   const [minPrice, setMinPrice] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
@@ -104,7 +104,7 @@ export default function ProductListPage() {
     {
       accessorKey: 'price',
       header: t('columns.price'),
-      cell: ({ row }) => formatCurrency(row.original.price),
+      cell: ({ row }) => formatPrice(row.original.price),
     },
     { accessorKey: 'quantity', header: t('columns.stock') },
     { accessorKey: 'sold', header: t('columns.sold') },
@@ -207,19 +207,8 @@ export default function ProductListPage() {
           </div>
         }
       />
-      <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" onClick={() => setFiltersOpen(!filtersOpen)}>
-          <Filter className="mr-2 size-4" />
-          {tc('buttons.filters')}
-        </Button>
-        {(categoryFilter || minPrice || maxPrice || stockFilter) && (
-          <Button variant="ghost" size="sm" onClick={handleClearFilters}>
-            <X className="mr-1 size-4" /> {tc('buttons.clearFilters')}
-          </Button>
-        )}
-      </div>
-      {filtersOpen && (
-        <div className="grid gap-4 sm:grid-cols-4 rounded-lg border p-4">
+      <FilterPanel onClear={handleClearFilters}>
+        <div className="grid gap-4 sm:grid-cols-4">
           <div>
             <Label htmlFor="filter-category">{t('filters.category')}</Label>
             <Select
@@ -277,7 +266,7 @@ export default function ProductListPage() {
             </Select>
           </div>
         </div>
-      )}
+      </FilterPanel>
       {isError && <ErrorState message={t('error')} onRetry={refetch} />}
       <DataTable
         columns={columns}

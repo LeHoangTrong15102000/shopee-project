@@ -207,7 +207,6 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <nav aria-label={t('sidebar.mainNavigation')}>
-          ``
           {navSections.map((section) => (
             <SidebarGroup key={section.labelKey}>
               <SidebarGroupLabel>{t(section.labelKey)}</SidebarGroupLabel>

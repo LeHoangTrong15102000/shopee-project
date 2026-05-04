@@ -17,7 +17,7 @@ import {
   useDashboardTopBuyers,
   useDashboardRevenueByCategory,
 } from 'src/hooks/useDashboard'
-import { formatCurrency } from 'src/utils/format'
+import { formatPrice } from '@shopee/shared-utils'
 import { ChartSkeleton } from './components/ChartSkeleton'
 
 const RevenueOrderCharts = lazy(() => import('./components/RevenueOrderCharts'))
@@ -84,7 +84,7 @@ export default function DashboardPage() {
                 label={t('stats.totalRevenue')}
                 value={overview?.total_revenue ?? 0}
                 trend={overview?.revenue_change}
-                formatter={formatCurrency}
+                formatter={formatPrice}
                 icon={<DollarSign className="size-4" />}
               />
             </StaggerItem>

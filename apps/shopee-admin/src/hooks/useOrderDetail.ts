@@ -1,10 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import i18n from 'src/i18n/i18n'
 import ordersApi from 'src/apis/orders.api'
-import { useActivityLogStore } from 'src/stores/activity-log.store'
-import { useAuthStore } from 'src/stores/auth.store'
 import type { OrderStatus } from 'src/types'
+import { ORDER_KEYS } from './useOrders'
+import { useAdminMutationContext } from './useAdminMutationContext'
 
 export const ORDER_DETAIL_KEYS = {
   detail: (id: string) => ['admin-order', id] as const,
@@ -19,9 +19,7 @@ export function useOrderDetail(id: string | undefined) {
 }
 
 export function useUpdateOrderStatus(id: string | undefined, onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: (status: OrderStatus) => ordersApi.updateOrderStatus(id!, { status }),
     onSuccess: (_, status) => {
@@ -33,10 +31,13 @@ export function useUpdateOrderStatus(id: string | undefined, onSuccess?: () => v
         adminEmail: email,
       })
       qc.invalidateQueries({ queryKey: ORDER_DETAIL_KEYS.detail(id!) })
-      qc.invalidateQueries({ queryKey: ['admin-orders'] })
-      qc.invalidateQueries({ queryKey: ['admin-orders-count-by-status'] })
+      qc.invalidateQueries({ queryKey: ORDER_KEYS.all })
+      qc.invalidateQueries({ queryKey: ORDER_KEYS.countByStatus })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.updateStatusFailed', { ns: 'orders' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.updateStatusFailed', { ns: 'orders' }))
+    },
   })
 }

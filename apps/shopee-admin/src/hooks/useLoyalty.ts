@@ -1,9 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import i18n from 'src/i18n/i18n'
 import loyaltyApi from 'src/apis/loyalty.api'
-import { useActivityLogStore } from 'src/stores/activity-log.store'
-import { useAuthStore } from 'src/stores/auth.store'
+import { useAdminMutationContext } from './useAdminMutationContext'
 
 export const LOYALTY_KEYS = {
   rewards: ['admin-rewards'] as const,
@@ -33,9 +32,7 @@ export function useLoyaltyStats() {
 }
 
 export function useCreateReward(onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: (body: { name: string; description: string; points_required: number }) =>
       loyaltyApi.createReward(body),
@@ -45,14 +42,15 @@ export function useCreateReward(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: LOYALTY_KEYS.rewards })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.createFailed', { ns: 'loyalty' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.createFailed', { ns: 'loyalty' }))
+    },
   })
 }
 
 export function useUpdateReward(onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: ({
       id,
@@ -72,14 +70,15 @@ export function useUpdateReward(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: LOYALTY_KEYS.rewards })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.updateFailed', { ns: 'loyalty' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.updateFailed', { ns: 'loyalty' }))
+    },
   })
 }
 
 export function useDeleteReward(onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: (id: string) => loyaltyApi.deleteReward(id),
     onSuccess: (_, id) => {
@@ -88,14 +87,15 @@ export function useDeleteReward(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: LOYALTY_KEYS.rewards })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.deleteFailed', { ns: 'loyalty' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.deleteFailed', { ns: 'loyalty' }))
+    },
   })
 }
 
 export function useAdjustPoints(onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: (body: { user_id: string; points: number; description: string }) =>
       loyaltyApi.adjustPoints(body),
@@ -110,6 +110,9 @@ export function useAdjustPoints(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: LOYALTY_KEYS.transactions })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.adjustPointsFailed', { ns: 'loyalty' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.adjustPointsFailed', { ns: 'loyalty' }))
+    },
   })
 }

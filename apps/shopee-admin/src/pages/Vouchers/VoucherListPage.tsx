@@ -41,7 +41,7 @@ import {
   useUpdateVoucher,
   useToggleVoucher,
 } from 'src/hooks/useVouchers'
-import { formatCurrency } from 'src/utils/format'
+import { formatPrice } from '@shopee/shared-utils'
 import type { Voucher, DiscountType } from 'src/types'
 
 export default function VoucherListPage() {
@@ -81,7 +81,7 @@ export default function VoucherListPage() {
       cell: ({ row }) =>
         row.original.discount_type === 'percentage'
           ? `${row.original.discount_value}%`
-          : formatCurrency(row.original.discount_value),
+          : formatPrice(row.original.discount_value),
     },
     {
       accessorKey: 'used_count',

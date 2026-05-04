@@ -1,10 +1,9 @@
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
+import { useQuery, useMutation, keepPreviousData } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import i18n from 'src/i18n/i18n'
 import vouchersApi from 'src/apis/vouchers.api'
-import { useActivityLogStore } from 'src/stores/activity-log.store'
-import { useAuthStore } from 'src/stores/auth.store'
 import type { DiscountType } from 'src/types'
+import { useAdminMutationContext } from './useAdminMutationContext'
 
 export const VOUCHER_KEYS = {
   list: (page: number) => ['admin-vouchers', page] as const,
@@ -28,9 +27,7 @@ export function useVoucherStats() {
 }
 
 export function useCreateVoucher(onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: (body: {
       code: string
@@ -47,14 +44,15 @@ export function useCreateVoucher(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: VOUCHER_KEYS.all })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.createFailed', { ns: 'vouchers' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.createFailed', { ns: 'vouchers' }))
+    },
   })
 }
 
 export function useDeleteVoucher(onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: (id: string) => vouchersApi.deleteVoucher(id),
     onSuccess: (_, id) => {
@@ -63,14 +61,15 @@ export function useDeleteVoucher(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: VOUCHER_KEYS.all })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.deleteFailed', { ns: 'vouchers' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.deleteFailed', { ns: 'vouchers' }))
+    },
   })
 }
 
 export function useUpdateVoucher(onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: ({
       id,
@@ -93,14 +92,15 @@ export function useUpdateVoucher(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: VOUCHER_KEYS.all })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.updateFailed', { ns: 'vouchers' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.updateFailed', { ns: 'vouchers' }))
+    },
   })
 }
 
 export function useToggleVoucher(onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: ({ id, is_active }: { id: string; is_active: boolean }) =>
       vouchersApi.updateVoucher(id, { is_active }),
@@ -116,6 +116,9 @@ export function useToggleVoucher(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: VOUCHER_KEYS.stats })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.updateStatusFailed', { ns: 'vouchers' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.updateStatusFailed', { ns: 'vouchers' }))
+    },
   })
 }

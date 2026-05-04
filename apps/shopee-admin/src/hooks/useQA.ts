@@ -1,9 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import i18n from 'src/i18n/i18n'
 import qaApi from 'src/apis/qa.api'
-import { useActivityLogStore } from 'src/stores/activity-log.store'
-import { useAuthStore } from 'src/stores/auth.store'
+import { useAdminMutationContext } from './useAdminMutationContext'
 
 export const QA_KEYS = {
   all: ['admin-qa'] as const,
@@ -25,9 +24,7 @@ export function useQAStats() {
 }
 
 export function useDeleteQuestion(onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: (id: string) => qaApi.deleteQuestion(id),
     onSuccess: (_, id) => {
@@ -36,14 +33,15 @@ export function useDeleteQuestion(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: QA_KEYS.all })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.deleteQuestionFailed', { ns: 'qa' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.deleteQuestionFailed', { ns: 'qa' }))
+    },
   })
 }
 
 export function useDeleteAnswer(onSuccess?: () => void) {
-  const qc = useQueryClient()
-  const addLog = useActivityLogStore((s) => s.addLog)
-  const email = useAuthStore((s) => s.user?.email ?? 'admin')
+  const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({
     mutationFn: ({ qId, aId }: { qId: string; aId: string }) => qaApi.deleteAnswer(qId, aId),
     onSuccess: (_, vars) => {
@@ -52,6 +50,9 @@ export function useDeleteAnswer(onSuccess?: () => void) {
       qc.invalidateQueries({ queryKey: QA_KEYS.all })
       onSuccess?.()
     },
-    onError: () => toast.error(i18n.t('toast.deleteAnswerFailed', { ns: 'qa' })),
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.deleteAnswerFailed', { ns: 'qa' }))
+    },
   })
 }

@@ -9,7 +9,7 @@ import { PageHeader } from 'src/components/shared/PageHeader'
 import { LoadingState } from 'src/components/shared/LoadingState'
 import { ErrorState } from 'src/components/shared/ErrorState'
 import { useProductDetail } from 'src/hooks/useProductDetail'
-import { formatCurrency } from 'src/utils/format'
+import { formatPrice } from '@shopee/shared-utils'
 
 export default function ProductDetailPage() {
   const { t } = useTranslation('products')
@@ -69,13 +69,13 @@ export default function ProductDetailPage() {
             <CardContent className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">{t('detail.price')}</span>
-                <span className="font-medium">{formatCurrency(product.price)}</span>
+                <span className="font-medium">{formatPrice(product.price)}</span>
               </div>
               {product.price_before_discount > product.price && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{t('detail.original')}</span>
                   <span className="line-through">
-                    {formatCurrency(product.price_before_discount)}
+                    {formatPrice(product.price_before_discount)}
                   </span>
                 </div>
               )}

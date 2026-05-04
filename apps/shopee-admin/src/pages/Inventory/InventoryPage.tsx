@@ -23,7 +23,7 @@ import {
   useUpdateStock,
   useBulkUpdateStock,
 } from 'src/hooks/useInventory'
-import { formatCurrency } from 'src/utils/format'
+import { formatPrice } from '@shopee/shared-utils'
 import type { Product } from 'src/types'
 
 export default function InventoryPage() {
@@ -111,7 +111,7 @@ export default function InventoryPage() {
     {
       accessorKey: 'price',
       header: t('columns.price'),
-      cell: ({ row }) => formatCurrency(row.original.price),
+      cell: ({ row }) => formatPrice(row.original.price),
     },
     {
       id: 'actions',

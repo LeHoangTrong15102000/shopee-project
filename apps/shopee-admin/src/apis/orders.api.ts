@@ -1,5 +1,5 @@
 import http from 'src/utils/http'
-import type { SuccessResponse, Order, OrderStatus } from 'src/types'
+import type { SuccessResponse, Order, OrderStatus, PaginationMeta } from 'src/types'
 
 interface OrderListParams {
   page?: number
@@ -13,7 +13,7 @@ interface OrderListParams {
 
 interface OrderListResponse {
   orders: Order[]
-  pagination: { page: number; limit: number; total: number; totalPages: number }
+  pagination: PaginationMeta
 }
 
 interface OrderCountByStatus {

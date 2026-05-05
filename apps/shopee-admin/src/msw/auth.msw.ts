@@ -31,6 +31,14 @@ const authHandlers = [
       data: { access_token: 'mock-new-access-token' },
     })
   }),
+
+  http.post(`${API_URL}/auth/forgot-password`, () => {
+    return HttpResponse.json({ message: 'Email sent successfully' })
+  }),
+
+  http.post(`${API_URL}/auth/reset-password`, () => {
+    return HttpResponse.json({ message: 'Password reset successfully' })
+  }),
 ]
 
 export default authHandlers

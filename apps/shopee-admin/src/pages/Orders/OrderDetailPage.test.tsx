@@ -258,6 +258,80 @@ describe('OrderDetailPage', () => {
     expect(screen.queryByText('detail.customer')).not.toBeInTheDocument()
   })
 
+  it('renders tracking card with carrier and tracking number', async () => {
+    renderWithProviders(<OrderDetailPage />)
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByText('tracking.title')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByText('GHN Express')).toBeInTheDocument()
+      expect(screen.getByText('GHN123456789')).toBeInTheDocument()
+    })
+  })
+
+  it('renders tracking events list', async () => {
+    renderWithProviders(<OrderDetailPage />)
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByText('tracking.events')).toBeInTheDocument()
+    })
+    expect(screen.getByText('Package picked up from sender')).toBeInTheDocument()
+    expect(screen.getByText('Ho Chi Minh City')).toBeInTheDocument()
+    expect(screen.getByText('Package in transit to destination')).toBeInTheDocument()
+  })
+
+  it('renders tracking estimated delivery and current status', async () => {
+    renderWithProviders(<OrderDetailPage />)
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByText('Jan 5, 2024')).toBeInTheDocument()
+      expect(screen.getByText('in_transit')).toBeInTheDocument()
+    })
+  })
+
+  it('renders tracking empty state when no tracking data', async () => {
+    server.use(
+      http.get(`${API_URL}/orders/:id/tracking`, () => {
+        return HttpResponse.json({
+          message: 'Thành công',
+          data: {
+            orderId: 'order-1',
+            events: [],
+          },
+        })
+      }),
+    )
+    renderWithProviders(<OrderDetailPage />)
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByText('tracking.emptyState')).toBeInTheDocument()
+    })
+  })
+
+  it('renders tracking error state on API failure', async () => {
+    server.use(
+      http.get(`${API_URL}/orders/:id/tracking`, () => {
+        return HttpResponse.json({ message: 'Error' }, { status: 500 })
+      }),
+    )
+    renderWithProviders(<OrderDetailPage />)
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(screen.getByText('tracking.errorState')).toBeInTheDocument()
+    })
+  })
+
   it('renders customer without name showing N/A fallback', async () => {
     server.use(
       http.get(`${API_URL}/admin/orders/:id`, () => {

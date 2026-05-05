@@ -63,6 +63,32 @@ const ordersHandlers = [
       data: { modifiedCount: body.order_ids.length },
     })
   }),
+
+  http.get(`${API_URL}/orders/:id/tracking`, () => {
+    return HttpResponse.json({
+      message: 'Thành công',
+      data: {
+        orderId: 'order-1',
+        carrier: 'GHN Express',
+        trackingNumber: 'GHN123456789',
+        estimatedDelivery: 'Jan 5, 2024',
+        currentStatus: 'in_transit',
+        events: [
+          {
+            status: 'picked_up',
+            description: 'Package picked up from sender',
+            timestamp: '2024-01-02T10:00:00.000Z',
+            location: 'Ho Chi Minh City',
+          },
+          {
+            status: 'in_transit',
+            description: 'Package in transit to destination',
+            timestamp: '2024-01-03T14:00:00.000Z',
+          },
+        ],
+      },
+    })
+  }),
 ]
 
 export default ordersHandlers

@@ -308,4 +308,100 @@ describe('QAPage', () => {
       })
     }
   })
+
+  it('opens answer form when clicking answer button on unanswered question', async () => {
+    const { user } = renderWithProviders(<QAPage />)
+    await waitFor(() => {
+      expect(screen.getByText('Có hỗ trợ trả góp không?')).toBeInTheDocument()
+    })
+    // Expand qa-3 first so CollapsibleContent is visible
+    const trigger = screen.getByText('Có hỗ trợ trả góp không?').closest('button')
+    if (trigger) await user.click(trigger)
+    // qa-3 has answers_count=0, so it shows the Answer button
+    const answerBtn = screen.getByRole('button', { name: /actions.answer/i })
+    await user.click(answerBtn)
+    await waitFor(() => {
+      expect(screen.getByLabelText('answerForm.label')).toBeInTheDocument()
+    })
+  })
+
+  it('shows validation error when submitting empty answer', async () => {
+    const { user } = renderWithProviders(<QAPage />)
+    await waitFor(() => {
+      expect(screen.getByText('Có hỗ trợ trả góp không?')).toBeInTheDocument()
+    })
+    const trigger = screen.getByText('Có hỗ trợ trả góp không?').closest('button')
+    if (trigger) await user.click(trigger)
+    const answerBtn = screen.getByRole('button', { name: /actions.answer/i })
+    await user.click(answerBtn)
+    await waitFor(() => {
+      expect(screen.getByLabelText('answerForm.label')).toBeInTheDocument()
+    })
+    // Submit without typing anything
+    await user.click(screen.getByRole('button', { name: 'answerForm.submit' }))
+    await waitFor(() => {
+      expect(screen.getByText('answerForm.validation')).toBeInTheDocument()
+    })
+  })
+
+  it('clears validation error when typing in answer textarea', async () => {
+    const { user } = renderWithProviders(<QAPage />)
+    await waitFor(() => {
+      expect(screen.getByText('Có hỗ trợ trả góp không?')).toBeInTheDocument()
+    })
+    const trigger = screen.getByText('Có hỗ trợ trả góp không?').closest('button')
+    if (trigger) await user.click(trigger)
+    const answerBtn = screen.getByRole('button', { name: /actions.answer/i })
+    await user.click(answerBtn)
+    await waitFor(() => {
+      expect(screen.getByLabelText('answerForm.label')).toBeInTheDocument()
+    })
+    await user.click(screen.getByRole('button', { name: 'answerForm.submit' }))
+    await waitFor(() => {
+      expect(screen.getByText('answerForm.validation')).toBeInTheDocument()
+    })
+    // Type something to clear the error
+    await user.type(screen.getByLabelText('answerForm.label'), 'Some answer')
+    await waitFor(() => {
+      expect(screen.queryByText('answerForm.validation')).not.toBeInTheDocument()
+    })
+  })
+
+  it('submits answer successfully and closes form', async () => {
+    const { user } = renderWithProviders(<QAPage />)
+    await waitFor(() => {
+      expect(screen.getByText('Có hỗ trợ trả góp không?')).toBeInTheDocument()
+    })
+    const trigger = screen.getByText('Có hỗ trợ trả góp không?').closest('button')
+    if (trigger) await user.click(trigger)
+    const answerBtn = screen.getByRole('button', { name: /actions.answer/i })
+    await user.click(answerBtn)
+    await waitFor(() => {
+      expect(screen.getByLabelText('answerForm.label')).toBeInTheDocument()
+    })
+    await user.type(screen.getByLabelText('answerForm.label'), 'Có hỗ trợ trả góp')
+    await user.click(screen.getByRole('button', { name: 'answerForm.submit' }))
+    await waitFor(() => {
+      expect(screen.queryByLabelText('answerForm.label')).not.toBeInTheDocument()
+    })
+  })
+
+  it('closes answer form when clicking cancel', async () => {
+    const { user } = renderWithProviders(<QAPage />)
+    await waitFor(() => {
+      expect(screen.getByText('Có hỗ trợ trả góp không?')).toBeInTheDocument()
+    })
+    const trigger = screen.getByText('Có hỗ trợ trả góp không?').closest('button')
+    if (trigger) await user.click(trigger)
+    const answerBtn = screen.getByRole('button', { name: /actions.answer/i })
+    await user.click(answerBtn)
+    await waitFor(() => {
+      expect(screen.getByLabelText('answerForm.label')).toBeInTheDocument()
+    })
+    // Click Cancel button
+    await user.click(screen.getByRole('button', { name: 'Cancel' }))
+    await waitFor(() => {
+      expect(screen.queryByLabelText('answerForm.label')).not.toBeInTheDocument()
+    })
+  })
 })

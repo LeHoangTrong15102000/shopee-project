@@ -24,6 +24,10 @@ const qaHandlers = [
   http.delete(`${API_URL}/admin/qa/questions/:questionId/answers/:answerId`, () => {
     return HttpResponse.json({ message: 'Xóa câu trả lời thành công', data: null })
   }),
+
+  http.post(`${API_URL}/qa/questions/:id/answers`, () => {
+    return HttpResponse.json({ message: 'Trả lời thành công', data: { _id: 'ans-new' } })
+  }),
 ]
 
 export default qaHandlers

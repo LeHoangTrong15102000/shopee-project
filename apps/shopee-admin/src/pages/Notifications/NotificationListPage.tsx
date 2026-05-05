@@ -247,7 +247,7 @@ export default function NotificationListPage() {
               <Select
                 value={form.notifType}
                 onValueChange={(v) => {
-                  setForm({ ...form, notifType: v })
+                  setForm({ ...form, notifType: v || '' })
                   setTypeError('')
                 }}
               >

@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion, Variants } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { formatCurrency } from 'src/utils/utils'
 import { IconChartBar, IconCurrencyDollar, IconHeart, IconTag } from './WishlistIcons'
@@ -8,8 +8,8 @@ interface WishlistStatsProps {
   totalValue: number
   totalSavings: number
   avgDiscount: number
-  itemVariants: any
-  containerVariants: any
+  itemVariants: Variants
+  containerVariants: Variants | undefined
   isMobile: boolean
 }
 

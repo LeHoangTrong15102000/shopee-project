@@ -54,13 +54,7 @@ vi.mock('react-router', () => ({
     </a>
   ),
   useLocation: () => ({ pathname: '/cart' }),
-}))
-
-vi.mock('src/hooks/useSearchProducts', () => ({
-  default: () => ({
-    onSubmitSearch: vi.fn((e: any) => e?.preventDefault?.()),
-    register: () => ({}),
-  }),
+  useNavigate: () => vi.fn(),
 }))
 
 vi.mock('src/components/NavHeader', () => ({

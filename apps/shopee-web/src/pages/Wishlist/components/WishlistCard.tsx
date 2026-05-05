@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion, Variants } from 'framer-motion'
 import { Link } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import Button from 'src/components/Button'
@@ -30,7 +30,7 @@ interface WishlistCardProps {
   isTrending: (product: Product) => boolean
   getStockStatus: (product: Product) => { label: string; color: string } | null
   getDiscountPercent: (product: Product) => number
-  itemVariants: any
+  itemVariants: Variants
 }
 
 export default function WishlistCard({

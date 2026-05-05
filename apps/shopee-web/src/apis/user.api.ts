@@ -13,71 +13,20 @@ export interface BodyUpdateProfile extends Omit<
   // Không có đưa lên confirm_password -> chỉ handle ở dưới client thôi
 }
 
-// Mock data for fallback when API is not available
-const mockUser: User = {
-  _id: 'mock-user-id',
-  roles: ['User'] as ('User' | 'Admin')[],
-  email: 'user@shopee.vn',
-  name: 'Nguyễn Văn A',
-  date_of_birth: '1990-01-15T00:00:00.000Z',
-  avatar: 'https://picsum.photos/seed/avatar/200',
-  address: 'Quận 1, Hồ Chí Minh',
-  phone: '0901234567',
-  createdAt: '2024-01-01T00:00:00.000Z',
-  updatedAt: new Date().toISOString(),
-}
-
 export const userApi = {
-  getProfile: async () => {
-    try {
-      return await http.get<SuccessResponseApi<User>>('/me')
-    } catch (error) {
-      console.warn('⚠️ [getProfile] API not available, using mock data')
-      return {
-        status: 200,
-        data: {
-          message: 'Lấy thông tin người dùng thành công (mock)',
-          data: mockUser,
-        },
-      }
-    }
+  getProfile: () => {
+    return http.get<SuccessResponseApi<User>>('/me')
   },
-  updateProfile: async (body: BodyUpdateProfile) => {
-    try {
-      return await http.put<SuccessResponseApi<User>>('/user', body)
-    } catch (error) {
-      console.warn('⚠️ [updateProfile] API not available, using mock data')
-      return {
-        status: 200,
-        data: {
-          message: 'Cập nhật thông tin người dùng thành công (mock)',
-          data: {
-            ...mockUser,
-            ...body,
-            updatedAt: new Date().toISOString(),
-          },
-        },
-      }
-    }
+  updateProfile: (body: BodyUpdateProfile) => {
+    return http.put<SuccessResponseApi<User>>('/user', body)
   },
-  uploadAvatar: async (body: FormData) => {
-    try {
-      return await http.post<SuccessResponseApi<string>>('/user/upload-avatar', body, {
-        // Và phải truyền lên cái headers định dạng như này để có thể uploadAvatar
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-    } catch (error) {
-      console.warn('⚠️ [uploadAvatar] API not available, using mock data')
-      return {
-        status: 200,
-        data: {
-          message: 'Upload ảnh đại diện thành công (mock)',
-          data: 'https://picsum.photos/seed/avatar-new/200',
-        },
-      }
-    }
+  uploadAvatar: (body: FormData) => {
+    return http.post<SuccessResponseApi<string>>('/user/upload-avatar', body, {
+      // Và phải truyền lên cái headers định dạng như này để có thể uploadAvatar
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
   },
 }
 

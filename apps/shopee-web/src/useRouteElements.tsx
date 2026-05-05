@@ -19,6 +19,7 @@ const Login = lazy(() => import('./pages/Login'))
 const Register = lazy(() => import('./pages/Register'))
 const Home = lazy(() => import('./pages/Home'))
 const ProductList = lazy(() => import('./pages/ProductList'))
+const ProductListInfinite = lazy(() => import('./pages/ProductList/ProductListInfinite'))
 const ProductDetail = lazy(() => import('./pages/ProductDetail'))
 const Cart = lazy(() => import('./pages/Cart'))
 const Checkout = lazy(() => import('./pages/Checkout'))
@@ -26,7 +27,6 @@ const Wishlist = lazy(() => import('./pages/Wishlist'))
 const Compare = lazy(() => import('./pages/Compare'))
 const Profile = lazy(() => import('./pages/User/pages/Profile'))
 const ChangePassword = lazy(() => import('./pages/User/pages/ChangePassword'))
-const HistoryPurchases = lazy(() => import('./pages/User/pages/HistoryPurchases'))
 const OrderList = lazy(() => import('./pages/User/pages/OrderList'))
 const OrderDetail = lazy(() => import('./pages/User/pages/OrderDetail'))
 const MyVouchers = lazy(() => import('./pages/User/pages/MyVouchers'))
@@ -79,6 +79,15 @@ const useRouteElements = () => {
           element: (
             <Suspense fallback={<Loader />}>
               <ProductList />
+            </Suspense>
+          ),
+          errorElement: <NotFound />,
+        },
+        {
+          path: path.productsInfinite,
+          element: (
+            <Suspense fallback={<Loader />}>
+              <ProductListInfinite />
             </Suspense>
           ),
           errorElement: <NotFound />,
@@ -186,11 +195,7 @@ const useRouteElements = () => {
                 },
                 {
                   path: path.historyPurchases,
-                  element: (
-                    <Suspense>
-                      <HistoryPurchases />
-                    </Suspense>
-                  ),
+                  element: <Navigate to={path.orderList} replace />,
                 },
                 {
                   path: path.orderDetail,

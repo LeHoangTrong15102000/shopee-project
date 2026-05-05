@@ -41,61 +41,16 @@ interface HistoryResponse {
 }
 
 const checkinApi = {
-  checkIn: async () => {
-    try {
-      return await http.post<SuccessResponseApi<CheckInResponse>>('/checkin')
-    } catch (error) {
-      console.warn('⚠️ [checkIn] API not available, using mock data')
-      const today = new Date().toISOString().split('T')[0]
-      return {
-        data: {
-          message: 'Điểm danh thành công',
-          data: {
-            date: today,
-            streak: 1,
-            reward: { type: 'coins' as const, value: 5 },
-            total_coins: 5,
-          },
-        },
-      }
-    }
+  checkIn: () => {
+    return http.post<SuccessResponseApi<CheckInResponse>>('/checkin')
   },
 
-  getStreak: async () => {
-    try {
-      return await http.get<SuccessResponseApi<StreakResponse>>('/checkin/streak')
-    } catch (error) {
-      console.warn('⚠️ [getStreak] API not available, using mock data')
-      return {
-        data: {
-          message: 'Lấy thông tin streak thành công',
-          data: {
-            current_streak: 0,
-            longest_streak: 0,
-            last_checkin_date: null,
-            can_checkin_today: true,
-            total_coins: 0,
-          },
-        },
-      }
-    }
+  getStreak: () => {
+    return http.get<SuccessResponseApi<StreakResponse>>('/checkin/streak')
   },
 
-  getHistory: async (params: HistoryParams = {}) => {
-    try {
-      return await http.get<SuccessResponseApi<HistoryResponse>>('/checkin/history', { params })
-    } catch (error) {
-      console.warn('⚠️ [getHistory] API not available, using mock data')
-      return {
-        data: {
-          message: 'Lấy lịch sử điểm danh thành công',
-          data: {
-            data: [],
-            pagination: { page: 1, limit: 10, page_size: 1, total: 0 },
-          },
-        },
-      }
-    }
+  getHistory: (params: HistoryParams = {}) => {
+    return http.get<SuccessResponseApi<HistoryResponse>>('/checkin/history', { params })
   },
 }
 

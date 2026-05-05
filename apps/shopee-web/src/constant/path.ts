@@ -2,10 +2,11 @@
 const path = {
   home: '/',
   products: '/products',
+  productsInfinite: '/products/infinite',
   user: '/user',
   profile: '/user/profile',
   changePassword: '/user/password',
-  historyPurchases: '/user/purchase',
+  historyPurchases: '/user/purchase', // redirect alias → orderList (/user/order)
   orderList: '/user/order',
   myVouchers: '/user/voucher',
   addressBook: '/user/address', // Trang quản lý địa chỉ giao hàng

@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import NavHeader from '../NavHeader'
-import { Link, useLocation } from 'react-router'
+import { Link, useLocation, useNavigate } from 'react-router'
 import path from 'src/constant/path'
-import useSearchProducts from 'src/hooks/useSearchProducts'
+import { useForm } from 'react-hook-form'
 import { motion } from 'framer-motion'
 import MobileNavigationDrawer from '../MobileNavigationDrawer'
 import Button from 'src/components/Button'
@@ -15,7 +15,11 @@ interface CartHeaderProps {
 
 const CartHeader = ({ title, showStepper = true }: CartHeaderProps) => {
   const { t } = useTranslation('cart')
-  const { onSubmitSearch, register } = useSearchProducts()
+  const navigate = useNavigate()
+  const { register, handleSubmit } = useForm<{ name: string }>({ defaultValues: { name: '' } })
+  const onSubmitSearch = handleSubmit((data) => {
+    navigate(`${path.products}?search=${encodeURIComponent(data.name)}`)
+  })
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const displayTitle = title ?? t('header.title')
   return (

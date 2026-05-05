@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion'
 import OrderStatusTracker from 'src/components/OrderStatusTracker'
 import OrderTrackingTimeline from 'src/components/OrderTrackingTimeline'
+import { OrderTracking } from 'src/types/orderTracking.type'
 import { reducedMotionVariants, sectionVariants } from '../orderDetail.constants'
 
 interface OrderTimelineProps {
-  tracking: any
+  tracking: OrderTracking | null | undefined
   currentStatus: string | null
   isSubscribed: boolean
   orderStatus: string

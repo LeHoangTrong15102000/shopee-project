@@ -18,6 +18,11 @@ import {
   Upload,
   Settings,
   FileText,
+  MessageSquare,
+  Truck,
+  CreditCard,
+  TrendingUp,
+  CheckSquare,
 } from 'lucide-react'
 import { ROUTES } from 'src/constants/routes'
 import {
@@ -64,9 +69,14 @@ const navSections = [
     items: [
       { titleKey: 'menu.notifications', href: ROUTES.NOTIFICATIONS, icon: Bell },
       { titleKey: 'menu.qa', href: ROUTES.QA, icon: HelpCircle },
+      { titleKey: 'menu.conversations', href: ROUTES.CONVERSATIONS, icon: MessageSquare },
       { titleKey: 'menu.import', href: ROUTES.IMPORT, icon: Upload },
       { titleKey: 'menu.settings', href: ROUTES.SETTINGS, icon: Settings },
       { titleKey: 'menu.activityLog', href: ROUTES.ACTIVITY_LOG, icon: FileText },
+      { titleKey: 'menu.shippingMethods', href: ROUTES.SHIPPING_METHODS, icon: Truck },
+      { titleKey: 'menu.paymentMethods', href: ROUTES.PAYMENT_METHODS, icon: CreditCard },
+      { titleKey: 'menu.priceAlerts', href: ROUTES.PRICE_ALERTS, icon: TrendingUp },
+      { titleKey: 'menu.checkin', href: ROUTES.CHECKIN, icon: CheckSquare },
     ],
   },
 ]
@@ -87,6 +97,11 @@ const routePrefetchMap: Record<string, () => Promise<unknown>> = {
   [ROUTES.IMPORT]: () => import('src/pages/Import/ImportPage'),
   [ROUTES.SETTINGS]: () => import('src/pages/Settings/SettingsPage'),
   [ROUTES.ACTIVITY_LOG]: () => import('src/pages/ActivityLog/ActivityLogPage'),
+  [ROUTES.CONVERSATIONS]: () => import('src/pages/Conversations/ConversationListPage'),
+  [ROUTES.SHIPPING_METHODS]: () => import('src/pages/Shipping/ShippingMethodsPage'),
+  [ROUTES.PAYMENT_METHODS]: () => import('src/pages/Payments/PaymentMethodsPage'),
+  [ROUTES.PRICE_ALERTS]: () => import('src/pages/PriceAlerts/PriceAlertsPage'),
+  [ROUTES.CHECKIN]: () => import('src/pages/Checkin/CheckinPage'),
 }
 
 const prefetchedRoutes = new Set<string>()

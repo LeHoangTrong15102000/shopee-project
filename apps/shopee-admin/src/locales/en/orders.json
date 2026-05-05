@@ -46,6 +46,18 @@
     "address": "Address",
     "updateStatus": "Update order status"
   },
+  "tracking": {
+    "title": "Tracking",
+    "carrier": "Carrier",
+    "trackingNumber": "Tracking Number",
+    "estimatedDelivery": "Estimated Delivery",
+    "currentStatus": "Current Status",
+    "events": "Events",
+    "location": "Location",
+    "timestamp": "Time",
+    "emptyState": "No tracking information available.",
+    "errorState": "Failed to load tracking information."
+  },
   "itemCount": "{{count}} item(s)",
   "search": "Search orders...",
   "error": "Failed to load orders",

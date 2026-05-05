@@ -47,7 +47,15 @@
     "description": "Mô tả",
     "searchOrders": "Tìm kiếm đơn hàng...",
     "searchReviews": "Tìm kiếm đánh giá...",
-    "searchTransactions": "Tìm kiếm giao dịch..."
+    "searchTransactions": "Tìm kiếm giao dịch...",
+    "addresses": "Địa chỉ",
+    "addressesColumns": {
+      "street": "Đường",
+      "city": "Thành phố",
+      "country": "Quốc gia",
+      "default": "Mặc định"
+    },
+    "addressesEmpty": "Không có địa chỉ nào."
   },
   "toast": {
     "deleteTitle": "Xóa người dùng",

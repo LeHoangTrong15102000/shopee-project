@@ -1,0 +1,20 @@
+{
+  "title": "Phân tích Check-in",
+  "description": "Tổng quan hoạt động check-in hàng ngày",
+  "stats": {
+    "totalToday": "Check-in hôm nay",
+    "activeStreaks": "Chuỗi đang hoạt động"
+  },
+  "activity": {
+    "title": "Hoạt động gần đây",
+    "columns": {
+      "user": "Người dùng",
+      "streak": "Chuỗi",
+      "pointsEarned": "Điểm nhận được",
+      "date": "Ngày"
+    }
+  },
+  "error": "Không thể tải dữ liệu check-in",
+  "emptyState": "Không có hoạt động check-in nào.",
+  "backendRequired": "Endpoint quản trị check-in chưa có. Cần triển khai backend."
+}

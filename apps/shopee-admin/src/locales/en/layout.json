@@ -21,7 +21,12 @@
     "qa": "Q&A",
     "import": "Import",
     "settings": "Settings",
-    "activityLog": "Activity Log"
+    "activityLog": "Activity Log",
+    "conversations": "Conversations",
+    "shippingMethods": "Shipping Methods",
+    "paymentMethods": "Payment Methods",
+    "priceAlerts": "Price Alerts",
+    "checkin": "Check-in"
   },
   "header": {
     "settings": "Settings",

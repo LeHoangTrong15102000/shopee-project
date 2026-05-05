@@ -46,6 +46,18 @@
     "address": "Địa chỉ",
     "updateStatus": "Cập nhật trạng thái đơn hàng"
   },
+  "tracking": {
+    "title": "Theo dõi",
+    "carrier": "Đơn vị vận chuyển",
+    "trackingNumber": "Mã vận đơn",
+    "estimatedDelivery": "Dự kiến giao hàng",
+    "currentStatus": "Trạng thái hiện tại",
+    "events": "Sự kiện",
+    "location": "Địa điểm",
+    "timestamp": "Thời gian",
+    "emptyState": "Không có thông tin theo dõi.",
+    "errorState": "Không thể tải thông tin theo dõi."
+  },
   "itemCount": "{{count}} sản phẩm",
   "search": "Tìm kiếm đơn hàng...",
   "error": "Không thể tải đơn hàng",

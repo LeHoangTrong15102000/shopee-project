@@ -16,11 +16,13 @@ interface CreateNotificationBody {
   user_id: string
   title: string
   message: string
+  type?: string
 }
 
 interface BroadcastNotificationBody {
   title: string
   message: string
+  type?: string
 }
 
 const notificationsApi = {

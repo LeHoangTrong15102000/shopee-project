@@ -6,17 +6,31 @@ import type { OrderStatus } from 'src/types'
 import { useAdminMutationContext } from './useAdminMutationContext'
 
 export const ORDER_KEYS = {
-  list: (page: number, status: string) => ['admin-orders', page, status] as const,
+  list: (page: number, status: string, start_date?: string, end_date?: string, payment_method?: string) =>
+    ['admin-orders', page, status, start_date, end_date, payment_method] as const,
   all: ['admin-orders'] as const,
   countByStatus: ['admin-orders-count-by-status'] as const,
 }
 
-export function useOrders(page: number, status: OrderStatus | 'all') {
+export function useOrders(
+  page: number,
+  status: OrderStatus | 'all',
+  start_date?: string,
+  end_date?: string,
+  payment_method?: string,
+) {
   return useQuery({
-    queryKey: ORDER_KEYS.list(page, status),
+    queryKey: ORDER_KEYS.list(page, status, start_date, end_date, payment_method),
     queryFn: () =>
       ordersApi
-        .getOrders({ page: page + 1, limit: 10, ...(status !== 'all' && { status }) })
+        .getOrders({
+          page: page + 1,
+          limit: 10,
+          ...(status !== 'all' && { status }),
+          ...(start_date && { start_date }),
+          ...(end_date && { end_date }),
+          ...(payment_method && { payment_method }),
+        })
         .then((r) => r.data.data),
     placeholderData: keepPreviousData,
   })

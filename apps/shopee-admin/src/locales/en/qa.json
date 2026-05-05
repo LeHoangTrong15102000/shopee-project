@@ -11,6 +11,15 @@
   "by": "by",
   "answers": "answers",
   "noAnswers": "No answers yet.",
+  "answerForm": {
+    "label": "Your Answer",
+    "placeholder": "Type your answer here...",
+    "submit": "Submit Answer",
+    "validation": "Answer cannot be empty"
+  },
+  "actions": {
+    "answer": "Answer"
+  },
   "toast": {
     "deleteQuestionTitle": "Delete Question",
     "deleteQuestionDescription": "This will delete the question and all its answers.",
@@ -19,7 +28,9 @@
     "questionDeleted": "Question deleted",
     "answerDeleted": "Answer deleted",
     "deleteQuestionFailed": "Failed to delete question",
-    "deleteAnswerFailed": "Failed to delete answer"
+    "deleteAnswerFailed": "Failed to delete answer",
+    "answerSubmitted": "Answer submitted",
+    "answerFailed": "Failed to submit answer"
   },
   "error": "Failed to load Q&A"
 }

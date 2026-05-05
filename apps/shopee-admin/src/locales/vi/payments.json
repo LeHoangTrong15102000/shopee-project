@@ -1,0 +1,14 @@
+{
+  "title": "Phương thức thanh toán",
+  "description": "Xem các phương thức thanh toán",
+  "columns": {
+    "name": "Tên",
+    "code": "Mã",
+    "description": "Mô tả",
+    "status": "Trạng thái"
+  },
+  "enabled": "Đang bật",
+  "disabled": "Đã tắt",
+  "error": "Không thể tải phương thức thanh toán",
+  "emptyState": "Không có phương thức thanh toán nào."
+}

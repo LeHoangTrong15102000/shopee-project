@@ -202,6 +202,7 @@ export default function UserDetailPage() {
           <TabsTrigger value="orders">{t('detail.orders')}</TabsTrigger>
           <TabsTrigger value="reviews">{t('detail.reviews')}</TabsTrigger>
           <TabsTrigger value="loyalty">{t('detail.loyalty')}</TabsTrigger>
+          <TabsTrigger value="addresses">{t('detail.addresses')}</TabsTrigger>
         </TabsList>
         <TabsContent value="orders">
           <DataTable
@@ -226,6 +227,53 @@ export default function UserDetailPage() {
             searchKey="description"
             searchPlaceholder={t('detail.searchTransactions')}
           />
+        </TabsContent>
+        <TabsContent value="addresses">
+          {(() => {
+            const userAny = user as unknown as Record<string, unknown>
+            const addressesArr = Array.isArray(userAny.addresses)
+              ? (userAny.addresses as Array<Record<string, string>>)
+              : null
+            if (addressesArr && addressesArr.length > 0) {
+              return (
+                <div className="rounded border">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b bg-muted/50">
+                        <th className="px-4 py-2 text-left font-medium">{t('detail.addressesColumns.street')}</th>
+                        <th className="px-4 py-2 text-left font-medium">{t('detail.addressesColumns.city')}</th>
+                        <th className="px-4 py-2 text-left font-medium">{t('detail.addressesColumns.country')}</th>
+                        <th className="px-4 py-2 text-left font-medium">{t('detail.addressesColumns.default')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {addressesArr.map((addr, i) => (
+                        <tr key={i} className="border-b last:border-0">
+                          <td className="px-4 py-2">{addr.street ?? addr.address ?? '—'}</td>
+                          <td className="px-4 py-2">{addr.city ?? '—'}</td>
+                          <td className="px-4 py-2">{addr.country ?? '—'}</td>
+                          <td className="px-4 py-2">{addr.is_default ? '✓' : ''}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )
+            }
+            if (user.address) {
+              return (
+                <div className="rounded border p-4 text-sm">
+                  <p className="text-muted-foreground text-xs mb-1">{t('detail.address')}</p>
+                  <p>{user.address}</p>
+                </div>
+              )
+            }
+            return (
+              <p className="py-8 text-center text-sm text-muted-foreground">
+                {t('detail.addressesEmpty')}
+              </p>
+            )
+          })()}
         </TabsContent>
       </Tabs>
     </div>

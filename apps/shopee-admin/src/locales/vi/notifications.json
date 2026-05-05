@@ -24,6 +24,16 @@
     "title": "Tiêu đề",
     "message": "Nội dung",
     "userId": "ID người dùng",
+    "type": "Loại",
+    "selectType": "Chọn loại",
+    "typeOptions": {
+      "order": "Đơn hàng",
+      "promotion": "Khuyến mãi",
+      "maintenance": "Bảo trì",
+      "system": "Hệ thống",
+      "other": "Khác"
+    },
+    "typeRequired": "Loại là bắt buộc",
     "templates": {
       "maintenance": "Bảo trì hệ thống",
       "maintenanceTitle": "Bảo trì định kỳ",

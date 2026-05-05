@@ -9,6 +9,9 @@ interface OrderListParams {
   order?: string
   search?: string
   user_id?: string
+  start_date?: string
+  end_date?: string
+  payment_method?: string
 }
 
 interface OrderListResponse {

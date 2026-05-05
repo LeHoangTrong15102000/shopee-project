@@ -47,7 +47,15 @@
     "description": "Description",
     "searchOrders": "Search orders...",
     "searchReviews": "Search reviews...",
-    "searchTransactions": "Search transactions..."
+    "searchTransactions": "Search transactions...",
+    "addresses": "Addresses",
+    "addressesColumns": {
+      "street": "Street",
+      "city": "City",
+      "country": "Country",
+      "default": "Default"
+    },
+    "addressesEmpty": "No addresses on file."
   },
   "toast": {
     "deleteTitle": "Delete User",

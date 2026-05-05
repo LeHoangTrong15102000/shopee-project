@@ -18,5 +18,25 @@
     "loginSuccess": "Dev login successful",
     "loginButton": "Dev Login (bypass API)",
     "credentialHint": "Mock credentials: admin@shopee.com / admin123"
+  },
+  "forgotPasswordLink": "Forgot Password?",
+  "forgotPassword": {
+    "title": "Forgot Password",
+    "description": "Enter your email address and we will send you a reset link.",
+    "submit": "Send Reset Link",
+    "successMessage": "If that email exists, a reset link has been sent.",
+    "errorMessage": "Failed to send reset link. Please try again.",
+    "backToLogin": "Back to Login"
+  },
+  "resetPassword": {
+    "title": "Reset Password",
+    "description": "Enter your new password below.",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "passwordMismatch": "Passwords do not match",
+    "submit": "Reset Password",
+    "successMessage": "Password reset successfully. Please log in.",
+    "errorMessage": "Failed to reset password. The link may have expired.",
+    "missingToken": "Invalid or missing reset token. Please request a new reset link."
   }
 }

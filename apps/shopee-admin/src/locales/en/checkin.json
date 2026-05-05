@@ -1,0 +1,20 @@
+{
+  "title": "Check-in Analytics",
+  "description": "Overview of daily check-in activity",
+  "stats": {
+    "totalToday": "Check-ins Today",
+    "activeStreaks": "Active Streaks"
+  },
+  "activity": {
+    "title": "Recent Activity",
+    "columns": {
+      "user": "User",
+      "streak": "Streak",
+      "pointsEarned": "Points Earned",
+      "date": "Date"
+    }
+  },
+  "error": "Failed to load check-in data",
+  "emptyState": "No check-in activity found.",
+  "backendRequired": "Check-in admin endpoint not yet available. Backend work required."
+}

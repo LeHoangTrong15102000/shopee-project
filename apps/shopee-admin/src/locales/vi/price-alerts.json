@@ -1,0 +1,17 @@
+{
+  "title": "Cảnh báo giá",
+  "description": "Tổng quan cảnh báo giá của người dùng",
+  "columns": {
+    "user": "Người dùng",
+    "product": "Sản phẩm",
+    "targetPrice": "Giá mục tiêu",
+    "currentPrice": "Giá hiện tại",
+    "status": "Trạng thái",
+    "date": "Ngày"
+  },
+  "triggered": "Đã kích hoạt",
+  "pending": "Chờ",
+  "error": "Không thể tải cảnh báo giá",
+  "emptyState": "Không có cảnh báo giá nào.",
+  "backendRequired": "Endpoint quản trị cảnh báo giá chưa có. Cần triển khai backend."
+}

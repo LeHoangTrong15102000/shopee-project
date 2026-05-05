@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
@@ -15,6 +15,7 @@ import authApi from 'src/apis/auth.api'
 import { clearLS } from 'src/utils/http'
 import { AxiosError } from 'axios'
 import type { User } from 'src/types'
+import { ROUTES } from 'src/constants/routes'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email format'),
@@ -138,6 +139,11 @@ export default function LoginPage() {
               {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
               {t('form.signIn')}
             </Button>
+            <p className="text-center text-sm">
+              <Link to={ROUTES.FORGOT_PASSWORD} className="text-primary underline">
+                {t('forgotPasswordLink')}
+              </Link>
+            </p>
             {import.meta.env.DEV && (
               <div className="space-y-2">
                 <p className="text-center text-xs text-muted-foreground">

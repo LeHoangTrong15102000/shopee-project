@@ -36,14 +36,20 @@ export function useCreateNotification(onSuccess?: () => void) {
   return useMutation({
     mutationFn: (params: {
       type: 'targeted' | 'broadcast'
-      form: { user_id: string; title: string; message: string }
+      form: { user_id: string; title: string; message: string; notifType: string }
     }) =>
       params.type === 'broadcast'
         ? notificationsApi.broadcastNotification({
             title: params.form.title,
             message: params.form.message,
+            type: params.form.notifType,
           })
-        : notificationsApi.createNotification(params.form),
+        : notificationsApi.createNotification({
+            user_id: params.form.user_id,
+            title: params.form.title,
+            message: params.form.message,
+            type: params.form.notifType,
+          }),
     onSuccess: (_, vars) => {
       toast.success(i18n.t('toast.notificationSent', { ns: 'notifications' }))
       addLog({

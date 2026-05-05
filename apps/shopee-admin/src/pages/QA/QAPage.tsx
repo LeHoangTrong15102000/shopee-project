@@ -1,27 +1,37 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
-import { Trash2, ChevronDown, ChevronRight, MessageSquare } from 'lucide-react'
+import { Trash2, ChevronDown, ChevronRight, MessageSquare, Send } from 'lucide-react'
 import { Button } from 'src/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from 'src/components/ui/collapsible'
+import { Textarea } from 'src/components/ui/textarea'
+import { Label } from 'src/components/ui/label'
 import { PageHeader } from 'src/components/shared/PageHeader'
 import { StatCard } from 'src/components/shared/StatCard'
 import { LoadingState } from 'src/components/shared/LoadingState'
 import { ErrorState } from 'src/components/shared/ErrorState'
 import { ConfirmDialog } from 'src/components/shared/ConfirmDialog'
-import { useQuestions, useQAStats, useDeleteQuestion, useDeleteAnswer } from 'src/hooks/useQA'
+import { useQuestions, useQAStats, useDeleteQuestion, useDeleteAnswer, useAnswerQuestion } from 'src/hooks/useQA'
 
 export default function QAPage() {
   const [deleteQ, setDeleteQ] = useState<string | null>(null)
   const [deleteA, setDeleteA] = useState<{ qId: string; aId: string } | null>(null)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
+  const [answerOpen, setAnswerOpen] = useState<string | null>(null)
+  const [answerText, setAnswerText] = useState('')
+  const [answerError, setAnswerError] = useState('')
   const { t } = useTranslation('qa')
 
   const { data, isLoading, isError, refetch } = useQuestions()
   const { data: stats } = useQAStats()
   const deleteQMut = useDeleteQuestion(() => setDeleteQ(null))
   const deleteAMut = useDeleteAnswer(() => setDeleteA(null))
+  const answerMut = useAnswerQuestion(() => {
+    setAnswerOpen(null)
+    setAnswerText('')
+    setAnswerError('')
+  })
 
   const toggle = (id: string) => {
     setExpanded((prev) => {
@@ -29,6 +39,20 @@ export default function QAPage() {
       next.has(id) ? next.delete(id) : next.add(id)
       return next
     })
+  }
+
+  const handleOpenAnswer = (qId: string) => {
+    setAnswerOpen(qId)
+    setAnswerText('')
+    setAnswerError('')
+  }
+
+  const handleSubmitAnswer = (questionId: string) => {
+    if (!answerText.trim()) {
+      setAnswerError(t('answerForm.validation'))
+      return
+    }
+    answerMut.mutate({ questionId, answer: answerText.trim() })
   }
 
   if (isLoading) return <LoadingState />
@@ -68,14 +92,26 @@ export default function QAPage() {
                     </p>
                   </div>
                 </CollapsibleTrigger>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  aria-label={t('common:aria.deleteItem', { item: t('qa:question') })}
-                  onClick={() => setDeleteQ(q._id)}
-                >
-                  <Trash2 className="size-4 text-destructive" />
-                </Button>
+                <div className="flex items-center gap-1">
+                  {q.answers_count === 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleOpenAnswer(q._id)}
+                    >
+                      <Send className="mr-1 size-3" />
+                      {t('actions.answer')}
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    aria-label={t('common:aria.deleteItem', { item: t('qa:question') })}
+                    onClick={() => setDeleteQ(q._id)}
+                  >
+                    <Trash2 className="size-4 text-destructive" />
+                  </Button>
+                </div>
               </CardHeader>
               <CollapsibleContent>
                 <CardContent className="pt-0">
@@ -114,6 +150,43 @@ export default function QAPage() {
                     </div>
                   ) : (
                     <p className="text-xs text-muted-foreground">{t('noAnswers')}</p>
+                  )}
+                  {answerOpen === q._id && (
+                    <div className="mt-3 space-y-2 border-t pt-3">
+                      <Label htmlFor={`answer-${q._id}`}>{t('answerForm.label')}</Label>
+                      <Textarea
+                        id={`answer-${q._id}`}
+                        placeholder={t('answerForm.placeholder')}
+                        value={answerText}
+                        onChange={(e) => {
+                          setAnswerText(e.target.value)
+                          if (answerError) setAnswerError('')
+                        }}
+                        aria-invalid={!!answerError}
+                        aria-describedby={answerError ? `answer-error-${q._id}` : undefined}
+                      />
+                      {answerError && (
+                        <p id={`answer-error-${q._id}`} className="text-xs text-destructive">
+                          {answerError}
+                        </p>
+                      )}
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={() => handleSubmitAnswer(q._id)}
+                          disabled={answerMut.isPending}
+                        >
+                          {t('answerForm.submit')}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => { setAnswerOpen(null); setAnswerText(''); setAnswerError('') }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
                   )}
                 </CardContent>
               </CollapsibleContent>

@@ -24,6 +24,16 @@
     "title": "Title",
     "message": "Message",
     "userId": "User ID",
+    "type": "Type",
+    "selectType": "Select type",
+    "typeOptions": {
+      "order": "Order",
+      "promotion": "Promotion",
+      "maintenance": "Maintenance",
+      "system": "System",
+      "other": "Other"
+    },
+    "typeRequired": "Type is required",
     "templates": {
       "maintenance": "System Maintenance",
       "maintenanceTitle": "Scheduled Maintenance",

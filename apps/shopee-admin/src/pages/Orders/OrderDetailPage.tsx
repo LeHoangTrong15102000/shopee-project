@@ -23,11 +23,86 @@ import { PageHeader } from 'src/components/shared/PageHeader'
 import { StatusBadge } from 'src/components/shared/StatusBadge'
 import { LoadingState } from 'src/components/shared/LoadingState'
 import { ErrorState } from 'src/components/shared/ErrorState'
+import { Skeleton } from 'src/components/ui/skeleton'
 import { useOrderDetail, useUpdateOrderStatus } from 'src/hooks/useOrderDetail'
+import { useOrderTracking } from 'src/hooks/useTracking'
 import { formatPrice } from '@shopee/shared-utils'
 import type { OrderStatus } from 'src/types'
 
 const statusFlow: OrderStatus[] = ['pending', 'processing', 'shipped', 'delivered', 'cancelled']
+
+function TrackingCard({ orderId }: { orderId: string }) {
+  const { t } = useTranslation('orders')
+  const { data, isLoading, isError } = useOrderTracking(orderId)
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{t('tracking.title')}</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2 text-sm">
+        {isLoading && (
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-4 w-2/3" />
+          </div>
+        )}
+        {isError && (
+          <p className="text-muted-foreground">{t('tracking.errorState')}</p>
+        )}
+        {!isLoading && !isError && !data && (
+          <p className="text-muted-foreground">{t('tracking.emptyState')}</p>
+        )}
+        {!isLoading && !isError && data && (
+          <>
+            {data.carrier && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">{t('tracking.carrier')}</span>
+                <span>{data.carrier}</span>
+              </div>
+            )}
+            {data.trackingNumber && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">{t('tracking.trackingNumber')}</span>
+                <span className="font-mono text-xs">{data.trackingNumber}</span>
+              </div>
+            )}
+            {data.estimatedDelivery && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">{t('tracking.estimatedDelivery')}</span>
+                <span>{data.estimatedDelivery}</span>
+              </div>
+            )}
+            {data.currentStatus && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">{t('tracking.currentStatus')}</span>
+                <span className="capitalize">{data.currentStatus}</span>
+              </div>
+            )}
+            {data.events && data.events.length > 0 && (
+              <div className="mt-3 space-y-2">
+                <p className="font-medium">{t('tracking.events')}</p>
+                {data.events.map((ev, i) => (
+                  <div key={i} className="rounded border p-2 text-xs">
+                    <div className="flex justify-between text-muted-foreground">
+                      {ev.location && <span>{ev.location}</span>}
+                      <span>{ev.timestamp}</span>
+                    </div>
+                    <p className="mt-0.5">{ev.description}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+            {(!data.carrier && !data.trackingNumber && !data.currentStatus && data.events.length === 0) && (
+              <p className="text-muted-foreground">{t('tracking.emptyState')}</p>
+            )}
+          </>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
 
 export default function OrderDetailPage() {
   const { t } = useTranslation('orders')
@@ -163,6 +238,7 @@ export default function OrderDetailPage() {
               )}
             </CardContent>
           </Card>
+          {id && <TrackingCard orderId={id} />}
         </div>
       </div>
     </div>

@@ -1,0 +1,14 @@
+{
+  "title": "Payment Methods",
+  "description": "View available payment methods",
+  "columns": {
+    "name": "Name",
+    "code": "Code",
+    "description": "Description",
+    "status": "Status"
+  },
+  "enabled": "Enabled",
+  "disabled": "Disabled",
+  "error": "Failed to load payment methods",
+  "emptyState": "No payment methods available."
+}

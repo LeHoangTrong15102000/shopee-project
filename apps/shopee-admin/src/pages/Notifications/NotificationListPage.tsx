@@ -66,7 +66,8 @@ export default function NotificationListPage() {
   const [page, setPage] = useState(0)
   const [createType, setCreateType] = useState<'targeted' | 'broadcast' | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
-  const [form, setForm] = useState({ user_id: '', title: '', message: '' })
+  const [form, setForm] = useState({ user_id: '', title: '', message: '', notifType: '' })
+  const [typeError, setTypeError] = useState('')
   const [selectedTemplate, setSelectedTemplate] = useState('custom')
   const { t } = useTranslation('notifications')
   const { t: tc } = useTranslation('common')
@@ -135,7 +136,8 @@ export default function NotificationListPage() {
               variant="outline"
               onClick={() => {
                 setCreateType('targeted')
-                setForm({ user_id: '', title: '', message: '' })
+                setForm({ user_id: '', title: '', message: '', notifType: '' })
+                setTypeError('')
                 setSelectedTemplate('custom')
               }}
             >
@@ -146,7 +148,8 @@ export default function NotificationListPage() {
               size="sm"
               onClick={() => {
                 setCreateType('broadcast')
-                setForm({ user_id: '', title: '', message: '' })
+                setForm({ user_id: '', title: '', message: '', notifType: '' })
+                setTypeError('')
                 setSelectedTemplate('custom')
               }}
             >
@@ -239,10 +242,38 @@ export default function NotificationListPage() {
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
               />
             </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="notif-type">{t('form.type')}</Label>
+              <Select
+                value={form.notifType}
+                onValueChange={(v) => {
+                  setForm({ ...form, notifType: v })
+                  setTypeError('')
+                }}
+              >
+                <SelectTrigger id="notif-type" aria-invalid={!!typeError}>
+                  <SelectValue placeholder={t('form.selectType')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {(['order', 'promotion', 'maintenance', 'system', 'other'] as const).map((opt) => (
+                    <SelectItem key={opt} value={opt}>
+                      {t(`form.typeOptions.${opt}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {typeError && <p className="text-xs text-destructive">{typeError}</p>}
+            </div>
           </div>
           <DialogFooter>
             <Button
-              onClick={() => createMut.mutate({ type: createType!, form })}
+              onClick={() => {
+                if (!form.notifType) {
+                  setTypeError(t('form.typeRequired'))
+                  return
+                }
+                createMut.mutate({ type: createType!, form })
+              }}
               disabled={createMut.isPending}
             >
               {tc('buttons.send')}

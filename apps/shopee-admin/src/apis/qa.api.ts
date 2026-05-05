@@ -31,6 +31,12 @@ const qaApi = {
 
   deleteAnswer: (questionId: string, answerId: string) =>
     http.delete<SuccessResponse<null>>(`admin/qa/questions/${questionId}/answers/${answerId}`),
+
+  answerQuestion: (questionId: string, answer: string) =>
+    http.post<SuccessResponse<QAAnswer>>(`qa/questions/${questionId}/answers`, {
+      answer,
+      is_seller: true,
+    }),
 }
 
 export default qaApi

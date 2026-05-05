@@ -54,7 +54,7 @@ export default function OrderListPage() {
   const [endDate, setEndDate] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('')
 
-  const { data, isLoading, isError, refetch } = useOrders(page, status)
+  const { data, isLoading, isError, refetch } = useOrders(page, status, startDate || undefined, endDate || undefined, paymentMethod || undefined)
   const { data: countData } = useOrderCountByStatus()
 
   const countMap = new Map(countData?.map((c) => [c._id, c.count]) ?? [])
@@ -158,17 +158,11 @@ export default function OrderListPage() {
       'orders',
     )
 
-  const filteredOrders = (data?.orders ?? []).filter((o) => {
-    if (startDate && new Date(o.createdAt) < new Date(startDate)) return false
-    if (endDate && new Date(o.createdAt) > new Date(endDate + 'T23:59:59')) return false
-    if (paymentMethod && o.payment_method !== paymentMethod) return false
-    return true
-  })
-
   const handleClearFilters = () => {
     setStartDate('')
     setEndDate('')
     setPaymentMethod('')
+    setPage(0)
   }
 
   const handleStatusChange = (v: string) => {
@@ -196,7 +190,7 @@ export default function OrderListPage() {
               id="filter-start-date"
               type="date"
               value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              onChange={(e) => { setStartDate(e.target.value); setPage(0) }}
             />
           </div>
           <div>
@@ -205,12 +199,12 @@ export default function OrderListPage() {
               id="filter-end-date"
               type="date"
               value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
+              onChange={(e) => { setEndDate(e.target.value); setPage(0) }}
             />
           </div>
           <div>
             <Label htmlFor="filter-payment">{t('filters.paymentMethod')}</Label>
-            <Select value={paymentMethod} onValueChange={(v) => v && setPaymentMethod(v)}>
+            <Select value={paymentMethod} onValueChange={(v) => { if (v) { setPaymentMethod(v); setPage(0) } }}>
               <SelectTrigger id="filter-payment">
                 <SelectValue placeholder={t('filters.all')} />
               </SelectTrigger>
@@ -243,7 +237,7 @@ export default function OrderListPage() {
       {isError && <ErrorState message={t('error')} onRetry={refetch} />}
       <DataTable
         columns={columns}
-        data={filteredOrders}
+        data={data?.orders ?? []}
         isLoading={isLoading}
         searchKey="_id"
         searchPlaceholder={t('search')}

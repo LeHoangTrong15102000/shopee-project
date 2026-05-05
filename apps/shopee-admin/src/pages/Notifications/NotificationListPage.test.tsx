@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { renderWithProviders } from 'src/test-utils'
 import NotificationListPage from './NotificationListPage'
 import { server } from '../../../vitest.setup'
@@ -133,7 +134,8 @@ describe('NotificationListPage', () => {
   })
 
   it('submits targeted notification form', async () => {
-    const { user } = renderWithProviders(<NotificationListPage />)
+    const user = userEvent.setup({ pointerEventsCheck: 0 })
+    renderWithProviders(<NotificationListPage />)
     await waitFor(() => {
       expect(screen.getByRole('table')).toBeInTheDocument()
     })
@@ -145,11 +147,40 @@ describe('NotificationListPage', () => {
     await user.type(screen.getByLabelText('form.userId'), 'user-123')
     await user.type(screen.getByLabelText('form.title'), 'Test Notification Title')
     await user.type(screen.getByLabelText('form.message'), 'Test notification message content')
+    // Select a notification type (required field)
+    const typeSelect = screen.getByRole('combobox', { name: /form.type/i })
+    await user.click(typeSelect)
+    await waitFor(() => {
+      expect(screen.getByText('form.typeOptions.order')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('form.typeOptions.order'))
     const sendBtn = screen.getByRole('button', { name: /buttons.send/i })
     await user.click(sendBtn)
     await waitFor(() => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     })
+  })
+
+  it('shows validation error when submitting targeted form without type', async () => {
+    const { user } = renderWithProviders(<NotificationListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    const targetedBtn = screen.getByRole('button', { name: /tabs.targeted/i })
+    await user.click(targetedBtn)
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+    await user.type(screen.getByLabelText('form.userId'), 'user-123')
+    await user.type(screen.getByLabelText('form.title'), 'Test Title')
+    await user.type(screen.getByLabelText('form.message'), 'Test message')
+    const sendBtn = screen.getByRole('button', { name: /buttons.send/i })
+    await user.click(sendBtn)
+    await waitFor(() => {
+      expect(screen.getByText('form.typeRequired')).toBeInTheDocument()
+    })
+    // Dialog should still be open
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
   })
 
   it('renders notification title column header in table', async () => {
@@ -258,7 +289,8 @@ describe('NotificationListPage', () => {
   })
 
   it('submits broadcast notification form and dialog closes', async () => {
-    const { user } = renderWithProviders(<NotificationListPage />)
+    const user = userEvent.setup({ pointerEventsCheck: 0 })
+    renderWithProviders(<NotificationListPage />)
     await waitFor(() => {
       expect(screen.getByRole('table')).toBeInTheDocument()
     })
@@ -269,6 +301,13 @@ describe('NotificationListPage', () => {
     })
     await user.type(screen.getByLabelText('form.title'), 'Broadcast Title')
     await user.type(screen.getByLabelText('form.message'), 'Broadcast message content')
+    // Select a notification type (required field)
+    const typeSelect = screen.getByRole('combobox', { name: /form.type/i })
+    await user.click(typeSelect)
+    await waitFor(() => {
+      expect(screen.getByText('form.typeOptions.promotion')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('form.typeOptions.promotion'))
     const sendBtn = screen.getByRole('button', { name: /buttons.send/i })
     await user.click(sendBtn)
     await waitFor(() => {
@@ -312,7 +351,8 @@ describe('NotificationListPage', () => {
   })
 
   it('selects a non-custom template in broadcast dialog and prefills form', async () => {
-    const { user } = renderWithProviders(<NotificationListPage />)
+    const user = userEvent.setup({ pointerEventsCheck: 0 })
+    renderWithProviders(<NotificationListPage />)
     await waitFor(() => {
       expect(screen.getByRole('table')).toBeInTheDocument()
     })
@@ -322,7 +362,7 @@ describe('NotificationListPage', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument()
     })
     // The template select should be visible in broadcast mode
-    const templateSelect = screen.getByRole('combobox')
+    const templateSelect = screen.getByRole('combobox', { name: /form.template/i })
     await user.click(templateSelect)
     await waitFor(() => {
       expect(screen.getByText('form.templates.maintenance')).toBeInTheDocument()
@@ -336,7 +376,8 @@ describe('NotificationListPage', () => {
   })
 
   it('selects custom template in broadcast dialog and clears form', async () => {
-    const { user } = renderWithProviders(<NotificationListPage />)
+    const user = userEvent.setup({ pointerEventsCheck: 0 })
+    renderWithProviders(<NotificationListPage />)
     await waitFor(() => {
       expect(screen.getByRole('table')).toBeInTheDocument()
     })
@@ -346,7 +387,7 @@ describe('NotificationListPage', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument()
     })
     // First select a non-custom template to fill the form
-    const templateSelect = screen.getByRole('combobox')
+    const templateSelect = screen.getByRole('combobox', { name: /form.template/i })
     await user.click(templateSelect)
     await waitFor(() => {
       expect(screen.getByText('form.templates.maintenance')).toBeInTheDocument()
@@ -356,7 +397,7 @@ describe('NotificationListPage', () => {
       expect(screen.getByLabelText('form.title')).toHaveValue('form.templates.maintenanceTitle')
     })
     // Now select custom to clear the form
-    await user.click(screen.getByRole('combobox'))
+    await user.click(screen.getByRole('combobox', { name: /form.template/i }))
     await waitFor(() => {
       expect(screen.getByText('form.custom')).toBeInTheDocument()
     })

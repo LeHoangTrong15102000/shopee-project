@@ -18,5 +18,25 @@
     "loginSuccess": "Đăng nhập dev thành công",
     "loginButton": "Đăng nhập Dev (bỏ qua API)",
     "credentialHint": "Tài khoản mock: admin@shopee.com / admin123"
+  },
+  "forgotPasswordLink": "Quên mật khẩu?",
+  "forgotPassword": {
+    "title": "Quên mật khẩu",
+    "description": "Nhập địa chỉ email và chúng tôi sẽ gửi liên kết đặt lại mật khẩu.",
+    "submit": "Gửi liên kết đặt lại",
+    "successMessage": "Nếu email tồn tại, liên kết đặt lại đã được gửi.",
+    "errorMessage": "Không thể gửi liên kết đặt lại. Vui lòng thử lại.",
+    "backToLogin": "Quay lại đăng nhập"
+  },
+  "resetPassword": {
+    "title": "Đặt lại mật khẩu",
+    "description": "Nhập mật khẩu mới của bạn bên dưới.",
+    "newPassword": "Mật khẩu mới",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "passwordMismatch": "Mật khẩu không khớp",
+    "submit": "Đặt lại mật khẩu",
+    "successMessage": "Đặt lại mật khẩu thành công. Vui lòng đăng nhập.",
+    "errorMessage": "Không thể đặt lại mật khẩu. Liên kết có thể đã hết hạn.",
+    "missingToken": "Token đặt lại không hợp lệ hoặc bị thiếu. Vui lòng yêu cầu liên kết mới."
   }
 }

@@ -6,6 +6,8 @@ import { ROUTES } from 'src/constants/routes'
 
 const AdminLayout = lazy(() => import('src/components/layout/AdminLayout'))
 const LoginPage = lazy(() => import('src/pages/Login/LoginPage'))
+const ForgotPasswordPage = lazy(() => import('src/pages/Login/ForgotPasswordPage'))
+const ResetPasswordPage = lazy(() => import('src/pages/Login/ResetPasswordPage'))
 const DashboardPage = lazy(() => import('src/pages/Dashboard/DashboardPage'))
 const UserListPage = lazy(() => import('src/pages/Users/UserListPage'))
 const ProductListPage = lazy(() => import('src/pages/Products/ProductListPage'))
@@ -28,6 +30,12 @@ const SettingsPage = lazy(() => import('src/pages/Settings/SettingsPage'))
 const UserDetailPage = lazy(() => import('src/pages/Users/UserDetailPage'))
 const NotFoundPage = lazy(() => import('src/pages/NotFound/NotFoundPage'))
 const ActivityLogPage = lazy(() => import('src/pages/ActivityLog/ActivityLogPage'))
+const ConversationListPage = lazy(() => import('src/pages/Conversations/ConversationListPage'))
+const ConversationDetailPage = lazy(() => import('src/pages/Conversations/ConversationDetailPage'))
+const ShippingMethodsPage = lazy(() => import('src/pages/Shipping/ShippingMethodsPage'))
+const PaymentMethodsPage = lazy(() => import('src/pages/Payments/PaymentMethodsPage'))
+const PriceAlertsPage = lazy(() => import('src/pages/PriceAlerts/PriceAlertsPage'))
+const CheckinPage = lazy(() => import('src/pages/Checkin/CheckinPage'))
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
@@ -219,6 +227,54 @@ const protectedRoutes: RouteObject[] = [
       </SuspenseWrapper>
     ),
   },
+  {
+    path: ROUTES.CONVERSATIONS.slice(1),
+    element: (
+      <SuspenseWrapper>
+        <ConversationListPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: ROUTES.CONVERSATION_DETAIL.slice(1),
+    element: (
+      <SuspenseWrapper>
+        <ConversationDetailPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: ROUTES.SHIPPING_METHODS.slice(1),
+    element: (
+      <SuspenseWrapper>
+        <ShippingMethodsPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: ROUTES.PAYMENT_METHODS.slice(1),
+    element: (
+      <SuspenseWrapper>
+        <PaymentMethodsPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: ROUTES.PRICE_ALERTS.slice(1),
+    element: (
+      <SuspenseWrapper>
+        <PriceAlertsPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: ROUTES.CHECKIN.slice(1),
+    element: (
+      <SuspenseWrapper>
+        <CheckinPage />
+      </SuspenseWrapper>
+    ),
+  },
 ]
 
 export const router = createBrowserRouter([
@@ -227,6 +283,22 @@ export const router = createBrowserRouter([
     element: (
       <SuspenseWrapper>
         <LoginPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: ROUTES.FORGOT_PASSWORD,
+    element: (
+      <SuspenseWrapper>
+        <ForgotPasswordPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: ROUTES.RESET_PASSWORD,
+    element: (
+      <SuspenseWrapper>
+        <ResetPasswordPage />
       </SuspenseWrapper>
     ),
   },

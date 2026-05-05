@@ -1,0 +1,16 @@
+{
+  "title": "Phương thức vận chuyển",
+  "description": "Xem các phương thức vận chuyển",
+  "columns": {
+    "name": "Tên",
+    "code": "Mã",
+    "description": "Mô tả",
+    "baseCost": "Phí cơ bản",
+    "estimatedDays": "Ngày dự kiến",
+    "status": "Trạng thái"
+  },
+  "active": "Hoạt động",
+  "inactive": "Không hoạt động",
+  "error": "Không thể tải phương thức vận chuyển",
+  "emptyState": "Không có phương thức vận chuyển nào."
+}

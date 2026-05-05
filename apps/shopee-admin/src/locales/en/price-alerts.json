@@ -1,0 +1,17 @@
+{
+  "title": "Price Alerts",
+  "description": "Overview of user price alerts",
+  "columns": {
+    "user": "User",
+    "product": "Product",
+    "targetPrice": "Target Price",
+    "currentPrice": "Current Price",
+    "status": "Status",
+    "date": "Date"
+  },
+  "triggered": "Triggered",
+  "pending": "Pending",
+  "error": "Failed to load price alerts",
+  "emptyState": "No price alerts found.",
+  "backendRequired": "Price alerts admin endpoint not yet available. Backend work required."
+}

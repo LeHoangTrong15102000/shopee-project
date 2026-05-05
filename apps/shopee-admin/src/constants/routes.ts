@@ -1,6 +1,8 @@
 export const ROUTES = {
   DASHBOARD: '/',
   LOGIN: '/login',
+  FORGOT_PASSWORD: '/forgot-password',
+  RESET_PASSWORD: '/reset-password',
 
   USERS: '/users',
   USER_DETAIL: '/users/:id',
@@ -30,6 +32,14 @@ export const ROUTES = {
   IMPORT: '/import',
   SETTINGS: '/settings',
   ACTIVITY_LOG: '/activity-log',
+
+  CONVERSATIONS: '/conversations',
+  CONVERSATION_DETAIL: '/conversations/:id',
+
+  SHIPPING_METHODS: '/shipping-methods',
+  PAYMENT_METHODS: '/payment-methods',
+  PRICE_ALERTS: '/price-alerts',
+  CHECKIN: '/checkin',
 } as const
 
 export type RouteKey = keyof typeof ROUTES

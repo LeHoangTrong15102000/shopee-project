@@ -21,7 +21,12 @@
     "qa": "Hỏi đáp",
     "import": "Nhập dữ liệu",
     "settings": "Cài đặt",
-    "activityLog": "Nhật ký hoạt động"
+    "activityLog": "Nhật ký hoạt động",
+    "conversations": "Hội thoại",
+    "shippingMethods": "Phương thức vận chuyển",
+    "paymentMethods": "Phương thức thanh toán",
+    "priceAlerts": "Cảnh báo giá",
+    "checkin": "Check-in"
   },
   "header": {
     "settings": "Cài đặt",

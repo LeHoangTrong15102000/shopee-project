@@ -1,0 +1,16 @@
+{
+  "title": "Shipping Methods",
+  "description": "View available shipping methods",
+  "columns": {
+    "name": "Name",
+    "code": "Code",
+    "description": "Description",
+    "baseCost": "Base Cost",
+    "estimatedDays": "Est. Days",
+    "status": "Status"
+  },
+  "active": "Active",
+  "inactive": "Inactive",
+  "error": "Failed to load shipping methods",
+  "emptyState": "No shipping methods available."
+}

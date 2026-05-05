@@ -1,0 +1,30 @@
+{
+  "title": "Conversations",
+  "description": "View customer conversations",
+  "columns": {
+    "id": "ID",
+    "user": "User",
+    "messageCount": "Messages",
+    "status": "Status",
+    "date": "Date"
+  },
+  "status": {
+    "open": "Open",
+    "closed": "Closed",
+    "pending": "Pending"
+  },
+  "senderType": {
+    "user": "User",
+    "admin": "Admin",
+    "bot": "Bot"
+  },
+  "detail": {
+    "title": "Conversation #{{id}}",
+    "messages": "Messages",
+    "noMessages": "No messages in this conversation.",
+    "backToList": "Back to Conversations"
+  },
+  "error": "Failed to load conversations",
+  "notFound": "Conversation not found",
+  "emptyState": "No conversations found."
+}

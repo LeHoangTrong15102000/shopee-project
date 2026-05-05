@@ -40,6 +40,23 @@ export function useDeleteQuestion(onSuccess?: () => void) {
   })
 }
 
+export function useAnswerQuestion(onSuccess?: () => void) {
+  const { qc } = useAdminMutationContext()
+  return useMutation({
+    mutationFn: ({ questionId, answer }: { questionId: string; answer: string }) =>
+      qaApi.answerQuestion(questionId, answer),
+    onSuccess: () => {
+      toast.success(i18n.t('toast.answerSubmitted', { ns: 'qa' }))
+      qc.invalidateQueries({ queryKey: QA_KEYS.all })
+      onSuccess?.()
+    },
+    onError: (error) => {
+      console.error(error)
+      toast.error(i18n.t('toast.answerFailed', { ns: 'qa' }))
+    },
+  })
+}
+
 export function useDeleteAnswer(onSuccess?: () => void) {
   const { qc, addLog, email } = useAdminMutationContext()
   return useMutation({

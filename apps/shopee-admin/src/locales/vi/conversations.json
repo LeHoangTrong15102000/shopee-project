@@ -1,0 +1,30 @@
+{
+  "title": "Hội thoại",
+  "description": "Xem hội thoại của khách hàng",
+  "columns": {
+    "id": "Mã",
+    "user": "Người dùng",
+    "messageCount": "Tin nhắn",
+    "status": "Trạng thái",
+    "date": "Ngày"
+  },
+  "status": {
+    "open": "Đang mở",
+    "closed": "Đã đóng",
+    "pending": "Chờ xử lý"
+  },
+  "senderType": {
+    "user": "Người dùng",
+    "admin": "Quản trị",
+    "bot": "Bot"
+  },
+  "detail": {
+    "title": "Hội thoại #{{id}}",
+    "messages": "Tin nhắn",
+    "noMessages": "Không có tin nhắn trong hội thoại này.",
+    "backToList": "Quay lại danh sách"
+  },
+  "error": "Không thể tải hội thoại",
+  "notFound": "Không tìm thấy hội thoại",
+  "emptyState": "Không có hội thoại nào."
+}

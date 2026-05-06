@@ -16,7 +16,7 @@ export function useImportStats() {
 }
 
 export function useImportProducts(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: () => importApi.importProducts(),
     onSuccess: (res) => {
@@ -24,12 +24,6 @@ export function useImportProducts(onSuccess?: () => void) {
       toast.success(
         i18n.t('toast.imported', { ns: 'import', imported: d.imported, deleted: d.deleted }),
       )
-      addLog({
-        action: 'create',
-        entityType: 'import',
-        entityName: `${d.imported} products imported`,
-        adminEmail: email,
-      })
       qc.invalidateQueries({ queryKey: IMPORT_KEYS.stats })
       onSuccess?.()
     },

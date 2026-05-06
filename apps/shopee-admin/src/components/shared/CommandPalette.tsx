@@ -17,7 +17,6 @@ import {
   HelpCircle,
   Upload,
   Settings,
-  FileText,
 } from 'lucide-react'
 import {
   CommandDialog,
@@ -53,7 +52,6 @@ const pages = [
   { titleKey: 'menu.qa', href: '/qa', icon: HelpCircle },
   { titleKey: 'menu.import', href: '/import', icon: Upload },
   { titleKey: 'menu.settings', href: '/settings', icon: Settings },
-  { titleKey: 'menu.activityLog', href: '/activity-log', icon: FileText },
 ]
 
 interface SearchResult {

@@ -72,7 +72,6 @@ describe('AppSidebar', () => {
     expect(screen.getByText('menu.notifications')).toBeInTheDocument()
     expect(screen.getByText('menu.qa')).toBeInTheDocument()
     expect(screen.getByText('menu.settings')).toBeInTheDocument()
-    expect(screen.getByText('menu.activityLog')).toBeInTheDocument()
   })
 
   it('brand link navigates to home', () => {
@@ -373,7 +372,6 @@ describe('AppSidebar', () => {
     expect(screen.getByText('menu.qa')).toBeInTheDocument()
     expect(screen.getByText('menu.import')).toBeInTheDocument()
     expect(screen.getByText('menu.settings')).toBeInTheDocument()
-    expect(screen.getByText('menu.activityLog')).toBeInTheDocument()
   })
 
   it('renders keyboard shortcuts for shortcut routes', () => {
@@ -387,7 +385,7 @@ describe('AppSidebar', () => {
     renderSidebar()
     // Some items won't have shortcuts if they're not in SHORTCUT_ROUTES
     // Just verify the component renders without crashing
-    expect(screen.getByText('menu.activityLog')).toBeInTheDocument()
+    expect(screen.getByText('menu.settings')).toBeInTheDocument()
   })
 
   it('AnimatedIcon animate callback handles SVG with no getTotalLength (jsdom)', () => {

@@ -83,6 +83,17 @@ const vouchersHandlers = [
   http.delete(`${API_URL}/admin/vouchers/:id`, () => {
     return HttpResponse.json({ message: 'Xóa voucher thành công', data: null })
   }),
+
+  http.patch(`${API_URL}/admin/vouchers/:id/toggle`, ({ params }) => {
+    const voucher = mockVouchers.find((v) => v._id === params.id)
+    if (!voucher) {
+      return HttpResponse.json({ message: 'Không tìm thấy voucher' }, { status: 404 })
+    }
+    return HttpResponse.json({
+      message: 'Cập nhật trạng thái voucher thành công',
+      data: { ...voucher, is_active: !voucher.is_active },
+    })
+  }),
 ]
 
 export default vouchersHandlers

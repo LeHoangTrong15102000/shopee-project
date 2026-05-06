@@ -32,13 +32,12 @@ export function useLoyaltyStats() {
 }
 
 export function useCreateReward(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (body: { name: string; description: string; points_required: number }) =>
       loyaltyApi.createReward(body),
-    onSuccess: (_, vars) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.rewardCreated', { ns: 'loyalty' }))
-      addLog({ action: 'create', entityType: 'reward', entityName: vars.name, adminEmail: email })
       qc.invalidateQueries({ queryKey: LOYALTY_KEYS.rewards })
       onSuccess?.()
     },
@@ -50,7 +49,7 @@ export function useCreateReward(onSuccess?: () => void) {
 }
 
 export function useUpdateReward(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: ({
       id,
@@ -59,14 +58,8 @@ export function useUpdateReward(onSuccess?: () => void) {
       id: string
       body: { name: string; description: string; points_required: number }
     }) => loyaltyApi.updateReward(id, body),
-    onSuccess: (_, vars) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.rewardUpdated', { ns: 'loyalty' }))
-      addLog({
-        action: 'update',
-        entityType: 'reward',
-        entityName: vars.body.name,
-        adminEmail: email,
-      })
       qc.invalidateQueries({ queryKey: LOYALTY_KEYS.rewards })
       onSuccess?.()
     },
@@ -78,12 +71,11 @@ export function useUpdateReward(onSuccess?: () => void) {
 }
 
 export function useDeleteReward(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (id: string) => loyaltyApi.deleteReward(id),
-    onSuccess: (_, id) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.rewardDeleted', { ns: 'loyalty' }))
-      addLog({ action: 'delete', entityType: 'reward', entityName: id, adminEmail: email })
       qc.invalidateQueries({ queryKey: LOYALTY_KEYS.rewards })
       onSuccess?.()
     },
@@ -95,18 +87,12 @@ export function useDeleteReward(onSuccess?: () => void) {
 }
 
 export function useAdjustPoints(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (body: { user_id: string; points: number; description: string }) =>
       loyaltyApi.adjustPoints(body),
-    onSuccess: (_, vars) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.pointsAdjusted', { ns: 'loyalty' }))
-      addLog({
-        action: 'update',
-        entityType: 'loyalty',
-        entityName: `${vars.points > 0 ? '+' : ''}${vars.points} pts for ${vars.user_id}`,
-        adminEmail: email,
-      })
       qc.invalidateQueries({ queryKey: LOYALTY_KEYS.transactions })
       onSuccess?.()
     },

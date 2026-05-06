@@ -31,7 +31,6 @@ export const ROUTES = {
   QA: '/qa',
   IMPORT: '/import',
   SETTINGS: '/settings',
-  ACTIVITY_LOG: '/activity-log',
 
   CONVERSATIONS: '/conversations',
   CONVERSATION_DETAIL: '/conversations/:id',

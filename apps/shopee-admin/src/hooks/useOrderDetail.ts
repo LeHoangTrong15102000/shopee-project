@@ -19,17 +19,11 @@ export function useOrderDetail(id: string | undefined) {
 }
 
 export function useUpdateOrderStatus(id: string | undefined, onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (status: OrderStatus) => ordersApi.updateOrderStatus(id!, { status }),
-    onSuccess: (_, status) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.statusUpdated', { ns: 'orders' }))
-      addLog({
-        action: 'update',
-        entityType: 'order',
-        entityName: `${id!.slice(-8)} → ${status}`,
-        adminEmail: email,
-      })
       qc.invalidateQueries({ queryKey: ORDER_DETAIL_KEYS.detail(id!) })
       qc.invalidateQueries({ queryKey: ORDER_KEYS.all })
       qc.invalidateQueries({ queryKey: ORDER_KEYS.countByStatus })

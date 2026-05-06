@@ -29,7 +29,6 @@ const ImportPage = lazy(() => import('src/pages/Import/ImportPage'))
 const SettingsPage = lazy(() => import('src/pages/Settings/SettingsPage'))
 const UserDetailPage = lazy(() => import('src/pages/Users/UserDetailPage'))
 const NotFoundPage = lazy(() => import('src/pages/NotFound/NotFoundPage'))
-const ActivityLogPage = lazy(() => import('src/pages/ActivityLog/ActivityLogPage'))
 const ConversationListPage = lazy(() => import('src/pages/Conversations/ConversationListPage'))
 const ConversationDetailPage = lazy(() => import('src/pages/Conversations/ConversationDetailPage'))
 const ShippingMethodsPage = lazy(() => import('src/pages/Shipping/ShippingMethodsPage'))
@@ -216,14 +215,6 @@ const protectedRoutes: RouteObject[] = [
     element: (
       <SuspenseWrapper>
         <SettingsPage />
-      </SuspenseWrapper>
-    ),
-  },
-  {
-    path: ROUTES.ACTIVITY_LOG.slice(1),
-    element: (
-      <SuspenseWrapper>
-        <ActivityLogPage />
       </SuspenseWrapper>
     ),
   },

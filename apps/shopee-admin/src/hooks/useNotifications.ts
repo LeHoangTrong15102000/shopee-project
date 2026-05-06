@@ -32,7 +32,7 @@ export function useNotifications(page: number) {
 }
 
 export function useCreateNotification(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (params: {
       type: 'targeted' | 'broadcast'
@@ -50,14 +50,8 @@ export function useCreateNotification(onSuccess?: () => void) {
             message: params.form.message,
             type: params.form.notifType,
           }),
-    onSuccess: (_, vars) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.notificationSent', { ns: 'notifications' }))
-      addLog({
-        action: 'create',
-        entityType: 'notification',
-        entityName: vars.form.title,
-        adminEmail: email,
-      })
       qc.invalidateQueries({ queryKey: NOTIFICATION_KEYS.all })
       onSuccess?.()
     },

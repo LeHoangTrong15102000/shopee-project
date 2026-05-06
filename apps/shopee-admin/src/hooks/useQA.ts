@@ -24,12 +24,11 @@ export function useQAStats() {
 }
 
 export function useDeleteQuestion(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (id: string) => qaApi.deleteQuestion(id),
-    onSuccess: (_, id) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.questionDeleted', { ns: 'qa' }))
-      addLog({ action: 'delete', entityType: 'question', entityName: id, adminEmail: email })
       qc.invalidateQueries({ queryKey: QA_KEYS.all })
       onSuccess?.()
     },
@@ -58,12 +57,11 @@ export function useAnswerQuestion(onSuccess?: () => void) {
 }
 
 export function useDeleteAnswer(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: ({ qId, aId }: { qId: string; aId: string }) => qaApi.deleteAnswer(qId, aId),
-    onSuccess: (_, vars) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.answerDeleted', { ns: 'qa' }))
-      addLog({ action: 'delete', entityType: 'answer', entityName: vars.aId, adminEmail: email })
       qc.invalidateQueries({ queryKey: QA_KEYS.all })
       onSuccess?.()
     },

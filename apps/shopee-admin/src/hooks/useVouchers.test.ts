@@ -73,7 +73,7 @@ describe('useToggleVoucher', () => {
     const { result } = renderHook(() => useToggleVoucher(onSuccess), {
       wrapper: createQueryWrapper(),
     })
-    result.current.mutate({ id: 'voucher-1', is_active: false })
+    result.current.mutate('voucher-1')
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
   })
 })

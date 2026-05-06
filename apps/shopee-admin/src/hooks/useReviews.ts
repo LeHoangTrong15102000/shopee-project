@@ -26,12 +26,11 @@ export function useReviewStats() {
 }
 
 export function useDeleteReview(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (id: string) => reviewsApi.deleteReview(id),
-    onSuccess: (_, id) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.reviewDeleted', { ns: 'reviews' }))
-      addLog({ action: 'delete', entityType: 'review', entityName: id, adminEmail: email })
       qc.invalidateQueries({ queryKey: REVIEW_KEYS.all })
       onSuccess?.()
     },

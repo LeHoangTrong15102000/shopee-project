@@ -132,7 +132,7 @@ export default function VoucherListPage() {
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() =>
-                toggleMut.mutate({ id: row.original._id, is_active: !row.original.is_active })
+                toggleMut.mutate(row.original._id)
               }
             >
               <ToggleLeft className="mr-2 size-4" />

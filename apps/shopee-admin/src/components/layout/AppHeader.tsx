@@ -86,7 +86,6 @@ const routeLabelKeys: Record<string, string> = {
   qa: 'menu.qa',
   import: 'menu.import',
   settings: 'menu.settings',
-  'activity-log': 'menu.activityLog',
 }
 
 export function AppHeader() {

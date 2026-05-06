@@ -28,12 +28,11 @@ export function useProductFormData(id?: string) {
 }
 
 export function useCreateProduct(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (data: ProductData) => productsApi.createProduct(data),
-    onSuccess: (_, vars) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.productCreated', { ns: 'products' }))
-      addLog({ action: 'create', entityType: 'product', entityName: vars.name, adminEmail: email })
       qc.invalidateQueries({ queryKey: PRODUCT_KEYS.all })
       onSuccess?.()
     },
@@ -45,18 +44,12 @@ export function useCreateProduct(onSuccess?: () => void) {
 }
 
 export function useUpdateProduct(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: ProductData }) =>
       productsApi.updateProduct(id, data),
-    onSuccess: (_, vars) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.productUpdated', { ns: 'products' }))
-      addLog({
-        action: 'update',
-        entityType: 'product',
-        entityName: vars.data.name,
-        adminEmail: email,
-      })
       qc.invalidateQueries({ queryKey: PRODUCT_KEYS.all })
       onSuccess?.()
     },

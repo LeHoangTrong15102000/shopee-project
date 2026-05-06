@@ -17,12 +17,11 @@ export function useReviewDetail(id: string | undefined) {
 }
 
 export function useDeleteComment(id: string | undefined, onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (commentId: string) => reviewsApi.deleteComment(commentId),
-    onSuccess: (_, commentId) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.commentDeleted', { ns: 'reviews' }))
-      addLog({ action: 'delete', entityType: 'comment', entityName: commentId, adminEmail: email })
       qc.invalidateQueries({ queryKey: REVIEW_DETAIL_KEYS.detail(id!) })
       onSuccess?.()
     },

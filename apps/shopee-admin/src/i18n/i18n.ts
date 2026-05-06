@@ -19,7 +19,6 @@ import analyticsVI from 'src/locales/vi/analytics.json'
 import notificationsVI from 'src/locales/vi/notifications.json'
 import qaVI from 'src/locales/vi/qa.json'
 import importVI from 'src/locales/vi/import.json'
-import activityLogVI from 'src/locales/vi/activity-log.json'
 
 // English — eagerly loaded (admin app is small, no need for lazy loading)
 import commonEN from 'src/locales/en/common.json'
@@ -39,7 +38,6 @@ import analyticsEN from 'src/locales/en/analytics.json'
 import notificationsEN from 'src/locales/en/notifications.json'
 import qaEN from 'src/locales/en/qa.json'
 import importEN from 'src/locales/en/import.json'
-import activityLogEN from 'src/locales/en/activity-log.json'
 
 export const locales = {
   en: 'English',
@@ -65,7 +63,6 @@ export const resources = {
     notifications: notificationsVI,
     qa: qaVI,
     import: importVI,
-    'activity-log': activityLogVI,
   },
   en: {
     common: commonEN,
@@ -85,7 +82,6 @@ export const resources = {
     notifications: notificationsEN,
     qa: qaEN,
     import: importEN,
-    'activity-log': activityLogEN,
   },
 } as const
 

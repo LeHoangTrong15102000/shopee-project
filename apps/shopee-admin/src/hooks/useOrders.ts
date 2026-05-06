@@ -44,18 +44,12 @@ export function useOrderCountByStatus() {
 }
 
 export function useBulkUpdateOrderStatus(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (body: { order_ids: string[]; status: OrderStatus }) =>
       ordersApi.bulkUpdateStatus(body),
-    onSuccess: (_, vars) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.ordersUpdated', { ns: 'orders' }))
-      addLog({
-        action: 'update',
-        entityType: 'order',
-        entityName: `${vars.order_ids.length} orders → ${vars.status}`,
-        adminEmail: email,
-      })
       qc.invalidateQueries({ queryKey: ORDER_KEYS.all })
       qc.invalidateQueries({ queryKey: ORDER_KEYS.countByStatus })
       onSuccess?.()

@@ -18,13 +18,12 @@ export function useUsers(page: number) {
 }
 
 export function useCreateUser(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (body: { email: string; password: string; name?: string; roles?: string[] }) =>
       usersApi.createUser(body),
-    onSuccess: (_, vars) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.userCreated', { ns: 'users' }))
-      addLog({ action: 'create', entityType: 'user', entityName: vars.email, adminEmail: email })
       qc.invalidateQueries({ queryKey: USER_KEYS.all })
       onSuccess?.()
     },
@@ -36,7 +35,7 @@ export function useCreateUser(onSuccess?: () => void) {
 }
 
 export function useUpdateUser(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: ({
       id,
@@ -45,14 +44,8 @@ export function useUpdateUser(onSuccess?: () => void) {
       id: string
       body: { name?: string; email?: string; roles?: string[] }
     }) => usersApi.updateUser(id, body),
-    onSuccess: (_, vars) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.userUpdated', { ns: 'users' }))
-      addLog({
-        action: 'update',
-        entityType: 'user',
-        entityName: vars.body.email || vars.id,
-        adminEmail: email,
-      })
       qc.invalidateQueries({ queryKey: USER_KEYS.all })
       onSuccess?.()
     },
@@ -64,12 +57,11 @@ export function useUpdateUser(onSuccess?: () => void) {
 }
 
 export function useDeleteUser(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (id: string) => usersApi.deleteUser(id),
-    onSuccess: (_, id) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.userDeleted', { ns: 'users' }))
-      addLog({ action: 'delete', entityType: 'user', entityName: id, adminEmail: email })
       qc.invalidateQueries({ queryKey: USER_KEYS.all })
       onSuccess?.()
     },

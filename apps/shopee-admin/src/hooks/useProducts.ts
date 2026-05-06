@@ -20,12 +20,11 @@ export function useProducts(page: number, filters?: { category?: string; name?: 
 }
 
 export function useDeleteProduct(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (id: string) => productsApi.deleteProduct(id),
-    onSuccess: (_, id) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.productDeleted', { ns: 'products' }))
-      addLog({ action: 'delete', entityType: 'product', entityName: id, adminEmail: email })
       qc.invalidateQueries({ queryKey: PRODUCT_KEYS.all })
       onSuccess?.()
     },
@@ -37,17 +36,11 @@ export function useDeleteProduct(onSuccess?: () => void) {
 }
 
 export function useDeleteManyProducts(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (ids: string[]) => productsApi.deleteManyProducts(ids),
-    onSuccess: (_, ids) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.productsDeleted', { ns: 'products' }))
-      addLog({
-        action: 'delete',
-        entityType: 'product',
-        entityName: `${ids.length} products`,
-        adminEmail: email,
-      })
       qc.invalidateQueries({ queryKey: PRODUCT_KEYS.all })
       onSuccess?.()
     },

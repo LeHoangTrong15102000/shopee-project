@@ -16,17 +16,11 @@ export function useCategories() {
 }
 
 export function useCreateCategory(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (body: { name: string }) => categoriesApi.createCategory(body),
-    onSuccess: (_, vars) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.categoryCreated', { ns: 'categories' }))
-      addLog({
-        action: 'create',
-        entityType: 'category',
-        entityName: vars.name,
-        adminEmail: email,
-      })
       qc.invalidateQueries({ queryKey: CATEGORY_KEYS.all })
       onSuccess?.()
     },
@@ -38,18 +32,12 @@ export function useCreateCategory(onSuccess?: () => void) {
 }
 
 export function useUpdateCategory(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: ({ id, body }: { id: string; body: { name: string } }) =>
       categoriesApi.updateCategory(id, body),
-    onSuccess: (_, vars) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.categoryUpdated', { ns: 'categories' }))
-      addLog({
-        action: 'update',
-        entityType: 'category',
-        entityName: vars.body.name,
-        adminEmail: email,
-      })
       qc.invalidateQueries({ queryKey: CATEGORY_KEYS.all })
       onSuccess?.()
     },
@@ -61,12 +49,11 @@ export function useUpdateCategory(onSuccess?: () => void) {
 }
 
 export function useDeleteCategory(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (id: string) => categoriesApi.deleteCategory(id),
-    onSuccess: (_, id) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.categoryDeleted', { ns: 'categories' }))
-      addLog({ action: 'delete', entityType: 'category', entityName: id, adminEmail: email })
       qc.invalidateQueries({ queryKey: CATEGORY_KEYS.all })
       onSuccess?.()
     },

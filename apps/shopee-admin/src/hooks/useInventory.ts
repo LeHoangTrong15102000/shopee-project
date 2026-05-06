@@ -24,18 +24,12 @@ export function useOutOfStock() {
 }
 
 export function useUpdateStock(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: ({ id, qty }: { id: string; qty: number }) =>
       inventoryApi.updateStock(id, { quantity: qty }),
-    onSuccess: (_, vars) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.stockUpdated', { ns: 'inventory' }))
-      addLog({
-        action: 'update',
-        entityType: 'inventory',
-        entityName: `${vars.id} → ${vars.qty}`,
-        adminEmail: email,
-      })
       qc.invalidateQueries({ queryKey: INVENTORY_KEYS.low })
       qc.invalidateQueries({ queryKey: INVENTORY_KEYS.out })
       onSuccess?.()
@@ -48,18 +42,12 @@ export function useUpdateStock(onSuccess?: () => void) {
 }
 
 export function useBulkUpdateStock(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (items: Array<{ product_id: string; quantity: number }>) =>
       inventoryApi.bulkUpdateStock({ items }),
-    onSuccess: (_, items) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.productsUpdated', { ns: 'inventory' }))
-      addLog({
-        action: 'update',
-        entityType: 'inventory',
-        entityName: `${items.length} products`,
-        adminEmail: email,
-      })
       qc.invalidateQueries({ queryKey: INVENTORY_KEYS.low })
       qc.invalidateQueries({ queryKey: INVENTORY_KEYS.out })
       onSuccess?.()

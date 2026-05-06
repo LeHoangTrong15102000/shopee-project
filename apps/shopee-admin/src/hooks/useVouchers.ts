@@ -27,7 +27,7 @@ export function useVoucherStats() {
 }
 
 export function useCreateVoucher(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (body: {
       code: string
@@ -38,9 +38,8 @@ export function useCreateVoucher(onSuccess?: () => void) {
       start_date: string
       end_date: string
     }) => vouchersApi.createVoucher(body),
-    onSuccess: (_, vars) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.voucherCreated', { ns: 'vouchers' }))
-      addLog({ action: 'create', entityType: 'voucher', entityName: vars.code, adminEmail: email })
       qc.invalidateQueries({ queryKey: VOUCHER_KEYS.all })
       onSuccess?.()
     },
@@ -52,12 +51,11 @@ export function useCreateVoucher(onSuccess?: () => void) {
 }
 
 export function useDeleteVoucher(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: (id: string) => vouchersApi.deleteVoucher(id),
-    onSuccess: (_, id) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.voucherDeleted', { ns: 'vouchers' }))
-      addLog({ action: 'delete', entityType: 'voucher', entityName: id, adminEmail: email })
       qc.invalidateQueries({ queryKey: VOUCHER_KEYS.all })
       onSuccess?.()
     },
@@ -69,7 +67,7 @@ export function useDeleteVoucher(onSuccess?: () => void) {
 }
 
 export function useUpdateVoucher(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
     mutationFn: ({
       id,
@@ -86,9 +84,8 @@ export function useUpdateVoucher(onSuccess?: () => void) {
         end_date: string
       }> & { is_active?: boolean }
     }) => vouchersApi.updateVoucher(id, body),
-    onSuccess: (_, vars) => {
+    onSuccess: () => {
       toast.success(i18n.t('toast.voucherUpdated', { ns: 'vouchers' }))
-      addLog({ action: 'update', entityType: 'voucher', entityName: vars.id, adminEmail: email })
       qc.invalidateQueries({ queryKey: VOUCHER_KEYS.all })
       onSuccess?.()
     },
@@ -100,18 +97,11 @@ export function useUpdateVoucher(onSuccess?: () => void) {
 }
 
 export function useToggleVoucher(onSuccess?: () => void) {
-  const { qc, addLog, email } = useAdminMutationContext()
+  const { qc } = useAdminMutationContext()
   return useMutation({
-    mutationFn: ({ id, is_active }: { id: string; is_active: boolean }) =>
-      vouchersApi.updateVoucher(id, { is_active }),
-    onSuccess: (_, vars) => {
+    mutationFn: (id: string) => vouchersApi.toggleVoucher(id),
+    onSuccess: () => {
       toast.success(i18n.t('toast.statusUpdated', { ns: 'vouchers' }))
-      addLog({
-        action: 'update',
-        entityType: 'voucher',
-        entityName: `${vars.id} → ${vars.is_active ? 'active' : 'inactive'}`,
-        adminEmail: email,
-      })
       qc.invalidateQueries({ queryKey: VOUCHER_KEYS.all })
       qc.invalidateQueries({ queryKey: VOUCHER_KEYS.stats })
       onSuccess?.()

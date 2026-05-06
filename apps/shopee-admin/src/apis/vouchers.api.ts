@@ -56,6 +56,8 @@ const vouchersApi = {
     http.put<SuccessResponse<Voucher>>(`admin/vouchers/${id}`, body),
 
   deleteVoucher: (id: string) => http.delete<SuccessResponse<null>>(`admin/vouchers/${id}`),
+
+  toggleVoucher: (id: string) => http.patch<SuccessResponse<Voucher>>(`admin/vouchers/${id}/toggle`),
 }
 
 export default vouchersApi

@@ -1,151 +1,201 @@
 /// <reference types="jest" />
 
+/**
+ * Tests for the async MemoryCacheService.
+ *
+ * Uses jest.useFakeTimers() for TTL expiry tests.
+ * All cache operations are async (return Promises).
+ */
+
 jest.useFakeTimers()
 
-import { cacheService, CacheKeys, CacheTTL } from '../../utils/cache.service'
+import { MemoryCacheService } from '@utils/cache/memory-cache.service'
+import { CacheKeys, CacheTTL } from '@utils/cache'
 
-describe('CacheService', () => {
+describe('MemoryCacheService', () => {
+  let cache: MemoryCacheService
+
   beforeEach(() => {
-    cacheService.flush()
+    cache = new MemoryCacheService()
+  })
+
+  afterEach(() => {
+    cache.destroy()
   })
 
   afterAll(() => {
-    cacheService.destroy()
     jest.useRealTimers()
   })
 
-  describe('get/set', () => {
-    it('should store and retrieve values', () => {
-      const testData = { id: 1, name: 'test' }
-      cacheService.set('test-key', testData)
-
-      const result = cacheService.get('test-key')
-      expect(result).toEqual(testData)
+  describe('get / set', () => {
+    it('stores and retrieves a value', async () => {
+      const data = { id: 1, name: 'test' }
+      await cache.set('key1', data)
+      const result = await cache.get<typeof data>('key1')
+      expect(result).toEqual(data)
     })
 
-    it('should return null for non-existent keys', () => {
-      const result = cacheService.get('non-existent-key')
+    it('returns null for a non-existent key', async () => {
+      const result = await cache.get('missing-key')
       expect(result).toBeNull()
     })
 
-    it('should use default TTL of 300 seconds', () => {
-      cacheService.set('default-ttl-key', 'value')
-
-      jest.advanceTimersByTime(299 * 1000)
-      expect(cacheService.get('default-ttl-key')).toBe('value')
-
-      jest.advanceTimersByTime(2 * 1000)
-      expect(cacheService.get('default-ttl-key')).toBeNull()
+    it('stores string values', async () => {
+      await cache.set('str-key', 'hello')
+      expect(await cache.get('str-key')).toBe('hello')
     })
 
-    it('should support custom TTL', () => {
-      cacheService.set('custom-ttl-key', 'value', 10)
+    it('stores number values', async () => {
+      await cache.set('num-key', 42)
+      expect(await cache.get('num-key')).toBe(42)
+    })
 
-      jest.advanceTimersByTime(9 * 1000)
-      expect(cacheService.get('custom-ttl-key')).toBe('value')
-
-      jest.advanceTimersByTime(2 * 1000)
-      expect(cacheService.get('custom-ttl-key')).toBeNull()
+    it('stores array values', async () => {
+      await cache.set('arr-key', [1, 2, 3])
+      expect(await cache.get('arr-key')).toEqual([1, 2, 3])
     })
   })
 
-  describe('TTL expiration', () => {
-    it('should return null and delete entry after TTL expires', () => {
-      cacheService.set('expire-key', 'value', 5)
+  describe('TTL', () => {
+    it('uses default TTL of 300 seconds', async () => {
+      await cache.set('default-ttl', 'value')
 
-      expect(cacheService.get('expire-key')).toBe('value')
-      expect(cacheService.size()).toBe(1)
+      jest.advanceTimersByTime(299 * 1000)
+      expect(await cache.get('default-ttl')).toBe('value')
+
+      jest.advanceTimersByTime(2 * 1000)
+      expect(await cache.get('default-ttl')).toBeNull()
+    })
+
+    it('supports custom TTL', async () => {
+      await cache.set('custom-ttl', 'value', 10)
+
+      jest.advanceTimersByTime(9 * 1000)
+      expect(await cache.get('custom-ttl')).toBe('value')
+
+      jest.advanceTimersByTime(2 * 1000)
+      expect(await cache.get('custom-ttl')).toBeNull()
+    })
+
+    it('lazy TTL eviction on get() — returns null after expiry', async () => {
+      await cache.set('expire-key', 'value', 5)
+
+      expect(await cache.get('expire-key')).toBe('value')
 
       jest.advanceTimersByTime(6 * 1000)
 
-      expect(cacheService.get('expire-key')).toBeNull()
-      expect(cacheService.size()).toBe(0)
+      expect(await cache.get('expire-key')).toBeNull()
+    })
+
+    it('lazy TTL eviction on has() — returns false after expiry', async () => {
+      await cache.set('expire-has', 'value', 5)
+
+      expect(await cache.has('expire-has')).toBe(true)
+
+      jest.advanceTimersByTime(6 * 1000)
+
+      expect(await cache.has('expire-has')).toBe(false)
     })
   })
 
   describe('del', () => {
-    it('should delete by exact key and return 1', () => {
-      cacheService.set('key-to-delete', 'value')
-
-      const result = cacheService.del('key-to-delete')
-
+    it('deletes by exact key and returns 1', async () => {
+      await cache.set('key-to-delete', 'value')
+      const result = await cache.del('key-to-delete')
       expect(result).toBe(1)
-      expect(cacheService.get('key-to-delete')).toBeNull()
+      expect(await cache.get('key-to-delete')).toBeNull()
     })
 
-    it('should return 0 when deleting non-existent key', () => {
-      const result = cacheService.del('non-existent')
+    it('returns 0 for non-existent key', async () => {
+      const result = await cache.del('non-existent')
       expect(result).toBe(0)
     })
 
-    it('should delete by wildcard pattern', () => {
-      cacheService.set('products:list:1', 'list1')
-      cacheService.set('products:list:2', 'list2')
-      cacheService.set('products:detail:abc', 'detail')
-      cacheService.set('categories:list', 'categories')
+    it('deletes with wildcard pattern', async () => {
+      await cache.set('products:list:1', 'list1')
+      await cache.set('products:list:2', 'list2')
+      await cache.set('products:detail:abc', 'detail')
+      await cache.set('categories:list', 'categories')
 
-      const result = cacheService.del('products:*')
+      const result = await cache.del('products:*')
 
       expect(result).toBe(3)
-      expect(cacheService.get('products:list:1')).toBeNull()
-      expect(cacheService.get('products:list:2')).toBeNull()
-      expect(cacheService.get('products:detail:abc')).toBeNull()
-      expect(cacheService.get('categories:list')).toBe('categories')
+      expect(await cache.get('products:list:1')).toBeNull()
+      expect(await cache.get('products:list:2')).toBeNull()
+      expect(await cache.get('products:detail:abc')).toBeNull()
+      expect(await cache.get('categories:list')).toBe('categories')
     })
 
-    it('should return count of deleted entries', () => {
-      cacheService.set('test:a', 'a')
-      cacheService.set('test:b', 'b')
-      cacheService.set('other:c', 'c')
+    it('returns count of deleted entries for wildcard', async () => {
+      await cache.set('test:a', 'a')
+      await cache.set('test:b', 'b')
+      await cache.set('other:c', 'c')
 
-      const result = cacheService.del('test:*')
+      const result = await cache.del('test:*')
       expect(result).toBe(2)
+    })
+
+    it('returns 0 for wildcard that matches nothing', async () => {
+      const result = await cache.del('no-match:*')
+      expect(result).toBe(0)
     })
   })
 
   describe('flush', () => {
-    it('should clear all entries', () => {
-      cacheService.set('key1', 'value1')
-      cacheService.set('key2', 'value2')
-      cacheService.set('key3', 'value3')
+    it('clears all entries', async () => {
+      await cache.set('key1', 'value1')
+      await cache.set('key2', 'value2')
+      await cache.set('key3', 'value3')
 
-      cacheService.flush()
+      await cache.flush()
 
-      expect(cacheService.get('key1')).toBeNull()
-      expect(cacheService.get('key2')).toBeNull()
-      expect(cacheService.get('key3')).toBeNull()
-    })
-
-    it('should make size become 0', () => {
-      cacheService.set('key1', 'value1')
-      cacheService.set('key2', 'value2')
-      expect(cacheService.size()).toBe(2)
-
-      cacheService.flush()
-
-      expect(cacheService.size()).toBe(0)
+      expect(await cache.get('key1')).toBeNull()
+      expect(await cache.get('key2')).toBeNull()
+      expect(await cache.get('key3')).toBeNull()
     })
   })
 
-  describe('size', () => {
-    it('should return correct count', () => {
-      expect(cacheService.size()).toBe(0)
+  describe('has', () => {
+    it('returns true for an existing key', async () => {
+      await cache.set('existing', 'value')
+      expect(await cache.has('existing')).toBe(true)
+    })
 
-      cacheService.set('key1', 'value1')
-      expect(cacheService.size()).toBe(1)
+    it('returns false for a non-existent key', async () => {
+      expect(await cache.has('missing')).toBe(false)
+    })
 
-      cacheService.set('key2', 'value2')
-      expect(cacheService.size()).toBe(2)
+    it('returns false for an expired key', async () => {
+      await cache.set('expiring', 'value', 5)
+      jest.advanceTimersByTime(6 * 1000)
+      expect(await cache.has('expiring')).toBe(false)
+    })
+  })
 
-      cacheService.del('key1')
-      expect(cacheService.size()).toBe(1)
+  describe('destroy', () => {
+    it('clears all entries', async () => {
+      await cache.set('key1', 'v1')
+      await cache.set('key2', 'v2')
+      cache.destroy()
+      expect(await cache.get('key1')).toBeNull()
+      expect(await cache.get('key2')).toBeNull()
+    })
+  })
+
+  describe('no setInterval', () => {
+    it('does not use setInterval (no timer leaks)', () => {
+      const setIntervalSpy = jest.spyOn(global, 'setInterval')
+      const freshCache = new MemoryCacheService()
+      expect(setIntervalSpy).not.toHaveBeenCalled()
+      freshCache.destroy()
+      setIntervalSpy.mockRestore()
     })
   })
 })
 
 describe('CacheKeys', () => {
   describe('productsList', () => {
-    it('should generate correct key format with all params', () => {
+    it('generates correct key with all params', () => {
       const key = CacheKeys.productsList({
         page: 2,
         limit: 20,
@@ -157,70 +207,59 @@ describe('CacheKeys', () => {
         price_max: '500',
         name: 'phone',
       })
-
       expect(key).toBe('products:list:2:20:electronics:price:asc:4:100:500:phone')
     })
 
-    it('should use default values for missing params', () => {
+    it('uses default values for missing params', () => {
       const key = CacheKeys.productsList({})
-
       expect(key).toBe('products:list:1:30:::::::')
     })
 
-    it('should handle partial params', () => {
-      const key = CacheKeys.productsList({
-        page: 3,
-        category: 'books',
-      })
-
+    it('handles partial params', () => {
+      const key = CacheKeys.productsList({ page: 3, category: 'books' })
       expect(key).toBe('products:list:3:30:books::::::')
     })
   })
 
   describe('productDetail', () => {
-    it('should generate correct key', () => {
-      const key = CacheKeys.productDetail('abc123')
-      expect(key).toBe('products:detail:abc123')
+    it('generates correct key', () => {
+      expect(CacheKeys.productDetail('abc123')).toBe('products:detail:abc123')
     })
   })
 
   describe('productsPattern', () => {
-    it('should return products:*', () => {
-      const pattern = CacheKeys.productsPattern()
-      expect(pattern).toBe('products:*')
+    it('returns products:*', () => {
+      expect(CacheKeys.productsPattern()).toBe('products:*')
     })
   })
 
   describe('categoriesList', () => {
-    it('should generate correct key without exclude', () => {
-      const key = CacheKeys.categoriesList()
-      expect(key).toBe('categories:list:')
+    it('generates correct key without exclude', () => {
+      expect(CacheKeys.categoriesList()).toBe('categories:list:')
     })
 
-    it('should generate correct key with exclude', () => {
-      const key = CacheKeys.categoriesList('cat123')
-      expect(key).toBe('categories:list:cat123')
+    it('generates correct key with exclude', () => {
+      expect(CacheKeys.categoriesList('cat123')).toBe('categories:list:cat123')
     })
   })
 
   describe('categoriesPattern', () => {
-    it('should return categories:*', () => {
-      const pattern = CacheKeys.categoriesPattern()
-      expect(pattern).toBe('categories:*')
+    it('returns categories:*', () => {
+      expect(CacheKeys.categoriesPattern()).toBe('categories:*')
     })
   })
 })
 
 describe('CacheTTL', () => {
-  it('should have correct PRODUCTS_LIST value', () => {
+  it('PRODUCTS_LIST is 300 seconds (5 minutes)', () => {
     expect(CacheTTL.PRODUCTS_LIST).toBe(300)
   })
 
-  it('should have correct PRODUCT_DETAIL value', () => {
+  it('PRODUCT_DETAIL is 600 seconds (10 minutes)', () => {
     expect(CacheTTL.PRODUCT_DETAIL).toBe(600)
   })
 
-  it('should have correct CATEGORIES_LIST value', () => {
+  it('CATEGORIES_LIST is 1800 seconds (30 minutes)', () => {
     expect(CacheTTL.CATEGORIES_LIST).toBe(1800)
   })
 })

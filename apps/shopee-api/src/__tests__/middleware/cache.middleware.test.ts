@@ -66,25 +66,25 @@ describe('Cache Middleware', () => {
     const ttl = 300
 
     describe('cache miss', () => {
-      it('should call next() on cache miss', () => {
-        ;(cacheService.get as jest.Mock).mockReturnValue(null)
+      it('should call next() on cache miss', async () => {
+        ;(cacheService.get as jest.Mock).mockResolvedValue(null)
         const middleware = cacheResponse(keyGenerator, ttl)
         const req = createMockReq({ query: { id: '123' } })
         const res = createMockRes()
 
-        middleware(req, res, mockNext)
+        await middleware(req, res, mockNext)
 
         expect(mockNext).toHaveBeenCalled()
       })
 
-      it('should override res.json and set X-Cache=MISS header', () => {
-        ;(cacheService.get as jest.Mock).mockReturnValue(null)
+      it('should override res.json and set X-Cache=MISS header', async () => {
+        ;(cacheService.get as jest.Mock).mockResolvedValue(null)
         const middleware = cacheResponse(keyGenerator, ttl)
         const req = createMockReq({ query: { id: '123' } })
         const res = createMockRes()
         const originalJson = res.json
 
-        middleware(req, res, mockNext)
+        await middleware(req, res, mockNext)
 
         expect(res.json).not.toBe(originalJson)
 
@@ -94,14 +94,14 @@ describe('Cache Middleware', () => {
         expect(res.setHeader).toHaveBeenCalledWith('X-Cache', 'MISS')
       })
 
-      it('should cache 2xx responses', () => {
-        ;(cacheService.get as jest.Mock).mockReturnValue(null)
+      it('should cache 2xx responses', async () => {
+        ;(cacheService.get as jest.Mock).mockResolvedValue(null)
         const middleware = cacheResponse(keyGenerator, ttl)
         const req = createMockReq({ query: { id: '123' } })
         const res = createMockRes()
         res.statusCode = 200
 
-        middleware(req, res, mockNext)
+        await middleware(req, res, mockNext)
 
         const responseData = { message: 'success' }
         res.json(responseData)
@@ -109,14 +109,14 @@ describe('Cache Middleware', () => {
         expect(cacheService.set).toHaveBeenCalledWith('test:123', responseData, ttl)
       })
 
-      it('should not cache 4xx responses', () => {
-        ;(cacheService.get as jest.Mock).mockReturnValue(null)
+      it('should not cache 4xx responses', async () => {
+        ;(cacheService.get as jest.Mock).mockResolvedValue(null)
         const middleware = cacheResponse(keyGenerator, ttl)
         const req = createMockReq({ query: { id: '123' } })
         const res = createMockRes()
         res.statusCode = 400
 
-        middleware(req, res, mockNext)
+        await middleware(req, res, mockNext)
 
         const responseData = { error: 'Bad request' }
         res.json(responseData)
@@ -124,14 +124,14 @@ describe('Cache Middleware', () => {
         expect(cacheService.set).not.toHaveBeenCalled()
       })
 
-      it('should not cache 5xx responses', () => {
-        ;(cacheService.get as jest.Mock).mockReturnValue(null)
+      it('should not cache 5xx responses', async () => {
+        ;(cacheService.get as jest.Mock).mockResolvedValue(null)
         const middleware = cacheResponse(keyGenerator, ttl)
         const req = createMockReq({ query: { id: '123' } })
         const res = createMockRes()
         res.statusCode = 500
 
-        middleware(req, res, mockNext)
+        await middleware(req, res, mockNext)
 
         const responseData = { error: 'Server error' }
         res.json(responseData)
@@ -141,72 +141,72 @@ describe('Cache Middleware', () => {
     })
 
     describe('cache hit', () => {
-      it('should return cached data and set X-Cache=HIT header', () => {
+      it('should return cached data and set X-Cache=HIT header', async () => {
         const cachedData = { message: 'cached' }
-        ;(cacheService.get as jest.Mock).mockReturnValue(cachedData)
+        ;(cacheService.get as jest.Mock).mockResolvedValue(cachedData)
         const middleware = cacheResponse(keyGenerator, ttl)
         const req = createMockReq({ query: { id: '123' } })
         const res = createMockRes()
 
-        middleware(req, res, mockNext)
+        await middleware(req, res, mockNext)
 
         expect(res.setHeader).toHaveBeenCalledWith('X-Cache', 'HIT')
         expect(res.json).toHaveBeenCalledWith(cachedData)
       })
 
-      it('should NOT call next() on cache hit', () => {
+      it('should NOT call next() on cache hit', async () => {
         const cachedData = { message: 'cached' }
-        ;(cacheService.get as jest.Mock).mockReturnValue(cachedData)
+        ;(cacheService.get as jest.Mock).mockResolvedValue(cachedData)
         const middleware = cacheResponse(keyGenerator, ttl)
         const req = createMockReq({ query: { id: '123' } })
         const res = createMockRes()
 
-        middleware(req, res, mockNext)
+        await middleware(req, res, mockNext)
 
         expect(mockNext).not.toHaveBeenCalled()
       })
     })
 
     describe('non-GET requests', () => {
-      it('should call next() directly for POST requests without caching', () => {
+      it('should call next() directly for POST requests without caching', async () => {
         const middleware = cacheResponse(keyGenerator, ttl)
         const req = createMockReq({ method: 'POST' })
         const res = createMockRes()
 
-        middleware(req, res, mockNext)
+        await middleware(req, res, mockNext)
 
         expect(mockNext).toHaveBeenCalled()
         expect(cacheService.get).not.toHaveBeenCalled()
       })
 
-      it('should call next() directly for PUT requests without caching', () => {
+      it('should call next() directly for PUT requests without caching', async () => {
         const middleware = cacheResponse(keyGenerator, ttl)
         const req = createMockReq({ method: 'PUT' })
         const res = createMockRes()
 
-        middleware(req, res, mockNext)
+        await middleware(req, res, mockNext)
 
         expect(mockNext).toHaveBeenCalled()
         expect(cacheService.get).not.toHaveBeenCalled()
       })
 
-      it('should call next() directly for DELETE requests without caching', () => {
+      it('should call next() directly for DELETE requests without caching', async () => {
         const middleware = cacheResponse(keyGenerator, ttl)
         const req = createMockReq({ method: 'DELETE' })
         const res = createMockRes()
 
-        middleware(req, res, mockNext)
+        await middleware(req, res, mockNext)
 
         expect(mockNext).toHaveBeenCalled()
         expect(cacheService.get).not.toHaveBeenCalled()
       })
 
-      it('should call next() directly for PATCH requests without caching', () => {
+      it('should call next() directly for PATCH requests without caching', async () => {
         const middleware = cacheResponse(keyGenerator, ttl)
         const req = createMockReq({ method: 'PATCH' })
         const res = createMockRes()
 
-        middleware(req, res, mockNext)
+        await middleware(req, res, mockNext)
 
         expect(mockNext).toHaveBeenCalled()
         expect(cacheService.get).not.toHaveBeenCalled()
@@ -341,13 +341,13 @@ describe('Cache Middleware', () => {
         expect(typeof cacheProductsList).toBe('function')
       })
 
-      it('should use correct TTL (5 minutes = 300 seconds)', () => {
-        ;(cacheService.get as jest.Mock).mockReturnValue(null)
+      it('should use correct TTL (5 minutes = 300 seconds)', async () => {
+        ;(cacheService.get as jest.Mock).mockResolvedValue(null)
         const req = createMockReq({ query: { page: 1 } })
         const res = createMockRes()
         res.statusCode = 200
 
-        cacheProductsList(req, res, mockNext)
+        await cacheProductsList(req, res, mockNext)
         res.json({ products: [] })
 
         expect(cacheService.set).toHaveBeenCalledWith(
@@ -363,13 +363,13 @@ describe('Cache Middleware', () => {
         expect(typeof cacheProductDetail).toBe('function')
       })
 
-      it('should use correct TTL (10 minutes = 600 seconds)', () => {
-        ;(cacheService.get as jest.Mock).mockReturnValue(null)
+      it('should use correct TTL (10 minutes = 600 seconds)', async () => {
+        ;(cacheService.get as jest.Mock).mockResolvedValue(null)
         const req = createMockReq({ params: { product_id: 'abc123' } })
         const res = createMockRes()
         res.statusCode = 200
 
-        cacheProductDetail(req, res, mockNext)
+        await cacheProductDetail(req, res, mockNext)
         res.json({ product: {} })
 
         expect(cacheService.set).toHaveBeenCalledWith(
@@ -385,13 +385,13 @@ describe('Cache Middleware', () => {
         expect(typeof cacheCategoriesList).toBe('function')
       })
 
-      it('should use correct TTL (30 minutes = 1800 seconds)', () => {
-        ;(cacheService.get as jest.Mock).mockReturnValue(null)
+      it('should use correct TTL (30 minutes = 1800 seconds)', async () => {
+        ;(cacheService.get as jest.Mock).mockResolvedValue(null)
         const req = createMockReq({ query: {} })
         const res = createMockRes()
         res.statusCode = 200
 
-        cacheCategoriesList(req, res, mockNext)
+        await cacheCategoriesList(req, res, mockNext)
         res.json({ categories: [] })
 
         expect(cacheService.set).toHaveBeenCalledWith(

@@ -34,6 +34,7 @@ import {
   validateContentTypeMiddleware,
 } from '@middleware/security.middleware'
 import { requestLoggerMiddleware } from '@middleware/request-logger.middleware'
+import { requestIdMiddleware } from '@middleware/request-id.middleware'
 import { getDeprecationInfo, getDeprecationHeaders } from '@constants/api-version'
 import { Logger } from '@utils/logger'
 import { initializeSocket } from './socket/socket.init'
@@ -123,6 +124,9 @@ app.use(sanitizeMiddleware)
 
 // Global rate limiting — baseline 200 req/min per IP for all routes
 app.use(publicRateLimit)
+
+// Request ID middleware — must run before request logger so req.requestId is available
+app.use(requestIdMiddleware)
 
 // Request logger middleware - log tất cả incoming requests
 app.use(requestLoggerMiddleware)

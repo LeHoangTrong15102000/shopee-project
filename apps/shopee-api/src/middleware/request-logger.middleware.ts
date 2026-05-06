@@ -79,6 +79,7 @@ interface RequestLogData {
   url: string
   ip: string
   userAgent: string
+  requestId?: string
   userId?: string
   query?: Record<string, any>
   body?: Record<string, any>
@@ -89,16 +90,21 @@ interface RequestLogData {
 
 /**
  * Request Logger Middleware
- * Log tất cả incoming requests với response time
- * Tự động loại bỏ sensitive data từ logs
+ * Log tất cả incoming requests với response time và requestId.
+ * Tự động loại bỏ sensitive data từ logs.
+ * Sử dụng Logger.child({ requestId }) để mọi log entry đều mang requestId.
  */
 export const requestLoggerMiddleware = (req: Request, res: Response, next: NextFunction): void => {
-  // Bỏ qua các paths không cần log
+  // Bỏ qua các paths không cần log (health check, static files)
   if (EXCLUDED_PATHS.some((path) => req.path.startsWith(path))) {
     return next()
   }
 
   const startTime = Date.now()
+  const requestId = req.requestId
+
+  // Create a child logger that automatically includes requestId in every entry
+  const logger = Logger.child({ requestId })
 
   // Lấy thông tin request
   const logData: RequestLogData = {
@@ -106,6 +112,7 @@ export const requestLoggerMiddleware = (req: Request, res: Response, next: NextF
     url: req.originalUrl || req.url,
     ip: getClientIP(req),
     userAgent: req.headers['user-agent'] || 'unknown',
+    requestId,
   }
 
   // Thêm user ID nếu có (sau khi auth middleware chạy)
@@ -128,12 +135,15 @@ export const requestLoggerMiddleware = (req: Request, res: Response, next: NextF
     logData.body = sanitizeData(req.body)
   }
 
-  // Log request đến
-  Logger.request(req.method, req.originalUrl || req.url, logData.userId, {
+  // Log request start: { method, url, requestId }
+  logger.info(`${req.method} ${req.originalUrl || req.url}`, {
+    method: logData.method,
+    url: logData.url,
     ip: logData.ip,
+    ...(logData.userId ? { userId: logData.userId } : {}),
   })
 
-  // Override res.end để log response
+  // Override res.end để log response với duration
   const originalEnd = res.end.bind(res)
 
   res.end = function (chunk?: any, encoding?: any, callback?: any): Response {
@@ -143,15 +153,25 @@ export const requestLoggerMiddleware = (req: Request, res: Response, next: NextF
     logData.statusCode = res.statusCode
     logData.contentLength = res.get('Content-Length') || '0'
 
-    // Log response với màu theo status code
-    const logLevel = res.statusCode >= 400 ? 'error' : 'info'
+    // Log response finish: { method, url, requestId, statusCode, duration }
+    const responseMeta = {
+      method: logData.method,
+      url: logData.url,
+      statusCode: res.statusCode,
+      duration: responseTime,
+      contentLength: logData.contentLength,
+    }
 
-    if (logLevel === 'error') {
-      Logger.apiError(`${req.method} ${req.originalUrl} - ${res.statusCode} (${responseTime}ms)`, {
-        ...logData,
-      })
+    if (res.statusCode >= 400) {
+      logger.error(
+        `${req.method} ${req.originalUrl} - ${res.statusCode} (${responseTime}ms)`,
+        responseMeta,
+      )
     } else {
-      Logger.apiInfo(`${req.method} ${req.originalUrl} - ${res.statusCode} (${responseTime}ms)`)
+      logger.info(
+        `${req.method} ${req.originalUrl} - ${res.statusCode} (${responseTime}ms)`,
+        responseMeta,
+      )
     }
 
     return originalEnd(chunk, encoding, callback)

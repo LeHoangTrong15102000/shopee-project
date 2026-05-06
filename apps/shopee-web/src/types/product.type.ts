@@ -14,6 +14,7 @@ export interface Product extends Omit<SharedProduct, 'category' | 'description' 
     name: string
   }
   location: string
+  shop_id?: string
 }
 
 export interface ProductList {

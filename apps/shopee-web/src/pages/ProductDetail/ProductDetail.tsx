@@ -437,6 +437,7 @@ const ProductDetail = () => {
             rating={product.rating}
             isSellerOnline={isSellerOnline}
             sellerLastSeen={sellerLastSeen}
+            shopId={product.shop_id}
           />
         </div>
       </motion.div>

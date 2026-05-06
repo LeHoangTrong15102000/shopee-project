@@ -19,6 +19,7 @@ import CHECKIN_VI from 'src/locales/vi/checkin.json'
 import WISHLIST_VI from 'src/locales/vi/wishlist.json'
 import COMPARE_VI from 'src/locales/vi/compare.json'
 import VALIDATION_VI from 'src/locales/vi/validation.json'
+import VOUCHER_VI from 'src/locales/vi/voucher.json'
 
 export const locales = {
   en: 'English',
@@ -46,6 +47,7 @@ export const resources = {
     wishlist: WISHLIST_VI,
     compare: COMPARE_VI,
     validation: VALIDATION_VI,
+    voucher: VOUCHER_VI,
   },
 } as const
 
@@ -71,6 +73,7 @@ const allNamespaces = [
   'wishlist',
   'compare',
   'validation',
+  'voucher',
 ] as const
 
 // Khởi tạo i18n chỉ khi không phải test environment
@@ -132,6 +135,7 @@ if (!isTestEnvironment) {
       import('src/locales/en/wishlist.json'),
       import('src/locales/en/compare.json'),
       import('src/locales/en/validation.json'),
+      import('src/locales/en/voucher.json'),
     ])
       .then(
         ([
@@ -154,6 +158,7 @@ if (!isTestEnvironment) {
           wishlistModule,
           compareModule,
           validationModule,
+          voucherModule,
         ]) => {
           const enResources = {
             common: commonModule.default,
@@ -175,6 +180,7 @@ if (!isTestEnvironment) {
             wishlist: wishlistModule.default,
             compare: compareModule.default,
             validation: validationModule.default,
+            voucher: voucherModule.default,
           }
           Object.entries(enResources).forEach(([ns, bundle]) => {
             i18n.addResourceBundle('en', ns, bundle, true, true)
@@ -240,6 +246,7 @@ export async function loadLanguage(lng: string): Promise<void> {
     wishlistModule,
     compareModule,
     validationModule,
+    voucherModule,
   ] = await Promise.all([
     import('src/locales/en/common.json'),
     import('src/locales/en/home.json'),
@@ -260,6 +267,7 @@ export async function loadLanguage(lng: string): Promise<void> {
     import('src/locales/en/wishlist.json'),
     import('src/locales/en/compare.json'),
     import('src/locales/en/validation.json'),
+    import('src/locales/en/voucher.json'),
   ])
 
   i18n.addResourceBundle(lng, 'common', commonModule.default, true, true)
@@ -281,6 +289,7 @@ export async function loadLanguage(lng: string): Promise<void> {
   i18n.addResourceBundle(lng, 'wishlist', wishlistModule.default, true, true)
   i18n.addResourceBundle(lng, 'compare', compareModule.default, true, true)
   i18n.addResourceBundle(lng, 'validation', validationModule.default, true, true)
+  i18n.addResourceBundle(lng, 'voucher', voucherModule.default, true, true)
   await i18n.changeLanguage(lng)
   document.documentElement.lang = lng
   try {

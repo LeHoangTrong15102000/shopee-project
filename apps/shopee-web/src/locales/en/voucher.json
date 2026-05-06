@@ -1,0 +1,9 @@
+{
+  "page.title": "Voucher Store",
+  "page.description": "Discover and save great discount vouchers",
+  "page.subtitle": "Save vouchers now to enjoy deals when shopping",
+  "heading": "Voucher Store",
+  "empty": "No vouchers available at the moment",
+  "toast.collectSuccess": "Voucher saved successfully!",
+  "toast.collectError": "Could not save voucher. Please try again."
+}

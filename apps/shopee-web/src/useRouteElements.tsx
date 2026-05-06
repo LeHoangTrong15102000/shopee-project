@@ -34,6 +34,8 @@ const DailyCheckInPage = lazy(() => import('./pages/User/pages/DailyCheckIn'))
 const AddressBook = lazy(() => import('./pages/User/pages/AddressBook'))
 const Notifications = lazy(() => import('./pages/User/pages/Notifications'))
 const ConversationHistory = lazy(() => import('./pages/User/pages/ConversationHistory'))
+const LoyaltyPage = lazy(() => import('./pages/User/pages/Loyalty'))
+const VouchersPage = lazy(() => import('./pages/Vouchers'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword/ForgotPassword'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword/ResetPassword'))
@@ -106,6 +108,15 @@ const useRouteElements = () => {
           element: (
             <Suspense fallback={<Loader />}>
               <Compare />
+            </Suspense>
+          ),
+          errorElement: <NotFound />,
+        },
+        {
+          path: path.voucherCollection,
+          element: (
+            <Suspense fallback={<Loader />}>
+              <VouchersPage />
             </Suspense>
           ),
           errorElement: <NotFound />,
@@ -250,6 +261,14 @@ const useRouteElements = () => {
                   element: (
                     <Suspense>
                       <ConversationHistory />
+                    </Suspense>
+                  ),
+                },
+                {
+                  path: path.loyalty,
+                  element: (
+                    <Suspense>
+                      <LoyaltyPage />
                     </Suspense>
                   ),
                 },

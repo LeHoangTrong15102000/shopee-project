@@ -1,0 +1,9 @@
+{
+  "page.title": "Kho Voucher",
+  "page.description": "Khám phá và lưu voucher giảm giá hấp dẫn",
+  "page.subtitle": "Lưu voucher ngay để nhận ưu đãi khi mua hàng",
+  "heading": "Kho Voucher",
+  "empty": "Hiện chưa có voucher nào",
+  "toast.collectSuccess": "Đã lưu voucher thành công!",
+  "toast.collectError": "Không thể lưu voucher. Vui lòng thử lại."
+}

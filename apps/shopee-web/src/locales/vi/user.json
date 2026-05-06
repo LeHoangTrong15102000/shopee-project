@@ -123,5 +123,6 @@
   "vouchers.copied": "Đã sao chép mã voucher!",
   "vouchers.copiedCode": "Đã sao chép mã: {{code}}",
   "history.seo.title": "Đơn mua",
-  "sideNav.conversations": "Lịch sử hội thoại"
+  "sideNav.conversations": "Lịch sử hội thoại",
+  "sideNav.loyalty": "Điểm tích lũy"
 }

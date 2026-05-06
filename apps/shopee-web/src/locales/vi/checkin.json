@@ -27,6 +27,8 @@
   "loyalty.eligible": "Đủ điều kiện!",
   "loyalty.expiryWarning": "{{count}} xu sẽ hết hạn vào {{date}}",
   "loyalty.expiryDays": "({{count}} ngày nữa!)",
+  "loyalty.errorLoading": "Không thể tải dữ liệu điểm tích lũy. Vui lòng thử lại.",
+  "loyalty.noTransactions": "Chưa có lịch sử giao dịch.",
   "page.title": "Điểm danh hàng ngày",
   "page.description": "Điểm danh hàng ngày để nhận xu và phần thưởng",
   "page.subtitle": "Điểm danh mỗi ngày để nhận xu và phần thưởng hấp dẫn",

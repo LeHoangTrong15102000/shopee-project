@@ -8,6 +8,7 @@ interface ShopInfoProps {
   rating: number
   isSellerOnline: boolean
   sellerLastSeen: string | null
+  shopId?: string
 }
 
 const ShopInfo = ({
@@ -16,6 +17,7 @@ const ShopInfo = ({
   rating,
   isSellerOnline,
   sellerLastSeen,
+  shopId,
 }: ShopInfoProps) => {
   const { t } = useTranslation('product')
 
@@ -100,7 +102,7 @@ const ShopInfo = ({
         <div className="hidden h-20 w-px bg-gray-200 md:block dark:bg-slate-600" />
         {/* Right: Shop Metrics */}
         <div className="flex-1">
-          <ShopMetrics rating={rating} />
+          <ShopMetrics rating={rating} shopId={shopId} />
         </div>
       </div>
     </div>

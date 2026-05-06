@@ -462,6 +462,53 @@ const UserSideNav = () => {
               </>
             )}
           </NavLink>
+          {/* Điểm tích lũy */}
+          <NavLink
+            to={path.loyalty}
+            className={({ isActive }) =>
+              classNames(
+                'relative mt-4 mb-3.75 flex items-center justify-start capitalize transition-colors',
+                {
+                  'text-[#ee4d2d]': isActive,
+                  'text-gray-600 dark:text-gray-300': !isActive,
+                },
+              )
+            }
+          >
+            {({ isActive }) => (
+              <>
+                {isActive && !reducedMotion && (
+                  <motion.div
+                    layoutId="activeNavIndicator"
+                    className="absolute inset-0 rounded-lg bg-[#ee4d2d]/5"
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  />
+                )}
+                {isActive && reducedMotion && (
+                  <div className="absolute inset-0 rounded-lg bg-[#ee4d2d]/5" />
+                )}
+                <div className="relative z-10 flex items-center">
+                  <div className="mr-2 flex shrink-0 items-center justify-center rounded-sm">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="h-6 w-6 text-amber-500"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                  <span className="font-medium capitalize">{t('sideNav.loyalty')}</span>
+                </div>
+              </>
+            )}
+          </NavLink>
         </div>
       </div>
     </div>

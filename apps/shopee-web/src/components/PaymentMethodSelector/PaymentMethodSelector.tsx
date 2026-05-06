@@ -43,7 +43,7 @@ function PaymentMethodSelector({ selectedMethodType, onSelect }: PaymentMethodSe
       {/* Title removed - using SectionHeader in parent */}
 
       <div className="space-y-3">
-        {methods.map((method) => (
+        {methods.map((method: PaymentMethod) => (
           <motion.div
             key={method._id}
             initial={{ opacity: 0, y: 10 }}

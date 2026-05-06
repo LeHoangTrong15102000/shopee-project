@@ -52,7 +52,7 @@ function ShippingMethodSelector({
       role={viewOnly ? 'list' : 'radiogroup'}
       aria-label={t('shipping.selectMethod')}
     >
-      {methods.map((method) => (
+      {methods.map((method: ShippingMethod) => (
         <motion.div
           key={method._id}
           initial={reducedMotion ? false : { opacity: 0, y: 10 }}

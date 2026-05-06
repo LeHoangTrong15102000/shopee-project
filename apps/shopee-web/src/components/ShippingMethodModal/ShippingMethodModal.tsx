@@ -4,7 +4,7 @@ import BaseModal from 'src/components/BaseModal/BaseModal'
 import checkoutApi from 'src/apis/checkout.api'
 import { formatCurrency } from 'src/utils/utils'
 import { getShopeeDeliveryRange } from 'src/utils/date'
-import { ShippingMethod } from 'src/types/checkout.type'
+import { ShippingMethod, ShippingMethodDetail } from 'src/types/checkout.type'
 
 // Shopee official truck icon URL - only for instant delivery
 const SHOPEE_TRUCK_ICON_URL =
@@ -150,7 +150,7 @@ const ShippingMethodModal = ({ isOpen, onClose, location }: ShippingMethodModalP
         {/* Shipping methods - Shopee flat layout */}
         {hasMethods && (
           <ul className="divide-y divide-gray-100 dark:divide-slate-700" role="list">
-            {methods.map((method) => {
+            {methods.map((method: ShippingMethod) => {
               const deliveryRange = getShopeeDeliveryRange(method.estimatedDays)
               const isInstant = method.type === 'instant'
               const isPickup = method.type === 'pickup'
@@ -198,7 +198,7 @@ const ShippingMethodModal = ({ isOpen, onClose, location }: ShippingMethodModalP
                   {/* Method details - additional info */}
                   {method.details && method.details.length > 0 && (
                     <ul className="mt-2 space-y-1">
-                      {method.details.map((detail, idx) => (
+                      {method.details.map((detail: ShippingMethodDetail, idx: number) => (
                         <li key={idx} className="text-xs text-gray-400 dark:text-gray-500">
                           {detail.text}
                         </li>

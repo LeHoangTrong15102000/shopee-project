@@ -11,6 +11,14 @@ const shopApi = {
   getShopProducts: (id: string, params?: ShopProductsParams) => {
     return http.get<SuccessResponseApi<ProductList>>(`/shops/${id}/products`, { params })
   },
+
+  followShop: (id: string) => {
+    return http.post<SuccessResponseApi<{ message: string }>>(`/shops/${id}/follow`)
+  },
+
+  unfollowShop: (id: string) => {
+    return http.delete<SuccessResponseApi<{ message: string }>>(`/shops/${id}/follow`)
+  },
 }
 
 export default shopApi

@@ -124,5 +124,6 @@
   "vouchers.copiedCode": "Copied code: {{code}}",
   "history.seo.title": "My Purchases",
   "sideNav.conversations": "Conversation History",
-  "sideNav.loyalty": "Loyalty Points"
+  "sideNav.loyalty": "Loyalty Points",
+  "sideNav.priceAlerts": "Price Alerts"
 }

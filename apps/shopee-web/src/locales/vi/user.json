@@ -124,5 +124,6 @@
   "vouchers.copiedCode": "Đã sao chép mã: {{code}}",
   "history.seo.title": "Đơn mua",
   "sideNav.conversations": "Lịch sử hội thoại",
-  "sideNav.loyalty": "Điểm tích lũy"
+  "sideNav.loyalty": "Điểm tích lũy",
+  "sideNav.priceAlerts": "Cảnh báo giá"
 }

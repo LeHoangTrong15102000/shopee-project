@@ -27,6 +27,9 @@ const path = {
   notifications: '/user/notification', // Trang thông báo
   conversations: '/user/conversations', // Trang lịch sử hội thoại
   loyalty: '/user/loyalty', // Trang điểm tích lũy
+  shopProfile: '/shop/:id', // Trang hồ sơ cửa hàng
+  priceAlerts: '/user/price-alerts', // Trang cảnh báo giá
+  orderTracking: '/tracking/:number', // Trang theo dõi đơn hàng công khai
 } as const
 
 export default path

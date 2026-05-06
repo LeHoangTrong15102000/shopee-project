@@ -24,6 +24,7 @@ import {
   ShopInfo,
   ShopProducts,
 } from './components'
+import PriceHistoryChart from './components/PriceHistoryChart'
 
 import { AppContext } from 'src/contexts/app.context'
 import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum'
@@ -59,6 +60,7 @@ const ProductDetail = () => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false)
   const [needsCollapse, setNeedsCollapse] = useState(false)
   const [showVariantError, setShowVariantError] = useState(false)
+  const [isPriceHistoryExpanded, setIsPriceHistoryExpanded] = useState(false)
   const descriptionRef = useRef<HTMLDivElement>(null)
   const infoContainerVariants = staggerContainer(STAGGER_DELAY.normal)
 
@@ -127,6 +129,14 @@ const ProductDetail = () => {
 
   const product =
     productDetailData?.status === HTTP_STATUS_CODE.NotFound ? null : productDetailData?.data?.data
+
+  // Price history query — only fetches when user expands the section
+  const { data: priceHistoryData, isLoading: isPriceHistoryLoading } = useQuery({
+    queryKey: ['priceHistory', id],
+    queryFn: () => productApi.getPriceHistory(id as string),
+    enabled: isPriceHistoryExpanded && Boolean(id),
+    staleTime: 10 * 60 * 1000,
+  })
 
   // Variant selection state
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({})
@@ -501,6 +511,41 @@ const ProductDetail = () => {
           </div>
         </div>
       </motion.div>
+      {/* Price History Chart */}
+      <div className='mt-4'>
+        <div className='container'>
+          <div className='rounded-sm bg-white p-4 shadow-sm dark:bg-slate-800 dark:shadow-slate-900/50'>
+            <button
+              type='button'
+              onClick={() => setIsPriceHistoryExpanded((prev) => !prev)}
+              className='flex w-full items-center justify-between text-sm font-medium text-gray-700 hover:text-orange dark:text-gray-200 dark:hover:text-orange-400'
+              aria-expanded={isPriceHistoryExpanded}
+            >
+              <span>View price history</span>
+              <svg
+                aria-hidden='true'
+                className={`h-4 w-4 transition-transform duration-200 motion-reduce:transition-none ${isPriceHistoryExpanded ? 'rotate-180' : ''}`}
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
+              </svg>
+            </button>
+            {isPriceHistoryExpanded && (
+              <div className='mt-4'>
+                {isPriceHistoryLoading ? (
+                  <div className='flex items-center justify-center py-8'>
+                    <div className='h-6 w-6 animate-spin rounded-full border-2 border-orange border-t-transparent' />
+                  </div>
+                ) : (
+                  <PriceHistoryChart data={priceHistoryData?.data?.data ?? []} />
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
       {/* Live Review Feed - Phase 3 */}
       {newReviews.length > 0 && (
         <div className="mt-4">

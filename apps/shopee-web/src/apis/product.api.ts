@@ -19,6 +19,11 @@ export interface ApiOptions {
   signal?: AbortSignal
 }
 
+export interface PriceHistoryEntry {
+  price: number
+  date: string
+}
+
 const productApi = {
   getProducts: (params: ProductListConfig, options?: ApiOptions) => {
     return http.get<SuccessResponseApi<ProductList>>('/products', {
@@ -74,6 +79,12 @@ const productApi = {
       {
         signal: options?.signal,
       },
+    )
+  },
+
+  getPriceHistory: (productId: string) => {
+    return http.get<SuccessResponseApi<PriceHistoryEntry[]>>(
+      `/products/${productId}/price-history`,
     )
   },
 }

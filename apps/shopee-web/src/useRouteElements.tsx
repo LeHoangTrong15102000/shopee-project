@@ -36,6 +36,9 @@ const Notifications = lazy(() => import('./pages/User/pages/Notifications'))
 const ConversationHistory = lazy(() => import('./pages/User/pages/ConversationHistory'))
 const LoyaltyPage = lazy(() => import('./pages/User/pages/Loyalty'))
 const VouchersPage = lazy(() => import('./pages/Vouchers'))
+const ShopProfilePage = lazy(() => import('./pages/ShopProfile'))
+const OrderTrackingPage = lazy(() => import('./pages/OrderTracking'))
+const PriceAlertsPage = lazy(() => import('./pages/User/pages/PriceAlerts'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword/ForgotPassword'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword/ResetPassword'))
@@ -117,6 +120,24 @@ const useRouteElements = () => {
           element: (
             <Suspense fallback={<Loader />}>
               <VouchersPage />
+            </Suspense>
+          ),
+          errorElement: <NotFound />,
+        },
+        {
+          path: path.shopProfile,
+          element: (
+            <Suspense fallback={<Loader />}>
+              <ShopProfilePage />
+            </Suspense>
+          ),
+          errorElement: <NotFound />,
+        },
+        {
+          path: path.orderTracking,
+          element: (
+            <Suspense fallback={<Loader />}>
+              <OrderTrackingPage />
             </Suspense>
           ),
           errorElement: <NotFound />,
@@ -269,6 +290,14 @@ const useRouteElements = () => {
                   element: (
                     <Suspense>
                       <LoyaltyPage />
+                    </Suspense>
+                  ),
+                },
+                {
+                  path: path.priceAlerts,
+                  element: (
+                    <Suspense>
+                      <PriceAlertsPage />
                     </Suspense>
                   ),
                 },

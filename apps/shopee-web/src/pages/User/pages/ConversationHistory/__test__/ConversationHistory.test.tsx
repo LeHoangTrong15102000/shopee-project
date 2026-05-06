@@ -4,60 +4,48 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import ConversationHistory from '../ConversationHistory'
 import React from 'react'
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    li: ({ children, ...props }: any) => <li {...props}>{children}</li>,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
-
-vi.mock('src/hooks/useReducedMotion', () => ({
-  useReducedMotion: () => false,
-}))
-
 vi.mock('src/components/SEO', () => ({
   default: () => <div data-testid="seo" />,
 }))
 
-vi.mock('src/components/Button', () => ({
-  default: ({ children, onClick, disabled, className, ...props }: any) => (
-    <button onClick={onClick} disabled={disabled} className={className} {...props}>
-      {children}
-    </button>
-  ),
+vi.mock('src/components/Chat/ChatWindow', () => ({
+  default: ({ sellerName }: any) => <div data-testid="chat-window">{sellerName}</div>,
 }))
 
 const mockConversations = [
   {
     _id: 'conv-1',
-    title: 'Conversation 1',
-    status: 'active',
-    lastActivity: '2024-01-01T00:00:00.000Z',
-    updatedAt: '2024-01-01T00:00:00.000Z',
+    shopId: 'shop-1',
+    shopName: 'Test Shop 1',
+    shopAvatar: '',
+    lastMessage: 'Hello from shop 1',
+    lastMessageAt: '2024-01-01T10:00:00.000Z',
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T10:00:00.000Z',
   },
   {
     _id: 'conv-2',
-    title: 'Conversation 2',
-    status: 'archived',
-    lastActivity: '2024-01-02T00:00:00.000Z',
-    updatedAt: '2024-01-02T00:00:00.000Z',
+    shopId: 'shop-2',
+    shopName: 'Test Shop 2',
+    shopAvatar: '',
+    lastMessage: 'Hello from shop 2',
+    lastMessageAt: '2024-01-02T10:00:00.000Z',
+    createdAt: '2024-01-02T00:00:00.000Z',
+    updatedAt: '2024-01-02T10:00:00.000Z',
   },
 ]
+
 let mockGetConversations = vi.fn(() =>
   Promise.resolve({ data: { data: { conversations: mockConversations } } }),
 )
-const mockDeleteConversation = vi.fn(() => Promise.resolve())
 
-vi.mock('src/apis/chatbot.api', () => ({
+vi.mock('src/apis/shopChat.api', () => ({
   default: {
     getConversations: (...args: any[]) => mockGetConversations(...args),
-    deleteConversation: (...args: any[]) => mockDeleteConversation(...args),
+    createConversation: vi.fn(() => Promise.resolve({ data: { data: mockConversations[0] } })),
+    getMessages: vi.fn(() => Promise.resolve({ data: { data: { messages: [] } } })),
+    sendMessage: vi.fn(() => Promise.resolve({ data: { data: {} } })),
   },
-}))
-
-vi.mock('react-toastify', () => ({
-  toast: { success: vi.fn(), error: vi.fn() },
 }))
 
 describe('ConversationHistory', () => {
@@ -84,73 +72,57 @@ describe('ConversationHistory', () => {
     expect(spinner).toBeInTheDocument()
   })
 
-  it('should render conversations list', async () => {
+  it('should render conversations list with shop names', async () => {
     render(<ConversationHistory />, { wrapper })
     await waitFor(() => {
-      expect(screen.getByText('Conversation 1')).toBeInTheDocument()
-      expect(screen.getByText('Conversation 2')).toBeInTheDocument()
+      expect(screen.getByText('Test Shop 1')).toBeInTheDocument()
+      expect(screen.getByText('Test Shop 2')).toBeInTheDocument()
     })
   })
 
   it('should show empty state when no conversations', async () => {
-    mockGetConversations = vi.fn(() => Promise.resolve({ data: { data: { conversations: [] } } }))
+    mockGetConversations = vi.fn(() =>
+      Promise.resolve({ data: { data: { conversations: [] } } }),
+    )
     render(<ConversationHistory />, { wrapper })
     await waitFor(() => {
-      expect(screen.getByText('Chưa có cuộc hội thoại nào')).toBeInTheDocument()
+      expect(screen.getByText('No conversations yet')).toBeInTheDocument()
     })
   })
 
-  it('should show delete confirmation modal', async () => {
+  it('should render last message preview', async () => {
     render(<ConversationHistory />, { wrapper })
     await waitFor(() => {
-      expect(screen.getByText('Conversation 1')).toBeInTheDocument()
-    })
-    const deleteButtons = screen.getAllByLabelText(/Xóa hội thoại/)
-    fireEvent.click(deleteButtons[0])
-    expect(screen.getByText('Xác nhận xóa')).toBeInTheDocument()
-  })
-
-  it('should close delete modal on cancel', async () => {
-    render(<ConversationHistory />, { wrapper })
-    await waitFor(() => {
-      expect(screen.getByText('Conversation 1')).toBeInTheDocument()
-    })
-    const deleteButtons = screen.getAllByLabelText(/Xóa hội thoại/)
-    fireEvent.click(deleteButtons[0])
-    const cancelButton = screen.getByText('Hủy')
-    fireEvent.click(cancelButton)
-    await waitFor(() => {
-      expect(screen.queryByText('Xác nhận xóa')).not.toBeInTheDocument()
+      expect(screen.getByText('Hello from shop 1')).toBeInTheDocument()
     })
   })
 
-  it('should delete conversation on confirm', async () => {
+  it('should open ChatWindow when conversation is clicked', async () => {
     render(<ConversationHistory />, { wrapper })
     await waitFor(() => {
-      expect(screen.getByText('Conversation 1')).toBeInTheDocument()
+      expect(screen.getByText('Test Shop 1')).toBeInTheDocument()
     })
-    const deleteButtons = screen.getAllByLabelText(/Xóa hội thoại/)
-    fireEvent.click(deleteButtons[0])
-    const confirmButton = screen.getByText('Xóa')
-    fireEvent.click(confirmButton)
+    const convButton = screen.getAllByRole('button')[0]
+    fireEvent.click(convButton)
     await waitFor(() => {
-      expect(mockDeleteConversation).toHaveBeenCalledWith('conv-1')
+      expect(screen.getByTestId('chat-window')).toBeInTheDocument()
     })
   })
 
-  it('should display conversation status', async () => {
+  it('should close ChatWindow when close button is clicked', async () => {
     render(<ConversationHistory />, { wrapper })
     await waitFor(() => {
-      expect(screen.getByText('Đang hoạt động')).toBeInTheDocument()
-      expect(screen.getByText('Đã lưu trữ')).toBeInTheDocument()
+      expect(screen.getByText('Test Shop 1')).toBeInTheDocument()
     })
-  })
-
-  it('should format date correctly', async () => {
-    render(<ConversationHistory />, { wrapper })
+    const convButton = screen.getAllByRole('button')[0]
+    fireEvent.click(convButton)
     await waitFor(() => {
-      const dateElements = screen.getAllByText(/\d{2}\/\d{2}\/\d{4}/)
-      expect(dateElements.length).toBeGreaterThan(0)
+      expect(screen.getByTestId('chat-window')).toBeInTheDocument()
+    })
+    const closeButton = screen.getByText('Close chat')
+    fireEvent.click(closeButton)
+    await waitFor(() => {
+      expect(screen.queryByTestId('chat-window')).not.toBeInTheDocument()
     })
   })
 })

@@ -73,11 +73,11 @@ describe('MobileAccountNav', () => {
     expect(listbox).toBeInTheDocument()
   })
 
-  it('shows all 7 nav items when open', () => {
+  it('shows all 9 nav items when open', () => {
     render(<MobileAccountNav />)
     fireEvent.click(screen.getByRole('button', { name: 'Menu tài khoản' }))
     const options = screen.getAllByRole('option')
-    expect(options.length).toBe(7)
+    expect(options.length).toBe(9)
   })
 
   it('marks active item with aria-selected', () => {

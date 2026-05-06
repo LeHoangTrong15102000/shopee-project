@@ -509,6 +509,53 @@ const UserSideNav = () => {
               </>
             )}
           </NavLink>
+          {/* Cảnh báo giá */}
+          <NavLink
+            to={path.priceAlerts}
+            className={({ isActive }) =>
+              classNames(
+                'relative mt-4 mb-3.75 flex items-center justify-start capitalize transition-colors',
+                {
+                  'text-[#ee4d2d]': isActive,
+                  'text-gray-600 dark:text-gray-300': !isActive,
+                },
+              )
+            }
+          >
+            {({ isActive }) => (
+              <>
+                {isActive && !reducedMotion && (
+                  <motion.div
+                    layoutId="activeNavIndicator"
+                    className="absolute inset-0 rounded-lg bg-[#ee4d2d]/5"
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  />
+                )}
+                {isActive && reducedMotion && (
+                  <div className="absolute inset-0 rounded-lg bg-[#ee4d2d]/5" />
+                )}
+                <div className="relative z-10 flex items-center">
+                  <div className="mr-2 flex shrink-0 items-center justify-center rounded-sm">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="h-6 w-6 text-orange-500"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
+                      />
+                    </svg>
+                  </div>
+                  <span className="font-medium capitalize">{t('sideNav.priceAlerts')}</span>
+                </div>
+              </>
+            )}
+          </NavLink>
         </div>
       </div>
     </div>

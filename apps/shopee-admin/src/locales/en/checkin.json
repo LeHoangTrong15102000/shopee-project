@@ -5,6 +5,33 @@
     "totalToday": "Check-ins Today",
     "activeStreaks": "Active Streaks"
   },
+  "tabs": {
+    "overview": {
+      "label": "Overview",
+      "dailyChart": "Daily Check-ins (Last 30 Days)",
+      "checkins": "Check-ins"
+    },
+    "users": {
+      "label": "Users",
+      "search": "Search users...",
+      "columns": {
+        "user": "User",
+        "totalCheckins": "Total Check-ins",
+        "currentStreak": "Current Streak",
+        "longestStreak": "Longest Streak",
+        "lastCheckin": "Last Check-in"
+      }
+    },
+    "leaderboard": {
+      "label": "Leaderboard",
+      "columns": {
+        "rank": "Rank",
+        "user": "User",
+        "currentStreak": "Current Streak",
+        "totalCheckins": "Total Check-ins"
+      }
+    }
+  },
   "activity": {
     "title": "Recent Activity",
     "columns": {

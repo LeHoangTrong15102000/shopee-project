@@ -1,5 +1,6 @@
 import { Types } from 'mongoose'
 import { CheckInModel, ICheckIn } from '@database/models/checkin.model'
+import { UserModel } from '@database/models/user.model'
 import { BaseService, BusinessError } from './base.service'
 
 // Reward tiers based on streak day
@@ -142,5 +143,180 @@ export class CheckInService extends BaseService {
         total,
       },
     }
+  }
+
+  // ─── Admin Methods ──────────────────────────────────────────────
+
+  async adminGetUsers(pagination: { page: number; limit: number; search?: string }) {
+    const { page, limit } = this.normalizePagination(pagination)
+    const skip = (page - 1) * limit
+
+    // Aggregate per user: total checkins, current streak, last checkin date
+    const today = getTodayUTC()
+    const yesterday = getYesterdayUTC()
+
+    const userStats = await CheckInModel.aggregate([
+      {
+        $group: {
+          _id: '$user_id',
+          total_checkins: { $sum: 1 },
+          last_checkin_date: { $max: '$date' },
+          max_streak: { $max: '$streak_day' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      { $unwind: { path: '$user', preserveNullAndEmptyArrays: false } },
+      ...(pagination.search
+        ? [
+            {
+              $match: {
+                $or: [
+                  { 'user.name': { $regex: pagination.search, $options: 'i' } },
+                  { 'user.email': { $regex: pagination.search, $options: 'i' } },
+                ],
+              },
+            },
+          ]
+        : []),
+      {
+        $addFields: {
+          current_streak: {
+            $cond: [
+              { $or: [{ $eq: ['$last_checkin_date', today] }, { $eq: ['$last_checkin_date', yesterday] }] },
+              '$max_streak',
+              0,
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          user_id: '$_id',
+          user_name: '$user.name',
+          user_email: '$user.email',
+          user_avatar: '$user.avatar',
+          total_checkins: 1,
+          current_streak: 1,
+          longest_streak: '$max_streak',
+          last_checkin_date: 1,
+        },
+      },
+      { $sort: { total_checkins: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+    ])
+
+    // Count for pagination
+    const countPipeline = await CheckInModel.aggregate([
+      { $group: { _id: '$user_id' } },
+      { $count: 'total' },
+    ])
+    const total = countPipeline[0]?.total ?? 0
+
+    return {
+      data: userStats,
+      pagination: {
+        page,
+        limit,
+        page_size: Math.ceil(total / limit) || 1,
+        total,
+      },
+    }
+  }
+
+  async adminGetLeaderboard() {
+    const today = getTodayUTC()
+    const yesterday = getYesterdayUTC()
+
+    const leaderboard = await CheckInModel.aggregate([
+      {
+        $group: {
+          _id: '$user_id',
+          total_checkins: { $sum: 1 },
+          last_checkin_date: { $max: '$date' },
+          max_streak: { $max: '$streak_day' },
+        },
+      },
+      {
+        $addFields: {
+          current_streak: {
+            $cond: [
+              {
+                $or: [
+                  { $eq: ['$last_checkin_date', today] },
+                  { $eq: ['$last_checkin_date', yesterday] },
+                ],
+              },
+              '$max_streak',
+              0,
+            ],
+          },
+        },
+      },
+      { $sort: { current_streak: -1, total_checkins: -1 } },
+      { $limit: 20 },
+      {
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      { $unwind: { path: '$user', preserveNullAndEmptyArrays: false } },
+      {
+        $project: {
+          _id: 0,
+          user_id: '$_id',
+          user_name: '$user.name',
+          user_email: '$user.email',
+          user_avatar: '$user.avatar',
+          total_checkins: 1,
+          current_streak: 1,
+          longest_streak: '$max_streak',
+        },
+      },
+    ])
+
+    return leaderboard
+  }
+
+  async adminGetDailyStats() {
+    const today = new Date()
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setUTCDate(today.getUTCDate() - 29)
+
+    // Generate list of dates for last 30 days
+    const dates: string[] = []
+    for (let i = 0; i < 30; i++) {
+      const d = new Date()
+      d.setUTCDate(today.getUTCDate() - (29 - i))
+      dates.push(d.toISOString().slice(0, 10))
+    }
+
+    const dailyCounts = await CheckInModel.aggregate([
+      { $match: { date: { $gte: dates[0], $lte: dates[29] } } },
+      {
+        $group: {
+          _id: '$date',
+          count: { $sum: 1 },
+        },
+      },
+    ])
+
+    const countMap: Record<string, number> = {}
+    for (const dc of dailyCounts) {
+      countMap[dc._id] = dc.count
+    }
+
+    return dates.map((date) => ({ date, count: countMap[date] ?? 0 }))
   }
 }

@@ -7,6 +7,17 @@
     "averageRating": "Average Rating",
     "fiveStarReviews": "5-Star Reviews"
   },
+  "moderation": {
+    "pending": "Pending Moderation",
+    "approved": "Approved",
+    "flagged": "Flagged"
+  },
+  "filter": {
+    "allStatuses": "All Statuses",
+    "pending": "Pending",
+    "approved": "Approved",
+    "flagged": "Flagged"
+  },
   "columns": {
     "product": "Product",
     "user": "User",
@@ -20,7 +31,12 @@
     "view": "View",
     "approve": "Approve",
     "flag": "Flag",
+    "resetPending": "Reset to Pending",
     "delete": "Delete"
+  },
+  "bulk": {
+    "approveAll": "Approve Selected",
+    "flagAll": "Flag Selected"
   },
   "detail": {
     "title": "Review Detail",
@@ -33,6 +49,8 @@
   "toast": {
     "approved": "Review approved",
     "flagged": "Review flagged",
+    "resetPending": "Review reset to pending",
+    "moderateFailed": "Failed to moderate review",
     "deleteTitle": "Delete Review",
     "deleteDescription": "This will permanently delete this review.",
     "deleteCommentTitle": "Delete Comment",

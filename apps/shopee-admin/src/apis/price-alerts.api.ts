@@ -8,6 +8,8 @@ export interface PriceAlert {
   target_price: number
   current_price: number
   is_triggered: boolean
+  is_active: boolean
+  triggered_at?: string
   createdAt: string
 }
 
@@ -16,11 +18,37 @@ export interface PriceAlertListResponse {
   pagination: { page: number; limit: number; total: number; totalPages: number }
 }
 
+export interface PriceAlertStats {
+  total_active: number
+  triggered_today: number
+  expired: number
+  most_watched_products: Array<{
+    product_id: string
+    product_name: string
+    product_image?: string
+    alert_count: number
+  }>
+}
+
+export interface PriceAlertListParams {
+  page?: number
+  limit?: number
+  user_id?: string
+  product_id?: string
+  status?: 'active' | 'triggered' | 'expired' | ''
+}
+
 const priceAlertsApi = {
-  getPriceAlerts: (page = 1) =>
+  getPriceAlerts: (params?: PriceAlertListParams) =>
     http.get<SuccessResponse<PriceAlertListResponse>>('admin/price-alerts', {
-      params: { page, limit: 10 },
+      params: { page: 1, limit: 20, ...params },
     }),
+
+  getAlertStats: () =>
+    http.get<SuccessResponse<PriceAlertStats>>('admin/price-alerts/stats'),
+
+  deleteAlert: (id: string) =>
+    http.delete<SuccessResponse<null>>(`admin/price-alerts/${id}`),
 }
 
 export default priceAlertsApi

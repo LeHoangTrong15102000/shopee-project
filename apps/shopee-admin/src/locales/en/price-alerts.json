@@ -1,6 +1,11 @@
 {
   "title": "Price Alerts",
-  "description": "Overview of user price alerts",
+  "description": "Manage user price alerts",
+  "stats": {
+    "totalActive": "Active Alerts",
+    "triggeredToday": "Triggered Today",
+    "expired": "Expired"
+  },
   "columns": {
     "user": "User",
     "product": "Product",
@@ -9,8 +14,27 @@
     "status": "Status",
     "date": "Date"
   },
+  "filter": {
+    "productSearch": "Search by product ID...",
+    "userSearch": "Search by user ID...",
+    "status": "Filter by status",
+    "allStatuses": "All statuses",
+    "active": "Active",
+    "triggered": "Triggered",
+    "expired": "Expired"
+  },
+  "mostWatched": {
+    "title": "Most Watched Products",
+    "alertCount": "{{count}} alerts"
+  },
   "triggered": "Triggered",
   "pending": "Pending",
+  "toast": {
+    "deleted": "Alert deleted",
+    "deleteFailed": "Failed to delete alert",
+    "deleteTitle": "Delete Alert",
+    "deleteDescription": "This will permanently delete this price alert."
+  },
   "error": "Failed to load price alerts",
   "emptyState": "No price alerts found.",
   "backendRequired": "Price alerts admin endpoint not yet available. Backend work required."

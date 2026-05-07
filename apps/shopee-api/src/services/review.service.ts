@@ -255,7 +255,13 @@ export class ReviewService extends BaseService {
   // ─── Admin Methods ─────────────────────────────────────────────
 
   async adminGetReviews(
-    filters: { rating?: number; product_id?: string; user_id?: string; search?: string },
+    filters: {
+      rating?: number
+      product_id?: string
+      user_id?: string
+      search?: string
+      moderation_status?: string
+    },
     pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' },
   ) {
     return (this.reviewRepository as any).findAllWithFilters(filters, pagination)
@@ -266,6 +272,15 @@ export class ReviewService extends BaseService {
     const review = await this.reviewRepository.findById(id)
     if (!review) throw new NotFoundError('Review', id)
     return review
+  }
+
+  async adminModerateReview(id: string, status: 'pending' | 'approved' | 'flagged') {
+    if (!this.isValidObjectId(id)) throw new ValidationError('Invalid review ID')
+    const review = await this.reviewRepository.findById(id)
+    if (!review) throw new NotFoundError('Review', id)
+    const updated = await (this.reviewRepository as any).updateModerationStatus(id, status)
+    if (!updated) throw new NotFoundError('Review', id)
+    return updated
   }
 
   async adminDeleteReview(id: string) {

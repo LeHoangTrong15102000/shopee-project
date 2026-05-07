@@ -9,6 +9,7 @@ interface IReview {
   comment: string
   images: string[]
   helpful_count: number
+  moderation_status: 'pending' | 'approved' | 'flagged'
   createdAt: Date
   updatedAt: Date
 }
@@ -54,6 +55,12 @@ const ReviewSchema = new Schema<IReview>(
     helpful_count: {
       type: Number,
       default: 0,
+    },
+    moderation_status: {
+      type: String,
+      enum: ['pending', 'approved', 'flagged'],
+      default: 'pending',
+      index: true,
     },
   },
   {

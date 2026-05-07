@@ -11,9 +11,10 @@ const handleError = (error: any) => {
 }
 
 export const adminGetReviews = async (req: Request, res: Response) => {
-  const { page, limit, sort_by, order, rating, product_id, user_id, search } = req.query as any
+  const { page, limit, sort_by, order, rating, product_id, user_id, search, moderation_status } =
+    req.query as any
   const data = await reviewService.adminGetReviews(
-    { rating: rating ? Number(rating) : undefined, product_id, user_id, search },
+    { rating: rating ? Number(rating) : undefined, product_id, user_id, search, moderation_status },
     { page: Number(page) || 1, limit: Number(limit) || 20, sort_by, order },
   )
   return responseSuccess(res, { message: 'Lấy danh sách đánh giá thành công', data })
@@ -23,6 +24,16 @@ export const adminGetReviewById = async (req: Request, res: Response) => {
   try {
     const data = await reviewService.adminGetReviewById(req.params.id as string)
     return responseSuccess(res, { message: 'Lấy chi tiết đánh giá thành công', data })
+  } catch (error) {
+    handleError(error)
+  }
+}
+
+export const adminModerateReview = async (req: Request, res: Response) => {
+  try {
+    const { status } = req.body as { status: 'pending' | 'approved' | 'flagged' }
+    const data = await reviewService.adminModerateReview(req.params.id as string, status)
+    return responseSuccess(res, { message: 'Cập nhật trạng thái kiểm duyệt thành công', data })
   } catch (error) {
     handleError(error)
   }

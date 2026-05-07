@@ -16,6 +16,7 @@ export const adminReviewListSchema = z.object({
       rating: z.coerce.number().int().min(1).max(5).optional(),
       product_id: mongoIdSchema.optional(),
       user_id: mongoIdSchema.optional(),
+      moderation_status: z.enum(['pending', 'approved', 'flagged']).optional(),
     }),
 })
 
@@ -32,3 +33,14 @@ export const adminReviewIdSchema = z.object({
 export const adminCommentIdSchema = z.object({
   params: z.object({ id: mongoIdSchema }),
 })
+
+// ─── Moderate Review Body ─────────────────────────────────────────
+
+export const adminModerateReviewSchema = z.object({
+  params: z.object({ id: mongoIdSchema }),
+  body: z.object({
+    status: z.enum(['pending', 'approved', 'flagged']),
+  }),
+})
+
+export type AdminModerateReviewBody = z.infer<typeof adminModerateReviewSchema>['body']

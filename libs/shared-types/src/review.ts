@@ -16,6 +16,7 @@ export interface Review {
   images: string[]
   helpful_count: number
   comments_count?: number
+  moderation_status?: 'pending' | 'approved' | 'flagged'
   createdAt: string
   updatedAt: string
 }

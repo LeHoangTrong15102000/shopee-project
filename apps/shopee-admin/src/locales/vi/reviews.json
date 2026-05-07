@@ -7,6 +7,17 @@
     "averageRating": "Đánh giá trung bình",
     "fiveStarReviews": "Đánh giá 5 sao"
   },
+  "moderation": {
+    "pending": "Chờ kiểm duyệt",
+    "approved": "Đã duyệt",
+    "flagged": "Đã đánh dấu"
+  },
+  "filter": {
+    "allStatuses": "Tất cả trạng thái",
+    "pending": "Chờ duyệt",
+    "approved": "Đã duyệt",
+    "flagged": "Đã đánh dấu"
+  },
   "columns": {
     "product": "Sản phẩm",
     "user": "Người dùng",
@@ -20,7 +31,12 @@
     "view": "Xem",
     "approve": "Duyệt",
     "flag": "Đánh dấu",
+    "resetPending": "Đặt lại chờ duyệt",
     "delete": "Xóa"
+  },
+  "bulk": {
+    "approveAll": "Duyệt đã chọn",
+    "flagAll": "Đánh dấu đã chọn"
   },
   "detail": {
     "title": "Chi tiết đánh giá",
@@ -33,6 +49,8 @@
   "toast": {
     "approved": "Đã duyệt đánh giá",
     "flagged": "Đã đánh dấu đánh giá",
+    "resetPending": "Đã đặt lại đánh giá về chờ duyệt",
+    "moderateFailed": "Không thể kiểm duyệt đánh giá",
     "deleteTitle": "Xóa đánh giá",
     "deleteDescription": "Đánh giá này sẽ bị xóa vĩnh viễn.",
     "deleteCommentTitle": "Xóa bình luận",

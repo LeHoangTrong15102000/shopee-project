@@ -1,6 +1,6 @@
 {
   "title": "Conversations",
-  "description": "View customer conversations",
+  "description": "Manage customer conversations",
   "columns": {
     "id": "ID",
     "user": "User",
@@ -11,18 +11,47 @@
   "status": {
     "open": "Open",
     "closed": "Closed",
-    "pending": "Pending"
+    "pending": "Pending",
+    "active": "Active",
+    "archived": "Archived"
   },
   "senderType": {
     "user": "User",
     "admin": "Admin",
     "bot": "Bot"
   },
+  "filter": {
+    "userSearch": "Search by user email/ID...",
+    "status": "Filter by status",
+    "allStatuses": "All statuses",
+    "dateFrom": "From date",
+    "dateTo": "To date"
+  },
+  "bulk": {
+    "deleteSelected": "Delete selected ({{count}})",
+    "deleteTitle": "Delete Selected Conversations",
+    "deleteDescription": "This will permanently delete {{count}} conversation(s) and all their messages."
+  },
+  "actions": {
+    "delete": "Delete"
+  },
   "detail": {
     "title": "Conversation #{{id}}",
     "messages": "Messages",
     "noMessages": "No messages in this conversation.",
-    "backToList": "Back to Conversations"
+    "backToList": "Back to Conversations",
+    "metadata": {
+      "user": "User",
+      "messageCount": "Message Count",
+      "createdAt": "Created At",
+      "lastActivity": "Last Activity"
+    }
+  },
+  "toast": {
+    "deleted": "Conversation deleted",
+    "deleteFailed": "Failed to delete conversation",
+    "deleteTitle": "Delete Conversation",
+    "deleteDescription": "This will permanently delete this conversation and all its messages."
   },
   "error": "Failed to load conversations",
   "notFound": "Conversation not found",

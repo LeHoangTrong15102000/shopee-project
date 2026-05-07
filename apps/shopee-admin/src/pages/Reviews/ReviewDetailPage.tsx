@@ -1,8 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
-import { toast } from 'sonner'
-import { ArrowLeft, Star, Trash2, CheckCircle, Flag } from 'lucide-react'
+import { ArrowLeft, Star, Trash2, CheckCircle, Flag, RotateCcw } from 'lucide-react'
 import { Button } from 'src/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
 import { Badge } from 'src/components/ui/badge'
@@ -13,7 +12,7 @@ import { LoadingState } from 'src/components/shared/LoadingState'
 import { ErrorState } from 'src/components/shared/ErrorState'
 import { ConfirmDialog } from 'src/components/shared/ConfirmDialog'
 import { useReviewDetail, useDeleteComment } from 'src/hooks/useReviewDetail'
-import { useReviewModerationStore } from 'src/stores/review-moderation.store'
+import { useModerateReview } from 'src/hooks/useReviews'
 import { useState } from 'react'
 
 export default function ReviewDetailPage() {
@@ -22,15 +21,16 @@ export default function ReviewDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [deleteCommentId, setDeleteCommentId] = useState<string | null>(null)
-  const { getStatus, setStatus } = useReviewModerationStore()
 
   const { data: review, isLoading, isError, refetch } = useReviewDetail(id)
-
   const deleteCommentMut = useDeleteComment(id, () => setDeleteCommentId(null))
+  const moderateMut = useModerateReview()
 
   if (isLoading) return <LoadingState />
   if (isError) return <ErrorState message={t('error')} onRetry={refetch} />
   if (!review) return null
+
+  const moderationStatus = review.moderation_status ?? 'pending'
 
   return (
     <div className="space-y-6">
@@ -54,7 +54,7 @@ export default function ReviewDetailPage() {
                 <Star className="mr-1 size-3" />
                 {review.rating}/5
               </Badge>
-              <StatusBadge status={getStatus(review._id)} />
+              <StatusBadge status={moderationStatus} />
               <span className="text-sm text-muted-foreground">
                 {format(new Date(review.createdAt), 'MMM d, yyyy')}
               </span>
@@ -63,24 +63,29 @@ export default function ReviewDetailPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => {
-                  setStatus(review._id, 'approved')
-                  toast.success(t('toast.approved'))
-                }}
+                disabled={moderationStatus === 'approved' || moderateMut.isPending}
+                onClick={() => id && moderateMut.mutate({ id, status: 'approved' })}
               >
-                <CheckCircle className="mr-1 size-4" />
+                <CheckCircle className="mr-1 size-4 text-green-600" />
                 {t('actions.approve')}
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => {
-                  setStatus(review._id, 'flagged')
-                  toast.success(t('toast.flagged'))
-                }}
+                disabled={moderationStatus === 'flagged' || moderateMut.isPending}
+                onClick={() => id && moderateMut.mutate({ id, status: 'flagged' })}
               >
-                <Flag className="mr-1 size-4" />
+                <Flag className="mr-1 size-4 text-amber-600" />
                 {t('actions.flag')}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={moderationStatus === 'pending' || moderateMut.isPending}
+                onClick={() => id && moderateMut.mutate({ id, status: 'pending' })}
+              >
+                <RotateCcw className="mr-1 size-4" />
+                {t('actions.resetPending')}
               </Button>
             </div>
             <p>{review.comment}</p>

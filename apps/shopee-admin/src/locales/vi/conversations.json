@@ -1,6 +1,6 @@
 {
   "title": "Hội thoại",
-  "description": "Xem hội thoại của khách hàng",
+  "description": "Quản lý hội thoại của khách hàng",
   "columns": {
     "id": "Mã",
     "user": "Người dùng",
@@ -11,18 +11,47 @@
   "status": {
     "open": "Đang mở",
     "closed": "Đã đóng",
-    "pending": "Chờ xử lý"
+    "pending": "Chờ xử lý",
+    "active": "Đang hoạt động",
+    "archived": "Đã lưu trữ"
   },
   "senderType": {
     "user": "Người dùng",
     "admin": "Quản trị",
     "bot": "Bot"
   },
+  "filter": {
+    "userSearch": "Tìm theo email/ID người dùng...",
+    "status": "Lọc theo trạng thái",
+    "allStatuses": "Tất cả trạng thái",
+    "dateFrom": "Từ ngày",
+    "dateTo": "Đến ngày"
+  },
+  "bulk": {
+    "deleteSelected": "Xóa đã chọn ({{count}})",
+    "deleteTitle": "Xóa các hội thoại đã chọn",
+    "deleteDescription": "Hành động này sẽ xóa vĩnh viễn {{count}} hội thoại và toàn bộ tin nhắn."
+  },
+  "actions": {
+    "delete": "Xóa"
+  },
   "detail": {
     "title": "Hội thoại #{{id}}",
     "messages": "Tin nhắn",
     "noMessages": "Không có tin nhắn trong hội thoại này.",
-    "backToList": "Quay lại danh sách"
+    "backToList": "Quay lại danh sách",
+    "metadata": {
+      "user": "Người dùng",
+      "messageCount": "Số tin nhắn",
+      "createdAt": "Ngày tạo",
+      "lastActivity": "Hoạt động gần nhất"
+    }
+  },
+  "toast": {
+    "deleted": "Đã xóa hội thoại",
+    "deleteFailed": "Không thể xóa hội thoại",
+    "deleteTitle": "Xóa hội thoại",
+    "deleteDescription": "Hội thoại và toàn bộ tin nhắn sẽ bị xóa vĩnh viễn."
   },
   "error": "Không thể tải hội thoại",
   "notFound": "Không tìm thấy hội thoại",

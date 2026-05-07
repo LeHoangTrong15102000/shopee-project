@@ -5,6 +5,33 @@
     "totalToday": "Check-in hôm nay",
     "activeStreaks": "Chuỗi đang hoạt động"
   },
+  "tabs": {
+    "overview": {
+      "label": "Tổng quan",
+      "dailyChart": "Check-in hàng ngày (30 ngày qua)",
+      "checkins": "Check-ins"
+    },
+    "users": {
+      "label": "Người dùng",
+      "search": "Tìm người dùng...",
+      "columns": {
+        "user": "Người dùng",
+        "totalCheckins": "Tổng check-in",
+        "currentStreak": "Chuỗi hiện tại",
+        "longestStreak": "Chuỗi dài nhất",
+        "lastCheckin": "Check-in gần nhất"
+      }
+    },
+    "leaderboard": {
+      "label": "Bảng xếp hạng",
+      "columns": {
+        "rank": "Hạng",
+        "user": "Người dùng",
+        "currentStreak": "Chuỗi hiện tại",
+        "totalCheckins": "Tổng check-in"
+      }
+    }
+  },
   "activity": {
     "title": "Hoạt động gần đây",
     "columns": {

@@ -199,8 +199,28 @@ export class ReviewRepository implements IReviewRepository {
 
   // ─── Admin Methods ─────────────────────────────────────────────
 
+  async updateModerationStatus(
+    reviewId: string,
+    status: 'pending' | 'approved' | 'flagged',
+  ): Promise<IReviewItem | null> {
+    return ReviewModel.findByIdAndUpdate(
+      reviewId,
+      { moderation_status: status },
+      { new: true },
+    )
+      .populate('user', 'name email avatar')
+      .populate('product', 'name image')
+      .lean<IReviewItem | null>()
+  }
+
   async findAllWithFilters(
-    filters: { rating?: number; product_id?: string; user_id?: string; search?: string },
+    filters: {
+      rating?: number
+      product_id?: string
+      user_id?: string
+      search?: string
+      moderation_status?: string
+    },
     pagination: { page: number; limit: number; sort_by?: string; order?: 'asc' | 'desc' },
   ): Promise<PaginatedResult<IReviewItem>> {
     const { page, limit, sort_by = 'createdAt', order = 'desc' } = pagination
@@ -210,6 +230,7 @@ export class ReviewRepository implements IReviewRepository {
     if (filters.rating) query.rating = filters.rating
     if (filters.product_id) query.product = new Types.ObjectId(filters.product_id)
     if (filters.user_id) query.user = new Types.ObjectId(filters.user_id)
+    if (filters.moderation_status) query.moderation_status = filters.moderation_status
 
     const sortObj: Record<string, 1 | -1> = { [sort_by]: order === 'asc' ? 1 : -1 }
 
@@ -243,20 +264,29 @@ export class ReviewRepository implements IReviewRepository {
   }
 
   async getReviewStats() {
-    const [total, ratingDist, avgRating, todayCount, weekCount] = await Promise.all([
-      ReviewModel.countDocuments(),
-      ReviewModel.aggregate([{ $group: { _id: '$rating', count: { $sum: 1 } } }]),
-      ReviewModel.aggregate([{ $group: { _id: null, avg: { $avg: '$rating' } } }]),
-      ReviewModel.countDocuments({
-        createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) },
-      }),
-      ReviewModel.countDocuments({
-        createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
-      }),
-    ])
+    const [total, ratingDist, avgRating, todayCount, weekCount, moderationCounts] =
+      await Promise.all([
+        ReviewModel.countDocuments(),
+        ReviewModel.aggregate([{ $group: { _id: '$rating', count: { $sum: 1 } } }]),
+        ReviewModel.aggregate([{ $group: { _id: null, avg: { $avg: '$rating' } } }]),
+        ReviewModel.countDocuments({
+          createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) },
+        }),
+        ReviewModel.countDocuments({
+          createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+        }),
+        ReviewModel.aggregate([
+          { $group: { _id: '$moderation_status', count: { $sum: 1 } } },
+        ]),
+      ])
 
     const breakdown: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
     for (const r of ratingDist) breakdown[r._id] = r.count
+
+    const moderation: Record<string, number> = { pending: 0, approved: 0, flagged: 0 }
+    for (const m of moderationCounts) {
+      if (m._id) moderation[m._id] = m.count
+    }
 
     return {
       total,
@@ -264,6 +294,7 @@ export class ReviewRepository implements IReviewRepository {
       rating_breakdown: breakdown,
       today: todayCount,
       this_week: weekCount,
+      moderation,
     }
   }
 }

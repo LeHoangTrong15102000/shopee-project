@@ -1,6 +1,11 @@
 {
   "title": "Cảnh báo giá",
-  "description": "Tổng quan cảnh báo giá của người dùng",
+  "description": "Quản lý cảnh báo giá của người dùng",
+  "stats": {
+    "totalActive": "Cảnh báo đang hoạt động",
+    "triggeredToday": "Đã kích hoạt hôm nay",
+    "expired": "Đã hết hạn"
+  },
   "columns": {
     "user": "Người dùng",
     "product": "Sản phẩm",
@@ -9,8 +14,27 @@
     "status": "Trạng thái",
     "date": "Ngày"
   },
+  "filter": {
+    "productSearch": "Tìm theo ID sản phẩm...",
+    "userSearch": "Tìm theo ID người dùng...",
+    "status": "Lọc theo trạng thái",
+    "allStatuses": "Tất cả trạng thái",
+    "active": "Đang hoạt động",
+    "triggered": "Đã kích hoạt",
+    "expired": "Đã hết hạn"
+  },
+  "mostWatched": {
+    "title": "Sản phẩm được theo dõi nhiều nhất",
+    "alertCount": "{{count}} cảnh báo"
+  },
   "triggered": "Đã kích hoạt",
   "pending": "Chờ",
+  "toast": {
+    "deleted": "Đã xóa cảnh báo giá",
+    "deleteFailed": "Không thể xóa cảnh báo giá",
+    "deleteTitle": "Xóa cảnh báo giá",
+    "deleteDescription": "Cảnh báo giá này sẽ bị xóa vĩnh viễn."
+  },
   "error": "Không thể tải cảnh báo giá",
   "emptyState": "Không có cảnh báo giá nào.",
   "backendRequired": "Endpoint quản trị cảnh báo giá chưa có. Cần triển khai backend."

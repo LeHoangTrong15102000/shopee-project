@@ -6,6 +6,7 @@ import {
   adminReviewListSchema,
   adminReviewIdSchema,
   adminCommentIdSchema,
+  adminModerateReviewSchema,
 } from '@schemas/admin-review.schema'
 import * as ctrl from '@controllers/admin-review.controller'
 
@@ -16,6 +17,11 @@ adminReviewRouter.use(authMiddleware.verifyAccessToken, authMiddleware.verifyAdm
 adminReviewRouter.get('/', validate(adminReviewListSchema), asyncHandler(ctrl.adminGetReviews))
 adminReviewRouter.get('/stats', asyncHandler(ctrl.adminGetReviewStats))
 adminReviewRouter.get('/:id', validate(adminReviewIdSchema), asyncHandler(ctrl.adminGetReviewById))
+adminReviewRouter.patch(
+  '/:id/moderate',
+  validate(adminModerateReviewSchema),
+  asyncHandler(ctrl.adminModerateReview),
+)
 adminReviewRouter.delete(
   '/:id',
   validate(adminReviewIdSchema),

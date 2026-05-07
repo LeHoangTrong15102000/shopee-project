@@ -3,7 +3,6 @@ import type { SuccessResponse } from 'src/types'
 
 export interface ConversationMessage {
   _id: string
-  sender: string
   sender_type: 'user' | 'admin' | 'bot'
   content: string
   createdAt: string
@@ -12,11 +11,13 @@ export interface ConversationMessage {
 export interface Conversation {
   _id: string
   user: string | { _id: string; name: string; email: string }
+  title?: string
   messages: ConversationMessage[]
   message_count: number
-  status: 'open' | 'closed' | 'pending'
+  status: 'active' | 'archived' | 'open' | 'closed' | 'pending'
   createdAt: string
   updatedAt: string
+  lastActivity?: string
 }
 
 export interface ConversationListResponse {
@@ -24,14 +25,26 @@ export interface ConversationListResponse {
   pagination: { page: number; limit: number; total: number; totalPages: number }
 }
 
+export interface ConversationListParams {
+  page?: number
+  limit?: number
+  user_id?: string
+  status?: string
+  date_from?: string
+  date_to?: string
+}
+
 const conversationsApi = {
-  getConversations: (page = 1) =>
-    http.get<SuccessResponse<ConversationListResponse>>('conversations', {
-      params: { page, limit: 10 },
+  getConversations: (params?: ConversationListParams) =>
+    http.get<SuccessResponse<ConversationListResponse>>('admin/conversations', {
+      params: { page: 1, limit: 10, ...params },
     }),
 
   getConversation: (id: string) =>
-    http.get<SuccessResponse<Conversation>>(`conversations/${id}`),
+    http.get<SuccessResponse<Conversation>>(`admin/conversations/${id}`),
+
+  deleteConversation: (id: string) =>
+    http.delete<SuccessResponse<null>>(`admin/conversations/${id}`),
 }
 
 export default conversationsApi

@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native'
+import { View, ScrollView, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
@@ -14,6 +14,7 @@ import OrderTimeline from '@/components/orders/OrderTimeline'
 import OrderActions from '@/components/order-detail/OrderActions'
 import { ORDER_STATUS } from '@/constants/order'
 import { useReorder } from '@/hooks/useReorder'
+import OrderItemReviewButton from '@/components/order-detail/OrderItemReviewButton'
 
 export default function OrderDetailScreen() {
   const { t } = useTranslation()
@@ -120,7 +121,8 @@ export default function OrderDetailScreen() {
                   </View>
                 </View>
                 {isDelivered && (
-                  <TouchableOpacity
+                  <OrderItemReviewButton
+                    purchaseId={order._id}
                     onPress={() =>
                       router.push({
                         pathname: '/write-review',
@@ -131,12 +133,7 @@ export default function OrderDetailScreen() {
                         },
                       })
                     }
-                    className="mt-2 self-end rounded-lg border border-neutrals700 px-3 py-1.5"
-                    accessibilityRole="button">
-                    <AppText raw variant="bodySmall" color="primary">
-                      {t('orderDetail.actions.review')}
-                    </AppText>
-                  </TouchableOpacity>
+                  />
                 )}
               </View>
             ))}

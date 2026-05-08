@@ -54,6 +54,26 @@ export async function getXuPoints(): Promise<XuPointsResponse> {
   return res.data.data
 }
 
+// ─── Loyalty Rewards ─────────────────────────────────────────────────────────
+
+export interface LoyaltyReward {
+  _id: string
+  name: string
+  description: string
+  points_required: number
+  stock: number
+}
+
+export async function getLoyaltyRewards(): Promise<ApiResponse<LoyaltyReward[]>> {
+  const res = await http.get<ApiResponse<LoyaltyReward[]>>('loyalty/rewards')
+  return res.data
+}
+
+export async function redeemReward(rewardId: string): Promise<ApiResponse<unknown>> {
+  const res = await http.post<ApiResponse<unknown>>(`loyalty/redeem/${rewardId}`)
+  return res.data
+}
+
 export async function getXuHistory(page: number, limit: number): Promise<XuHistoryResponse> {
   const res = await http.get<ApiResponse<BackendTransactionsData>>('loyalty/transactions', {
     params: { page, limit },

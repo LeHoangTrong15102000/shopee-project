@@ -14,6 +14,7 @@ interface ReviewSectionProps {
   onLoadMore: () => void
   onWriteReview: () => void
   onToggleLike: (reviewId: string) => void
+  productId: string
 }
 
 function RatingBar({
@@ -59,6 +60,7 @@ export default function ReviewSection({
   onLoadMore,
   onWriteReview,
   onToggleLike,
+  productId,
 }: ReviewSectionProps) {
   const colors = useColors()
   const { t } = useTranslation()
@@ -118,7 +120,7 @@ export default function ReviewSection({
       ) : (
         <>
           {reviews.map((review) => (
-            <ReviewCard key={review._id} review={review} onToggleLike={onToggleLike} />
+            <ReviewCard key={review._id} review={review} productId={productId} onToggleLike={onToggleLike} />
           ))}
           {hasNextPage && (
             <AppButton variant="ghost" size="sm" onPress={onLoadMore}>

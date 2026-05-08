@@ -301,6 +301,34 @@
       "checkIn": "Điểm danh"
     }
   },
+  "xuHistory": {
+    "title": "Lịch sử Xu",
+    "subtitle": "Lịch sử giao dịch Xu",
+    "empty": "Chưa có giao dịch Xu nào",
+    "tab": {
+      "history": "Lịch sử",
+      "rewards": "Phần thưởng"
+    },
+    "transaction": {
+      "earned": "Nhận",
+      "spent": "Dùng",
+      "expired": "Hết hạn"
+    }
+  },
+  "loyalty": {
+    "tab": {
+      "rewards": "Phần thưởng"
+    },
+    "rewards": {
+      "empty": "Chưa có phần thưởng nào",
+      "pointsRequired": "Cần {{points}} Xu",
+      "outOfStock": "Hết hàng",
+      "redeem": "Đổi thưởng",
+      "confirmTitle": "Đổi phần thưởng",
+      "confirmMessage": "Dùng {{points}} Xu để đổi \"{{name}}\"?",
+      "success": "Đổi thưởng thành công!"
+    }
+  },
   "checkout": {
     "header": {
       "title": "Thanh toán"
@@ -435,7 +463,25 @@
   "vouchers": {
     "tab": {
       "available": "Voucher có sẵn",
-      "saved": "Voucher của tôi"
+      "saved": "Voucher của tôi",
+      "availableForYou": "Dành cho bạn"
+    },
+    "filter": {
+      "active": "Còn hiệu lực",
+      "used": "Đã dùng",
+      "expired": "Hết hạn"
+    },
+    "button": {
+      "save": "Lưu"
+    },
+    "code": {
+      "placeholder": "Nhập mã voucher",
+      "lookup": "Tìm",
+      "notFound": "Không tìm thấy voucher"
+    },
+    "apply": {
+      "discount": "Giảm: {{amount}}",
+      "remove": "Xóa"
     },
     "empty": {
       "available": "Chưa có voucher nào",
@@ -670,7 +716,11 @@
     "header": {
       "title": "Shop đã theo dõi"
     },
-    "empty": "Bạn chưa theo dõi shop nào"
+    "empty": "Bạn chưa theo dõi shop nào",
+    "unfollow": "Bỏ theo dõi",
+    "confirmUnfollow": "Bỏ theo dõi shop này?",
+    "productCount": "{{count}} sản phẩm",
+    "followerCount": "{{count}} người theo dõi"
   },
   "settings": {
     "header": {
@@ -770,6 +820,19 @@
     "toast": {
       "success": "Đánh giá đã được gửi",
       "error": "Không thể gửi đánh giá"
+    },
+    "comments": {
+      "toggle": "Bình luận",
+      "empty": "Chưa có bình luận nào",
+      "inputPlaceholder": "Thêm bình luận...",
+      "submit": "Đăng"
+    },
+    "edit": {
+      "title": "Sửa đánh giá"
+    },
+    "delete": {
+      "confirm": "Xóa đánh giá",
+      "cancel": "Hủy"
     }
   },
   "reorder": {

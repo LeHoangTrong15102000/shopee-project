@@ -23,6 +23,8 @@ interface VoucherCardProps {
   onCollect?: (id: string) => void
   isCollecting?: boolean
   showActions?: boolean
+  onSave?: (id: string) => void
+  isSaving?: boolean
 }
 
 export default function VoucherCard({
@@ -30,6 +32,8 @@ export default function VoucherCard({
   onCollect,
   isCollecting,
   showActions = false,
+  onSave,
+  isSaving,
 }: VoucherCardProps) {
   const colors = useColors()
   const { t, i18n } = useTranslation()
@@ -86,35 +90,61 @@ export default function VoucherCard({
           )}
         </View>
 
-        {/* Collect button shown on available tab */}
+        {/* Collect / Save buttons shown on available tabs */}
         {showActions && !isExpiredOrUsed && (
-          <TouchableOpacity
-            onPress={() => !voucher.is_saved && onCollect?.(voucher._id)}
-            disabled={voucher.is_saved || isCollecting}
-            accessibilityRole="button"
-            accessibilityLabel={
-              voucher.is_saved ? t('voucherCard.button.saved') : t('voucherCard.button.save')
-            }
-            accessibilityState={{ disabled: voucher.is_saved || isCollecting }}
-            style={{
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-              borderRadius: 16,
-              borderWidth: 1,
-              borderColor: voucher.is_saved ? colors.neutrals600 : colors.primary,
-              backgroundColor: voucher.is_saved ? 'transparent' : undefined,
-            }}>
-            {isCollecting ? (
-              <ActivityIndicator size="small" color={colors.primary} />
-            ) : (
-              <AppText
-                raw
-                variant="labelSmall"
-                style={{ color: voucher.is_saved ? colors.neutrals400 : colors.primary }}>
-                {voucher.is_saved ? t('voucherCard.button.saved') : t('voucherCard.button.save')}
-              </AppText>
+          <View className="gap-1">
+            {onCollect && (
+              <TouchableOpacity
+                onPress={() => !voucher.is_saved && onCollect?.(voucher._id)}
+                disabled={voucher.is_saved || isCollecting}
+                accessibilityRole="button"
+                accessibilityLabel={
+                  voucher.is_saved ? t('voucherCard.button.saved') : t('voucherCard.button.save')
+                }
+                accessibilityState={{ disabled: voucher.is_saved || isCollecting }}
+                style={{
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
+                  borderRadius: 16,
+                  borderWidth: 1,
+                  borderColor: voucher.is_saved ? colors.neutrals600 : colors.primary,
+                  backgroundColor: voucher.is_saved ? 'transparent' : undefined,
+                }}>
+                {isCollecting ? (
+                  <ActivityIndicator size="small" color={colors.primary} />
+                ) : (
+                  <AppText
+                    raw
+                    variant="labelSmall"
+                    style={{ color: voucher.is_saved ? colors.neutrals400 : colors.primary }}>
+                    {voucher.is_saved ? t('voucherCard.button.saved') : t('voucherCard.button.save')}
+                  </AppText>
+                )}
+              </TouchableOpacity>
             )}
-          </TouchableOpacity>
+            {onSave && (
+              <TouchableOpacity
+                onPress={() => onSave(voucher._id)}
+                disabled={isSaving}
+                accessibilityRole="button"
+                accessibilityLabel={t('vouchers.button.save')}
+                style={{
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
+                  borderRadius: 16,
+                  borderWidth: 1,
+                  borderColor: colors.primary,
+                }}>
+                {isSaving ? (
+                  <ActivityIndicator size="small" color={colors.primary} />
+                ) : (
+                  <AppText raw variant="labelSmall" style={{ color: colors.primary }}>
+                    {t('vouchers.button.save')}
+                  </AppText>
+                )}
+              </TouchableOpacity>
+            )}
+          </View>
         )}
       </View>
     </View>

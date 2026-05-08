@@ -266,6 +266,7 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
             onLoadMore={() => reviewsQuery.fetchNextPage()}
             onWriteReview={() => reviewFormRef.current?.present()}
             onToggleLike={(id) => toggleReviewLike.mutate(id)}
+            productId={productId}
           />
 
           <View style={{ height: 8, backgroundColor: colors.neutrals800 }} />

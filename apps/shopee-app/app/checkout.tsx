@@ -11,6 +11,7 @@ import {
   useCreateOrder,
 } from '@/hooks/useCheckout'
 import { useAddresses } from '@/hooks/useAddresses'
+import { useApplyVoucher } from '@/hooks/useVouchers'
 import CheckoutAddressCard from '@/components/checkout/CheckoutAddressCard'
 import ShippingMethodSelector from '@/components/checkout/ShippingMethodSelector'
 import PaymentMethodSelector from '@/components/checkout/PaymentMethodSelector'
@@ -54,6 +55,7 @@ export default function CheckoutScreen() {
     shippingMethodId: selectedShippingId ?? undefined,
   })
   const { mutate: createOrder, isPending: isCreating } = useCreateOrder()
+  const { mutate: applyVoucher, isPending: isApplyingVoucher } = useApplyVoucher()
 
   const addresses = addressesData?.data ?? []
   const shippingMethods = shippingData?.data ?? []
@@ -140,7 +142,18 @@ export default function CheckoutScreen() {
             onSelect={setSelectedPaymentId}
           />
           <VoucherInput
-            onApply={(code) => { setVoucherCode(code); setVoucherError('') }}
+            onApply={(code) => {
+              setVoucherError('')
+              applyVoucher(
+                { code, orderValue: subtotal },
+                {
+                  onSuccess: () => setVoucherCode(code),
+                  onError: () => setVoucherError(t('vouchers.code.notFound')),
+                }
+              )
+            }}
+            onRemove={() => { setVoucherCode(''); setVoucherError('') }}
+            isValidating={isApplyingVoucher}
             appliedDiscount={voucherDiscount}
             errorMessage={voucherError}
           />

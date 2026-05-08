@@ -1,17 +1,24 @@
-import React from 'react'
-import { View, FlatList, ActivityIndicator } from 'react-native'
+import React, { useState } from 'react'
+import { View, FlatList, ActivityIndicator, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack } from 'expo-router'
 import { Coins } from 'lucide-react-native'
 import { useQuery } from '@tanstack/react-query'
-import { AppText, EmptyState, SkeletonLoader } from '@/components/ui'
+import { useTranslation } from 'react-i18next'
+import { AppText, Chip, EmptyState, SkeletonLoader } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { useXuHistory } from '@/hooks/useXuHistory'
+import { useLoyaltyRewards, useRedeemReward } from '@/hooks/useLoyaltyRewards'
 import { type XuTransaction, getXuPoints } from '@/apis/xu.api'
+import { useToast } from '@/components/ui/ToastProvider'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
+import RewardCard from '@/components/loyalty/RewardCard'
+
+type TabKey = 'history' | 'rewards'
 
 function XuTransactionItem({ item }: { item: XuTransaction }) {
   const colors = useColors()
+  const { t } = useTranslation()
 
   const amountColor =
     item.type === 'earned' ? colors.success : item.type === 'spent' ? colors.error : colors.neutrals400
@@ -25,7 +32,11 @@ function XuTransactionItem({ item }: { item: XuTransaction }) {
   })
 
   const typeLabel =
-    item.type === 'earned' ? 'Nhận' : item.type === 'spent' ? 'Dùng' : 'Hết hạn'
+    item.type === 'earned'
+      ? t('xuHistory.transaction.earned')
+      : item.type === 'spent'
+        ? t('xuHistory.transaction.spent')
+        : t('xuHistory.transaction.expired')
   const typeBgColor =
     item.type === 'earned' ? colors.success : item.type === 'spent' ? colors.error : colors.neutrals600
 
@@ -78,16 +89,23 @@ function XuSkeletonList() {
 
 export default function XuHistoryScreen() {
   const colors = useColors()
+  const { t } = useTranslation()
+  const { showSuccess } = useToast()
+  const [activeTab, setActiveTab] = useState<TabKey>('history')
+  const [redeemingId, setRedeemingId] = useState<string | null>(null)
+
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useXuHistory()
   const { data: pointsData } = useQuery({
     queryKey: ['xu-points'],
     queryFn: getXuPoints,
   })
+  const { data: rewardsData, isLoading: isLoadingRewards } = useLoyaltyRewards()
+  const { mutate: redeemReward } = useRedeemReward()
 
   const allPages = data?.pages ?? []
   const transactions = allPages.flatMap((p) => p.transactions)
-  // Use balance from the points API (transactions endpoint does not return balance)
-  const balance = pointsData?.available_points
+  const balance = pointsData?.available_points ?? 0
+  const rewards = (rewardsData?.data as unknown as import('@/apis/xu.api').LoyaltyReward[]) ?? []
 
   const loadMore = () => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -95,12 +113,27 @@ export default function XuHistoryScreen() {
     }
   }
 
+  const handleRedeem = (rewardId: string) => {
+    setRedeemingId(rewardId)
+    redeemReward(rewardId, {
+      onSuccess: () => {
+        showSuccess(t('loyalty.rewards.success'))
+      },
+      onSettled: () => setRedeemingId(null),
+    })
+  }
+
+  const TABS: { key: TabKey; label: string }[] = [
+    { key: 'history', label: t('xuHistory.tab.history') },
+    { key: 'rewards', label: t('loyalty.tab.rewards') },
+  ]
+
   return (
     <>
       <Stack.Screen
         options={{
           header: (props) => <CustomScreenHeader {...props} />,
-          title: 'Lịch sử Xu',
+          title: t('xuHistory.title'),
         }}
       />
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
@@ -109,7 +142,7 @@ export default function XuHistoryScreen() {
           style={{ backgroundColor: colors.coin }}
           className="items-center px-4 py-6">
           <AppText raw variant="bodySmall" style={{ color: 'rgba(255,255,255,0.8)' }}>
-            Lịch sử giao dịch Xu
+            {t('xuHistory.subtitle')}
           </AppText>
           {balance !== undefined && (
             <AppText
@@ -122,29 +155,65 @@ export default function XuHistoryScreen() {
           )}
         </View>
 
-        {isLoading ? (
+        {/* Tab chips */}
+        <View className="flex-row gap-2 px-4 py-3 border-b border-neutrals900">
+          {TABS.map((tab) => (
+            <Chip
+              key={tab.key}
+              variant="outline"
+              selected={activeTab === tab.key}
+              onPress={() => setActiveTab(tab.key)}>
+              {tab.label}
+            </Chip>
+          ))}
+        </View>
+
+        {activeTab === 'history' ? (
+          isLoading ? (
+            <XuSkeletonList />
+          ) : transactions.length === 0 ? (
+            <View className="flex-1 items-center justify-center">
+              <EmptyState icon={Coins} message={t('xuHistory.empty')} />
+            </View>
+          ) : (
+            <FlatList
+              data={transactions}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => <XuTransactionItem item={item} />}
+              ItemSeparatorComponent={() => <View className="h-px bg-neutrals900" />}
+              onEndReached={loadMore}
+              onEndReachedThreshold={0.5}
+              ListFooterComponent={
+                isFetchingNextPage ? (
+                  <ActivityIndicator
+                    size="small"
+                    color={colors.primary}
+                    style={{ marginVertical: 16 }}
+                  />
+                ) : null
+              }
+            />
+          )
+        ) : isLoadingRewards ? (
           <XuSkeletonList />
-        ) : transactions.length === 0 ? (
+        ) : rewards.length === 0 ? (
           <View className="flex-1 items-center justify-center">
-            <EmptyState icon={Coins} message="Chưa có giao dịch Xu nào" />
+            <EmptyState icon={Coins} message={t('loyalty.rewards.empty')} />
           </View>
         ) : (
           <FlatList
-            data={transactions}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => <XuTransactionItem item={item} />}
-            ItemSeparatorComponent={() => <View className="h-px bg-neutrals900" />}
-            onEndReached={loadMore}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={
-              isFetchingNextPage ? (
-                <ActivityIndicator
-                  size="small"
-                  color={colors.primary}
-                  style={{ marginVertical: 16 }}
-                />
-              ) : null
-            }
+            data={rewards}
+            keyExtractor={(item) => item._id}
+            renderItem={({ item }) => (
+              <RewardCard
+                reward={item}
+                userBalance={balance}
+                onRedeem={handleRedeem}
+                isRedeeming={redeemingId === item._id}
+              />
+            )}
+            contentContainerStyle={{ paddingVertical: 8 }}
+            ListFooterComponent={<View style={{ height: 16 }} />}
           />
         )}
       </SafeAreaView>

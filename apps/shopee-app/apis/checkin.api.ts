@@ -1,5 +1,5 @@
 import http from '@/utils/http'
-import { type ApiResponse } from '@/types/api.type'
+import { type ApiResponse, type Pagination } from '@/types/api.type'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -14,6 +14,17 @@ export interface CheckinStreak {
   }>
 }
 
+export interface CheckinHistoryItem {
+  date: string
+  xu_earned: number
+  streak_day: number
+}
+
+export interface CheckinHistoryResponse {
+  items: CheckinHistoryItem[]
+  pagination: Pagination
+}
+
 // ─── Check-in API ─────────────────────────────────────────────────────────────
 
 export async function checkIn() {
@@ -25,3 +36,11 @@ export async function getCheckinStreak() {
   const res = await http.get<ApiResponse<CheckinStreak>>('checkin/streak')
   return res.data
 }
+
+export async function getCheckinHistory(page = 1, limit = 20) {
+  const res = await http.get<ApiResponse<CheckinHistoryResponse>>('checkin/history', {
+    params: { page, limit },
+  })
+  return res.data
+}
+

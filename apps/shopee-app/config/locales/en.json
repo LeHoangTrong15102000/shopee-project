@@ -299,6 +299,40 @@
     "button": {
       "checkedIn": "Checked in today",
       "checkIn": "Check In"
+    },
+    "history": {
+      "title": "Check-in History",
+      "empty": "No check-in history yet",
+      "xuEarned": "+{{amount}} Xu",
+      "streakDay": "Day {{day}}"
+    }
+  },
+  "xuHistory": {
+    "title": "Xu History",
+    "subtitle": "Xu transaction history",
+    "empty": "No Xu transactions yet",
+    "tab": {
+      "history": "History",
+      "rewards": "Rewards"
+    },
+    "transaction": {
+      "earned": "Earned",
+      "spent": "Spent",
+      "expired": "Expired"
+    }
+  },
+  "loyalty": {
+    "tab": {
+      "rewards": "Rewards"
+    },
+    "rewards": {
+      "empty": "No rewards available",
+      "pointsRequired": "{{points}} Xu required",
+      "outOfStock": "Out of stock",
+      "redeem": "Redeem",
+      "confirmTitle": "Redeem Reward",
+      "confirmMessage": "Use {{points}} Xu to redeem \"{{name}}\"?",
+      "success": "Reward redeemed successfully!"
     }
   },
   "checkout": {
@@ -435,7 +469,25 @@
   "vouchers": {
     "tab": {
       "available": "Available Vouchers",
-      "saved": "My Vouchers"
+      "saved": "My Vouchers",
+      "availableForYou": "For You"
+    },
+    "filter": {
+      "active": "Active",
+      "used": "Used",
+      "expired": "Expired"
+    },
+    "button": {
+      "save": "Save"
+    },
+    "code": {
+      "placeholder": "Enter voucher code",
+      "lookup": "Find",
+      "notFound": "Voucher not found"
+    },
+    "apply": {
+      "discount": "Discount: {{amount}}",
+      "remove": "Remove"
     },
     "empty": {
       "available": "No vouchers available",
@@ -670,7 +722,11 @@
     "header": {
       "title": "Followed Shops"
     },
-    "empty": "You haven't followed any shops yet"
+    "empty": "You haven't followed any shops yet",
+    "unfollow": "Unfollow",
+    "confirmUnfollow": "Unfollow this shop?",
+    "productCount": "{{count}} products",
+    "followerCount": "{{count}} followers"
   },
   "settings": {
     "header": {
@@ -770,6 +826,19 @@
     "toast": {
       "success": "Review submitted successfully",
       "error": "Failed to submit review"
+    },
+    "comments": {
+      "toggle": "Comments",
+      "empty": "No comments yet",
+      "inputPlaceholder": "Add a comment...",
+      "submit": "Post"
+    },
+    "edit": {
+      "title": "Edit Review"
+    },
+    "delete": {
+      "confirm": "Delete Review",
+      "cancel": "Cancel"
     }
   },
   "reorder": {

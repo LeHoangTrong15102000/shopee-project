@@ -7,6 +7,7 @@ import { formatPrice } from '@/utils/price'
 
 interface VoucherInputProps {
   onApply: (code: string) => void
+  onRemove?: () => void
   isValidating?: boolean
   appliedDiscount?: number
   errorMessage?: string
@@ -15,6 +16,7 @@ interface VoucherInputProps {
 
 export default function VoucherInput({
   onApply,
+  onRemove,
   isValidating,
   appliedDiscount,
   errorMessage,
@@ -88,9 +90,18 @@ export default function VoucherInput({
         </AppText>
       )}
       {hasApplied && !errorMessage && (
-        <AppText raw variant="labelSmall" style={{ color: colors.success, marginTop: 4 }}>
-          {t('voucherInput.applied', { formattedDiscount: formatPrice(appliedDiscount!) })}
-        </AppText>
+        <View className="flex-row items-center justify-between mt-1">
+          <AppText raw variant="labelSmall" style={{ color: colors.success }}>
+            {t('voucherInput.applied', { formattedDiscount: formatPrice(appliedDiscount!) })}
+          </AppText>
+          {onRemove && (
+            <TouchableOpacity onPress={onRemove} accessibilityRole="button">
+              <AppText raw variant="labelSmall" style={{ color: colors.error }}>
+                {t('vouchers.apply.remove')}
+              </AppText>
+            </TouchableOpacity>
+          )}
+        </View>
       )}
     </View>
   )

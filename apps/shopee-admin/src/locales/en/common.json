@@ -71,7 +71,9 @@
     "delivered": "Delivered",
     "cancelled": "Cancelled",
     "approved": "Approved",
-    "flagged": "Flagged"
+    "flagged": "Flagged",
+    "suspended": "Suspended",
+    "banned": "Banned"
   },
   "aria": {
     "selectAll": "Select all",

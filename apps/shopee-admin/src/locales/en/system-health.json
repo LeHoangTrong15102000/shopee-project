@@ -1,0 +1,63 @@
+{
+  "title": "System Health",
+  "description": "Monitor API server status, database, memory, and performance metrics",
+  "lastUpdated": "Last updated",
+  "autoRefresh": "Auto-refresh",
+  "refresh": "Refresh",
+  "never": "Never",
+  "status": {
+    "healthy": "Healthy",
+    "unhealthy": "Unhealthy",
+    "degraded": "Degraded",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "ready": "Ready",
+    "notReady": "Not Ready"
+  },
+  "cards": {
+    "apiStatus": "API Status",
+    "database": "Database",
+    "redis": "Redis",
+    "uptime": "Uptime",
+    "version": "Version"
+  },
+  "memory": {
+    "title": "Memory Usage",
+    "heapUsed": "Heap Used",
+    "heapTotal": "Heap Total",
+    "usage": "Usage",
+    "mb": "MB"
+  },
+  "metrics": {
+    "title": "Server Metrics",
+    "pid": "Process ID",
+    "platform": "Platform",
+    "nodeVersion": "Node Version",
+    "dbPool": "DB Pool",
+    "totalConnections": "Total Connections",
+    "availableConnections": "Available"
+  },
+  "sparkline": {
+    "memoryHistory": "Memory History (last 10 readings)",
+    "heapUsed": "Heap Used (MB)"
+  },
+  "responseTime": {
+    "title": "Avg Response Time",
+    "description": "Average across all requests since last restart",
+    "noData": "No request data yet"
+  },
+  "requestStats": {
+    "title": "Request Stats",
+    "total": "Total Requests",
+    "perMinute": "Req / Min",
+    "errorRate": "Error Rate",
+    "noData": "No request data yet"
+  },
+  "uptime": {
+    "days": "{{count}}d",
+    "hours": "{{count}}h",
+    "minutes": "{{count}}m",
+    "seconds": "{{count}}s"
+  },
+  "error": "Failed to load health data"
+}

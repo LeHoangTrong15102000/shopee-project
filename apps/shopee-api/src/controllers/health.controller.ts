@@ -6,6 +6,8 @@ import {
   getConnectionPoolStats,
   DatabaseHealthStatus,
 } from '@database/database'
+import { redisClient } from '@utils/redis.client'
+import { getRequestStats } from '@utils/request-stats'
 
 /**
  * Health check response interface
@@ -32,6 +34,7 @@ interface ReadinessResponse {
   timestamp: string
   checks: {
     database: boolean
+    redis: boolean
   }
 }
 
@@ -71,12 +74,14 @@ export const healthCheck = async (req: Request, res: Response) => {
  */
 export const readinessCheck = async (req: Request, res: Response) => {
   const dbReady = isDatabaseReady()
+  const redisReady = redisClient !== null && redisClient.status === 'ready'
 
   const readiness: ReadinessResponse = {
     ready: dbReady,
     timestamp: new Date().toISOString(),
     checks: {
       database: dbReady,
+      redis: redisReady,
     },
   }
 
@@ -95,6 +100,7 @@ export const metricsCheck = async (req: Request, res: Response) => {
   const dbHealth = await checkDatabaseHealth()
   const poolStats = getConnectionPoolStats()
   const memoryUsage = process.memoryUsage()
+  const reqStats = getRequestStats()
 
   const metrics = {
     timestamp: new Date().toISOString(),
@@ -115,6 +121,12 @@ export const metricsCheck = async (req: Request, res: Response) => {
     database: {
       ...dbHealth,
       pool: poolStats,
+    },
+    requests: {
+      total: reqStats.totalRequests,
+      perMinute: reqStats.requestsPerMinute,
+      avgResponseTimeMs: reqStats.avgResponseTimeMs,
+      errorRate: reqStats.errorRate,
     },
   }
 

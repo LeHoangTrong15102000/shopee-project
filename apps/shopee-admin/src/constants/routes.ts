@@ -39,6 +39,13 @@ export const ROUTES = {
   PAYMENT_METHODS: '/payment-methods',
   PRICE_ALERTS: '/price-alerts',
   CHECKIN: '/checkin',
+
+  SHOPS: '/shops',
+  SHOP_DETAIL: '/shops/:id',
+
+  SYSTEM_HEALTH: '/system-health',
+
+  SEARCH_ANALYTICS: '/search-analytics',
 } as const
 
 export type RouteKey = keyof typeof ROUTES

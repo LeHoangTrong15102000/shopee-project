@@ -1,0 +1,49 @@
+{
+  "title": "Search Analytics",
+  "description": "Analyze search behavior and discover content gaps",
+  "period": {
+    "label": "Period",
+    "7d": "Last 7 days",
+    "30d": "Last 30 days",
+    "90d": "Last 90 days"
+  },
+  "stats": {
+    "totalSearches": "Total Searches",
+    "uniqueKeywords": "Unique Keywords",
+    "avgPerDay": "Avg Searches / Day",
+    "zeroResultRate": "Zero-Result Rate"
+  },
+  "volume": {
+    "title": "Search Volume",
+    "description": "Daily search count over the selected period",
+    "searches": "Searches",
+    "date": "Date"
+  },
+  "popular": {
+    "title": "Popular Searches",
+    "description": "Top search terms by frequency",
+    "rank": "Rank",
+    "keyword": "Keyword",
+    "count": "Search Count",
+    "trend": "Trend",
+    "noData": "No popular searches found"
+  },
+  "trending": {
+    "title": "Trending Searches",
+    "description": "Keywords with rising frequency vs previous period",
+    "keyword": "Keyword",
+    "increase": "Increase",
+    "noData": "No trending searches found"
+  },
+  "zeroResults": {
+    "title": "Zero-Result Searches",
+    "description": "Searches that returned no products — potential content gaps",
+    "keyword": "Keyword",
+    "count": "Search Count",
+    "action": "Action",
+    "createProduct": "Create Product",
+    "noData": "No zero-result searches found"
+  },
+  "loading": "Loading search analytics...",
+  "error": "Failed to load search analytics"
+}

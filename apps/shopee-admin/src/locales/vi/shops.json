@@ -1,0 +1,66 @@
+{
+  "title": "Cửa hàng",
+  "description": "Quản lý cửa hàng người bán và trạng thái",
+  "error": "Không thể tải danh sách cửa hàng",
+  "statusUpdated": "Cập nhật trạng thái cửa hàng thành công",
+  "columns": {
+    "shop": "Cửa hàng",
+    "owner": "Chủ sở hữu",
+    "status": "Trạng thái",
+    "products": "Sản phẩm",
+    "revenue": "Doanh thu",
+    "followers": "Người theo dõi",
+    "rating": "Đánh giá",
+    "created": "Ngày tạo"
+  },
+  "filters": {
+    "searchPlaceholder": "Tìm kiếm cửa hàng...",
+    "status": "Trạng thái",
+    "allStatuses": "Tất cả trạng thái",
+    "sortBy": "Sắp xếp theo",
+    "sortOptions": {
+      "createdAt": "Ngày tạo",
+      "products": "Số sản phẩm",
+      "followers": "Số người theo dõi"
+    }
+  },
+  "actions": {
+    "setStatus": {
+      "pending": "Đặt chờ duyệt",
+      "active": "Kích hoạt",
+      "suspended": "Tạm ngưng",
+      "banned": "Cấm"
+    }
+  },
+  "statusDialog": {
+    "title": "Thay đổi trạng thái cửa hàng",
+    "description": "Thay đổi trạng thái của \"{{shop}}\" thành {{status}}?",
+    "reason": "Lý do",
+    "reasonPlaceholder": "Nhập lý do thay đổi trạng thái..."
+  },
+  "detail": {
+    "description": "Xem chi tiết cửa hàng, sản phẩm và doanh thu",
+    "joined": "Tham gia",
+    "stats": {
+      "products": "Sản phẩm",
+      "revenue": "Tổng doanh thu",
+      "followers": "Người theo dõi",
+      "rating": "Đánh giá TB"
+    },
+    "tabs": {
+      "products": "Sản phẩm",
+      "revenue": "Doanh thu"
+    },
+    "products": {
+      "columns": {
+        "name": "Tên sản phẩm",
+        "price": "Giá",
+        "stock": "Tồn kho",
+        "sold": "Đã bán"
+      }
+    },
+    "revenue": {
+      "title": "Doanh thu theo thời gian"
+    }
+  }
+}

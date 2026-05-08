@@ -11,6 +11,11 @@ export class ShopService extends BaseService {
     const shop = await ShopModel.findById(shopId).lean()
     if (!shop) throw new NotFoundError('Shop', shopId)
 
+    // Suspended or banned shops are hidden from user-facing API
+    if (shop.status === 'suspended' || shop.status === 'banned') {
+      throw new NotFoundError('Shop', shopId)
+    }
+
     const isFollowing = userId
       ? shop.followers.some((f) => f.toString() === userId)
       : false

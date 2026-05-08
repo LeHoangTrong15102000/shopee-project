@@ -25,5 +25,15 @@
     "orders": "Đơn hàng",
     "totalSpent": "Tổng chi tiêu"
   },
+  "realtime": {
+    "title": "Hôm nay (trực tiếp)",
+    "todayRevenue": "Doanh thu hôm nay",
+    "todayOrders": "Đơn hàng hôm nay",
+    "pendingOrders": "Đơn chờ xử lý",
+    "activeUsers": "Người dùng đang hoạt động",
+    "ordersPerHour": "Đơn hàng / giờ",
+    "pendingQA": "Q&A chờ duyệt",
+    "live": "TRỰC TIẾP"
+  },
   "error": "Không thể tải bảng điều khiển"
 }

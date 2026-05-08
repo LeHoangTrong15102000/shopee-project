@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DollarSign, ShoppingCart, Users, Package } from 'lucide-react'
+import { DollarSign, ShoppingCart, Users, Package, Clock, AlertCircle, Zap, MessageSquare } from 'lucide-react'
 import { StatCard } from 'src/components/shared/StatCard'
 import { PeriodSelect } from 'src/components/shared/PeriodSelect'
 import { PageHeader } from 'src/components/shared/PageHeader'
@@ -8,6 +8,7 @@ import { ErrorState } from 'src/components/shared/ErrorState'
 import { StaggerList, StaggerItem } from 'src/components/shared/StaggerList'
 import { Skeleton } from 'src/components/ui/skeleton'
 import { Card, CardContent, CardHeader } from 'src/components/ui/card'
+import { Badge } from 'src/components/ui/badge'
 import {
   useDashboardOverview,
   useDashboardRevenue,
@@ -17,6 +18,7 @@ import {
   useDashboardTopBuyers,
   useDashboardRevenueByCategory,
 } from 'src/hooks/useDashboard'
+import { useRealtimeMetrics } from 'src/hooks/useRealtimeMetrics'
 import { formatPrice } from '@shopee/shared-utils'
 import { ChartSkeleton } from './components/ChartSkeleton'
 
@@ -44,6 +46,8 @@ export default function DashboardPage() {
   const { data: topProducts } = useDashboardTopProducts(period)
   const { data: topBuyers } = useDashboardTopBuyers(period)
   const { data: revenueByCategory } = useDashboardRevenueByCategory(period)
+
+  const realtimeMetrics = useRealtimeMetrics()
 
   const handleCustomRange = (s: string, e: string) => setCustomRange({ start_date: s, end_date: e })
 
@@ -113,6 +117,63 @@ export default function DashboardPage() {
               />
             </StaggerItem>
           </StaggerList>
+      )}
+
+      {realtimeMetrics && (
+        <div>
+          <div className="mb-3 flex items-center gap-2">
+            <span className="text-sm font-medium text-muted-foreground">{t('realtime.title')}</span>
+            <Badge variant="outline" className="gap-1 border-green-500 text-green-600 text-xs px-1.5 py-0">
+              <span className="size-1.5 rounded-full bg-green-500 animate-pulse inline-block" />
+              {t('realtime.live')}
+            </Badge>
+          </div>
+          <StaggerList className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" staggerDelay={0.05}>
+            <StaggerItem>
+              <StatCard
+                label={t('realtime.todayRevenue')}
+                value={realtimeMetrics.today_revenue}
+                formatter={formatPrice}
+                icon={<DollarSign className="size-4" />}
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <StatCard
+                label={t('realtime.todayOrders')}
+                value={realtimeMetrics.today_orders}
+                icon={<ShoppingCart className="size-4" />}
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <StatCard
+                label={t('realtime.pendingOrders')}
+                value={realtimeMetrics.pending_orders}
+                icon={<Clock className="size-4" />}
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <StatCard
+                label={t('realtime.activeUsers')}
+                value={realtimeMetrics.active_users}
+                icon={<Users className="size-4" />}
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <StatCard
+                label={t('realtime.ordersPerHour')}
+                value={realtimeMetrics.orders_per_hour}
+                icon={<Zap className="size-4" />}
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <StatCard
+                label={t('realtime.pendingQA')}
+                value={realtimeMetrics.pending_qa}
+                icon={<MessageSquare className="size-4" />}
+              />
+            </StaggerItem>
+          </StaggerList>
+        </div>
       )}
 
       <Suspense fallback={<ChartSkeleton columns={2} />}>

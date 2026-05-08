@@ -1,0 +1,49 @@
+{
+  "title": "Phân tích tìm kiếm",
+  "description": "Phân tích hành vi tìm kiếm và phát hiện khoảng trống nội dung",
+  "period": {
+    "label": "Khoảng thời gian",
+    "7d": "7 ngày qua",
+    "30d": "30 ngày qua",
+    "90d": "90 ngày qua"
+  },
+  "stats": {
+    "totalSearches": "Tổng lượt tìm kiếm",
+    "uniqueKeywords": "Từ khóa duy nhất",
+    "avgPerDay": "TB lượt tìm / ngày",
+    "zeroResultRate": "Tỷ lệ không có kết quả"
+  },
+  "volume": {
+    "title": "Lượng tìm kiếm",
+    "description": "Số lượt tìm kiếm hàng ngày trong khoảng thời gian đã chọn",
+    "searches": "Lượt tìm kiếm",
+    "date": "Ngày"
+  },
+  "popular": {
+    "title": "Tìm kiếm phổ biến",
+    "description": "Các từ khóa được tìm kiếm nhiều nhất",
+    "rank": "Hạng",
+    "keyword": "Từ khóa",
+    "count": "Số lượt tìm",
+    "trend": "Xu hướng",
+    "noData": "Không có dữ liệu tìm kiếm phổ biến"
+  },
+  "trending": {
+    "title": "Tìm kiếm đang tăng",
+    "description": "Từ khóa có tần suất tăng so với kỳ trước",
+    "keyword": "Từ khóa",
+    "increase": "Tăng",
+    "noData": "Không có từ khóa đang tăng"
+  },
+  "zeroResults": {
+    "title": "Tìm kiếm không có kết quả",
+    "description": "Các tìm kiếm không trả về sản phẩm nào — khoảng trống nội dung tiềm năng",
+    "keyword": "Từ khóa",
+    "count": "Số lượt tìm",
+    "action": "Hành động",
+    "createProduct": "Tạo sản phẩm",
+    "noData": "Không có tìm kiếm không có kết quả"
+  },
+  "loading": "Đang tải phân tích tìm kiếm...",
+  "error": "Không thể tải phân tích tìm kiếm"
+}

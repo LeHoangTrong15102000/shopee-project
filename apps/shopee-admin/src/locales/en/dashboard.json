@@ -25,5 +25,15 @@
     "orders": "Orders",
     "totalSpent": "Total Spent"
   },
+  "realtime": {
+    "title": "Live Today",
+    "todayRevenue": "Today's Revenue",
+    "todayOrders": "Today's Orders",
+    "pendingOrders": "Pending Orders",
+    "activeUsers": "Active Users",
+    "ordersPerHour": "Orders / Hour",
+    "pendingQA": "Pending Q&A",
+    "live": "LIVE"
+  },
   "error": "Failed to load dashboard"
 }

@@ -10,10 +10,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from 'src/c
 import { Input } from 'src/components/ui/input'
 import { Label } from 'src/components/ui/label'
 import { Button } from 'src/components/ui/button'
+import { Switch } from 'src/components/ui/switch'
 import { PageHeader } from 'src/components/shared/PageHeader'
 import { LoadingState } from 'src/components/shared/LoadingState'
 import { ErrorState } from 'src/components/shared/ErrorState'
 import { useAuthStore } from 'src/stores/auth.store'
+import { useNotificationStore } from 'src/stores/notification.store'
 import settingsApi from 'src/apis/settings.api'
 
 // --- Profile Tab ---
@@ -41,13 +43,34 @@ const passwordSchema = z
   })
 type PasswordForm = z.infer<typeof passwordSchema>
 
+export const NOTIFICATION_SOUND_KEY = 'admin_notification_sound'
+
+export function getNotificationSoundEnabled(): boolean {
+  try {
+    const stored = localStorage.getItem(NOTIFICATION_SOUND_KEY)
+    return stored !== 'false'
+  } catch {
+    return true
+  }
+}
+
 // --- Component ---
 
 export default function SettingsPage() {
   const { t } = useTranslation('settings')
   const [activeTab, setActiveTab] = useState<string>('profile')
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(getNotificationSoundEnabled)
   const { user, setUser } = useAuthStore()
   const qc = useQueryClient()
+
+  const handleSoundToggle = (checked: boolean) => {
+    setSoundEnabled(checked)
+    try {
+      localStorage.setItem(NOTIFICATION_SOUND_KEY, String(checked))
+    } catch {
+      // ignore
+    }
+  }
 
   const {
     data: profile,
@@ -110,6 +133,7 @@ export default function SettingsPage() {
         <TabsList>
           <TabsTrigger value="profile">{t('tabs.profile')}</TabsTrigger>
           <TabsTrigger value="password">{t('tabs.changePassword')}</TabsTrigger>
+          <TabsTrigger value="notifications">{t('tabs.notifications')}</TabsTrigger>
           <TabsTrigger value="system">{t('tabs.systemInfo')}</TabsTrigger>
         </TabsList>
 
@@ -227,8 +251,31 @@ export default function SettingsPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="system">
+        <TabsContent value="notifications">
           <Card>
+            <CardHeader>
+              <CardTitle>{t('notifications.title')}</CardTitle>
+              <CardDescription>{t('notifications.description')}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between rounded-lg border p-4 max-w-lg">
+                <div className="space-y-0.5">
+                  <Label htmlFor="sound-toggle" className="text-sm font-medium">
+                    {t('notifications.soundToggle')}
+                  </Label>
+                  <p className="text-xs text-muted-foreground">{t('notifications.soundDescription')}</p>
+                </div>
+                <Switch
+                  id="sound-toggle"
+                  checked={soundEnabled}
+                  onCheckedChange={handleSoundToggle}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="system">          <Card>
             <CardHeader>
               <CardTitle>{t('system.title')}</CardTitle>
               <CardDescription>{t('system.description')}</CardDescription>

@@ -7,16 +7,20 @@ import { ErrorBoundary } from 'src/components/shared/ErrorBoundary'
 import { CommandPalette } from 'src/components/shared/CommandPalette'
 import { PageTransition } from 'src/components/shared/PageTransition'
 import { useKeyboardShortcuts } from 'src/hooks/use-keyboard-shortcuts'
+import { useSocket } from 'src/hooks/useSocket'
+import { useRealtimeOrders } from 'src/hooks/useRealtimeOrders'
 
 export default function AdminLayout() {
   useKeyboardShortcuts()
   const location = useLocation()
+  const socketStatus = useSocket()
+  useRealtimeOrders()
 
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <AppHeader />
+        <AppHeader socketStatus={socketStatus} />
         <main className="flex-1 overflow-auto p-4 md:p-6">
           <ErrorBoundary>
             <AnimatePresence mode="sync">
@@ -31,4 +35,5 @@ export default function AdminLayout() {
     </SidebarProvider>
   )
 }
+
 

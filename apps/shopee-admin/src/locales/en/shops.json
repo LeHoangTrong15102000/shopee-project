@@ -1,0 +1,66 @@
+{
+  "title": "Shops",
+  "description": "Manage seller shops and their statuses",
+  "error": "Failed to load shops",
+  "statusUpdated": "Shop status updated successfully",
+  "columns": {
+    "shop": "Shop",
+    "owner": "Owner",
+    "status": "Status",
+    "products": "Products",
+    "revenue": "Revenue",
+    "followers": "Followers",
+    "rating": "Rating",
+    "created": "Created"
+  },
+  "filters": {
+    "searchPlaceholder": "Search shops...",
+    "status": "Status",
+    "allStatuses": "All Statuses",
+    "sortBy": "Sort by",
+    "sortOptions": {
+      "createdAt": "Date Created",
+      "products": "Products Count",
+      "followers": "Followers Count"
+    }
+  },
+  "actions": {
+    "setStatus": {
+      "pending": "Set Pending",
+      "active": "Activate",
+      "suspended": "Suspend",
+      "banned": "Ban"
+    }
+  },
+  "statusDialog": {
+    "title": "Change Shop Status",
+    "description": "Change status of \"{{shop}}\" to {{status}}?",
+    "reason": "Reason",
+    "reasonPlaceholder": "Enter reason for this status change..."
+  },
+  "detail": {
+    "description": "View shop details, products, and revenue",
+    "joined": "Joined",
+    "stats": {
+      "products": "Products",
+      "revenue": "Total Revenue",
+      "followers": "Followers",
+      "rating": "Avg Rating"
+    },
+    "tabs": {
+      "products": "Products",
+      "revenue": "Revenue"
+    },
+    "products": {
+      "columns": {
+        "name": "Product Name",
+        "price": "Price",
+        "stock": "Stock",
+        "sold": "Sold"
+      }
+    },
+    "revenue": {
+      "title": "Revenue Over Time"
+    }
+  }
+}

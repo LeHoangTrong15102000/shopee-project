@@ -35,6 +35,10 @@ const ShippingMethodsPage = lazy(() => import('src/pages/Shipping/ShippingMethod
 const PaymentMethodsPage = lazy(() => import('src/pages/Payments/PaymentMethodsPage'))
 const PriceAlertsPage = lazy(() => import('src/pages/PriceAlerts/PriceAlertsPage'))
 const CheckinPage = lazy(() => import('src/pages/Checkin/CheckinPage'))
+const ShopListPage = lazy(() => import('src/pages/Shops/ShopListPage'))
+const ShopDetailPage = lazy(() => import('src/pages/Shops/ShopDetailPage'))
+const SystemHealthPage = lazy(() => import('src/pages/SystemHealth/SystemHealthPage'))
+const SearchAnalyticsPage = lazy(() => import('src/pages/SearchAnalytics/SearchAnalyticsPage'))
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
@@ -263,6 +267,38 @@ const protectedRoutes: RouteObject[] = [
     element: (
       <SuspenseWrapper>
         <CheckinPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: ROUTES.SHOPS.slice(1),
+    element: (
+      <SuspenseWrapper>
+        <ShopListPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: ROUTES.SHOP_DETAIL.slice(1),
+    element: (
+      <SuspenseWrapper>
+        <ShopDetailPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: ROUTES.SYSTEM_HEALTH.slice(1),
+    element: (
+      <SuspenseWrapper>
+        <SystemHealthPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: ROUTES.SEARCH_ANALYTICS.slice(1),
+    element: (
+      <SuspenseWrapper>
+        <SearchAnalyticsPage />
       </SuspenseWrapper>
     ),
   },

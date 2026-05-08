@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { Logger } from '@utils/logger'
+import { recordRequest } from '@utils/request-stats'
 
 /**
  * Danh sách các fields nhạy cảm cần loại bỏ khỏi logs
@@ -173,6 +174,8 @@ export const requestLoggerMiddleware = (req: Request, res: Response, next: NextF
         responseMeta,
       )
     }
+
+    recordRequest(res.statusCode, responseTime)
 
     return originalEnd(chunk, encoding, callback)
   }

@@ -26,7 +26,10 @@
     "shippingMethods": "Phương thức vận chuyển",
     "paymentMethods": "Phương thức thanh toán",
     "priceAlerts": "Cảnh báo giá",
-    "checkin": "Check-in"
+    "checkin": "Check-in",
+    "shops": "Cửa hàng",
+    "systemHealth": "Sức khỏe hệ thống",
+    "searchAnalytics": "Phân tích tìm kiếm"
   },
   "header": {
     "settings": "Cài đặt",

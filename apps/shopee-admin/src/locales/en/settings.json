@@ -4,6 +4,7 @@
   "tabs": {
     "profile": "Profile",
     "changePassword": "Change Password",
+    "notifications": "Notifications",
     "systemInfo": "System Info"
   },
   "profile": {
@@ -33,6 +34,12 @@
     "appVersion": "App Version",
     "apiBaseUrl": "API Base URL",
     "environment": "Environment"
+  },
+  "notifications": {
+    "title": "Notification Preferences",
+    "description": "Control how you receive alerts and sounds",
+    "soundToggle": "Order notification sound",
+    "soundDescription": "Play a sound when a new order arrives"
   },
   "toast": {
     "profileUpdated": "Profile updated",

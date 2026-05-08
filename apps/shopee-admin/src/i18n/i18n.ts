@@ -21,6 +21,9 @@ import qaVI from 'src/locales/vi/qa.json'
 import importVI from 'src/locales/vi/import.json'
 import shippingVI from 'src/locales/vi/shipping.json'
 import paymentsVI from 'src/locales/vi/payments.json'
+import shopsVI from 'src/locales/vi/shops.json'
+import systemHealthVI from 'src/locales/vi/system-health.json'
+import searchAnalyticsVI from 'src/locales/vi/search-analytics.json'
 
 // English — eagerly loaded (admin app is small, no need for lazy loading)
 import commonEN from 'src/locales/en/common.json'
@@ -42,6 +45,9 @@ import qaEN from 'src/locales/en/qa.json'
 import importEN from 'src/locales/en/import.json'
 import shippingEN from 'src/locales/en/shipping.json'
 import paymentsEN from 'src/locales/en/payments.json'
+import shopsEN from 'src/locales/en/shops.json'
+import systemHealthEN from 'src/locales/en/system-health.json'
+import searchAnalyticsEN from 'src/locales/en/search-analytics.json'
 
 export const locales = {
   en: 'English',
@@ -69,6 +75,9 @@ export const resources = {
     import: importVI,
     shipping: shippingVI,
     payments: paymentsVI,
+    shops: shopsVI,
+    'system-health': systemHealthVI,
+    'search-analytics': searchAnalyticsVI,
   },
   en: {
     common: commonEN,
@@ -90,6 +99,9 @@ export const resources = {
     import: importEN,
     shipping: shippingEN,
     payments: paymentsEN,
+    shops: shopsEN,
+    'system-health': systemHealthEN,
+    'search-analytics': searchAnalyticsEN,
   },
 } as const
 

@@ -22,6 +22,9 @@ import {
   CreditCard,
   TrendingUp,
   CheckSquare,
+  Store,
+  Activity,
+  Search,
 } from 'lucide-react'
 import { ROUTES } from 'src/constants/routes'
 import {
@@ -53,6 +56,7 @@ const navSections = [
       { titleKey: 'menu.orders', href: ROUTES.ORDERS, icon: ShoppingCart },
       { titleKey: 'menu.vouchers', href: ROUTES.VOUCHERS, icon: Ticket },
       { titleKey: 'menu.reviews', href: ROUTES.REVIEWS, icon: Star },
+      { titleKey: 'menu.shops', href: ROUTES.SHOPS, icon: Store },
     ],
   },
   {
@@ -61,6 +65,7 @@ const navSections = [
       { titleKey: 'menu.loyalty', href: ROUTES.LOYALTY, icon: Gift },
       { titleKey: 'menu.inventory', href: ROUTES.INVENTORY, icon: Warehouse },
       { titleKey: 'menu.analytics', href: ROUTES.ANALYTICS, icon: BarChart3 },
+      { titleKey: 'menu.searchAnalytics', href: ROUTES.SEARCH_ANALYTICS, icon: Search },
     ],
   },
   {
@@ -75,6 +80,7 @@ const navSections = [
       { titleKey: 'menu.paymentMethods', href: ROUTES.PAYMENT_METHODS, icon: CreditCard },
       { titleKey: 'menu.priceAlerts', href: ROUTES.PRICE_ALERTS, icon: TrendingUp },
       { titleKey: 'menu.checkin', href: ROUTES.CHECKIN, icon: CheckSquare },
+      { titleKey: 'menu.systemHealth', href: ROUTES.SYSTEM_HEALTH, icon: Activity },
     ],
   },
 ]
@@ -99,6 +105,9 @@ const routePrefetchMap: Record<string, () => Promise<unknown>> = {
   [ROUTES.PAYMENT_METHODS]: () => import('src/pages/Payments/PaymentMethodsPage'),
   [ROUTES.PRICE_ALERTS]: () => import('src/pages/PriceAlerts/PriceAlertsPage'),
   [ROUTES.CHECKIN]: () => import('src/pages/Checkin/CheckinPage'),
+  [ROUTES.SHOPS]: () => import('src/pages/Shops/ShopListPage'),
+  [ROUTES.SYSTEM_HEALTH]: () => import('src/pages/SystemHealth/SystemHealthPage'),
+  [ROUTES.SEARCH_ANALYTICS]: () => import('src/pages/SearchAnalytics/SearchAnalyticsPage'),
 }
 
 const prefetchedRoutes = new Set<string>()

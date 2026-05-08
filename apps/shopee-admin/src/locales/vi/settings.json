@@ -4,6 +4,7 @@
   "tabs": {
     "profile": "Hồ sơ",
     "changePassword": "Đổi mật khẩu",
+    "notifications": "Thông báo",
     "systemInfo": "Thông tin hệ thống"
   },
   "profile": {
@@ -33,6 +34,12 @@
     "appVersion": "Phiên bản ứng dụng",
     "apiBaseUrl": "URL API",
     "environment": "Môi trường"
+  },
+  "notifications": {
+    "title": "Tùy chọn thông báo",
+    "description": "Kiểm soát cách bạn nhận cảnh báo và âm thanh",
+    "soundToggle": "Âm thanh thông báo đơn hàng",
+    "soundDescription": "Phát âm thanh khi có đơn hàng mới"
   },
   "toast": {
     "profileUpdated": "Đã cập nhật hồ sơ",

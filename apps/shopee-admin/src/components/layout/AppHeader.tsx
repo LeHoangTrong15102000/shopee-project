@@ -24,6 +24,7 @@ import { Avatar, AvatarFallback } from 'src/components/ui/avatar'
 import { useAuthStore } from 'src/stores/auth.store'
 import { useThemeStore } from 'src/stores/theme.store'
 import { locales, changeLanguage } from 'src/i18n/i18n'
+import type { SocketStatus } from 'src/hooks/useSocket'
 
 function FlagIcon({ children }: { children: React.ReactNode }) {
   return (
@@ -86,9 +87,28 @@ const routeLabelKeys: Record<string, string> = {
   qa: 'menu.qa',
   import: 'menu.import',
   settings: 'menu.settings',
+  shops: 'menu.shops',
+  'system-health': 'menu.systemHealth',
+  'search-analytics': 'menu.searchAnalytics',
 }
 
-export function AppHeader() {
+const socketStatusColors: Record<SocketStatus, string> = {
+  connected: 'bg-green-500',
+  reconnecting: 'bg-yellow-500',
+  disconnected: 'bg-red-500',
+}
+
+const socketStatusLabels: Record<SocketStatus, string> = {
+  connected: 'Connected',
+  reconnecting: 'Reconnecting',
+  disconnected: 'Disconnected',
+}
+
+interface AppHeaderProps {
+  socketStatus?: SocketStatus
+}
+
+export function AppHeader({ socketStatus }: AppHeaderProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const { t, i18n } = useTranslation('layout')
@@ -141,6 +161,19 @@ export function AppHeader() {
       </Breadcrumb>
 
       <div className="ml-auto flex items-center gap-2">
+        {socketStatus && (
+          <div
+            className="flex items-center gap-1.5"
+            title={socketStatusLabels[socketStatus]}
+            aria-label={`WebSocket: ${socketStatusLabels[socketStatus]}`}
+          >
+            <span
+              className={`size-2 rounded-full ${socketStatusColors[socketStatus]} ${
+                socketStatus === 'reconnecting' ? 'animate-pulse' : ''
+              }`}
+            />
+          </div>
+        )}
         <Button
           variant="ghost"
           size="sm"

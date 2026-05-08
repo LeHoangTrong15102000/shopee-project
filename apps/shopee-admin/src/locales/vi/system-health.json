@@ -1,0 +1,63 @@
+{
+  "title": "Sức khỏe hệ thống",
+  "description": "Giám sát trạng thái máy chủ API, cơ sở dữ liệu, bộ nhớ và các chỉ số hiệu suất",
+  "lastUpdated": "Cập nhật lần cuối",
+  "autoRefresh": "Tự động làm mới",
+  "refresh": "Làm mới",
+  "never": "Chưa cập nhật",
+  "status": {
+    "healthy": "Hoạt động tốt",
+    "unhealthy": "Không hoạt động",
+    "degraded": "Suy giảm",
+    "connected": "Đã kết nối",
+    "disconnected": "Mất kết nối",
+    "ready": "Sẵn sàng",
+    "notReady": "Chưa sẵn sàng"
+  },
+  "cards": {
+    "apiStatus": "Trạng thái API",
+    "database": "Cơ sở dữ liệu",
+    "redis": "Redis",
+    "uptime": "Thời gian hoạt động",
+    "version": "Phiên bản"
+  },
+  "memory": {
+    "title": "Sử dụng bộ nhớ",
+    "heapUsed": "Heap đã dùng",
+    "heapTotal": "Tổng Heap",
+    "usage": "Mức sử dụng",
+    "mb": "MB"
+  },
+  "metrics": {
+    "title": "Chỉ số máy chủ",
+    "pid": "ID tiến trình",
+    "platform": "Nền tảng",
+    "nodeVersion": "Phiên bản Node",
+    "dbPool": "Pool DB",
+    "totalConnections": "Tổng kết nối",
+    "availableConnections": "Khả dụng"
+  },
+  "sparkline": {
+    "memoryHistory": "Lịch sử bộ nhớ (10 lần đọc gần nhất)",
+    "heapUsed": "Heap đã dùng (MB)"
+  },
+  "responseTime": {
+    "title": "Thời gian phản hồi TB",
+    "description": "Trung bình tất cả yêu cầu kể từ lần khởi động cuối",
+    "noData": "Chưa có dữ liệu yêu cầu"
+  },
+  "requestStats": {
+    "title": "Thống kê yêu cầu",
+    "total": "Tổng yêu cầu",
+    "perMinute": "Yêu cầu / phút",
+    "errorRate": "Tỷ lệ lỗi",
+    "noData": "Chưa có dữ liệu yêu cầu"
+  },
+  "uptime": {
+    "days": "{{count}} ngày",
+    "hours": "{{count}} giờ",
+    "minutes": "{{count}} phút",
+    "seconds": "{{count}} giây"
+  },
+  "error": "Không thể tải dữ liệu sức khỏe hệ thống"
+}

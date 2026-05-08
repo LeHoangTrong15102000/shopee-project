@@ -5,15 +5,33 @@ import { STATUS } from '@constants/status'
 import { orderService } from '../container'
 import { ValidationError, NotFoundError, BusinessError } from '@services/base.service'
 import { OrderStatusType } from '@database/models/order.model'
+import { ShippingMethodModel } from '@database/models/shipping-method.model'
+import { PaymentMethodModel } from '@database/models/payment-method.model'
 
-export const getShippingMethods = async (req: Request, res: Response) => {
+export const getShippingMethods = async (_req: Request, res: Response) => {
+  // Try DB first; fall back to static list if collection is empty (e.g. before seeding)
+  const dbMethods = await ShippingMethodModel.find({ is_active: true }).sort({ sort_order: 1 }).lean()
+  if (dbMethods.length > 0) {
+    return responseSuccess(res, {
+      message: 'Lấy phương thức vận chuyển thành công',
+      data: dbMethods,
+    })
+  }
   return responseSuccess(res, {
     message: 'Lấy phương thức vận chuyển thành công',
     data: orderService.getShippingMethods(),
   })
 }
 
-export const getPaymentMethods = async (req: Request, res: Response) => {
+export const getPaymentMethods = async (_req: Request, res: Response) => {
+  // Try DB first; fall back to static list if collection is empty (e.g. before seeding)
+  const dbMethods = await PaymentMethodModel.find({ is_active: true }).sort({ sort_order: 1 }).lean()
+  if (dbMethods.length > 0) {
+    return responseSuccess(res, {
+      message: 'Lấy phương thức thanh toán thành công',
+      data: dbMethods,
+    })
+  }
   return responseSuccess(res, {
     message: 'Lấy phương thức thanh toán thành công',
     data: orderService.getPaymentMethods(),

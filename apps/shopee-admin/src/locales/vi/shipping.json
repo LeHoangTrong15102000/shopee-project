@@ -1,16 +1,51 @@
 {
   "title": "Phương thức vận chuyển",
-  "description": "Xem các phương thức vận chuyển",
-  "columns": {
-    "name": "Tên",
-    "code": "Mã",
-    "description": "Mô tả",
-    "baseCost": "Phí cơ bản",
-    "estimatedDays": "Ngày dự kiến",
-    "status": "Trạng thái"
-  },
+  "description": "Quản lý các phương thức vận chuyển cho khách hàng",
+  "days": "ngày",
   "active": "Hoạt động",
   "inactive": "Không hoạt động",
   "error": "Không thể tải phương thức vận chuyển",
-  "emptyState": "Không có phương thức vận chuyển nào."
+  "emptyState": "Không có phương thức vận chuyển nào.",
+  "search": "Tìm phương thức vận chuyển...",
+  "columns": {
+    "order": "Thứ tự",
+    "icon": "Biểu tượng",
+    "name": "Tên",
+    "description": "Mô tả",
+    "price": "Giá",
+    "estimatedDays": "Số ngày dự kiến",
+    "status": "Trạng thái"
+  },
+  "form": {
+    "name": "Tên",
+    "description": "Mô tả",
+    "price": "Giá (VND)",
+    "icon": "Biểu tượng",
+    "estimatedDaysMin": "Số ngày tối thiểu",
+    "estimatedDaysMax": "Số ngày tối đa",
+    "sortOrder": "Thứ tự sắp xếp",
+    "isActive": "Hoạt động"
+  },
+  "actions": {
+    "create": "Thêm phương thức vận chuyển",
+    "edit": "Sửa phương thức vận chuyển",
+    "delete": "Xóa",
+    "toggle": "Bật/tắt trạng thái",
+    "moveUp": "Di chuyển lên",
+    "moveDown": "Di chuyển xuống"
+  },
+  "delete": {
+    "title": "Xóa phương thức vận chuyển",
+    "description": "Bạn có chắc muốn xóa \"{{name}}\"? Hành động này không thể hoàn tác.",
+    "descriptionFallback": "Bạn có chắc muốn xóa phương thức vận chuyển này? Hành động này không thể hoàn tác."
+  },
+  "toast": {
+    "created": "Đã tạo phương thức vận chuyển",
+    "createFailed": "Tạo phương thức vận chuyển thất bại",
+    "updated": "Đã cập nhật phương thức vận chuyển",
+    "updateFailed": "Cập nhật phương thức vận chuyển thất bại",
+    "deleted": "Đã xóa phương thức vận chuyển",
+    "deleteFailed": "Xóa phương thức vận chuyển thất bại",
+    "statusUpdated": "Đã cập nhật trạng thái phương thức vận chuyển"
+  }
 }

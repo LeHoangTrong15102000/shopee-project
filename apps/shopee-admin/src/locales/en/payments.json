@@ -1,14 +1,54 @@
 {
   "title": "Payment Methods",
-  "description": "View available payment methods",
+  "description": "Manage payment methods available to customers",
+  "active": "Active",
+  "inactive": "Inactive",
+  "error": "Failed to load payment methods",
+  "emptyState": "No payment methods available.",
+  "search": "Search payment methods...",
   "columns": {
+    "order": "Order",
+    "icon": "Icon",
     "name": "Name",
-    "code": "Code",
+    "type": "Type",
     "description": "Description",
     "status": "Status"
   },
-  "enabled": "Enabled",
-  "disabled": "Disabled",
-  "error": "Failed to load payment methods",
-  "emptyState": "No payment methods available."
+  "types": {
+    "cod": "Cash on Delivery",
+    "bank_transfer": "Bank Transfer",
+    "e_wallet": "E-Wallet",
+    "credit_card": "Credit Card"
+  },
+  "form": {
+    "name": "Name",
+    "type": "Type",
+    "description": "Description",
+    "icon": "Icon",
+    "instructions": "Instructions",
+    "sortOrder": "Sort Order",
+    "isActive": "Active"
+  },
+  "actions": {
+    "create": "Add Payment Method",
+    "edit": "Edit Payment Method",
+    "delete": "Delete",
+    "toggle": "Toggle status",
+    "moveUp": "Move up",
+    "moveDown": "Move down"
+  },
+  "delete": {
+    "title": "Delete Payment Method",
+    "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+    "descriptionFallback": "Are you sure you want to delete this payment method? This action cannot be undone."
+  },
+  "toast": {
+    "created": "Payment method created",
+    "createFailed": "Failed to create payment method",
+    "updated": "Payment method updated",
+    "updateFailed": "Failed to update payment method",
+    "deleted": "Payment method deleted",
+    "deleteFailed": "Failed to delete payment method",
+    "statusUpdated": "Payment method status updated"
+  }
 }

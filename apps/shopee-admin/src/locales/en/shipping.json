@@ -1,16 +1,51 @@
 {
   "title": "Shipping Methods",
-  "description": "View available shipping methods",
-  "columns": {
-    "name": "Name",
-    "code": "Code",
-    "description": "Description",
-    "baseCost": "Base Cost",
-    "estimatedDays": "Est. Days",
-    "status": "Status"
-  },
+  "description": "Manage shipping methods available to customers",
+  "days": "days",
   "active": "Active",
   "inactive": "Inactive",
   "error": "Failed to load shipping methods",
-  "emptyState": "No shipping methods available."
+  "emptyState": "No shipping methods available.",
+  "search": "Search shipping methods...",
+  "columns": {
+    "order": "Order",
+    "icon": "Icon",
+    "name": "Name",
+    "description": "Description",
+    "price": "Price",
+    "estimatedDays": "Est. Days",
+    "status": "Status"
+  },
+  "form": {
+    "name": "Name",
+    "description": "Description",
+    "price": "Price (VND)",
+    "icon": "Icon",
+    "estimatedDaysMin": "Min Days",
+    "estimatedDaysMax": "Max Days",
+    "sortOrder": "Sort Order",
+    "isActive": "Active"
+  },
+  "actions": {
+    "create": "Add Shipping Method",
+    "edit": "Edit Shipping Method",
+    "delete": "Delete",
+    "toggle": "Toggle status",
+    "moveUp": "Move up",
+    "moveDown": "Move down"
+  },
+  "delete": {
+    "title": "Delete Shipping Method",
+    "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+    "descriptionFallback": "Are you sure you want to delete this shipping method? This action cannot be undone."
+  },
+  "toast": {
+    "created": "Shipping method created",
+    "createFailed": "Failed to create shipping method",
+    "updated": "Shipping method updated",
+    "updateFailed": "Failed to update shipping method",
+    "deleted": "Shipping method deleted",
+    "deleteFailed": "Failed to delete shipping method",
+    "statusUpdated": "Shipping method status updated"
+  }
 }

@@ -17,6 +17,8 @@ import adminQARouter from './admin-qa.route'
 import adminCheckinRouter from './admin-checkin.route'
 import adminPriceAlertsRouter from './admin-price-alerts.route'
 import adminConversationRouter from './admin-conversation.route'
+import adminShippingRouter from './admin-shipping.route'
+import adminPaymentRouter from './admin-payment.route'
 import { adminRateLimit } from '@middleware/rateLimiter.middleware'
 
 // Wrap every admin sub-router with the admin rate limiter (300 req/min per user)
@@ -97,6 +99,14 @@ const adminRoutes = {
     {
       path: 'conversations',
       route: withAdminRateLimit(adminConversationRouter),
+    },
+    {
+      path: 'shipping-methods',
+      route: withAdminRateLimit(adminShippingRouter),
+    },
+    {
+      path: 'payment-methods',
+      route: withAdminRateLimit(adminPaymentRouter),
     },
     {
       path: '',

@@ -1,14 +1,54 @@
 {
   "title": "Phương thức thanh toán",
-  "description": "Xem các phương thức thanh toán",
+  "description": "Quản lý các phương thức thanh toán cho khách hàng",
+  "active": "Hoạt động",
+  "inactive": "Không hoạt động",
+  "error": "Không thể tải phương thức thanh toán",
+  "emptyState": "Không có phương thức thanh toán nào.",
+  "search": "Tìm phương thức thanh toán...",
   "columns": {
+    "order": "Thứ tự",
+    "icon": "Biểu tượng",
     "name": "Tên",
-    "code": "Mã",
+    "type": "Loại",
     "description": "Mô tả",
     "status": "Trạng thái"
   },
-  "enabled": "Đang bật",
-  "disabled": "Đã tắt",
-  "error": "Không thể tải phương thức thanh toán",
-  "emptyState": "Không có phương thức thanh toán nào."
+  "types": {
+    "cod": "Thanh toán khi nhận hàng",
+    "bank_transfer": "Chuyển khoản ngân hàng",
+    "e_wallet": "Ví điện tử",
+    "credit_card": "Thẻ tín dụng"
+  },
+  "form": {
+    "name": "Tên",
+    "type": "Loại",
+    "description": "Mô tả",
+    "icon": "Biểu tượng",
+    "instructions": "Hướng dẫn",
+    "sortOrder": "Thứ tự sắp xếp",
+    "isActive": "Hoạt động"
+  },
+  "actions": {
+    "create": "Thêm phương thức thanh toán",
+    "edit": "Sửa phương thức thanh toán",
+    "delete": "Xóa",
+    "toggle": "Bật/tắt trạng thái",
+    "moveUp": "Di chuyển lên",
+    "moveDown": "Di chuyển xuống"
+  },
+  "delete": {
+    "title": "Xóa phương thức thanh toán",
+    "description": "Bạn có chắc muốn xóa \"{{name}}\"? Hành động này không thể hoàn tác.",
+    "descriptionFallback": "Bạn có chắc muốn xóa phương thức thanh toán này? Hành động này không thể hoàn tác."
+  },
+  "toast": {
+    "created": "Đã tạo phương thức thanh toán",
+    "createFailed": "Tạo phương thức thanh toán thất bại",
+    "updated": "Đã cập nhật phương thức thanh toán",
+    "updateFailed": "Cập nhật phương thức thanh toán thất bại",
+    "deleted": "Đã xóa phương thức thanh toán",
+    "deleteFailed": "Xóa phương thức thanh toán thất bại",
+    "statusUpdated": "Đã cập nhật trạng thái phương thức thanh toán"
+  }
 }

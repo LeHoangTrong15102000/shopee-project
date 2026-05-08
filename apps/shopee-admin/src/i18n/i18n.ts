@@ -19,6 +19,8 @@ import analyticsVI from 'src/locales/vi/analytics.json'
 import notificationsVI from 'src/locales/vi/notifications.json'
 import qaVI from 'src/locales/vi/qa.json'
 import importVI from 'src/locales/vi/import.json'
+import shippingVI from 'src/locales/vi/shipping.json'
+import paymentsVI from 'src/locales/vi/payments.json'
 
 // English — eagerly loaded (admin app is small, no need for lazy loading)
 import commonEN from 'src/locales/en/common.json'
@@ -38,6 +40,8 @@ import analyticsEN from 'src/locales/en/analytics.json'
 import notificationsEN from 'src/locales/en/notifications.json'
 import qaEN from 'src/locales/en/qa.json'
 import importEN from 'src/locales/en/import.json'
+import shippingEN from 'src/locales/en/shipping.json'
+import paymentsEN from 'src/locales/en/payments.json'
 
 export const locales = {
   en: 'English',
@@ -63,6 +67,8 @@ export const resources = {
     notifications: notificationsVI,
     qa: qaVI,
     import: importVI,
+    shipping: shippingVI,
+    payments: paymentsVI,
   },
   en: {
     common: commonEN,
@@ -82,6 +88,8 @@ export const resources = {
     notifications: notificationsEN,
     qa: qaEN,
     import: importEN,
+    shipping: shippingEN,
+    payments: paymentsEN,
   },
 } as const
 

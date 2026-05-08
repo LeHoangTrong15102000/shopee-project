@@ -6,15 +6,16 @@ import {
   RefreshControl,
   ActivityIndicator,
   Dimensions,
+  Alert,
 } from 'react-native'
 import AppImage from '@/components/ui/AppImage'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useRouter } from 'expo-router'
-import { Heart, Star } from 'lucide-react-native'
+import { Heart, Star, Trash2 } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
 import { AppText, EmptyState } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
-import { useWishlist, useRemoveFromWishlist } from '@/hooks/useWishlist'
+import { useWishlist, useRemoveFromWishlist, useClearWishlist } from '@/hooks/useWishlist'
 import { formatPrice, getDiscountPercent } from '@/utils/price'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
 import { WishlistItem } from '@/apis/wishlist.api'
@@ -31,6 +32,7 @@ export default function WishlistScreen() {
   const { data, isLoading, isRefetching, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useWishlist()
   const { mutate: removeFromWishlist } = useRemoveFromWishlist()
+  const { mutate: clearWishlist, isPending: isClearing } = useClearWishlist()
 
   const allProducts = data?.pages.flatMap((p) => p.data.items) ?? []
 
@@ -38,6 +40,21 @@ export default function WishlistScreen() {
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage()
     }
+  }
+
+  const handleClearAll = () => {
+    Alert.alert(
+      t('wishlist.confirm.clearAll'),
+      t('wishlist.confirm.clearAllMessage'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('wishlist.button.clearAll'),
+          style: 'destructive',
+          onPress: () => clearWishlist(),
+        },
+      ]
+    )
   }
 
   const renderItem = useCallback(
@@ -158,6 +175,27 @@ export default function WishlistScreen() {
             }
             onEndReached={loadMore}
             onEndReachedThreshold={0.5}
+            ListHeaderComponent={
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'flex-end',
+                  paddingHorizontal: CARD_PADDING,
+                  paddingTop: 8,
+                }}>
+                <TouchableOpacity
+                  onPress={handleClearAll}
+                  disabled={isClearing}
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('wishlist.button.clearAll')}>
+                  <Trash2 size={16} color={colors.error} />
+                  <AppText raw variant="bodySmall" style={{ color: colors.error }}>
+                    {t('wishlist.button.clearAll')}
+                  </AppText>
+                </TouchableOpacity>
+              </View>
+            }
             ListFooterComponent={
               isFetchingNextPage ? (
                 <ActivityIndicator

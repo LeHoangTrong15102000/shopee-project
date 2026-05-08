@@ -1,5 +1,5 @@
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getWishlist, removeFromWishlist, type WishlistPage } from '@/apis/wishlist.api'
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { getWishlist, removeFromWishlist, getWishlistCount, clearWishlist, type WishlistPage } from '@/apis/wishlist.api'
 import type { InfiniteData } from '@tanstack/react-query'
 import { handleMutationError } from '@/utils/mutationErrorHandler'
 
@@ -11,6 +11,7 @@ type WishlistResponse = { message: string; data: WishlistPage }
 
 export const wishlistKeys = {
   all: () => ['wishlist-list'] as const,
+  count: () => ['wishlist-count'] as const,
 }
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
@@ -61,5 +62,25 @@ export function useRemoveFromWishlist() {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: wishlistKeys.all() })
     },
+  })
+}
+
+export function useWishlistCount() {
+  return useQuery({
+    queryKey: wishlistKeys.count(),
+    queryFn: getWishlistCount,
+    staleTime: 1000 * 60 * 5,
+  })
+}
+
+export function useClearWishlist() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: clearWishlist,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: wishlistKeys.all() })
+      queryClient.invalidateQueries({ queryKey: wishlistKeys.count() })
+    },
+    onError: handleMutationError,
   })
 }

@@ -122,6 +122,13 @@ export async function likeQuestion(questionId: string) {
   return res.data
 }
 
+export async function likeAnswer(questionId: string, answerId: string) {
+  const res = await http.post<ApiResponse<{ is_liked: boolean; likes_count: number }>>(
+    `qa/questions/${questionId}/answers/${answerId}/like`
+  )
+  return res.data
+}
+
 // ─── Purchase API ────────────────────────────────────────────────────────────
 
 export async function addToCart(body: { product_id: string; buy_count: number }) {

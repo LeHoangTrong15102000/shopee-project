@@ -8,7 +8,6 @@ import { AppText, Chip, EmptyState } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import {
   useAvailableVouchers,
-  useSavedVouchers,
   useCollectVoucher,
   usePersonalizedVouchers,
   useMyVouchers,
@@ -47,7 +46,6 @@ export default function VoucherScreen() {
 
   const { data: availableData, isLoading: isLoadingAvailable } = useAvailableVouchers()
   const { data: personalizedData, isLoading: isLoadingPersonalized } = usePersonalizedVouchers()
-  const { data: savedData, isLoading: isLoadingSaved } = useSavedVouchers()
   const { data: myVouchersData, isLoading: isLoadingMy } = useMyVouchers(savedFilter)
   const { mutate: collectVoucher } = useCollectVoucher()
   const { mutate: saveVoucher } = useSaveVoucher()
@@ -85,7 +83,7 @@ export default function VoucherScreen() {
       ? isLoadingAvailable
       : activeTab === 'personalized'
         ? isLoadingPersonalized
-        : isLoadingSaved || isLoadingMy
+        : isLoadingMy
 
   const vouchers: Voucher[] =
     activeTab === 'available'

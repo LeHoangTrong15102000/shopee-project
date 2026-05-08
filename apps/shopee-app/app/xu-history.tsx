@@ -18,14 +18,15 @@ type TabKey = 'history' | 'rewards'
 
 function XuTransactionItem({ item }: { item: XuTransaction }) {
   const colors = useColors()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   const amountColor =
     item.type === 'earned' ? colors.success : item.type === 'spent' ? colors.error : colors.neutrals400
   const amountPrefix = item.type === 'earned' ? '+' : '-'
   const absAmount = Math.abs(item.amount)
 
-  const formattedDate = new Date(item.date).toLocaleDateString('vi-VN', {
+  const locale = i18n.language === 'vi' ? 'vi-VN' : 'en-US'
+  const formattedDate = new Date(item.date).toLocaleDateString(locale, {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -89,7 +90,7 @@ function XuSkeletonList() {
 
 export default function XuHistoryScreen() {
   const colors = useColors()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { showSuccess } = useToast()
   const [activeTab, setActiveTab] = useState<TabKey>('history')
   const [redeemingId, setRedeemingId] = useState<string | null>(null)
@@ -147,10 +148,10 @@ export default function XuHistoryScreen() {
           {balance !== undefined && (
             <AppText
               raw
-              variant="heading"
+              variant="heading1"
               weight="bold"
               style={{ color: '#fff', fontSize: 32, marginTop: 4 }}>
-              {balance.toLocaleString('vi-VN')} Xu
+              {balance.toLocaleString(i18n.language === 'vi' ? 'vi-VN' : 'en-US')} Xu
             </AppText>
           )}
         </View>

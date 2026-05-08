@@ -74,7 +74,6 @@ export function useSaveVoucher() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: voucherKeys.saved() })
       queryClient.invalidateQueries({ queryKey: voucherKeys.available() })
-      queryClient.invalidateQueries({ queryKey: voucherKeys.personalized() })
     },
     onError: handleMutationError,
   })

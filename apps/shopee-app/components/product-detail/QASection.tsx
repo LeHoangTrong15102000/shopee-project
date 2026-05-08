@@ -13,6 +13,7 @@ interface QASectionProps {
   onAskQuestion: () => void
   onAnswerQuestion: (questionId: string) => void
   onToggleLike: (questionId: string) => void
+  onToggleLikeAnswer: (questionId: string, answerId: string) => void
 }
 
 export default function QASection({
@@ -22,6 +23,7 @@ export default function QASection({
   onAskQuestion,
   onAnswerQuestion,
   onToggleLike,
+  onToggleLikeAnswer,
 }: QASectionProps) {
   const colors = useColors()
   const { t } = useTranslation()
@@ -61,6 +63,7 @@ export default function QASection({
               question={question}
               onAnswer={onAnswerQuestion}
               onToggleLike={onToggleLike}
+              onToggleLikeAnswer={onToggleLikeAnswer}
             />
           ))}
           {hasNextPage && (

@@ -4,6 +4,7 @@ import { Heart, MapPin, Bell, Calendar, Tag, Coins, Store, HelpCircle, MessageCi
 import { useTranslation } from 'react-i18next'
 import { MenuList, AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
+import { useWishlistCount } from '@/hooks/useWishlist'
 
 interface UtilityMenuProps {
   onWishlist: () => void
@@ -30,6 +31,27 @@ export default function UtilityMenu({
 }: UtilityMenuProps) {
   const { t } = useTranslation()
   const colors = useColors()
+  const { data: wishlistCountData } = useWishlistCount()
+  const wishlistCount = wishlistCountData?.data?.count ?? 0
+
+  const wishlistBadge =
+    wishlistCount > 0 ? (
+      <View
+        style={{
+          backgroundColor: colors.primary,
+          borderRadius: 10,
+          minWidth: 20,
+          height: 20,
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingHorizontal: 5,
+          marginRight: 4,
+        }}>
+        <AppText raw variant="labelSmall" style={{ color: '#fff', fontSize: 11 }}>
+          {wishlistCount > 99 ? '99+' : wishlistCount}
+        </AppText>
+      </View>
+    ) : undefined
 
   const items = useMemo(() => [
     {
@@ -41,6 +63,7 @@ export default function UtilityMenu({
       title: t('account.menu.wishlist'),
       icon: () => <Heart size={20} color={colors.primary} />,
       onPress: onWishlist,
+      value: wishlistBadge,
     },
     {
       title: t('account.menu.addresses'),
@@ -77,7 +100,8 @@ export default function UtilityMenu({
       icon: () => <HelpCircle size={20} color={colors.foreground} />,
       onPress: onHelp,
     },
-  ], [t, colors.primary, colors.secondary, colors.warning, colors.success, colors.coin, colors.error, colors.foreground, onChat, onWishlist, onAddresses, onNotifications, onCheckin, onXuHistory, onVouchers, onFollowedShops, onHelp])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [t, colors.primary, colors.secondary, colors.warning, colors.success, colors.coin, colors.error, colors.foreground, onChat, onWishlist, onAddresses, onNotifications, onCheckin, onXuHistory, onVouchers, onFollowedShops, onHelp, wishlistBadge])
 
   return (
     <View className="px-4 py-4">

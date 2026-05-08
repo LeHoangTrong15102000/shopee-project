@@ -38,3 +38,13 @@ export async function removeFromWishlist(productId: string) {
   const res = await http.delete<ApiResponse<unknown>>(`wishlist/${productId}`)
   return res.data
 }
+
+export async function getWishlistCount() {
+  const res = await http.get<ApiResponse<{ count: number }>>('wishlist/count')
+  return res.data
+}
+
+export async function clearWishlist() {
+  const res = await http.delete<ApiResponse<unknown>>('wishlist')
+  return res.data
+}

@@ -228,7 +228,7 @@ export default function ReviewCard({ review, productId, onToggleLike }: ReviewCa
           className="flex-row items-center gap-1">
           <MessageCircle size={14} color={colors.neutrals400} />
           <AppText raw variant="labelSmall" color="muted">
-            {commentsOpen ? t('review.comments.toggle') : t('review.comments.toggle')}
+            {commentsOpen ? t('review.comments.hide') : t('review.comments.toggle')}
           </AppText>
         </TouchableOpacity>
       </View>

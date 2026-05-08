@@ -37,7 +37,8 @@ describe('QASection', () => {
         onLoadMore={jest.fn()}
         onAskQuestion={jest.fn()}
         onAnswerQuestion={jest.fn()}
-        onLikeQuestion={jest.fn()}
+        onToggleLike={jest.fn()}
+        onToggleLikeAnswer={jest.fn()}
       />
     )
     expect(getByText('PD_NO_QUESTIONS')).toBeTruthy()
@@ -51,7 +52,8 @@ describe('QASection', () => {
         onLoadMore={jest.fn()}
         onAskQuestion={jest.fn()}
         onAnswerQuestion={jest.fn()}
-        onLikeQuestion={jest.fn()}
+        onToggleLike={jest.fn()}
+        onToggleLikeAnswer={jest.fn()}
       />
     )
     expect(getByText('Is this product good?')).toBeTruthy()

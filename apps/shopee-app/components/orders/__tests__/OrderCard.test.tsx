@@ -25,6 +25,7 @@ function makeOrder(status: OrderStatusType): Order {
     status,
     items: [
       {
+        _id: 'item-001',
         product: {
           _id: 'p1',
           name: 'Test Product',

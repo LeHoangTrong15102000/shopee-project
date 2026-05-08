@@ -122,7 +122,7 @@ export default function OrderDetailScreen() {
                 </View>
                 {isDelivered && (
                   <OrderItemReviewButton
-                    purchaseId={order._id}
+                    purchaseId={item._id}
                     onPress={() =>
                       router.push({
                         pathname: '/write-review',

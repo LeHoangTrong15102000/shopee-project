@@ -496,7 +496,12 @@
   },
   "wishlist": {
     "button": {
-      "remove": "Remove from wishlist"
+      "remove": "Remove from wishlist",
+      "clearAll": "Clear All"
+    },
+    "confirm": {
+      "clearAll": "Clear Wishlist",
+      "clearAllMessage": "Are you sure you want to remove all items from your wishlist?"
     },
     "header": {
       "title": "Wishlist"
@@ -829,6 +834,7 @@
     },
     "comments": {
       "toggle": "Comments",
+      "hide": "Hide comments",
       "empty": "No comments yet",
       "inputPlaceholder": "Add a comment...",
       "submit": "Post"
@@ -867,6 +873,12 @@
       "starRating": "{{count}} stars",
       "removeImage": "Remove image",
       "addImage": "Add image"
+    }
+  },
+  "qa": {
+    "answer": {
+      "like": "Like",
+      "unlike": "Unlike"
     }
   }
 }

@@ -10,11 +10,12 @@ interface QuestionCardProps {
   question: Question
   onAnswer: (questionId: string) => void
   onToggleLike: (questionId: string) => void
+  onToggleLikeAnswer: (questionId: string, answerId: string) => void
 }
 
 const INITIAL_ANSWERS = 2
 
-export default function QuestionCard({ question, onAnswer, onToggleLike }: QuestionCardProps) {
+export default function QuestionCard({ question, onAnswer, onToggleLike, onToggleLikeAnswer }: QuestionCardProps) {
   const colors = useColors()
   const { t, i18n } = useTranslation()
   const [showAllAnswers, setShowAllAnswers] = useState(false)
@@ -102,6 +103,24 @@ export default function QuestionCard({ question, onAnswer, onToggleLike }: Quest
                 <AppText raw variant="bodySmall" color="muted">
                   {ans.answer}
                 </AppText>
+                {/* Answer like button */}
+                <TouchableOpacity
+                  onPress={() => onToggleLikeAnswer(question._id, ans._id)}
+                  accessibilityRole="button"
+                  accessibilityLabel={ans.is_liked ? t('qa.answer.unlike') : t('qa.answer.like')}
+                  accessibilityState={{ selected: ans.is_liked }}
+                  className="flex-row items-center gap-1 mt-1">
+                  <ThumbsUp
+                    size={12}
+                    color={ans.is_liked ? colors.primary : colors.neutrals400}
+                    fill={ans.is_liked ? colors.primary : 'transparent'}
+                  />
+                  {ans.likes_count > 0 && (
+                    <AppText raw variant="labelSmall" color="muted">
+                      {ans.likes_count}
+                    </AppText>
+                  )}
+                </TouchableOpacity>
               </View>
             </View>
           ))}

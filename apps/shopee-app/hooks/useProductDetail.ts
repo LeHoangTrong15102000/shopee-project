@@ -16,8 +16,10 @@ import {
   askQuestion as askQuestionApi,
   answerQuestion as answerQuestionApi,
   likeQuestion as likeQuestionApi,
+  likeAnswer as likeAnswerApi,
   type Review,
   type Question,
+  type Answer,
 } from '@/apis/product-detail.api'
 import { checkWishlist, addToWishlist, removeFromWishlist } from '@/apis/wishlist.api'
 import { createReview as createReviewApi } from '@/apis/review.api'
@@ -269,6 +271,58 @@ export function useLikeQuestion(productId: string) {
                         ...q,
                         is_liked: !q.is_liked,
                         likes_count: q.is_liked ? q.likes_count - 1 : q.likes_count + 1,
+                      }
+                    : q
+                ),
+              },
+            })),
+          }
+        }
+      )
+      return { previous }
+    },
+    onError: (error, _vars, context) => {
+      queryClient.setQueryData(['questions', productId], context?.previous)
+      handleMutationError(error)
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['questions', productId] })
+    },
+  })
+}
+
+export function useLikeAnswer(productId: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ questionId, answerId }: { questionId: string; answerId: string }) =>
+      likeAnswerApi(questionId, answerId),
+    onMutate: async ({ questionId, answerId }) => {
+      await queryClient.cancelQueries({ queryKey: ['questions', productId] })
+      const previous = queryClient.getQueryData(['questions', productId])
+      queryClient.setQueryData(
+        ['questions', productId],
+        (old: InfiniteData<QuestionsPage> | undefined) => {
+          if (!old?.pages) return old
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              data: {
+                ...page.data,
+                questions: page.data.questions.map((q: Question) =>
+                  q._id === questionId
+                    ? {
+                        ...q,
+                        answers: q.answers.map((a: Answer) =>
+                          a._id === answerId
+                            ? {
+                                ...a,
+                                is_liked: !a.is_liked,
+                                likes_count: a.is_liked ? a.likes_count - 1 : a.likes_count + 1,
+                              }
+                            : a
+                        ),
                       }
                     : q
                 ),

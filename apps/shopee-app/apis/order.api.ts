@@ -14,6 +14,7 @@ export interface OrderProduct {
 }
 
 export interface OrderItem {
+  _id: string
   product: OrderProduct
   buy_count: number
   price: number

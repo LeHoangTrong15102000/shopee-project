@@ -299,6 +299,12 @@
     "button": {
       "checkedIn": "Đã điểm danh hôm nay",
       "checkIn": "Điểm danh"
+    },
+    "history": {
+      "title": "Lịch sử điểm danh",
+      "empty": "Chưa có lịch sử điểm danh",
+      "xuEarned": "+{{amount}} Xu",
+      "streakDay": "Ngày {{day}}"
     }
   },
   "xuHistory": {
@@ -490,7 +496,12 @@
   },
   "wishlist": {
     "button": {
-      "remove": "Bỏ yêu thích"
+      "remove": "Bỏ yêu thích",
+      "clearAll": "Xóa tất cả"
+    },
+    "confirm": {
+      "clearAll": "Xóa danh sách yêu thích",
+      "clearAllMessage": "Bạn có chắc muốn xóa tất cả sản phẩm khỏi danh sách yêu thích?"
     },
     "header": {
       "title": "Yêu thích"
@@ -823,6 +834,7 @@
     },
     "comments": {
       "toggle": "Bình luận",
+      "hide": "Ẩn bình luận",
       "empty": "Chưa có bình luận nào",
       "inputPlaceholder": "Thêm bình luận...",
       "submit": "Đăng"
@@ -861,6 +873,12 @@
       "starRating": "{{count}} sao",
       "removeImage": "Xóa ảnh",
       "addImage": "Thêm ảnh"
+    }
+  },
+  "qa": {
+    "answer": {
+      "like": "Thích",
+      "unlike": "Bỏ thích"
     }
   }
 }

@@ -23,6 +23,7 @@ import {
   useAskQuestion,
   useAnswerQuestion,
   useLikeQuestion,
+  useLikeAnswer,
 } from '@/hooks/useProductDetail'
 import { useRecentlyViewedStore } from '@/store/recentlyViewedStore'
 
@@ -77,6 +78,7 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
   const askQuestion = useAskQuestion(productId)
   const answerQuestion = useAnswerQuestion(productId)
   const likeQuestion = useLikeQuestion(productId)
+  const likeAnswer = useLikeAnswer(productId)
 
   const product = productQuery.data?.data
   const isOutOfStock = product ? product.quantity <= 0 : false
@@ -277,6 +279,7 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
             onAskQuestion={() => questionFormRef.current?.present()}
             onAnswerQuestion={handleOpenAnswer}
             onToggleLike={(id) => likeQuestion.mutate(id)}
+            onToggleLikeAnswer={(questionId, answerId) => likeAnswer.mutate({ questionId, answerId })}
           />
 
           {relatedProducts.length > 0 && (

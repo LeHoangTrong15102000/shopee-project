@@ -6,7 +6,7 @@ export const paymentMethodSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
   description: z.string().max(500).optional().or(z.literal('')),
   icon: z.string().max(50).optional().or(z.literal('')),
-  type: z.enum(PAYMENT_TYPE_OPTIONS, { errorMap: () => ({ message: 'Type is required' }) }),
+  type: z.enum(PAYMENT_TYPE_OPTIONS, { error: 'Type is required' }),
   is_active: z.boolean().default(true),
   sort_order: z.coerce.number().int().min(0).default(0),
   instructions: z.string().max(1000).optional().or(z.literal('')),

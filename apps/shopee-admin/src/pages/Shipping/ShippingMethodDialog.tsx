@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
 import {
@@ -36,7 +36,7 @@ export default function ShippingMethodDialog({ open, method, onOpenChange }: Pro
     watch,
     formState: { errors },
   } = useForm<ShippingMethodFormValues>({
-    resolver: zodResolver(shippingMethodSchema),
+    resolver: zodResolver(shippingMethodSchema) as unknown as Resolver<ShippingMethodFormValues>,
     defaultValues: {
       name: '',
       description: '',

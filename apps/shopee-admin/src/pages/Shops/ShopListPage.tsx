@@ -211,7 +211,7 @@ export default function ShopListPage() {
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-xs"
         />
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
+        <Select value={statusFilter} onValueChange={(val) => val !== null && setStatusFilter(val)}>
           <SelectTrigger className="w-40" aria-label={t('filters.status')}>
             <SelectValue placeholder={t('filters.status')} />
           </SelectTrigger>
@@ -224,7 +224,7 @@ export default function ShopListPage() {
             ))}
           </SelectContent>
         </Select>
-        <Select value={sortBy} onValueChange={setSortBy}>
+        <Select value={sortBy} onValueChange={(val) => val !== null && setSortBy(val)}>
           <SelectTrigger className="w-48" aria-label={t('filters.sortBy')}>
             <SelectValue placeholder={t('filters.sortBy')} />
           </SelectTrigger>
@@ -242,8 +242,9 @@ export default function ShopListPage() {
         isLoading={isLoading}
         pageIndex={page}
         pageCount={data?.pagination.totalPages ?? 1}
-        onPageChange={setPage}
+        onPaginationChange={(page) => setPage(page)}
         totalRows={data?.pagination.total ?? 0}
+        manualPagination
       />
 
       <Dialog

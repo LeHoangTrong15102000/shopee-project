@@ -236,12 +236,13 @@ export default function ShopDetailPage() {
             <TabsContent value="products" className="mt-4">
               <DataTable
                 columns={productColumns}
-                data={(products as { data: Product[] })?.data ?? []}
+                data={products?.items ?? []}
                 isLoading={loadingProducts}
                 pageIndex={productsPage}
-                pageCount={(products as { pagination?: { totalPages: number } })?.pagination?.totalPages ?? 1}
-                onPageChange={setProductsPage}
-                totalRows={(products as { pagination?: { total: number } })?.pagination?.total ?? 0}
+                pageCount={products?.pagination.total_pages ?? 1}
+                onPaginationChange={(page) => setProductsPage(page)}
+                totalRows={products?.pagination.total ?? 0}
+                manualPagination
               />
             </TabsContent>
 
@@ -249,7 +250,7 @@ export default function ShopDetailPage() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle className="text-base">{t('detail.revenue.title')}</CardTitle>
-                  <Select value={revenuePeriod} onValueChange={setRevenuePeriod}>
+                  <Select value={revenuePeriod} onValueChange={(val) => val !== null && setRevenuePeriod(val)}>
                     <SelectTrigger className="w-32">
                       <SelectValue />
                     </SelectTrigger>

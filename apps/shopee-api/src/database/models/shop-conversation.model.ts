@@ -12,6 +12,8 @@ export interface IShopConversation {
   shopId: mongoose.Types.ObjectId
   lastMessage?: IShopConversationLastMessage
   unreadCount: number
+  flagged: boolean
+  flag_reason?: string
   updatedAt: Date
   createdAt: Date
 }
@@ -36,6 +38,8 @@ const ShopConversationSchema = new Schema<IShopConversation>(
       createdAt: { type: Date },
     },
     unreadCount: { type: Number, default: 0 },
+    flagged: { type: Boolean, default: false, index: true },
+    flag_reason: { type: String, maxlength: 500 },
   },
   { timestamps: true },
 )

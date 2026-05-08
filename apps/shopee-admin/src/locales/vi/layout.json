@@ -29,7 +29,9 @@
     "checkin": "Check-in",
     "shops": "Cửa hàng",
     "systemHealth": "Sức khỏe hệ thống",
-    "searchAnalytics": "Phân tích tìm kiếm"
+    "searchAnalytics": "Phân tích tìm kiếm",
+    "wishlistAnalytics": "Phân tích Wishlist",
+    "shopChat": "Chat cửa hàng"
   },
   "header": {
     "settings": "Cài đặt",

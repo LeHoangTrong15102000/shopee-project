@@ -46,6 +46,11 @@ export const ROUTES = {
   SYSTEM_HEALTH: '/system-health',
 
   SEARCH_ANALYTICS: '/search-analytics',
+
+  WISHLIST_ANALYTICS: '/wishlist-analytics',
+
+  SHOP_CHAT: '/shop-chat',
+  SHOP_CHAT_DETAIL: '/shop-chat/:id',
 } as const
 
 export type RouteKey = keyof typeof ROUTES

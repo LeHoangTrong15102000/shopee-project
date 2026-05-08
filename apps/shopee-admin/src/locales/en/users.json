@@ -51,11 +51,12 @@
     "addresses": "Addresses",
     "addressesColumns": {
       "street": "Street",
-      "city": "City",
-      "country": "Country",
+      "province": "Province",
       "default": "Default"
     },
-    "addressesEmpty": "No addresses on file."
+    "addressesEmpty": "No addresses on file.",
+    "addressesLoading": "Loading addresses...",
+    "addressesDefault": "Default"
   },
   "toast": {
     "deleteTitle": "Delete User",

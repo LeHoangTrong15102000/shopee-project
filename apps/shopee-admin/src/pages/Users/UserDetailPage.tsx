@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { type ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, MapPin } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from 'src/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card'
@@ -20,6 +20,7 @@ import ordersApi from 'src/apis/orders.api'
 import reviewsApi from 'src/apis/reviews.api'
 import loyaltyApi from 'src/apis/loyalty.api'
 import type { Order, Review, LoyaltyTransaction } from 'src/types'
+import type { Address } from 'src/types/address.types'
 
 export default function UserDetailPage() {
   const { t } = useTranslation('users')
@@ -55,6 +56,13 @@ export default function UserDetailPage() {
     queryFn: () => loyaltyApi.getTransactions({ user_id: id, limit: 50 }).then((r) => r.data.data),
     enabled: !!id && activeTab === 'loyalty',
   })
+
+  const { data: addressesData, isLoading: addressesLoading } = useQuery({
+    queryKey: ['admin-user-addresses', id],
+    queryFn: () => usersApi.getUserAddresses(id!).then((r) => r.data.data),
+    enabled: !!id && activeTab === 'addresses',
+  })
+
   const orderColumns: ColumnDef<Order>[] = [
     {
       accessorKey: '_id',
@@ -229,53 +237,67 @@ export default function UserDetailPage() {
           />
         </TabsContent>
         <TabsContent value="addresses">
-          {(() => {
-            const userAny = user as unknown as Record<string, unknown>
-            const addressesArr = Array.isArray(userAny.addresses)
-              ? (userAny.addresses as Array<Record<string, string>>)
-              : null
-            if (addressesArr && addressesArr.length > 0) {
-              return (
-                <div className="rounded border">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b bg-muted/50">
-                        <th className="px-4 py-2 text-left font-medium">{t('detail.addressesColumns.street')}</th>
-                        <th className="px-4 py-2 text-left font-medium">{t('detail.addressesColumns.city')}</th>
-                        <th className="px-4 py-2 text-left font-medium">{t('detail.addressesColumns.country')}</th>
-                        <th className="px-4 py-2 text-left font-medium">{t('detail.addressesColumns.default')}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {addressesArr.map((addr, i) => (
-                        <tr key={i} className="border-b last:border-0">
-                          <td className="px-4 py-2">{addr.street ?? addr.address ?? '—'}</td>
-                          <td className="px-4 py-2">{addr.city ?? '—'}</td>
-                          <td className="px-4 py-2">{addr.country ?? '—'}</td>
-                          <td className="px-4 py-2">{addr.is_default ? '✓' : ''}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )
-            }
-            if (user.address) {
-              return (
-                <div className="rounded border p-4 text-sm">
-                  <p className="text-muted-foreground text-xs mb-1">{t('detail.address')}</p>
-                  <p>{user.address}</p>
-                </div>
-              )
-            }
-            return (
-              <p className="py-8 text-center text-sm text-muted-foreground">
-                {t('detail.addressesEmpty')}
-              </p>
-            )
-          })()}
+          <AddressesTab
+            addresses={addressesData?.addresses ?? []}
+            isLoading={addressesLoading}
+            t={t}
+          />
         </TabsContent>
       </Tabs>
+    </div>
+  )
+}
+
+function AddressesTab({
+  addresses,
+  isLoading,
+  t,
+}: {
+  addresses: Address[]
+  isLoading: boolean
+  t: (key: string) => string
+}) {
+  if (isLoading) {
+    return (
+      <div className="py-8 text-center text-sm text-muted-foreground">
+        {t('detail.addressesLoading')}
+      </div>
+    )
+  }
+
+  if (addresses.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-2 py-12 text-center">
+        <MapPin className="size-8 text-muted-foreground/50" aria-hidden="true" />
+        <p className="text-sm text-muted-foreground">{t('detail.addressesEmpty')}</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 pt-2">
+      {addresses.map((addr) => (
+        <Card key={addr._id} className={addr.is_default ? 'border-primary' : ''}>
+          <CardHeader className="pb-2 pt-4 px-4">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium">{addr.full_name}</CardTitle>
+              {addr.is_default && (
+                <Badge variant="default" className="text-xs">
+                  {t('detail.addressesDefault')}
+                </Badge>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="px-4 pb-4 text-sm text-muted-foreground space-y-1">
+            <p>{addr.phone}</p>
+            <p>{addr.street}</p>
+            <p>
+              {addr.ward}, {addr.district}
+            </p>
+            <p>{addr.province}</p>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   )
 }

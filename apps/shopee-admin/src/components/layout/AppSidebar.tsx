@@ -25,6 +25,8 @@ import {
   Store,
   Activity,
   Search,
+  Heart,
+  MessagesSquare,
 } from 'lucide-react'
 import { ROUTES } from 'src/constants/routes'
 import {
@@ -66,6 +68,7 @@ const navSections = [
       { titleKey: 'menu.inventory', href: ROUTES.INVENTORY, icon: Warehouse },
       { titleKey: 'menu.analytics', href: ROUTES.ANALYTICS, icon: BarChart3 },
       { titleKey: 'menu.searchAnalytics', href: ROUTES.SEARCH_ANALYTICS, icon: Search },
+      { titleKey: 'menu.wishlistAnalytics', href: ROUTES.WISHLIST_ANALYTICS, icon: Heart },
     ],
   },
   {
@@ -74,6 +77,7 @@ const navSections = [
       { titleKey: 'menu.notifications', href: ROUTES.NOTIFICATIONS, icon: Bell },
       { titleKey: 'menu.qa', href: ROUTES.QA, icon: HelpCircle },
       { titleKey: 'menu.conversations', href: ROUTES.CONVERSATIONS, icon: MessageSquare },
+      { titleKey: 'menu.shopChat', href: ROUTES.SHOP_CHAT, icon: MessagesSquare },
       { titleKey: 'menu.import', href: ROUTES.IMPORT, icon: Upload },
       { titleKey: 'menu.settings', href: ROUTES.SETTINGS, icon: Settings },
       { titleKey: 'menu.shippingMethods', href: ROUTES.SHIPPING_METHODS, icon: Truck },
@@ -108,6 +112,8 @@ const routePrefetchMap: Record<string, () => Promise<unknown>> = {
   [ROUTES.SHOPS]: () => import('src/pages/Shops/ShopListPage'),
   [ROUTES.SYSTEM_HEALTH]: () => import('src/pages/SystemHealth/SystemHealthPage'),
   [ROUTES.SEARCH_ANALYTICS]: () => import('src/pages/SearchAnalytics/SearchAnalyticsPage'),
+  [ROUTES.WISHLIST_ANALYTICS]: () => import('src/pages/WishlistAnalytics/WishlistAnalyticsPage'),
+  [ROUTES.SHOP_CHAT]: () => import('src/pages/ShopChat/ShopChatListPage'),
 }
 
 const prefetchedRoutes = new Set<string>()

@@ -29,7 +29,9 @@
     "checkin": "Check-in",
     "shops": "Shops",
     "systemHealth": "System Health",
-    "searchAnalytics": "Search Analytics"
+    "searchAnalytics": "Search Analytics",
+    "wishlistAnalytics": "Wishlist Analytics",
+    "shopChat": "Shop Chat"
   },
   "header": {
     "settings": "Settings",

@@ -39,6 +39,9 @@ const ShopListPage = lazy(() => import('src/pages/Shops/ShopListPage'))
 const ShopDetailPage = lazy(() => import('src/pages/Shops/ShopDetailPage'))
 const SystemHealthPage = lazy(() => import('src/pages/SystemHealth/SystemHealthPage'))
 const SearchAnalyticsPage = lazy(() => import('src/pages/SearchAnalytics/SearchAnalyticsPage'))
+const WishlistAnalyticsPage = lazy(() => import('src/pages/WishlistAnalytics/WishlistAnalyticsPage'))
+const ShopChatListPage = lazy(() => import('src/pages/ShopChat/ShopChatListPage'))
+const ShopChatDetailPage = lazy(() => import('src/pages/ShopChat/ShopChatDetailPage'))
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
@@ -299,6 +302,30 @@ const protectedRoutes: RouteObject[] = [
     element: (
       <SuspenseWrapper>
         <SearchAnalyticsPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: ROUTES.WISHLIST_ANALYTICS.slice(1),
+    element: (
+      <SuspenseWrapper>
+        <WishlistAnalyticsPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: ROUTES.SHOP_CHAT.slice(1),
+    element: (
+      <SuspenseWrapper>
+        <ShopChatListPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: ROUTES.SHOP_CHAT_DETAIL.slice(1),
+    element: (
+      <SuspenseWrapper>
+        <ShopChatDetailPage />
       </SuspenseWrapper>
     ),
   },

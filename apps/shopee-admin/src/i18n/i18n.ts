@@ -24,6 +24,8 @@ import paymentsVI from 'src/locales/vi/payments.json'
 import shopsVI from 'src/locales/vi/shops.json'
 import systemHealthVI from 'src/locales/vi/system-health.json'
 import searchAnalyticsVI from 'src/locales/vi/search-analytics.json'
+import wishlistAnalyticsVI from 'src/locales/vi/wishlist-analytics.json'
+import shopChatVI from 'src/locales/vi/shop-chat.json'
 
 // English — eagerly loaded (admin app is small, no need for lazy loading)
 import commonEN from 'src/locales/en/common.json'
@@ -48,6 +50,8 @@ import paymentsEN from 'src/locales/en/payments.json'
 import shopsEN from 'src/locales/en/shops.json'
 import systemHealthEN from 'src/locales/en/system-health.json'
 import searchAnalyticsEN from 'src/locales/en/search-analytics.json'
+import wishlistAnalyticsEN from 'src/locales/en/wishlist-analytics.json'
+import shopChatEN from 'src/locales/en/shop-chat.json'
 
 export const locales = {
   en: 'English',
@@ -78,6 +82,8 @@ export const resources = {
     shops: shopsVI,
     'system-health': systemHealthVI,
     'search-analytics': searchAnalyticsVI,
+    'wishlist-analytics': wishlistAnalyticsVI,
+    'shop-chat': shopChatVI,
   },
   en: {
     common: commonEN,
@@ -102,6 +108,8 @@ export const resources = {
     shops: shopsEN,
     'system-health': systemHealthEN,
     'search-analytics': searchAnalyticsEN,
+    'wishlist-analytics': wishlistAnalyticsEN,
+    'shop-chat': shopChatEN,
   },
 } as const
 

@@ -1,0 +1,45 @@
+{
+  "title": "Wishlist Analytics",
+  "description": "Insights into product wishlisting behavior and conversion",
+  "error": "Failed to load wishlist analytics",
+  "period": {
+    "7d": "7d",
+    "30d": "30d",
+    "90d": "90d",
+    "all": "All"
+  },
+  "stats": {
+    "totalWishlisted": "Total Wishlisted",
+    "uniqueProducts": "Unique Products",
+    "avgConversion": "Avg. Conversion Rate"
+  },
+  "alerts": {
+    "lowStockTitle": "High Demand, Low Stock",
+    "lowStockDescription": "Products with more than 10 wishlists but fewer than 5 units in stock",
+    "wishlists": "{{count}} wishlists",
+    "stock": "{{count}} left"
+  },
+  "trends": {
+    "title": "Daily Wishlist Additions",
+    "description": "Number of products added to wishlists per day",
+    "additions": "Additions"
+  },
+  "topProducts": {
+    "title": "Top Wishlisted Products",
+    "description": "Most wishlisted products in the selected period",
+    "rank": "#",
+    "product": "Product",
+    "wishlists": "Wishlists",
+    "stock": "Stock",
+    "noData": "No wishlist data available."
+  },
+  "conversion": {
+    "title": "Conversion Insights",
+    "description": "Wishlist-to-purchase conversion rates by product",
+    "product": "Product",
+    "wishlists": "Wishlists",
+    "purchases": "Purchases",
+    "rate": "Rate",
+    "noData": "No conversion data available."
+  }
+}

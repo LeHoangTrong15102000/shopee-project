@@ -1,0 +1,48 @@
+{
+  "title": "Giám sát Chat Cửa hàng",
+  "description": "Theo dõi và kiểm duyệt cuộc trò chuyện giữa cửa hàng và người dùng",
+  "error": "Không thể tải danh sách cuộc trò chuyện",
+  "flagged": "Đã gắn cờ",
+  "noMessages": "Không có tin nhắn",
+  "columns": {
+    "shop": "Cửa hàng",
+    "user": "Người dùng",
+    "lastMessage": "Tin nhắn cuối",
+    "messageCount": "Tin nhắn",
+    "lastActivity": "Hoạt động cuối",
+    "flagged": "Cờ"
+  },
+  "filter": {
+    "shopSearch": "Tìm theo ID cửa hàng...",
+    "userSearch": "Tìm theo ID người dùng...",
+    "dateFrom": "Từ ngày",
+    "dateTo": "Đến ngày",
+    "flaggedOnly": "Chỉ hiện đã gắn cờ"
+  },
+  "actions": {
+    "view": "Xem cuộc trò chuyện",
+    "flag": "Gắn cờ cuộc trò chuyện",
+    "unflag": "Bỏ gắn cờ"
+  },
+  "flagDialog": {
+    "flagTitle": "Gắn cờ cuộc trò chuyện",
+    "unflagTitle": "Bỏ gắn cờ cuộc trò chuyện",
+    "reason": "Lý do",
+    "reasonPlaceholder": "Mô tả lý do gắn cờ cuộc trò chuyện này...",
+    "flagConfirm": "Gắn cờ",
+    "unflagConfirm": "Bỏ gắn cờ",
+    "cancel": "Hủy"
+  },
+  "detail": {
+    "title": "Cuộc trò chuyện #{{id}}",
+    "backToList": "Quay lại danh sách",
+    "shop": "Cửa hàng",
+    "user": "Người dùng",
+    "messageCount": "Tin nhắn",
+    "status": "Trạng thái",
+    "normal": "Bình thường",
+    "flagReason": "Lý do gắn cờ",
+    "messages": "Luồng tin nhắn",
+    "error": "Không thể tải cuộc trò chuyện"
+  }
+}

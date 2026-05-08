@@ -1,0 +1,45 @@
+{
+  "title": "Phân tích Wishlist",
+  "description": "Thông tin về hành vi thêm vào danh sách yêu thích và tỷ lệ chuyển đổi",
+  "error": "Không thể tải dữ liệu phân tích wishlist",
+  "period": {
+    "7d": "7 ngày",
+    "30d": "30 ngày",
+    "90d": "90 ngày",
+    "all": "Tất cả"
+  },
+  "stats": {
+    "totalWishlisted": "Tổng lượt thêm",
+    "uniqueProducts": "Sản phẩm duy nhất",
+    "avgConversion": "Tỷ lệ chuyển đổi TB"
+  },
+  "alerts": {
+    "lowStockTitle": "Nhu cầu cao, tồn kho thấp",
+    "lowStockDescription": "Sản phẩm có hơn 10 lượt thêm wishlist nhưng còn dưới 5 đơn vị trong kho",
+    "wishlists": "{{count}} lượt thêm",
+    "stock": "Còn {{count}}"
+  },
+  "trends": {
+    "title": "Lượt thêm Wishlist theo ngày",
+    "description": "Số sản phẩm được thêm vào danh sách yêu thích mỗi ngày",
+    "additions": "Lượt thêm"
+  },
+  "topProducts": {
+    "title": "Sản phẩm được thêm nhiều nhất",
+    "description": "Sản phẩm được thêm vào wishlist nhiều nhất trong kỳ đã chọn",
+    "rank": "#",
+    "product": "Sản phẩm",
+    "wishlists": "Wishlist",
+    "stock": "Tồn kho",
+    "noData": "Không có dữ liệu wishlist."
+  },
+  "conversion": {
+    "title": "Thông tin chuyển đổi",
+    "description": "Tỷ lệ chuyển đổi từ wishlist sang mua hàng theo sản phẩm",
+    "product": "Sản phẩm",
+    "wishlists": "Wishlist",
+    "purchases": "Mua hàng",
+    "rate": "Tỷ lệ",
+    "noData": "Không có dữ liệu chuyển đổi."
+  }
+}

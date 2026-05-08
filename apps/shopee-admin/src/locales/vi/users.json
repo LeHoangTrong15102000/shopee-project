@@ -51,11 +51,12 @@
     "addresses": "Địa chỉ",
     "addressesColumns": {
       "street": "Đường",
-      "city": "Thành phố",
-      "country": "Quốc gia",
+      "province": "Tỉnh/Thành phố",
       "default": "Mặc định"
     },
-    "addressesEmpty": "Không có địa chỉ nào."
+    "addressesEmpty": "Không có địa chỉ nào.",
+    "addressesLoading": "Đang tải địa chỉ...",
+    "addressesDefault": "Mặc định"
   },
   "toast": {
     "deleteTitle": "Xóa người dùng",

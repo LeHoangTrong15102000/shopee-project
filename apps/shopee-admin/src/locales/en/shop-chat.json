@@ -1,0 +1,48 @@
+{
+  "title": "Shop Chat Monitoring",
+  "description": "Monitor and moderate shop-user conversations",
+  "error": "Failed to load conversations",
+  "flagged": "Flagged",
+  "noMessages": "No messages",
+  "columns": {
+    "shop": "Shop",
+    "user": "User",
+    "lastMessage": "Last Message",
+    "messageCount": "Messages",
+    "lastActivity": "Last Activity",
+    "flagged": "Flag"
+  },
+  "filter": {
+    "shopSearch": "Search by shop ID...",
+    "userSearch": "Search by user ID...",
+    "dateFrom": "From date",
+    "dateTo": "To date",
+    "flaggedOnly": "Flagged only"
+  },
+  "actions": {
+    "view": "View conversation",
+    "flag": "Flag conversation",
+    "unflag": "Unflag conversation"
+  },
+  "flagDialog": {
+    "flagTitle": "Flag Conversation",
+    "unflagTitle": "Unflag Conversation",
+    "reason": "Reason",
+    "reasonPlaceholder": "Describe why this conversation is being flagged...",
+    "flagConfirm": "Flag",
+    "unflagConfirm": "Unflag",
+    "cancel": "Cancel"
+  },
+  "detail": {
+    "title": "Conversation #{{id}}",
+    "backToList": "Back to List",
+    "shop": "Shop",
+    "user": "User",
+    "messageCount": "Messages",
+    "status": "Status",
+    "normal": "Normal",
+    "flagReason": "Flag reason",
+    "messages": "Message Thread",
+    "error": "Failed to load conversation"
+  }
+}

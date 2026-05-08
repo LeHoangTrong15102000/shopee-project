@@ -34,6 +34,10 @@ const WishlistSchema = new Schema<IWishlist>(
 // Compound unique index: mỗi user chỉ có thể thêm 1 product 1 lần
 WishlistSchema.index({ user: 1, product: 1 }, { unique: true })
 
+// Analytics indexes: support aggregation queries on product and addedAt
+WishlistSchema.index({ product: 1, addedAt: -1 })
+WishlistSchema.index({ addedAt: 1 })
+
 export const WishlistModel = mongoose.model<IWishlist>('wishlists', WishlistSchema)
 
 export { IWishlist }

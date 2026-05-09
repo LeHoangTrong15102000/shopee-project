@@ -144,7 +144,9 @@
       "xu_history": "Lịch sử Xu",
       "vouchers": "Voucher của tôi",
       "followedShops": "Shop đã theo dõi",
-      "help": "Trợ giúp"
+      "help": "Trợ giúp",
+      "aiAssistant": "Trợ lý AI",
+      "priceAlerts": "Cảnh báo giá"
     },
     "settings": {
       "darkMode": "Giao diện tối",
@@ -879,6 +881,64 @@
     "answer": {
       "like": "Thích",
       "unlike": "Bỏ thích"
+    }
+  },
+  "aiChat": {
+    "header": {
+      "title": "Trợ lý AI",
+      "newChat": "Cuộc trò chuyện mới"
+    },
+    "chat": {
+      "inputPlaceholder": "Hỏi tôi bất cứ điều gì...",
+      "send": "Gửi",
+      "emptyTitle": "Bắt đầu cuộc trò chuyện",
+      "emptySubtitle": "Hỏi trợ lý AI bất cứ điều gì",
+      "copySuccess": "Đã sao chép vào clipboard",
+      "errorResponse": "Không thể nhận phản hồi",
+      "editTitle": "Chỉnh sửa tiêu đề cuộc trò chuyện"
+    },
+    "list": {
+      "deleteAction": "Xóa",
+      "emptyTitle": "Chưa có cuộc trò chuyện nào",
+      "emptySubtitle": "Bắt đầu cuộc trò chuyện mới với trợ lý AI"
+    }
+  },
+  "priceHistory": {
+    "title": "Lịch sử giá",
+    "high": "Cao",
+    "avg": "TB",
+    "low": "Thấp",
+    "noData": "Không có lịch sử giá"
+  },
+  "priceAlerts": {
+    "header": {
+      "title": "Cảnh báo giá"
+    },
+    "status": {
+      "active": "Đang hoạt động",
+      "triggered": "Đã kích hoạt"
+    },
+    "button": {
+      "setAlert": "Đặt cảnh báo giá",
+      "removeAlert": "Xóa cảnh báo",
+      "confirm": "Xác nhận"
+    },
+    "sheet": {
+      "title": "Đặt cảnh báo giá",
+      "existingAlert": "Bạn đã đặt cảnh báo tại:",
+      "targetPrice": "Giá mục tiêu",
+      "targetPricePlaceholder": "Nhập giá mục tiêu (vd: 150000)",
+      "validation": {
+        "required": "Vui lòng nhập giá mục tiêu",
+        "positive": "Giá mục tiêu phải là số dương"
+      }
+    },
+    "list": {
+      "emptyTitle": "Chưa có cảnh báo giá nào",
+      "emptySubtitle": "Đặt cảnh báo trên sản phẩm để được thông báo khi giá giảm",
+      "deleteAction": "Xóa",
+      "currentPrice": "Hiện tại",
+      "targetPrice": "Mục tiêu"
     }
   }
 }

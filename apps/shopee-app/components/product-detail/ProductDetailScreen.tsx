@@ -40,6 +40,8 @@ import QASection from './QASection'
 import QuestionForm from './QuestionForm'
 import RelatedProducts from './RelatedProducts'
 import ShopSummaryCard from './ShopSummaryCard'
+import PriceHistoryChart from './PriceHistoryChart'
+import PriceAlertButton from './PriceAlertButton'
 
 interface ProductDetailScreenProps {
   productId: string
@@ -258,6 +260,11 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
           {product.shopSummary && (
             <ShopSummaryCard shopSummary={product.shopSummary} />
           )}
+
+          <View style={{ height: 8, backgroundColor: colors.neutrals800 }} />
+
+          <PriceHistoryChart productId={productId} />
+          <PriceAlertButton productId={productId} />
 
           <View style={{ height: 8, backgroundColor: colors.neutrals800 }} />
 

@@ -144,7 +144,9 @@
       "xu_history": "Xu History",
       "vouchers": "My Vouchers",
       "followedShops": "Followed Shops",
-      "help": "Help"
+      "help": "Help",
+      "aiAssistant": "AI Assistant",
+      "priceAlerts": "Price Alerts"
     },
     "settings": {
       "darkMode": "Dark Mode",
@@ -879,6 +881,64 @@
     "answer": {
       "like": "Like",
       "unlike": "Unlike"
+    }
+  },
+  "aiChat": {
+    "header": {
+      "title": "AI Assistant",
+      "newChat": "New Chat"
+    },
+    "chat": {
+      "inputPlaceholder": "Ask me anything...",
+      "send": "Send",
+      "emptyTitle": "Start a conversation",
+      "emptySubtitle": "Ask the AI assistant anything",
+      "copySuccess": "Copied to clipboard",
+      "errorResponse": "Failed to get a response",
+      "editTitle": "Edit conversation title"
+    },
+    "list": {
+      "deleteAction": "Delete",
+      "emptyTitle": "No conversations yet",
+      "emptySubtitle": "Start a new chat with the AI assistant"
+    }
+  },
+  "priceHistory": {
+    "title": "Price History",
+    "high": "High",
+    "avg": "Avg",
+    "low": "Low",
+    "noData": "No price history available"
+  },
+  "priceAlerts": {
+    "header": {
+      "title": "Price Alerts"
+    },
+    "status": {
+      "active": "Active",
+      "triggered": "Triggered"
+    },
+    "button": {
+      "setAlert": "Set Price Alert",
+      "removeAlert": "Remove Alert",
+      "confirm": "Confirm"
+    },
+    "sheet": {
+      "title": "Set Price Alert",
+      "existingAlert": "You have an alert set at:",
+      "targetPrice": "Target Price",
+      "targetPricePlaceholder": "Enter target price (e.g. 150000)",
+      "validation": {
+        "required": "Target price is required",
+        "positive": "Target price must be a positive number"
+      }
+    },
+    "list": {
+      "emptyTitle": "No price alerts yet",
+      "emptySubtitle": "Set alerts on products to get notified when prices drop",
+      "deleteAction": "Delete",
+      "currentPrice": "Current",
+      "targetPrice": "Target"
     }
   }
 }

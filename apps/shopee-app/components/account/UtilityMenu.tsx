@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { View } from 'react-native'
-import { Heart, MapPin, Bell, Calendar, Tag, Coins, Store, HelpCircle, MessageCircle } from 'lucide-react-native'
+import { Heart, MapPin, Bell, Calendar, Tag, Coins, Store, HelpCircle, MessageCircle, Bot, BellDot } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
 import { MenuList, AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
@@ -16,6 +16,8 @@ interface UtilityMenuProps {
   onFollowedShops: () => void
   onHelp: () => void
   onChat: () => void
+  onAiAssistant: () => void
+  onPriceAlerts: () => void
 }
 
 export default function UtilityMenu({
@@ -28,6 +30,8 @@ export default function UtilityMenu({
   onFollowedShops,
   onHelp,
   onChat,
+  onAiAssistant,
+  onPriceAlerts,
 }: UtilityMenuProps) {
   const { t } = useTranslation()
   const colors = useColors()
@@ -100,8 +104,18 @@ export default function UtilityMenu({
       icon: () => <HelpCircle size={20} color={colors.foreground} />,
       onPress: onHelp,
     },
+    {
+      title: t('account.menu.aiAssistant'),
+      icon: () => <Bot size={20} color={colors.primary} />,
+      onPress: onAiAssistant,
+    },
+    {
+      title: t('account.menu.priceAlerts'),
+      icon: () => <BellDot size={20} color={colors.warning} />,
+      onPress: onPriceAlerts,
+    },
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  ], [t, colors.primary, colors.secondary, colors.warning, colors.success, colors.coin, colors.error, colors.foreground, onChat, onWishlist, onAddresses, onNotifications, onCheckin, onXuHistory, onVouchers, onFollowedShops, onHelp, wishlistBadge])
+  ], [t, colors.primary, colors.secondary, colors.warning, colors.success, colors.coin, colors.error, colors.foreground, onChat, onWishlist, onAddresses, onNotifications, onCheckin, onXuHistory, onVouchers, onFollowedShops, onHelp, onAiAssistant, onPriceAlerts, wishlistBadge])
 
   return (
     <View className="px-4 py-4">

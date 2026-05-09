@@ -72,6 +72,8 @@ export default function AccountScreen() {
           onXuHistory={() => router.push('/xu-history')}
           onFollowedShops={() => router.push('/followed-shops')}
           onHelp={() => router.push('/help')}
+          onAiAssistant={() => router.push('/ai-chat')}
+          onPriceAlerts={() => router.push('/price-alerts')}
         />
 
         <SettingsMenu

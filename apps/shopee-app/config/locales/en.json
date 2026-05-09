@@ -36,6 +36,7 @@
   "AUTH_HAS_ACCOUNT": "Already have an account?",
   "AUTH_SIGN_IN_LINK": "Sign In",
   "AUTH_GOOGLE_SIGN_IN": "Sign in with Google",
+  "AUTH_GOOGLE_ERROR": "Google sign-in failed",
   "AUTH_COMING_SOON": "Coming soon",
   "AUTH_LOGIN_SUCCESS": "Login successful",
   "AUTH_REGISTER_SUCCESS": "Registration successful",
@@ -203,9 +204,11 @@
     }
   },
   "live": {
-    "comingSoon": {
-      "message": "Feature under development, coming soon!"
-    }
+    "title": "Shopee Live",
+    "empty": "No live streams right now",
+    "watching": "watching",
+    "likes": "likes",
+    "featuredProducts": "Featured Products"
   },
   "addresses": {
     "dialog": {
@@ -747,7 +750,19 @@
     },
     "privacy": {
       "title": "Privacy",
-      "comingSoon": "This feature is coming soon!"
+      "profile": "Profile",
+      "profileVisibility": "Profile visibility",
+      "profileVisibility.public": "Public",
+      "profileVisibility.friendsOnly": "Friends only",
+      "profileVisibility.private": "Private",
+      "activity": "Activity",
+      "showOnlineStatus": "Show online status",
+      "showPurchaseHistory": "Show purchase history to followers",
+      "messaging": "Messaging",
+      "allowShopChat": "Allow shop chat",
+      "data": "Data",
+      "dataPersonalization": "Data & personalization",
+      "dataComingSoon": "Data & personalization settings coming soon"
     }
   },
   "help": {

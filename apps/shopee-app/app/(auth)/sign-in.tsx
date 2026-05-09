@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
   AccessibilityInfo,
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -11,6 +12,9 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { useRouter } from 'expo-router'
 import Animated, { FadeInDown } from 'react-native-reanimated'
 import { useTranslation } from 'react-i18next'
+import * as Google from 'expo-auth-session/providers/google'
+import * as WebBrowser from 'expo-web-browser'
+import Constants from 'expo-constants'
 import { useForm } from '@/hooks/useForm'
 import { signInSchema, SignInFormData } from '@/schemas/auth.schema'
 import { FormField, FormItem, FormMessage } from '@/components/ui/Form'
@@ -25,20 +29,57 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AppSpacing } from '@/config/colors'
 import { AxiosError } from 'axios'
 
+WebBrowser.maybeCompleteAuthSession()
+
+const GOOGLE_CLIENT_ID = Constants.expoConfig?.extra?.GOOGLE_CLIENT_ID ?? ''
+
 export default function SignInScreen() {
   const { t } = useTranslation()
   const router = useRouter()
   const insets = useSafeAreaInsets()
-  const { showError, showInfo } = useToast()
+  const { showError } = useToast()
   const colors = useColors()
   const login = useAuthStore((state) => state.login)
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
   const [reduceMotion, setReduceMotion] = useState(false)
   const passwordRef = useRef<TextInput>(null)
+
+  const [, googleResponse, promptAsync] = Google.useAuthRequest({
+    clientId: GOOGLE_CLIENT_ID,
+  })
 
   useEffect(() => {
     AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion)
   }, [])
+
+  const handleGoogleLogin = useCallback(async (idToken: string) => {
+    setGoogleLoading(true)
+    try {
+      const res = await authApi.googleLogin({ id_token: idToken })
+      const { access_token, refresh_token, user } = res.data.data
+      login({ accessToken: access_token, refreshToken: refresh_token, user })
+      router.replace('/(tabs)/home')
+    } catch (error: unknown) {
+      const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message
+      showError(t('AUTH_GOOGLE_ERROR'), message)
+    } finally {
+      setGoogleLoading(false)
+    }
+  }, [login, router, showError, t])
+
+  useEffect(() => {
+    if (!googleResponse) return
+    if (googleResponse.type === 'success') {
+      const idToken = googleResponse.authentication?.idToken
+      if (idToken) {
+        handleGoogleLogin(idToken)
+      }
+    } else if (googleResponse.type === 'error') {
+      showError(t('AUTH_GOOGLE_ERROR'), googleResponse.error?.message)
+    }
+    // type === 'dismiss' — user cancelled, do nothing
+  }, [googleResponse, handleGoogleLogin, showError, t])
 
   const { handleSubmit, control } = useForm<SignInFormData>({
     defaultValues: { email: '', password: '' },
@@ -174,17 +215,19 @@ export default function SignInScreen() {
             </AppButton>
           </Animated.View>
 
-          {/* Google Sign-In Placeholder */}
+          {/* Google Sign-In */}
           <Animated.View
             entering={reduceMotion ? undefined : FadeInDown.delay(500).duration(600)}
             className="mt-4">
             <AppButton
               variant="outline"
               size="lg"
-              onPress={() => showInfo(t('AUTH_COMING_SOON'))}
+              onPress={() => promptAsync()}
+              loading={googleLoading}
+              disabled={googleLoading || loading}
               className="w-full border-white/30"
               textClassname="text-white"
-              icon={<Icon name="Chrome" className="h-5 w-5 text-white" />}
+              icon={<Icon name="Globe" className="h-5 w-5 text-white" />}
               accessibilityRole="button"
               accessibilityLabel={t('AUTH_GOOGLE_SIGN_IN')}>
               {t('AUTH_GOOGLE_SIGN_IN')}

@@ -62,6 +62,7 @@ export const AUTH_MESSAGES = {
   LOGIN_SUCCESS: 'Đăng nhập thành công',
   LOGOUT_SUCCESS: 'Đăng xuất thành công',
   REFRESH_TOKEN_SUCCESS: 'Refresh Token thành công',
+  GOOGLE_LOGIN_SUCCESS: 'Đăng nhập Google thành công',
 
   // Errors
   EMAIL_EXISTS: 'Email đã tồn tại',
@@ -73,6 +74,8 @@ export const AUTH_MESSAGES = {
   REFRESH_TOKEN_NOT_EXISTS: 'Refresh Token không tồn tại',
   UNAUTHORIZED: 'Bạn không có quyền truy cập',
   FORBIDDEN: 'Bạn không có quyền thực hiện hành động này',
+  GOOGLE_TOKEN_REQUIRED: 'Google ID token là bắt buộc',
+  GOOGLE_TOKEN_INVALID: 'Google ID token không hợp lệ',
 } as const
 
 // ==================== USER MESSAGES ====================

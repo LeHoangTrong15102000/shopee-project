@@ -11,7 +11,7 @@ export {
 } from './common.schema'
 
 // Auth schemas
-export { loginSchema, registerSchema, type LoginInput, type RegisterInput } from './auth.schema'
+export { loginSchema, registerSchema, googleLoginSchema, type LoginInput, type RegisterInput } from './auth.schema'
 
 // Category schemas
 export {

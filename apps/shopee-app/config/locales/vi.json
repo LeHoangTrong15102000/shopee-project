@@ -36,6 +36,7 @@
   "AUTH_HAS_ACCOUNT": "Đã có tài khoản?",
   "AUTH_SIGN_IN_LINK": "Đăng nhập",
   "AUTH_GOOGLE_SIGN_IN": "Đăng nhập với Google",
+  "AUTH_GOOGLE_ERROR": "Đăng nhập Google thất bại",
   "AUTH_COMING_SOON": "Tính năng sắp ra mắt",
   "AUTH_LOGIN_SUCCESS": "Đăng nhập thành công",
   "AUTH_REGISTER_SUCCESS": "Đăng ký thành công",
@@ -203,9 +204,11 @@
     }
   },
   "live": {
-    "comingSoon": {
-      "message": "Tính năng đang được phát triển, sẽ sớm ra mắt!"
-    }
+    "title": "Shopee Live",
+    "empty": "Không có livestream nào đang diễn ra",
+    "watching": "đang xem",
+    "likes": "lượt thích",
+    "featuredProducts": "Sản phẩm nổi bật"
   },
   "addresses": {
     "dialog": {
@@ -747,7 +750,19 @@
     },
     "privacy": {
       "title": "Quyền riêng tư",
-      "comingSoon": "Tính năng đang được phát triển, sẽ sớm ra mắt!"
+      "profile": "Hồ sơ",
+      "profileVisibility": "Hiển thị hồ sơ",
+      "profileVisibility.public": "Công khai",
+      "profileVisibility.friendsOnly": "Chỉ bạn bè",
+      "profileVisibility.private": "Riêng tư",
+      "activity": "Hoạt động",
+      "showOnlineStatus": "Hiển thị trạng thái trực tuyến",
+      "showPurchaseHistory": "Hiển thị lịch sử mua hàng cho người theo dõi",
+      "messaging": "Tin nhắn",
+      "allowShopChat": "Cho phép chat với shop",
+      "data": "Dữ liệu",
+      "dataPersonalization": "Dữ liệu & cá nhân hóa",
+      "dataComingSoon": "Cài đặt dữ liệu & cá nhân hóa sẽ sớm ra mắt"
     }
   },
   "help": {

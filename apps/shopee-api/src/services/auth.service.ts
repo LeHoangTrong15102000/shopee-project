@@ -1,4 +1,5 @@
 import crypto from 'crypto'
+import { OAuth2Client } from 'google-auth-library'
 import { IUser, IPayloadToken } from '../@types/models.type'
 import { IAuthRepository } from '@repositories/interfaces/auth.repository.interface'
 import { IUserRepository } from '@repositories/interfaces/user.repository.interface'
@@ -9,6 +10,8 @@ import { config } from '@constants/config'
 import { ROLE } from '@constants/role.enum'
 import { omit } from 'lodash'
 import { Logger } from '@utils/logger'
+
+const googleOAuthClient = new OAuth2Client()
 
 export interface RegisterDTO {
   email: string
@@ -268,6 +271,70 @@ export class AuthService extends BaseService {
     const accessToken = (await signToken(payload, config.SECRET_KEY, expireAccessToken)) as string
 
     return { access_token: 'Bearer ' + accessToken }
+  }
+
+  async googleLogin(
+    idToken: string,
+    tokenConfig: TokenConfig,
+  ): Promise<AuthResult> {
+    let payload
+    try {
+      const ticket = await googleOAuthClient.verifyIdToken({
+        idToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      })
+      payload = ticket.getPayload()
+    } catch {
+      throw new UnauthorizedError('Google token verification failed')
+    }
+
+    if (!payload || !payload.email) {
+      throw new UnauthorizedError('Google token verification failed')
+    }
+
+    const email = payload.email
+    const name = payload.name || email.split('@')[0]
+    const avatar = payload.picture
+
+    let user = await this.userRepository.findByEmail(email)
+    if (!user) {
+      // Create new user with Google profile info (random password since they use OAuth)
+      const randomPassword = crypto.randomBytes(32).toString('hex')
+      user = await this.userRepository.create({
+        email,
+        password: hashValue(randomPassword),
+        name,
+        avatar,
+        roles: [ROLE.USER],
+      })
+    }
+
+    const tokenPayload: IPayloadToken = {
+      id: user._id!.toString(),
+      email: user.email,
+      roles: user.roles || [ROLE.USER],
+      created_at: new Date().toISOString(),
+    }
+
+    const { accessToken, refreshToken, refreshJti } = await this.generateTokens(tokenPayload, tokenConfig)
+
+    const expiresAt = new Date(Date.now() + tokenConfig.expireRefreshToken * 1000)
+    await this.authRepository.createRefreshTokenWithJti(
+      user._id!,
+      refreshToken,
+      refreshJti,
+      expiresAt,
+    )
+
+    Logger.apiInfo('auth.google.login', { userId: user._id!.toString(), email })
+
+    return {
+      access_token: 'Bearer ' + accessToken,
+      expires: tokenConfig.expireAccessToken,
+      refresh_token: refreshToken,
+      expires_refresh_token: tokenConfig.expireRefreshToken,
+      user: omit(user, ['password']) as Omit<IUser, 'password'>,
+    }
   }
 
   async logout(refreshToken: string): Promise<void> {

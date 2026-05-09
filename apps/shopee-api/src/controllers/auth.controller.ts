@@ -130,11 +130,30 @@ const logoutController = async (req: Request, res: Response) => {
   return responseSuccess(res, { message: AUTH_MESSAGES.LOGOUT_SUCCESS })
 }
 
+const googleLoginController = async (req: Request, res: Response) => {
+  const { id_token } = req.body
+
+  const { expireAccessTokenConfig, expireRefreshTokenConfig } = getExpire()
+
+  const result = await authService.googleLogin(id_token, {
+    expireAccessToken: expireAccessTokenConfig,
+    expireRefreshToken: expireRefreshTokenConfig,
+  })
+
+  Logger.apiInfo('Google login thành công', { email: result.user.email })
+
+  return responseSuccess(res, {
+    message: AUTH_MESSAGES.GOOGLE_LOGIN_SUCCESS,
+    data: result,
+  })
+}
+
 const authController = {
   registerController,
   loginController,
   logoutController,
   refreshTokenController,
+  googleLoginController,
 }
 
 export default authController

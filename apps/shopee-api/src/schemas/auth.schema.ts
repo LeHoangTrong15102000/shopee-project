@@ -57,3 +57,13 @@ export const registerSchema = z.object({
 // Type exports
 export type LoginInput = z.infer<typeof loginSchema>['body']
 export type RegisterInput = z.infer<typeof registerSchema>['body']
+
+/**
+ * Google login schema
+ * Validates that id_token is a non-empty string
+ */
+export const googleLoginSchema = z.object({
+  body: z.object({
+    id_token: z.string().min(1, 'Google ID token is required'),
+  }),
+})

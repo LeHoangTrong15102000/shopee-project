@@ -11,6 +11,7 @@ import {
   registerSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  googleLoginSchema,
 } from '@schemas/index'
 
 const commonAuthRouter = Router()
@@ -57,6 +58,13 @@ commonAuthRouter.post(
   bruteForceProtectionMiddleware, // Prevent password reset abuse
   validate(resetPasswordSchema),
   asyncHandler(passwordResetController.resetPassword),
+)
+
+commonAuthRouter.post(
+  '/google',
+  authRateLimit,
+  validate(googleLoginSchema),
+  asyncHandler(authController.googleLoginController),
 )
 
 export default commonAuthRouter

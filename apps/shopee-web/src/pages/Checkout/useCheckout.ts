@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import { useTranslation } from 'react-i18next'
+import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js'
 import { useCartStore, useCartItems, useCheckedItems } from 'src/stores/cart.store'
 import {
   Address,
@@ -17,6 +18,14 @@ import { useReducedMotion } from 'src/hooks/useReducedMotion'
 
 const CHECKOUT_SESSION_KEY = 'checkout_items'
 
+// Map Stripe error codes to Vietnamese user-facing messages
+const STRIPE_ERROR_MESSAGES: Record<string, string> = {
+  card_declined: 'Thẻ bị từ chối. Vui lòng thử thẻ khác.',
+  insufficient_funds: 'Thẻ không đủ số dư.',
+  expired_card: 'Thẻ đã hết hạn.',
+  incorrect_cvc: 'Mã CVC không đúng.',
+}
+
 export const useCheckout = () => {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -26,6 +35,25 @@ export const useCheckout = () => {
   const clearCheckedItems = useCartStore((s) => s.clearCheckedItems)
   const checkedItems = useCheckedItems()
   const prefersReducedMotion = useReducedMotion()
+
+  // Stripe hooks — may return null if not inside an Elements context
+  const stripe = useStripe()
+  const elements = useElements()
+
+  const [isConfirmingPayment, setIsConfirmingPayment] = useState(false)
+  const [paymentWaitMessage, setPaymentWaitMessage] = useState<string | null>(null)
+
+  // Show a patience message after 10 seconds of waiting for Stripe to confirm
+  useEffect(() => {
+    if (!isConfirmingPayment) {
+      setPaymentWaitMessage(null)
+      return
+    }
+    const timer = setTimeout(() => {
+      setPaymentWaitMessage('Vui lòng chờ...')
+    }, 10000)
+    return () => clearTimeout(timer)
+  }, [isConfirmingPayment])
 
   useEffect(() => {
     const savedItems = sessionStorage.getItem(CHECKOUT_SESSION_KEY)
@@ -69,7 +97,51 @@ export const useCheckout = () => {
 
   const createOrderMutation = useMutation({
     mutationFn: (body: CreateOrderBody) => checkoutApi.createOrder(body),
-    onSuccess: () => {
+    onSuccess: async (response) => {
+      const orderData = response.data.data
+
+      // Credit card: confirm payment with Stripe
+      if (selectedPaymentMethod === 'credit_card' && orderData.client_secret) {
+        // Guards
+        if (!stripe || !elements) {
+          toast.error(t('stripe.notReady', 'Stripe chưa sẵn sàng'))
+          return
+        }
+        const cardElement = elements.getElement(CardElement)
+        if (!cardElement) {
+          toast.error(t('stripe.noCard', 'Vui lòng nhập thông tin thẻ'))
+          return
+        }
+
+        setIsConfirmingPayment(true)
+        try {
+          const { error, paymentIntent } = await stripe.confirmCardPayment(
+            orderData.client_secret,
+            { payment_method: { card: cardElement } },
+          )
+
+          if (error) {
+            const code = error.code || ''
+            const message = STRIPE_ERROR_MESSAGES[code] || error.message || t('stripe.paymentFailed', 'Thanh toán thất bại. Vui lòng thử lại.')
+            toast.error(message)
+            setIsConfirmingPayment(false)
+            return
+          }
+
+          if (paymentIntent?.status === 'succeeded') {
+            sessionStorage.removeItem(CHECKOUT_SESSION_KEY)
+            clearCheckedItems()
+            queryClient.invalidateQueries({ queryKey: ['purchases'] })
+            navigate(`${path.paymentSuccess}?orderId=${orderData._id}`)
+          }
+        } catch {
+          toast.error(t('stripe.paymentFailed', 'Thanh toán thất bại. Vui lòng thử lại.'))
+          setIsConfirmingPayment(false)
+        }
+        return
+      }
+
+      // Non-credit-card: existing flow
       toast.success(t('toast.orderSuccess'))
       sessionStorage.removeItem(CHECKOUT_SESSION_KEY)
       clearCheckedItems()
@@ -208,6 +280,8 @@ export const useCheckout = () => {
     currentStep,
     totalAmount,
     createOrderMutation,
+    isConfirmingPayment,
+    paymentWaitMessage,
     setVoucherCode,
     setCoinsUsed,
     setNote,

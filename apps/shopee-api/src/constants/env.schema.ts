@@ -64,6 +64,22 @@ const envSchema = z.object({
   RATE_LIMIT_WINDOW_S: z.coerce.number().int().positive().default(60),
   // Comma-separated list of IPs that bypass rate limiting (e.g. load balancer, monitoring)
   RATE_LIMIT_WHITELIST_IPS: z.string().default(''),
+
+  // Stripe — required when CREDIT_CARD payment method is active
+  STRIPE_SECRET_KEY: z
+    .string()
+    .min(1, 'STRIPE_SECRET_KEY is required for credit card payments')
+    .startsWith('sk_', 'STRIPE_SECRET_KEY must start with sk_ (use sk_test_ for development)'),
+
+  STRIPE_PUBLISHABLE_KEY: z
+    .string()
+    .min(1, 'STRIPE_PUBLISHABLE_KEY is required')
+    .startsWith('pk_', 'STRIPE_PUBLISHABLE_KEY must start with pk_'),
+
+  STRIPE_WEBHOOK_SECRET: z
+    .string()
+    .min(1, 'STRIPE_WEBHOOK_SECRET is required for webhook signature verification')
+    .startsWith('whsec_', 'STRIPE_WEBHOOK_SECRET must start with whsec_'),
 })
 
 export type Env = z.infer<typeof envSchema>
@@ -104,6 +120,9 @@ export function validateEnv(rawEnv: NodeJS.ProcessEnv = process.env): Env {
       RATE_LIMIT_EXPENSIVE_MAX: 30,
       RATE_LIMIT_WINDOW_S: 60,
       RATE_LIMIT_WHITELIST_IPS: '',
+      STRIPE_SECRET_KEY: 'sk_test_placeholder',
+      STRIPE_PUBLISHABLE_KEY: 'pk_test_placeholder',
+      STRIPE_WEBHOOK_SECRET: 'whsec_placeholder',
     }
   }
 

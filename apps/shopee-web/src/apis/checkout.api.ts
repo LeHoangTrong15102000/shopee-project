@@ -4,6 +4,7 @@ import {
   PaymentMethod,
   Order,
   CreateOrderBody,
+  CreateOrderResponse,
   CheckoutSummary,
 } from 'src/types/checkout.type'
 import http from 'src/utils/http'
@@ -146,7 +147,7 @@ const checkoutApi = {
   },
 
   createOrder: (body: CreateOrderBody) => {
-    return http.post<SuccessResponseApi<Order>>('/checkout/create-order', {
+    return http.post<SuccessResponseApi<CreateOrderResponse>>('/checkout/create-order', {
       purchase_ids: body.purchaseIds,
       shipping_address_id: body.shippingAddressId,
       shipping_method_id: body.shippingMethodId,

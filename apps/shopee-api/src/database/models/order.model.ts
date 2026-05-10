@@ -21,6 +21,16 @@ export const PAYMENT_METHOD = {
 
 export type PaymentMethodType = (typeof PAYMENT_METHOD)[keyof typeof PAYMENT_METHOD]
 
+export const PAYMENT_STATUS = {
+  PENDING: 'pending',
+  PROCESSING: 'processing',
+  PAID: 'paid',
+  FAILED: 'failed',
+  REFUNDED: 'refunded',
+} as const
+
+export type PaymentStatusType = (typeof PAYMENT_STATUS)[keyof typeof PAYMENT_STATUS]
+
 export interface IOrderItem {
   product: mongoose.Types.ObjectId
   buy_count: number
@@ -52,6 +62,9 @@ export interface IOrder {
   shipping_address: IShippingAddress
   shipping_method: IShippingMethod
   payment_method: PaymentMethodType
+  payment_status: PaymentStatusType          // default: 'pending'
+  stripe_payment_intent_id?: string | null   // set when credit_card order is created
+  stripe_client_secret?: string | null       // transient — used by frontend to confirm payment
   subtotal: number
   shipping_fee: number
   discount: number
@@ -112,6 +125,13 @@ const OrderSchema = new Schema<IOrder>(
       enum: Object.values(PAYMENT_METHOD),
       required: true,
     },
+    payment_status: {
+      type: String,
+      enum: Object.values(PAYMENT_STATUS),
+      default: PAYMENT_STATUS.PENDING,
+    },
+    stripe_payment_intent_id: { type: String, default: null },
+    stripe_client_secret: { type: String, default: null },
     subtotal: { type: Number, required: true },
     shipping_fee: { type: Number, required: true, default: 0 },
     discount: { type: Number, default: 0 },
@@ -142,5 +162,6 @@ const OrderSchema = new Schema<IOrder>(
 OrderSchema.index({ user: 1, status: 1 })
 OrderSchema.index({ user: 1, createdAt: -1 })
 OrderSchema.index({ status: 1 })
+OrderSchema.index({ stripe_payment_intent_id: 1 }, { sparse: true })
 
 export const OrderModel = mongoose.model<IOrder>('orders', OrderSchema)

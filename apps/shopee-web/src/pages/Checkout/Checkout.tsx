@@ -23,6 +23,7 @@ const Checkout = () => {
     currentStep,
     totalAmount,
     createOrderMutation,
+    isConfirmingPayment,
     setVoucherCode,
     setCoinsUsed,
     setNote,
@@ -100,7 +101,7 @@ const Checkout = () => {
             note={note}
             onPlaceOrder={handlePlaceOrder}
             onBack={handleBackToStep3}
-            isPlacingOrder={createOrderMutation.isPending}
+            isPlacingOrder={createOrderMutation.isPending || isConfirmingPayment}
           />
         ) : (
           <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-3">
@@ -112,6 +113,7 @@ const Checkout = () => {
               voucherDiscount={voucherDiscount}
               coinsUsed={coinsUsed}
               note={note}
+              isConfirmingPayment={isConfirmingPayment}
               onAddressSelect={handleAddressSelect}
               onShippingSelect={handleShippingSelect}
               onPaymentSelect={handlePaymentSelect}

@@ -109,6 +109,10 @@ app.use(validateContentTypeMiddleware)
 // Security middleware - log hoạt động đáng ngờ
 app.use(suspiciousActivityMiddleware)
 
+// Raw body parser for Stripe webhook — MUST come before express.json()
+// Stripe signature verification requires the raw Buffer, not parsed JSON.
+app.use('/payment/stripe/webhook', express.raw({ type: 'application/json' }))
+
 // Parse JSON với giới hạn kích thước
 app.use(express.json({ limit: MAX_REQUEST_SIZE }))
 app.use(express.urlencoded({ extended: true, limit: MAX_REQUEST_SIZE }))
@@ -117,10 +121,18 @@ app.use(express.urlencoded({ extended: true, limit: MAX_REQUEST_SIZE }))
 app.use(compression())
 
 // Security middleware - kiểm tra suspicious patterns trong request (sau khi parse body)
-app.use(suspiciousPatternMiddleware)
+// Skip for Stripe webhook — body is a raw Buffer, not parsed JSON
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.path === '/payment/stripe/webhook') return next()
+  suspiciousPatternMiddleware(req, res, next)
+})
 
 // Middleware sanitize input để chống NoSQL injection
-app.use(sanitizeMiddleware)
+// Skip for Stripe webhook — body is a raw Buffer, not parsed JSON
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.path === '/payment/stripe/webhook') return next()
+  sanitizeMiddleware(req, res, next)
+})
 
 // Global rate limiting — baseline 200 req/min per IP for all routes
 app.use(publicRateLimit)

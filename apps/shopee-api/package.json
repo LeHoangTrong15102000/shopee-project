@@ -48,6 +48,7 @@
     "rate-limiter-flexible": "^11.0.1",
     "shelljs": "^0.8.5",
     "socket.io": "^4.8.3",
+    "stripe": "^22.1.1",
     "uuid": "^11.0.3",
     "xstate": "^5.28.0",
     "zod": "^4.3.6"

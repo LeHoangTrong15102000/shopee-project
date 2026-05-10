@@ -290,6 +290,9 @@ importers:
       socket.io:
         specifier: ^4.8.3
         version: 4.8.3
+      stripe:
+        specifier: ^22.1.1
+        version: 22.1.1(@types/node@22.19.15)
       uuid:
         specifier: ^11.0.3
         version: 11.1.0
@@ -589,6 +592,12 @@ importers:
       '@shopee/shared-utils':
         specifier: workspace:*
         version: link:../../libs/shared-utils
+      '@stripe/react-stripe-js':
+        specifier: ^6.3.0
+        version: 6.3.0(@stripe/stripe-js@9.4.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@stripe/stripe-js':
+        specifier: ^9.4.0
+        version: 9.4.0
       '@tanstack/react-query':
         specifier: ^5.90.21
         version: 5.91.3(react@19.1.0)
@@ -3598,6 +3607,17 @@ packages:
     resolution: {integrity: sha512-n6OEjEtHupa2PdTwWzRepr7cO8NkDd4rgF6BKLitRbujOspLxzMBEqdphs+QLcuiCIgf33SqmEA64QWnbSMhPw==}
     peerDependencies:
       storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
+
+  '@stripe/react-stripe-js@6.3.0':
+    resolution: {integrity: sha512-N1FTRNCMKySElDz1lAsf/m6Oy5vcl6LRVXcW29t0Y3U3HYOAqCBlk6nuDsR2x7SAuaXkVCjnpCqrNbA/7l74jg==}
+    peerDependencies:
+      '@stripe/stripe-js': '>=9.3.1 <10.0.0'
+      react: 19.1.0
+      react-dom: 19.1.0
+
+  '@stripe/stripe-js@9.4.0':
+    resolution: {integrity: sha512-zXG86DnoLU5nH2U18tX5ApTE3IAm+txoiPm4YFyEtRS0K5y7ZDH9M8e1Le/cZyI6wvW3BkJn2daZe2FqZOrSSg==}
+    engines: {node: '>=12.16'}
 
   '@swc/helpers@0.5.19':
     resolution: {integrity: sha512-QamiFeIK3txNjgUTNppE6MiG3p7TdninpZu0E0PbqVh1a9FNLT2FRhisaa4NcaX52XVhA5l7Pk58Ft7Sqi/2sA==}
@@ -9606,6 +9626,15 @@ packages:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
 
+  stripe@22.1.1:
+    resolution: {integrity: sha512-cmodIYP27tBkJ8G7DuGgWw0PFuemlFZbuF3Wwr1TrjFjUa3T7NIgCe6TVwX8BO2ynu+xtTuDGfHafNDCPt9lXA==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@types/node': '>=18'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+
   structured-headers@0.4.1:
     resolution: {integrity: sha512-0MP/Cxx5SzeeZ10p/bZI0S6MpgD+yxAhi1BOQ34jgnMXsCq3j1t6tQnZu+KdlL7dvJTLT3g9xN8tl10TqgFMcg==}
 
@@ -14045,6 +14074,15 @@ snapshots:
   '@storybook/theming@8.6.18(storybook@8.6.18(prettier@3.8.1))':
     dependencies:
       storybook: 8.6.18(prettier@3.8.1)
+
+  '@stripe/react-stripe-js@6.3.0(@stripe/stripe-js@9.4.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@stripe/stripe-js': 9.4.0
+      prop-types: 15.8.1
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@stripe/stripe-js@9.4.0': {}
 
   '@swc/helpers@0.5.19':
     dependencies:
@@ -21339,6 +21377,10 @@ snapshots:
   strip-json-comments@2.0.1: {}
 
   strip-json-comments@3.1.1: {}
+
+  stripe@22.1.1(@types/node@22.19.15):
+    optionalDependencies:
+      '@types/node': 22.19.15
 
   structured-headers@0.4.1: {}
 

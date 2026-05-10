@@ -54,6 +54,13 @@
   "toast.selectPayment": "Please select a payment method",
   "trust.authentic": "Authentic",
   "trust.sevenDayReturn": "7-day return",
-  "trust.fastDelivery": "Fast delivery"
+  "trust.fastDelivery": "Fast delivery",
+  "stripe.notReady": "Stripe is not ready. Please try again.",
+  "stripe.noCard": "Please enter your card details.",
+  "stripe.paymentFailed": "Payment failed. Please try again.",
+  "stripe.cardDeclined": "Card declined. Please try a different card.",
+  "stripe.insufficientFunds": "Insufficient funds.",
+  "stripe.expiredCard": "Card has expired.",
+  "stripe.incorrectCvc": "Incorrect CVC code."
 }
 

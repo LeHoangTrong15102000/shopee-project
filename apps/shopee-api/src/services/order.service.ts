@@ -36,6 +36,7 @@ import { STATUS_TO_EVENT, OrderEventType } from './order/order_constants'
 import { emitOrderStatusUpdate } from '../socket/utils/order-emit'
 import { withTransaction } from '@utils/transaction.helper'
 import { Logger } from '@utils/logger'
+import { stripeService } from '../container'
 
 const SHIPPING_METHODS = [
   { id: 'standard', name: 'Giao hàng tiêu chuẩn', price: 30000, estimated_days: '3-5 ngày' },
@@ -138,7 +139,7 @@ export class OrderService extends BaseService {
 
   // ─── Public createOrder — orchestration only ──────────────────────────────
 
-  async createOrder(userId: string, input: CreateOrderInput): Promise<IOrder> {
+  async createOrder(userId: string, input: CreateOrderInput): Promise<IOrder & { client_secret?: string }> {
     if (!this.isValidObjectId(userId)) throw new ValidationError('Invalid user ID format')
 
     const correlationId = `order-${userId}-${Date.now()}`
@@ -196,6 +197,20 @@ export class OrderService extends BaseService {
         itemCount: input.items.length,
       })
       Logger.performance('order.create.duration', duration, { correlationId, userId })
+
+      // Credit card: create Stripe PaymentIntent and attach to order
+      if (order.payment_method === PAYMENT_METHOD.CREDIT_CARD) {
+        const { clientSecret, paymentIntentId } = await stripeService.createPaymentIntent(
+          order.total,
+          'vnd',
+          { orderId: order._id.toString(), userId: order.user.toString() },
+        )
+        await OrderModel.findByIdAndUpdate(order._id, {
+          stripe_payment_intent_id: paymentIntentId,
+          stripe_client_secret: clientSecret,
+        })
+        return { ...(order as any).toObject(), client_secret: clientSecret }
+      }
 
       return order
     } catch (err) {

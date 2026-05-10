@@ -3,6 +3,7 @@ import { Navigate, Outlet, useRoutes } from 'react-router'
 import Loader from './components/Loader'
 import path from './constant/path'
 import { AppContext } from './contexts/app.context'
+import { StripeProvider } from './contexts/stripe.context'
 
 // Lazy load layouts - giảm initial bundle size
 const MainLayout = lazy(() => import('./layouts/MainLayout'))
@@ -42,6 +43,7 @@ const PriceAlertsPage = lazy(() => import('./pages/User/pages/PriceAlerts'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword/ForgotPassword'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword/ResetPassword'))
+const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'))
 
 // Khai báo một Route Protected(Vì nó return về Outlet nên hàm này được coi là component)
 function ProtectedRoute() {
@@ -173,9 +175,11 @@ const useRouteElements = () => {
           element: (
             <Suspense fallback={<Loader />}>
               <CartLayout>
-                <Suspense fallback={<Loader />}>
-                  <Checkout />
-                </Suspense>
+                <StripeProvider>
+                  <Suspense fallback={<Loader />}>
+                    <Checkout />
+                  </Suspense>
+                </StripeProvider>
               </CartLayout>
             </Suspense>
           ),
@@ -189,6 +193,18 @@ const useRouteElements = () => {
                   <Wishlist />
                 </Suspense>
               </CartLayout>
+            </Suspense>
+          ),
+        },
+        {
+          path: path.paymentSuccess,
+          element: (
+            <Suspense fallback={<Loader />}>
+              <MainLayout>
+                <Suspense fallback={<Loader />}>
+                  <PaymentSuccess />
+                </Suspense>
+              </MainLayout>
             </Suspense>
           ),
         },

@@ -30,6 +30,7 @@ const path = {
   shopProfile: '/shop/:id', // Trang hồ sơ cửa hàng
   priceAlerts: '/user/price-alerts', // Trang cảnh báo giá
   orderTracking: '/tracking/:number', // Trang theo dõi đơn hàng công khai
+  paymentSuccess: '/payment/success', // Trang xác nhận thanh toán thành công
 } as const
 
 export default path

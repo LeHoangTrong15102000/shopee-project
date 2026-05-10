@@ -54,6 +54,13 @@
   "toast.selectPayment": "Vui lòng chọn phương thức thanh toán",
   "trust.authentic": "Chính hãng",
   "trust.sevenDayReturn": "Đổi trả 7 ngày",
-  "trust.fastDelivery": "Giao nhanh"
+  "trust.fastDelivery": "Giao nhanh",
+  "stripe.notReady": "Stripe chưa sẵn sàng. Vui lòng thử lại.",
+  "stripe.noCard": "Vui lòng nhập thông tin thẻ.",
+  "stripe.paymentFailed": "Thanh toán thất bại. Vui lòng thử lại.",
+  "stripe.cardDeclined": "Thẻ bị từ chối. Vui lòng thử thẻ khác.",
+  "stripe.insufficientFunds": "Thẻ không đủ số dư.",
+  "stripe.expiredCard": "Thẻ đã hết hạn.",
+  "stripe.incorrectCvc": "Mã CVC không đúng."
 }
 

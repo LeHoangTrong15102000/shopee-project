@@ -93,6 +93,7 @@ export interface Order {
   shippingAddress: Address
   shippingMethod: ShippingMethod
   paymentMethod: PaymentMethodType
+  payment_status?: 'pending' | 'processing' | 'paid' | 'failed' | 'refunded'
   subtotal: number
   shippingFee: number
   discount: number
@@ -115,6 +116,15 @@ export interface CreateOrderBody {
   voucherCode?: string
   coinsUsed?: number
   note?: string
+}
+
+export interface CreateOrderResponse {
+  _id: string
+  client_secret?: string
+  stripe_payment_intent_id?: string
+  payment_method: PaymentMethodType
+  total: number
+  status: OrderStatus
 }
 
 export interface CheckoutSummaryBody {

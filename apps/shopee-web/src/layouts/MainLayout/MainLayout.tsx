@@ -8,7 +8,6 @@ import PageTransition from 'src/components/PageTransition'
 const CompareFloatingBar = lazy(() => import('src/components/CompareFloatingBar'))
 const ConnectionStatus = lazy(() => import('src/components/ConnectionStatus'))
 const BackToTop = lazy(() => import('src/components/BackToTop'))
-const UserChatButton = lazy(() => import('src/components/UserChatButton'))
 
 interface Props {
   children?: React.ReactNode
@@ -41,10 +40,6 @@ const MainLayout = ({ children }: Props) => {
       {/* Back to top button */}
       <Suspense fallback={null}>
         <BackToTop />
-      </Suspense>
-      {/* Floating chat button for authenticated users */}
-      <Suspense fallback={null}>
-        <UserChatButton />
       </Suspense>
     </div>
   )

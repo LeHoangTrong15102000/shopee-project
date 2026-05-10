@@ -5,6 +5,8 @@ import { container } from '../container'
 import { emitNewQuestion, emitNewAnswer, emitQuestionLiked } from '../socket/utils/qa-emit'
 import { emitSellerQANotification } from '../socket/utils/seller-emit'
 import { emitCurrentSellerMetrics } from '../socket/utils/seller-metrics.service'
+import { getIO } from '../socket/socket.init'
+import { SOCKET_CONFIG } from '@constants/socket'
 import { NotFoundError, ValidationError } from '@services/base.service'
 import { ErrorHandler, NotFoundError as HttpNotFoundError } from '@utils/response'
 
@@ -55,14 +57,24 @@ export const askQuestion = async (req: Request, res: Response): Promise<void> =>
         question: newQuestion.question,
         createdAt: newQuestion.createdAt?.toISOString?.() || new Date().toISOString(),
       })
-      emitSellerQANotification('admin', {
-        product_id,
-        product_name: product.name,
-        question_id: newQuestion._id!.toString(),
-        question_preview: question.substring(0, 100),
-        user_name: newQuestion.user_name,
-      })
-      await emitCurrentSellerMetrics('admin')
+      const io = getIO()
+      if (io) {
+        const rooms = io.sockets.adapter.rooms
+        const sellerPrefix = SOCKET_CONFIG.ROOM_PREFIX.SELLER
+        for (const [roomName, sockets] of rooms) {
+          if (roomName.startsWith(sellerPrefix) && sockets.size > 0) {
+            const sellerId = roomName.slice(sellerPrefix.length)
+            emitSellerQANotification(sellerId, {
+              product_id,
+              product_name: product.name,
+              question_id: newQuestion._id!.toString(),
+              question_preview: question.substring(0, 100),
+              user_name: newQuestion.user_name,
+            })
+            await emitCurrentSellerMetrics(sellerId)
+          }
+        }
+      }
     } catch (_) {
       /* non-critical */
     }

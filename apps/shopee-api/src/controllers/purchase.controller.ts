@@ -14,9 +14,11 @@ import { PurchaseBody, BuyProductItem } from '../@types/request.type'
 import { PURCHASE_MESSAGES, PRODUCT_MESSAGES } from '@constants/messages'
 import { emitCartUpdate } from '../socket/utils/cart-emit'
 import { emitActivityEvent } from '../socket/utils/activity-emit'
-import { emitSellerOrderNotification, emitSellerMetricsUpdate } from '../socket/utils/seller-emit'
+import { emitSellerOrderNotification } from '../socket/utils/seller-emit'
 import { emitCurrentSellerMetrics } from '../socket/utils/seller-metrics.service'
 import { emitAdminNewOrderNotification } from '../socket/utils/order-emit'
+import { getIO } from '../socket/socket.init'
+import { SOCKET_CONFIG } from '@constants/socket'
 import { purchaseService } from '../container'
 import { NotFoundError, ValidationError } from '@services/base.service'
 
@@ -249,21 +251,29 @@ export const buyProducts = async (req: Request, res: Response) => {
     // Seller dashboard: emit order notification + metrics update (fire-and-forget)
     void (async () => {
       try {
+        const io = getIO()
+        if (!io) return
+
         const productNames = purchases
           .map((p) => (p.product as any)?.name || 'Sản phẩm')
           .slice(0, 3)
         const total = purchases.reduce((sum, p) => sum + (p.price || 0) * (p.buy_count || 0), 0)
 
-        emitSellerOrderNotification('admin', {
-          order_id: purchases[0]?._id?.toString() || 'unknown',
-          status: 'wait_for_confirmation',
-          product_names: productNames,
-          total,
-          timestamp: new Date().toISOString(),
-        })
-
-        // Emit real aggregated metrics from DB
-        await emitCurrentSellerMetrics('admin')
+        const rooms = io.sockets.adapter.rooms
+        const sellerPrefix = SOCKET_CONFIG.ROOM_PREFIX.SELLER
+        for (const [roomName, sockets] of rooms) {
+          if (roomName.startsWith(sellerPrefix) && sockets.size > 0) {
+            const sellerId = roomName.slice(sellerPrefix.length)
+            emitSellerOrderNotification(sellerId, {
+              order_id: purchases[0]?._id?.toString() || 'unknown',
+              status: 'wait_for_confirmation',
+              product_names: productNames,
+              total,
+              timestamp: new Date().toISOString(),
+            })
+            await emitCurrentSellerMetrics(sellerId)
+          }
+        }
       } catch (_) {
         /* non-critical */
       }

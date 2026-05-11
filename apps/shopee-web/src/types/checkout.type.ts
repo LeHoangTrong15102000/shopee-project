@@ -94,6 +94,8 @@ export interface Order {
   shippingMethod: ShippingMethod
   paymentMethod: PaymentMethodType
   payment_status?: 'pending' | 'processing' | 'paid' | 'failed' | 'refunded'
+  stripe_payment_intent_id?: string | null
+  stripe_client_secret?: string | null
   subtotal: number
   shippingFee: number
   discount: number

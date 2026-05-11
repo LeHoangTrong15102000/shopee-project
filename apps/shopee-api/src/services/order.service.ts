@@ -715,6 +715,21 @@ export class OrderService extends BaseService {
 
   // ─── Admin: Count by Status ────────────────────────────────────
 
+  async getPendingPaymentOrder(userId: string): Promise<IOrder | null> {
+    if (!this.isValidObjectId(userId)) throw new ValidationError('Invalid user ID format')
+
+    const order = await OrderModel.findOne({
+      user: new Types.ObjectId(userId),
+      payment_method: PAYMENT_METHOD.CREDIT_CARD,
+      payment_status: PAYMENT_STATUS.PENDING,
+      stripe_client_secret: { $ne: null },
+    })
+      .sort({ createdAt: -1 })
+      .lean()
+
+    return order ?? null
+  }
+
   async adminGetOrderCountByStatus() {
     const counts = await OrderModel.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }])
 

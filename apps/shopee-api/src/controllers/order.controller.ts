@@ -76,6 +76,25 @@ export const createOrder = async (req: Request, res: Response) => {
   }
 }
 
+export const getPendingPaymentOrder = async (req: Request, res: Response) => {
+  try {
+    const user_id = req.jwtDecoded.id
+    const order = await orderService.getPendingPaymentOrder(user_id)
+
+    return responseSuccess(res, {
+      message: order
+        ? 'Tìm thấy đơn hàng chưa thanh toán'
+        : 'Không có đơn hàng chưa thanh toán',
+      data: order,
+    })
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      throw new ErrorHandler(STATUS.BAD_REQUEST, error.message)
+    }
+    throw error
+  }
+}
+
 export const getOrders = async (req: Request, res: Response) => {
   try {
     const user_id = req.jwtDecoded.id

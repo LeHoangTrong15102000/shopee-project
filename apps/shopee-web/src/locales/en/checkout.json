@@ -61,6 +61,21 @@
   "stripe.cardDeclined": "Card declined. Please try a different card.",
   "stripe.insufficientFunds": "Insufficient funds.",
   "stripe.expiredCard": "Card has expired.",
-  "stripe.incorrectCvc": "Incorrect CVC code."
+  "stripe.incorrectCvc": "Incorrect CVC code.",
+  "recovery": {
+    "title": "You have an unpaid order",
+    "subtitle": "Order {{amount}} is awaiting payment. Would you like to continue or cancel?",
+    "resume": "Continue Payment",
+    "confirming": "Confirming...",
+    "cancel": "Cancel Order",
+    "cancelling": "Cancelling...",
+    "cancelSuccess": "Order cancelled successfully",
+    "cancelError": "Could not cancel the order. Please try again.",
+    "stripeNotReady": "Stripe is not ready. Please try again.",
+    "cardNotReady": "Please enter your card details.",
+    "paymentFailed": "Payment failed. Please try again.",
+    "expiredError": "Payment session has expired. Please cancel and place a new order.",
+    "expiredHint": "Payment session expired. Click \"Cancel Order\" to place a new order."
+  }
 }
 

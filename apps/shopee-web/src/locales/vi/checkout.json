@@ -61,6 +61,21 @@
   "stripe.cardDeclined": "Thẻ bị từ chối. Vui lòng thử thẻ khác.",
   "stripe.insufficientFunds": "Thẻ không đủ số dư.",
   "stripe.expiredCard": "Thẻ đã hết hạn.",
-  "stripe.incorrectCvc": "Mã CVC không đúng."
+  "stripe.incorrectCvc": "Mã CVC không đúng.",
+  "recovery": {
+    "title": "Bạn có đơn hàng chưa thanh toán",
+    "subtitle": "Đơn hàng {{amount}} đang chờ thanh toán. Bạn muốn tiếp tục hay hủy đơn?",
+    "resume": "Tiếp tục thanh toán",
+    "confirming": "Đang xác nhận...",
+    "cancel": "Hủy đơn hàng",
+    "cancelling": "Đang hủy...",
+    "cancelSuccess": "Đã hủy đơn hàng thành công",
+    "cancelError": "Không thể hủy đơn hàng. Vui lòng thử lại.",
+    "stripeNotReady": "Stripe chưa sẵn sàng. Vui lòng thử lại.",
+    "cardNotReady": "Vui lòng nhập thông tin thẻ.",
+    "paymentFailed": "Thanh toán thất bại. Vui lòng thử lại.",
+    "expiredError": "Phiên thanh toán đã hết hạn. Vui lòng hủy đơn và đặt lại.",
+    "expiredHint": "Phiên thanh toán đã hết hạn. Nhấn \"Hủy đơn hàng\" để đặt lại."
+  }
 }
 

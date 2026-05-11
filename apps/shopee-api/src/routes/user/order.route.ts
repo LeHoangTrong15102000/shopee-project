@@ -20,6 +20,13 @@ userOrderRouter.get('/payment/methods', asyncHandler(orderController.getPaymentM
 // Get all orders
 userOrderRouter.get('', authMiddleware.verifyAccessToken, asyncHandler(orderController.getOrders))
 
+// GET /orders/pending-payment — must be registered BEFORE /:id to avoid route conflict
+userOrderRouter.get(
+  '/pending-payment',
+  authMiddleware.verifyAccessToken,
+  asyncHandler(orderController.getPendingPaymentOrder),
+)
+
 // Get order by ID
 userOrderRouter.get(
   '/:id',

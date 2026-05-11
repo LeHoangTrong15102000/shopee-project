@@ -163,5 +163,9 @@ OrderSchema.index({ user: 1, status: 1 })
 OrderSchema.index({ user: 1, createdAt: -1 })
 OrderSchema.index({ status: 1 })
 OrderSchema.index({ stripe_payment_intent_id: 1 }, { sparse: true })
+OrderSchema.index(
+  { user: 1, payment_method: 1, payment_status: 1, stripe_client_secret: 1 },
+  { sparse: true, name: 'idx_pending_payment_recovery' },
+)
 
 export const OrderModel = mongoose.model<IOrder>('orders', OrderSchema)

@@ -6,6 +6,8 @@ import { CheckoutProgressStepper } from './components/CheckoutProgressStepper'
 import { CheckoutFormSections } from './components/CheckoutFormSections'
 import { CheckoutSidebar } from './components/CheckoutSidebar'
 import OrderPreview from 'src/components/OrderPreview'
+import { PendingPaymentPrompt } from 'src/components/PendingPaymentPrompt'
+import Loader from 'src/components/Loader'
 
 const Checkout = () => {
   const { t } = useTranslation('checkout')
@@ -35,7 +37,27 @@ const Checkout = () => {
     handleBackToStep3,
     handleGoToReview,
     handlePlaceOrder,
+    pendingPaymentOrder,
+    isPendingPaymentLoading,
+    handleRecoverySuccess,
+    handleRecoveryCancelled,
   } = useCheckout()
+
+  if (isPendingPaymentLoading) {
+    return <div className="flex justify-center py-16"><Loader /></div>
+  }
+
+  if (pendingPaymentOrder) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-8">
+        <PendingPaymentPrompt
+          pendingOrder={pendingPaymentOrder}
+          onPaymentSuccess={handleRecoverySuccess}
+          onCancelSuccess={handleRecoveryCancelled}
+        />
+      </div>
+    )
+  }
 
   if (checkedItems.length === 0) {
     return null

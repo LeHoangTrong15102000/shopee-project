@@ -487,7 +487,11 @@ const orderApi = {
         }
       }
     }
-  }
+  },
+
+  getPendingPaymentOrder: async () => {
+    return http.get<SuccessResponseApi<Order | null>>(`${URL}/pending-payment`)
+  },
 }
 
 export default orderApi

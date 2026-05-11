@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import { useTranslation } from 'react-i18next'
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js'
@@ -12,6 +12,7 @@ import {
   CreateOrderBody,
 } from 'src/types/checkout.type'
 import checkoutApi from 'src/apis/checkout.api'
+import orderApi from 'src/apis/order.api'
 import path from 'src/constant/path'
 import { scrollToTop } from 'src/utils/utils'
 import { useReducedMotion } from 'src/hooks/useReducedMotion'
@@ -50,6 +51,20 @@ export const useCheckout = () => {
   // Use a ref so the socket handler always sees the latest value without re-registering
   const pendingOrderIdRef = useRef<string | null>(null)
   pendingOrderIdRef.current = pendingOrderId
+
+  // Detect pending payment order on mount — enables recovery flow
+  const {
+    data: pendingPaymentData,
+    isLoading: isPendingPaymentLoading,
+  } = useQuery({
+    queryKey: ['pendingPayment'],
+    queryFn: () => orderApi.getPendingPaymentOrder(),
+    // Only run once on mount — no refetch needed
+    staleTime: Infinity,
+    retry: false,
+  })
+
+  const pendingPaymentOrder = pendingPaymentData?.data?.data ?? null
 
   // Show a patience message after 10 seconds of waiting for Stripe to confirm
   useEffect(() => {
@@ -241,6 +256,17 @@ export const useCheckout = () => {
     scrollToTop(prefersReducedMotion)
   }
 
+  const handleRecoverySuccess = (orderId: string) => {
+    sessionStorage.removeItem(CHECKOUT_SESSION_KEY)
+    clearCheckedItems()
+    queryClient.invalidateQueries({ queryKey: ['purchases'] })
+    navigate(`${path.paymentSuccess}?orderId=${orderId}`)
+  }
+
+  const handleRecoveryCancelled = () => {
+    queryClient.invalidateQueries({ queryKey: ['pendingPayment'] })
+  }
+
   const handleGoToReview = () => {
     if (!selectedAddress) {
       toast.error(t('toast.selectAddress'))
@@ -323,6 +349,8 @@ export const useCheckout = () => {
     createOrderMutation,
     isConfirmingPayment,
     paymentWaitMessage,
+    pendingPaymentOrder,
+    isPendingPaymentLoading,
     setVoucherCode,
     setCoinsUsed,
     setNote,
@@ -334,5 +362,7 @@ export const useCheckout = () => {
     handleBackToStep3,
     handleGoToReview,
     handlePlaceOrder,
+    handleRecoverySuccess,
+    handleRecoveryCancelled,
   }
 }

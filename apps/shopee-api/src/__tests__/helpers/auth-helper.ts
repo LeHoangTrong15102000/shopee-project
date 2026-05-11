@@ -26,7 +26,8 @@ export const getAuthToken = async (
   overrides?: { email?: string; password?: string },
 ): Promise<AuthResult> => {
   const email = overrides?.email || `test-${Date.now()}@test.com`
-  const password = overrides?.password || 'Test123456'
+  // Password must satisfy the strengthened schema: uppercase, lowercase, digit, special char
+  const password = overrides?.password || 'Test123456!'
 
   await supertest(app).post('/register').send({ email, password })
 

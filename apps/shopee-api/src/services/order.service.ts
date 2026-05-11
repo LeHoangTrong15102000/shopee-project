@@ -210,7 +210,7 @@ export class OrderService extends BaseService {
           stripe_payment_intent_id: paymentIntentId,
           stripe_client_secret: clientSecret,
         })
-        return { ...(order as any).toObject(), client_secret: clientSecret }
+        return { ...order, client_secret: clientSecret }
       }
 
       return order

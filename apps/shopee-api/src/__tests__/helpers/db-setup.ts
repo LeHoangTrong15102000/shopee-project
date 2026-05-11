@@ -1,17 +1,21 @@
 /**
  * Test Database Setup
- * Uses mongodb-memory-server for isolated integration/E2E testing
+ * Uses mongodb-memory-server for isolated integration/E2E testing.
+ * MongoMemoryReplSet is used (instead of MongoMemoryServer) so that
+ * Mongoose sessions and multi-document transactions work correctly —
+ * MongoDB requires a replica set member for transaction support.
  */
-import { MongoMemoryServer } from 'mongodb-memory-server'
+import { MongoMemoryReplSet } from 'mongodb-memory-server'
 import mongoose from 'mongoose'
 
-let mongoServer: MongoMemoryServer | null = null
+let mongoServer: MongoMemoryReplSet | null = null
 
 /**
- * Start MongoMemoryServer and connect mongoose
+ * Start a single-node MongoMemoryReplSet and connect mongoose.
+ * The replica set is required for transaction support (withTransaction helper).
  */
 export const connectTestDB = async (): Promise<void> => {
-  mongoServer = await MongoMemoryServer.create()
+  mongoServer = await MongoMemoryReplSet.create({ replSet: { count: 1 } })
   const uri = mongoServer.getUri()
   await mongoose.connect(uri)
 }
@@ -27,7 +31,7 @@ export const clearTestDB = async (): Promise<void> => {
 }
 
 /**
- * Disconnect mongoose and stop MongoMemoryServer
+ * Disconnect mongoose and stop MongoMemoryReplSet
  */
 export const disconnectTestDB = async (): Promise<void> => {
   await mongoose.disconnect()

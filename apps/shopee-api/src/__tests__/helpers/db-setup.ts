@@ -34,6 +34,10 @@ export const clearTestDB = async (): Promise<void> => {
  * Disconnect mongoose and stop MongoMemoryReplSet
  */
 export const disconnectTestDB = async (): Promise<void> => {
+  // Remove all connection event listeners before disconnecting to prevent
+  // the production reconnection handler (from database.ts) from firing
+  // during test teardown — which causes "Cannot log after tests are done" warnings.
+  mongoose.connection.removeAllListeners()
   await mongoose.disconnect()
   if (mongoServer) {
     await mongoServer.stop()

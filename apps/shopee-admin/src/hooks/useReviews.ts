@@ -21,7 +21,7 @@ export function useReviews(params?: {
     queryKey: REVIEW_KEYS.list(params ?? {}),
     queryFn: () =>
       reviewsApi
-        .getReviews({ page: (params?.page ?? 0) + 1, limit: 10, ...params })
+        .getReviews({ limit: 10, ...params, page: (params?.page ?? 0) + 1 })
         .then((r) => r.data.data),
     placeholderData: keepPreviousData,
   })

@@ -31,6 +31,13 @@ const usersHandlers = [
     return HttpResponse.json({ message: 'Thành công', data: user })
   }),
 
+  http.get(`${API_URL}/admin/users/:id/addresses`, () => {
+    return HttpResponse.json({
+      message: 'Thành công',
+      data: { addresses: [], total: 0 },
+    })
+  }),
+
   http.post(`${API_URL}/admin/users`, async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown>
     const newUser = { ...mockUsers[1], ...body, _id: `user-new-${Date.now()}` }

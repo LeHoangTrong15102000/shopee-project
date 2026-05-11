@@ -218,13 +218,9 @@ describe('ReviewListPage', () => {
       expect(screen.getByRole('table')).toBeInTheDocument()
     })
     await waitFor(() => {
-      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+      expect(screen.getAllByTitle('actions.approve').length).toBeGreaterThan(0)
     })
-    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
-    await waitFor(() => {
-      expect(screen.getByText('actions.approve')).toBeInTheDocument()
-    })
-    await user.click(screen.getByText('actions.approve'))
+    await user.click(screen.getAllByTitle('actions.approve')[0])
   })
 
   it('clicks flag action in dropdown menu', async () => {
@@ -233,13 +229,9 @@ describe('ReviewListPage', () => {
       expect(screen.getByRole('table')).toBeInTheDocument()
     })
     await waitFor(() => {
-      expect(screen.getAllByLabelText('common:aria.actions').length).toBeGreaterThan(0)
+      expect(screen.getAllByTitle('actions.flag').length).toBeGreaterThan(0)
     })
-    await user.click(screen.getAllByLabelText('common:aria.actions')[0])
-    await waitFor(() => {
-      expect(screen.getByText('actions.flag')).toBeInTheDocument()
-    })
-    await user.click(screen.getByText('actions.flag'))
+    await user.click(screen.getAllByTitle('actions.flag')[0])
   })
 
   it('closes delete dialog via cancel button (onOpenChange false branch)', async () => {

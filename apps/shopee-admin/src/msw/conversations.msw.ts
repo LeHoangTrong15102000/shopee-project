@@ -26,7 +26,7 @@ const mockConversations = [
 ]
 
 const conversationsHandlers = [
-  http.get(`${API_URL}/conversations`, () => {
+  http.get(`${API_URL}/admin/conversations`, () => {
     return HttpResponse.json({
       message: 'Success',
       data: {
@@ -36,7 +36,7 @@ const conversationsHandlers = [
     })
   }),
 
-  http.get(`${API_URL}/conversations/:id`, ({ params }) => {
+  http.get(`${API_URL}/admin/conversations/:id`, ({ params }) => {
     const conv = mockConversations.find((c) => c._id === params.id)
     if (!conv) return HttpResponse.json({ message: 'Not found' }, { status: 404 })
     return HttpResponse.json({ message: 'Success', data: conv })

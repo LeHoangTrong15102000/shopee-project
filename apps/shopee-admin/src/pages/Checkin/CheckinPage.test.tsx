@@ -30,35 +30,46 @@ describe('CheckinPage', () => {
     expect(screen.getByText('15')).toBeInTheDocument()
   })
 
-  it('renders activity table', async () => {
+  it('renders overview tab by default', async () => {
     renderWithProviders(<CheckinPage />)
+    await waitFor(() => {
+      expect(screen.getByText('tabs.overview.label')).toBeInTheDocument()
+    })
+    expect(screen.getByText('tabs.users.label')).toBeInTheDocument()
+    expect(screen.getByText('tabs.leaderboard.label')).toBeInTheDocument()
+  })
+
+  it('renders users table after clicking users tab', async () => {
+    const { user } = renderWithProviders(<CheckinPage />)
+    await waitFor(() => {
+      expect(screen.getByText('tabs.users.label')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('tabs.users.label'))
     await waitFor(() => {
       expect(screen.getByRole('table')).toBeInTheDocument()
     })
   })
 
-  it('renders activity table column headers', async () => {
-    renderWithProviders(<CheckinPage />)
+  it('renders users table column headers', async () => {
+    const { user } = renderWithProviders(<CheckinPage />)
+    await waitFor(() => {
+      expect(screen.getByText('tabs.users.label')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('tabs.users.label'))
     await waitFor(() => {
       expect(screen.getByRole('table')).toBeInTheDocument()
     })
-    expect(screen.getByText('activity.columns.user')).toBeInTheDocument()
-    expect(screen.getByText('activity.columns.streak')).toBeInTheDocument()
-    expect(screen.getByText('activity.columns.pointsEarned')).toBeInTheDocument()
+    expect(screen.getByText('tabs.users.columns.user')).toBeInTheDocument()
+    expect(screen.getByText('tabs.users.columns.currentStreak')).toBeInTheDocument()
+    expect(screen.getByText('tabs.users.columns.totalCheckins')).toBeInTheDocument()
   })
 
-  it('renders activity title', async () => {
-    renderWithProviders(<CheckinPage />)
+  it('renders user names in users table', async () => {
+    const { user } = renderWithProviders(<CheckinPage />)
     await waitFor(() => {
-      expect(screen.getByText('activity.title')).toBeInTheDocument()
+      expect(screen.getByText('tabs.users.label')).toBeInTheDocument()
     })
-  })
-
-  it('renders user names in activity table', async () => {
-    renderWithProviders(<CheckinPage />)
-    await waitFor(() => {
-      expect(screen.getByRole('table')).toBeInTheDocument()
-    })
+    await user.click(screen.getByText('tabs.users.label'))
     await waitFor(() => {
       expect(screen.getByText('Nguyen Van A')).toBeInTheDocument()
     })
@@ -88,25 +99,10 @@ describe('CheckinPage', () => {
     })
   })
 
-  it('shows error state on other API failure', async () => {
+  it('shows empty state when no daily stats', async () => {
     server.use(
-      http.get(`${API_URL}/admin/checkin`, () => {
-        return HttpResponse.json({ message: 'Server error' }, { status: 500 })
-      }),
-    )
-    renderWithProviders(<CheckinPage />)
-    await waitFor(() => {
-      expect(screen.getByText('error')).toBeInTheDocument()
-    })
-  })
-
-  it('shows empty state when no activity', async () => {
-    server.use(
-      http.get(`${API_URL}/admin/checkin`, () => {
-        return HttpResponse.json({
-          message: 'Success',
-          data: { total_today: 0, active_streaks: 0, recent_activity: [] },
-        })
+      http.get(`${API_URL}/admin/checkin/daily-stats`, () => {
+        return HttpResponse.json({ message: 'Success', data: [] })
       }),
     )
     renderWithProviders(<CheckinPage />)
@@ -115,41 +111,26 @@ describe('CheckinPage', () => {
     })
   })
 
-  it('renders date column in activity table', async () => {
-    renderWithProviders(<CheckinPage />)
+  it('renders leaderboard table after clicking leaderboard tab', async () => {
+    const { user } = renderWithProviders(<CheckinPage />)
+    await waitFor(() => {
+      expect(screen.getByText('tabs.leaderboard.label')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('tabs.leaderboard.label'))
     await waitFor(() => {
       expect(screen.getByRole('table')).toBeInTheDocument()
     })
-    expect(screen.getByText('activity.columns.date')).toBeInTheDocument()
+    expect(screen.getByText('tabs.leaderboard.columns.user')).toBeInTheDocument()
   })
 
-  it('renders user ID fallback when user is a string', async () => {
-    server.use(
-      http.get(`${API_URL}/admin/checkin`, () => {
-        return HttpResponse.json({
-          message: 'Success',
-          data: {
-            total_today: 1,
-            active_streaks: 1,
-            recent_activity: [
-              {
-                _id: 'checkin-str',
-                user: 'user-id-string',
-                streak: 1,
-                points_earned: 10,
-                createdAt: '2024-01-15T08:00:00.000Z',
-              },
-            ],
-          },
-        })
-      }),
-    )
-    renderWithProviders(<CheckinPage />)
+  it('renders leaderboard user names', async () => {
+    const { user } = renderWithProviders(<CheckinPage />)
     await waitFor(() => {
-      expect(screen.getByRole('table')).toBeInTheDocument()
+      expect(screen.getByText('tabs.leaderboard.label')).toBeInTheDocument()
     })
+    await user.click(screen.getByText('tabs.leaderboard.label'))
     await waitFor(() => {
-      expect(screen.getByText('d-string')).toBeInTheDocument()
+      expect(screen.getByText('Nguyen Van A')).toBeInTheDocument()
     })
   })
 })

@@ -36,7 +36,7 @@ describe('PaymentMethodsPage', () => {
       expect(screen.getByRole('table')).toBeInTheDocument()
     })
     expect(screen.getByText('columns.name')).toBeInTheDocument()
-    expect(screen.getByText('columns.code')).toBeInTheDocument()
+    expect(screen.getByText('columns.type')).toBeInTheDocument()
     expect(screen.getByText('columns.status')).toBeInTheDocument()
   })
 
@@ -46,13 +46,13 @@ describe('PaymentMethodsPage', () => {
       expect(screen.getByRole('table')).toBeInTheDocument()
     })
     await waitFor(() => {
-      expect(screen.getAllByText('enabled').length).toBeGreaterThan(0)
+      expect(screen.getAllByText('active').length).toBeGreaterThan(0)
     })
   })
 
   it('shows error state on API failure', async () => {
     server.use(
-      http.get(`${API_URL}/orders/payment/methods`, () => {
+      http.get(`${API_URL}/admin/payment-methods`, () => {
         return HttpResponse.json({ message: 'Server error' }, { status: 500 })
       }),
     )
@@ -64,13 +64,13 @@ describe('PaymentMethodsPage', () => {
 
   it('shows empty state when no data', async () => {
     server.use(
-      http.get(`${API_URL}/orders/payment/methods`, () => {
+      http.get(`${API_URL}/admin/payment-methods`, () => {
         return HttpResponse.json({ message: 'Success', data: [] })
       }),
     )
     renderWithProviders(<PaymentMethodsPage />)
     await waitFor(() => {
-      expect(screen.getByText('emptyState')).toBeInTheDocument()
+      expect(screen.getByText('states.noResults')).toBeInTheDocument()
     })
   })
 
@@ -88,7 +88,7 @@ describe('PaymentMethodsPage', () => {
       expect(screen.getByRole('table')).toBeInTheDocument()
     })
     await waitFor(() => {
-      expect(screen.getByText('disabled')).toBeInTheDocument()
+      expect(screen.getByText('inactive')).toBeInTheDocument()
     })
   })
 })

@@ -57,7 +57,7 @@ describe('ConversationDetailPage', () => {
 
   it('shows error state when conversation not found', async () => {
     server.use(
-      http.get(`${API_URL}/conversations/:id`, () => {
+      http.get(`${API_URL}/admin/conversations/:id`, () => {
         return HttpResponse.json({ message: 'Not found' }, { status: 404 })
       }),
     )
@@ -78,7 +78,7 @@ describe('ConversationDetailPage', () => {
 
   it('shows no messages state for empty conversation', async () => {
     server.use(
-      http.get(`${API_URL}/conversations/:id`, () => {
+      http.get(`${API_URL}/admin/conversations/:id`, () => {
         return HttpResponse.json({
           message: 'Success',
           data: {

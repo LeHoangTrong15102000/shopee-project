@@ -121,24 +121,15 @@ describe('UserDetailPage', () => {
 
   it('renders addresses tab with addresses array', async () => {
     server.use(
-      http.get(`${API_URL}/admin/users/:id`, () => {
+      http.get(`${API_URL}/admin/users/:id/addresses`, () => {
         return HttpResponse.json({
           message: 'Thành công',
           data: {
-            _id: 'user-1',
-            email: 'admin@shopee.com',
-            name: 'Admin',
-            roles: ['Admin'],
-            avatar: '',
-            date_of_birth: '1990-01-01',
-            address: '',
-            phone: '0901234567',
-            createdAt: '2024-01-01T00:00:00.000Z',
-            updatedAt: '2024-01-01T00:00:00.000Z',
             addresses: [
-              { street: '123 Nguyen Hue', city: 'Ho Chi Minh', country: 'Vietnam', is_default: 'true' },
-              { street: '456 Le Loi', city: 'Ha Noi', country: 'Vietnam', is_default: '' },
+              { _id: 'addr-1', street: '123 Nguyen Hue', ward: 'Ben Nghe', district: 'District 1', province: 'Ho Chi Minh', country: 'Vietnam', is_default: true, full_name: 'Nguyen Van A', phone: '0901234567' },
+              { _id: 'addr-2', street: '456 Le Loi', ward: 'Hoan Kiem', district: 'Hoan Kiem', province: 'Ha Noi', country: 'Vietnam', is_default: false, full_name: 'Nguyen Van A', phone: '0901234567' },
             ],
+            total: 2,
           },
         })
       }),
@@ -157,18 +148,16 @@ describe('UserDetailPage', () => {
     expect(screen.getByText('Ha Noi')).toBeInTheDocument()
   })
 
-  it('renders addresses tab with user.address fallback', async () => {
+  it('renders addresses tab empty state when no addresses returned', async () => {
     const { user } = renderWithProviders(<UserDetailPage />)
     await waitFor(() => {
       expect(screen.queryByRole('status')).not.toBeInTheDocument()
     })
     const addressesTab = screen.getByRole('tab', { name: 'detail.addresses' })
     await user.click(addressesTab)
-    // The addresses tab shows user.address as fallback when no addresses array
-    // Profile section already shows 'Hà Nội', tab content adds another instance
+    // The addresses API returns empty array, so the empty state is shown
     await waitFor(() => {
-      const allHaNoi = screen.getAllByText('Hà Nội')
-      expect(allHaNoi.length).toBeGreaterThanOrEqual(2)
+      expect(screen.getByText('detail.addressesEmpty')).toBeInTheDocument()
     })
   })
 

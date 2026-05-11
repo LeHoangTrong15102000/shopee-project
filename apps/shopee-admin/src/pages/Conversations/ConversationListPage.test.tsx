@@ -70,7 +70,7 @@ describe('ConversationListPage', () => {
 
   it('shows error state on API failure', async () => {
     server.use(
-      http.get(`${API_URL}/conversations`, () => {
+      http.get(`${API_URL}/admin/conversations`, () => {
         return HttpResponse.json({ message: 'Server error' }, { status: 500 })
       }),
     )
@@ -113,7 +113,7 @@ describe('ConversationListPage', () => {
 
   it('renders user ID fallback when user is a string', async () => {
     server.use(
-      http.get(`${API_URL}/conversations`, () => {
+      http.get(`${API_URL}/admin/conversations`, () => {
         return HttpResponse.json({
           message: 'Success',
           data: {
@@ -144,7 +144,7 @@ describe('ConversationListPage', () => {
 
   it('renders pagination when multiple pages', async () => {
     server.use(
-      http.get(`${API_URL}/conversations`, () => {
+      http.get(`${API_URL}/admin/conversations`, () => {
         return HttpResponse.json({
           message: 'Success',
           data: {
@@ -166,13 +166,14 @@ describe('ConversationListPage', () => {
     )
     renderWithProviders(<ConversationListPage />)
     await waitFor(() => {
-      expect(screen.getByText('1 / 3')).toBeInTheDocument()
+      expect(screen.getByText(/pagination\.page/)).toBeInTheDocument()
     })
+    expect(screen.getByText(/pagination\.of/)).toBeInTheDocument()
   })
 
   it('pagination buttons work', async () => {
     server.use(
-      http.get(`${API_URL}/conversations`, () => {
+      http.get(`${API_URL}/admin/conversations`, () => {
         return HttpResponse.json({
           message: 'Success',
           data: {
@@ -194,19 +195,20 @@ describe('ConversationListPage', () => {
     )
     const { user } = renderWithProviders(<ConversationListPage />)
     await waitFor(() => {
-      expect(screen.getByText('1 / 3')).toBeInTheDocument()
+      expect(screen.getByText(/pagination\.page/)).toBeInTheDocument()
     })
-    const buttons = screen.getAllByRole('button')
-    const nextBtn = buttons[buttons.length - 1]
+    // Click next page button (aria-label pagination.nextPage)
+    const nextBtn = screen.getByRole('button', { name: 'pagination.nextPage' })
     await user.click(nextBtn)
     await waitFor(() => {
-      expect(screen.getByText('2 / 3')).toBeInTheDocument()
+      const pageSpan = screen.getByText(/pagination\.page/)
+      expect(pageSpan.textContent).toContain('2')
     })
   })
 
   it('previous page button works', async () => {
     server.use(
-      http.get(`${API_URL}/conversations`, () => {
+      http.get(`${API_URL}/admin/conversations`, () => {
         return HttpResponse.json({
           message: 'Success',
           data: {
@@ -228,20 +230,21 @@ describe('ConversationListPage', () => {
     )
     const { user } = renderWithProviders(<ConversationListPage />)
     await waitFor(() => {
-      expect(screen.getByText('1 / 3')).toBeInTheDocument()
+      expect(screen.getByText(/pagination\.page/)).toBeInTheDocument()
     })
     // Go to page 2 first
-    const buttons = screen.getAllByRole('button')
-    const nextBtn = buttons[buttons.length - 1]
+    const nextBtn = screen.getByRole('button', { name: 'pagination.nextPage' })
     await user.click(nextBtn)
     await waitFor(() => {
-      expect(screen.getByText('2 / 3')).toBeInTheDocument()
+      const pageSpan = screen.getByText(/pagination\.page/)
+      expect(pageSpan.textContent).toContain('2')
     })
     // Now click previous
-    const prevBtn = screen.getAllByRole('button')[screen.getAllByRole('button').length - 2]
+    const prevBtn = screen.getByRole('button', { name: 'pagination.previousPage' })
     await user.click(prevBtn)
     await waitFor(() => {
-      expect(screen.getByText('1 / 3')).toBeInTheDocument()
+      const pageSpan = screen.getByText(/pagination\.page/)
+      expect(pageSpan.textContent).toContain('1')
     })
   })
 

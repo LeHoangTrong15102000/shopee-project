@@ -54,6 +54,13 @@ const reviewsHandlers = [
   http.delete(`${API_URL}/admin/reviews/comments/:id`, () => {
     return HttpResponse.json({ message: 'Xóa bình luận thành công', data: null })
   }),
+
+  http.patch(`${API_URL}/admin/reviews/:id/moderate`, async ({ params, request }) => {
+    const body = (await request.json()) as Record<string, unknown>
+    const review = mockReviews.find((r) => r._id === params.id)
+    if (!review) return HttpResponse.json({ message: 'Không tìm thấy đánh giá' }, { status: 404 })
+    return HttpResponse.json({ message: 'Cập nhật thành công', data: { ...review, moderation_status: body.status } })
+  }),
 ]
 
 export default reviewsHandlers

@@ -36,7 +36,7 @@ describe('ShippingMethodsPage', () => {
       expect(screen.getByRole('table')).toBeInTheDocument()
     })
     expect(screen.getByText('columns.name')).toBeInTheDocument()
-    expect(screen.getByText('columns.code')).toBeInTheDocument()
+    expect(screen.getByText('columns.price')).toBeInTheDocument()
     expect(screen.getByText('columns.status')).toBeInTheDocument()
   })
 
@@ -53,7 +53,7 @@ describe('ShippingMethodsPage', () => {
 
   it('shows error state on API failure', async () => {
     server.use(
-      http.get(`${API_URL}/orders/shipping/methods`, () => {
+      http.get(`${API_URL}/admin/shipping-methods`, () => {
         return HttpResponse.json({ message: 'Server error' }, { status: 500 })
       }),
     )
@@ -65,13 +65,13 @@ describe('ShippingMethodsPage', () => {
 
   it('shows empty state when no data', async () => {
     server.use(
-      http.get(`${API_URL}/orders/shipping/methods`, () => {
+      http.get(`${API_URL}/admin/shipping-methods`, () => {
         return HttpResponse.json({ message: 'Success', data: [] })
       }),
     )
     renderWithProviders(<ShippingMethodsPage />)
     await waitFor(() => {
-      expect(screen.getByText('emptyState')).toBeInTheDocument()
+      expect(screen.getByText('states.noResults')).toBeInTheDocument()
     })
   })
 
@@ -81,14 +81,6 @@ describe('ShippingMethodsPage', () => {
       expect(screen.getByRole('table')).toBeInTheDocument()
     })
     expect(screen.getByText('columns.description')).toBeInTheDocument()
-  })
-
-  it('renders base cost column', async () => {
-    renderWithProviders(<ShippingMethodsPage />)
-    await waitFor(() => {
-      expect(screen.getByRole('table')).toBeInTheDocument()
-    })
-    expect(screen.getByText('columns.baseCost')).toBeInTheDocument()
   })
 
   it('renders estimated days column', async () => {

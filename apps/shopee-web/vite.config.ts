@@ -169,9 +169,9 @@ export default defineConfig(({ mode }) => {
         teardownTimeout: 10000,
         pool: 'forks',
         // Vitest v4: poolOptions removed — use top-level options instead
-        maxWorkers: process.env.CI ? 1 : 2,
-        // Increase heap memory for worker processes (integration tests need ~4GB each)
-        execArgv: ['--max-old-space-size=8192'],
+        maxWorkers: 2,
+        // Heap limit per worker — 3GB each, fits within GitHub Actions 7GB runner
+        execArgv: ['--max-old-space-size=3072'],
         include: [
           'src/**/*.test.{ts,tsx}', // Unit tests
           'test/**/*.test.{ts,tsx}', // Integration & E2E tests

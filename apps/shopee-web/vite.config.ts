@@ -164,14 +164,11 @@ export default defineConfig(({ mode }) => {
         environment: 'jsdom',
         setupFiles: ['./vitest.setup.js'],
         css: true,
-        testTimeout: 30000,
-        hookTimeout: 30000,
-        teardownTimeout: 10000,
-        pool: 'forks',
-        // Vitest v4: poolOptions removed — use top-level options instead
-        maxWorkers: 2,
-        // Heap limit per worker — 3GB each, fits within GitHub Actions 7GB runner
-        execArgv: ['--max-old-space-size=3072'],
+        testTimeout: 10000,
+        hookTimeout: 10000,
+        teardownTimeout: 5000,
+        pool: 'threads',
+        // Vitest v4: poolOptions removed — threads pool shares parent process memory
         include: [
           'src/**/*.test.{ts,tsx}', // Unit tests
           'test/**/*.test.{ts,tsx}', // Integration & E2E tests

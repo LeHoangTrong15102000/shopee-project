@@ -78,6 +78,7 @@ describe('ProductActions - Cart Validation (Task 1.9)', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     useCartStore.getState().setItems([])
+    mockMutateAsync.mockResolvedValue({ data: { data: { _id: 'purchase-1' } } })
   })
 
   it('allows adding to cart when cart is empty', async () => {
@@ -257,6 +258,7 @@ describe('ProductActions - Variant Selection (Task 15.9)', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     useCartStore.getState().setItems([])
+    mockMutateAsync.mockResolvedValue({ data: { data: { _id: 'purchase-1' } } })
   })
 
   it('shows error when trying to add to cart without selecting variant', async () => {

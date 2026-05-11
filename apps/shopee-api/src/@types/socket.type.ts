@@ -83,6 +83,9 @@ export enum SocketEvent {
   // Admin new order notification
   ADMIN_NEW_ORDER = 'admin_new_order',
 
+  // Payment status events
+  PAYMENT_STATUS_UPDATED = 'payment:status_updated',
+
   // Error events
   ERROR = 'error',
   RATE_LIMITED = 'rate_limited',
@@ -417,4 +420,13 @@ export interface AdminNewOrderPayload {
   items_count: number
   total_amount: number
   created_at: string
+}
+
+// --- Payment Status Update Payload ---
+
+// Payment status updated payload (server -> client, emitted on webhook)
+export interface PaymentStatusUpdatedPayload {
+  orderId: string
+  payment_status: string
+  order_status: string
 }

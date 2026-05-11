@@ -23,6 +23,7 @@ import {
   ORDER_STATUS,
   OrderStatusType,
   PAYMENT_METHOD,
+  PAYMENT_STATUS,
   PaymentMethodType,
   IOrderItem,
   IShippingAddress,
@@ -503,12 +504,31 @@ export class OrderService extends BaseService {
       throw new BusinessError(validation.message!)
     }
 
+    // Cancel Stripe PaymentIntent if credit card order with pending payment
+    if (
+      order.payment_method === PAYMENT_METHOD.CREDIT_CARD &&
+      order.stripe_payment_intent_id &&
+      order.payment_status === PAYMENT_STATUS.PENDING
+    ) {
+      try {
+        await stripeService.cancelPaymentIntent(order.stripe_payment_intent_id)
+      } catch (err) {
+        // Log but don't block cancellation — PaymentIntent may already be expired/cancelled
+        Logger.apiWarn('Failed to cancel Stripe PaymentIntent', {
+          orderId,
+          paymentIntentId: order.stripe_payment_intent_id,
+          error: err,
+        })
+      }
+    }
+
     // Restore stock
     await this.restoreOrderStock(order.items)
 
     const updatedOrder = await this.orderRepository.updateStatus(orderId, ORDER_STATUS.CANCELLED, {
       cancel_reason: reason,
       cancelled_at: new Date(),
+      payment_status: PAYMENT_STATUS.FAILED,
     })
 
     emitOrderStatusUpdate(orderId, order.status, ORDER_STATUS.CANCELLED)

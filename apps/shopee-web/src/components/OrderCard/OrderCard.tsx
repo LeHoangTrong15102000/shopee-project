@@ -7,6 +7,7 @@ import { formatCurrency } from 'src/utils/utils'
 import { orderStatusToNumber } from 'src/constant/order'
 import ImageWithFallback from 'src/components/ImageWithFallback'
 import Button from 'src/components/Button'
+import PaymentStatusBadge from 'src/components/PaymentStatusBadge'
 
 interface OrderCardProps {
   order: Order
@@ -109,11 +110,17 @@ const OrderCard = function OrderCard({
             </p>
           </div>
         </div>
-        <span
-          className={`inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-semibold ${status.color} ${status.bgColor} ${status.borderColor}`}
-        >
-          {status.label}
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className={`inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-semibold ${status.color} ${status.bgColor} ${status.borderColor}`}
+          >
+            {status.label}
+          </span>
+          <PaymentStatusBadge
+            paymentStatus={order.payment_status}
+            paymentMethod={order.paymentMethod}
+          />
+        </div>
       </div>
 
       {/* Items */}

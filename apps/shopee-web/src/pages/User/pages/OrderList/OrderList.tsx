@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-toastify'
 import classNames from 'classnames'
@@ -14,6 +14,7 @@ import { useIsMobile } from 'src/hooks/useIsMobile'
 import SEO from 'src/components/SEO'
 import Pagination from 'src/components/Pagination'
 import { useTranslation } from 'react-i18next'
+import useSocket from 'src/hooks/useSocket'
 
 const orderTabKeys = [
   'tabs.all',
@@ -45,6 +46,21 @@ export default function OrderList() {
   const [cancelReason, setCancelReason] = useState('')
   const [showCancelModal, setShowCancelModal] = useState(false)
   const isMobile = useIsMobile()
+  const { socket } = useSocket()
+
+  // Refresh order list when a payment status update arrives via socket
+  useEffect(() => {
+    if (!socket) return
+
+    const handlePaymentStatusUpdated = () => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] })
+    }
+
+    socket.on('payment:status_updated', handlePaymentStatusUpdated)
+    return () => {
+      socket.off('payment:status_updated', handlePaymentStatusUpdated)
+    }
+  }, [socket, queryClient])
 
   const toggleOrderTracking = (orderId: string) => {
     setExpandedOrderIds((prev) => {

@@ -156,6 +156,13 @@
   "filter.clearAll": "Clear all filters",
   "return.reasonRequired": "Enter return reason (required)",
   "return.success": "Return request submitted successfully",
-  "return.error": "Failed to submit return request"
+  "return.error": "Failed to submit return request",
+  "paymentStatus.pending": "Awaiting Payment",
+  "paymentStatus.processing": "Processing",
+  "paymentStatus.paid": "Paid",
+  "paymentStatus.failed": "Payment Failed",
+  "paymentStatus.refunded": "Refunded",
+  "toast.paymentConfirmed": "Payment confirmed successfully",
+  "toast.paymentFailedRemote": "Payment failed. Please try again or contact support."
 }
 

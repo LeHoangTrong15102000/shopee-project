@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
@@ -15,6 +15,7 @@ import checkoutApi from 'src/apis/checkout.api'
 import path from 'src/constant/path'
 import { scrollToTop } from 'src/utils/utils'
 import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import useSocket from 'src/hooks/useSocket'
 
 const CHECKOUT_SESSION_KEY = 'checkout_items'
 
@@ -30,11 +31,13 @@ export const useCheckout = () => {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { t } = useTranslation('checkout')
+  const { t: tOrder } = useTranslation('order')
   const extendedPurchases = useCartItems()
   const setExtendedPurchases = useCartStore((s) => s.setItems)
   const clearCheckedItems = useCartStore((s) => s.clearCheckedItems)
   const checkedItems = useCheckedItems()
   const prefersReducedMotion = useReducedMotion()
+  const { socket } = useSocket()
 
   // Stripe hooks — may return null if not inside an Elements context
   const stripe = useStripe()
@@ -42,6 +45,11 @@ export const useCheckout = () => {
 
   const [isConfirmingPayment, setIsConfirmingPayment] = useState(false)
   const [paymentWaitMessage, setPaymentWaitMessage] = useState<string | null>(null)
+  // Track the pending credit card order so the socket listener can reference it
+  const [pendingOrderId, setPendingOrderId] = useState<string | null>(null)
+  // Use a ref so the socket handler always sees the latest value without re-registering
+  const pendingOrderIdRef = useRef<string | null>(null)
+  pendingOrderIdRef.current = pendingOrderId
 
   // Show a patience message after 10 seconds of waiting for Stripe to confirm
   useEffect(() => {
@@ -54,6 +62,35 @@ export const useCheckout = () => {
     }, 10000)
     return () => clearTimeout(timer)
   }, [isConfirmingPayment])
+
+  // Listen for real-time payment status updates from the server webhook
+  useEffect(() => {
+    if (!socket) return
+
+    const handlePaymentStatusUpdated = (payload: {
+      orderId: string
+      payment_status: string
+      order_status: string
+    }) => {
+      // Only react to the order we're waiting on
+      if (payload.orderId !== pendingOrderIdRef.current) return
+
+      if (payload.payment_status === 'paid') {
+        toast.success(tOrder('toast.paymentConfirmed'))
+        queryClient.invalidateQueries({ queryKey: ['orders'] })
+        queryClient.invalidateQueries({ queryKey: ['purchases'] })
+      } else if (payload.payment_status === 'failed') {
+        toast.error(tOrder('toast.paymentFailedRemote'))
+      }
+
+      setPendingOrderId(null)
+    }
+
+    socket.on('payment:status_updated', handlePaymentStatusUpdated)
+    return () => {
+      socket.off('payment:status_updated', handlePaymentStatusUpdated)
+    }
+  }, [socket, queryClient, tOrder])
 
   useEffect(() => {
     const savedItems = sessionStorage.getItem(CHECKOUT_SESSION_KEY)
@@ -114,6 +151,8 @@ export const useCheckout = () => {
         }
 
         setIsConfirmingPayment(true)
+        // Store the order ID so the socket listener can match the incoming event
+        setPendingOrderId(orderData._id)
         try {
           const { error, paymentIntent } = await stripe.confirmCardPayment(
             orderData.client_secret,
@@ -125,6 +164,7 @@ export const useCheckout = () => {
             const message = STRIPE_ERROR_MESSAGES[code] || error.message || t('stripe.paymentFailed', 'Thanh toán thất bại. Vui lòng thử lại.')
             toast.error(message)
             setIsConfirmingPayment(false)
+            setPendingOrderId(null)
             return
           }
 
@@ -137,6 +177,7 @@ export const useCheckout = () => {
         } catch {
           toast.error(t('stripe.paymentFailed', 'Thanh toán thất bại. Vui lòng thử lại.'))
           setIsConfirmingPayment(false)
+          setPendingOrderId(null)
         }
         return
       }

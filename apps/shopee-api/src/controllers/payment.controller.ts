@@ -3,6 +3,8 @@ import { stripeService } from '../container'
 import { OrderModel, PAYMENT_STATUS } from '@database/models/order.model'
 import { PaymentLogModel } from '@database/models/payment-log.model'
 import { Logger } from '@utils/logger'
+import { emitToUser } from '../socket/utils/emit'
+import { SocketEvent } from '../@types/socket.type'
 
 /**
  * Handle Stripe webhook events.
@@ -75,6 +77,16 @@ export const stripeWebhook = async (req: Request, res: Response): Promise<void> 
         updateFields.confirmed_at = new Date()
       }
       await OrderModel.findByIdAndUpdate(orderId, updateFields)
+
+      // Emit real-time payment status update to the order owner
+      const updatedOrder = await OrderModel.findById(orderId).select('user status').lean()
+      if (updatedOrder) {
+        emitToUser(updatedOrder.user.toString(), SocketEvent.PAYMENT_STATUS_UPDATED, {
+          orderId: updatedOrder._id.toString(),
+          payment_status: paymentStatus,
+          order_status: orderStatus || updatedOrder.status,
+        })
+      }
     }
 
     // Record the event for idempotency and audit

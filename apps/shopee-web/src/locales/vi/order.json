@@ -156,6 +156,13 @@
   "filter.clearAll": "Xóa tất cả bộ lọc",
   "return.reasonRequired": "Vui lòng nhập lý do trả hàng",
   "return.success": "Yêu cầu trả hàng thành công",
-  "return.error": "Yêu cầu trả hàng thất bại"
+  "return.error": "Yêu cầu trả hàng thất bại",
+  "paymentStatus.pending": "Chờ thanh toán",
+  "paymentStatus.processing": "Đang xử lý",
+  "paymentStatus.paid": "Đã thanh toán",
+  "paymentStatus.failed": "Thanh toán thất bại",
+  "paymentStatus.refunded": "Đã hoàn tiền",
+  "toast.paymentConfirmed": "Thanh toán thành công",
+  "toast.paymentFailedRemote": "Thanh toán thất bại. Vui lòng thử lại hoặc liên hệ hỗ trợ."
 }
 

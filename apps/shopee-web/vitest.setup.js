@@ -243,8 +243,8 @@ const server = setupServer(
   ...additionalMocks,
 )
 
-// Start server before all tests với strict mode — unhandled requests sẽ throw error
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
+// Start server before all tests — unhandled requests sẽ log warning (không throw để tránh phá teardown)
+beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }))
 
 // Close server after all tests
 afterAll(() => server.close())

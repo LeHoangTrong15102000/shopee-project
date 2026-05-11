@@ -164,8 +164,9 @@ export default defineConfig(({ mode }) => {
         environment: 'jsdom',
         setupFiles: ['./vitest.setup.js'],
         css: true,
-        testTimeout: 60000,
-        hookTimeout: 60000,
+        testTimeout: 30000,
+        hookTimeout: 30000,
+        teardownTimeout: 10000,
         pool: 'forks',
         // Vitest v4: poolOptions removed — use top-level options instead
         maxWorkers: process.env.CI ? 1 : 2,

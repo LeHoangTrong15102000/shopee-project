@@ -236,6 +236,9 @@ importers:
       ai:
         specifier: ^4.3.16
         version: 4.3.19(react@19.2.4)(zod@4.3.6)
+      axios:
+        specifier: ^1.13.6
+        version: 1.13.6
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
@@ -296,6 +299,9 @@ importers:
       uuid:
         specifier: ^11.0.3
         version: 11.1.0
+      vnpay:
+        specifier: ^2.5.0
+        version: 2.5.0
       xstate:
         specifier: ^5.28.0
         version: 5.28.0
@@ -5238,6 +5244,9 @@ packages:
 
   date-fns@4.1.0:
     resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
+
+  dayjs@1.11.20:
+    resolution: {integrity: sha512-YbwwqR/uYpeoP4pu043q+LTDLFBLApUP6VxRihdfNTqu4ubqMlGDLd6ErXhEgsyvY0K6nCs7nggYumAN+9uEuQ==}
 
   debug@2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
@@ -10235,6 +10244,9 @@ packages:
 
   vlq@1.0.1:
     resolution: {integrity: sha512-gQpnTgkubC6hQgdIcRdYGDSDc+SaujOdyesZQMv6JlfQee/9Mp0Qhnys6WxDWvQnL5WZdT7o2Ul187aSt0Rq+w==}
+
+  vnpay@2.5.0:
+    resolution: {integrity: sha512-kyUYxG0pyEnRu/ha0gSVqkPCajmql523W2PQzgCkH4ct4XdEuzdiQnssi/k9XMcv+TvoPzuweEJG+4hWNU2DAQ==}
 
   void-elements@3.1.0:
     resolution: {integrity: sha512-Dhxzh5HZuiHQhbvTW9AMetFfBHDMYpo23Uo9btPXgdYP+3T5S+p+jgNy7spra+veYhBP2dCSgxR/i2Y02h5/6w==}
@@ -15918,6 +15930,8 @@ snapshots:
       is-data-view: 1.0.2
 
   date-fns@4.1.0: {}
+
+  dayjs@1.11.20: {}
 
   debug@2.6.9:
     dependencies:
@@ -22061,6 +22075,10 @@ snapshots:
       - msw
 
   vlq@1.0.1: {}
+
+  vnpay@2.5.0:
+    dependencies:
+      dayjs: 1.11.20
 
   void-elements@3.1.0: {}
 

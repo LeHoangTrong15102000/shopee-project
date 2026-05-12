@@ -38,6 +38,18 @@ import { emitOrderStatusUpdate } from '../socket/utils/order-emit'
 import { withTransaction } from '@utils/transaction.helper'
 import { Logger } from '@utils/logger'
 import { stripeService } from '../container'
+// paymentService is imported lazily to avoid circular dependency at module load time
+// (container.ts imports OrderService, PaymentService imports OrderModel — no cycle,
+//  but we import from container which is not yet fully initialized at this point)
+let _paymentService: import('./payment.service').PaymentService | null = null
+function getPaymentService(): import('./payment.service').PaymentService {
+  if (!_paymentService) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { paymentService } = require('../container')
+    _paymentService = paymentService
+  }
+  return _paymentService!
+}
 
 const SHIPPING_METHODS = [
   { id: 'standard', name: 'Giao hàng tiêu chuẩn', price: 30000, estimated_days: '3-5 ngày' },
@@ -89,6 +101,7 @@ export interface CreateOrderInput {
   voucher_discount?: number
   coins_used?: number
   note?: string
+  _clientIp?: string   // passed from controller for MoMo/VNPay payment initiation
 }
 
 // Shape returned by validateOrderInput — all expensive lookups happen before the transaction.
@@ -211,6 +224,44 @@ export class OrderService extends BaseService {
           stripe_client_secret: clientSecret,
         })
         return { ...order, client_secret: clientSecret }
+      }
+
+      // MoMo / VNPay: initiate redirect-based payment
+      if (
+        order.payment_method === PAYMENT_METHOD.MOMO ||
+        order.payment_method === PAYMENT_METHOD.VNPAY
+      ) {
+        const { PaymentProvider } = await import('./payment/payment.interface')
+        const provider =
+          order.payment_method === PAYMENT_METHOD.MOMO
+            ? PaymentProvider.MOMO
+            : PaymentProvider.VNPAY
+        const clientIp = input._clientIp || '127.0.0.1'
+        try {
+          const { paymentUrl, paymentId } = await getPaymentService().initiatePayment(
+            order._id.toString(),
+            provider,
+            clientIp,
+          )
+          return { ...order, payment_url: paymentUrl, payment_id: new Types.ObjectId(paymentId) }
+        } catch (err) {
+          Logger.apiWarn('[Order] Payment initiation failed — order created but payment pending', {
+            orderId: order._id.toString(),
+            error: err instanceof Error ? err.message : String(err),
+          })
+          // Return order without payment_url — frontend can retry
+          return order
+        }
+      }
+
+      // COD: go directly to confirmed
+      if (order.payment_method === PAYMENT_METHOD.COD) {
+        await OrderModel.findByIdAndUpdate(order._id, {
+          status: ORDER_STATUS.CONFIRMED,
+          payment_status: PAYMENT_STATUS.PAID,
+          confirmed_at: new Date(),
+        })
+        return { ...order, status: ORDER_STATUS.CONFIRMED }
       }
 
       return order

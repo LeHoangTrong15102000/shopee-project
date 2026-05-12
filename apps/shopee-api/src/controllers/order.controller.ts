@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 type Req = Request<Record<string, string>>
 import { responseSuccess, ErrorHandler } from '@utils/response'
 import { STATUS } from '@constants/status'
-import { orderService } from '../container'
+import { orderService, paymentService } from '../container'
 import { ValidationError, NotFoundError, BusinessError } from '@services/base.service'
 import { OrderStatusType } from '@database/models/order.model'
 import { ShippingMethodModel } from '@database/models/shipping-method.model'
@@ -59,6 +59,7 @@ export const createOrder = async (req: Request, res: Response) => {
       voucher_code,
       coins_used,
       note,
+      _clientIp: req.ip || (req as any).connection?.remoteAddress || '127.0.0.1',
     })
 
     return responseSuccess(res, {
@@ -90,6 +91,39 @@ export const getPendingPaymentOrder = async (req: Request, res: Response) => {
   } catch (error) {
     if (error instanceof ValidationError) {
       throw new ErrorHandler(STATUS.BAD_REQUEST, error.message)
+    }
+    throw error
+  }
+}
+
+/**
+ * GET /orders/:id/payment-status
+ * Returns current payment status, paymentUrl, canRetry flag, and provider.
+ * Rate limited to 20 req/min per user (applied in route).
+ */
+export const getOrderPaymentStatus = async (req: Request, res: Response) => {
+  try {
+    const user_id = req.jwtDecoded.id
+    const orderId = req.params.id as string
+
+    // Verify the order belongs to this user
+    const order = await orderService.getOrderById(user_id, orderId)
+    if (!order) {
+      throw new ErrorHandler(STATUS.NOT_FOUND, 'Không tìm thấy đơn hàng')
+    }
+
+    const status = await paymentService.getPaymentStatus(orderId)
+
+    return responseSuccess(res, {
+      message: 'Lấy trạng thái thanh toán thành công',
+      data: status,
+    })
+  } catch (error) {
+    if (error instanceof ValidationError || error instanceof BusinessError) {
+      throw new ErrorHandler(STATUS.BAD_REQUEST, error.message)
+    }
+    if (error instanceof NotFoundError) {
+      throw new ErrorHandler(STATUS.NOT_FOUND, error.message)
     }
     throw error
   }
@@ -295,4 +329,38 @@ export const adminBulkUpdateStatus = async (req: Request, res: Response) => {
 export const adminGetOrderCountByStatus = async (_req: Request, res: Response) => {
   const data = await orderService.adminGetOrderCountByStatus()
   return responseSuccess(res, { message: 'Lấy thống kê đơn hàng theo trạng thái thành công', data })
+}
+
+/**
+ * POST /orders/:id/retry-payment
+ * Generates a new payment URL for an order whose previous payment failed or expired.
+ * Requires the order to belong to the authenticated user.
+ */
+export const retryOrderPayment = async (req: Req, res: Response) => {
+  try {
+    const user_id = req.jwtDecoded.id
+    const orderId = req.params.id
+
+    // Verify the order belongs to this user before retrying
+    const order = await orderService.getOrderById(user_id, orderId)
+    if (!order) {
+      throw new ErrorHandler(STATUS.NOT_FOUND, 'Không tìm thấy đơn hàng')
+    }
+
+    const clientIp = req.ip || (req as any).connection?.remoteAddress || '127.0.0.1'
+    const result = await paymentService.retryPayment(orderId, clientIp)
+
+    return responseSuccess(res, {
+      message: 'Tạo lại URL thanh toán thành công',
+      data: { paymentUrl: result.paymentUrl, paymentId: result.paymentId },
+    })
+  } catch (error) {
+    if (error instanceof ValidationError || error instanceof BusinessError) {
+      throw new ErrorHandler(STATUS.BAD_REQUEST, error.message)
+    }
+    if (error instanceof NotFoundError) {
+      throw new ErrorHandler(STATUS.NOT_FOUND, error.message)
+    }
+    throw error
+  }
 }

@@ -2,6 +2,8 @@ import mongoose, { Schema } from 'mongoose'
 
 export const ORDER_STATUS = {
   PENDING: 'pending',
+  PAYMENT_PENDING: 'payment_pending',
+  PAYMENT_FAILED: 'payment_failed',
   CONFIRMED: 'confirmed',
   PROCESSING: 'processing',
   SHIPPING: 'shipping',
@@ -17,6 +19,8 @@ export const PAYMENT_METHOD = {
   BANK_TRANSFER: 'bank_transfer',
   E_WALLET: 'e_wallet',
   CREDIT_CARD: 'credit_card',
+  MOMO: 'momo',
+  VNPAY: 'vnpay',
 } as const
 
 export type PaymentMethodType = (typeof PAYMENT_METHOD)[keyof typeof PAYMENT_METHOD]
@@ -65,6 +69,8 @@ export interface IOrder {
   payment_status: PaymentStatusType          // default: 'pending'
   stripe_payment_intent_id?: string | null   // set when credit_card order is created
   stripe_client_secret?: string | null       // transient — used by frontend to confirm payment
+  payment_id?: mongoose.Types.ObjectId | null  // ref to Payment document (MoMo/VNPay)
+  payment_url?: string | null                  // redirect URL for MoMo/VNPay payment
   subtotal: number
   shipping_fee: number
   discount: number
@@ -132,6 +138,8 @@ const OrderSchema = new Schema<IOrder>(
     },
     stripe_payment_intent_id: { type: String, default: null },
     stripe_client_secret: { type: String, default: null },
+    payment_id: { type: mongoose.SchemaTypes.ObjectId, ref: 'payments', default: null },
+    payment_url: { type: String, default: null },
     subtotal: { type: Number, required: true },
     shipping_fee: { type: Number, required: true, default: 0 },
     discount: { type: Number, default: 0 },

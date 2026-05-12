@@ -134,7 +134,32 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Run Tests
-        run: pnpm nx run shopee-web:test -- --run --coverage --shard=${{ matrix.shard }}
+        run: pnpm nx run shopee-web:test -- --run --shard=${{ matrix.shard }}
+        env:
+          CI: 'true'
+          NODE_OPTIONS: '--max-old-space-size=4096'
+
+  # ==================== SHOPEE-WEB: COVERAGE (main only) ====================
+  coverage-web:
+    name: Coverage (shopee-web)
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    needs: [changes, test-web]
+    if: github.ref == 'refs/heads/master' && (needs.changes.outputs.web-src == 'true' || needs.changes.outputs.web-tests == 'true')
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Run Tests with Coverage
+        run: pnpm nx run shopee-web:test -- --run --coverage
         env:
           CI: 'true'
           NODE_OPTIONS: '--max-old-space-size=8192'
@@ -144,7 +169,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           files: apps/shopee-web/coverage/lcov.info
-          flags: shopee-web-shard-${{ matrix.shard }}
+          flags: shopee-web
           fail_ci_if_error: false
 
   # ==================== SHOPEE-WEB: BUILD ====================

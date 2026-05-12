@@ -167,13 +167,7 @@ export default defineConfig(({ mode }) => {
         testTimeout: 10000,
         hookTimeout: 10000,
         teardownTimeout: 5000,
-        pool: 'forks',
-        poolOptions: {
-          forks: {
-            maxForks: 3,
-            minForks: 1,
-          },
-        },
+        pool: 'threads',
         include: [
           'src/**/*.test.{ts,tsx}', // Unit tests
           'test/**/*.test.{ts,tsx}', // Integration & E2E tests

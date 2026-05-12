@@ -20,6 +20,7 @@ import { OrderRepository } from '@repositories/order.repository'
 import { VoucherRepository } from '@repositories/voucher.repository'
 import { SKURepository } from '@repositories/sku.repository'
 import { ProductSkuSnapshotRepository } from '@repositories/product-sku-snapshot.repository'
+import { PaymentRepository } from '@repositories/payment.repository'
 
 // Services
 import { ProductService } from '@services/product.service'
@@ -40,6 +41,7 @@ import { CheckInService } from '@services/checkin.service'
 import { PasswordResetService } from '@services/password-reset.service'
 import { PriceService } from '@services/price.service'
 import { StripeService } from '@services/stripe.service'
+import { PaymentService } from '@services/payment.service'
 
 // Repository instances (singletons)
 const productRepository = new ProductRepository()
@@ -58,6 +60,7 @@ const orderRepository = new OrderRepository()
 const voucherRepository = new VoucherRepository()
 const skuRepository = new SKURepository(productRepository)
 const productSkuSnapshotRepository = new ProductSkuSnapshotRepository()
+const paymentRepository = new PaymentRepository()
 
 // Service instances (singletons with injected repositories)
 const productService = new ProductService(productRepository, skuRepository)
@@ -85,6 +88,7 @@ const checkinService = new CheckInService()
 const passwordResetService = new PasswordResetService(userRepository, authRepository)
 const priceService = new PriceService()
 const stripeService = new StripeService()
+const paymentService = new PaymentService(paymentRepository)
 
 // Export container with all services
 export const container = {
@@ -106,6 +110,7 @@ export const container = {
     voucher: voucherRepository,
     sku: skuRepository,
     productSkuSnapshot: productSkuSnapshotRepository,
+    payment: paymentRepository,
   },
   // Services (main interface for controllers)
   services: {
@@ -127,6 +132,7 @@ export const container = {
     passwordReset: passwordResetService,
     price: priceService,
     stripe: stripeService,
+    payment: paymentService,
   },
 }
 
@@ -152,4 +158,6 @@ export {
   stripeService,
   skuRepository,
   productSkuSnapshotRepository,
+  paymentRepository,
+  paymentService,
 }

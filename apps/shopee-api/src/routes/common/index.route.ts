@@ -6,6 +6,7 @@ import qaRouter from './qa.route'
 import healthRouter from './health.route'
 import { shopRouter } from './shop.route'
 import paymentRouter from './payment.route'
+import ipnRouter from './ipn.route'
 
 const commonRoutes = {
   prefix: '/',
@@ -42,6 +43,10 @@ const commonRoutes = {
     {
       path: 'payment',
       route: paymentRouter,
+    },
+    {
+      path: 'payment',
+      route: ipnRouter,
     },
   ],
 }

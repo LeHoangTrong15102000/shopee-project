@@ -32,6 +32,30 @@ const sharedConfig = {
 }
 
 module.exports = {
+  // Coverage thresholds for payment module (applies when running with --coverage)
+  coverageThreshold: {
+    './src/services/payment.service.ts': {
+      lines: 85,
+      functions: 85,
+    },
+    './src/services/payment/momo.provider.ts': {
+      lines: 90,
+      functions: 90,
+    },
+    './src/services/payment/vnpay.provider.ts': {
+      lines: 85,
+      functions: 85,
+    },
+    './src/controllers/ipn.controller.ts': {
+      lines: 80,
+      functions: 80,
+    },
+    './src/controllers/payment.controller.ts': {
+      lines: 80,
+      functions: 80,
+    },
+  },
+
   // Coverage configuration (applies when running with --coverage)
   collectCoverageFrom: [
     'src/**/*.ts',

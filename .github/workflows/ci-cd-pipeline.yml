@@ -118,6 +118,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.web-src == 'true' || needs.changes.outputs.web-tests == 'true'
     strategy:
+      fail-fast: false
       matrix:
         shard: [1/3, 2/3, 3/3]
     steps:
@@ -136,7 +137,7 @@ jobs:
         run: pnpm nx run shopee-web:test -- --run --coverage --shard=${{ matrix.shard }}
         env:
           CI: 'true'
-          NODE_OPTIONS: '--max-old-space-size=4096'
+          NODE_OPTIONS: '--max-old-space-size=8192'
 
       - name: Upload Coverage
         if: always()

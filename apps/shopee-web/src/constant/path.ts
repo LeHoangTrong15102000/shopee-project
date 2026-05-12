@@ -31,6 +31,7 @@ const path = {
   priceAlerts: '/user/price-alerts', // Trang cảnh báo giá
   orderTracking: '/tracking/:number', // Trang theo dõi đơn hàng công khai
   paymentSuccess: '/payment/success', // Trang xác nhận thanh toán thành công
+  paymentReturn: '/payment/return', // Trang xử lý kết quả thanh toán (polling)
 } as const
 
 export default path

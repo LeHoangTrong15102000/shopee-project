@@ -40,6 +40,7 @@ import { Logger } from '@utils/logger'
 import { initializeSocket } from './socket/socket.init'
 import { viewCounterService } from '@utils/view-counter.service'
 import { disconnectRedis } from '@utils/redis.client'
+import { paymentReconciliationJob } from './container'
 
 const app: express.Application = express()
 connectMongoDB()
@@ -268,6 +269,9 @@ httpServer.listen(PORT, () => {
     nodeVersion: process.version,
     websocket: true,
   })
+
+  // Start background jobs after server is ready
+  paymentReconciliationJob.start()
 })
 
 // ==================== GRACEFUL SHUTDOWN ====================

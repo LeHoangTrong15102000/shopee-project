@@ -8,6 +8,7 @@ import {
 } from '@database/database'
 import { redisClient } from '@utils/redis.client'
 import { getRequestStats } from '@utils/request-stats'
+import { getSnapshot as getPaymentSnapshot } from '@utils/payment-metrics'
 
 /**
  * Health check response interface
@@ -101,6 +102,7 @@ export const metricsCheck = async (req: Request, res: Response) => {
   const poolStats = getConnectionPoolStats()
   const memoryUsage = process.memoryUsage()
   const reqStats = getRequestStats()
+  const paymentSnapshot = getPaymentSnapshot()
 
   const metrics = {
     timestamp: new Date().toISOString(),
@@ -128,6 +130,7 @@ export const metricsCheck = async (req: Request, res: Response) => {
       avgResponseTimeMs: reqStats.avgResponseTimeMs,
       errorRate: reqStats.errorRate,
     },
+    payment: paymentSnapshot,
   }
 
   return responseSuccess(res, {

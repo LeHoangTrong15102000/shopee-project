@@ -492,6 +492,21 @@ const orderApi = {
   getPendingPaymentOrder: async () => {
     return http.get<SuccessResponseApi<Order | null>>(`${URL}/pending-payment`)
   },
+
+  getPaymentStatus: async (orderId: string) => {
+    return http.get<SuccessResponseApi<{
+      status: string
+      paymentUrl: string | null
+      canRetry: boolean
+      provider: string | null
+    }>>(`${URL}/${orderId}/payment-status`)
+  },
+
+  retryPayment: async (orderId: string) => {
+    return http.post<SuccessResponseApi<{ paymentUrl: string; paymentId: string }>>(
+      `${URL}/${orderId}/retry-payment`,
+    )
+  },
 }
 
 export default orderApi

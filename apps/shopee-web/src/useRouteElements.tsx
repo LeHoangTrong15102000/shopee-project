@@ -44,6 +44,7 @@ const NotFound = lazy(() => import('./pages/NotFound'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword/ForgotPassword'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword/ResetPassword'))
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'))
+const PaymentReturn = lazy(() => import('./pages/PaymentReturn/PaymentReturn'))
 
 // Khai báo một Route Protected(Vì nó return về Outlet nên hàm này được coi là component)
 function ProtectedRoute() {
@@ -203,6 +204,18 @@ const useRouteElements = () => {
               <MainLayout>
                 <Suspense fallback={<Loader />}>
                   <PaymentSuccess />
+                </Suspense>
+              </MainLayout>
+            </Suspense>
+          ),
+        },
+        {
+          path: path.paymentReturn,
+          element: (
+            <Suspense fallback={<Loader />}>
+              <MainLayout>
+                <Suspense fallback={<Loader />}>
+                  <PaymentReturn />
                 </Suspense>
               </MainLayout>
             </Suspense>

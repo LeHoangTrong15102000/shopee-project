@@ -9,6 +9,12 @@ import { VnpayProvider } from './payment/vnpay.provider'
 import { emitToUser } from '../socket/utils/emit'
 import { SocketEvent } from '../@types/socket.type'
 import { Logger } from '@utils/logger'
+import {
+  incrementInitiated,
+  incrementIpnReceived,
+  incrementSuccess,
+  incrementFailed,
+} from '@utils/payment-metrics'
 
 const APP_BASE_URL = process.env.APP_BASE_URL || 'http://localhost:4000'
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000'
@@ -42,6 +48,7 @@ export class PaymentService {
     provider: PaymentProvider,
     clientIp: string,
   ): Promise<{ paymentUrl: string; paymentId: string }> {
+    incrementInitiated()
     const order = await OrderModel.findById(orderId).lean()
     if (!order) throw new Error(`Order not found: ${orderId}`)
 
@@ -139,6 +146,7 @@ export class PaymentService {
     provider: PaymentProvider,
     payload: Record<string, unknown>,
   ): Promise<void> {
+    incrementIpnReceived()
     const providerInstance = this.getProvider(provider)
 
     // Verify signature — reject if invalid
@@ -197,6 +205,7 @@ export class PaymentService {
             status: GATEWAY_PAYMENT_STATUS.FAILED,
             ipnPayload: ipnResult.rawData,
           })
+          incrementFailed()
           return
         }
 
@@ -207,6 +216,13 @@ export class PaymentService {
         const newOrderStatus = ipnResult.success
           ? ORDER_STATUS.CONFIRMED
           : ORDER_STATUS.PAYMENT_FAILED
+
+        // Track payment outcome metrics
+        if (ipnResult.success) {
+          incrementSuccess()
+        } else {
+          incrementFailed()
+        }
 
         // Update payment record
         await this.paymentRepository.updateById(payment._id, {

@@ -43,6 +43,9 @@ import { PriceService } from '@services/price.service'
 import { StripeService } from '@services/stripe.service'
 import { PaymentService } from '@services/payment.service'
 
+// Jobs
+import { PaymentReconciliationJob } from './jobs/payment-reconciliation.job'
+
 // Repository instances (singletons)
 const productRepository = new ProductRepository()
 const userRepository = new UserRepository()
@@ -90,6 +93,9 @@ const priceService = new PriceService()
 const stripeService = new StripeService()
 const paymentService = new PaymentService(paymentRepository)
 
+// Job instances
+const paymentReconciliationJob = new PaymentReconciliationJob(paymentService)
+
 // Export container with all services
 export const container = {
   // Repositories (for direct access if needed)
@@ -134,6 +140,10 @@ export const container = {
     stripe: stripeService,
     payment: paymentService,
   },
+  // Jobs
+  jobs: {
+    paymentReconciliation: paymentReconciliationJob,
+  },
 }
 
 // Named exports for convenience
@@ -160,4 +170,5 @@ export {
   productSkuSnapshotRepository,
   paymentRepository,
   paymentService,
+  paymentReconciliationJob,
 }

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { paymentService, paymentRepository } from '../container'
+import { paymentService, paymentRepository, paymentReconciliationJob } from '../container'
 import { responseSuccess, ErrorHandler } from '@utils/response'
 import { STATUS } from '@constants/status'
 import { GatewayPaymentStatusType } from '@database/models/payment.model'
@@ -179,5 +179,24 @@ export const adminManualConfirmPayment = async (req: Request, res: Response) => 
   return responseSuccess(res, {
     message: 'Xác nhận thanh toán thủ công thành công',
     data: updated,
+  })
+}
+
+/**
+ * POST /admin/gateway-payments/reconcile-all
+ * Trigger a full reconciliation run immediately.
+ * Queries all stale PENDING payments against their providers and updates local state.
+ * Protected by existing admin authentication middleware.
+ */
+export const adminReconcileAll = async (req: Request, res: Response) => {
+  Logger.apiInfo('[Admin] Manual reconcile-all triggered', {
+    adminId: req.jwtDecoded?.id || 'unknown',
+  })
+
+  const summary = await paymentReconciliationJob.runOnce()
+
+  return responseSuccess(res, {
+    message: 'Reconciliation run complete',
+    data: summary,
   })
 }

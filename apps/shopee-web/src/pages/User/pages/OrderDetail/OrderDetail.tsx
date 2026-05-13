@@ -29,8 +29,6 @@ export default function OrderDetail() {
     isLoading,
     navigate,
     currentStatus,
-    isSubscribed,
-    stepTimestamps,
     showCancelModal,
     setShowCancelModal,
     cancelReason,
@@ -135,14 +133,11 @@ export default function OrderDetail() {
         </div>
       </motion.div>
 
-      {/* Order Tracking Timeline + Status Tracker */}
+      {/* Order Tracking Timeline */}
       <OrderTimeline
         tracking={tracking}
         currentStatus={currentStatus}
-        isSubscribed={isSubscribed}
         orderStatus={order.status}
-        orderTotal={order.total}
-        stepTimestamps={stepTimestamps}
         shouldReduceMotion={shouldReduceMotion}
       />
 

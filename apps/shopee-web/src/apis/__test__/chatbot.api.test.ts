@@ -29,10 +29,9 @@ describe('Chatbot API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await chatbotApi.getConversations()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(chatbotApi.getConversations()).rejects.toThrow('Network error')
     })
   })
 
@@ -45,10 +44,9 @@ describe('Chatbot API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await chatbotApi.getConversation('1')
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(chatbotApi.getConversation('1')).rejects.toThrow('Network error')
     })
   })
 
@@ -61,10 +59,11 @@ describe('Chatbot API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await chatbotApi.createConversation({ message: 'Hello' })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(chatbotApi.createConversation({ message: 'Hello' })).rejects.toThrow(
+        'Network error',
+      )
     })
   })
 
@@ -77,10 +76,9 @@ describe('Chatbot API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await chatbotApi.sendMessage('1', { message: 'Hi' })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(chatbotApi.sendMessage('1', { message: 'Hi' })).rejects.toThrow('Network error')
     })
   })
 
@@ -93,10 +91,11 @@ describe('Chatbot API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.put).mockRejectedValue(new Error('Network error'))
-      const result = await chatbotApi.updateConversation('1', { title: 'New Title' })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(
+        chatbotApi.updateConversation('1', { title: 'New Title' }),
+      ).rejects.toThrow('Network error')
     })
   })
 
@@ -109,10 +108,9 @@ describe('Chatbot API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.delete).mockRejectedValue(new Error('Network error'))
-      const result = await chatbotApi.deleteConversation('1')
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(chatbotApi.deleteConversation('1')).rejects.toThrow('Network error')
     })
   })
 
@@ -125,10 +123,9 @@ describe('Chatbot API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await chatbotApi.testChatbot({ message: 'test' })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(chatbotApi.testChatbot({ message: 'test' })).rejects.toThrow('Network error')
     })
   })
 })

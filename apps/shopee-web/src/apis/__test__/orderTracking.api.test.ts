@@ -27,10 +27,9 @@ describe('OrderTracking API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await orderTrackingApi.getTracking({ order_id: '1' })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(orderTrackingApi.getTracking({ order_id: '1' })).rejects.toThrow('Network error')
     })
   })
 
@@ -45,10 +44,9 @@ describe('OrderTracking API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await orderTrackingApi.getTrackingByNumber('VN123')
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(orderTrackingApi.getTrackingByNumber('VN123')).rejects.toThrow('Network error')
     })
   })
 })

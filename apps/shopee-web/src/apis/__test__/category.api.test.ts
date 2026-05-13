@@ -27,10 +27,9 @@ describe('Category API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await categoryApi.getCategories()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(categoryApi.getCategories()).rejects.toThrow('Network error')
     })
   })
 })

@@ -59,10 +59,11 @@ describe('Checkout API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await checkoutApi.calculateSummary({ purchaseIds: ['1'] })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(
+        checkoutApi.calculateSummary({ purchaseIds: ['1'] }),
+      ).rejects.toThrow('Network error')
     })
   })
 
@@ -80,15 +81,16 @@ describe('Checkout API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await checkoutApi.createOrder({
-        purchaseIds: ['1'],
-        shippingAddressId: '1',
-        shippingMethodId: '1',
-        paymentMethod: 'cod',
-      })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(
+        checkoutApi.createOrder({
+          purchaseIds: ['1'],
+          shippingAddressId: '1',
+          shippingMethodId: '1',
+          paymentMethod: 'cod',
+        }),
+      ).rejects.toThrow('Network error')
     })
   })
 })

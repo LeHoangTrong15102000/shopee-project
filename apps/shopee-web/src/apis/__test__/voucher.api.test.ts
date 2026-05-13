@@ -27,10 +27,9 @@ describe('Voucher API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await voucherApi.getVouchers()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(voucherApi.getVouchers()).rejects.toThrow('Network error')
     })
   })
 
@@ -43,10 +42,9 @@ describe('Voucher API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await voucherApi.getAvailableVouchers()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(voucherApi.getAvailableVouchers()).rejects.toThrow('Network error')
     })
   })
 
@@ -59,10 +57,9 @@ describe('Voucher API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await voucherApi.getMyVouchers()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(voucherApi.getMyVouchers()).rejects.toThrow('Network error')
     })
   })
 
@@ -90,10 +87,9 @@ describe('Voucher API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await voucherApi.collectVoucher('1')
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(voucherApi.collectVoucher('1')).rejects.toThrow('Network error')
     })
   })
 
@@ -106,10 +102,9 @@ describe('Voucher API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await voucherApi.saveVoucher('1')
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(voucherApi.saveVoucher('1')).rejects.toThrow('Network error')
     })
   })
 
@@ -122,10 +117,9 @@ describe('Voucher API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await voucherApi.getSavedVouchers()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(voucherApi.getSavedVouchers()).rejects.toThrow('Network error')
     })
   })
 
@@ -155,10 +149,11 @@ describe('Voucher API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await voucherApi.validateVoucher({ code: 'TEST', order_total: 200000 })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(
+        voucherApi.validateVoucher({ code: 'TEST', order_total: 200000 }),
+      ).rejects.toThrow('Network error')
     })
   })
 })

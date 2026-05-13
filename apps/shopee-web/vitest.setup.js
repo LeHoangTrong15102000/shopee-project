@@ -257,6 +257,7 @@ afterEach(() => {
   localStorage.clear()
   sessionStorage.clear()
   vi.clearAllMocks()
+  vi.restoreAllMocks()
 })
 
 // Mock PointerEvent cho framer-motion trong test environment
@@ -283,6 +284,19 @@ vi.mock('@heroui/tooltip', () => ({
   Tooltip: ({ children }) => children,
 }))
 
+// Mock react-toastify to prevent timer leaks from toast.error/success autoClose
+vi.mock('react-toastify', () => ({
+  toast: {
+    error: vi.fn(),
+    success: vi.fn(),
+    info: vi.fn(),
+    warning: vi.fn(),
+    dismiss: vi.fn(),
+  },
+  ToastContainer: () => null,
+  Bounce: 'Bounce',
+}))
+
 // Mock heavy lazy-loaded components to prevent OOM in integration tests
 // These are only used in App.tsx via React.lazy() - component tests import directly and override
 vi.mock('src/components/ChatbotWidget', () => ({
@@ -292,3 +306,5 @@ vi.mock('src/components/ChatbotWidget', () => ({
 vi.mock('src/components/PWAInstallPrompt', () => ({
   default: () => null,
 }))
+
+// Note: window.location.replace is handled by http.ts which uses pushState in test mode

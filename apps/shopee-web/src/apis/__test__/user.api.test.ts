@@ -27,10 +27,9 @@ describe('User API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await userApi.getProfile()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(userApi.getProfile()).rejects.toThrow('Network error')
     })
   })
 
@@ -43,10 +42,9 @@ describe('User API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.put).mockRejectedValue(new Error('Network error'))
-      const result = await userApi.updateProfile({ name: 'Updated' })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(userApi.updateProfile({ name: 'Updated' })).rejects.toThrow('Network error')
     })
   })
 
@@ -60,11 +58,10 @@ describe('User API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
       const formData = new FormData()
-      const result = await userApi.uploadAvatar(formData)
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(userApi.uploadAvatar(formData)).rejects.toThrow('Network error')
     })
   })
 })

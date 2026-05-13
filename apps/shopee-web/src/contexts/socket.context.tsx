@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import type { Socket } from 'socket.io-client'
 import config from 'src/constant/config'
 import { AppContext } from 'src/contexts/app.context'
@@ -31,7 +31,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
   const isConnected = connectionStatus === 'connected'
 
-  const connect = async () => {
+  const connect = useCallback(async () => {
     if (socketRef.current?.connected || !isAuthenticated) {
       return
     }
@@ -96,9 +96,9 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       console.error('Failed to load socket.io-client:', error)
       setConnectionStatus('disconnected')
     }
-  }
+  }, [isAuthenticated])
 
-  const disconnect = () => {
+  const disconnect = useCallback(() => {
     if (socketRef.current) {
       socketRef.current.removeAllListeners()
       socketRef.current.disconnect()
@@ -106,7 +106,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       setSocket(null)
       setConnectionStatus('disconnected')
     }
-  }
+  }, [])
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -118,13 +118,9 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     return () => {
-      if (socketRef.current) {
-        socketRef.current.removeAllListeners()
-        socketRef.current.disconnect()
-        socketRef.current = null
-      }
+      disconnect()
     }
-  }, [])
+  }, [disconnect])
 
   const value = {
     socket,

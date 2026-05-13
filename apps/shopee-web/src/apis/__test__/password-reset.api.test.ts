@@ -27,10 +27,11 @@ describe('Password Reset API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await passwordResetApi.forgotPassword('test@test.com')
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(passwordResetApi.forgotPassword('test@test.com')).rejects.toThrow(
+        'Network error',
+      )
     })
   })
 
@@ -43,10 +44,11 @@ describe('Password Reset API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await passwordResetApi.resetPassword('token', 'newpass', 'newpass')
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(
+        passwordResetApi.resetPassword('token', 'newpass', 'newpass'),
+      ).rejects.toThrow('Network error')
     })
   })
 })

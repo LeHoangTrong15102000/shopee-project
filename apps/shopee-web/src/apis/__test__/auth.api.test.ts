@@ -27,10 +27,11 @@ describe('Auth API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await authApi.registerAccount({ email: 'test@test.com', password: 'pass' })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(
+        authApi.registerAccount({ email: 'test@test.com', password: 'pass' }),
+      ).rejects.toThrow('Network error')
     })
   })
 
@@ -43,10 +44,11 @@ describe('Auth API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await authApi.loginAccount({ email: 'test@test.com', password: 'pass' })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(
+        authApi.loginAccount({ email: 'test@test.com', password: 'pass' }),
+      ).rejects.toThrow('Network error')
     })
   })
 
@@ -59,10 +61,9 @@ describe('Auth API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await authApi.logoutAccount()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(authApi.logoutAccount()).rejects.toThrow('Network error')
     })
   })
 
@@ -75,10 +76,11 @@ describe('Auth API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await authApi.refreshAccessToken({ refresh_token: 'refresh' })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(
+        authApi.refreshAccessToken({ refresh_token: 'refresh' }),
+      ).rejects.toThrow('Network error')
     })
   })
 })

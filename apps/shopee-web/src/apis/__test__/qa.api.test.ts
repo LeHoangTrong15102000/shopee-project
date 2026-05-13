@@ -29,10 +29,9 @@ describe('QA API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await qaApi.getQuestions({ product_id: '1' })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(qaApi.getQuestions({ product_id: '1' })).rejects.toThrow('Network error')
     })
   })
 
@@ -45,10 +44,11 @@ describe('QA API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await qaApi.askQuestion({ product_id: '1', question: 'test' })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(
+        qaApi.askQuestion({ product_id: '1', question: 'test' }),
+      ).rejects.toThrow('Network error')
     })
   })
 
@@ -61,10 +61,11 @@ describe('QA API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await qaApi.answerQuestion('1', { answer: 'test answer' })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(
+        qaApi.answerQuestion('1', { answer: 'test answer' }),
+      ).rejects.toThrow('Network error')
     })
   })
 
@@ -77,10 +78,9 @@ describe('QA API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await qaApi.likeQuestion('1')
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(qaApi.likeQuestion('1')).rejects.toThrow('Network error')
     })
   })
 
@@ -93,10 +93,9 @@ describe('QA API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await qaApi.likeAnswer('1', '2')
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(qaApi.likeAnswer('1', '2')).rejects.toThrow('Network error')
     })
   })
 })

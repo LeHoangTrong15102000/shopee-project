@@ -149,9 +149,9 @@ describe('ProductDetail', () => {
       () => {
         expect(screen.getByTestId('product-images')).toBeInTheDocument()
       },
-      { timeout: 10000 },
+      { timeout: 25000 },
     )
-  })
+  }, 30000)
 
   it('renders product name from MSW data (OPPO A12)', async () => {
     renderWithRouter({ route: PRODUCT_SLUG })

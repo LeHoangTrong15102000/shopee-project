@@ -27,10 +27,11 @@ describe('Purchases API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await purchaseApi.addToCart({ product_id: '1', buy_count: 1 })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(
+        purchaseApi.addToCart({ product_id: '1', buy_count: 1 }),
+      ).rejects.toThrow('Network error')
     })
   })
 
@@ -43,10 +44,9 @@ describe('Purchases API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await purchaseApi.getPurchases({ status: 0 })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(purchaseApi.getPurchases({ status: 0 })).rejects.toThrow('Network error')
     })
   })
 
@@ -59,10 +59,11 @@ describe('Purchases API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await purchaseApi.buyPurchases([{ product_id: '1', buy_count: 1 }])
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(
+        purchaseApi.buyPurchases([{ product_id: '1', buy_count: 1 }]),
+      ).rejects.toThrow('Network error')
     })
   })
 
@@ -75,10 +76,11 @@ describe('Purchases API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.put).mockRejectedValue(new Error('Network error'))
-      const result = await purchaseApi.updatePurchase({ product_id: '1', buy_count: 2 })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(
+        purchaseApi.updatePurchase({ product_id: '1', buy_count: 2 }),
+      ).rejects.toThrow('Network error')
     })
   })
 
@@ -91,10 +93,9 @@ describe('Purchases API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.delete).mockRejectedValue(new Error('Network error'))
-      const result = await purchaseApi.deletePurchase(['1'])
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(purchaseApi.deletePurchase(['1'])).rejects.toThrow('Network error')
     })
   })
 })

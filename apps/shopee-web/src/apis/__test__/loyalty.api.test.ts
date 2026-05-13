@@ -27,10 +27,9 @@ describe('Loyalty API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await loyaltyApi.getPoints()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(loyaltyApi.getPoints()).rejects.toThrow('Network error')
     })
   })
 
@@ -45,10 +44,9 @@ describe('Loyalty API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await loyaltyApi.getTransactions()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(loyaltyApi.getTransactions()).rejects.toThrow('Network error')
     })
   })
 
@@ -61,10 +59,9 @@ describe('Loyalty API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await loyaltyApi.getRewards()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(loyaltyApi.getRewards()).rejects.toThrow('Network error')
     })
   })
 
@@ -77,10 +74,9 @@ describe('Loyalty API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await loyaltyApi.redeemPoints('1')
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(loyaltyApi.redeemPoints('1')).rejects.toThrow('Network error')
     })
   })
 })

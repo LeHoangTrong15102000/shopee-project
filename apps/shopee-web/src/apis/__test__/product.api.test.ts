@@ -27,10 +27,9 @@ describe('Product API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await productApi.getProducts({ page: 1 })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(productApi.getProducts({ page: 1 })).rejects.toThrow('Network error')
     })
   })
 
@@ -43,10 +42,9 @@ describe('Product API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await productApi.getProductDetail('1')
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(productApi.getProductDetail('1')).rejects.toThrow('Network error')
     })
   })
 
@@ -59,10 +57,9 @@ describe('Product API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await productApi.getSearchSuggestions({ q: 'test' })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(productApi.getSearchSuggestions({ q: 'test' })).rejects.toThrow('Network error')
     })
   })
 
@@ -75,10 +72,9 @@ describe('Product API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await productApi.getSearchHistory()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(productApi.getSearchHistory()).rejects.toThrow('Network error')
     })
   })
 
@@ -91,10 +87,11 @@ describe('Product API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await productApi.saveSearchHistory({ keyword: 'test' })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(productApi.saveSearchHistory({ keyword: 'test' })).rejects.toThrow(
+        'Network error',
+      )
     })
   })
 
@@ -107,10 +104,9 @@ describe('Product API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.delete).mockRejectedValue(new Error('Network error'))
-      const result = await productApi.deleteSearchHistory()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(productApi.deleteSearchHistory()).rejects.toThrow('Network error')
     })
   })
 
@@ -123,10 +119,9 @@ describe('Product API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.delete).mockRejectedValue(new Error('Network error'))
-      const result = await productApi.deleteSearchHistoryItem('test')
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(productApi.deleteSearchHistoryItem('test')).rejects.toThrow('Network error')
     })
   })
 })

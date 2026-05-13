@@ -27,10 +27,9 @@ describe('Checkin API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await checkinApi.checkIn()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(checkinApi.checkIn()).rejects.toThrow('Network error')
     })
   })
 
@@ -45,10 +44,9 @@ describe('Checkin API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await checkinApi.getStreak()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(checkinApi.getStreak()).rejects.toThrow('Network error')
     })
   })
 
@@ -61,10 +59,9 @@ describe('Checkin API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await checkinApi.getHistory()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(checkinApi.getHistory()).rejects.toThrow('Network error')
     })
   })
 })

@@ -39,12 +39,14 @@ export class Http {
   private refreshToken: string
   private refreshTokenRequest: Promise<string> | null
   private redirectOnTokenExpiry: boolean
+  private redirectTimer: ReturnType<typeof setTimeout> | null
   constructor(options?: HttpOptions) {
     // this.accessToken sẽ lưu vào RAM nên lấy ra sẽ nhanh hơn
     this.accessToken = getAccessTokenFromLS()
     this.refreshToken = getRefreshTokenFromLS()
     this.refreshTokenRequest = null
     this.redirectOnTokenExpiry = options?.redirectOnTokenExpiry ?? true
+    this.redirectTimer = null
     this.instance = axios.create({
       baseURL: config.baseUrl,
       timeout: 10000,
@@ -142,9 +144,16 @@ export class Http {
             i18n.t('common:session_expired')
           toast.error(errorMessage, { autoClose: 1000 })
           if (this.redirectOnTokenExpiry) {
-            setTimeout(() => {
-              window.location.replace(LOGIN_REDIRECT_URL)
-            }, 1000)
+            if (this.redirectTimer) clearTimeout(this.redirectTimer)
+            const loginPath = new URL(LOGIN_REDIRECT_URL).pathname
+            if (import.meta.env.MODE === 'test') {
+              // In test mode, redirect synchronously via pushState (no timer to leak)
+              window.history.pushState({}, '', loginPath)
+            } else {
+              this.redirectTimer = setTimeout(() => {
+                window.location.replace(LOGIN_REDIRECT_URL)
+              }, 1000)
+            }
           }
           // khi mà hết hạn refresh_token thì chúng ta sẽ quay lại trang đầu tiên
         }

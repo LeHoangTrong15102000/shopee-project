@@ -27,10 +27,9 @@ describe('Wishlist API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await wishlistApi.getWishlist()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(wishlistApi.getWishlist()).rejects.toThrow('Network error')
     })
   })
 
@@ -43,10 +42,9 @@ describe('Wishlist API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await wishlistApi.addToWishlist({ product_id: '1' })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(wishlistApi.addToWishlist({ product_id: '1' })).rejects.toThrow('Network error')
     })
   })
 
@@ -59,10 +57,9 @@ describe('Wishlist API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.delete).mockRejectedValue(new Error('Network error'))
-      const result = await wishlistApi.removeFromWishlist('1')
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(wishlistApi.removeFromWishlist('1')).rejects.toThrow('Network error')
     })
   })
 
@@ -75,10 +72,9 @@ describe('Wishlist API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await wishlistApi.checkInWishlist('1')
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(wishlistApi.checkInWishlist('1')).rejects.toThrow('Network error')
     })
   })
 
@@ -91,10 +87,9 @@ describe('Wishlist API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.delete).mockRejectedValue(new Error('Network error'))
-      const result = await wishlistApi.clearWishlist()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(wishlistApi.clearWishlist()).rejects.toThrow('Network error')
     })
   })
 
@@ -107,10 +102,9 @@ describe('Wishlist API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await wishlistApi.getWishlistCount()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(wishlistApi.getWishlistCount()).rejects.toThrow('Network error')
     })
   })
 })

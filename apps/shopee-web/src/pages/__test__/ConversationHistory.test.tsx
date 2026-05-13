@@ -5,23 +5,7 @@ import { MemoryRouter } from 'react-router'
 import React from 'react'
 import ConversationHistory from '../User/pages/ConversationHistory/ConversationHistory'
 
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => {
-      const translations: Record<string, string> = {
-        'history.title': 'Lịch sử hội thoại',
-        'history.subtitle': 'Quản lý các cuộc hội thoại với trợ lý AI',
-        'history.empty': 'Chưa có cuộc hội thoại nào',
-        'history.seoTitle': 'Lịch sử hội thoại | Shopee Clone',
-        'history.seoDescription': 'Quản lý lịch sử hội thoại với trợ lý AI',
-      }
-      return translations[key] || key
-    },
-    i18n: { language: 'vi', changeLanguage: vi.fn() },
-  }),
-}))
-
-vi.mock('src/apis/chatbot.api', () => ({
+vi.mock('src/apis/shopChat.api', () => ({
   default: {
     getConversations: vi.fn(() =>
       Promise.resolve({
@@ -32,19 +16,15 @@ vi.mock('src/apis/chatbot.api', () => ({
         },
       }),
     ),
-    deleteConversation: vi.fn(() => Promise.resolve({ data: { data: {} } })),
   },
 }))
 
-vi.mock('src/hooks/useReducedMotion', () => ({
-  useReducedMotion: () => false,
+vi.mock('src/components/SEO', () => ({
+  default: ({ title }: any) => <title>{title}</title>,
 }))
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    li: ({ children, ...props }: any) => <li {...props}>{children}</li>,
-  },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+vi.mock('src/components/Chat/ChatWindow', () => ({
+  default: () => <div data-testid='chat-window' />,
 }))
 
 const createWrapper = () => {
@@ -62,12 +42,12 @@ describe('ConversationHistory', () => {
     vi.clearAllMocks()
   })
 
-  it('renders conversation history page', async () => {
+  it('renders conversation history page heading', async () => {
     const Wrapper = createWrapper()
     render(React.createElement(ConversationHistory), { wrapper: Wrapper })
 
     await waitFor(() => {
-      expect(screen.getByText('Lịch sử hội thoại')).toBeInTheDocument()
+      expect(screen.getByText('Chat with Shops')).toBeInTheDocument()
     })
   })
 
@@ -76,11 +56,11 @@ describe('ConversationHistory', () => {
     render(React.createElement(ConversationHistory), { wrapper: Wrapper })
 
     await waitFor(() => {
-      expect(screen.getByText('Quản lý các cuộc hội thoại với trợ lý AI')).toBeInTheDocument()
+      expect(screen.getByText('Your conversation history with shops')).toBeInTheDocument()
     })
   })
 
-  it('shows loading state', () => {
+  it('shows loading state initially', () => {
     const Wrapper = createWrapper()
     render(React.createElement(ConversationHistory), { wrapper: Wrapper })
 
@@ -93,7 +73,7 @@ describe('ConversationHistory', () => {
     render(React.createElement(ConversationHistory), { wrapper: Wrapper })
 
     await waitFor(() => {
-      expect(screen.getByText('Chưa có cuộc hội thoại nào')).toBeInTheDocument()
+      expect(screen.getByText('No conversations yet')).toBeInTheDocument()
     })
   })
 })

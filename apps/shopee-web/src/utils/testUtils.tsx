@@ -45,30 +45,19 @@ export const logScreen = async (
   screen.debug(body, 99999999)
 }
 
-const createWrapper = () => {
-  const queryClient = new QueryClient({
+const createQueryClient = () =>
+  new QueryClient({
     defaultOptions: {
       queries: {
         retry: false,
-        staleTime: 5 * 60 * 1000,
-        gcTime: 10 * 60 * 1000,
+        staleTime: 0,
+        gcTime: 0,
       },
       mutations: {
         retry: false,
       },
     },
   })
-  const Provider = ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <HelmetProvider>{children}</HelmetProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
-  )
-  return Provider
-}
-
-const Provider = createWrapper()
 
 // Composite wrapper that provides BrowserRouter + NuqsTestingAdapter (matching main.tsx provider order)
 const RouterWithNuqs = ({ children }: { children: React.ReactNode }) => (
@@ -81,16 +70,25 @@ const RouterWithNuqs = ({ children }: { children: React.ReactNode }) => (
 export const renderWithRouter = ({ route = '/' } = {}) => {
   window.history.pushState({}, 'Test page', route)
   const defaultValueAppContext = getInitialAppContext()
+  const queryClient = createQueryClient()
+  const TestProvider = ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <HelmetProvider>{children}</HelmetProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  )
   return {
     user: userEvent.setup(),
+    queryClient,
     ...render(
-      <Provider>
+      <TestProvider>
         <AppProvider defaultValue={defaultValueAppContext}>
           <SocketProvider>
             <App />
           </SocketProvider>
         </AppProvider>
-      </Provider>,
+      </TestProvider>,
       { wrapper: RouterWithNuqs },
     ),
   }

@@ -9,6 +9,32 @@ import { ExtendedPurchase } from 'src/types/purchases.type'
 import { Product } from 'src/types/product.type'
 import { useCartStore } from 'src/stores/cart.store'
 
+vi.mock('@stripe/react-stripe-js', () => ({
+  useStripe: () => ({
+    confirmCardPayment: vi.fn(),
+    createPaymentMethod: vi.fn(),
+  }),
+  useElements: () => ({
+    getElement: vi.fn(),
+  }),
+  CardElement: () => null,
+  Elements: ({ children }: any) => children,
+}))
+
+// Mock order API to prevent getPendingPaymentOrder from hanging (no MSW handler)
+vi.mock('src/apis/order.api', () => ({
+  default: {
+    getPendingPaymentOrder: vi.fn(() => Promise.resolve({ data: { data: null } })),
+    getOrders: vi.fn(),
+    getOrderById: vi.fn(),
+    cancelOrder: vi.fn(),
+    returnOrder: vi.fn(),
+    confirmReceived: vi.fn(),
+    getPaymentStatus: vi.fn(),
+    retryPayment: vi.fn(),
+  },
+}))
+
 // Mock react-toastify
 vi.mock('react-toastify', () => ({
   toast: {

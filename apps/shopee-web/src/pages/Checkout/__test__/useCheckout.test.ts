@@ -9,6 +9,18 @@ import * as cartStore from 'src/stores/cart.store'
 import * as useReducedMotionHook from 'src/hooks/useReducedMotion'
 import * as utils from 'src/utils/utils'
 
+vi.mock('@stripe/react-stripe-js', () => ({
+  useStripe: () => ({
+    confirmCardPayment: vi.fn(),
+    createPaymentMethod: vi.fn(),
+  }),
+  useElements: () => ({
+    getElement: vi.fn(),
+  }),
+  CardElement: () => null,
+  Elements: ({ children }: any) => children,
+}))
+
 vi.mock('react-router', () => ({
   useNavigate: vi.fn(),
 }))

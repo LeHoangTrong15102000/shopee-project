@@ -86,7 +86,7 @@ export class PaymentReconciliationJob {
 
     for (const payment of stalePendingPayments) {
       const paymentId = payment._id.toString()
-      const orderId = payment.orderId.toString()
+      const orderId = payment.orderId?.toString() ?? ''
       const provider = payment.provider as PaymentProvider
 
       // Skip COD — no provider to query

@@ -40,6 +40,12 @@ export class PaymentRepository {
       .lean<IPayment | null>()
   }
 
+  async findBySessionId(sessionId: string | Types.ObjectId): Promise<IPayment | null> {
+    return PaymentModel.findOne({ sessionId: new Types.ObjectId(sessionId.toString()) })
+      .sort({ createdAt: -1 })
+      .lean<IPayment | null>()
+  }
+
   async findWithFilters(filters: {
     status?: GatewayPaymentStatusType
     provider?: string

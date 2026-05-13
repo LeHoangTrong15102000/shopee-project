@@ -6,6 +6,9 @@ import {
   CreateOrderBody,
   CreateOrderResponse,
   CheckoutSummary,
+  InitiatePaymentBody,
+  InitiatePaymentResponse,
+  PaymentSessionStatusResponse,
 } from 'src/types/checkout.type'
 import http from 'src/utils/http'
 
@@ -119,7 +122,9 @@ const checkoutApi = {
       return await http.get<SuccessResponseApi<ShippingMethod[]>>('/orders/shipping/methods')
     } catch (_error) {
       console.warn('Shipping methods API not available, using mock data')
-      return { data: { message: 'Mock shipping methods', data: mockShippingMethods } } as any
+      return {
+        data: { message: 'Mock shipping methods', data: mockShippingMethods },
+      } as SuccessResponseApi<ShippingMethod[]> & { data: { message: string; data: ShippingMethod[] } }
     }
   },
 
@@ -128,7 +133,9 @@ const checkoutApi = {
       return await http.get<SuccessResponseApi<PaymentMethod[]>>('/orders/payment/methods')
     } catch (_error) {
       console.warn('Payment methods API not available, using mock data')
-      return { data: { message: 'Mock payment methods', data: mockPaymentMethods } } as any
+      return {
+        data: { message: 'Mock payment methods', data: mockPaymentMethods },
+      } as SuccessResponseApi<PaymentMethod[]> & { data: { message: string; data: PaymentMethod[] } }
     }
   },
 
@@ -156,6 +163,25 @@ const checkoutApi = {
       coins_used: body.coinsUsed,
       note: body.note,
     })
+  },
+
+  initiatePayment: (body: InitiatePaymentBody) => {
+    return http.post<SuccessResponseApi<InitiatePaymentResponse>>('/checkout/initiate-payment', {
+      purchase_ids: body.purchaseIds,
+      shipping_address_id: body.shippingAddressId,
+      shipping_method_id: body.shippingMethodId,
+      payment_method: body.paymentMethod,
+      e_wallet_provider: body.eWalletProvider,
+      voucher_code: body.voucherCode,
+      coins_used: body.coinsUsed,
+      note: body.note,
+    })
+  },
+
+  getSessionStatus: (sessionId: string) => {
+    return http.get<SuccessResponseApi<PaymentSessionStatusResponse>>(
+      `/checkout/session-status/${sessionId}`,
+    )
   },
 }
 

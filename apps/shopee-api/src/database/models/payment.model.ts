@@ -19,7 +19,8 @@ export type GatewayPaymentStatusType = (typeof GATEWAY_PAYMENT_STATUS)[keyof typ
 
 export interface IPayment {
   _id: mongoose.Types.ObjectId
-  orderId: mongoose.Types.ObjectId
+  orderId?: mongoose.Types.ObjectId   // optional: populated after IPN success for session-based payments
+  sessionId?: mongoose.Types.ObjectId  // optional: set for e-wallet session-based payments
   provider: PaymentProviderType
   transactionId?: string          // transaction ID from provider
   amount: number                  // VND, integer
@@ -35,7 +36,8 @@ export interface IPayment {
 
 const PaymentSchema = new Schema<IPayment>(
   {
-    orderId: { type: mongoose.SchemaTypes.ObjectId, ref: 'orders', required: true },
+    orderId: { type: mongoose.SchemaTypes.ObjectId, ref: 'orders' },
+    sessionId: { type: mongoose.SchemaTypes.ObjectId, ref: 'payment_sessions' },
     provider: {
       type: String,
       enum: Object.values(PAYMENT_PROVIDER),
@@ -59,6 +61,7 @@ const PaymentSchema = new Schema<IPayment>(
 
 // idempotencyKey already indexed via unique: true
 PaymentSchema.index({ orderId: 1 })
+PaymentSchema.index({ sessionId: 1 }, { sparse: true })
 PaymentSchema.index({ transactionId: 1 }, { sparse: true })
 PaymentSchema.index({ status: 1 })
 

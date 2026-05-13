@@ -31,25 +31,18 @@ import {
 } from '@database/models/order.model'
 import { OrderModel } from '@database/models/order.model'
 import { IOrderTracking } from '@database/models/order-tracking.model'
+import {
+  PaymentSessionModel,
+  PAYMENT_SESSION_STATUS,
+  IPaymentSession,
+} from '@database/models/payment-session.model'
 import { STATUS_PURCHASE } from '@constants/purchase'
 import { validateStatusTransition, validateReturnDeadline } from './order/order_state_machine'
 import { STATUS_TO_EVENT, OrderEventType } from './order/order_constants'
-import { emitOrderStatusUpdate } from '../socket/utils/order-emit'
+import { emitOrderStatusUpdate, emitAdminNewOrderNotification } from '../socket/utils/order-emit'
 import { withTransaction } from '@utils/transaction.helper'
 import { Logger } from '@utils/logger'
 import { stripeService } from '../container'
-// paymentService is imported lazily to avoid circular dependency at module load time
-// (container.ts imports OrderService, PaymentService imports OrderModel — no cycle,
-//  but we import from container which is not yet fully initialized at this point)
-let _paymentService: import('./payment.service').PaymentService | null = null
-function getPaymentService(): import('./payment.service').PaymentService {
-  if (!_paymentService) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { paymentService } = require('../container')
-    _paymentService = paymentService
-  }
-  return _paymentService!
-}
 
 const SHIPPING_METHODS = [
   { id: 'standard', name: 'Giao hàng tiêu chuẩn', price: 30000, estimated_days: '3-5 ngày' },
@@ -156,6 +149,17 @@ export class OrderService extends BaseService {
   async createOrder(userId: string, input: CreateOrderInput): Promise<IOrder & { client_secret?: string }> {
     if (!this.isValidObjectId(userId)) throw new ValidationError('Invalid user ID format')
 
+    // MoMo and VNPay must use the new /checkout/initiate-payment endpoint
+    if (
+      input.payment_method === PAYMENT_METHOD.MOMO ||
+      input.payment_method === PAYMENT_METHOD.VNPAY
+    ) {
+      throw new ValidationError(
+        'MoMo and VNPay payments must use POST /checkout/initiate-payment. ' +
+        'Use payment_method "e_wallet" with e_wallet_provider "momo" or "vnpay".',
+      )
+    }
+
     const correlationId = `order-${userId}-${Date.now()}`
     const startTime = Date.now()
 
@@ -226,34 +230,6 @@ export class OrderService extends BaseService {
         return { ...order, client_secret: clientSecret }
       }
 
-      // MoMo / VNPay: initiate redirect-based payment
-      if (
-        order.payment_method === PAYMENT_METHOD.MOMO ||
-        order.payment_method === PAYMENT_METHOD.VNPAY
-      ) {
-        const { PaymentProvider } = await import('./payment/payment.interface')
-        const provider =
-          order.payment_method === PAYMENT_METHOD.MOMO
-            ? PaymentProvider.MOMO
-            : PaymentProvider.VNPAY
-        const clientIp = input._clientIp || '127.0.0.1'
-        try {
-          const { paymentUrl, paymentId } = await getPaymentService().initiatePayment(
-            order._id.toString(),
-            provider,
-            clientIp,
-          )
-          return { ...order, payment_url: paymentUrl, payment_id: new Types.ObjectId(paymentId) }
-        } catch (err) {
-          Logger.apiWarn('[Order] Payment initiation failed — order created but payment pending', {
-            orderId: order._id.toString(),
-            error: err instanceof Error ? err.message : String(err),
-          })
-          // Return order without payment_url — frontend can retry
-          return order
-        }
-      }
-
       // COD: go directly to confirmed
       if (order.payment_method === PAYMENT_METHOD.COD) {
         await OrderModel.findByIdAndUpdate(order._id, {
@@ -275,6 +251,267 @@ export class OrderService extends BaseService {
       })
       throw err
     }
+  }
+
+  // ─── createOrderFromSession — called by IPN handler after e-wallet payment ──
+
+  /**
+   * Create an order from a PAID PaymentSession.
+   * Idempotent: if an order already references this session, returns the existing order.
+   * Runs a Mongoose transaction: reserve stock, persist order, snapshot SKUs, clear cart.
+   * On stock failure: marks session FAILED and logs a manual-refund-required warning.
+   */
+  async createOrderFromSession(sessionId: string): Promise<IOrder> {
+    if (!this.isValidObjectId(sessionId)) throw new ValidationError('Invalid session ID format')
+
+    // Idempotency: return existing order if already created for this session
+    const existingOrder = await OrderModel.findOne({
+      payment_session_id: new Types.ObjectId(sessionId),
+    }).lean<IOrder>()
+
+    if (existingOrder) {
+      Logger.apiInfo('[Order] createOrderFromSession: order already exists (idempotency)', {
+        sessionId,
+        orderId: existingOrder._id.toString(),
+      })
+      return existingOrder
+    }
+
+    const session = await PaymentSessionModel.findById(sessionId).lean<IPaymentSession>()
+    if (!session) throw new NotFoundError('PaymentSession', sessionId)
+
+    if (session.status !== PAYMENT_SESSION_STATUS.PAID) {
+      throw new ValidationError(
+        `Cannot create order from session with status: ${session.status}. Session must be PAID.`,
+      )
+    }
+
+    const userId = session.userId.toString()
+    const correlationId = `session-order-${sessionId}-${Date.now()}`
+    const startTime = Date.now()
+
+    // Resolve address
+    const address = await this.addressRepository.findByIdAndUser(
+      session.shippingAddressId.toString(),
+      userId,
+    )
+    if (!address) throw new NotFoundError('Address', session.shippingAddressId.toString())
+
+    // Resolve shipping method
+    const shippingMethod = SHIPPING_METHODS.find((m) => m.id === session.shippingMethodId)
+    if (!shippingMethod) throw new BusinessError('Phương thức vận chuyển không hợp lệ')
+
+    // Build order items from session cart snapshot
+    const orderItems: IOrderItem[] = []
+    const snapshotData: CreateProductSkuSnapshotDTO[] = []
+    const skuItems: Array<{
+      skuId: string
+      quantity: number
+      productName: string
+      skuValue: string
+      skuStock: number
+    }> = []
+    const legacyItems: Array<{ product_id: string; buy_count: number }> = []
+    const productIds: string[] = []
+
+    for (const cartItem of session.cartItems) {
+      const productId = cartItem.productId.toString()
+      productIds.push(productId)
+
+      const product = await this.productRepository.findById(productId)
+      if (!product) throw new NotFoundError('Product', productId)
+
+      if (cartItem.skuId && this.skuRepository) {
+        const skuId = cartItem.skuId.toString()
+        const sku = await this.skuRepository.findById(skuId)
+        if (!sku) throw new NotFoundError('SKU', skuId)
+
+        skuItems.push({
+          skuId,
+          quantity: cartItem.buyCount,
+          productName: product.name,
+          skuValue: sku.value,
+          skuStock: sku.stock,
+        })
+
+        orderItems.push({
+          product: new Types.ObjectId(productId),
+          buy_count: cartItem.buyCount,
+          price: cartItem.price,
+          price_before_discount: product.price_before_discount,
+          sku: new Types.ObjectId(skuId),
+        })
+
+        if (this.productSkuSnapshotRepository) {
+          snapshotData.push({
+            product_name: product.name,
+            product_image: product.image || '',
+            sku_price: cartItem.price,
+            sku_value: sku.value,
+            sku_image: sku.image || '',
+            variant_values: (sku.variant_values as Record<string, string>) || {},
+            quantity: cartItem.buyCount,
+            sku: new Types.ObjectId(skuId),
+            product: new Types.ObjectId(productId),
+            order: null,
+          })
+        }
+      } else {
+        orderItems.push({
+          product: new Types.ObjectId(productId),
+          buy_count: cartItem.buyCount,
+          price: cartItem.price,
+          price_before_discount: product.price_before_discount,
+        })
+        legacyItems.push({ product_id: productId, buy_count: cartItem.buyCount })
+      }
+    }
+
+    const shippingFee = shippingMethod.price
+    const discount = 0 // voucher discount already factored into session.amount
+    const coinsDiscount = session.coinsUsed || 0
+
+    Logger.dbInfo('[Order.Transaction] Starting createOrderFromSession transaction', {
+      correlationId,
+    })
+
+    let order: IOrder
+    try {
+      order = await withTransaction(async (txSession) => {
+        // Reserve SKU stock
+        if (skuItems.length > 0) {
+          try {
+            await this.reserveStock(skuItems, txSession)
+          } catch (err) {
+            // Stock unavailable — mark session FAILED and log for manual refund
+            await PaymentSessionModel.findByIdAndUpdate(sessionId, {
+              status: PAYMENT_SESSION_STATUS.FAILED,
+            })
+            Logger.apiWarn(
+              '[Order] MANUAL REFUND REQUIRED: stock unavailable after payment confirmed',
+              {
+                sessionId,
+                userId,
+                error: err instanceof Error ? err.message : String(err),
+              },
+            )
+            throw err
+          }
+        }
+
+        // Reserve legacy stock
+        if (legacyItems.length > 0) {
+          try {
+            await this.updateLegacyStock(legacyItems, txSession)
+          } catch (err) {
+            await PaymentSessionModel.findByIdAndUpdate(sessionId, {
+              status: PAYMENT_SESSION_STATUS.FAILED,
+            })
+            Logger.apiWarn(
+              '[Order] MANUAL REFUND REQUIRED: legacy stock unavailable after payment confirmed',
+              {
+                sessionId,
+                userId,
+                error: err instanceof Error ? err.message : String(err),
+              },
+            )
+            throw err
+          }
+        }
+
+        // Persist order
+        const createdOrder = await this.orderRepository.create(
+          {
+            user: new Types.ObjectId(userId),
+            items: orderItems,
+            shipping_address: {
+              full_name: address.full_name,
+              phone: address.phone,
+              province: address.province,
+              district: address.district,
+              ward: address.ward,
+              street: address.street,
+            },
+            shipping_method: shippingMethod as IShippingMethod,
+            payment_method: session.eWalletProvider as PaymentMethodType,
+            payment_status: PAYMENT_STATUS.PAID,
+            status: ORDER_STATUS.CONFIRMED,
+            payment_id: session.payment_id
+              ? new Types.ObjectId(session.payment_id)
+              : undefined,
+            payment_session_id: new Types.ObjectId(sessionId),
+            subtotal: session.amount - shippingFee + discount + coinsDiscount,
+            shipping_fee: shippingFee,
+            discount,
+            coins_used: session.coinsUsed || 0,
+            coins_discount: coinsDiscount,
+            total: session.amount,
+            voucher_code: session.voucherCode,
+            note: session.note,
+            confirmed_at: new Date(),
+          } as any,
+          { session: txSession },
+        )
+
+        // Create SKU snapshots
+        if (snapshotData.length > 0) {
+          await this.snapshotSkus(createdOrder._id, snapshotData, txSession)
+        }
+
+        // Increment sold counters
+        if (skuItems.length > 0) {
+          const inputItems = session.cartItems.map((c) => ({
+            product_id: c.productId.toString(),
+            sku_id: c.skuId?.toString(),
+          }))
+          await this.incrementSoldCounters(skuItems, inputItems, txSession)
+        }
+
+        // Clear cart items from session snapshot
+        await this.clearCartItems(userId, productIds, txSession)
+
+        return createdOrder
+      })
+    } catch (err) {
+      const duration = Date.now() - startTime
+      Logger.apiError('[Order] createOrderFromSession failed', {
+        correlationId,
+        sessionId,
+        userId,
+        duration_ms: duration,
+        error: err instanceof Error ? err.message : String(err),
+      })
+      throw err
+    }
+
+    const duration = Date.now() - startTime
+    Logger.apiInfo('[Order] order.created_from_session', {
+      correlationId,
+      orderId: order._id.toString(),
+      sessionId,
+      userId,
+      duration_ms: duration,
+    })
+
+    // Emit payment status update to user
+    const { emitToUser } = await import('../socket/utils/emit')
+    const { SocketEvent } = await import('../@types/socket.type')
+    emitToUser(userId, SocketEvent.PAYMENT_STATUS_UPDATED, {
+      orderId: order._id.toString(),
+      payment_status: PAYMENT_STATUS.PAID,
+      order_status: ORDER_STATUS.CONFIRMED,
+    })
+
+    // Emit admin new order notification (fire-and-forget)
+    emitAdminNewOrderNotification({
+      order_id: order._id.toString(),
+      buyer_name: address.full_name,
+      items_count: session.cartItems.length,
+      total_amount: session.amount,
+      created_at: new Date().toISOString(),
+    })
+
+    return order
   }
 
   // ─── Private helper methods ───────────────────────────────────────────────

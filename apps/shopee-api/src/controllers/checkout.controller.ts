@@ -7,9 +7,11 @@ import {
   addressService,
   loyaltyService,
   voucherService,
+  paymentService,
 } from '../container'
 import { ValidationError, NotFoundError, BusinessError } from '@services/base.service'
 import { emitAdminNewOrderNotification } from '../socket/utils/order-emit'
+import { Logger } from '@utils/logger'
 
 export const getCheckoutSummary = async (req: Request, res: Response) => {
   try {
@@ -56,8 +58,12 @@ export const getCheckoutSummary = async (req: Request, res: Response) => {
         })
         voucherDiscount = voucherResult.discount_amount
         appliedVoucher = { code: voucherResult.code, discount: voucherDiscount }
-      } catch {
+      } catch (err) {
         // Voucher invalid or not applicable - continue without discount
+        Logger.apiWarn('[Checkout] Voucher apply failed in summary', {
+          voucher_code,
+          error: err instanceof Error ? err.message : String(err),
+        })
       }
     }
 
@@ -139,8 +145,12 @@ export const createCheckoutOrder = async (req: Request, res: Response) => {
           order_value: subtotal,
         })
         voucherDiscount = voucherResult.discount_amount
-      } catch {
+      } catch (err) {
         // Voucher invalid - continue without discount
+        Logger.apiWarn('[Checkout] Voucher apply failed in create-order', {
+          voucher_code,
+          error: err instanceof Error ? err.message : String(err),
+        })
       }
     }
 
@@ -167,8 +177,12 @@ export const createCheckoutOrder = async (req: Request, res: Response) => {
             order._id?.toString(),
           )
         }
-      } catch {
-        // Voucher handling failed - order still created
+      } catch (err) {
+        Logger.apiWarn('[Checkout] Voucher mark-used failed — order still created', {
+          voucher_code,
+          orderId: order._id?.toString(),
+          error: err instanceof Error ? err.message : String(err),
+        })
       }
     }
 
@@ -176,8 +190,12 @@ export const createCheckoutOrder = async (req: Request, res: Response) => {
     if (coins_used > 0) {
       try {
         await loyaltyService.deductPoints(user_id, coins_used, 'Sử dụng xu cho đơn hàng')
-      } catch {
-        // Coins deduction failed - order still created
+      } catch (err) {
+        Logger.apiWarn('[Checkout] Coins deduction failed — order still created', {
+          coins_used,
+          orderId: order._id?.toString(),
+          error: err instanceof Error ? err.message : String(err),
+        })
       }
     }
 
@@ -200,6 +218,159 @@ export const createCheckoutOrder = async (req: Request, res: Response) => {
     }
     if (error instanceof NotFoundError) {
       throw new ErrorHandler(STATUS.NOT_FOUND, error.message)
+    }
+    throw error
+  }
+}
+
+/**
+ * POST /checkout/initiate-payment
+ * Creates a PaymentSession for MoMo/VNPay e-wallet payments.
+ * Returns { sessionId, payment_url } for frontend redirect.
+ */
+export const initiatePayment = async (req: Request, res: Response) => {
+  try {
+    const user_id = req.jwtDecoded.id
+    const {
+      purchase_ids,
+      shipping_address_id,
+      shipping_method_id,
+      payment_method,
+      e_wallet_provider,
+      voucher_code,
+      coins_used = 0,
+      note,
+    } = req.body
+
+    // Validate e_wallet_provider
+    const validProviders = ['momo', 'vnpay']
+    if (!e_wallet_provider || !validProviders.includes(e_wallet_provider.toLowerCase())) {
+      throw new ErrorHandler(
+        STATUS.BAD_REQUEST,
+        `Invalid e_wallet_provider. Must be one of: ${validProviders.join(', ')}`,
+      )
+    }
+
+    // Get purchases from cart
+    const purchases = await purchaseService.getCartItemsByIds(user_id, purchase_ids)
+    if (purchases.length === 0) {
+      throw new ErrorHandler(STATUS.BAD_REQUEST, 'Không có sản phẩm nào trong giỏ hàng')
+    }
+
+    // Calculate subtotal
+    const subtotal = purchases.reduce((sum, p) => {
+      const product = p.product as any
+      return sum + product.price * p.buy_count
+    }, 0)
+
+    // Get shipping method
+    const shippingMethods = orderService.getShippingMethods()
+    const shippingMethod = shippingMethods.find((m) => m.id === shipping_method_id)
+    const shippingFee = shippingMethod?.price || 30000
+
+    // Calculate voucher discount
+    let voucherDiscount = 0
+    if (voucher_code) {
+      try {
+        const voucherResult = await voucherService.applyVoucher({
+          code: voucher_code,
+          order_value: subtotal,
+        })
+        voucherDiscount = voucherResult.discount_amount
+      } catch (err) {
+        Logger.apiWarn('[Checkout] Voucher apply failed in initiate-payment', {
+          voucher_code,
+          error: err instanceof Error ? err.message : String(err),
+        })
+      }
+    }
+
+    // Calculate coins discount
+    let coinsDiscount = 0
+    if (coins_used > 0) {
+      try {
+        const loyaltyInfo = await loyaltyService.getPoints(user_id)
+        const availableCoins = loyaltyInfo?.points?.available_points || 0
+        coinsDiscount = Math.min(Number(coins_used), availableCoins, subtotal - voucherDiscount)
+      } catch (err) {
+        Logger.apiWarn('[Checkout] Coins lookup failed in initiate-payment', {
+          coins_used,
+          error: err instanceof Error ? err.message : String(err),
+        })
+      }
+    }
+
+    const amount = Math.max(0, subtotal + shippingFee - voucherDiscount - coinsDiscount)
+
+    // Build cart items snapshot
+    const cartItems = purchases.map((purchase) => {
+      const product = purchase.product as any
+      return {
+        productId: product._id.toString(),
+        buyCount: purchase.buy_count,
+        price: product.price,
+      }
+    })
+
+    const clientIp =
+      (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
+      req.socket.remoteAddress ||
+      '127.0.0.1'
+
+    const result = await paymentService.createPaymentSession(user_id, {
+      cartItems,
+      shippingAddressId: shipping_address_id,
+      shippingMethodId: shipping_method_id,
+      paymentMethod: payment_method,
+      eWalletProvider: e_wallet_provider.toLowerCase(),
+      voucherCode: voucher_code,
+      coinsUsed: coinsDiscount,
+      note,
+      amount,
+      clientIp,
+    })
+
+    return responseSuccess(res, {
+      message: 'Khởi tạo thanh toán thành công',
+      data: {
+        sessionId: result.sessionId,
+        payment_url: result.payment_url,
+      },
+    })
+  } catch (error) {
+    if (error instanceof ErrorHandler) throw error
+    if (error instanceof ValidationError || error instanceof BusinessError) {
+      throw new ErrorHandler(STATUS.BAD_REQUEST, error.message)
+    }
+    if (error instanceof NotFoundError) {
+      throw new ErrorHandler(STATUS.NOT_FOUND, error.message)
+    }
+    throw error
+  }
+}
+
+/**
+ * GET /checkout/session-status/:sessionId
+ * Returns the current status of a PaymentSession.
+ */
+export const getSessionStatus = async (req: Request, res: Response) => {
+  try {
+    const user_id = req.jwtDecoded.id
+    const sessionId = req.params.sessionId as string
+
+    const result = await paymentService.getSessionStatus(sessionId, user_id)
+
+    return responseSuccess(res, {
+      message: 'Lấy trạng thái phiên thanh toán thành công',
+      data: result,
+    })
+  } catch (error) {
+    const err = error as any
+    if (err.statusCode === 404) {
+      throw new ErrorHandler(STATUS.NOT_FOUND, err.message)
+    }
+    if (error instanceof ValidationError) {
+      throw new ErrorHandler(STATUS.BAD_REQUEST, (error as ValidationError).message)
     }
     throw error
   }

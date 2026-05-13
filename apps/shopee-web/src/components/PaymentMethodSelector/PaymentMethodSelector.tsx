@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { PaymentMethod, PaymentMethodType } from 'src/types/checkout.type'
+import { PaymentMethod, PaymentMethodType, EWalletProvider } from 'src/types/checkout.type'
 import checkoutApi from 'src/apis/checkout.api'
 import { PaymentIcon } from 'src/components/Icons'
 import Button from 'src/components/Button'
@@ -11,9 +11,17 @@ interface PaymentMethodSelectorProps {
   selectedMethodType: PaymentMethodType | null
   onSelect: (method: PaymentMethod) => void
   isConfirmingPayment?: boolean
+  selectedEWalletProvider?: EWalletProvider | null
+  onEWalletProviderSelect?: (provider: EWalletProvider) => void
 }
 
-function PaymentMethodSelector({ selectedMethodType, onSelect, isConfirmingPayment = false }: PaymentMethodSelectorProps) {
+function PaymentMethodSelector({
+  selectedMethodType,
+  onSelect,
+  isConfirmingPayment = false,
+  selectedEWalletProvider,
+  onEWalletProviderSelect,
+}: PaymentMethodSelectorProps) {
   const { t } = useTranslation('payment')
   const { data: methodsData, isLoading } = useQuery({
     queryKey: ['payment-methods'],
@@ -137,19 +145,33 @@ function PaymentMethodSelector({ selectedMethodType, onSelect, isConfirmingPayme
           <div className="mt-3 flex gap-3">
             <Button
               animated={false}
-              className="flex-1 rounded-xl bg-linear-to-r from-pink-500 to-rose-500 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-pink-500/30 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-pink-500/40"
+              onClick={() => onEWalletProviderSelect?.('momo')}
+              className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-medium text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl ${
+                selectedEWalletProvider === 'momo'
+                  ? 'bg-linear-to-r from-pink-600 to-rose-600 shadow-pink-600/40 ring-2 ring-pink-400'
+                  : 'bg-linear-to-r from-pink-500 to-rose-500 shadow-pink-500/30 hover:shadow-pink-500/40'
+              }`}
+              aria-pressed={selectedEWalletProvider === 'momo'}
             >
               MoMo
             </Button>
             <Button
               animated={false}
-              className="flex-1 rounded-xl bg-linear-to-r from-blue-500 to-cyan-500 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-500/40"
+              disabled
+              className="flex-1 cursor-not-allowed rounded-xl bg-linear-to-r from-blue-300 to-cyan-300 px-4 py-2.5 text-sm font-medium text-white opacity-50 shadow-lg shadow-blue-300/30"
+              title="ZaloPay chưa được hỗ trợ"
             >
               ZaloPay
             </Button>
             <Button
               animated={false}
-              className="flex-1 rounded-xl bg-linear-to-r from-blue-600 to-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-600/30 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-600/40"
+              onClick={() => onEWalletProviderSelect?.('vnpay')}
+              className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-medium text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl ${
+                selectedEWalletProvider === 'vnpay'
+                  ? 'bg-linear-to-r from-blue-700 to-indigo-700 shadow-blue-700/40 ring-2 ring-blue-400'
+                  : 'bg-linear-to-r from-blue-600 to-indigo-600 shadow-blue-600/30 hover:shadow-blue-600/40'
+              }`}
+              aria-pressed={selectedEWalletProvider === 'vnpay'}
             >
               VNPay
             </Button>

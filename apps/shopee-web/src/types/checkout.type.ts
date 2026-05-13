@@ -127,6 +127,34 @@ export interface CreateOrderResponse {
   payment_method: PaymentMethodType
   total: number
   status: OrderStatus
+  payment_url?: string
+  session_id?: string
+}
+
+// E-wallet provider type
+export type EWalletProvider = 'momo' | 'vnpay'
+
+// Initiate e-wallet payment request/response
+export interface InitiatePaymentBody {
+  purchaseIds: string[]
+  shippingAddressId: string
+  shippingMethodId: string
+  paymentMethod?: string
+  eWalletProvider: EWalletProvider
+  voucherCode?: string
+  coinsUsed?: number
+  note?: string
+}
+
+export interface InitiatePaymentResponse {
+  sessionId: string
+  payment_url: string
+}
+
+// Payment session status response
+export interface PaymentSessionStatusResponse {
+  status: 'PENDING' | 'PAID' | 'FAILED' | 'EXPIRED'
+  orderId?: string
 }
 
 export interface CheckoutSummaryBody {

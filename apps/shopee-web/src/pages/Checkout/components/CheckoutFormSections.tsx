@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { Address, ShippingMethod, PaymentMethodType } from 'src/types/checkout.type'
+import { Address, ShippingMethod, PaymentMethodType, EWalletProvider } from 'src/types/checkout.type'
 import AddressSelector from 'src/components/AddressSelector'
 import ShippingMethodSelector from 'src/components/ShippingMethodSelector'
 import PaymentMethodSelector from 'src/components/PaymentMethodSelector'
@@ -23,6 +23,7 @@ interface CheckoutFormSectionsProps {
   selectedAddress: Address | null
   selectedShippingMethod: ShippingMethod | null
   selectedPaymentMethod: PaymentMethodType | null
+  selectedEWalletProvider?: EWalletProvider | null
   voucherCode: string
   voucherDiscount: number
   coinsUsed: number
@@ -31,6 +32,7 @@ interface CheckoutFormSectionsProps {
   onAddressSelect: (address: Address) => void
   onShippingSelect: (method: ShippingMethod) => void
   onPaymentSelect: (method: { type: PaymentMethodType }) => void
+  onEWalletProviderSelect?: (provider: EWalletProvider) => void
   onApplyVoucher: () => void
   onVoucherCodeChange: (code: string) => void
   onCoinsChange: (coins: number) => void
@@ -41,6 +43,7 @@ export const CheckoutFormSections = ({
   selectedAddress,
   selectedShippingMethod,
   selectedPaymentMethod,
+  selectedEWalletProvider,
   voucherCode,
   voucherDiscount,
   coinsUsed,
@@ -49,6 +52,7 @@ export const CheckoutFormSections = ({
   onAddressSelect,
   onShippingSelect,
   onPaymentSelect,
+  onEWalletProviderSelect,
   onApplyVoucher,
   onVoucherCodeChange,
   onCoinsChange,
@@ -97,6 +101,8 @@ export const CheckoutFormSections = ({
           selectedMethodType={selectedPaymentMethod}
           onSelect={onPaymentSelect}
           isConfirmingPayment={isConfirmingPayment}
+          selectedEWalletProvider={selectedEWalletProvider}
+          onEWalletProviderSelect={onEWalletProviderSelect}
         />
         <SecurityBadge />
       </motion.div>

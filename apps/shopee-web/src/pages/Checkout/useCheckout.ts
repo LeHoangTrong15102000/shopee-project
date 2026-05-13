@@ -10,6 +10,8 @@ import {
   ShippingMethod,
   PaymentMethodType,
   CreateOrderBody,
+  EWalletProvider,
+  InitiatePaymentBody,
 } from 'src/types/checkout.type'
 import checkoutApi from 'src/apis/checkout.api'
 import orderApi from 'src/apis/order.api'
@@ -141,6 +143,7 @@ export const useCheckout = () => {
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null)
   const [selectedShippingMethod, setSelectedShippingMethod] = useState<ShippingMethod | null>(null)
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethodType | null>(null)
+  const [selectedEWalletProvider, setSelectedEWalletProvider] = useState<EWalletProvider | null>(null)
   const [voucherCode, setVoucherCode] = useState('')
   const [voucherDiscount, setVoucherDiscount] = useState(0)
   const [coinsUsed, setCoinsUsed] = useState(0)
@@ -209,6 +212,18 @@ export const useCheckout = () => {
     },
   })
 
+  const initiatePaymentMutation = useMutation({
+    mutationFn: (body: InitiatePaymentBody) => checkoutApi.initiatePayment(body),
+    onSuccess: (response) => {
+      const { payment_url } = response.data.data
+      // Redirect to external payment gateway — React Router cannot navigate to external URLs
+      window.location.href = payment_url
+    },
+    onError: () => {
+      toast.error(t('toast.orderFailed'))
+    },
+  })
+
   const handleAddressSelect = (address: Address) => {
     setSelectedAddress(address)
   }
@@ -219,29 +234,36 @@ export const useCheckout = () => {
 
   const handlePaymentSelect = (method: { type: PaymentMethodType }) => {
     setSelectedPaymentMethod(method.type)
+    // Reset e-wallet provider when switching away from e_wallet
+    if (method.type !== 'e_wallet') {
+      setSelectedEWalletProvider(null)
+    }
   }
 
-  const handleApplyVoucher = () => {
-    if (voucherCode.trim()) {
-      const code = voucherCode.toUpperCase()
-      if (code === 'GIAM10') {
-        setVoucherDiscount(10000)
-        toast.success(t('toast.voucherApplied', { amount: '10.000đ' }))
-      } else if (code === 'GIAM50K') {
-        setVoucherDiscount(50000)
-        toast.success(t('toast.voucherApplied', { amount: '50.000đ' }))
-      } else if (code === 'DISCOUNT50') {
-        setVoucherDiscount(50000)
-        toast.success(t('toast.voucherApplied', { amount: '50.000đ' }))
-      } else if (code === 'FREESHIP') {
-        setVoucherDiscount(30000)
-        toast.success(t('toast.voucherFreeShip'))
-      } else if (code === 'NEWUSER') {
-        setVoucherDiscount(100000)
-        toast.success(t('toast.voucherNewUser', { amount: '100.000đ' }))
-      } else {
-        toast.error(t('toast.voucherInvalid'))
-      }
+  const handleEWalletProviderSelect = (provider: EWalletProvider) => {
+    setSelectedEWalletProvider(provider)
+  }
+
+  const handleApplyVoucher = async () => {
+    if (!voucherCode.trim()) return
+
+    try {
+      const subtotal = checkedItems.reduce(
+        (sum, item) => sum + item.product.price * item.buy_count,
+        0,
+      )
+      const res = await checkoutApi.calculateSummary({
+        purchaseIds: checkedItems.map((item) => item._id),
+        shippingMethodId: selectedShippingMethod?._id,
+        voucherCode: voucherCode.trim(),
+        coinsUsed,
+      })
+      const summary = res.data.data
+      const discount = subtotal - (summary.subtotal ?? subtotal) + (summary.discount ?? 0)
+      setVoucherDiscount(discount > 0 ? discount : 0)
+      toast.success(t('toast.voucherApplied', { amount: '' }))
+    } catch {
+      toast.error(t('toast.voucherInvalid'))
     }
   }
 
@@ -280,6 +302,10 @@ export const useCheckout = () => {
       toast.error(t('toast.selectPayment'))
       return
     }
+    if (selectedPaymentMethod === 'e_wallet' && !selectedEWalletProvider) {
+      toast.error(t('toast.selectEWalletProvider', 'Vui lòng chọn ví điện tử (MoMo hoặc VNPay)'))
+      return
+    }
     setShowReview(true)
     scrollToTop(prefersReducedMotion)
   }
@@ -298,6 +324,29 @@ export const useCheckout = () => {
       return
     }
 
+    // E-wallet path: initiate PaymentSession and redirect to gateway
+    if (selectedPaymentMethod === 'e_wallet') {
+      if (!selectedEWalletProvider) {
+        toast.error(t('toast.selectEWalletProvider', 'Vui lòng chọn ví điện tử (MoMo hoặc VNPay)'))
+        return
+      }
+
+      const initiateBody: InitiatePaymentBody = {
+        purchaseIds: checkedItems.map((item) => item._id),
+        shippingAddressId: selectedAddress._id,
+        shippingMethodId: selectedShippingMethod._id,
+        paymentMethod: 'e_wallet',
+        eWalletProvider: selectedEWalletProvider,
+        voucherCode: voucherCode || undefined,
+        coinsUsed: coinsUsed || undefined,
+        note: note || undefined,
+      }
+
+      initiatePaymentMutation.mutate(initiateBody)
+      return
+    }
+
+    // COD / bank_transfer / credit_card path
     const orderBody: CreateOrderBody = {
       purchaseIds: checkedItems.map((item) => item._id),
       shippingAddressId: selectedAddress._id,
@@ -337,6 +386,7 @@ export const useCheckout = () => {
     selectedAddress,
     selectedShippingMethod,
     selectedPaymentMethod,
+    selectedEWalletProvider,
     voucherCode,
     voucherDiscount,
     coinsUsed,
@@ -347,6 +397,7 @@ export const useCheckout = () => {
     currentStep,
     totalAmount,
     createOrderMutation,
+    initiatePaymentMutation,
     isConfirmingPayment,
     paymentWaitMessage,
     pendingPaymentOrder,
@@ -357,6 +408,7 @@ export const useCheckout = () => {
     handleAddressSelect,
     handleShippingSelect,
     handlePaymentSelect,
+    handleEWalletProviderSelect,
     handleApplyVoucher,
     handleRemoveVoucher,
     handleBackToStep3,

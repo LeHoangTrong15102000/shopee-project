@@ -71,6 +71,7 @@ export interface IOrder {
   stripe_client_secret?: string | null       // transient — used by frontend to confirm payment
   payment_id?: mongoose.Types.ObjectId | null  // ref to Payment document (MoMo/VNPay)
   payment_url?: string | null                  // redirect URL for MoMo/VNPay payment
+  payment_session_id?: mongoose.Types.ObjectId | null  // ref to PaymentSession (e-wallet session flow)
   subtotal: number
   shipping_fee: number
   discount: number
@@ -140,6 +141,7 @@ const OrderSchema = new Schema<IOrder>(
     stripe_client_secret: { type: String, default: null },
     payment_id: { type: mongoose.SchemaTypes.ObjectId, ref: 'payments', default: null },
     payment_url: { type: String, default: null },
+    payment_session_id: { type: mongoose.SchemaTypes.ObjectId, ref: 'payment_sessions', default: null },
     subtotal: { type: Number, required: true },
     shipping_fee: { type: Number, required: true, default: 0 },
     discount: { type: Number, default: 0 },
@@ -171,6 +173,7 @@ OrderSchema.index({ user: 1, status: 1 })
 OrderSchema.index({ user: 1, createdAt: -1 })
 OrderSchema.index({ status: 1 })
 OrderSchema.index({ stripe_payment_intent_id: 1 }, { sparse: true })
+OrderSchema.index({ payment_session_id: 1 }, { sparse: true })
 OrderSchema.index(
   { user: 1, payment_method: 1, payment_status: 1, stripe_client_secret: 1 },
   { sparse: true, name: 'idx_pending_payment_recovery' },

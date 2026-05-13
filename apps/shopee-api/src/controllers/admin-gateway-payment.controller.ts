@@ -65,7 +65,7 @@ export const adminReconcilePayment = async (req: Request, res: Response) => {
   Logger.apiInfo('[Admin] Reconciling payment', {
     paymentId: id,
     provider: payment.provider,
-    orderId: payment.orderId.toString(),
+    orderId: payment.orderId?.toString(),
   })
 
   const requestId = uuidv4()
@@ -73,7 +73,7 @@ export const adminReconcilePayment = async (req: Request, res: Response) => {
   const providerInstance = paymentService.getProvider(provider)
 
   const remoteStatus = await providerInstance.queryStatus({
-    orderId: payment.orderId.toString(),
+    orderId: payment.orderId?.toString() ?? '',
     requestId,
     transactionId: payment.transactionId,
   })
@@ -154,7 +154,7 @@ export const adminManualConfirmPayment = async (req: Request, res: Response) => 
     paymentId: id,
     adminId,
     reason,
-    orderId: payment.orderId.toString(),
+    orderId: payment.orderId?.toString(),
   })
 
   const updated = await paymentRepository.updateById(id, {

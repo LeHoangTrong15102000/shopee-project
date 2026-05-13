@@ -1,3 +1,4 @@
+// DEMO COMPONENT — part of the EWalletPayment demo UI. Not connected to real payment flow.
 import { motion } from 'framer-motion'
 import Button from 'src/components/Button'
 import { WalletInfo, WalletLogo, formatCurrency } from './WalletCard'

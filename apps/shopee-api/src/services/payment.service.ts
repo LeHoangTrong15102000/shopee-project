@@ -3,6 +3,11 @@ import mongoose from 'mongoose'
 import { PaymentRepository } from '@repositories/payment.repository'
 import { OrderModel, ORDER_STATUS, PAYMENT_METHOD, PAYMENT_STATUS } from '@database/models/order.model'
 import { GATEWAY_PAYMENT_STATUS } from '@database/models/payment.model'
+import {
+  PaymentSessionModel,
+  PAYMENT_SESSION_STATUS,
+  IPaymentSession,
+} from '@database/models/payment-session.model'
 import { IPaymentProvider, PaymentProvider, PaymentStatus } from './payment/payment.interface'
 import { MomoProvider } from './payment/momo.provider'
 import { VnpayProvider } from './payment/vnpay.provider'
@@ -15,6 +20,29 @@ import {
   incrementSuccess,
   incrementFailed,
 } from '@utils/payment-metrics'
+
+// Session prefix used to distinguish session-based IPN orderId values from real order IDs
+const SESSION_ID_PREFIX = 'session_'
+
+const PAYMENT_SESSION_TTL_MINUTES = 15
+
+export interface CreatePaymentSessionInput {
+  cartItems: Array<{
+    productId: string
+    skuId?: string
+    buyCount: number
+    price: number
+  }>
+  shippingAddressId: string
+  shippingMethodId: string
+  paymentMethod: string
+  eWalletProvider: string
+  voucherCode?: string
+  coinsUsed?: number
+  note?: string
+  amount: number
+  clientIp: string
+}
 
 const APP_BASE_URL = process.env.APP_BASE_URL || 'http://localhost:4000'
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000'
@@ -36,6 +64,150 @@ export class PaymentService {
         return this.vnpayProvider
       default:
         throw new Error(`Unsupported payment provider: ${method}`)
+    }
+  }
+
+  /**
+   * Create a PaymentSession for e-wallet (MoMo/VNPay) payments.
+   * Does NOT create an order — order is created only after IPN success.
+   * Returns { sessionId, payment_url } for frontend redirect.
+   */
+  async createPaymentSession(
+    userId: string,
+    input: CreatePaymentSessionInput,
+  ): Promise<{ sessionId: string; payment_url: string }> {
+    incrementInitiated()
+
+    const expiresAt = new Date(Date.now() + PAYMENT_SESSION_TTL_MINUTES * 60 * 1000)
+
+    const session = await PaymentSessionModel.create({
+      userId: new mongoose.Types.ObjectId(userId),
+      cartItems: input.cartItems.map((item) => ({
+        productId: new mongoose.Types.ObjectId(item.productId),
+        skuId: item.skuId ? new mongoose.Types.ObjectId(item.skuId) : undefined,
+        buyCount: item.buyCount,
+        price: item.price,
+      })),
+      shippingAddressId: new mongoose.Types.ObjectId(input.shippingAddressId),
+      shippingMethodId: input.shippingMethodId,
+      paymentMethod: input.paymentMethod,
+      eWalletProvider: input.eWalletProvider,
+      voucherCode: input.voucherCode,
+      coinsUsed: input.coinsUsed || 0,
+      note: input.note,
+      amount: input.amount,
+      status: PAYMENT_SESSION_STATUS.PENDING,
+      expiresAt,
+    })
+
+    const sessionId = session._id.toString()
+
+    // Use SESSION_ID_PREFIX + sessionId as the orderId sent to the provider
+    // so IPN handler can distinguish session-based from order-based callbacks
+    const providerOrderId = `${SESSION_ID_PREFIX}${sessionId}`
+
+    const provider = input.eWalletProvider.toUpperCase() as PaymentProvider
+    const providerInstance = this.getProvider(provider)
+
+    const requestId = uuidv4()
+    const idempotencyKey = `session-${sessionId}-${requestId}`
+    const ipnUrl = `${APP_BASE_URL}/payment/${input.eWalletProvider.toLowerCase()}/ipn`
+    const returnUrl = `${FRONTEND_URL}/payment/return?provider=${input.eWalletProvider.toLowerCase()}&sessionId=${sessionId}`
+    const orderInfo = `Thanh toan don hang #${sessionId}`
+
+    // Create payment record linked to session (no orderId yet)
+    const paymentRecord = await this.paymentRepository.create({
+      sessionId: new mongoose.Types.ObjectId(sessionId),
+      provider: provider as any,
+      amount: input.amount,
+      currency: 'VND',
+      status: GATEWAY_PAYMENT_STATUS.PENDING,
+      idempotencyKey,
+      requestPayload: { requestId, ipnUrl, returnUrl },
+    })
+
+    Logger.apiInfo('[Payment] Creating payment session', {
+      sessionId,
+      provider: input.eWalletProvider,
+      amount: input.amount,
+      paymentId: paymentRecord._id.toString(),
+    })
+
+    let paymentUrl: string
+    try {
+      const result = await providerInstance.createPayment({
+        orderId: providerOrderId,
+        amount: input.amount,
+        orderInfo,
+        returnUrl,
+        ipnUrl,
+        clientIp: input.clientIp,
+        requestId,
+      })
+
+      paymentUrl = result.paymentUrl
+
+      await this.paymentRepository.updateById(paymentRecord._id, {
+        transactionId: result.transactionId,
+        responsePayload: result as unknown as Record<string, unknown>,
+      })
+    } catch (err) {
+      await this.paymentRepository.updateById(paymentRecord._id, {
+        status: GATEWAY_PAYMENT_STATUS.FAILED,
+      })
+      await PaymentSessionModel.findByIdAndUpdate(sessionId, {
+        status: PAYMENT_SESSION_STATUS.FAILED,
+      })
+      throw err
+    }
+
+    // Store payment_url and payment_id on the session
+    await PaymentSessionModel.findByIdAndUpdate(sessionId, {
+      payment_url: paymentUrl,
+      payment_id: paymentRecord._id.toString(),
+    })
+
+    Logger.apiInfo('[Payment] Payment session created', {
+      sessionId,
+      provider: input.eWalletProvider,
+      paymentId: paymentRecord._id.toString(),
+    })
+
+    return { sessionId, payment_url: paymentUrl }
+  }
+
+  /**
+   * Get the current status of a PaymentSession.
+   * Returns { status, orderId? } — orderId is present only after IPN success creates the order.
+   */
+  async getSessionStatus(
+    sessionId: string,
+    userId: string,
+  ): Promise<{ status: string; orderId?: string }> {
+    const session = await PaymentSessionModel.findById(sessionId).lean<IPaymentSession>()
+
+    if (!session) {
+      const err = new Error(`Payment session not found: ${sessionId}`)
+      ;(err as any).statusCode = 404
+      throw err
+    }
+
+    if (session.userId.toString() !== userId) {
+      const err = new Error(`Payment session not found: ${sessionId}`)
+      ;(err as any).statusCode = 404
+      throw err
+    }
+
+    // Look up the order that references this session (if IPN has already created it)
+    const order = await OrderModel.findOne({
+      payment_session_id: new mongoose.Types.ObjectId(sessionId),
+    })
+      .select('_id')
+      .lean()
+
+    return {
+      status: session.status,
+      orderId: order ? order._id.toString() : undefined,
     }
   }
 
@@ -140,6 +312,7 @@ export class PaymentService {
 
   /**
    * Handle IPN callback from payment provider.
+   * Detects session-based vs order-based payments by the orderId prefix.
    * Uses Mongoose transaction to prevent race conditions on duplicate IPN delivery.
    */
   async handleIpn(
@@ -165,6 +338,140 @@ export class PaymentService {
       resultCode: ipnResult.resultCode,
     })
 
+    // Detect session-based IPN: orderId starts with SESSION_ID_PREFIX
+    if (ipnResult.orderId.startsWith(SESSION_ID_PREFIX)) {
+      const sessionId = ipnResult.orderId.slice(SESSION_ID_PREFIX.length)
+      await this.handleSessionIpn(provider, ipnResult, sessionId)
+      return
+    }
+
+    // Legacy order-based IPN path
+    await this.handleOrderIpn(provider, ipnResult)
+  }
+
+  /**
+   * Handle IPN for session-based (e-wallet) payments.
+   * On success: calls orderService.createOrderFromSession, marks session PAID.
+   * On failure: marks session FAILED.
+   */
+  private async handleSessionIpn(
+    provider: PaymentProvider,
+    ipnResult: import('./payment/payment.interface').IpnResult,
+    sessionId: string,
+  ): Promise<void> {
+    const mongoSession = await mongoose.startSession()
+    try {
+      await mongoSession.withTransaction(async () => {
+        const paymentSession = await PaymentSessionModel.findById(sessionId)
+          .session(mongoSession)
+          .lean<IPaymentSession>()
+
+        if (!paymentSession) {
+          Logger.apiWarn('[Payment] Session IPN: session not found', { sessionId, provider })
+          return
+        }
+
+        // Idempotency: if already PAID or FAILED, skip
+        if (
+          paymentSession.status === PAYMENT_SESSION_STATUS.PAID ||
+          paymentSession.status === PAYMENT_SESSION_STATUS.FAILED
+        ) {
+          Logger.apiInfo('[Payment] Session IPN already processed (idempotency)', {
+            sessionId,
+            status: paymentSession.status,
+          })
+          return
+        }
+
+        // Validate amount matches session amount (allow ±1 VND tolerance)
+        if (Math.abs(ipnResult.amount - paymentSession.amount) > 1) {
+          Logger.apiWarn('[Payment] Session IPN amount mismatch — possible tampering', {
+            sessionId,
+            ipnAmount: ipnResult.amount,
+            sessionAmount: paymentSession.amount,
+          })
+          const payment = await this.paymentRepository.findBySessionId(sessionId)
+          if (payment) {
+            await this.paymentRepository.updateById(payment._id, {
+              status: GATEWAY_PAYMENT_STATUS.FAILED,
+              ipnPayload: ipnResult.rawData,
+            })
+          }
+          await PaymentSessionModel.findByIdAndUpdate(sessionId, {
+            status: PAYMENT_SESSION_STATUS.FAILED,
+          }).session(mongoSession)
+          incrementFailed()
+          return
+        }
+
+        // Find the payment record linked to this session
+        const payment = await this.paymentRepository.findBySessionId(sessionId)
+
+        if (payment) {
+          await this.paymentRepository.updateById(payment._id, {
+            status: ipnResult.success
+              ? GATEWAY_PAYMENT_STATUS.SUCCESS
+              : GATEWAY_PAYMENT_STATUS.FAILED,
+            transactionId: ipnResult.transactionId,
+            ipnPayload: ipnResult.rawData,
+          })
+        }
+
+        if (ipnResult.success) {
+          incrementSuccess()
+
+          // Mark session as PAID
+          await PaymentSessionModel.findByIdAndUpdate(sessionId, {
+            status: PAYMENT_SESSION_STATUS.PAID,
+            provider_transaction_id: ipnResult.transactionId,
+          }).session(mongoSession)
+
+          Logger.apiInfo('[Payment] Session IPN success — creating order from session', {
+            sessionId,
+            provider,
+          })
+
+          // Create order from session (runs its own transaction internally)
+          // We do this outside the current transaction to avoid nested transactions
+          // The createOrderFromSession method has its own idempotency check
+          setImmediate(async () => {
+            try {
+              const { orderService } = require('../container')
+              await orderService.createOrderFromSession(sessionId)
+            } catch (err) {
+              Logger.apiError('[Payment] Failed to create order from session after IPN', {
+                sessionId,
+                error: err instanceof Error ? err.message : String(err),
+              })
+            }
+          })
+        } else {
+          incrementFailed()
+
+          // Mark session as FAILED
+          await PaymentSessionModel.findByIdAndUpdate(sessionId, {
+            status: PAYMENT_SESSION_STATUS.FAILED,
+          }).session(mongoSession)
+
+          Logger.apiInfo('[Payment] Session IPN failed', {
+            sessionId,
+            provider,
+            resultCode: ipnResult.resultCode,
+          })
+        }
+      })
+    } finally {
+      await mongoSession.endSession()
+    }
+  }
+
+  /**
+   * Handle IPN for legacy order-based payments (Stripe/COD path — kept for backward compat).
+   */
+  private async handleOrderIpn(
+    provider: PaymentProvider,
+    ipnResult: import('./payment/payment.interface').IpnResult,
+  ): Promise<void> {
     const session = await mongoose.startSession()
     try {
       await session.withTransaction(async () => {

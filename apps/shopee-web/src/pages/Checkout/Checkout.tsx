@@ -15,6 +15,7 @@ const Checkout = () => {
     selectedAddress,
     selectedShippingMethod,
     selectedPaymentMethod,
+    selectedEWalletProvider,
     voucherCode,
     voucherDiscount,
     coinsUsed,
@@ -25,6 +26,7 @@ const Checkout = () => {
     currentStep,
     totalAmount,
     createOrderMutation,
+    initiatePaymentMutation,
     isConfirmingPayment,
     setVoucherCode,
     setCoinsUsed,
@@ -32,6 +34,7 @@ const Checkout = () => {
     handleAddressSelect,
     handleShippingSelect,
     handlePaymentSelect,
+    handleEWalletProviderSelect,
     handleApplyVoucher,
     handleRemoveVoucher,
     handleBackToStep3,
@@ -123,7 +126,7 @@ const Checkout = () => {
             note={note}
             onPlaceOrder={handlePlaceOrder}
             onBack={handleBackToStep3}
-            isPlacingOrder={createOrderMutation.isPending || isConfirmingPayment}
+            isPlacingOrder={createOrderMutation.isPending || initiatePaymentMutation.isPending || isConfirmingPayment}
           />
         ) : (
           <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-3">
@@ -131,6 +134,7 @@ const Checkout = () => {
               selectedAddress={selectedAddress}
               selectedShippingMethod={selectedShippingMethod}
               selectedPaymentMethod={selectedPaymentMethod}
+              selectedEWalletProvider={selectedEWalletProvider}
               voucherCode={voucherCode}
               voucherDiscount={voucherDiscount}
               coinsUsed={coinsUsed}
@@ -139,6 +143,7 @@ const Checkout = () => {
               onAddressSelect={handleAddressSelect}
               onShippingSelect={handleShippingSelect}
               onPaymentSelect={handlePaymentSelect}
+              onEWalletProviderSelect={handleEWalletProviderSelect}
               onApplyVoucher={handleApplyVoucher}
               onVoucherCodeChange={setVoucherCode}
               onCoinsChange={setCoinsUsed}

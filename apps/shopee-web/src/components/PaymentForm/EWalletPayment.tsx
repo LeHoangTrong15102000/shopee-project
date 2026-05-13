@@ -1,3 +1,8 @@
+/* DEMO COMPONENT — simulates e-wallet QR flow for UI development only.
+ * This component is NOT connected to the real MoMo/VNPay payment flow.
+ * Real payments go through POST /checkout/initiate-payment → gateway redirect.
+ * Only rendered in development mode (import.meta.env.DEV guard below).
+ */
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
@@ -28,6 +33,9 @@ function EWalletPayment({
   onPaymentComplete,
   onPaymentFailed,
 }: EWalletPaymentProps) {
+  // Guard: this demo component must not render in production builds
+  if (!import.meta.env.DEV) return null
+
   const { t } = useTranslation('payment')
   const [flowState, setFlowState] = useState<PaymentFlowState>('select')
   const [selectedWallet, setSelectedWallet] = useState<WalletType | null>(null)

@@ -57,7 +57,7 @@ function App() {
           logo: `${SITE_URL}/vite.svg`,
         }}
       />
-      <ToastContainer autoClose={1500} role="alert" />
+      <ToastContainer autoClose={3000} role="alert" />
       <ScrollToTopOnNavigate />
       {routeElements}
       {/* Chatbot Widget - hiển thị trên tất cả các trang */}

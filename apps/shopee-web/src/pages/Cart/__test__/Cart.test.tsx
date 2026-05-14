@@ -385,8 +385,15 @@ describe('Cart', () => {
     render(<Cart />, { wrapper })
 
     await waitFor(() => {
-      const deleteBtn = screen.getByTestId('delete-btn-0')
-      fireEvent.click(deleteBtn)
+      expect(screen.getByTestId('delete-btn-0')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByTestId('delete-btn-0'))
+
+    const confirmBtn = await screen.findByRole('button', { name: 'confirm.defaultConfirm' })
+    fireEvent.click(confirmBtn)
+
+    await waitFor(() => {
       expect(mockDeleteMutate).toHaveBeenCalledWith(['purchase-1'])
     })
   })
@@ -397,8 +404,15 @@ describe('Cart', () => {
     render(<Cart />, { wrapper })
 
     await waitFor(() => {
-      const deleteManyBtn = screen.getByTestId('delete-many-btn')
-      fireEvent.click(deleteManyBtn)
+      expect(screen.getByTestId('delete-many-btn')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByTestId('delete-many-btn'))
+
+    const confirmBtn = await screen.findByRole('button', { name: 'confirm.defaultConfirm' })
+    fireEvent.click(confirmBtn)
+
+    await waitFor(() => {
       expect(mockDeleteMutate).toHaveBeenCalledWith(['purchase-1'])
     })
   })

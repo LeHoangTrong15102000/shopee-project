@@ -47,7 +47,7 @@ const NotFound = () => {
         className="absolute rotate-12 rounded-sm bg-orange px-2 text-sm text-white"
         variants={disableAnimation ? undefined : staggerItem}
       >
-        Page Not Found
+        {t('seo.notFound')}
       </motion.div>
       <motion.div className="mt-5" variants={disableAnimation ? undefined : staggerItem}>
         <Link
@@ -56,7 +56,7 @@ const NotFound = () => {
         >
           <span className="absolute inset-0 translate-x-0.5 translate-y-0.5 bg-[#FF6A3D] transition-transform group-hover:translate-x-0 group-hover:translate-y-0" />
           <span className="relative block border border-current bg-orange px-8 py-3">
-            <span className="text-white">Go Home</span>
+            <span className="text-white">{t('error.goHome')}</span>
           </span>
         </Link>
       </motion.div>

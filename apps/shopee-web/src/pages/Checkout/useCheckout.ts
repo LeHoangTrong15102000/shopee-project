@@ -374,7 +374,8 @@ export const useCheckout = () => {
     !!selectedAddress &&
     !!selectedShippingMethod &&
     !!selectedPaymentMethod &&
-    checkedItems.length > 0
+    checkedItems.length > 0 &&
+    (selectedPaymentMethod !== 'e_wallet' || !!selectedEWalletProvider)
 
   const currentStep = (() => {
     if (!selectedAddress) return 1

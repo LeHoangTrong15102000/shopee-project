@@ -70,5 +70,9 @@
   "sync.synced": "Đã đồng bộ",
   "toast.alreadyInCart": "Sản phẩm đã có trong giỏ hàng",
   "sync.updatedFromOtherDevice": "🔄 Giỏ hàng đã được cập nhật từ thiết bị khác",
-  "seo.title": "Giỏ hàng"
+  "seo.title": "Giỏ hàng",
+  "deleteConfirm.title": "Xóa sản phẩm",
+  "deleteConfirm.message": "Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?",
+  "deleteConfirm.titleMany": "Xóa các sản phẩm đã chọn",
+  "deleteConfirm.messageMany": "Bạn có chắc muốn xóa tất cả sản phẩm đã chọn khỏi giỏ hàng?"
 }

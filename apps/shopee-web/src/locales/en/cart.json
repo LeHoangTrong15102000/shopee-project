@@ -70,5 +70,9 @@
   "sync.synced": "Synced",
   "toast.alreadyInCart": "Product is already in cart",
   "sync.updatedFromOtherDevice": "🔄 Cart updated from another device",
-  "seo.title": "Shopping Cart"
+  "seo.title": "Shopping Cart",
+  "deleteConfirm.title": "Remove item",
+  "deleteConfirm.message": "Are you sure you want to remove this item from your cart?",
+  "deleteConfirm.titleMany": "Remove selected items",
+  "deleteConfirm.messageMany": "Are you sure you want to remove all selected items from your cart?"
 }

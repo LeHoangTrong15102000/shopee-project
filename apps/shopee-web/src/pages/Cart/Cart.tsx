@@ -27,6 +27,7 @@ import CartItemList from './components/CartItemList'
 import CartSummaryBar from './components/CartSummaryBar'
 import EmptyCartState from './components/EmptyCartState'
 import { ExtendedPurchase, InlineStockAlertState } from './types'
+import ConfirmDialog from 'src/components/ConfirmDialog/ConfirmDialog'
 
 export type { ExtendedPurchase, InlineStockAlertState }
 
@@ -45,6 +46,11 @@ const Cart = () => {
 
   // State for inline stock alerts on individual cart items
   const [inlineAlerts, setInlineAlerts] = useState<Map<string, InlineStockAlertState>>(new Map())
+
+  // State for delete confirmation dialog
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+  const [pendingDeleteAction, setPendingDeleteAction] = useState<(() => void) | null>(null)
+  const [deleteType, setDeleteType] = useState<'single' | 'bulk'>('single')
 
   // WebSocket: Real-time cart sync across devices
   const { lastSyncTimestamp, isSyncing } = useCartSync()
@@ -224,13 +230,28 @@ const Cart = () => {
   // func xử lý xóa 1 sản phẩm với Optimistic Updates
   const handleDelete = (purchaseIndex: number) => () => {
     const purchaseId = extendedPurchases[purchaseIndex]._id
-    deletePurchasesMutation.mutate([purchaseId])
+    setPendingDeleteAction(() => () => deletePurchasesMutation.mutate([purchaseId]))
+    setDeleteType('single')
+    setDeleteConfirmOpen(true)
   }
 
   // func xử lý xóa nhiều sản phẩm với Optimistic Updates
   const handleDeleteManyPurchases = () => {
     const purchaseIds = checkedPurchases.map((purchase) => purchase._id)
-    deletePurchasesMutation.mutate(purchaseIds)
+    setPendingDeleteAction(() => () => deletePurchasesMutation.mutate(purchaseIds))
+    setDeleteType('bulk')
+    setDeleteConfirmOpen(true)
+  }
+
+  const handleConfirmDelete = () => {
+    pendingDeleteAction?.()
+    setDeleteConfirmOpen(false)
+    setPendingDeleteAction(null)
+  }
+
+  const handleCancelDelete = () => {
+    setDeleteConfirmOpen(false)
+    setPendingDeleteAction(null)
   }
 
   // func xử lý lưu sản phẩm để mua sau
@@ -349,6 +370,14 @@ const Cart = () => {
           />
         )}
       </div>
+      <ConfirmDialog
+        isOpen={deleteConfirmOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title={t(deleteType === 'bulk' ? 'deleteConfirm.titleMany' : 'deleteConfirm.title')}
+        message={t(deleteType === 'bulk' ? 'deleteConfirm.messageMany' : 'deleteConfirm.message')}
+        variant="danger"
+      />
     </div>
   )
 }

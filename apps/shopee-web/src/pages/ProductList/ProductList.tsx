@@ -24,7 +24,7 @@ import { useIsMobile } from 'src/hooks/useIsMobile'
 import SEO from 'src/components/SEO'
 import { SITE_URL } from 'src/components/SEO'
 import { useTranslation } from 'react-i18next'
-import Loader from 'src/components/Loader'
+import ProductListSkeleton from 'src/components/Skeleton/ProductListSkeleton'
 import Button from 'src/components/Button'
 
 /**
@@ -134,7 +134,7 @@ const ProductList = () => {
     return (
       <div className="bg-[#f5f5f5] py-6 dark:bg-slate-900">
         <div className="container">
-          <Loader />
+          <ProductListSkeleton />
         </div>
       </div>
     )

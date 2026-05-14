@@ -37,6 +37,8 @@ vi.mock('react-toastify', () => ({
 vi.mock('src/apis/checkout.api', () => ({
   default: {
     createOrder: vi.fn(),
+    calculateSummary: vi.fn(),
+    initiatePayment: vi.fn(),
   },
 }))
 
@@ -90,6 +92,30 @@ describe('useCheckout', () => {
       } as any,
     ])
     vi.mocked(useReducedMotionHook.useReducedMotion).mockReturnValue(false)
+
+    vi.mocked(checkoutApi.calculateSummary).mockImplementation(async (body: any) => {
+      const code = (body.voucherCode || '').toUpperCase()
+      let discount = 0
+      if (code === 'GIAM10') discount = 10000
+      else if (code === 'GIAM50K') discount = 50000
+      else if (code === 'DISCOUNT50') discount = 50000
+      else if (code === 'FREESHIP') discount = 30000
+      else if (code === 'NEWUSER') discount = 100000
+      else if (code) throw new Error('Invalid voucher')
+
+      return {
+        data: {
+          data: {
+            items: [],
+            subtotal: 200000,
+            shippingFee: 0,
+            discount,
+            coinsDiscount: 0,
+            total: 200000 - discount,
+          },
+        },
+      } as any
+    })
 
     sessionStorage.clear()
   })
@@ -204,7 +230,7 @@ describe('useCheckout', () => {
     expect(result.current.selectedPaymentMethod).toBe('cod')
   })
 
-  it('should apply GIAM10 voucher', () => {
+  it('should apply GIAM10 voucher', async () => {
     const { result } = renderHook(() => useCheckout(), { wrapper: createWrapper() })
 
     act(() => {
@@ -213,15 +239,15 @@ describe('useCheckout', () => {
 
     vi.clearAllMocks() // Clear previous toast calls
 
-    act(() => {
-      result.current.handleApplyVoucher()
+    await act(async () => {
+      await result.current.handleApplyVoucher()
     })
 
     expect(result.current.voucherDiscount).toBe(10000)
     expect(toast.success).toHaveBeenCalledWith('Áp dụng voucher thành công! Giảm 10.000đ')
   })
 
-  it('should apply GIAM50K voucher', () => {
+  it('should apply GIAM50K voucher', async () => {
     const { result } = renderHook(() => useCheckout(), { wrapper: createWrapper() })
 
     act(() => {
@@ -230,15 +256,15 @@ describe('useCheckout', () => {
 
     vi.clearAllMocks()
 
-    act(() => {
-      result.current.handleApplyVoucher()
+    await act(async () => {
+      await result.current.handleApplyVoucher()
     })
 
     expect(result.current.voucherDiscount).toBe(50000)
     expect(toast.success).toHaveBeenCalledWith('Áp dụng voucher thành công! Giảm 50.000đ')
   })
 
-  it('should apply DISCOUNT50 voucher', () => {
+  it('should apply DISCOUNT50 voucher', async () => {
     const { result } = renderHook(() => useCheckout(), { wrapper: createWrapper() })
 
     act(() => {
@@ -247,14 +273,14 @@ describe('useCheckout', () => {
 
     vi.clearAllMocks()
 
-    act(() => {
-      result.current.handleApplyVoucher()
+    await act(async () => {
+      await result.current.handleApplyVoucher()
     })
 
     expect(result.current.voucherDiscount).toBe(50000)
   })
 
-  it('should apply FREESHIP voucher', () => {
+  it('should apply FREESHIP voucher', async () => {
     const { result } = renderHook(() => useCheckout(), { wrapper: createWrapper() })
 
     act(() => {
@@ -263,15 +289,15 @@ describe('useCheckout', () => {
 
     vi.clearAllMocks()
 
-    act(() => {
-      result.current.handleApplyVoucher()
+    await act(async () => {
+      await result.current.handleApplyVoucher()
     })
 
     expect(result.current.voucherDiscount).toBe(30000)
     expect(toast.success).toHaveBeenCalledWith('Áp dụng voucher thành công! Miễn phí vận chuyển')
   })
 
-  it('should apply NEWUSER voucher', () => {
+  it('should apply NEWUSER voucher', async () => {
     const { result } = renderHook(() => useCheckout(), { wrapper: createWrapper() })
 
     act(() => {
@@ -280,8 +306,8 @@ describe('useCheckout', () => {
 
     vi.clearAllMocks()
 
-    act(() => {
-      result.current.handleApplyVoucher()
+    await act(async () => {
+      await result.current.handleApplyVoucher()
     })
 
     expect(result.current.voucherDiscount).toBe(100000)
@@ -290,7 +316,7 @@ describe('useCheckout', () => {
     )
   })
 
-  it('should show error for invalid voucher', () => {
+  it('should show error for invalid voucher', async () => {
     const { result } = renderHook(() => useCheckout(), { wrapper: createWrapper() })
 
     act(() => {
@@ -299,8 +325,8 @@ describe('useCheckout', () => {
 
     vi.clearAllMocks()
 
-    act(() => {
-      result.current.handleApplyVoucher()
+    await act(async () => {
+      await result.current.handleApplyVoucher()
     })
 
     expect(result.current.voucherDiscount).toBe(0)
@@ -321,12 +347,15 @@ describe('useCheckout', () => {
     expect(toast.error).not.toHaveBeenCalled()
   })
 
-  it('should remove voucher', () => {
+  it('should remove voucher', async () => {
     const { result } = renderHook(() => useCheckout(), { wrapper: createWrapper() })
 
     act(() => {
       result.current.setVoucherCode('GIAM10')
-      result.current.handleApplyVoucher()
+    })
+
+    await act(async () => {
+      await result.current.handleApplyVoucher()
     })
 
     act(() => {
@@ -586,7 +615,7 @@ describe('useCheckout', () => {
     expect(result.current.currentStep).toBe(4)
   })
 
-  it('should calculate totalAmount correctly', () => {
+  it('should calculate totalAmount correctly', async () => {
     const { result } = renderHook(() => useCheckout(), { wrapper: createWrapper() })
 
     // Base: 100000 * 2 = 200000
@@ -602,8 +631,8 @@ describe('useCheckout', () => {
       result.current.setVoucherCode('GIAM10')
     })
 
-    act(() => {
-      result.current.handleApplyVoucher()
+    await act(async () => {
+      await result.current.handleApplyVoucher()
     })
     // 230000 - 10000 = 220000
     expect(result.current.totalAmount).toBe(220000)
@@ -706,7 +735,7 @@ describe('useCheckout', () => {
     expect(result.current.totalAmount).toBe(200000)
   })
 
-  it('should handle voucher code with whitespace as invalid', () => {
+  it('should handle voucher code with whitespace as invalid', async () => {
     const { result } = renderHook(() => useCheckout(), { wrapper: createWrapper() })
 
     act(() => {
@@ -717,8 +746,8 @@ describe('useCheckout', () => {
 
     vi.clearAllMocks()
 
-    act(() => {
-      result.current.handleApplyVoucher()
+    await act(async () => {
+      await result.current.handleApplyVoucher()
     })
 
     // The code has a bug: it trims to check if empty, but converts the untrimmed string to uppercase

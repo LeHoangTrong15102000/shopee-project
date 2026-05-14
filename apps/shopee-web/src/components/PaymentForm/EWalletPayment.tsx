@@ -33,9 +33,6 @@ function EWalletPayment({
   onPaymentComplete,
   onPaymentFailed,
 }: EWalletPaymentProps) {
-  // Guard: this demo component must not render in production builds
-  if (!import.meta.env.DEV) return null
-
   const { t } = useTranslation('payment')
   const [flowState, setFlowState] = useState<PaymentFlowState>('select')
   const [selectedWallet, setSelectedWallet] = useState<WalletType | null>(null)
@@ -62,6 +59,9 @@ function EWalletPayment({
       if (timer) clearInterval(timer)
     }
   }, [flowState, timeRemaining])
+
+  // Guard: this demo component must not render in production builds
+  if (!import.meta.env.DEV) return null
 
   const handleSelectWallet = (wallet: WalletType) => {
     setSelectedWallet(wallet)

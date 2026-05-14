@@ -217,6 +217,7 @@ export const useCheckout = () => {
     onSuccess: (response) => {
       const { payment_url } = response.data.data
       // Redirect to external payment gateway — React Router cannot navigate to external URLs
+      // eslint-disable-next-line react-compiler/react-compiler
       window.location.href = payment_url
     },
     onError: () => {
@@ -248,20 +249,29 @@ export const useCheckout = () => {
     if (!voucherCode.trim()) return
 
     try {
-      const subtotal = checkedItems.reduce(
-        (sum, item) => sum + item.product.price * item.buy_count,
-        0,
-      )
       const res = await checkoutApi.calculateSummary({
         purchaseIds: checkedItems.map((item) => item._id),
         shippingMethodId: selectedShippingMethod?._id,
-        voucherCode: voucherCode.trim(),
+        voucherCode: voucherCode,
         coinsUsed,
       })
       const summary = res.data.data
-      const discount = subtotal - (summary.subtotal ?? subtotal) + (summary.discount ?? 0)
-      setVoucherDiscount(discount > 0 ? discount : 0)
-      toast.success(t('toast.voucherApplied', { amount: '' }))
+      const discount = summary.discount ?? 0
+      setVoucherDiscount(discount)
+
+      if (discount > 0) {
+        const code = voucherCode.trim().toUpperCase()
+        const formattedAmount = new Intl.NumberFormat('vi-VN').format(discount) + 'đ'
+        if (code === 'FREESHIP') {
+          toast.success(t('toast.voucherFreeShip'))
+        } else if (code === 'NEWUSER') {
+          toast.success(t('toast.voucherNewUser', { amount: formattedAmount }))
+        } else {
+          toast.success(t('toast.voucherApplied', { amount: formattedAmount }))
+        }
+      } else {
+        toast.error(t('toast.voucherInvalid'))
+      }
     } catch {
       toast.error(t('toast.voucherInvalid'))
     }

@@ -277,6 +277,27 @@ export const calculateCheckoutRequest = http.post(
     const subtotal = rawBody.purchase_ids.length * sampleProduct.price
     const coinsDiscount = rawBody.coins_used || 0
 
+    // Calculate voucher discount based on code
+    let discount = 0
+    const code = (rawBody.voucher_code || '').toUpperCase()
+    if (code === 'GIAM10') {
+      discount = 10000
+    } else if (code === 'GIAM50K') {
+      discount = 50000
+    } else if (code === 'DISCOUNT50') {
+      discount = 50000
+    } else if (code === 'FREESHIP') {
+      discount = 30000
+    } else if (code === 'NEWUSER') {
+      discount = 100000
+    } else if (code && code !== '') {
+      // Invalid voucher — return error
+      return HttpResponse.json(
+        { message: 'Invalid voucher code' },
+        { status: 400 },
+      )
+    }
+
     const summary: CheckoutSummary = {
       items: rawBody.purchase_ids.map(() => ({
         product: sampleProduct,
@@ -286,9 +307,9 @@ export const calculateCheckoutRequest = http.post(
       })),
       subtotal,
       shippingFee: shippingMethod.price,
-      discount: 0,
+      discount,
       coinsDiscount,
-      total: subtotal + shippingMethod.price - coinsDiscount,
+      total: subtotal + shippingMethod.price - discount - coinsDiscount,
     }
 
     return HttpResponse.json(

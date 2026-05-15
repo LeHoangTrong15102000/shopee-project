@@ -167,11 +167,16 @@ export default defineConfig(({ mode }) => {
         testTimeout: 10000,
         hookTimeout: 10000,
         teardownTimeout: 3000,
-        pool: 'forks',
+        pool: 'vmForks',
         maxWorkers: process.env.CI ? 1 : 2,
         fileParallelism: !process.env.CI,
         isolate: true,
-        execArgv: ['--max-old-space-size=6144'],
+        execArgv: ['--max-old-space-size=4096'],
+        poolOptions: {
+          vmForks: {
+            memoryLimit: 0.7,
+          },
+        },
         include: [
           'src/**/*.test.{ts,tsx}', // Unit tests
           'test/**/*.test.{ts,tsx}', // Integration & E2E tests

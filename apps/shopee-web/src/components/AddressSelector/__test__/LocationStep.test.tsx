@@ -5,12 +5,6 @@ import { UseFormReturn } from 'react-hook-form'
 import { AddressSchemaFormData } from '../addressForm.constants'
 
 // Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  },
-}))
-
 // Mock vietnamLocations data
 vi.mock('src/data/vietnamLocations', () => ({
   vietnamProvinces: [

@@ -2,12 +2,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import QuantityController from '../QuantityController/QuantityController'
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  },
-}))
-
 vi.mock('src/components/Button', () => ({
   default: ({ children, onClick, animated, ...props }: any) => (
     <button onClick={onClick} {...props}>

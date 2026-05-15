@@ -5,12 +5,6 @@ import ProfileFieldCard from '../components/ProfileFieldCard'
 import { PROFILE_FIELDS } from '../profileCompletion.constants'
 
 // Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  },
-}))
-
 const TestWrapper = ({ children }: { children: React.ReactNode }) => {
   return <BrowserRouter>{children}</BrowserRouter>
 }

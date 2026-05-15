@@ -1,21 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import NoResultsState from '../NoResultsState'
-
-vi.mock('framer-motion', () => ({
-  motion: new Proxy(
-    {},
-    {
-      get:
-        (_t, prop) =>
-        ({ children, ...p }: any) => {
-          const { initial, animate, exit, transition, variants, ...rest } = p
-          const Tag = (typeof prop === 'string' ? prop : 'div') as any
-          return <Tag {...rest}>{children}</Tag>
-        },
-    },
-  ),
-}))
 
 vi.mock('src/components/Button', () => ({
   default: ({ children, onClick, ...props }: any) => (

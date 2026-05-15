@@ -3,21 +3,6 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import Wishlist from '../Wishlist'
 
 // Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const { initial, animate, exit, transition, variants, whileHover, layout, custom, ...rest } =
-        props
-      return <div {...rest}>{children}</div>
-    },
-    p: ({ children, ...props }: any) => {
-      const { initial, animate, exit, transition, variants, ...rest } = props
-      return <p {...rest}>{children}</p>
-    },
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
-
 // Mock sub-components
 vi.mock('src/components/SEO', () => ({ default: () => null }))
 vi.mock('src/components/WishlistPriceAlert', () => ({

@@ -2,15 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import Notifications from '../Notifications'
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    ul: ({ children, ...props }: any) => <ul {...props}>{children}</ul>,
-    li: ({ children, ...props }: any) => <li {...props}>{children}</li>,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
-
 vi.mock('src/components/SEO', () => ({
   default: () => <div data-testid="seo" />,
 }))

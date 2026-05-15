@@ -1,17 +1,8 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import WishlistCard from '../WishlistCard'
 import type { Product } from 'src/types/product.type'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const { initial, animate, exit, transition, variants, layout, whileHover, ...rest } = props
-      return <div {...rest}>{children}</div>
-    },
-  },
-}))
 
 vi.mock('src/components/Button', () => ({
   default: ({ children, onClick, className, ...props }: any) => {

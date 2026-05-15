@@ -2,16 +2,6 @@ import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import WishlistStats from '../WishlistStats'
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const { initial, animate, exit, transition, variants, whileHover, layout, ...rest } = props
-      return <div {...rest}>{children}</div>
-    },
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
-
 const defaultProps = {
   itemCount: 5,
   totalValue: 1500000,

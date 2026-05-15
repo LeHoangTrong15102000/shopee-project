@@ -5,21 +5,6 @@ import { MemoryRouter } from 'react-router'
 import React from 'react'
 import DailyCheckInPage from '../DailyCheckIn'
 
-vi.mock('framer-motion', () => ({
-  motion: new Proxy(
-    {},
-    {
-      get:
-        (_target, prop) =>
-        ({ children, ...props }: any) => {
-          const Tag = typeof prop === 'string' ? prop : 'div'
-          return <Tag {...props}>{children}</Tag>
-        },
-    },
-  ),
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
-
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, params?: any) => {

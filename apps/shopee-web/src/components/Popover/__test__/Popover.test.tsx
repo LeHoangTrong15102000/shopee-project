@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import Popover from '../Popover'
 
@@ -10,17 +10,6 @@ vi.mock('@floating-ui/react', async (importOriginal) => {
     FloatingPortal: ({ children }: any) => <div data-testid="portal">{children}</div>,
   }
 })
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const { initial, animate, exit, transition, ...rest } = props
-      return <div {...rest}>{children}</div>
-    },
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-  useReducedMotion: () => false,
-}))
 
 describe('Popover', () => {
   it('renders children', () => {

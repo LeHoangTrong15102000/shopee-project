@@ -217,6 +217,7 @@ export const useCheckout = () => {
     onSuccess: (response) => {
       const { payment_url } = response.data.data
       // Redirect to external payment gateway — React Router cannot navigate to external URLs
+      // eslint-disable-next-line react-compiler/react-compiler
       window.location.href = payment_url
     },
     onError: () => {

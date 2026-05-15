@@ -4,16 +4,6 @@ import AddressCard from '../User/pages/AddressBook/components/AddressCard'
 import { Address, AddressType } from 'src/types/checkout.type'
 
 // Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, className, ...props }: any) => (
-      <div className={className} {...props}>
-        {children}
-      </div>
-    ),
-  },
-}))
-
 // Mock Button component
 vi.mock('src/components/Button', () => ({
   default: ({ children, onClick, className, ...props }: any) => (

@@ -21,13 +21,6 @@ vi.mock('src/i18n/i18n', () => ({
   },
 }))
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
-
 vi.mock('src/hooks/useReducedMotion', () => ({
   useReducedMotion: () => false,
 }))

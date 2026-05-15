@@ -97,6 +97,7 @@ describe('useOrderDetail', () => {
           _id: 'order123',
           status: 'pending',
           total: 100000,
+          createdAt: '2024-01-01T00:00:00Z',
           updatedAt: '2024-01-01T00:00:00Z',
         },
       },
@@ -125,7 +126,7 @@ describe('useOrderDetail', () => {
     }
     vi.mocked(orderTrackingApi.getTracking).mockResolvedValue(mockTracking as any)
     vi.mocked(orderApi.getOrderById).mockResolvedValue({
-      data: { data: { status: 'processing' } },
+      data: { data: { status: 'processing', createdAt: '2024-01-01T00:00:00Z' } },
     } as any)
 
     const { result } = renderHook(() => useOrderDetail(), { wrapper: createWrapper() })
@@ -148,6 +149,7 @@ describe('useOrderDetail', () => {
         data: {
           _id: 'order123',
           status: 'processing',
+          createdAt: '2024-01-01T00:00:00Z',
           updatedAt: '2024-01-03T00:00:00Z',
         },
       },
@@ -178,7 +180,7 @@ describe('useOrderDetail', () => {
 
   it('should merge websocket statusHistory into stepTimestamps', async () => {
     const mockOrder = {
-      data: { data: { _id: 'order123', status: 'shipped' } },
+      data: { data: { _id: 'order123', status: 'shipped', createdAt: '2024-01-01T00:00:00Z' } },
     }
     const mockTracking = {
       data: {
@@ -217,6 +219,7 @@ describe('useOrderDetail', () => {
         data: {
           _id: 'order123',
           status: 'delivered',
+          createdAt: '2024-01-01T00:00:00Z',
           updatedAt: '2024-01-05T00:00:00Z',
         },
       },
@@ -244,7 +247,7 @@ describe('useOrderDetail', () => {
   it('should handle cancel order successfully', async () => {
     vi.mocked(orderApi.cancelOrder).mockResolvedValue({ data: { success: true } } as any)
     vi.mocked(orderApi.getOrderById).mockResolvedValue({
-      data: { data: { _id: 'order123' } },
+      data: { data: { _id: 'order123', createdAt: '2024-01-01T00:00:00Z' } },
     } as any)
 
     const { result } = renderHook(() => useOrderDetail(), { wrapper: createWrapper() })
@@ -271,7 +274,7 @@ describe('useOrderDetail', () => {
   it('should handle cancel order error', async () => {
     vi.mocked(orderApi.cancelOrder).mockRejectedValue(new Error('Network error'))
     vi.mocked(orderApi.getOrderById).mockResolvedValue({
-      data: { data: { _id: 'order123' } },
+      data: { data: { _id: 'order123', createdAt: '2024-01-01T00:00:00Z' } },
     } as any)
 
     const { result } = renderHook(() => useOrderDetail(), { wrapper: createWrapper() })
@@ -292,7 +295,7 @@ describe('useOrderDetail', () => {
   it('should handle return order successfully', async () => {
     vi.mocked(orderApi.returnOrder).mockResolvedValue({ data: { success: true } } as any)
     vi.mocked(orderApi.getOrderById).mockResolvedValue({
-      data: { data: { _id: 'order123' } },
+      data: { data: { _id: 'order123', createdAt: '2024-01-01T00:00:00Z' } },
     } as any)
 
     const { result } = renderHook(() => useOrderDetail(), { wrapper: createWrapper() })
@@ -320,7 +323,7 @@ describe('useOrderDetail', () => {
 
   it('should validate return reason before submitting', () => {
     vi.mocked(orderApi.getOrderById).mockResolvedValue({
-      data: { data: { _id: 'order123' } },
+      data: { data: { _id: 'order123', createdAt: '2024-01-01T00:00:00Z' } },
     } as any)
 
     const { result } = renderHook(() => useOrderDetail(), { wrapper: createWrapper() })
@@ -337,7 +340,7 @@ describe('useOrderDetail', () => {
   it('should clear return reason error on successful submission', async () => {
     vi.mocked(orderApi.returnOrder).mockResolvedValue({ data: { success: true } } as any)
     vi.mocked(orderApi.getOrderById).mockResolvedValue({
-      data: { data: { _id: 'order123' } },
+      data: { data: { _id: 'order123', createdAt: '2024-01-01T00:00:00Z' } },
     } as any)
 
     const { result } = renderHook(() => useOrderDetail(), { wrapper: createWrapper() })
@@ -359,7 +362,7 @@ describe('useOrderDetail', () => {
   it('should handle return order error', async () => {
     vi.mocked(orderApi.returnOrder).mockRejectedValue(new Error('Network error'))
     vi.mocked(orderApi.getOrderById).mockResolvedValue({
-      data: { data: { _id: 'order123' } },
+      data: { data: { _id: 'order123', createdAt: '2024-01-01T00:00:00Z' } },
     } as any)
 
     const { result } = renderHook(() => useOrderDetail(), { wrapper: createWrapper() })
@@ -448,6 +451,7 @@ describe('useOrderDetail', () => {
         data: {
           _id: 'order123',
           status: 'processing',
+          createdAt: '2024-01-01T00:00:00Z',
           updatedAt: '2024-01-03T00:00:00Z',
         },
       },
@@ -506,7 +510,7 @@ describe('useOrderDetail', () => {
 
     vi.mocked(orderApi.cancelOrder).mockResolvedValue({ data: { success: true } } as any)
     vi.mocked(orderApi.getOrderById).mockResolvedValue({
-      data: { data: { _id: 'order123' } },
+      data: { data: { _id: 'order123', createdAt: '2024-01-01T00:00:00Z' } },
     } as any)
 
     const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -534,7 +538,7 @@ describe('useOrderDetail', () => {
 
     vi.mocked(orderApi.returnOrder).mockResolvedValue({ data: { success: true } } as any)
     vi.mocked(orderApi.getOrderById).mockResolvedValue({
-      data: { data: { _id: 'order123' } },
+      data: { data: { _id: 'order123', createdAt: '2024-01-01T00:00:00Z' } },
     } as any)
 
     const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -563,6 +567,7 @@ describe('useOrderDetail', () => {
         data: {
           _id: 'order123',
           status: 'delivered',
+          createdAt: '2024-01-01T00:00:00Z',
           updatedAt: '2024-01-05T00:00:00Z',
         },
       },
@@ -597,6 +602,7 @@ describe('useOrderDetail', () => {
         data: {
           _id: 'order123',
           status: 'pending',
+          createdAt: '2024-01-01T00:00:00Z',
           updatedAt: '2024-01-01T00:00:00Z',
         },
       },
@@ -644,6 +650,7 @@ describe('useOrderDetail', () => {
         data: {
           _id: 'order123',
           status: 'confirmed',
+          createdAt: '2024-01-01T00:00:00Z',
           updatedAt: '2024-01-02T00:00:00Z',
         },
       },

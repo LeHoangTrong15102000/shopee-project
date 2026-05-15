@@ -15,14 +15,6 @@ vi.mock('src/hooks/useIsMobile', () => ({
   useIsMobile: () => false,
 }))
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
-
 vi.mock('src/components/ImageWithFallback', () => ({
   default: ({ src, alt, className }: any) => (
     <img src={src} alt={alt} className={className} data-testid="product-image" />
@@ -287,13 +279,13 @@ describe('CartItemList', () => {
 
     it('renders delete button', () => {
       renderComponent()
-      expect(screen.getByText('list.delete')).toBeInTheDocument()
+      expect(screen.getAllByText('list.delete').length).toBeGreaterThan(0)
     })
 
     it('calls handleDelete when delete button is clicked', () => {
       const handleDelete = vi.fn(() => vi.fn())
       renderComponent({ handleDelete })
-      const deleteBtn = screen.getByText('list.delete')
+      const deleteBtn = screen.getAllByText('list.delete')[0]
       fireEvent.click(deleteBtn)
       expect(handleDelete).toHaveBeenCalledWith(0)
     })

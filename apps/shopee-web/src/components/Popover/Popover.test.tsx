@@ -1,17 +1,9 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { screen, waitFor, fireEvent } from '@testing-library/react'
 import { renderWithProviders } from 'src/utils/testUtils'
 import Popover from './Popover'
 
 // Mock framer-motion so AnimatePresence/motion.div render synchronously
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-  useReducedMotion: () => false,
-}))
-
 describe('Popover', () => {
   it('renders children', () => {
     renderWithProviders(

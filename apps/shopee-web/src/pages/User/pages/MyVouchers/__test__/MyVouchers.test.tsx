@@ -6,21 +6,6 @@ import MyVouchers from '../MyVouchers'
 import voucherApi from 'src/apis/voucher.api'
 import { toast } from 'react-toastify'
 
-vi.mock('framer-motion', () => ({
-  motion: new Proxy(
-    {},
-    {
-      get:
-        (_target, prop) =>
-        ({ children, ...props }: any) => {
-          const Tag = typeof prop === 'string' ? prop : 'div'
-          return <Tag {...props}>{children}</Tag>
-        },
-    },
-  ),
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
-
 // Uses global react-i18next mock from vitest.setup.js
 
 vi.mock('src/apis/voucher.api')

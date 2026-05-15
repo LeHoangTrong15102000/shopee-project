@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router'
 import BenefitsPanel from '../components/BenefitsPanel'
@@ -7,22 +7,6 @@ import ProfileCompletionTip from '../components/ProfileCompletionTip'
 import CongratulatoryPanel from '../components/CongratulatoryPanel'
 import ProfileCompletion from '../ProfileCompletion'
 import type { User } from 'src/types/user.type'
-
-vi.mock('framer-motion', () => ({
-  motion: new Proxy(
-    {},
-    {
-      get:
-        (_target, prop) =>
-        ({ children, ...props }: any) => {
-          const { initial, animate, exit, transition, variants, ...rest } = props
-          const Tag = (typeof prop === 'string' ? prop : 'div') as any
-          return <Tag {...rest}>{children}</Tag>
-        },
-    },
-  ),
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: 'vi' } }),

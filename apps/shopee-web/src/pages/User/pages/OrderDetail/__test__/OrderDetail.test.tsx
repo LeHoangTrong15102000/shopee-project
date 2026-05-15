@@ -31,15 +31,6 @@ vi.mock('react-i18next', () => ({
   }),
 }))
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-  useReducedMotion: () => false,
-}))
-
 vi.mock('react-router', () => ({
   useNavigate: () => vi.fn(),
   useParams: () => ({ id: 'order-1' }),

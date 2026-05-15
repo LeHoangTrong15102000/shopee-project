@@ -1,5 +1,6 @@
 /// <reference types="vitest" />
 
+import React from 'react'
 import { afterAll, afterEach, beforeAll, expect } from 'vitest'
 import { setupServer } from 'msw/node'
 import { cleanup } from '@testing-library/react'
@@ -170,6 +171,57 @@ const additionalMocks = [
     return new HttpResponse(null, { status: 200 })
   }),
 ]
+
+// Mock framer-motion globally — Proxy-based to handle any motion.xxx element
+vi.mock('framer-motion', () => {
+  // Props that framer-motion uses but should NOT be passed to DOM elements
+  const motionProps = new Set([
+    'initial', 'animate', 'exit', 'transition', 'variants',
+    'whileHover', 'whileTap', 'whileInView', 'whileFocus', 'whileDrag',
+    'drag', 'dragConstraints', 'dragElastic', 'dragMomentum', 'dragTransition',
+    'dragSnapToOrigin', 'dragPropagation', 'onDragStart', 'onDrag', 'onDragEnd',
+    'layout', 'layoutId', 'layoutDependency', 'layoutScroll',
+    'viewport', 'onViewportEnter', 'onViewportLeave',
+    'onAnimationStart', 'onAnimationComplete',
+    'custom', 'inherit', 'mode', 'animated',
+  ])
+
+  const componentCache = new Map()
+
+  const createMotionComponent = (tag) => {
+    if (componentCache.has(tag)) return componentCache.get(tag)
+    const Component = ({ children, ...props }) => {
+      const domProps = Object.fromEntries(
+        Object.entries(props).filter(([key]) => !motionProps.has(key))
+      )
+      const Tag = tag
+      return React.createElement(Tag, domProps, children)
+    }
+    Component.displayName = `motion.${tag}`
+    componentCache.set(tag, Component)
+    return Component
+  }
+
+  const motion = new Proxy({}, {
+    get: (_, tag) => createMotionComponent(tag),
+  })
+
+  return {
+    motion,
+    AnimatePresence: ({ children }) => children,
+    useReducedMotion: () => false,
+    useAnimation: () => ({ start: vi.fn(), stop: vi.fn(), set: vi.fn() }),
+    useMotionValue: (initial) => ({ get: () => initial, set: vi.fn(), onChange: vi.fn() }),
+    useTransform: () => ({ get: () => 0, set: vi.fn() }),
+    useSpring: () => ({ get: () => 0, set: vi.fn() }),
+    useInView: () => true,
+    useScroll: () => ({ scrollY: { get: () => 0, onChange: vi.fn() }, scrollYProgress: { get: () => 0, onChange: vi.fn() } }),
+    LayoutGroup: ({ children }) => children,
+    LazyMotion: ({ children }) => children,
+    domAnimation: {},
+    m: motion,
+  }
+})
 
 // Mock react-i18next
 vi.mock('react-i18next', async () => {

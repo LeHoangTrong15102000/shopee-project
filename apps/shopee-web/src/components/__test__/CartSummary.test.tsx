@@ -10,12 +10,6 @@ vi.mock('react-i18next', () => ({
   }),
 }))
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  },
-}))
-
 vi.mock('@heroui/tooltip', () => ({
   Tooltip: ({ children, content }: any) => (
     <div data-testid="tooltip-wrapper">

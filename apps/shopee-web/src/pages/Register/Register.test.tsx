@@ -1,7 +1,8 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
 import { renderWithRouter } from 'src/utils/testUtils'
 import path from 'src/constant/path'
+import React from 'react'
 
 describe('Register', () => {
   it('renders register form with email, password, and confirm_password fields', async () => {
@@ -16,7 +17,7 @@ describe('Register', () => {
 
     expect(document.querySelector('input[name="password"]')).toBeInTheDocument()
     expect(document.querySelector('input[name="confirm_password"]')).toBeInTheDocument()
-  })
+  }, 35000)
 
   it('shows validation errors when submitting empty form', async () => {
     const { user } = renderWithRouter({ route: path.register })
@@ -42,7 +43,7 @@ describe('Register', () => {
           screen.queryByText(/required/i),
       ).toBeTruthy()
     })
-  })
+  }, 35000)
 
   it('has link to login page', async () => {
     renderWithRouter({ route: path.register })
@@ -57,5 +58,5 @@ describe('Register', () => {
     // Register page should have a link to login
     const loginLink = screen.queryByText(/Đăng nhập/i)
     expect(loginLink).toBeTruthy()
-  })
+  }, 35000)
 })

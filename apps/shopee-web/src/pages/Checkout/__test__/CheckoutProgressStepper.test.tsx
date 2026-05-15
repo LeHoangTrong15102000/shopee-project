@@ -1,32 +1,9 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen } from '@testing-library/react'
 import {
   CheckoutProgressStepper,
   CHECKOUT_STEPS,
 } from '../../Checkout/components/CheckoutProgressStepper'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const safe = Object.fromEntries(
-        Object.entries(props).filter(
-          ([k]) =>
-            ![
-              'initial',
-              'animate',
-              'exit',
-              'transition',
-              'variants',
-              'whileHover',
-              'whileTap',
-            ].includes(k),
-        ),
-      )
-      return <div {...safe}>{children}</div>
-    },
-  },
-  AnimatePresence: ({ children }: any) => children,
-}))
 
 describe('CheckoutProgressStepper', () => {
   it('CHECKOUT_STEPS has 4 items', () => {

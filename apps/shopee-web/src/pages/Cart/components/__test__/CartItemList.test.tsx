@@ -2,48 +2,6 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import CartItemList from '../CartItemList'
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const safe = Object.fromEntries(
-        Object.entries(props).filter(
-          ([k]) =>
-            ![
-              'initial',
-              'animate',
-              'exit',
-              'transition',
-              'variants',
-              'whileHover',
-              'whileTap',
-              'style',
-            ].includes(k),
-        ),
-      )
-      return <div {...safe}>{children}</div>
-    },
-    span: ({ children, ...props }: any) => {
-      const safe = Object.fromEntries(
-        Object.entries(props).filter(
-          ([k]) =>
-            ![
-              'initial',
-              'animate',
-              'exit',
-              'transition',
-              'variants',
-              'whileHover',
-              'whileTap',
-              'style',
-            ].includes(k),
-        ),
-      )
-      return <span {...safe}>{children}</span>
-    },
-  },
-  AnimatePresence: ({ children }: any) => children,
-}))
-
 vi.mock('react-router', () => ({
   Link: ({ children, to, ...props }: any) => (
     <a href={to} {...props}>

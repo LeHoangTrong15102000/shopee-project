@@ -1,48 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen } from '@testing-library/react'
 import SaveForLaterSection from '../SaveForLaterSection'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const safe = Object.fromEntries(
-        Object.entries(props).filter(
-          ([k]) =>
-            ![
-              'initial',
-              'animate',
-              'exit',
-              'transition',
-              'variants',
-              'whileHover',
-              'whileTap',
-              'style',
-              'layout',
-            ].includes(k),
-        ),
-      )
-      return <div {...safe}>{children}</div>
-    },
-    svg: ({ children, ...props }: any) => {
-      const safe = Object.fromEntries(
-        Object.entries(props).filter(
-          ([k]) =>
-            ![
-              'initial',
-              'animate',
-              'exit',
-              'transition',
-              'variants',
-              'whileHover',
-              'whileTap',
-            ].includes(k),
-        ),
-      )
-      return <svg {...safe}>{children}</svg>
-    },
-  },
-  AnimatePresence: ({ children }: any) => children,
-}))
 
 vi.mock('react-router', () => ({
   Link: ({ children, to, ...props }: any) => (

@@ -1,45 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import StepIndicator from '../StepIndicator'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const safe = Object.fromEntries(
-        Object.entries(props).filter(
-          ([k]) =>
-            ![
-              'initial',
-              'animate',
-              'exit',
-              'transition',
-              'variants',
-              'whileHover',
-              'whileTap',
-            ].includes(k),
-        ),
-      )
-      return <div {...safe}>{children}</div>
-    },
-    svg: ({ children, ...props }: any) => {
-      const safe = Object.fromEntries(
-        Object.entries(props).filter(
-          ([k]) => !['initial', 'animate', 'exit', 'transition', 'variants'].includes(k),
-        ),
-      )
-      return <svg {...safe}>{children}</svg>
-    },
-    span: ({ children, ...props }: any) => {
-      const safe = Object.fromEntries(
-        Object.entries(props).filter(
-          ([k]) => !['initial', 'animate', 'exit', 'transition', 'variants'].includes(k),
-        ),
-      )
-      return <span {...safe}>{children}</span>
-    },
-  },
-  AnimatePresence: ({ children }: any) => children,
-}))
 
 describe('StepIndicator', () => {
   const defaultProps = {

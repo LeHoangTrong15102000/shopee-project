@@ -1,22 +1,8 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { BrowserRouter } from 'react-router'
 import ComparisonTableDesktop from '../ComparisonTableDesktop'
 import { BestValues } from '../../comparisonTable.constants'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...p }: any) => {
-      const { initial, animate, exit, transition, variants, whileHover, layout, ...rest } = p
-      return <div {...rest}>{children}</div>
-    },
-    span: ({ children, ...p }: any) => {
-      const { initial, animate, exit, transition, variants, ...rest } = p
-      return <span {...rest}>{children}</span>
-    },
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
 
 vi.mock('src/components/Button', () => ({
   default: ({ children, onClick, className, ...props }: any) => {

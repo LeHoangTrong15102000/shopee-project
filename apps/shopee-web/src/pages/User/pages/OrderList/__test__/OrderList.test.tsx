@@ -12,17 +12,6 @@ vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }))
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, onClick, className, initial, animate, exit, transition, ...props }: any) => (
-      <div onClick={onClick} className={className} {...props}>
-        {children}
-      </div>
-    ),
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
-
 vi.mock('src/hooks/nuqs/orderSearchParams', () => ({
   useOrderStatus: () => mockUseOrderStatus(),
 }))

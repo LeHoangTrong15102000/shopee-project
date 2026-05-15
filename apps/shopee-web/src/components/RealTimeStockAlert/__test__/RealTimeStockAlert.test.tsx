@@ -25,22 +25,6 @@ vi.mock('src/hooks/useReducedMotion', () => ({
   useReducedMotion: vi.fn(() => false),
 }))
 
-vi.mock('framer-motion', () => ({
-  motion: new Proxy(
-    {},
-    {
-      get:
-        (_target, prop) =>
-        ({ children, ...props }: any) => {
-          const { initial, animate, exit, transition, variants, layout, ...rest } = props
-          const Tag = (typeof prop === 'string' ? prop : 'div') as any
-          return <Tag {...rest}>{children}</Tag>
-        },
-    },
-  ),
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
-
 vi.mock('react-toastify', () => ({
   toast: {
     error: vi.fn(),

@@ -5,17 +5,6 @@ import { UseFormReturn } from 'react-hook-form'
 import { AddressSchemaFormData } from '../AddressSelector/addressForm.constants'
 
 // Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, className, ...props }: any) => (
-      <div className={className} {...props}>
-        {children}
-      </div>
-    ),
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
-
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({

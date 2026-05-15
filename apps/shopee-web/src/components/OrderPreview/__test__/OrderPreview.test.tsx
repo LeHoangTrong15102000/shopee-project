@@ -2,10 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import OrderPreview from '../OrderPreview'
 
-vi.mock('framer-motion', () => ({
-  motion: { div: 'div', p: 'p' },
-}))
-
 vi.mock('src/hooks/useReducedMotion', () => ({
   useReducedMotion: () => false,
 }))

@@ -30,13 +30,6 @@ vi.mock('src/hooks/useReducedMotion', () => ({
   useReducedMotion: () => false,
 }))
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  },
-  AnimatePresence: ({ children }: any) => children,
-}))
-
 const mockToastError = vi.fn()
 
 vi.mock('react-toastify', () => ({

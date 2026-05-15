@@ -46,9 +46,7 @@ exports[`Component Snapshots > Footer component renders correctly > Footer-defau
   <div
     class="relative z-10 container"
   >
-    <div
-      style="opacity: 0; transform: translateY(20px);"
-    >
+    <div>
       <div
         class="grid grid-cols-1 gap-4 border-b border-orange-200/40 pb-8 lg:grid-cols-3 dark:border-slate-700/50"
       >
@@ -75,14 +73,12 @@ exports[`Component Snapshots > Footer component renders correctly > Footer-defau
     </div>
     <div
       class="py-10"
-      style="opacity: 0;"
     >
       <div
         class="text-center"
       >
         <div
           class="flex flex-wrap items-center justify-center gap-4 md:gap-8"
-          style="opacity: 0; transform: translateY(20px);"
         >
           <a
             class="group relative cursor-pointer text-sm font-semibold text-gray-700 transition-all duration-300 hover:text-orange dark:text-gray-200 dark:hover:text-orange-400"
@@ -143,7 +139,6 @@ exports[`Component Snapshots > Footer component renders correctly > Footer-defau
         </div>
         <div
           class="mt-10 flex flex-wrap items-center justify-center gap-6 md:gap-8"
-          style="opacity: 0; transform: translateY(20px);"
         >
           <a
             class="group cursor-pointer transition-all duration-300 hover:scale-105"
@@ -178,7 +173,6 @@ exports[`Component Snapshots > Footer component renders correctly > Footer-defau
         </div>
         <div
           class="mt-12"
-          style="opacity: 0; transform: translateY(20px);"
         >
           <div
             class="mx-auto max-w-4xl space-y-3 border-t border-orange-200/30 px-4 py-6 md:px-8 dark:border-slate-700/40"
@@ -258,7 +252,6 @@ exports[`Component Snapshots > Input component with error state > Input-error 1`
   <div
     class="mt-1 min-h-5 text-sm text-red-600 dark:text-red-400"
     id="test-error-error"
-    style="opacity: 0; height: 0px; transform: translateY(-10px);"
   >
     This field is required
   </div>
@@ -279,6 +272,7 @@ exports[`Component Snapshots > NotificationSkeleton component renders correctly 
       class="mr-3 shrink-0"
     >
       <div
+        aria-hidden="true"
         class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-8 w-8 rounded-full"
       />
     </div>
@@ -289,19 +283,24 @@ exports[`Component Snapshots > NotificationSkeleton component renders correctly 
         class="flex items-start justify-between"
       >
         <div
+          aria-hidden="true"
           class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 mb-2 h-4 w-32"
         />
         <div
+          aria-hidden="true"
           class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 ml-2 h-2 w-2 shrink-0 rounded-full"
         />
       </div>
       <div
+        aria-hidden="true"
         class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 mb-1 h-3 w-full"
       />
       <div
+        aria-hidden="true"
         class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 mb-2 h-3 w-4/5"
       />
       <div
+        aria-hidden="true"
         class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-16"
       />
     </div>
@@ -313,6 +312,7 @@ exports[`Component Snapshots > NotificationSkeleton component renders correctly 
       class="mr-3 shrink-0"
     >
       <div
+        aria-hidden="true"
         class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-8 w-8 rounded-full"
       />
     </div>
@@ -323,19 +323,24 @@ exports[`Component Snapshots > NotificationSkeleton component renders correctly 
         class="flex items-start justify-between"
       >
         <div
+          aria-hidden="true"
           class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 mb-2 h-4 w-32"
         />
         <div
+          aria-hidden="true"
           class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 ml-2 h-2 w-2 shrink-0 rounded-full"
         />
       </div>
       <div
+        aria-hidden="true"
         class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 mb-1 h-3 w-full"
       />
       <div
+        aria-hidden="true"
         class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 mb-2 h-3 w-4/5"
       />
       <div
+        aria-hidden="true"
         class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-16"
       />
     </div>
@@ -455,6 +460,7 @@ exports[`Component Snapshots > ProductCardSkeleton component renders correctly >
     class="relative w-full pt-[100%]"
   >
     <div
+      aria-hidden="true"
       class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 absolute top-0 left-0 h-full w-full rounded-tl-sm rounded-tr-sm"
     />
   </div>
@@ -465,9 +471,11 @@ exports[`Component Snapshots > ProductCardSkeleton component renders correctly >
       class="min-h-[1.9rem]"
     >
       <div
+        aria-hidden="true"
         class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 mb-1 h-3 w-full"
       />
       <div
+        aria-hidden="true"
         class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-3/4"
       />
     </div>
@@ -475,9 +483,11 @@ exports[`Component Snapshots > ProductCardSkeleton component renders correctly >
       class="mt-3 flex items-center gap-2"
     >
       <div
+        aria-hidden="true"
         class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-4 w-16"
       />
       <div
+        aria-hidden="true"
         class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-4 w-20"
       />
     </div>
@@ -488,22 +498,28 @@ exports[`Component Snapshots > ProductCardSkeleton component renders correctly >
         class="flex gap-0.5"
       >
         <div
+          aria-hidden="true"
           class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-3"
         />
         <div
+          aria-hidden="true"
           class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-3"
         />
         <div
+          aria-hidden="true"
           class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-3"
         />
         <div
+          aria-hidden="true"
           class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-3"
         />
         <div
+          aria-hidden="true"
           class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-3"
         />
       </div>
       <div
+        aria-hidden="true"
         class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-16"
       />
     </div>
@@ -512,6 +528,7 @@ exports[`Component Snapshots > ProductCardSkeleton component renders correctly >
     class="p-2"
   >
     <div
+      aria-hidden="true"
       class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-3 w-20"
     />
   </div>
@@ -704,6 +721,7 @@ exports[`Component Snapshots > ProductRating component renders correctly > Produ
 
 exports[`Component Snapshots > SkeletonBase component renders correctly > SkeletonBase-default 1`] = `
 <div
+  aria-hidden="true"
   class="animate-pulse rounded-sm bg-gray-200 dark:bg-slate-600 h-4 w-full"
 />
 `;

@@ -6,12 +6,6 @@ vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }))
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  },
-}))
-
 vi.mock('react-router', () => ({
   Link: ({ children, to, ...props }: any) => (
     <a href={to} {...props}>

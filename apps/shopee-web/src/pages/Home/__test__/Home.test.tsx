@@ -1,28 +1,8 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { BrowserRouter } from 'react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Home from '../Home'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...p }: any) => {
-      const {
-        initial,
-        animate,
-        exit,
-        transition,
-        variants,
-        whileHover,
-        whileInView,
-        viewport,
-        layout,
-        ...rest
-      } = p
-      return <div {...rest}>{children}</div>
-    },
-  },
-}))
 
 vi.mock('src/components/HeroBanner', () => ({
   default: () => <div data-testid="hero-banner">banner</div>,

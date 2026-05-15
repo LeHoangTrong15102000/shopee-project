@@ -57,14 +57,6 @@ vi.mock('react-i18next', () => ({
 }))
 
 // Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
-
 // Mock hooks
 vi.mock('src/hooks/nuqs', () => ({
   useProductQueryStates: () => [mockFilters, mockSetFilters],
@@ -193,6 +185,10 @@ vi.mock('src/components/Loader', () => ({
   default: () => <div data-testid="loader">Loading...</div>,
 }))
 
+vi.mock('src/components/Skeleton/ProductListSkeleton', () => ({
+  default: () => <div data-testid="product-list-skeleton">Loading...</div>,
+}))
+
 vi.mock('src/components/Button', () => ({
   default: ({ children, onClick, variant, className, ariaLabel }: any) => (
     <button onClick={onClick} className={className} aria-label={ariaLabel}>
@@ -229,7 +225,7 @@ describe('ProductList', () => {
   describe('Initial Rendering', () => {
     it('shows loader on initial load', () => {
       renderWithProviders(<ProductList />)
-      expect(screen.getByTestId('loader')).toBeInTheDocument()
+      expect(screen.getByTestId('product-list-skeleton')).toBeInTheDocument()
     })
 
     it('renders product list after loading', async () => {

@@ -68,43 +68,43 @@ describe('OrderTrackingPage', () => {
 
   it('renders page heading', () => {
     render(<OrderTrackingPage />, { wrapper: createWrapper() })
-    expect(screen.getByText('Track Your Order')).toBeInTheDocument()
+    expect(screen.getByText('Theo dõi đơn hàng của bạn')).toBeInTheDocument()
   })
 
   it('renders tracking number input', () => {
     render(<OrderTrackingPage />, { wrapper: createWrapper() })
-    expect(screen.getByRole('textbox', { name: 'Tracking number' })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Mã vận đơn' })).toBeInTheDocument()
   })
 
   it('renders Track button', () => {
     render(<OrderTrackingPage />, { wrapper: createWrapper() })
-    expect(screen.getByRole('button', { name: /Track/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Theo dõi/i })).toBeInTheDocument()
   })
 
   it('shows empty state prompt when no tracking number entered', () => {
     render(<OrderTrackingPage />, { wrapper: createWrapper() })
     expect(
-      screen.getByText('Enter a tracking number above to see your shipment status'),
+      screen.getByText('Nhập mã vận đơn ở trên để xem trạng thái giao hàng'),
     ).toBeInTheDocument()
   })
 
   it('Track button is disabled when input is empty', () => {
     render(<OrderTrackingPage />, { wrapper: createWrapper() })
-    const btn = screen.getByRole('button', { name: /Track/i })
+    const btn = screen.getByRole('button', { name: /Theo dõi/i })
     expect(btn).toBeDisabled()
   })
 
   it('Track button becomes enabled when tracking number is entered', () => {
     render(<OrderTrackingPage />, { wrapper: createWrapper() })
-    const input = screen.getByRole('textbox', { name: 'Tracking number' })
+    const input = screen.getByRole('textbox', { name: 'Mã vận đơn' })
     fireEvent.change(input, { target: { value: 'TRK123456' } })
-    const btn = screen.getByRole('button', { name: /Track/i })
+    const btn = screen.getByRole('button', { name: /Theo dõi/i })
     expect(btn).not.toBeDisabled()
   })
 
   it('shows tracking result after submitting tracking number', async () => {
     render(<OrderTrackingPage />, { wrapper: createWrapper() })
-    const input = screen.getByRole('textbox', { name: 'Tracking number' })
+    const input = screen.getByRole('textbox', { name: 'Mã vận đơn' })
     fireEvent.change(input, { target: { value: 'TRK123456' } })
     const form = input.closest('form')!
     fireEvent.submit(form)
@@ -120,12 +120,12 @@ describe('OrderTrackingPage', () => {
       new Error('Not found'),
     )
     render(<OrderTrackingPage />, { wrapper: createWrapper() })
-    const input = screen.getByRole('textbox', { name: 'Tracking number' })
+    const input = screen.getByRole('textbox', { name: 'Mã vận đơn' })
     fireEvent.change(input, { target: { value: 'INVALID' } })
     fireEvent.submit(input.closest('form')!)
     await waitFor(
       () => {
-        expect(screen.getByText('Tracking information not found')).toBeInTheDocument()
+        expect(screen.getByText('Không tìm thấy thông tin vận đơn')).toBeInTheDocument()
       },
       { timeout: 10000 },
     )

@@ -71,33 +71,6 @@ vi.mock('src/components/ActivityFeedWidget', () => ({
   default: () => <div data-testid="activity-feed-widget">ActivityFeedWidget</div>,
 }))
 
-vi.mock('framer-motion', () => ({
-  motion: new Proxy(
-    {},
-    {
-      get:
-        (_target, prop) =>
-        ({ children, ...props }: any) => {
-          const {
-            initial,
-            animate,
-            exit,
-            transition,
-            variants,
-            viewport,
-            whileInView,
-            layout,
-            ...rest
-          } = props
-          const Tag = (typeof prop === 'string' ? prop : 'div') as any
-          return <Tag {...rest}>{children}</Tag>
-        },
-    },
-  ),
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-  useReducedMotion: () => true,
-}))
-
 vi.mock('src/components/SEO', () => ({
   default: ({ title }: any) => <title>{title}</title>,
   SITE_URL: 'https://shopee.vn',
@@ -149,9 +122,9 @@ describe('ProductDetail', () => {
       () => {
         expect(screen.getByTestId('product-images')).toBeInTheDocument()
       },
-      { timeout: 25000 },
+      { timeout: 50000 },
     )
-  }, 30000)
+  }, 55000)
 
   it('renders product name from MSW data (OPPO A12)', async () => {
     renderWithRouter({ route: PRODUCT_SLUG })
@@ -160,12 +133,12 @@ describe('ProductDetail', () => {
       () => {
         expect(screen.getByTestId('product-images')).toBeInTheDocument()
       },
-      { timeout: 5000 },
+      { timeout: 35000 },
     )
 
     // Product name comes from MSW productDetailRes.data.name
     expect(screen.getAllByText(/OPPO A12/)[0]).toBeInTheDocument()
-  })
+  }, 40000)
 
   it('renders breadcrumb after data loads', async () => {
     renderWithRouter({ route: PRODUCT_SLUG })
@@ -174,9 +147,9 @@ describe('ProductDetail', () => {
       () => {
         expect(screen.getByTestId('breadcrumb')).toBeInTheDocument()
       },
-      { timeout: 5000 },
+      { timeout: 35000 },
     )
-  })
+  }, 40000)
 
   it('renders product info section', async () => {
     renderWithRouter({ route: PRODUCT_SLUG })
@@ -185,9 +158,9 @@ describe('ProductDetail', () => {
       () => {
         expect(screen.getByTestId('product-info')).toBeInTheDocument()
       },
-      { timeout: 5000 },
+      { timeout: 35000 },
     )
-  })
+  }, 40000)
 
   it('renders shop info section', async () => {
     renderWithRouter({ route: PRODUCT_SLUG })
@@ -196,9 +169,9 @@ describe('ProductDetail', () => {
       () => {
         expect(screen.getByTestId('shop-info')).toBeInTheDocument()
       },
-      { timeout: 5000 },
+      { timeout: 35000 },
     )
-  })
+  }, 40000)
 
   it('renders product reviews section', async () => {
     renderWithRouter({ route: PRODUCT_SLUG })

@@ -3,13 +3,6 @@ import { render, screen, act } from '@testing-library/react'
 import FlashSaleUrgency from '../FlashSaleUrgency'
 
 // Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
-  },
-}))
-
 // Mock useReducedMotion hook
 vi.mock('src/hooks/useReducedMotion', () => ({
   useReducedMotion: vi.fn(() => false),

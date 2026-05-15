@@ -10,15 +10,6 @@ let mockIsLoading = false
 let mockNavigate = vi.fn()
 
 // Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
-  },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  useReducedMotion: () => false,
-}))
-
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({

@@ -2,33 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import MobileAccountNav from '../MobileAccountNav'
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const safe = Object.fromEntries(
-        Object.entries(props).filter(
-          ([k]) =>
-            ![
-              'initial',
-              'animate',
-              'exit',
-              'transition',
-              'variants',
-              'whileHover',
-              'whileTap',
-              'whileInView',
-              'viewport',
-              'layout',
-              'layoutId',
-            ].includes(k),
-        ),
-      )
-      return <div {...safe}>{children}</div>
-    },
-  },
-  AnimatePresence: ({ children }: any) => children,
-}))
-
 const mockNavigate = vi.fn()
 let mockPathname = '/user/profile'
 vi.mock('react-router', () => ({

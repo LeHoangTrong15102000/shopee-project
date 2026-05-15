@@ -2,13 +2,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor, act } from '@testing-library/react'
 import FlashSaleTimer from '../FlashSale/FlashSaleTimer'
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
-
 describe('FlashSaleTimer', () => {
   const mockNow = new Date('2024-03-17T12:00:00Z')
 

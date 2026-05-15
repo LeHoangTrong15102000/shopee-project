@@ -11,17 +11,17 @@ describe('NotFound', () => {
 
   it('renders Page Not Found message', () => {
     renderWithProviders(<NotFound />)
-    expect(screen.getByText('Page Not Found')).toBeInTheDocument()
+    expect(screen.getByText('Không tìm thấy trang')).toBeInTheDocument()
   })
 
   it('renders Go Home link', () => {
     renderWithProviders(<NotFound />)
-    expect(screen.getByText('Go Home')).toBeInTheDocument()
+    expect(screen.getByText('Về trang chủ')).toBeInTheDocument()
   })
 
   it('Go Home link points to home page', () => {
     renderWithProviders(<NotFound />)
-    const link = screen.getByText('Go Home').closest('a')
+    const link = screen.getByText('Về trang chủ').closest('a')
     expect(link).toHaveAttribute('href', '/')
   })
 })

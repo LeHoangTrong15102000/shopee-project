@@ -1,16 +1,7 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import AddressCard from '../AddressCard'
 import type { Address } from 'src/types/checkout.type'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const { initial, animate, exit, transition, whileHover, layout, ...rest } = props
-      return <div {...rest}>{children}</div>
-    },
-  },
-}))
 
 vi.mock('src/components/Button', () => ({
   default: ({ children, onClick, className, ...props }: any) => {

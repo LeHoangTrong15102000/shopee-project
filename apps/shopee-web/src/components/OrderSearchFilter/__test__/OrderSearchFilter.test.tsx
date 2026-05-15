@@ -4,13 +4,6 @@ import userEvent from '@testing-library/user-event'
 import OrderSearchFilter from '../OrderSearchFilter'
 
 // Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
-
 // Mock child components
 vi.mock('../components/SearchInput', () => ({
   default: ({ inputValue, onInputChange, onClearSearch }: any) => (

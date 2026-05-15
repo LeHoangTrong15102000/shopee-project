@@ -1,16 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import DeleteConfirmModal from '../DeleteConfirmModal'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const { initial, animate, exit, transition, ...rest } = props
-      return <div {...rest}>{children}</div>
-    },
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
 
 vi.mock('src/components/Button', () => ({
   default: ({ children, onClick, className, disabled, isLoading, ...props }: any) => {

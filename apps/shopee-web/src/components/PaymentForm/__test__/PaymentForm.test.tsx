@@ -1,24 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import PaymentForm from '../PaymentForm'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...p }: any) => {
-      const { initial, animate, exit, transition, variants, ...rest } = p
-      return <div {...rest}>{children}</div>
-    },
-    form: ({ children, onSubmit, ...p }: any) => {
-      const { initial, animate, exit, transition, variants, ...rest } = p
-      return (
-        <form onSubmit={onSubmit} {...rest}>
-          {children}
-        </form>
-      )
-    },
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
 
 vi.mock('src/components/Button', () => ({
   default: ({ children, onClick, className, type, disabled, ...props }: any) => {

@@ -67,15 +67,6 @@ vi.mock('src/hooks/useIsMobile', () => ({
 }))
 
 // Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    ul: ({ children, ...props }: any) => <ul {...props}>{children}</ul>,
-    li: ({ children, ...props }: any) => <li {...props}>{children}</li>,
-  },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}))
-
 // Mock SEO component
 vi.mock('src/components/SEO', () => ({
   default: ({ title }: { title: string }) => <div data-testid="seo">{title}</div>,

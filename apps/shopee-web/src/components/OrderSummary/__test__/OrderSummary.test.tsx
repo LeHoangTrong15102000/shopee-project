@@ -1,22 +1,8 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import OrderSummary from '../OrderSummary'
 import type { ExtendedPurchase } from 'src/types/purchases.type'
 import type { ShippingMethod } from 'src/types/checkout.type'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const { initial, animate, exit, transition, whileHover, layout, ...rest } = props
-      return <div {...rest}>{children}</div>
-    },
-    span: ({ children, ...props }: any) => {
-      const { initial, animate, exit, transition, key, ...rest } = props
-      return <span {...rest}>{children}</span>
-    },
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
 
 vi.mock('src/components/ImageWithFallback', () => ({
   default: ({ src, alt, className }: any) => <img src={src} alt={alt} className={className} />,

@@ -2,16 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import AddressBook from '../AddressBook'
 
-vi.mock('framer-motion', () => ({
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const { initial, animate, exit, transition, variants, whileHover, layout, ...rest } = props
-      return <div {...rest}>{children}</div>
-    },
-  },
-}))
-
 vi.mock('src/components/SEO', () => ({ default: () => null }))
 vi.mock('src/i18n/i18n', () => ({
   default: {

@@ -4,22 +4,6 @@ import AddressForm from '../AddressForm'
 import { renderWithProviders } from 'src/utils/testUtils'
 
 // Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: new Proxy(
-    {},
-    {
-      get:
-        (_target, prop) =>
-        ({ children, ...props }: any) => {
-          const { initial, animate, exit, transition, variants, ...rest } = props
-          const Tag = (typeof prop === 'string' ? prop : 'div') as any
-          return <Tag {...rest}>{children}</Tag>
-        },
-    },
-  ),
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
-
 // Mock child step components
 vi.mock('../components/ContactInfoStep', () => ({
   default: () => <div data-testid="contact-info-step">ContactInfoStep</div>,

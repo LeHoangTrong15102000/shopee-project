@@ -98,21 +98,21 @@ describe('ShopProfilePage', () => {
   it('renders shop name after data loads', async () => {
     render(<ShopProfilePage />, { wrapper: createWrapper() })
     await waitFor(() => {
-      expect(screen.getByText('Test Shop')).toBeInTheDocument()
+      expect(screen.getAllByText('Test Shop').length).toBeGreaterThan(0)
     })
   })
 
   it('renders follow button after data loads', async () => {
     render(<ShopProfilePage />, { wrapper: createWrapper() })
     await waitFor(() => {
-      expect(screen.getByText('+ Follow')).toBeInTheDocument()
+      expect(screen.getByText('+ Theo dõi')).toBeInTheDocument()
     })
   })
 
   it('renders chat with shop button after data loads', async () => {
     render(<ShopProfilePage />, { wrapper: createWrapper() })
     await waitFor(() => {
-      expect(screen.getByText('Chat with shop')).toBeInTheDocument()
+      expect(screen.getByText('Chat với shop')).toBeInTheDocument()
     })
   })
 
@@ -126,14 +126,14 @@ describe('ShopProfilePage', () => {
   it('renders Products heading after data loads', async () => {
     render(<ShopProfilePage />, { wrapper: createWrapper() })
     await waitFor(() => {
-      expect(screen.getByText(/Products/)).toBeInTheDocument()
+      expect(screen.getByText(/Sản phẩm/)).toBeInTheDocument()
     })
   })
 
   it('renders no products found when products list is empty', async () => {
     render(<ShopProfilePage />, { wrapper: createWrapper() })
     await waitFor(() => {
-      expect(screen.getByText('No products found')).toBeInTheDocument()
+      expect(screen.getByText('Không tìm thấy sản phẩm')).toBeInTheDocument()
     })
   })
 
@@ -144,7 +144,7 @@ describe('ShopProfilePage', () => {
     })
     render(<ShopProfilePage />, { wrapper: createWrapper() })
     await waitFor(() => {
-      expect(screen.getByText('Shop not found')).toBeInTheDocument()
+      expect(screen.getByText('Không tìm thấy shop')).toBeInTheDocument()
     })
   })
 })

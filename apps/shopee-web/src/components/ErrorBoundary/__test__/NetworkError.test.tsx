@@ -14,23 +14,6 @@ vi.mock('src/hooks/useReducedMotion', () => ({
   useReducedMotion: () => false,
 }))
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const { initial, animate, exit, transition, variants, whileHover, layout, ...rest } = props
-      return <div {...rest}>{children}</div>
-    },
-    h3: ({ children, ...props }: any) => {
-      const { initial, animate, exit, transition, variants, ...rest } = props
-      return <h3 {...rest}>{children}</h3>
-    },
-    p: ({ children, ...props }: any) => {
-      const { initial, animate, exit, transition, variants, ...rest } = props
-      return <p {...rest}>{children}</p>
-    },
-  },
-}))
-
 describe('NetworkError', () => {
   beforeEach(() => {
     vi.useFakeTimers()

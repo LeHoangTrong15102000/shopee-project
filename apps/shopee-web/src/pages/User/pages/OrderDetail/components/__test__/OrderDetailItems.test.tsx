@@ -1,23 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router'
-import { vi } from 'vitest'
 import OrderDetailItems from '../OrderDetailItems'
-
-vi.mock('framer-motion', () => ({
-  motion: new Proxy(
-    {},
-    {
-      get:
-        (_t, prop) =>
-        ({ children, ...p }: any) => {
-          const { initial, animate, exit, transition, variants, whileHover, layout, ...rest } = p
-          const Tag = (typeof prop === 'string' ? prop : 'div') as any
-          return <Tag {...rest}>{children}</Tag>
-        },
-    },
-  ),
-}))
 
 vi.mock('src/components/ImageWithFallback', () => ({
   default: ({ src, alt }: any) => <img src={src} alt={alt} />,

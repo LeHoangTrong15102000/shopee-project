@@ -1,48 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen } from '@testing-library/react'
 import CartSummaryBar from '../CartSummaryBar'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const safe = Object.fromEntries(
-        Object.entries(props).filter(
-          ([k]) =>
-            ![
-              'initial',
-              'animate',
-              'exit',
-              'transition',
-              'variants',
-              'whileHover',
-              'whileTap',
-              'style',
-            ].includes(k),
-        ),
-      )
-      return <div {...safe}>{children}</div>
-    },
-    span: ({ children, ...props }: any) => {
-      const safe = Object.fromEntries(
-        Object.entries(props).filter(
-          ([k]) =>
-            ![
-              'initial',
-              'animate',
-              'exit',
-              'transition',
-              'variants',
-              'whileHover',
-              'whileTap',
-              'style',
-            ].includes(k),
-        ),
-      )
-      return <span {...safe}>{children}</span>
-    },
-  },
-  AnimatePresence: ({ children }: any) => children,
-}))
 
 vi.mock('@heroui/tooltip', () => ({
   Tooltip: ({ children }: any) => children,

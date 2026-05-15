@@ -1,11 +1,5 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen } from '@testing-library/react'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
-  },
-}))
 
 import { getDiscountPercent, getBestValues, BestBadge } from '../comparisonTable.constants'
 import { Product } from 'src/types/product.type'

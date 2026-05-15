@@ -5,14 +5,6 @@ import ShopeeProtection from '../ShopeeProtection'
 import { renderWithProviders } from 'src/utils/testUtils'
 
 // Mock framer-motion so AnimatePresence/motion.div render synchronously
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-  useReducedMotion: () => false,
-}))
-
 describe('ShopeeProtection (Task 7.7)', () => {
   const user = userEvent.setup()
 

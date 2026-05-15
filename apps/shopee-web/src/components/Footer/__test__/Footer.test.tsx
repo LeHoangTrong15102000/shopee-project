@@ -1,34 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen } from '@testing-library/react'
 import Footer from '../Footer'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const safe = Object.fromEntries(
-        Object.entries(props).filter(
-          ([k]) =>
-            ![
-              'initial',
-              'animate',
-              'exit',
-              'transition',
-              'variants',
-              'whileHover',
-              'whileTap',
-              'whileInView',
-              'viewport',
-              'layout',
-              'layoutId',
-              'style',
-            ].includes(k),
-        ),
-      )
-      return <div {...safe}>{children}</div>
-    },
-  },
-  AnimatePresence: ({ children }: any) => children,
-}))
 
 vi.mock('react-router', () => ({
   Link: ({ children, to, ...props }: any) => (

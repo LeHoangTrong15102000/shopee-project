@@ -37,13 +37,6 @@ vi.mock('src/hooks/useReducedMotion', () => ({
   useReducedMotion: () => false,
 }))
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}))
-
 const createWrapper = (token?: string) => {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   const initialEntries = token ? [`/reset-password?token=${token}`] : ['/reset-password']

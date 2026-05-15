@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import EmptyState, { EmptyCart, EmptySearch, EmptyWishlist, EmptyOrders } from '../EmptyState'
 
@@ -29,14 +29,6 @@ let mockReducedMotion = false
 
 vi.mock('src/hooks/useReducedMotion', () => ({
   useReducedMotion: () => mockReducedMotion,
-}))
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    h3: ({ children, ...props }: any) => <h3 {...props}>{children}</h3>,
-    p: ({ children, ...props }: any) => <p {...props}>{children}</p>,
-  },
 }))
 
 describe('EmptyState', () => {

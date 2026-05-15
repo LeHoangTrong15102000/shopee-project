@@ -1,52 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen } from '@testing-library/react'
 import LoyaltyPointsCard from '../LoyaltyPointsCard'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const safe = Object.fromEntries(
-        Object.entries(props).filter(
-          ([k]) =>
-            ![
-              'initial',
-              'animate',
-              'exit',
-              'transition',
-              'variants',
-              'whileHover',
-              'whileTap',
-              'whileInView',
-              'viewport',
-              'layout',
-              'layoutId',
-              'style',
-            ].includes(k),
-        ),
-      )
-      return <div {...safe}>{children}</div>
-    },
-    span: ({ children, ...props }: any) => {
-      const safe = Object.fromEntries(
-        Object.entries(props).filter(
-          ([k]) =>
-            ![
-              'initial',
-              'animate',
-              'exit',
-              'transition',
-              'variants',
-              'whileHover',
-              'whileTap',
-              'key',
-            ].includes(k),
-        ),
-      )
-      return <span {...safe}>{children}</span>
-    },
-  },
-  AnimatePresence: ({ children }: any) => children,
-}))
 
 vi.mock('src/components/Button', () => ({
   default: ({ children, onClick, className, ...props }: any) => (

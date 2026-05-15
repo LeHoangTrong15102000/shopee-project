@@ -1,16 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen } from '@testing-library/react'
 import ProductInfo from '../ProductInfo'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...p }: any) => {
-      const { initial, animate, exit, transition, variants, whileHover, layout, ...rest } = p
-      return <div {...rest}>{children}</div>
-    },
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
 
 vi.mock('src/components/ProductRating', () => ({
   default: ({ rating }: any) => <div data-testid="product-rating">{rating}</div>,

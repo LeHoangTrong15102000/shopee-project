@@ -1,17 +1,8 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { VisualCardPreview, CVVTooltip } from '../VisualCardPreview'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    svg: ({ children, ...props }: any) => <svg {...props}>{children}</svg>,
-    path: ({ children, ...props }: any) => <path {...props}>{children}</path>,
-  },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}))
 
 describe('VisualCardPreview', () => {
   const defaultProps = {

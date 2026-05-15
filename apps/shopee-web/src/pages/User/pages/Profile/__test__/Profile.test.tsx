@@ -1,19 +1,9 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { renderWithProviders, createMockUser } from 'src/utils/testUtils'
 import Profile from '../Profile'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const { initial, animate, exit, transition, ...rest } = props
-      return <div {...rest}>{children}</div>
-    },
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
 
 vi.mock('src/components/ProfileCompletion', () => ({
   default: ({ user }: any) => <div data-testid="profile-completion">ProfileCompletion mock</div>,

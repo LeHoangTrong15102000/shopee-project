@@ -1,27 +1,8 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { BrowserRouter } from 'react-router'
 import EmptyCartState from '../EmptyCartState'
 import type { SavedItem } from 'src/hooks/useSaveForLater'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const { initial, animate, exit, transition, variants, whileHover, whileTap, style, ...rest } =
-        props
-      return <div {...rest}>{children}</div>
-    },
-    img: ({ src, alt, className, ...props }: any) => {
-      const { animate, transition, ...rest } = props
-      return <img src={src} alt={alt} className={className} {...rest} />
-    },
-    span: ({ children, ...props }: any) => {
-      const { initial, animate, transition, ...rest } = props
-      return <span {...rest}>{children}</span>
-    },
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
 
 vi.mock('src/components/Button', () => ({
   default: ({ children, onClick, className, ...props }: any) => {

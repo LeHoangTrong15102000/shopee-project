@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import PurchaseItem from '../PurchaseItem'
 import { Purchase } from 'src/types/purchases.type'
@@ -12,13 +12,6 @@ vi.mock('react-router', () => ({
       {children}
     </a>
   ),
-}))
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  },
-  AnimatePresence: ({ children }: any) => <div>{children}</div>,
 }))
 
 vi.mock('src/components/LiveOrderTracker', () => ({

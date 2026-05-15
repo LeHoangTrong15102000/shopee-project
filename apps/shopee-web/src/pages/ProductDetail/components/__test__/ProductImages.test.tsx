@@ -17,14 +17,6 @@ vi.mock('react-i18next', () => ({
   }),
 }))
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    img: ({ children, ...props }: any) => <img {...props} />,
-  },
-  AnimatePresence: ({ children }: any) => children,
-}))
-
 vi.mock('src/components/ImageWithFallback', () => ({
   default: ({ src, alt, className }: any) => <img src={src} alt={alt} className={className} />,
 }))

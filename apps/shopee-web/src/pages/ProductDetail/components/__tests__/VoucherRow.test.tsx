@@ -5,13 +5,14 @@ import VoucherRow from '../VoucherRow'
 import { renderWithProviders } from 'src/utils/testUtils'
 
 // Mock framer-motion so AnimatePresence/motion.div render synchronously
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-  useReducedMotion: () => false,
-}))
+// Override FloatingPortal to render inline for testing (avoids portal isolation in jsdom)
+vi.mock('@floating-ui/react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@floating-ui/react')>()
+  return {
+    ...actual,
+    FloatingPortal: ({ children }: any) => <div data-testid="portal">{children}</div>,
+  }
+})
 
 const defaultVouchers = [
   {

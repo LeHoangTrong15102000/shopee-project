@@ -16,14 +16,6 @@ let mockIsMobile = false
 let mockInfiniteQueryResult: any = null
 let mockCategoriesQueryResult: any = null
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
-
 vi.mock('src/hooks/nuqs', () => ({
   useProductQueryStates: () => [mockFilters, mockSetFilters],
   normalizeProductQueryKey: (filters: any) => {

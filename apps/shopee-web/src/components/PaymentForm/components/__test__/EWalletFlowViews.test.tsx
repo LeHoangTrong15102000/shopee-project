@@ -1,24 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect} from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { WaitingView, SuccessView, FailedView, TimeoutView } from '../EWalletFlowViews'
-
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const { initial, animate, exit, transition, variants, whileHover, layout, ...rest } = props
-      return <div {...rest}>{children}</div>
-    },
-    svg: ({ children, ...props }: any) => {
-      const { initial, animate, exit, transition, ...rest } = props
-      return <svg {...rest}>{children}</svg>
-    },
-    path: (props: any) => {
-      const { initial, animate, transition, ...rest } = props
-      return <path {...rest} />
-    },
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}))
 
 vi.mock('src/components/Button', () => ({
   default: ({ children, onClick, className, ...props }: any) => {

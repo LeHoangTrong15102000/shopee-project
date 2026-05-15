@@ -1,5 +1,5 @@
 import { Variants } from 'framer-motion'
-import { ANIMATION_DURATION, ANIMATION_EASING, STAGGER_DELAY } from './motion.config'
+import { ANIMATION_DURATION, ANIMATION_EASING, STAGGER_DELAY, MOBILE_SPRING } from './motion.config'
 
 export const fadeIn: Variants = {
   hidden: { opacity: 0 },
@@ -177,4 +177,38 @@ export const sectionEntrance: Variants = {
     y: 0,
     transition: { duration: ANIMATION_DURATION.slow, ease: ANIMATION_EASING.easeOut },
   },
+}
+
+// ===== MOBILE GESTURE VARIANTS =====
+
+// Swipe-to-delete: reveals a delete action layer behind the item
+export const swipeToDelete: Variants = {
+  hidden: { x: 0 },
+  revealed: { x: -80, transition: MOBILE_SPRING.snapBack },
+  dismissed: { x: -300, opacity: 0, transition: MOBILE_SPRING.swipeAway },
+}
+
+// Pull-to-refresh indicator states
+export const pullToRefresh: Variants = {
+  idle: { y: 0, opacity: 0 },
+  pulling: { y: 40, opacity: 1 },
+  refreshing: { y: 40, opacity: 1, rotate: 360, transition: { repeat: Infinity, duration: 0.8 } },
+}
+
+// Drawer slide-in/out from the left
+export const drawerSlide: Variants = {
+  open: { x: 0, transition: MOBILE_SPRING.snapBack },
+  closed: { x: '-100%', transition: MOBILE_SPRING.swipeAway },
+}
+
+// Carousel swipe with directional enter/exit
+// Pass direction as the `custom` prop: 1 = left swipe (next), -1 = right swipe (prev)
+export const carouselSwipe: Variants = {
+  enter: (direction: number) => ({ x: direction * 300, opacity: 0 }),
+  center: { x: 0, opacity: 1, transition: MOBILE_SPRING.snapBack },
+  exit: (direction: number) => ({
+    x: direction * -300,
+    opacity: 0,
+    transition: MOBILE_SPRING.swipeAway,
+  }),
 }

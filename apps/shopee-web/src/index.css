@@ -23,6 +23,8 @@
   ::backdrop,
   ::file-selector-button {
     border-color: var(--color-gray-200, currentcolor);
+    /* Remove default tap highlight flash on mobile */
+    -webkit-tap-highlight-color: transparent;
   }
 
   /* Tailwind v4 removed cursor:pointer from buttons in preflight.
@@ -30,6 +32,20 @@
   button:not(:disabled),
   [role='button']:not(:disabled) {
     cursor: pointer;
+  }
+
+  /* Eliminate 300ms tap delay on interactive elements */
+  button,
+  a,
+  [role='button'] {
+    touch-action: manipulation;
+  }
+
+  /* Prevent pull-to-navigate on iOS for scrollable containers */
+  .overflow-y-auto,
+  .overflow-x-auto,
+  [data-scroll] {
+    overscroll-behavior: contain;
   }
 }
 
@@ -65,6 +81,21 @@
 }
 @utility focus-ring-orange {
   @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange;
+}
+
+/* Horizontal scroll-snap container */
+@utility scroll-snap-x {
+  scroll-snap-type: x mandatory;
+  overflow-x: auto;
+}
+
+/* Snap alignment utilities for snap children */
+@utility snap-start {
+  scroll-snap-align: start;
+}
+
+@utility snap-center {
+  scroll-snap-align: center;
 }
 
 /* ===== THEME CSS VARIABLES ===== */
@@ -153,6 +184,13 @@
 html {
   height: 100%;
   line-height: 1.2;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 html.dark {

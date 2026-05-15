@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { AppContext } from 'src/contexts/app.context'
 import { useFocusTrap } from 'src/hooks/useFocusTrap'
+import { useSwipeGesture } from 'src/hooks/useSwipeGesture'
 import useInventoryAlerts from 'src/hooks/useInventoryAlerts'
 import { loadLanguage } from 'src/i18n/i18n'
 import authApi from 'src/apis/auth.api'
@@ -36,6 +37,13 @@ const MobileNavigationDrawer = ({ isOpen, onClose }: MobileNavigationDrawerProps
   const drawerRef = useRef<HTMLDivElement>(null)
 
   useFocusTrap({ isOpen, containerRef: drawerRef, onClose })
+
+  const { dragProps } = useSwipeGesture({
+    direction: 'x',
+    onSwipe: (dir) => {
+      if (dir === 'left') onClose()
+    },
+  })
 
   useEffect(() => {
     if (isOpen) document.body.style.overflow = 'hidden'
@@ -111,6 +119,8 @@ const MobileNavigationDrawer = ({ isOpen, onClose }: MobileNavigationDrawerProps
             role="dialog"
             aria-modal="true"
             aria-label="Navigation drawer"
+            dragConstraints={{ left: 0, right: 0 }}
+            {...dragProps}
           >
             {/* Header */}
             <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white p-4 dark:border-slate-600 dark:bg-slate-800">

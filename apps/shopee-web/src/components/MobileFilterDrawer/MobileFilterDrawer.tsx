@@ -13,6 +13,7 @@ import RatingStars from 'src/pages/ProductList/components/RatingStars'
 import path from 'src/constant/path'
 import { useProductQueryStates } from 'src/hooks/nuqs'
 import { useFocusTrap } from 'src/hooks/useFocusTrap'
+import { useSwipeGesture } from 'src/hooks/useSwipeGesture'
 import { Category } from 'src/types/category.type'
 import { inputNumberSchema } from 'src/utils/rules'
 import { useTranslation } from 'react-i18next'
@@ -32,6 +33,13 @@ const MobileFilterDrawer = ({ isOpen, onClose, categories }: MobileFilterDrawerP
   const drawerRef = useRef<HTMLDivElement>(null)
 
   useFocusTrap({ isOpen, containerRef: drawerRef, onClose })
+
+  const { dragProps } = useSwipeGesture({
+    direction: 'x',
+    onSwipe: (dir) => {
+      if (dir === 'left') onClose()
+    },
+  })
 
   const {
     control,
@@ -103,6 +111,8 @@ const MobileFilterDrawer = ({ isOpen, onClose, categories }: MobileFilterDrawerP
             role="dialog"
             aria-modal="true"
             aria-label="Filter drawer"
+            dragConstraints={{ left: 0, right: 0 }}
+            {...dragProps}
           >
             <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white p-4 dark:border-slate-600 dark:bg-slate-800">
               <h2 className="text-lg font-semibold dark:text-gray-100">

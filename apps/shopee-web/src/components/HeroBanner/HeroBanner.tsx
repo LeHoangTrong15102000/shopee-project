@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useIsMobile } from '@shopee/shared-utils'
 import Button from 'src/components/Button'
 import BannerSlide from './BannerSlide'
 import BannerIndicators from './BannerIndicators'
 import { BannerSlide as BannerSlideType } from './types'
+import { useSwipeGesture } from 'src/hooks/useSwipeGesture'
+import { carouselSwipe } from 'src/styles/animations/variants'
 
 // Mock data cho banner slides
 const bannerSlides: BannerSlideType[] = [
@@ -43,8 +47,10 @@ const bannerSlides: BannerSlideType[] = [
 
 const HeroBanner = () => {
   const { t } = useTranslation('home')
+  const isMobile = useIsMobile()
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isAutoPlay, setIsAutoPlay] = useState(true)
+  const [slideDirection, setSlideDirection] = useState(1)
 
   const translatedSlides = bannerSlides.map((slide) => ({
     ...slide,
@@ -56,21 +62,25 @@ const HeroBanner = () => {
     if (!isAutoPlay) return
 
     const interval = setInterval(() => {
+      setSlideDirection(1)
       setCurrentSlide((prev) => (prev + 1) % translatedSlides.length)
     }, 5000)
 
     return () => clearInterval(interval)
-  }, [isAutoPlay])
+  }, [isAutoPlay, translatedSlides.length])
 
   const goToSlide = (index: number) => {
+    setSlideDirection(index > currentSlide ? 1 : -1)
     setCurrentSlide(index)
   }
 
   const goToPrevSlide = () => {
+    setSlideDirection(-1)
     setCurrentSlide((prev) => (prev - 1 + translatedSlides.length) % translatedSlides.length)
   }
 
   const goToNextSlide = () => {
+    setSlideDirection(1)
     setCurrentSlide((prev) => (prev + 1) % translatedSlides.length)
   }
 
@@ -82,21 +92,48 @@ const HeroBanner = () => {
     setIsAutoPlay(true)
   }
 
+  const { dragProps } = useSwipeGesture({
+    direction: 'x',
+    onSwipe: (dir) => {
+      if (dir === 'left') goToNextSlide()
+      if (dir === 'right') goToPrevSlide()
+    },
+  })
+
   return (
     <div
       className="relative h-[280px] w-full overflow-hidden rounded-lg shadow-lg md:h-[320px]"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Banner Slides */}
-      <div
-        className="flex h-full transition-transform duration-500 ease-in-out"
-        style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-      >
-        {translatedSlides.map((slide, index) => (
-          <BannerSlide key={slide.id} slide={slide} isActive={index === currentSlide} />
-        ))}
-      </div>
+      {isMobile ? (
+        /* Mobile: AnimatePresence with carouselSwipe variant + drag gesture */
+        <AnimatePresence initial={false} custom={slideDirection} mode="wait">
+          <motion.div
+            key={currentSlide}
+            custom={slideDirection}
+            variants={carouselSwipe}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            className="absolute inset-0"
+            style={{ touchAction: 'pan-y' }}
+            {...dragProps}
+          >
+            <BannerSlide slide={translatedSlides[currentSlide]} isActive={true} />
+          </motion.div>
+        </AnimatePresence>
+      ) : (
+        /* Desktop: CSS translateX slide strip */
+        <div
+          className="flex h-full transition-transform duration-500 ease-in-out"
+          style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+        >
+          {translatedSlides.map((slide, index) => (
+            <BannerSlide key={slide.id} slide={slide} isActive={index === currentSlide} />
+          ))}
+        </div>
+      )}
 
       {/* Navigation Arrows */}
       <Button

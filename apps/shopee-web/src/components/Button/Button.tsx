@@ -1,5 +1,9 @@
 import React, { ButtonHTMLAttributes, forwardRef } from 'react'
+import { motion } from 'framer-motion'
 import { Link } from 'react-router'
+import { useIsMobile } from '@shopee/shared-utils'
+import { useReducedMotion } from 'src/hooks/useReducedMotion'
+import { MOBILE_SPRING } from 'src/styles/animations/motion.config'
 
 export type ButtonVariant =
   | 'primary'
@@ -86,6 +90,9 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>((p
     ...rest
   } = props
 
+  const isMobile = useIsMobile()
+  const reducedMotion = useReducedMotion()
+
   const getClassName = (addHoverTransition = false) => {
     const classes: string[] = ['outline-hidden focus:outline-hidden']
     // Per-variant focus classes, or default orange outline
@@ -156,11 +163,40 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>((p
   }
 
   // Render as button (default)
-  const { disabled, ...buttonRest } = rest as ButtonAsButton
+  // Strip all HTML drag events — they conflict with framer-motion's drag prop types.
+  // These events are rarely used on buttons; any caller passing them will silently lose them,
+  // which is acceptable given motion.button owns the drag API.
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  const {
+    disabled,
+    onDrag: _onDrag,
+    onDragEnd: _onDragEnd,
+    onDragStart: _onDragStart,
+    onDragEnter: _onDragEnter,
+    onDragLeave: _onDragLeave,
+    onDragOver: _onDragOver,
+    onDrop: _onDrop,
+    ...buttonRest
+  } = rest as ButtonAsButton & {
+    onDrag?: unknown
+    onDragEnd?: unknown
+    onDragStart?: unknown
+    onDragEnter?: unknown
+    onDragLeave?: unknown
+    onDragOver?: unknown
+    onDrop?: unknown
+  }
+  /* eslint-enable @typescript-eslint/no-unused-vars */
   const isDisabled = disabled || isLoading
 
+  // Mobile tap feedback: spring-animated scale+opacity when not reduced motion
+  const mobileTapProps =
+    isMobile && !reducedMotion && !isDisabled
+      ? { whileTap: { scale: 0.97, opacity: 0.85 }, transition: MOBILE_SPRING.snapBack }
+      : {}
+
   return (
-    <button
+    <motion.button
       type="button"
       className={getClassName(animated)}
       disabled={isDisabled}
@@ -168,7 +204,8 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>((p
       aria-busy={isLoading}
       aria-disabled={isDisabled}
       ref={ref as React.Ref<HTMLButtonElement>}
-      {...buttonRest}
+      {...mobileTapProps}
+      {...(buttonRest as Record<string, unknown>)}
     >
       {isLoading && (
         <svg
@@ -189,7 +226,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>((p
         </svg>
       )}
       {children}
-    </button>
+    </motion.button>
   )
 })
 

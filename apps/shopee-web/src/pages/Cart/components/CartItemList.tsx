@@ -1,4 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
+import { useCallback, useState } from 'react'
+import { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import Button from 'src/components/Button'
@@ -8,6 +10,9 @@ import { InlineStockAlert } from 'src/components/RealTimeStockAlert'
 import ShopeeCheckbox from 'src/components/ShopeeCheckbox'
 import StockBadge from 'src/components/StockBadge'
 import { useIsMobile } from 'src/hooks/useIsMobile'
+import { useSwipeGesture } from 'src/hooks/useSwipeGesture'
+import { MOBILE_GESTURE } from 'src/styles/animations/motion.config'
+import { swipeToDelete } from 'src/styles/animations/variants'
 import { Purchase } from 'src/types/purchases.type'
 import { ExtendedPurchase, InlineStockAlertState } from '../types'
 
@@ -28,6 +33,276 @@ interface CartItemListProps {
   generateNameId: (params: { name: string; id: string }) => string
 }
 
+interface MobileCartItemProps {
+  purchase: ExtendedPurchase
+  index: number
+  purchasesInCart: Purchase[] | undefined
+  inlineAlerts: Map<string, InlineStockAlertState>
+  revealedItemId: string | null
+  setRevealedItemId: (id: string | null) => void
+  handleChecked: (purchaseIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => void
+  handleQuantity: (purchaseIndex: number, value: number, enabled: boolean) => void
+  handleTypeQuantity: (purchaseIndex: number) => (value: number) => void
+  handleDelete: (purchaseIndex: number) => () => void
+  handleSaveForLater: (purchaseIndex: number) => () => void
+  handleDismissInlineAlert: (productId: string) => void
+  path: { home: string }
+  formatCurrency: (value: number) => string
+  generateNameId: (params: { name: string; id: string }) => string
+  t: TFunction<'cart'>
+}
+
+const MobileCartItem = ({
+  purchase,
+  index,
+  purchasesInCart,
+  inlineAlerts,
+  revealedItemId,
+  setRevealedItemId,
+  handleChecked,
+  handleQuantity,
+  handleTypeQuantity,
+  handleDelete,
+  handleSaveForLater,
+  handleDismissInlineAlert,
+  path,
+  formatCurrency,
+  generateNameId,
+  t,
+}: MobileCartItemProps) => {
+  const isRevealed = revealedItemId === purchase._id
+  const [isDismissing, setIsDismissing] = useState(false)
+
+  const triggerDismiss = useCallback(() => {
+    setIsDismissing(true)
+  }, [])
+
+  const handleAnimationComplete = useCallback(() => {
+    if (isDismissing) {
+      handleDelete(index)()
+    }
+  }, [isDismissing, handleDelete, index])
+
+  const { dragProps } = useSwipeGesture({
+    direction: 'x',
+    threshold: MOBILE_GESTURE.swipeThreshold,
+    onSwipe: (dir) => {
+      if (dir === 'left') {
+        if (isRevealed) {
+          // Second swipe left: animate out then delete
+          triggerDismiss()
+        } else {
+          setRevealedItemId(purchase._id)
+        }
+      } else if (dir === 'right') {
+        setRevealedItemId(null)
+      }
+    },
+  })
+
+  const animateState = isDismissing ? 'dismissed' : isRevealed ? 'revealed' : 'hidden'
+
+  return (
+    <div className="relative overflow-hidden rounded-lg">
+      {/* Delete action layer behind the item */}
+      <div className="absolute inset-y-0 right-0 flex w-20 items-center justify-center rounded-r-lg bg-red-500">
+        <button
+          type="button"
+          onClick={triggerDismiss}
+          className="flex flex-col items-center gap-1 text-white"
+          aria-label={t('list.delete')}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="h-6 w-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+            />
+          </svg>
+          <span className="text-xs">{t('list.delete')}</span>
+        </button>
+      </div>
+
+      {/* Swipeable item card */}
+      <motion.div
+        variants={swipeToDelete}
+        animate={animateState}
+        onAnimationComplete={handleAnimationComplete}
+        className="relative rounded-lg bg-white p-4 shadow-xs dark:bg-slate-800 dark:shadow-slate-900/50"
+        onClick={() => {
+          if (isRevealed) setRevealedItemId(null)
+        }}
+        {...dragProps}
+      >
+        <div className="flex gap-3 select-none">
+          <div className="flex shrink-0 items-start pt-1">
+            <ShopeeCheckbox
+              checked={purchase.isChecked}
+              onChange={(checked) => {
+                handleChecked(index)({
+                  target: { checked },
+                } as React.ChangeEvent<HTMLInputElement>)
+              }}
+              size="md"
+            />
+          </div>
+
+          <Link
+            to={`${path.home}${generateNameId({
+              name: purchase.product.name,
+              id: purchase.product._id,
+            })}`}
+            className="h-20 w-20 shrink-0"
+          >
+            <ImageWithFallback
+              src={purchase.product.image}
+              alt={purchase.product.name}
+              className="h-full w-full rounded-sm object-cover"
+              loading="lazy"
+            />
+          </Link>
+
+          <div className="min-w-0 flex-1">
+            <Link
+              to={`${path.home}${generateNameId({
+                name: purchase.product.name,
+                id: purchase.product._id,
+              })}`}
+              className="line-clamp-2 text-sm text-gray-800 transition-colors hover:text-[#ee4d2d] dark:text-gray-100"
+            >
+              {purchase.product.name}
+            </Link>
+
+            <div className="mt-1">
+              <StockBadge
+                availableStock={purchase.product.quantity}
+                requestedQuantity={purchase.buy_count}
+              />
+            </div>
+
+            <AnimatePresence>
+              {inlineAlerts.has(purchase.product._id) && (
+                <InlineStockAlert
+                  productId={purchase.product._id}
+                  productName={inlineAlerts.get(purchase.product._id)!.productName}
+                  newStock={inlineAlerts.get(purchase.product._id)!.newStock}
+                  severity={inlineAlerts.get(purchase.product._id)!.severity}
+                  onDismiss={() => handleDismissInlineAlert(purchase.product._id)}
+                />
+              )}
+            </AnimatePresence>
+
+            <div className="mt-2 flex items-center gap-2 text-sm">
+              <span className="text-gray-400 line-through dark:text-gray-500">
+                ₫{formatCurrency(purchase.product.price_before_discount)}
+              </span>
+              <span className="font-medium text-[#ee4d2d]">
+                ₫{formatCurrency(purchase.product.price)}
+              </span>
+            </div>
+
+            <div className="mt-3 flex items-center gap-2">
+              <QuantityController
+                handleDelete={handleDelete(index)}
+                product={purchase.product}
+                max={purchase.product.quantity}
+                value={purchase.buy_count}
+                classNameWrapper="flex items-center"
+                onIncrease={(value) =>
+                  handleQuantity(index, value, purchase.buy_count < purchase.product.quantity)
+                }
+                onDecrease={(value) => handleQuantity(index, value, purchase.buy_count > 1)}
+                onType={handleTypeQuantity(index)}
+                onFocusOut={(value) =>
+                  handleQuantity(
+                    index,
+                    value,
+                    purchase.buy_count >= 1 &&
+                      purchase.buy_count <= purchase.product.quantity &&
+                      value !== (purchasesInCart as Purchase[])[index].buy_count,
+                  )
+                }
+                disabled={false}
+                isQuantityInCart={true}
+              />
+
+              <div className="ml-auto flex items-center gap-1">
+                <Button
+                  size="sm"
+                  animated={false}
+                  onClick={handleSaveForLater(index)}
+                  className="rounded-md p-1.5 text-blue-500 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                  aria-label={t('list.saveForLater')}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="h-5 w-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z"
+                    />
+                  </svg>
+                </Button>
+
+                <Button
+                  size="sm"
+                  animated={false}
+                  onClick={triggerDismiss}
+                  className="rounded-md p-1.5 text-gray-500 transition-colors hover:text-[#ee4d2d] dark:text-gray-400"
+                  aria-label={t('list.delete')}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="h-5 w-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                    />
+                  </svg>
+                </Button>
+              </div>
+            </div>
+
+            <div className="mt-2 flex items-center justify-end">
+              <span className="mr-2 text-sm text-gray-500 dark:text-gray-400">
+                {t('summary.totalPayment')}:
+              </span>
+              <motion.span
+                className="font-medium text-[#ee4d2d]"
+                key={purchase.buy_count}
+                initial={{ scale: 0.9, opacity: 0.7 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              >
+                ₫{formatCurrency(purchase.price * purchase.buy_count)}
+              </motion.span>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
 const CartItemList = ({
   extendedPurchases,
   purchasesInCart,
@@ -46,6 +321,7 @@ const CartItemList = ({
 }: CartItemListProps) => {
   const { t } = useTranslation('cart')
   const isMobile = useIsMobile()
+  const [revealedItemId, setRevealedItemId] = useState<string | null>(null)
 
   return (
     <div className="overflow-auto">
@@ -249,175 +525,25 @@ const CartItemList = ({
         {extendedPurchases.length > 0 && (
           <div className="space-y-3">
             {extendedPurchases?.map((purchase, index) => (
-              <motion.div
+              <MobileCartItem
                 key={purchase._id}
-                initial={isMobile ? false : { opacity: 0, y: 20 }}
-                animate={isMobile ? undefined : { opacity: 1, y: 0 }}
-                transition={isMobile ? undefined : { duration: 0.3, delay: index * 0.1 }}
-                className="rounded-lg bg-white p-4 shadow-xs dark:bg-slate-800 dark:shadow-slate-900/50"
-              >
-                <div className="flex gap-3 select-none">
-                  <div className="flex shrink-0 items-start pt-1">
-                    <ShopeeCheckbox
-                      checked={purchase.isChecked}
-                      onChange={(checked) => {
-                        handleChecked(index)({
-                          target: { checked },
-                        } as React.ChangeEvent<HTMLInputElement>)
-                      }}
-                      size="md"
-                    />
-                  </div>
-
-                  <Link
-                    to={`${path.home}${generateNameId({
-                      name: purchase.product.name,
-                      id: purchase.product._id,
-                    })}`}
-                    className="h-20 w-20 shrink-0"
-                  >
-                    <ImageWithFallback
-                      src={purchase.product.image}
-                      alt={purchase.product.name}
-                      className="h-full w-full rounded-sm object-cover"
-                      loading="lazy"
-                    />
-                  </Link>
-
-                  <div className="min-w-0 flex-1">
-                    <Link
-                      to={`${path.home}${generateNameId({
-                        name: purchase.product.name,
-                        id: purchase.product._id,
-                      })}`}
-                      className="line-clamp-2 text-sm text-gray-800 transition-colors hover:text-[#ee4d2d] dark:text-gray-100"
-                    >
-                      {purchase.product.name}
-                    </Link>
-
-                    <div className="mt-1">
-                      <StockBadge
-                        availableStock={purchase.product.quantity}
-                        requestedQuantity={purchase.buy_count}
-                      />
-                    </div>
-
-                    <AnimatePresence>
-                      {inlineAlerts.has(purchase.product._id) && (
-                        <InlineStockAlert
-                          productId={purchase.product._id}
-                          productName={inlineAlerts.get(purchase.product._id)!.productName}
-                          newStock={inlineAlerts.get(purchase.product._id)!.newStock}
-                          severity={inlineAlerts.get(purchase.product._id)!.severity}
-                          onDismiss={() => handleDismissInlineAlert(purchase.product._id)}
-                        />
-                      )}
-                    </AnimatePresence>
-
-                    <div className="mt-2 flex items-center gap-2 text-sm">
-                      <span className="text-gray-400 line-through dark:text-gray-500">
-                        ₫{formatCurrency(purchase.product.price_before_discount)}
-                      </span>
-                      <span className="font-medium text-[#ee4d2d]">
-                        ₫{formatCurrency(purchase.product.price)}
-                      </span>
-                    </div>
-
-                    <div className="mt-3 flex items-center gap-2">
-                      <QuantityController
-                        handleDelete={handleDelete(index)}
-                        product={purchase.product}
-                        max={purchase.product.quantity}
-                        value={purchase.buy_count}
-                        classNameWrapper="flex items-center"
-                        onIncrease={(value) =>
-                          handleQuantity(
-                            index,
-                            value,
-                            purchase.buy_count < purchase.product.quantity,
-                          )
-                        }
-                        onDecrease={(value) => handleQuantity(index, value, purchase.buy_count > 1)}
-                        onType={handleTypeQuantity(index)}
-                        onFocusOut={(value) =>
-                          handleQuantity(
-                            index,
-                            value,
-                            purchase.buy_count >= 1 &&
-                              purchase.buy_count <= purchase.product.quantity &&
-                              value !== (purchasesInCart as Purchase[])[index].buy_count,
-                          )
-                        }
-                        disabled={false}
-                        isQuantityInCart={true}
-                      />
-
-                      <div className="ml-auto flex items-center gap-1">
-                        <Button
-                          size="sm"
-                          animated={false}
-                          onClick={handleSaveForLater(index)}
-                          className="rounded-md p-1.5 text-blue-500 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                          aria-label={t('list.saveForLater')}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="h-5 w-5"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z"
-                            />
-                          </svg>
-                        </Button>
-
-                        <Button
-                          size="sm"
-                          animated={false}
-                          onClick={handleDelete(index)}
-                          className="rounded-md p-1.5 text-gray-500 transition-colors hover:text-[#ee4d2d] dark:text-gray-400"
-                          aria-label={t('list.delete')}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="h-5 w-5"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                            />
-                          </svg>
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="mt-2 flex items-center justify-end">
-                      <span className="mr-2 text-sm text-gray-500 dark:text-gray-400">
-                        {t('summary.totalPayment')}:
-                      </span>
-                      <motion.span
-                        className="font-medium text-[#ee4d2d]"
-                        key={purchase.buy_count}
-                        initial={{ scale: 0.9, opacity: 0.7 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                      >
-                        ₫{formatCurrency(purchase.price * purchase.buy_count)}
-                      </motion.span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+                purchase={purchase}
+                index={index}
+                purchasesInCart={purchasesInCart}
+                inlineAlerts={inlineAlerts}
+                revealedItemId={revealedItemId}
+                setRevealedItemId={setRevealedItemId}
+                handleChecked={handleChecked}
+                handleQuantity={handleQuantity}
+                handleTypeQuantity={handleTypeQuantity}
+                handleDelete={handleDelete}
+                handleSaveForLater={handleSaveForLater}
+                handleDismissInlineAlert={handleDismissInlineAlert}
+                path={path}
+                formatCurrency={formatCurrency}
+                generateNameId={generateNameId}
+                t={t}
+              />
             ))}
           </div>
         )}

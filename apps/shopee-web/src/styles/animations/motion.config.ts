@@ -24,5 +24,18 @@ export const STAGGER_DELAY = {
   slow: 0.1,
 } as const
 
+export const MOBILE_GESTURE = {
+  swipeThreshold: 50,
+  swipeVelocity: 500,
+  dragElasticity: 0.2,
+  dragTransition: { bounceStiffness: 300, bounceDamping: 25 },
+} as const
+
+export const MOBILE_SPRING = {
+  swipeAway: { type: 'spring' as const, stiffness: 300, damping: 30 },
+  snapBack: { type: 'spring' as const, stiffness: 400, damping: 35 },
+  pullRefresh: { type: 'spring' as const, stiffness: 200, damping: 20 },
+} as const
+
 export type AnimationDuration = (typeof ANIMATION_DURATION)[keyof typeof ANIMATION_DURATION]
 export type StaggerDelay = (typeof STAGGER_DELAY)[keyof typeof STAGGER_DELAY]

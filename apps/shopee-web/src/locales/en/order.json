@@ -28,6 +28,7 @@
   "cancel.irreversible": "This action cannot be undone",
   "cancel.confirm": "Are you sure you want to cancel this order? Cancelled orders cannot be restored.",
   "cancel.reasonPlaceholder": "Reason for cancellation (optional)",
+  "cancel.reasonLabel": "Cancellation reason",
   "cancel.back": "Go Back",
   "cancel.processing": "Processing...",
   "cancel.confirmButton": "Confirm Cancel",
@@ -163,6 +164,17 @@
   "paymentStatus.failed": "Payment Failed",
   "paymentStatus.refunded": "Refunded",
   "toast.paymentConfirmed": "Payment confirmed successfully",
-  "toast.paymentFailedRemote": "Payment failed. Please try again or contact support."
+  "toast.paymentFailedRemote": "Payment failed. Please try again or contact support.",
+  "tracking.pageTitle": "Track Your Order",
+  "tracking.trackButton": "Track",
+  "tracking.trackingInProgress": "Tracking...",
+  "tracking.inputPlaceholder": "Enter tracking number (e.g. TRK123456)",
+  "tracking.inputLabel": "Tracking number",
+  "tracking.carrierLabel": "Carrier",
+  "tracking.deliveryTo": "Delivery to",
+  "tracking.notFound": "Tracking information not found",
+  "tracking.enterNumber": "Enter a tracking number above to see your shipment status",
+  "tracking.notFoundFor": "No tracking info found for \"{{number}}\"",
+  "tracking.seoDescription": "Track your order status in real time"
 }
 

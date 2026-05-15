@@ -52,10 +52,10 @@ const Login = () => {
   const loginAccountMutation = useMutation({
     mutationFn: (body: FormData) => authApi.loginAccount(body),
     onSuccess: () => {
-      toast.success(t('login.success'), { autoClose: 1000 })
+      toast.success(t('login.success'), { autoClose: 3000 })
     },
     onError: () => {
-      toast.error(t('login.error'), { autoClose: 1000 })
+      toast.error(t('login.error'), { autoClose: 3000 })
     },
   })
 

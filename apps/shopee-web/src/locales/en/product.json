@@ -33,6 +33,8 @@
   "reviews.title": "Product Reviews",
   "reviews.withImages": "With Images",
   "reviews.writeComment": "Write a comment",
+  "reviews.writeReviewLabel": "Write your review",
+  "reviews.replyLabel": "Reply to review",
   "toast.reviewLikeSuccess": "Liked the review!",
   "toast.reviewUnlikeSuccess": "Unliked the review",
   "toast.reviewLikeError": "Cannot perform action",

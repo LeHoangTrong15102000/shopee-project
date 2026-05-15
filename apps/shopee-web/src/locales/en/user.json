@@ -125,5 +125,16 @@
   "history.seo.title": "My Purchases",
   "sideNav.conversations": "Conversation History",
   "sideNav.loyalty": "Loyalty Points",
-  "sideNav.priceAlerts": "Price Alerts"
+  "sideNav.priceAlerts": "Price Alerts",
+  "shopProfile.home": "Home",
+  "shopProfile.followers": "{{count}} followers",
+  "shopProfile.following": "Following",
+  "shopProfile.follow": "+ Follow",
+  "shopProfile.chatWithShop": "Chat with shop",
+  "shopProfile.productsCount": "Products ({{count}})",
+  "shopProfile.noProducts": "No products found",
+  "shopProfile.notFound": "Shop not found",
+  "shopProfile.previous": "Previous",
+  "shopProfile.next": "Next",
+  "shopProfile.pageOf": "Page {{page}} / {{totalPages}}"
 }

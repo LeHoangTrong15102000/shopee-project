@@ -33,6 +33,8 @@
   "reviews.title": "Đánh giá sản phẩm",
   "reviews.withImages": "Có hình ảnh",
   "reviews.writeComment": "Viết bình luận",
+  "reviews.writeReviewLabel": "Viết đánh giá của bạn",
+  "reviews.replyLabel": "Trả lời đánh giá",
   "toast.reviewLikeSuccess": "Đã thích đánh giá!",
   "toast.reviewUnlikeSuccess": "Đã bỏ thích đánh giá",
   "toast.reviewLikeError": "Không thể thực hiện thao tác",

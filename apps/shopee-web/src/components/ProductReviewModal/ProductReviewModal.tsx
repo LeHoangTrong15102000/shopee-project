@@ -141,6 +141,7 @@ const ProductReviewModal = ({ isOpen, onClose, purchase }: ProductReviewModalPro
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder={t('review.placeholder')}
+              aria-label={t('reviews.writeReviewLabel')}
               className="w-full resize-none rounded-md border border-gray-300 bg-white p-3 text-gray-900 outline-hidden focus:border-orange-500 dark:border-slate-600 dark:bg-slate-700 dark:text-gray-100"
               rows={4}
               maxLength={2000}

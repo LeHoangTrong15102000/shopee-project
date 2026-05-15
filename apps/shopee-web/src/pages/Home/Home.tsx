@@ -163,7 +163,7 @@ const Home = () => {
         <div className="container py-6">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center">
-              <h2 className="mr-4 text-base font-semibold text-orange sm:text-xl">FLASH SALE</h2>
+              <h2 className="mr-4 text-base font-semibold text-orange sm:text-xl">{t('flashSale.title')}</h2>
               <FlashSaleTimer
                 serverRemainingSeconds={remainingSeconds}
                 isServerSynced={isConnectedToServer}

@@ -31,6 +31,12 @@ const Compare = () => {
         <div className="mb-4 rounded-lg bg-white p-3 shadow-xs sm:mb-6 sm:p-4 md:p-6 dark:bg-slate-800 dark:shadow-slate-900/50">
           <div className="flex items-center justify-between">
             <div>
+              <Link
+                to={path.products}
+                className="mb-2 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-orange dark:text-gray-400 dark:hover:text-orange-400"
+              >
+                &#8592; {t('back')}
+              </Link>
               <h1 className="text-lg font-bold text-gray-800 sm:text-xl md:text-2xl dark:text-gray-100">
                 {t('title')}
               </h1>

@@ -28,6 +28,7 @@
   "cancel.irreversible": "Hành động này không thể hoàn tác",
   "cancel.confirm": "Bạn có chắc chắn muốn hủy đơn hàng này? Đơn hàng sau khi hủy sẽ không thể khôi phục.",
   "cancel.reasonPlaceholder": "Lý do hủy đơn (không bắt buộc)",
+  "cancel.reasonLabel": "Lý do hủy đơn",
   "cancel.back": "Quay lại",
   "cancel.processing": "Đang xử lý...",
   "cancel.confirmButton": "Xác nhận hủy",
@@ -163,6 +164,17 @@
   "paymentStatus.failed": "Thanh toán thất bại",
   "paymentStatus.refunded": "Đã hoàn tiền",
   "toast.paymentConfirmed": "Thanh toán thành công",
-  "toast.paymentFailedRemote": "Thanh toán thất bại. Vui lòng thử lại hoặc liên hệ hỗ trợ."
+  "toast.paymentFailedRemote": "Thanh toán thất bại. Vui lòng thử lại hoặc liên hệ hỗ trợ.",
+  "tracking.pageTitle": "Theo dõi đơn hàng của bạn",
+  "tracking.trackButton": "Theo dõi",
+  "tracking.trackingInProgress": "Đang theo dõi...",
+  "tracking.inputPlaceholder": "Nhập mã vận đơn (ví dụ: TRK123456)",
+  "tracking.inputLabel": "Mã vận đơn",
+  "tracking.carrierLabel": "Đơn vị vận chuyển",
+  "tracking.deliveryTo": "Giao đến",
+  "tracking.notFound": "Không tìm thấy thông tin vận đơn",
+  "tracking.enterNumber": "Nhập mã vận đơn ở trên để xem trạng thái giao hàng",
+  "tracking.notFoundFor": "Không tìm thấy thông tin vận chuyển cho \"{{number}}\"",
+  "tracking.seoDescription": "Theo dõi trạng thái đơn hàng của bạn trong thời gian thực"
 }
 

@@ -229,7 +229,7 @@ const Profile = () => {
         setProfileToLS(res.data.data)
         // Reset file state để hiển thị avatar từ server thay vì previewImage
         setFile(undefined)
-        toast.success(res.data?.message, { autoClose: 1000, position: 'top-center' })
+        toast.success(res.data?.message, { autoClose: 3000, position: 'top-center' })
       }
     } catch (error) {
       // Xử lý lỗi từ phía server

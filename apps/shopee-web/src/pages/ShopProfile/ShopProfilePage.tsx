@@ -1,6 +1,7 @@
 import { useState, useContext } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import shopApi from 'src/apis/shop.api'
 import shopChatApi from 'src/apis/shopChat.api'
 import { AppContext } from 'src/contexts/app.context'
@@ -8,10 +9,12 @@ import ShopMetrics from 'src/pages/ProductDetail/components/ShopMetrics'
 import Product from 'src/pages/ProductList/components/Product'
 import SEO from 'src/components/SEO'
 import Button from 'src/components/Button'
+import Breadcrumb from 'src/components/Breadcrumb/Breadcrumb'
 import path from 'src/constant/path'
 import { formatNumberToSocialStyle } from 'src/utils/utils'
 
 const ShopProfilePage = () => {
+  const { t } = useTranslation('user')
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { isAuthenticated } = useContext(AppContext)
@@ -141,7 +144,7 @@ const ShopProfilePage = () => {
   if (!shop) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-slate-900">
-        <p className="text-gray-500 dark:text-gray-400">Shop not found</p>
+        <p className="text-gray-500 dark:text-gray-400">{t('shopProfile.notFound')}</p>
       </div>
     )
   }
@@ -149,6 +152,12 @@ const ShopProfilePage = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
       <SEO title={shop.name} description={shop.description} />
+
+      {shop && (
+        <div className="container pt-4">
+          <Breadcrumb items={[{ label: t('shopProfile.home'), to: '/' }, { label: shop.name }]} />
+        </div>
+      )}
 
       {/* Shop Header */}
       <div className="bg-white shadow-sm dark:bg-slate-800">
@@ -174,7 +183,7 @@ const ShopProfilePage = () => {
                   {shop.name}
                 </h1>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  {formatNumberToSocialStyle(shop.followerCount)} followers
+                  {t('shopProfile.followers', { count: formatNumberToSocialStyle(shop.followerCount) })}
                 </p>
                 <div className="mt-3 flex items-center gap-2">
                   <Button
@@ -186,7 +195,7 @@ const ShopProfilePage = () => {
                         : 'border border-orange bg-white text-orange hover:bg-orange/5 dark:border-orange-400 dark:text-orange-400'
                     }`}
                   >
-                    {shop.isFollowing ? 'Following' : '+ Follow'}
+                    {shop.isFollowing ? t('shopProfile.following') : t('shopProfile.follow')}
                   </Button>
                   <Button
                     onClick={handleChatClick}
@@ -201,7 +210,7 @@ const ShopProfilePage = () => {
                         d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                       />
                     </svg>
-                    Chat with shop
+                    {t('shopProfile.chatWithShop')}
                   </Button>
                 </div>
               </div>
@@ -219,7 +228,7 @@ const ShopProfilePage = () => {
       {/* Product Grid */}
       <div className="container py-6">
         <h2 className="mb-4 text-base font-medium text-gray-900 dark:text-gray-100">
-          Products ({shop.productCount})
+          {t('shopProfile.productsCount', { count: shop.productCount })}
         </h2>
 
         {isProductsLoading ? (
@@ -236,7 +245,7 @@ const ShopProfilePage = () => {
           </div>
         ) : products.length === 0 ? (
           <div className="flex items-center justify-center py-20">
-            <p className="text-gray-500 dark:text-gray-400">No products found</p>
+          <p className="text-gray-500 dark:text-gray-400">{t('shopProfile.noProducts')}</p>
           </div>
         ) : (
           <>
@@ -248,25 +257,29 @@ const ShopProfilePage = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
+              <nav aria-label="Pagination">
               <div className="mt-6 flex items-center justify-center gap-2">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
+                  aria-label="Previous page"
                   className="rounded-sm border border-gray-300 px-3 py-1.5 text-sm text-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:border-slate-600 dark:text-gray-300 dark:hover:bg-slate-700"
                 >
-                  Previous
+                  {t('shopProfile.previous')}
                 </button>
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  Page {page} / {totalPages}
+                <span aria-current="page" className="text-sm text-gray-600 dark:text-gray-400">
+                  {t('shopProfile.pageOf', { page, totalPages })}
                 </span>
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
+                  aria-label="Next page"
                   className="rounded-sm border border-gray-300 px-3 py-1.5 text-sm text-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:border-slate-600 dark:text-gray-300 dark:hover:bg-slate-700"
                 >
-                  Next
+                  {t('shopProfile.next')}
                 </button>
               </div>
+              </nav>
             )}
           </>
         )}

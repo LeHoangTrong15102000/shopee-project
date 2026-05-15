@@ -75,5 +75,6 @@
   "flashSale.onlyNLeft": "Chỉ còn {{count}} sản phẩm!",
   "flashSale.almostGone": "Sắp hết!",
   "flashSale.endingSoon": "Sắp kết thúc!",
-  "flashSale.soldPercent": "Đã bán {{percent}}%"
+  "flashSale.soldPercent": "Đã bán {{percent}}%",
+  "flashSale.title": "FLASH SALE"
 }

@@ -395,6 +395,7 @@ const ReviewItem = ({
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
                     placeholder={t('reviews.writeComment')}
+                    aria-label={t('reviews.writeReviewLabel')}
                     className="w-full resize-none rounded-md border border-gray-300 bg-white p-3 text-gray-900 focus:border-transparent focus:ring-2 focus:ring-red-500 dark:border-slate-600 dark:bg-slate-700 dark:text-gray-100"
                     rows={3}
                   />
@@ -497,6 +498,7 @@ const CommentItem = ({
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
                 placeholder={t('reviews.replyTo', { name: comment.user.name })}
+                aria-label={t('reviews.replyLabel')}
                 className="w-full resize-none rounded-md border border-gray-300 bg-white p-2 text-sm text-gray-900 focus:border-transparent focus:ring-2 focus:ring-red-500 dark:border-slate-600 dark:bg-slate-700 dark:text-gray-100"
                 rows={2}
               />

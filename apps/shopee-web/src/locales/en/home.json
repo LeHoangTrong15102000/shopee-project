@@ -75,5 +75,6 @@
   "flashSale.onlyNLeft": "Only {{count}} left!",
   "flashSale.almostGone": "Almost gone!",
   "flashSale.endingSoon": "Ending soon!",
-  "flashSale.soldPercent": "{{percent}}% sold"
+  "flashSale.soldPercent": "{{percent}}% sold",
+  "flashSale.title": "FLASH SALE"
 }

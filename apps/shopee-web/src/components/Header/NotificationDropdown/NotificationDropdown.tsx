@@ -95,6 +95,12 @@ const NotificationDropdown = () => {
         variant="icon"
         animated={false}
         className="relative flex items-center justify-center text-white transition-colors hover:text-white/80"
+        onKeyDown={(e: React.KeyboardEvent<HTMLButtonElement>) => {
+          if (e.key === 'ArrowDown') {
+            e.preventDefault()
+            e.currentTarget.click()
+          }
+        }}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

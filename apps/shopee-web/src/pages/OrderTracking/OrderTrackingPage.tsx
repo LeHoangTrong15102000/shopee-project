@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import orderTrackingApi from 'src/apis/orderTracking.api'
 import OrderTrackingTimeline from 'src/components/OrderTrackingTimeline'
 import SEO from 'src/components/SEO'
 
 const OrderTrackingPage = () => {
+  const { t } = useTranslation('order')
   const { number } = useParams<{ number: string }>()
   const [inputValue, setInputValue] = useState(number ?? '')
   const [submittedNumber, setSubmittedNumber] = useState(number ?? '')
@@ -38,13 +40,13 @@ const OrderTrackingPage = () => {
   return (
     <div className='min-h-screen bg-gray-50 dark:bg-slate-900'>
       <SEO
-        title='Order Tracking'
-        description='Track your order status in real time'
+        title={t('tracking.pageTitle')}
+        description={t('tracking.seoDescription')}
       />
 
       <div className='container py-8'>
         <h1 className='mb-6 text-xl font-semibold text-gray-900 dark:text-gray-100'>
-          Track Your Order
+          {t('tracking.pageTitle')}
         </h1>
 
         {/* Search form */}
@@ -54,16 +56,16 @@ const OrderTrackingPage = () => {
               type='text'
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder='Enter tracking number (e.g. TRK123456)'
+              placeholder={t('tracking.inputPlaceholder')}
               className='flex-1 rounded-sm border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-orange focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-400'
-              aria-label='Tracking number'
+              aria-label={t('tracking.inputLabel')}
             />
             <button
               type='submit'
               disabled={!inputValue.trim() || isLoading}
               className='rounded-sm bg-orange px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-orange/90 disabled:cursor-not-allowed disabled:opacity-50'
             >
-              {isLoading ? 'Tracking...' : 'Track'}
+              {isLoading ? t('tracking.trackingInProgress') : t('tracking.trackButton')}
             </button>
           </div>
         </form>
@@ -71,7 +73,7 @@ const OrderTrackingPage = () => {
         {/* Loading state */}
         {isLoading && (
           <div className='flex items-center justify-center py-16'>
-            <div className='h-8 w-8 animate-spin rounded-full border-4 border-orange border-t-transparent' />
+            <div className='h-8 w-8 animate-spin rounded-full border-4 border-orange border-t-transparent' role='status' aria-label='Loading' />
           </div>
         )}
 
@@ -92,10 +94,10 @@ const OrderTrackingPage = () => {
               />
             </svg>
             <p className='text-base font-medium text-gray-700 dark:text-gray-300'>
-              Tracking information not found
+              {t('tracking.notFound')}
             </p>
             <p className='mt-1 text-sm text-gray-500 dark:text-gray-400'>
-              {(error as Error)?.message || `No tracking info found for "${submittedNumber}"`}
+              {(error as Error)?.message || t('tracking.notFoundFor', { number: submittedNumber })}
             </p>
           </div>
         )}
@@ -117,7 +119,7 @@ const OrderTrackingPage = () => {
               />
             </svg>
             <p className='text-gray-500 dark:text-gray-400'>
-              Enter a tracking number above to see your shipment status
+              {t('tracking.enterNumber')}
             </p>
           </div>
         )}
@@ -129,20 +131,20 @@ const OrderTrackingPage = () => {
             <div className='rounded-sm bg-white p-4 shadow-sm dark:bg-slate-800'>
               <div className='flex flex-wrap items-center justify-between gap-3'>
                 <div>
-                  <span className='text-xs text-gray-500 dark:text-gray-400'>Tracking number</span>
+                  <span className='text-xs text-gray-500 dark:text-gray-400'>{t('tracking.inputLabel')}</span>
                   <p className='font-mono text-sm font-medium text-gray-900 dark:text-gray-100'>
                     {tracking.tracking_number}
                   </p>
                 </div>
                 <div>
-                  <span className='text-xs text-gray-500 dark:text-gray-400'>Carrier</span>
+                  <span className='text-xs text-gray-500 dark:text-gray-400'>{t('tracking.carrierLabel')}</span>
                   <p className='text-sm font-medium text-gray-900 dark:text-gray-100'>
                     {tracking.carrier}
                   </p>
                 </div>
                 {tracking.estimated_delivery && (
                   <div>
-                    <span className='text-xs text-gray-500 dark:text-gray-400'>Estimated delivery</span>
+                    <span className='text-xs text-gray-500 dark:text-gray-400'>{t('tracking.estimatedDelivery')}</span>
                     <p className='text-sm font-medium text-gray-900 dark:text-gray-100'>
                       {new Date(tracking.estimated_delivery).toLocaleDateString('vi-VN')}
                     </p>
@@ -158,7 +160,7 @@ const OrderTrackingPage = () => {
               {/* Shipping address */}
               {tracking.shipping_address && (
                 <div className='mt-3 border-t border-gray-100 pt-3 dark:border-slate-700'>
-                  <span className='text-xs text-gray-500 dark:text-gray-400'>Delivery to</span>
+                  <span className='text-xs text-gray-500 dark:text-gray-400'>{t('tracking.deliveryTo')}</span>
                   <p className='text-sm text-gray-700 dark:text-gray-300'>
                     {tracking.shipping_address.name} &bull; {tracking.shipping_address.phone}
                   </p>

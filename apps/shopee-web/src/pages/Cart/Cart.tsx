@@ -28,6 +28,7 @@ import CartSummaryBar from './components/CartSummaryBar'
 import EmptyCartState from './components/EmptyCartState'
 import { ExtendedPurchase, InlineStockAlertState } from './types'
 import ConfirmDialog from 'src/components/ConfirmDialog/ConfirmDialog'
+import CartItemSkeleton from 'src/components/Skeleton/CartItemSkeleton'
 
 export type { ExtendedPurchase, InlineStockAlertState }
 
@@ -56,7 +57,7 @@ const Cart = () => {
   const { lastSyncTimestamp, isSyncing } = useCartSync()
 
   // useQuery để gọi purchaseList hiển thị Cart product
-  const { data: purchasesInCartData } = useQuery({
+  const { data: purchasesInCartData, isLoading } = useQuery({
     queryKey: ['purchases', { status: purchasesStatus.inCart }],
     queryFn: async () => await purchaseApi.getPurchases({ status: purchasesStatus.inCart }),
   })
@@ -308,7 +309,9 @@ const Cart = () => {
     <div className="border-b-4 border-b-[#ee4d2d] bg-neutral-100 py-6 md:py-8 dark:bg-slate-900">
       <SEO title={t('seo.title')} noindex />
       <div className="container">
-        {extendedPurchases.length > 0 ? (
+        {isLoading ? (
+          <CartItemSkeleton count={3} />
+        ) : extendedPurchases.length > 0 ? (
           <Fragment>
             {/* Real-time stock alerts for products in cart */}
             <RealTimeStockAlert productIds={cartProductIds} onStockChange={handleStockChange} />

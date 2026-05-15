@@ -138,10 +138,12 @@ export default function OrderList() {
     <div className="space-y-4">
       <SEO title={t('seo.title')} noindex />
       {/* Tabs */}
-      <div className="sticky top-0 z-20 scrollbar-hide flex items-center overflow-x-auto rounded-t-sm bg-white shadow-xs dark:bg-slate-800">
+      <div role="tablist" className="relative sticky top-0 z-20 scrollbar-hide flex items-center overflow-x-auto rounded-t-sm bg-white shadow-xs dark:bg-slate-800">
         {orderTabStatuses.map((status, index) => (
           <Button
             key={status}
+            role="tab"
+            aria-selected={activeTab === status}
             variant="text"
             animated={false}
             onClick={() => handleTabChange(status)}
@@ -158,6 +160,7 @@ export default function OrderList() {
             {t(orderTabKeys[index])}
           </Button>
         ))}
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-white to-transparent dark:from-slate-800 sm:hidden" aria-hidden="true" />
       </div>
 
       {/* Orders List */}
@@ -269,6 +272,7 @@ export default function OrderList() {
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
                 placeholder={t('cancel.reasonPlaceholder')}
+                aria-label={t('cancel.reasonLabel')}
                 className="w-full resize-none rounded-xl border border-gray-200 p-3 text-sm transition-all duration-200 focus:border-orange focus:ring-2 focus:ring-orange/20 focus:outline-hidden dark:border-slate-600 dark:bg-slate-900 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-400"
                 rows={3}
               />

@@ -50,10 +50,10 @@ const Register = () => {
   const registerAccountMutation = useMutation({
     mutationFn: (body: Omit<FormData, 'confirm_password'>) => authApi.registerAccount(body),
     onSuccess: (_) => {
-      toast.success(t('register.success'), { autoClose: 1000 })
+      toast.success(t('register.success'), { autoClose: 3000 })
     },
     onError: () => {
-      toast.error(t('register.error'), { autoClose: 1000 })
+      toast.error(t('register.error'), { autoClose: 3000 })
     },
   })
 

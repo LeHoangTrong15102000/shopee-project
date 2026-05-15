@@ -125,5 +125,16 @@
   "history.seo.title": "Đơn mua",
   "sideNav.conversations": "Lịch sử hội thoại",
   "sideNav.loyalty": "Điểm tích lũy",
-  "sideNav.priceAlerts": "Cảnh báo giá"
+  "sideNav.priceAlerts": "Cảnh báo giá",
+  "shopProfile.home": "Trang chủ",
+  "shopProfile.followers": "{{count}} người theo dõi",
+  "shopProfile.following": "Đang theo dõi",
+  "shopProfile.follow": "+ Theo dõi",
+  "shopProfile.chatWithShop": "Chat với shop",
+  "shopProfile.productsCount": "Sản phẩm ({{count}})",
+  "shopProfile.noProducts": "Không tìm thấy sản phẩm",
+  "shopProfile.notFound": "Không tìm thấy shop",
+  "shopProfile.previous": "Trước",
+  "shopProfile.next": "Sau",
+  "shopProfile.pageOf": "Trang {{page}} / {{totalPages}}"
 }

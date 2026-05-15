@@ -162,7 +162,7 @@ export default defineConfig(({ mode }) => {
       test: {
         globals: true,
         environment: 'jsdom',
-        setupFiles: ['./vitest.setup.js'],
+        setupFiles: ['./vitest.polyfills.js', './vitest.setup.js'],
         css: true,
         testTimeout: 10000,
         hookTimeout: 10000,

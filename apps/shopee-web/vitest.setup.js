@@ -91,6 +91,7 @@ const localStorageMock = (() => {
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
   writable: true,
+  configurable: true,
 })
 
 // Setup sessionStorage mock — separate instance with its own store
@@ -113,11 +114,13 @@ const sessionStorageMock = (() => {
 Object.defineProperty(window, 'sessionStorage', {
   value: sessionStorageMock,
   writable: true,
+  configurable: true,
 })
 
 // Mock window.matchMedia (required by useReducedMotion hook)
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
+  configurable: true,
   value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
@@ -134,6 +137,7 @@ Object.defineProperty(window, 'matchMedia', {
 Object.defineProperty(window, 'scrollTo', {
   value: vi.fn(),
   writable: true,
+  configurable: true,
 })
 
 // Mock IntersectionObserver (required by framer-motion viewport features)
@@ -328,6 +332,7 @@ global.PointerEvent = class PointerEvent extends Event {
 // Mock additional globals for test environment
 Object.defineProperty(window, 'HTMLElement', {
   value: HTMLElement,
+  configurable: true,
 })
 
 // Mock @heroui/tooltip to avoid @react-aria/interactions crash in jsdom

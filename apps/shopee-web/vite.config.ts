@@ -168,10 +168,10 @@ export default defineConfig(({ mode }) => {
         hookTimeout: 10000,
         teardownTimeout: 3000,
         pool: 'vmForks',
-        maxWorkers: process.env.CI ? 1 : 2,
-        fileParallelism: !process.env.CI,
+        maxWorkers: 2,
+        fileParallelism: true,
         isolate: true,
-        memoryLimit: 0.7,
+        memoryLimit: process.env.CI ? '512MB' : undefined,
         include: [
           'src/**/*.test.{ts,tsx}', // Unit tests
           'test/**/*.test.{ts,tsx}', // Integration & E2E tests

@@ -1,9 +1,12 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { BrowserRouter } from 'react-router'
 import { NuqsTestingAdapter } from 'nuqs/adapters/testing'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import useSearchProducts from '../useSearchProducts'
+
+// Unmock nuqs hooks so real behavior works with NuqsTestingAdapter
+vi.unmock('src/hooks/nuqs')
 
 const createWrapper = () => {
   const queryClient = new QueryClient({

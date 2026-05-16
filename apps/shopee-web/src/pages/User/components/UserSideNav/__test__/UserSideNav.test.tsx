@@ -1,4 +1,4 @@
-import { describe, it, expect} from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import UserSideNav from '../UserSideNav'
@@ -7,10 +7,10 @@ vi.mock('src/hooks/useReducedMotion', () => ({
   useReducedMotion: () => false,
 }))
 
-vi.mock('src/contexts/app.context', () => {
-  const { createContext } = require('react')
+vi.mock('src/contexts/app.context', async () => {
+  const React = await vi.importActual<typeof import('react')>('react')
   return {
-    AppContext: createContext({
+    AppContext: React.createContext({
       profile: { name: 'Test User', avatar: 'test.jpg' },
       isAuthenticated: true,
     }),

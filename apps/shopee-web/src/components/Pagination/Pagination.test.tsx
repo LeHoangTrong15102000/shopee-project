@@ -4,6 +4,9 @@ import { BrowserRouter } from 'react-router'
 import { NuqsTestingAdapter } from 'nuqs/adapters/testing'
 import Pagination from './Pagination'
 
+// Unmock nuqs hooks so real behavior works with NuqsTestingAdapter
+vi.unmock('src/hooks/nuqs')
+
 const renderWithUrl = (searchParams: string = '', pageSize?: number, basePath?: string) => {
   window.history.pushState({}, '', `/${searchParams ? `?${searchParams}` : ''}`)
   return render(

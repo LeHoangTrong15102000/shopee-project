@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'vitest'
+import { describe, test, expect, vi } from 'vitest'
 import { render } from '@testing-library/react'
 import { BrowserRouter } from 'react-router'
 import { NuqsTestingAdapter } from 'nuqs/adapters/testing'
@@ -9,6 +9,9 @@ import Pagination from '../../src/components/Pagination'
 import ProductRating from '../../src/components/ProductRating'
 import Footer from '../../src/components/Footer'
 import { SkeletonBase, ProductCardSkeleton, NotificationSkeleton } from '../../src/components/Skeleton'
+
+// Unmock nuqs hooks so real behavior works with NuqsTestingAdapter
+vi.unmock('src/hooks/nuqs')
 
 // Wrapper component để cung cấp context cần thiết
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (

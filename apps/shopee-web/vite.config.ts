@@ -171,12 +171,7 @@ export default defineConfig(({ mode }) => {
         maxWorkers: process.env.CI ? 1 : 2,
         fileParallelism: !process.env.CI,
         isolate: true,
-        execArgv: ['--max-old-space-size=4096'],
-        poolOptions: {
-          vmForks: {
-            memoryLimit: 0.7,
-          },
-        },
+        memoryLimit: 0.7,
         include: [
           'src/**/*.test.{ts,tsx}', // Unit tests
           'test/**/*.test.{ts,tsx}', // Integration & E2E tests

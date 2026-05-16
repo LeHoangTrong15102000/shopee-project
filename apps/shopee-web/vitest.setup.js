@@ -359,4 +359,18 @@ vi.mock('src/components/PWAInstallPrompt', () => ({
   default: () => null,
 }))
 
+// Mock nuqs hooks globally to prevent "nuqs requires an adapter" errors
+// Tests that need real nuqs behavior use NuqsTestingAdapter from testUtils.tsx
+vi.mock('src/hooks/nuqs', () => ({
+  useProductQueryStates: () => [
+    { page: 1, limit: 20, sort_by: 'createdAt', order: 'desc', exclude: '', name: '', price_min: '', price_max: '', rating_filter: '', category: '' },
+    vi.fn(),
+  ],
+  usePurchaseStatus: () => [0, vi.fn()],
+  useOrderStatus: () => [0, vi.fn()],
+  productSearchParsers: {},
+  createProductSearchURL: () => '',
+  normalizeProductQueryKey: (key) => key,
+}))
+
 // Note: window.location.replace is handled by http.ts which uses pushState in test mode

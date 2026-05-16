@@ -14,9 +14,9 @@ vi.mock('react-router', async () => {
 })
 
 // Mock AppContext so useContext(AppContext) returns unauthenticated state
-vi.mock('src/contexts/app.context', () => {
-  const { createContext } = require('react')
-  const AppContext = createContext({ isAuthenticated: false, profile: null })
+vi.mock('src/contexts/app.context', async () => {
+  const React = await vi.importActual<typeof import('react')>('react')
+  const AppContext = React.createContext({ isAuthenticated: false, profile: null })
   return { AppContext }
 })
 

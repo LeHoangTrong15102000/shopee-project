@@ -218,7 +218,7 @@ export default function AuditLogListPage() {
             <Select
               value={action}
               onValueChange={(v) => {
-                setAction(v === '__all__' ? '' : v)
+                setAction(!v || v === '__all__' ? '' : v)
                 setPage(0)
               }}
             >
@@ -240,7 +240,7 @@ export default function AuditLogListPage() {
             <Select
               value={resource}
               onValueChange={(v) => {
-                setResource(v === '__all__' ? '' : v)
+                setResource(!v || v === '__all__' ? '' : v)
                 setPage(0)
               }}
             >

@@ -14,10 +14,11 @@
 
 import { v4 as uuidv4 } from 'uuid'
 import { PaymentModel, GATEWAY_PAYMENT_STATUS } from '@database/models/payment.model'
-import { OrderModel, ORDER_STATUS, PAYMENT_STATUS } from '@database/models/order.model'
+import { PAYMENT_STATUS } from '@database/models/order.model'
 import { PaymentService } from '@services/payment.service'
 import { PaymentProvider, PaymentStatus } from '@services/payment/payment.interface'
 import { Logger } from '@utils/logger'
+import { transitionOrderPaymentStatus } from '@services/order/order_state_machine'
 
 const STALE_THRESHOLD_MINUTES = 30
 const DEFAULT_INTERVAL_HOURS = 24
@@ -86,6 +87,7 @@ export class PaymentReconciliationJob {
 
     for (const payment of stalePendingPayments) {
       const paymentId = payment._id.toString()
+      // orderId string used only for logging; actual guard for order status transition uses payment.orderId (ObjectId)
       const orderId = payment.orderId?.toString() ?? ''
       const provider = payment.provider as PaymentProvider
 
@@ -109,11 +111,16 @@ export class PaymentReconciliationJob {
           await PaymentModel.findByIdAndUpdate(payment._id, {
             status: GATEWAY_PAYMENT_STATUS.SUCCESS,
           })
-          await OrderModel.findByIdAndUpdate(payment.orderId, {
-            status: ORDER_STATUS.CONFIRMED,
-            payment_status: PAYMENT_STATUS.PAID,
-            confirmed_at: new Date(),
-          })
+
+          // Skip order status transition for session-based payments (no orderId)
+          if (payment.orderId) {
+            await transitionOrderPaymentStatus(payment.orderId.toString(), 'PAYMENT_SUCCESS', {
+              extraUpdate: {
+                payment_status: PAYMENT_STATUS.PAID,
+                confirmed_at: new Date(),
+              },
+            })
+          }
 
           Logger.apiInfo('[ReconciliationJob] Payment transitioned to SUCCESS', {
             paymentId,
@@ -128,10 +135,15 @@ export class PaymentReconciliationJob {
           await PaymentModel.findByIdAndUpdate(payment._id, {
             status: GATEWAY_PAYMENT_STATUS.FAILED,
           })
-          await OrderModel.findByIdAndUpdate(payment.orderId, {
-            status: ORDER_STATUS.PAYMENT_FAILED,
-            payment_status: PAYMENT_STATUS.FAILED,
-          })
+
+          // Skip order status transition for session-based payments (no orderId)
+          if (payment.orderId) {
+            await transitionOrderPaymentStatus(payment.orderId.toString(), 'PAYMENT_FAIL', {
+              extraUpdate: {
+                payment_status: PAYMENT_STATUS.FAILED,
+              },
+            })
+          }
 
           Logger.apiInfo('[ReconciliationJob] Payment transitioned to FAILED', {
             paymentId,

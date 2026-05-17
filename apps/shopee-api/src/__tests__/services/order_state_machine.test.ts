@@ -7,7 +7,24 @@ import {
   getValidNextStates,
   validateStatusTransition,
   validateReturnDeadline,
+  transitionOrderPaymentStatus,
 } from '../../services/order/order_state_machine'
+
+// ─── Mock OrderModel for transitionOrderPaymentStatus tests ───────────────────
+
+jest.mock('@database/models/order.model', () => {
+  const actual = jest.requireActual('@database/models/order.model')
+  return {
+    ...actual,
+    OrderModel: {
+      findById: jest.fn(),
+      findByIdAndUpdate: jest.fn(),
+    },
+  }
+})
+
+import { OrderModel } from '@database/models/order.model'
+const mockOrderModel = OrderModel as jest.Mocked<typeof OrderModel>
 
 describe('Order State Machine', () => {
   describe('isValidTransition', () => {
@@ -38,9 +55,9 @@ describe('Order State Machine', () => {
   })
 
   describe('getValidNextStates', () => {
-    it('should return 2 next states from PENDING (confirm, cancel)', () => {
+    it('should return 3 next states from PENDING (confirm, cancel, initiate_payment)', () => {
       const nextStates = getValidNextStates(ORDER_STATUS.PENDING)
-      expect(nextStates).toHaveLength(2)
+      expect(nextStates).toHaveLength(3)
     })
 
     it('should return 2 next states from CONFIRMED (process, cancel)', () => {
@@ -165,5 +182,172 @@ describe('Order State Machine', () => {
       expect(result.valid).toBe(false)
       expect(result.message).toBeDefined()
     })
+  })
+})
+
+// ─── Payment state machine transitions ────────────────────────────────────────
+
+describe('Payment state machine transitions', () => {
+  describe('payment_pending state', () => {
+    it('should allow PAYMENT_SUCCESS from payment_pending', () => {
+      expect(isValidTransition(ORDER_STATUS.PAYMENT_PENDING, ORDER_EVENT.PAYMENT_SUCCESS)).toBe(true)
+    })
+
+    it('should allow PAYMENT_FAIL from payment_pending', () => {
+      expect(isValidTransition(ORDER_STATUS.PAYMENT_PENDING, ORDER_EVENT.PAYMENT_FAIL)).toBe(true)
+    })
+
+    it('should allow CANCEL from payment_pending', () => {
+      expect(isValidTransition(ORDER_STATUS.PAYMENT_PENDING, ORDER_EVENT.CANCEL)).toBe(true)
+    })
+
+    it('should reject CONFIRM from payment_pending', () => {
+      expect(isValidTransition(ORDER_STATUS.PAYMENT_PENDING, ORDER_EVENT.CONFIRM)).toBe(false)
+    })
+  })
+
+  describe('payment_failed state', () => {
+    it('should allow RETRY_PAYMENT from payment_failed', () => {
+      expect(isValidTransition(ORDER_STATUS.PAYMENT_FAILED, ORDER_EVENT.RETRY_PAYMENT)).toBe(true)
+    })
+
+    it('should allow INITIATE_PAYMENT from payment_failed', () => {
+      expect(isValidTransition(ORDER_STATUS.PAYMENT_FAILED, ORDER_EVENT.INITIATE_PAYMENT)).toBe(true)
+    })
+
+    it('should allow CANCEL from payment_failed', () => {
+      expect(isValidTransition(ORDER_STATUS.PAYMENT_FAILED, ORDER_EVENT.CANCEL)).toBe(true)
+    })
+
+    it('should reject CONFIRM from payment_failed', () => {
+      expect(isValidTransition(ORDER_STATUS.PAYMENT_FAILED, ORDER_EVENT.CONFIRM)).toBe(false)
+    })
+  })
+
+  describe('pending → INITIATE_PAYMENT → payment_pending', () => {
+    it('should allow INITIATE_PAYMENT from pending', () => {
+      expect(isValidTransition(ORDER_STATUS.PENDING, ORDER_EVENT.INITIATE_PAYMENT)).toBe(true)
+    })
+
+    it('should still allow CONFIRM from pending (COD orders)', () => {
+      expect(isValidTransition(ORDER_STATUS.PENDING, ORDER_EVENT.CONFIRM)).toBe(true)
+    })
+
+    it('should still allow CANCEL from pending', () => {
+      expect(isValidTransition(ORDER_STATUS.PENDING, ORDER_EVENT.CANCEL)).toBe(true)
+    })
+  })
+})
+
+// ─── transitionOrderPaymentStatus helper ──────────────────────────────────────
+
+describe('transitionOrderPaymentStatus', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('returns failure for null orderId without DB query', async () => {
+    const result = await transitionOrderPaymentStatus(null, 'PAYMENT_SUCCESS')
+    expect(result.success).toBe(false)
+    expect(result.message).toBe('Invalid orderId')
+    expect(mockOrderModel.findById).not.toHaveBeenCalled()
+  })
+
+  it('returns failure for undefined orderId without DB query', async () => {
+    const result = await transitionOrderPaymentStatus(undefined, 'PAYMENT_SUCCESS')
+    expect(result.success).toBe(false)
+    expect(result.message).toBe('Invalid orderId')
+    expect(mockOrderModel.findById).not.toHaveBeenCalled()
+  })
+
+  it('returns failure for empty string orderId without DB query', async () => {
+    const result = await transitionOrderPaymentStatus('', 'PAYMENT_SUCCESS')
+    expect(result.success).toBe(false)
+    expect(result.message).toBe('Invalid orderId')
+    expect(mockOrderModel.findById).not.toHaveBeenCalled()
+  })
+
+  it('returns failure when order is not found', async () => {
+    ;(mockOrderModel.findById as jest.Mock).mockReturnValue({
+      select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) }),
+    })
+
+    const result = await transitionOrderPaymentStatus('nonexistent-id', 'PAYMENT_SUCCESS')
+    expect(result.success).toBe(false)
+    expect(result.message).toBe('Order not found: nonexistent-id')
+    expect(mockOrderModel.findByIdAndUpdate).not.toHaveBeenCalled()
+  })
+
+  it('returns failure for invalid transition', async () => {
+    ;(mockOrderModel.findById as jest.Mock).mockReturnValue({
+      select: jest.fn().mockReturnValue({
+        lean: jest.fn().mockResolvedValue({ status: ORDER_STATUS.DELIVERED }),
+      }),
+    })
+
+    const result = await transitionOrderPaymentStatus('order-id', 'PAYMENT_SUCCESS')
+    expect(result.success).toBe(false)
+    expect(result.message).toContain('Invalid transition from delivered via PAYMENT_SUCCESS')
+    expect(mockOrderModel.findByIdAndUpdate).not.toHaveBeenCalled()
+  })
+
+  it('returns success and newStatus for valid transition', async () => {
+    ;(mockOrderModel.findById as jest.Mock).mockReturnValue({
+      select: jest.fn().mockReturnValue({
+        lean: jest.fn().mockResolvedValue({ status: ORDER_STATUS.PAYMENT_PENDING }),
+      }),
+    })
+    ;(mockOrderModel.findByIdAndUpdate as jest.Mock).mockReturnValue({
+      session: jest.fn().mockResolvedValue(undefined),
+    })
+    // findByIdAndUpdate without session returns a thenable
+    ;(mockOrderModel.findByIdAndUpdate as jest.Mock).mockReturnValue(Promise.resolve(undefined))
+
+    const result = await transitionOrderPaymentStatus('order-id', 'PAYMENT_SUCCESS')
+    expect(result.success).toBe(true)
+    expect(result.newStatus).toBe(ORDER_STATUS.CONFIRMED)
+    expect(mockOrderModel.findByIdAndUpdate).toHaveBeenCalledWith(
+      'order-id',
+      expect.objectContaining({ status: ORDER_STATUS.CONFIRMED }),
+    )
+  })
+
+  it('passes session to findByIdAndUpdate when provided', async () => {
+    ;(mockOrderModel.findById as jest.Mock).mockReturnValue({
+      select: jest.fn().mockReturnValue({
+        lean: jest.fn().mockResolvedValue({ status: ORDER_STATUS.PAYMENT_PENDING }),
+      }),
+    })
+
+    const mockSessionQuery = { session: jest.fn().mockResolvedValue(undefined) }
+    ;(mockOrderModel.findByIdAndUpdate as jest.Mock).mockReturnValue(mockSessionQuery)
+
+    const fakeSession = {} as any
+    await transitionOrderPaymentStatus('order-id', 'PAYMENT_SUCCESS', { session: fakeSession })
+
+    expect(mockSessionQuery.session).toHaveBeenCalledWith(fakeSession)
+  })
+
+  it('merges extraUpdate fields into the update object', async () => {
+    ;(mockOrderModel.findById as jest.Mock).mockReturnValue({
+      select: jest.fn().mockReturnValue({
+        lean: jest.fn().mockResolvedValue({ status: ORDER_STATUS.PAYMENT_PENDING }),
+      }),
+    })
+    ;(mockOrderModel.findByIdAndUpdate as jest.Mock).mockReturnValue(Promise.resolve(undefined))
+
+    const confirmedAt = new Date()
+    await transitionOrderPaymentStatus('order-id', 'PAYMENT_SUCCESS', {
+      extraUpdate: { payment_status: 'paid', confirmed_at: confirmedAt },
+    })
+
+    expect(mockOrderModel.findByIdAndUpdate).toHaveBeenCalledWith(
+      'order-id',
+      expect.objectContaining({
+        status: ORDER_STATUS.CONFIRMED,
+        payment_status: 'paid',
+        confirmed_at: confirmedAt,
+      }),
+    )
   })
 })

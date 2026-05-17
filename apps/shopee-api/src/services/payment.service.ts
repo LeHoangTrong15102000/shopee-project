@@ -9,9 +9,8 @@ import {
   IPaymentSession,
 } from '@database/models/payment-session.model'
 import { IPaymentProvider, PaymentProvider, PaymentStatus } from './payment/payment.interface'
-import { MomoProvider } from './payment/momo.provider'
-import { VnpayProvider } from './payment/vnpay.provider'
 import { emitToUser } from '../socket/utils/emit'
+import { transitionOrderPaymentStatus } from './order/order_state_machine'
 import { SocketEvent } from '../@types/socket.type'
 import { Logger } from '@utils/logger'
 import {
@@ -48,23 +47,21 @@ const APP_BASE_URL = process.env.APP_BASE_URL || 'http://localhost:4000'
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000'
 
 export class PaymentService {
-  private readonly momoProvider: MomoProvider
-  private readonly vnpayProvider: VnpayProvider
+  private readonly providers: Map<PaymentProvider, IPaymentProvider>
 
-  constructor(private readonly paymentRepository: PaymentRepository) {
-    this.momoProvider = new MomoProvider()
-    this.vnpayProvider = new VnpayProvider()
+  constructor(
+    private readonly paymentRepository: PaymentRepository,
+    providers: Map<PaymentProvider, IPaymentProvider>,
+  ) {
+    this.providers = providers
   }
 
   getProvider(method: PaymentProvider): IPaymentProvider {
-    switch (method) {
-      case PaymentProvider.MOMO:
-        return this.momoProvider
-      case PaymentProvider.VNPAY:
-        return this.vnpayProvider
-      default:
-        throw new Error(`Unsupported payment provider: ${method}`)
+    const provider = this.providers.get(method)
+    if (!provider) {
+      throw new Error(`Unsupported payment provider: ${method}`)
     }
+    return provider
   }
 
   /**
@@ -292,10 +289,11 @@ export class PaymentService {
     }
 
     // Update order: set payment_pending status and store payment_url + payment_id
-    await OrderModel.findByIdAndUpdate(orderId, {
-      status: ORDER_STATUS.PAYMENT_PENDING,
-      payment_id: paymentRecord._id,
-      payment_url: paymentUrl,
+    await transitionOrderPaymentStatus(orderId, 'INITIATE_PAYMENT', {
+      extraUpdate: {
+        payment_id: paymentRecord._id,
+        payment_url: paymentUrl,
+      },
     })
 
     Logger.apiInfo('[Payment] Payment initiated', {
@@ -520,9 +518,7 @@ export class PaymentService {
           ? GATEWAY_PAYMENT_STATUS.SUCCESS
           : GATEWAY_PAYMENT_STATUS.FAILED
 
-        const newOrderStatus = ipnResult.success
-          ? ORDER_STATUS.CONFIRMED
-          : ORDER_STATUS.PAYMENT_FAILED
+        const ipnEvent = ipnResult.success ? 'PAYMENT_SUCCESS' : 'PAYMENT_FAIL'
 
         // Track payment outcome metrics
         if (ipnResult.success) {
@@ -538,29 +534,32 @@ export class PaymentService {
           ipnPayload: ipnResult.rawData,
         })
 
-        // Update order status
-        const orderUpdate: Record<string, unknown> = {
-          status: newOrderStatus,
+        // Update order status via state machine helper
+        const extraUpdate: Record<string, unknown> = {
           payment_status: ipnResult.success ? PAYMENT_STATUS.PAID : PAYMENT_STATUS.FAILED,
         }
         if (ipnResult.success) {
-          orderUpdate.confirmed_at = new Date()
+          extraUpdate.confirmed_at = new Date()
         }
 
-        await OrderModel.findByIdAndUpdate(ipnResult.orderId, orderUpdate).session(session)
+        await transitionOrderPaymentStatus(ipnResult.orderId, ipnEvent, {
+          session,
+          extraUpdate,
+        })
 
         // Emit real-time update to order owner
+        const emittedOrderStatus = ipnResult.success ? ORDER_STATUS.CONFIRMED : ORDER_STATUS.PAYMENT_FAILED
         emitToUser(order.user.toString(), SocketEvent.PAYMENT_STATUS_UPDATED, {
           orderId: ipnResult.orderId,
           payment_status: ipnResult.success ? PAYMENT_STATUS.PAID : PAYMENT_STATUS.FAILED,
-          order_status: newOrderStatus,
+          order_status: emittedOrderStatus,
         })
 
         Logger.apiInfo('[Payment] IPN processed', {
           orderId: ipnResult.orderId,
           provider,
           success: ipnResult.success,
-          newOrderStatus,
+          newOrderStatus: emittedOrderStatus,
         })
       })
     } finally {

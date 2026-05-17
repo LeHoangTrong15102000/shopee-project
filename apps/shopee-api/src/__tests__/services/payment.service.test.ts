@@ -49,36 +49,48 @@ jest.mock('../../socket/utils/emit', () => ({
   emitToUser: jest.fn(),
 }))
 
-// Mock MoMo and VNPay providers so no real HTTP calls are made
-jest.mock('@services/payment/momo.provider', () => ({
-  MomoProvider: jest.fn().mockImplementation(() => ({
-    verifyIpn: jest.fn().mockReturnValue(true),
-    parseIpnResult: jest.fn(),
-    createPayment: jest.fn(),
-    queryStatus: jest.fn(),
-  })),
-}))
-
-jest.mock('@services/payment/vnpay.provider', () => ({
-  VnpayProvider: jest.fn().mockImplementation(() => ({
-    verifyIpn: jest.fn().mockReturnValue(true),
-    parseIpnResult: jest.fn(),
-    createPayment: jest.fn(),
-    queryStatus: jest.fn(),
-  })),
+// Mock order state machine helper so payment.service tests don't need real DB
+jest.mock('@services/order/order_state_machine', () => ({
+  transitionOrderPaymentStatus: jest.fn().mockResolvedValue({ success: true, newStatus: 'confirmed' }),
+  isValidTransition: jest.fn().mockReturnValue(true),
+  getValidNextStates: jest.fn().mockReturnValue([]),
+  validateStatusTransition: jest.fn(),
+  validateReturnDeadline: jest.fn(),
+  orderStateMachine: { states: {} },
 }))
 
 import { PaymentService } from '@services/payment.service'
 import { PaymentRepository } from '@repositories/payment.repository'
 import { OrderModel, ORDER_STATUS, PAYMENT_STATUS } from '@database/models/order.model'
 import { GATEWAY_PAYMENT_STATUS } from '@database/models/payment.model'
-import { PaymentProvider } from '@services/payment/payment.interface'
+import { PaymentProvider, IPaymentProvider } from '@services/payment/payment.interface'
 import { emitToUser } from '../../socket/utils/emit'
 import mongoose from 'mongoose'
 
 const MockPaymentRepository = PaymentRepository as jest.MockedClass<typeof PaymentRepository>
 const mockOrderModel = OrderModel as jest.Mocked<typeof OrderModel>
 const mockEmitToUser = emitToUser as jest.Mock
+
+// ─── Mock provider factory ────────────────────────────────────────────────────
+
+function makeMockProvider(): jest.Mocked<IPaymentProvider> {
+  return {
+    verifyIpn: jest.fn().mockReturnValue(true),
+    parseIpnResult: jest.fn(),
+    createPayment: jest.fn(),
+    queryStatus: jest.fn(),
+  }
+}
+
+function makeProviderMap(
+  momoProvider?: jest.Mocked<IPaymentProvider>,
+  vnpayProvider?: jest.Mocked<IPaymentProvider>,
+): Map<PaymentProvider, IPaymentProvider> {
+  return new Map<PaymentProvider, IPaymentProvider>([
+    [PaymentProvider.MOMO, momoProvider ?? makeMockProvider()],
+    [PaymentProvider.VNPAY, vnpayProvider ?? makeMockProvider()],
+  ])
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -113,7 +125,7 @@ describe('PaymentService — getProvider', () => {
     jest.clearAllMocks()
     new MockPaymentRepository()
     repoInstance = MockPaymentRepository.mock.instances[0] as jest.Mocked<PaymentRepository>
-    service = new PaymentService(repoInstance)
+    service = new PaymentService(repoInstance, makeProviderMap())
   })
 
   // A.2 — unsupported provider throws error
@@ -137,12 +149,14 @@ describe('PaymentService — getProvider', () => {
 describe('PaymentService — initiatePayment', () => {
   let service: PaymentService
   let repoInstance: jest.Mocked<PaymentRepository>
+  let mockMomoProvider: jest.Mocked<IPaymentProvider>
 
   beforeEach(() => {
     jest.clearAllMocks()
     new MockPaymentRepository()
     repoInstance = MockPaymentRepository.mock.instances[0] as jest.Mocked<PaymentRepository>
-    service = new PaymentService(repoInstance)
+    mockMomoProvider = makeMockProvider()
+    service = new PaymentService(repoInstance, makeProviderMap(mockMomoProvider))
   })
 
   // A.3 — order not found
@@ -171,9 +185,8 @@ describe('PaymentService — initiatePayment', () => {
     repoInstance.updateById = jest.fn().mockResolvedValue(undefined)
 
     // Mock provider to throw a timeout error
-    const momoProvider = service.getProvider(PaymentProvider.MOMO) as any
     const timeoutError = Object.assign(new Error('timeout'), { code: 'ECONNABORTED' })
-    momoProvider.createPayment = jest.fn().mockRejectedValue(timeoutError)
+    mockMomoProvider.createPayment = jest.fn().mockRejectedValue(timeoutError)
 
     await expect(
       service.initiatePayment(orderId, PaymentProvider.MOMO, '127.0.0.1'),
@@ -192,12 +205,14 @@ describe('PaymentService — initiatePayment', () => {
 describe('PaymentService — retryPayment', () => {
   let service: PaymentService
   let repoInstance: jest.Mocked<PaymentRepository>
+  let mockMomoProvider: jest.Mocked<IPaymentProvider>
 
   beforeEach(() => {
     jest.clearAllMocks()
     new MockPaymentRepository()
     repoInstance = MockPaymentRepository.mock.instances[0] as jest.Mocked<PaymentRepository>
-    service = new PaymentService(repoInstance)
+    mockMomoProvider = makeMockProvider()
+    service = new PaymentService(repoInstance, makeProviderMap(mockMomoProvider))
   })
 
   // A.5 — reject retry when payment already SUCCESS
@@ -230,8 +245,7 @@ describe('PaymentService — retryPayment', () => {
     repoInstance.create = jest.fn().mockResolvedValue(newPaymentRecord)
     repoInstance.updateById = jest.fn().mockResolvedValue(undefined)
 
-    const momoProvider = service.getProvider(PaymentProvider.MOMO) as any
-    momoProvider.createPayment = jest.fn().mockResolvedValue({
+    mockMomoProvider.createPayment = jest.fn().mockResolvedValue({
       paymentUrl: 'https://momo.vn/pay/new-url',
       requestId: 'new-req-id',
       transactionId: 'new-txn-id',
@@ -256,7 +270,7 @@ describe('PaymentService — getPaymentStatus', () => {
     jest.clearAllMocks()
     new MockPaymentRepository()
     repoInstance = MockPaymentRepository.mock.instances[0] as jest.Mocked<PaymentRepository>
-    service = new PaymentService(repoInstance)
+    service = new PaymentService(repoInstance, makeProviderMap())
   })
 
   // A.7 — status PENDING (not expired)
@@ -339,6 +353,7 @@ describe('PaymentService — getPaymentStatus', () => {
 describe('PaymentService — handleIpn idempotency', () => {
   let service: PaymentService
   let repoInstance: jest.Mocked<PaymentRepository>
+  let mockMomoProvider: jest.Mocked<IPaymentProvider>
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -346,8 +361,8 @@ describe('PaymentService — handleIpn idempotency', () => {
     // Instantiate the mocked repository
     new MockPaymentRepository()
     repoInstance = MockPaymentRepository.mock.instances[0] as jest.Mocked<PaymentRepository>
-
-    service = new PaymentService(repoInstance)
+    mockMomoProvider = makeMockProvider()
+    service = new PaymentService(repoInstance, makeProviderMap(mockMomoProvider))
   })
 
   it('skips processing and does NOT update order when payment is already SUCCESS (duplicate IPN)', async () => {
@@ -357,8 +372,7 @@ describe('PaymentService — handleIpn idempotency', () => {
     )
 
     // Provide a valid IPN payload for MoMo
-    const momoProvider = service.getProvider(PaymentProvider.MOMO) as any
-    momoProvider.parseIpnResult = jest.fn().mockReturnValue({
+    mockMomoProvider.parseIpnResult = jest.fn().mockReturnValue({
       orderId: 'bbbbbbbbbbbbbbbbbbbbbbbb',
       transactionId: 'txn_001',
       amount: 150000,
@@ -378,7 +392,11 @@ describe('PaymentService — handleIpn idempotency', () => {
     expect(repoInstance.updateById).not.toHaveBeenCalled()
   })
 
-  it('processes IPN and updates order to CONFIRMED when payment succeeds', async () => {
+  it('processes IPN and calls transitionOrderPaymentStatus with PAYMENT_SUCCESS when payment succeeds', async () => {
+    const { transitionOrderPaymentStatus } = require('@services/order/order_state_machine')
+    const mockTransition = transitionOrderPaymentStatus as jest.Mock
+    mockTransition.mockResolvedValue({ success: true, newStatus: ORDER_STATUS.CONFIRMED })
+
     repoInstance.findLatestByOrderId = jest.fn().mockResolvedValue(
       makePaymentRecord({ status: GATEWAY_PAYMENT_STATUS.PENDING }),
     )
@@ -387,10 +405,8 @@ describe('PaymentService — handleIpn idempotency', () => {
     const mockLean = jest.fn().mockResolvedValue(makeOrder())
     const mockSession = jest.fn().mockReturnValue({ lean: mockLean })
     ;(mockOrderModel.findById as jest.Mock).mockReturnValue({ session: mockSession })
-    ;(mockOrderModel.findByIdAndUpdate as jest.Mock).mockReturnValue({ session: jest.fn() })
 
-    const momoProvider = service.getProvider(PaymentProvider.MOMO) as any
-    momoProvider.parseIpnResult = jest.fn().mockReturnValue({
+    mockMomoProvider.parseIpnResult = jest.fn().mockReturnValue({
       orderId: 'bbbbbbbbbbbbbbbbbbbbbbbb',
       transactionId: 'txn_002',
       amount: 150000,
@@ -406,9 +422,12 @@ describe('PaymentService — handleIpn idempotency', () => {
       expect.anything(),
       expect.objectContaining({ status: GATEWAY_PAYMENT_STATUS.SUCCESS }),
     )
-    expect(mockOrderModel.findByIdAndUpdate).toHaveBeenCalledWith(
+    expect(mockTransition).toHaveBeenCalledWith(
       'bbbbbbbbbbbbbbbbbbbbbbbb',
-      expect.objectContaining({ status: ORDER_STATUS.CONFIRMED }),
+      'PAYMENT_SUCCESS',
+      expect.objectContaining({
+        extraUpdate: expect.objectContaining({ payment_status: PAYMENT_STATUS.PAID }),
+      }),
     )
     expect(mockEmitToUser).toHaveBeenCalledWith(
       'user_001',
@@ -418,8 +437,7 @@ describe('PaymentService — handleIpn idempotency', () => {
   })
 
   it('rejects IPN with invalid signature and throws', async () => {
-    const momoProvider = service.getProvider(PaymentProvider.MOMO) as any
-    momoProvider.verifyIpn = jest.fn().mockReturnValue(false)
+    mockMomoProvider.verifyIpn = jest.fn().mockReturnValue(false)
 
     await expect(
       service.handleIpn(PaymentProvider.MOMO, { orderId: 'order_tampered' }),
@@ -428,7 +446,11 @@ describe('PaymentService — handleIpn idempotency', () => {
     expect(repoInstance.findLatestByOrderId).not.toHaveBeenCalled()
   })
 
-  it('marks payment FAILED and does NOT update order to CONFIRMED when IPN reports failure', async () => {
+  it('calls transitionOrderPaymentStatus with PAYMENT_FAIL when IPN reports failure', async () => {
+    const { transitionOrderPaymentStatus } = require('@services/order/order_state_machine')
+    const mockTransition = transitionOrderPaymentStatus as jest.Mock
+    mockTransition.mockResolvedValue({ success: true, newStatus: ORDER_STATUS.PAYMENT_FAILED })
+
     repoInstance.findLatestByOrderId = jest.fn().mockResolvedValue(
       makePaymentRecord({ status: GATEWAY_PAYMENT_STATUS.PENDING }),
     )
@@ -437,10 +459,8 @@ describe('PaymentService — handleIpn idempotency', () => {
     const mockLean = jest.fn().mockResolvedValue(makeOrder())
     const mockSession = jest.fn().mockReturnValue({ lean: mockLean })
     ;(mockOrderModel.findById as jest.Mock).mockReturnValue({ session: mockSession })
-    ;(mockOrderModel.findByIdAndUpdate as jest.Mock).mockReturnValue({ session: jest.fn() })
 
-    const momoProvider = service.getProvider(PaymentProvider.MOMO) as any
-    momoProvider.parseIpnResult = jest.fn().mockReturnValue({
+    mockMomoProvider.parseIpnResult = jest.fn().mockReturnValue({
       orderId: 'bbbbbbbbbbbbbbbbbbbbbbbb',
       transactionId: 'txn_003',
       amount: 150000,
@@ -456,9 +476,12 @@ describe('PaymentService — handleIpn idempotency', () => {
       expect.anything(),
       expect.objectContaining({ status: GATEWAY_PAYMENT_STATUS.FAILED }),
     )
-    expect(mockOrderModel.findByIdAndUpdate).toHaveBeenCalledWith(
+    expect(mockTransition).toHaveBeenCalledWith(
       'bbbbbbbbbbbbbbbbbbbbbbbb',
-      expect.objectContaining({ status: ORDER_STATUS.PAYMENT_FAILED }),
+      'PAYMENT_FAIL',
+      expect.objectContaining({
+        extraUpdate: expect.objectContaining({ payment_status: PAYMENT_STATUS.FAILED }),
+      }),
     )
   })
 })

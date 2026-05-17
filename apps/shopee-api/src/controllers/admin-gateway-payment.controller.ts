@@ -6,6 +6,7 @@ import { GatewayPaymentStatusType } from '@database/models/payment.model'
 import { PaymentProvider } from '@services/payment/payment.interface'
 import { Logger } from '@utils/logger'
 import { v4 as uuidv4 } from 'uuid'
+import { transitionOrderPaymentStatus } from '@services/order/order_state_machine'
 
 /**
  * GET /admin/payments
@@ -79,7 +80,7 @@ export const adminReconcilePayment = async (req: Request, res: Response) => {
   })
 
   const { GATEWAY_PAYMENT_STATUS } = await import('@database/models/payment.model')
-  const { ORDER_STATUS, PAYMENT_STATUS, OrderModel } = await import('@database/models/order.model')
+  const { PAYMENT_STATUS } = await import('@database/models/order.model')
 
   let newStatus: GatewayPaymentStatusType
   switch (remoteStatus) {
@@ -100,15 +101,17 @@ export const adminReconcilePayment = async (req: Request, res: Response) => {
 
   // Sync order status if payment resolved
   if (newStatus === GATEWAY_PAYMENT_STATUS.SUCCESS) {
-    await OrderModel.findByIdAndUpdate(payment.orderId, {
-      status: ORDER_STATUS.CONFIRMED,
-      payment_status: PAYMENT_STATUS.PAID,
-      confirmed_at: new Date(),
+    await transitionOrderPaymentStatus(payment.orderId?.toString(), 'PAYMENT_SUCCESS', {
+      extraUpdate: {
+        payment_status: PAYMENT_STATUS.PAID,
+        confirmed_at: new Date(),
+      },
     })
   } else if (newStatus === GATEWAY_PAYMENT_STATUS.FAILED) {
-    await OrderModel.findByIdAndUpdate(payment.orderId, {
-      status: ORDER_STATUS.PAYMENT_FAILED,
-      payment_status: PAYMENT_STATUS.FAILED,
+    await transitionOrderPaymentStatus(payment.orderId?.toString(), 'PAYMENT_FAIL', {
+      extraUpdate: {
+        payment_status: PAYMENT_STATUS.FAILED,
+      },
     })
   }
 
@@ -142,7 +145,7 @@ export const adminManualConfirmPayment = async (req: Request, res: Response) => 
   }
 
   const { GATEWAY_PAYMENT_STATUS } = await import('@database/models/payment.model')
-  const { ORDER_STATUS, PAYMENT_STATUS, OrderModel } = await import('@database/models/order.model')
+  const { PAYMENT_STATUS } = await import('@database/models/order.model')
 
   if (payment.status === GATEWAY_PAYMENT_STATUS.SUCCESS) {
     throw new ErrorHandler(STATUS.BAD_REQUEST, 'Payment is already confirmed')
@@ -169,11 +172,12 @@ export const adminManualConfirmPayment = async (req: Request, res: Response) => 
     },
   })
 
-  // Update order to confirmed
-  await OrderModel.findByIdAndUpdate(payment.orderId, {
-    status: ORDER_STATUS.CONFIRMED,
-    payment_status: PAYMENT_STATUS.PAID,
-    confirmed_at: new Date(),
+  // Update order to confirmed via state machine helper
+  await transitionOrderPaymentStatus(payment.orderId?.toString(), 'PAYMENT_SUCCESS', {
+    extraUpdate: {
+      payment_status: PAYMENT_STATUS.PAID,
+      confirmed_at: new Date(),
+    },
   })
 
   return responseSuccess(res, {

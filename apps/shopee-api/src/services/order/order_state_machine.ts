@@ -2,16 +2,19 @@ import { createMachine } from 'xstate'
 import { ORDER_STATUS } from '@database/models/order.model'
 import {
   ORDER_EVENT,
+  EVENT_TO_STATUS,
   STATUS_TO_EVENT,
   ROLE_PERMISSIONS,
   RETURN_DEADLINE_DAYS,
   OrderEventType,
 } from './order_constants'
+import { OrderModel } from '@database/models/order.model'
+import mongoose from 'mongoose'
 
 /**
  * XState v5 state machine for order lifecycle
- * States: pending, confirmed, processing, shipping, delivered, cancelled, returned
- * Events: CONFIRM, PROCESS, SHIP, DELIVER, CANCEL, RETURN
+ * States: pending, payment_pending, payment_failed, confirmed, processing, shipping, delivered, cancelled, returned
+ * Events: CONFIRM, PROCESS, SHIP, DELIVER, CANCEL, RETURN, INITIATE_PAYMENT, PAYMENT_SUCCESS, PAYMENT_FAIL, RETRY_PAYMENT
  */
 export const orderStateMachine = createMachine({
   id: 'order',
@@ -20,6 +23,21 @@ export const orderStateMachine = createMachine({
     [ORDER_STATUS.PENDING]: {
       on: {
         [ORDER_EVENT.CONFIRM]: ORDER_STATUS.CONFIRMED,
+        [ORDER_EVENT.CANCEL]: ORDER_STATUS.CANCELLED,
+        [ORDER_EVENT.INITIATE_PAYMENT]: ORDER_STATUS.PAYMENT_PENDING,
+      },
+    },
+    [ORDER_STATUS.PAYMENT_PENDING]: {
+      on: {
+        [ORDER_EVENT.PAYMENT_SUCCESS]: ORDER_STATUS.CONFIRMED,
+        [ORDER_EVENT.PAYMENT_FAIL]: ORDER_STATUS.PAYMENT_FAILED,
+        [ORDER_EVENT.CANCEL]: ORDER_STATUS.CANCELLED,
+      },
+    },
+    [ORDER_STATUS.PAYMENT_FAILED]: {
+      on: {
+        [ORDER_EVENT.RETRY_PAYMENT]: ORDER_STATUS.PAYMENT_PENDING,
+        [ORDER_EVENT.INITIATE_PAYMENT]: ORDER_STATUS.PAYMENT_PENDING,
         [ORDER_EVENT.CANCEL]: ORDER_STATUS.CANCELLED,
       },
     },
@@ -145,4 +163,60 @@ export function validateReturnDeadline(
   }
 
   return { valid: true }
+}
+
+export interface TransitionOrderPaymentStatusOptions {
+  session?: mongoose.ClientSession
+  extraUpdate?: Record<string, unknown>
+}
+
+export interface TransitionOrderPaymentStatusResult {
+  success: boolean
+  newStatus?: string
+  message?: string
+}
+
+/**
+ * Validate and apply a payment state transition for an order.
+ * Reads current order status, validates via isValidTransition(), then writes to DB.
+ * Returns { success: true, newStatus } on valid transition.
+ * Returns { success: false, message } on invalid transition or missing order — never throws.
+ */
+export async function transitionOrderPaymentStatus(
+  orderId: string | null | undefined,
+  event: string,
+  options?: TransitionOrderPaymentStatusOptions,
+): Promise<TransitionOrderPaymentStatusResult> {
+  // Guard: null/undefined/empty orderId — skip DB query
+  if (!orderId || orderId.trim() === '') {
+    return { success: false, message: 'Invalid orderId' }
+  }
+
+  const order = await OrderModel.findById(orderId).select('status').lean()
+  if (!order) {
+    return { success: false, message: `Order not found: ${orderId}` }
+  }
+
+  const currentStatus = order.status as string
+  if (!isValidTransition(currentStatus, event)) {
+    return {
+      success: false,
+      message: `Invalid transition from ${currentStatus} via ${event}`,
+    }
+  }
+
+  const newStatus = EVENT_TO_STATUS[event as OrderEventType]
+
+  const updateFields: Record<string, unknown> = {
+    status: newStatus,
+    ...(options?.extraUpdate ?? {}),
+  }
+
+  const query = OrderModel.findByIdAndUpdate(orderId, updateFields)
+  if (options?.session) {
+    query.session(options.session)
+  }
+  await query
+
+  return { success: true, newStatus }
 }

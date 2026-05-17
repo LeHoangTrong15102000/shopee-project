@@ -30,7 +30,9 @@ describe('PaymentModel — schema validation', () => {
 
   // D.2 — required fields
   describe('required fields', () => {
-    it('should fail validation when orderId is missing', async () => {
+    // orderId is intentionally optional (supports session-based payments without an order).
+    // Verified optional in commit be77ee7 (May 13). Test confirms validation passes without it.
+    it('should pass validation when orderId is omitted (orderId is optional)', async () => {
       const payment = new PaymentModel({
         provider: PAYMENT_PROVIDER.MOMO,
         amount: 100000,
@@ -39,7 +41,7 @@ describe('PaymentModel — schema validation', () => {
         idempotencyKey: 'key-001',
       })
 
-      await expect(payment.validate()).rejects.toThrow()
+      await expect(payment.validate()).resolves.toBeUndefined()
     })
 
     it('should fail validation when provider is missing', async () => {

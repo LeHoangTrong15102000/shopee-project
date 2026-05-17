@@ -42,6 +42,9 @@ import { PasswordResetService } from '@services/password-reset.service'
 import { PriceService } from '@services/price.service'
 import { StripeService } from '@services/stripe.service'
 import { PaymentService } from '@services/payment.service'
+import { MomoProvider } from '@services/payment/momo.provider'
+import { VnpayProvider } from '@services/payment/vnpay.provider'
+import { PaymentProvider } from '@services/payment/payment.interface'
 
 // Jobs
 import { PaymentReconciliationJob } from './jobs/payment-reconciliation.job'
@@ -91,7 +94,13 @@ const checkinService = new CheckInService()
 const passwordResetService = new PasswordResetService(userRepository, authRepository)
 const priceService = new PriceService()
 const stripeService = new StripeService()
-const paymentService = new PaymentService(paymentRepository)
+const momoProvider = new MomoProvider()
+const vnpayProvider = new VnpayProvider()
+const paymentProviders = new Map([
+  [PaymentProvider.MOMO, momoProvider],
+  [PaymentProvider.VNPAY, vnpayProvider],
+])
+const paymentService = new PaymentService(paymentRepository, paymentProviders)
 
 // Job instances
 const paymentReconciliationJob = new PaymentReconciliationJob(paymentService)

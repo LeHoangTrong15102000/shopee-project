@@ -1,8 +1,9 @@
 {
   "title": "Nhật ký hoạt động",
-  "description": "Theo dõi hành động quản trị",
+  "description": "Theo dõi hành động quản trị. Nhật ký được lưu trữ trong 90 ngày.",
   "actions": {
-    "clearLog": "Xóa nhật ký"
+    "clearLog": "Xóa nhật ký",
+    "viewDetail": "Xem chi tiết"
   },
   "empty": {
     "title": "Không có hoạt động",
@@ -11,5 +12,59 @@
   "confirm": {
     "title": "Xóa nhật ký hoạt động",
     "description": "Thao tác này sẽ xóa vĩnh viễn tất cả bản ghi nhật ký."
-  }
+  },
+  "columns": {
+    "timestamp": "Thời gian",
+    "action": "Hành động",
+    "resource": "Tài nguyên",
+    "actor": "Người thực hiện",
+    "ip": "Địa chỉ IP",
+    "status": "Trạng thái"
+  },
+  "filters": {
+    "action": "Hành động",
+    "resource": "Tài nguyên",
+    "actorId": "ID người thực hiện",
+    "dateFrom": "Từ ngày",
+    "dateTo": "Đến ngày",
+    "clearFilters": "Xóa bộ lọc"
+  },
+  "tabs": {
+    "all": "Tất cả",
+    "success": "Thành công",
+    "failed": "Thất bại"
+  },
+  "detail": {
+    "back": "Quay lại",
+    "id": "ID",
+    "action": "Hành động",
+    "resource": "Tài nguyên",
+    "resourceId": "ID tài nguyên",
+    "actor": "Người thực hiện",
+    "actorId": "ID người thực hiện",
+    "actorRoles": "Vai trò",
+    "ip": "Địa chỉ IP",
+    "userAgent": "User Agent",
+    "status": "Trạng thái",
+    "timestamp": "Thời gian",
+    "errorMessage": "Thông báo lỗi",
+    "diffTabs": {
+      "before": "Trước",
+      "after": "Sau",
+      "changes": "Thay đổi"
+    },
+    "noDiff": "Không có thay đổi được ghi lại"
+  },
+  "diffKinds": {
+    "N": "Thêm mới",
+    "D": "Đã xóa",
+    "E": "Đã thay đổi",
+    "A": "Thay đổi mảng"
+  },
+  "export": {
+    "exportCsv": "Xuất CSV"
+  },
+  "retention": "Nhật ký được lưu trữ trong 90 ngày.",
+  "error": "Không thể tải nhật ký kiểm tra",
+  "notFound": "Không tìm thấy bản ghi nhật ký"
 }

@@ -27,6 +27,7 @@ import {
   Search,
   Heart,
   MessagesSquare,
+  ScrollText,
 } from 'lucide-react'
 import { ROUTES } from 'src/constants/routes'
 import {
@@ -85,6 +86,7 @@ const navSections = [
       { titleKey: 'menu.priceAlerts', href: ROUTES.PRICE_ALERTS, icon: TrendingUp },
       { titleKey: 'menu.checkin', href: ROUTES.CHECKIN, icon: CheckSquare },
       { titleKey: 'menu.systemHealth', href: ROUTES.SYSTEM_HEALTH, icon: Activity },
+      { titleKey: 'menu.activityLog', href: ROUTES.AUDIT_LOG, icon: ScrollText },
     ],
   },
 ]
@@ -114,6 +116,7 @@ const routePrefetchMap: Record<string, () => Promise<unknown>> = {
   [ROUTES.SEARCH_ANALYTICS]: () => import('src/pages/SearchAnalytics/SearchAnalyticsPage'),
   [ROUTES.WISHLIST_ANALYTICS]: () => import('src/pages/WishlistAnalytics/WishlistAnalyticsPage'),
   [ROUTES.SHOP_CHAT]: () => import('src/pages/ShopChat/ShopChatListPage'),
+  [ROUTES.AUDIT_LOG]: () => import('src/pages/AuditLog/AuditLogListPage'),
 }
 
 const prefetchedRoutes = new Set<string>()

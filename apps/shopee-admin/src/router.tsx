@@ -42,6 +42,8 @@ const SearchAnalyticsPage = lazy(() => import('src/pages/SearchAnalytics/SearchA
 const WishlistAnalyticsPage = lazy(() => import('src/pages/WishlistAnalytics/WishlistAnalyticsPage'))
 const ShopChatListPage = lazy(() => import('src/pages/ShopChat/ShopChatListPage'))
 const ShopChatDetailPage = lazy(() => import('src/pages/ShopChat/ShopChatDetailPage'))
+const AuditLogListPage = lazy(() => import('src/pages/AuditLog/AuditLogListPage'))
+const AuditLogDetailPage = lazy(() => import('src/pages/AuditLog/AuditLogDetailPage'))
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
@@ -326,6 +328,22 @@ const protectedRoutes: RouteObject[] = [
     element: (
       <SuspenseWrapper>
         <ShopChatDetailPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: ROUTES.AUDIT_LOG.slice(1),
+    element: (
+      <SuspenseWrapper>
+        <AuditLogListPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: ROUTES.AUDIT_LOG_DETAIL.slice(1),
+    element: (
+      <SuspenseWrapper>
+        <AuditLogDetailPage />
       </SuspenseWrapper>
     ),
   },

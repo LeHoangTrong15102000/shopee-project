@@ -18,6 +18,7 @@ import shippingHandlers from './shipping.msw'
 import paymentsHandlers from './payments.msw'
 import checkinHandlers from './checkin.msw'
 import priceAlertsHandlers from './price-alerts.msw'
+import auditLogHandlers from './audit-log.msw'
 
 export const handlers = [
   ...authHandlers,
@@ -40,4 +41,5 @@ export const handlers = [
   ...paymentsHandlers,
   ...checkinHandlers,
   ...priceAlertsHandlers,
+  ...auditLogHandlers,
 ]

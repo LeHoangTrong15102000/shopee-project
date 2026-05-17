@@ -51,6 +51,9 @@ export const ROUTES = {
 
   SHOP_CHAT: '/shop-chat',
   SHOP_CHAT_DETAIL: '/shop-chat/:id',
+
+  AUDIT_LOG: '/audit-log',
+  AUDIT_LOG_DETAIL: '/audit-log/:id',
 } as const
 
 export type RouteKey = keyof typeof ROUTES

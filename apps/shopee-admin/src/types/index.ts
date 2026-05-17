@@ -64,3 +64,13 @@ export type {
   ChatbotPerformanceData,
 } from './analytics'
 export type { ImportResult, ImportStats } from './import'
+export type {
+  AuditLogActor,
+  AuditLogStatus,
+  AuditLogDiffKind,
+  AuditLogDiffEntry,
+  AuditLogItem,
+  AuditLogDetail,
+  AuditLogListParams,
+  AuditLogListResponse,
+} from './audit-log'

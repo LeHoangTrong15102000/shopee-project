@@ -1,8 +1,9 @@
 {
   "title": "Activity Log",
-  "description": "Track admin actions",
+  "description": "Track admin actions. Logs are retained for 90 days.",
   "actions": {
-    "clearLog": "Clear Log"
+    "clearLog": "Clear Log",
+    "viewDetail": "View Detail"
   },
   "empty": {
     "title": "No activity",
@@ -11,5 +12,59 @@
   "confirm": {
     "title": "Clear Activity Log",
     "description": "This will permanently delete all log entries."
-  }
+  },
+  "columns": {
+    "timestamp": "Timestamp",
+    "action": "Action",
+    "resource": "Resource",
+    "actor": "Actor",
+    "ip": "IP Address",
+    "status": "Status"
+  },
+  "filters": {
+    "action": "Action",
+    "resource": "Resource",
+    "actorId": "Actor ID",
+    "dateFrom": "From",
+    "dateTo": "To",
+    "clearFilters": "Clear Filters"
+  },
+  "tabs": {
+    "all": "All",
+    "success": "Success",
+    "failed": "Failed"
+  },
+  "detail": {
+    "back": "Back",
+    "id": "ID",
+    "action": "Action",
+    "resource": "Resource",
+    "resourceId": "Resource ID",
+    "actor": "Actor",
+    "actorId": "Actor ID",
+    "actorRoles": "Roles",
+    "ip": "IP Address",
+    "userAgent": "User Agent",
+    "status": "Status",
+    "timestamp": "Timestamp",
+    "errorMessage": "Error Message",
+    "diffTabs": {
+      "before": "Before",
+      "after": "After",
+      "changes": "Changes"
+    },
+    "noDiff": "No changes recorded"
+  },
+  "diffKinds": {
+    "N": "Added",
+    "D": "Removed",
+    "E": "Changed",
+    "A": "Array Change"
+  },
+  "export": {
+    "exportCsv": "Export CSV"
+  },
+  "retention": "Logs are retained for 90 days.",
+  "error": "Failed to load audit logs",
+  "notFound": "Audit log entry not found"
 }

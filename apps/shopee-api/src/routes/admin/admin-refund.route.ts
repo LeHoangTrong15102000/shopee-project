@@ -3,7 +3,11 @@ import authMiddleware from '@middleware/auth.middleware'
 import * as adminRefundController from '@controllers/admin-refund.controller'
 import { asyncHandler } from '@utils/async-handler'
 import { validate } from '@schemas/index'
-import { adminApproveRefundSchema, adminRejectRefundSchema } from '@schemas/refund.schema'
+import {
+  adminApproveRefundSchema,
+  adminRejectRefundSchema,
+  adminRetryRefundSchema,
+} from '@schemas/refund.schema'
 
 export const adminRefundRouter = Router()
 
@@ -58,4 +62,13 @@ adminRefundRouter.put(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   asyncHandler(adminRefundController.completeRefund),
+)
+
+// PUT /admin/refunds/:id/retry — retry a failed gateway refund
+adminRefundRouter.put(
+  '/:id/retry',
+  authMiddleware.verifyAccessToken,
+  authMiddleware.verifyAdmin,
+  validate(adminRetryRefundSchema),
+  asyncHandler(adminRefundController.retryGatewayRefund),
 )

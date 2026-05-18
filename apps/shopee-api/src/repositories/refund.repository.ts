@@ -82,7 +82,9 @@ export class RefundRepository implements IRefundRepository {
   }
 
   async findByOrderId(orderId: string | Types.ObjectId): Promise<IRefund | null> {
-    return RefundModel.findOne({ order_id: new Types.ObjectId(orderId.toString()) }).lean<IRefund | null>()
+    return RefundModel.findOne({
+      order_id: new Types.ObjectId(orderId.toString()),
+    }).lean<IRefund | null>()
   }
 
   async findByUserId(
@@ -130,5 +132,23 @@ export class RefundRepository implements IRefundRepository {
       .populate('order_id')
       .populate('user_id', '-password -password_reset_token -password_reset_expires')
       .lean<IRefund | null>()
+  }
+
+  async findProcessingByProvider(paymentMethod: string): Promise<IRefund[]> {
+    // Aggregate: match PROCESSING refunds, join with orders, filter by payment_method
+    return RefundModel.aggregate([
+      { $match: { status: REFUND_STATUS.PROCESSING } },
+      {
+        $lookup: {
+          from: 'orders',
+          localField: 'order_id',
+          foreignField: '_id',
+          as: 'order',
+        },
+      },
+      { $unwind: '$order' },
+      { $match: { 'order.payment_method': paymentMethod } },
+      { $project: { order: 0 } }, // remove joined order from result
+    ])
   }
 }

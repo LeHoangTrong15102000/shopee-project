@@ -7,6 +7,7 @@ import Stripe from 'stripe'
 type StripeInstance = InstanceType<typeof Stripe>
 type PaymentIntentType = Awaited<ReturnType<StripeInstance['paymentIntents']['retrieve']>>
 type EventType = ReturnType<StripeInstance['webhooks']['constructEvent']>
+type RefundType = Awaited<ReturnType<StripeInstance['refunds']['retrieve']>>
 
 export class StripeService {
   private readonly stripe: StripeInstance
@@ -61,5 +62,36 @@ export class StripeService {
 
   async cancelPaymentIntent(paymentIntentId: string): Promise<PaymentIntentType> {
     return this.stripe.paymentIntents.cancel(paymentIntentId)
+  }
+
+  /**
+   * Create a Stripe refund for a PaymentIntent.
+   * VND is a zero-decimal currency — pass amount as-is (e.g., 150000 for 150,000 VND).
+   */
+  async createRefund(
+    paymentIntentId: string,
+    amount: number,
+    metadata?: Record<string, string>,
+  ): Promise<{ refundId: string; status: string }> {
+    const refund = await this.stripe.refunds.create(
+      {
+        payment_intent: paymentIntentId,
+        amount,
+        reason: 'requested_by_customer',
+        metadata,
+      },
+      {
+        idempotencyKey: metadata?.idempotencyKey || `refund-${paymentIntentId}-${Date.now()}`,
+      },
+    )
+    return { refundId: refund.id, status: refund.status! }
+  }
+
+  /**
+   * Retrieve a Stripe refund by its ID.
+   */
+  async retrieveRefund(refundId: string): Promise<{ status: string; failureReason?: string }> {
+    const refund: RefundType = await this.stripe.refunds.retrieve(refundId)
+    return { status: refund.status!, failureReason: (refund as any).failure_reason || undefined }
   }
 }

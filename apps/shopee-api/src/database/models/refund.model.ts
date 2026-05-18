@@ -39,6 +39,14 @@ export interface IRefund {
   rejection_reason?: string
   processed_at?: Date
   completed_at?: Date
+  /** Stripe refund ID (re_xxx) or MoMo transId — set after gateway call succeeds */
+  gateway_refund_id?: string
+  /** Determined by payment_method: auto for credit_card/momo, manual for others */
+  refund_method?: 'auto' | 'manual'
+  /** Gateway error message stored when gateway call fails */
+  failure_reason?: string
+  /** Number of gateway call attempts — incremented on each failure */
+  retry_count?: number
   createdAt?: Date
   updatedAt?: Date
 }
@@ -74,6 +82,10 @@ const RefundSchema = new Schema<IRefund>(
     rejection_reason: { type: String },
     processed_at: { type: Date },
     completed_at: { type: Date },
+    gateway_refund_id: { type: String },
+    refund_method: { type: String, enum: ['auto', 'manual'], default: 'manual' },
+    failure_reason: { type: String },
+    retry_count: { type: Number, default: 0 },
   },
   {
     timestamps: true,
@@ -85,5 +97,6 @@ RefundSchema.index({ order_id: 1 }, { unique: true })
 RefundSchema.index({ user_id: 1 })
 RefundSchema.index({ status: 1 })
 RefundSchema.index({ createdAt: -1 })
+RefundSchema.index({ gateway_refund_id: 1 }, { sparse: true })
 
 export const RefundModel = mongoose.model<IRefund>('refunds', RefundSchema)

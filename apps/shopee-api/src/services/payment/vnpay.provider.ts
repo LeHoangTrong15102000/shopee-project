@@ -6,6 +6,8 @@ import {
   IpnResult,
   QueryStatusParams,
   PaymentStatus,
+  RefundParams,
+  RefundResult,
 } from './payment.interface'
 import { Logger } from '@utils/logger'
 
@@ -51,7 +53,7 @@ export class VnpayProvider implements IPaymentProvider {
       vnp_Amount: amount,
       vnp_IpAddr: clientIp,
       vnp_ReturnUrl: returnUrl,
-      vnp_TxnRef: requestId,   // unique transaction ref (max 34 chars)
+      vnp_TxnRef: requestId, // unique transaction ref (max 34 chars)
       vnp_OrderInfo: orderInfo.substring(0, 255),
     })
 
@@ -94,7 +96,8 @@ export class VnpayProvider implements IPaymentProvider {
       amount,
       success: responseCode === '00',
       resultCode: responseCode,
-      message: responseCode === '00' ? 'Giao dịch thành công' : `Giao dịch thất bại (${responseCode})`,
+      message:
+        responseCode === '00' ? 'Giao dịch thành công' : `Giao dịch thất bại (${responseCode})`,
       rawData: payload,
     }
   }
@@ -123,6 +126,28 @@ export class VnpayProvider implements IPaymentProvider {
     } catch (err) {
       Logger.apiError('[VNPay] Query status failed', { orderId, error: err })
       return PaymentStatus.PENDING
+    }
+  }
+
+  /**
+   * VNPay programmatic refund is not available by default.
+   * Merchants must contact VNPay to activate the refund API.
+   * Returns an unsupported result so the caller falls back to manual processing.
+   */
+  async refund(_params: RefundParams): Promise<RefundResult> {
+    return {
+      success: false,
+      resultCode: 'UNSUPPORTED',
+      message:
+        'VNPay programmatic refund requires merchant activation. Process manually via VNPay portal.',
+    }
+  }
+
+  async queryRefundStatus(_params: { orderId: string; requestId: string }): Promise<RefundResult> {
+    return {
+      success: false,
+      resultCode: 'UNSUPPORTED',
+      message: 'VNPay refund status query is not supported.',
     }
   }
 }

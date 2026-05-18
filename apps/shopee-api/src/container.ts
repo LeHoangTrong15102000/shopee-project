@@ -59,6 +59,7 @@ import { RefundService } from '@services/refund.service'
 
 // Jobs
 import { PaymentReconciliationJob } from './jobs/payment-reconciliation.job'
+import { RefundStatusPollJob } from './jobs/refund-status-poll.job'
 import { FlashSaleScheduler } from './services/flash-sale.scheduler'
 
 // Repository instances (singletons)
@@ -123,10 +124,22 @@ const sessionService = new SessionService(sessionRepository)
 const loginHistoryService = new LoginHistoryService(loginHistoryRepository)
 const auditLogService = new AuditLogService(auditLogRepository)
 const flashSaleService = new FlashSaleService(flashSaleRepository)
-const refundService = new RefundService(refundRepository, orderRepository, notificationService)
+const refundService = new RefundService(
+  refundRepository,
+  orderRepository,
+  notificationService,
+  stripeService,
+  paymentService,
+)
 
 // Job instances
 const paymentReconciliationJob = new PaymentReconciliationJob(paymentService)
+const refundStatusPollJob = new RefundStatusPollJob(
+  refundRepository,
+  paymentService,
+  refundService,
+  orderRepository,
+)
 const flashSaleScheduler = new FlashSaleScheduler(flashSaleService)
 
 // Export container with all services
@@ -191,6 +204,7 @@ export const container = {
   // Jobs
   jobs: {
     paymentReconciliation: paymentReconciliationJob,
+    refundStatusPoll: refundStatusPollJob,
   },
 }
 
@@ -227,4 +241,5 @@ export {
   flashSaleService,
   flashSaleScheduler,
   refundService,
+  refundStatusPollJob,
 }

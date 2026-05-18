@@ -78,3 +78,15 @@ export const adminRejectRefundSchema = z.object({
 })
 
 export type AdminRejectRefundInput = z.infer<typeof adminRejectRefundSchema>
+
+/**
+ * Schema for admin retrying a failed gateway refund
+ * PUT /admin/refunds/:id/retry
+ */
+export const adminRetryRefundSchema = z.object({
+  params: z.object({
+    id: z.string().regex(objectIdRegex, 'ID yêu cầu hoàn tiền không hợp lệ'),
+  }),
+})
+
+export type AdminRetryRefundInput = z.infer<typeof adminRetryRefundSchema>

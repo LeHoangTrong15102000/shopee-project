@@ -1,7 +1,12 @@
 import { v4 as uuidv4 } from 'uuid'
 import mongoose from 'mongoose'
 import { PaymentRepository } from '@repositories/payment.repository'
-import { OrderModel, ORDER_STATUS, PAYMENT_METHOD, PAYMENT_STATUS } from '@database/models/order.model'
+import {
+  OrderModel,
+  ORDER_STATUS,
+  PAYMENT_METHOD,
+  PAYMENT_STATUS,
+} from '@database/models/order.model'
 import { GATEWAY_PAYMENT_STATUS } from '@database/models/payment.model'
 import {
   PaymentSessionModel,
@@ -313,10 +318,7 @@ export class PaymentService {
    * Detects session-based vs order-based payments by the orderId prefix.
    * Uses Mongoose transaction to prevent race conditions on duplicate IPN delivery.
    */
-  async handleIpn(
-    provider: PaymentProvider,
-    payload: Record<string, unknown>,
-  ): Promise<void> {
+  async handleIpn(provider: PaymentProvider, payload: Record<string, unknown>): Promise<void> {
     incrementIpnReceived()
     const providerInstance = this.getProvider(provider)
 
@@ -548,7 +550,9 @@ export class PaymentService {
         })
 
         // Emit real-time update to order owner
-        const emittedOrderStatus = ipnResult.success ? ORDER_STATUS.CONFIRMED : ORDER_STATUS.PAYMENT_FAILED
+        const emittedOrderStatus = ipnResult.success
+          ? ORDER_STATUS.CONFIRMED
+          : ORDER_STATUS.PAYMENT_FAILED
         emitToUser(order.user.toString(), SocketEvent.PAYMENT_STATUS_UPDATED, {
           orderId: ipnResult.orderId,
           payment_status: ipnResult.success ? PAYMENT_STATUS.PAID : PAYMENT_STATUS.FAILED,

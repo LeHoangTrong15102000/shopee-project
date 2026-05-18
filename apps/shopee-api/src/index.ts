@@ -40,7 +40,7 @@ import { Logger } from '@utils/logger'
 import { initializeSocket } from './socket/socket.init'
 import { viewCounterService } from '@utils/view-counter.service'
 import { disconnectRedis } from '@utils/redis.client'
-import { paymentReconciliationJob, flashSaleScheduler } from './container'
+import { paymentReconciliationJob, flashSaleScheduler, refundStatusPollJob } from './container'
 
 const app: express.Application = express()
 connectMongoDB()
@@ -273,6 +273,7 @@ httpServer.listen(PORT, () => {
   // Start background jobs after server is ready
   paymentReconciliationJob.start()
   flashSaleScheduler.start()
+  refundStatusPollJob.start()
 })
 
 // ==================== GRACEFUL SHUTDOWN ====================

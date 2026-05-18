@@ -95,6 +95,9 @@ const envSchema = z.object({
 
   // Refund request deadline in days after delivery (default 7 days)
   REFUND_REQUEST_DEADLINE_DAYS: z.coerce.number().int().positive().default(7),
+
+  // MoMo refund status polling interval in milliseconds (default 300000 = 5 minutes)
+  MOMO_REFUND_POLL_INTERVAL_MS: z.coerce.number().int().positive().default(300000),
 })
 
 export type Env = z.infer<typeof envSchema>
@@ -141,6 +144,7 @@ export function validateEnv(rawEnv: NodeJS.ProcessEnv = process.env): Env {
       TWO_FACTOR_ENCRYPTION_KEY: '0'.repeat(64),
       FLASH_SALE_CHECK_INTERVAL: 60,
       REFUND_REQUEST_DEADLINE_DAYS: 7,
+      MOMO_REFUND_POLL_INTERVAL_MS: 300000,
     }
   }
 

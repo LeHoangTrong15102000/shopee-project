@@ -27,6 +27,10 @@ export interface UpdateRefundDTO {
   rejection_reason?: string
   processed_at?: Date
   completed_at?: Date
+  gateway_refund_id?: string
+  refund_method?: 'auto' | 'manual'
+  failure_reason?: string
+  retry_count?: number
 }
 
 /**
@@ -42,7 +46,11 @@ export interface RefundFilterOptions {
 /**
  * Refund repository interface
  */
-export interface IRefundRepository extends IBaseRepository<IRefund, CreateRefundDTO, UpdateRefundDTO> {
+export interface IRefundRepository extends IBaseRepository<
+  IRefund,
+  CreateRefundDTO,
+  UpdateRefundDTO
+> {
   /**
    * Find a refund by its associated order ID
    */
@@ -73,4 +81,10 @@ export interface IRefundRepository extends IBaseRepository<IRefund, CreateRefund
    * Find a refund by ID with populated order and user info (admin detail view)
    */
   findByIdPopulated(id: string | Types.ObjectId): Promise<IRefund | null>
+
+  /**
+   * Find all refunds with status=PROCESSING for a given payment provider (payment_method).
+   * Used by the MoMo refund polling job to check pending refund statuses.
+   */
+  findProcessingByProvider(paymentMethod: string): Promise<IRefund[]>
 }

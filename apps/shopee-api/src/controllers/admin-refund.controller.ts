@@ -166,3 +166,30 @@ export const completeRefund = async (req: Request, res: Response) => {
     data: refund,
   })
 }
+
+/**
+ * PUT /admin/refunds/:id/retry
+ * Retry a failed gateway refund (auto-refund methods only).
+ */
+export const retryGatewayRefund = async (req: Request, res: Response) => {
+  const refundId = req.params.id as string
+  const adminId = req.jwtDecoded.id
+
+  const refund = await refundService.retryGatewayRefund(refundId)
+
+  // Audit log
+  auditLogService.writeLog({
+    action: 'refund.retry',
+    resource: 'refund',
+    resourceId: refundId,
+    actor: { userId: adminId, roles: ['admin'] },
+    ip: getClientIP(req),
+    userAgent: getUserAgent(req),
+    status: 'success',
+  })
+
+  return responseSuccess(res, {
+    message: 'Đã kích hoạt lại yêu cầu hoàn tiền qua cổng thanh toán',
+    data: refund,
+  })
+}

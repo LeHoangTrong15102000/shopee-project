@@ -7,6 +7,8 @@ import {
   IpnResult,
   QueryStatusParams,
   PaymentStatus,
+  RefundParams,
+  RefundResult,
 } from './payment.interface'
 import { Logger } from '@utils/logger'
 
@@ -21,14 +23,7 @@ function hmacSha256(data: string, key: string): string {
 
 export class MomoProvider implements IPaymentProvider {
   async createPayment(params: CreatePaymentParams): Promise<PaymentResult> {
-    const {
-      orderId,
-      amount,
-      orderInfo,
-      returnUrl,
-      ipnUrl,
-      requestId,
-    } = params
+    const { orderId, amount, orderInfo, returnUrl, ipnUrl, requestId } = params
 
     const extraData = ''
     const requestType = 'captureWallet'
@@ -66,14 +61,10 @@ export class MomoProvider implements IPaymentProvider {
 
     Logger.apiInfo('[MoMo] Creating payment', { orderId, amount, requestId })
 
-    const response = await axios.post(
-      `${MOMO_ENDPOINT}/v2/gateway/api/create`,
-      requestBody,
-      {
-        timeout: 30000,
-        headers: { 'Content-Type': 'application/json' },
-      },
-    )
+    const response = await axios.post(`${MOMO_ENDPOINT}/v2/gateway/api/create`, requestBody, {
+      timeout: 30000,
+      headers: { 'Content-Type': 'application/json' },
+    })
 
     const data = response.data
 
@@ -167,14 +158,10 @@ export class MomoProvider implements IPaymentProvider {
 
     Logger.apiInfo('[MoMo] Querying transaction status', { orderId, requestId })
 
-    const response = await axios.post(
-      `${MOMO_ENDPOINT}/v2/gateway/api/query`,
-      requestBody,
-      {
-        timeout: 30000,
-        headers: { 'Content-Type': 'application/json' },
-      },
-    )
+    const response = await axios.post(`${MOMO_ENDPOINT}/v2/gateway/api/query`, requestBody, {
+      timeout: 30000,
+      headers: { 'Content-Type': 'application/json' },
+    })
 
     const data = response.data
     const resultCode = Number(data.resultCode)
@@ -182,5 +169,136 @@ export class MomoProvider implements IPaymentProvider {
     if (resultCode === 0) return PaymentStatus.SUCCESS
     if (resultCode === 1000 || resultCode === 7000) return PaymentStatus.PENDING
     return PaymentStatus.FAILED
+  }
+
+  /**
+   * Request a refund from MoMo.
+   * POST /v2/gateway/api/refund
+   * Signature = HMAC-SHA256 of:
+   *   accessKey=...&amount=...&description=...&orderId=...&partnerCode=...&requestId=...&transId=...
+   */
+  async refund(params: RefundParams): Promise<RefundResult> {
+    const { transactionId, amount, orderId, requestId, description = '' } = params
+
+    const rawSignature = [
+      `accessKey=${ACCESS_KEY}`,
+      `amount=${amount}`,
+      `description=${description}`,
+      `orderId=${orderId}`,
+      `partnerCode=${PARTNER_CODE}`,
+      `requestId=${requestId}`,
+      `transId=${transactionId}`,
+    ].join('&')
+
+    const signature = hmacSha256(rawSignature, SECRET_KEY)
+
+    const requestBody = {
+      partnerCode: PARTNER_CODE,
+      orderId,
+      requestId,
+      amount,
+      transId: transactionId,
+      lang: 'vi',
+      description,
+      signature,
+    }
+
+    Logger.apiInfo('[MoMo] Requesting refund', { orderId, amount, requestId })
+
+    try {
+      const response = await axios.post(`${MOMO_ENDPOINT}/v2/gateway/api/refund`, requestBody, {
+        timeout: 30000,
+        headers: { 'Content-Type': 'application/json' },
+      })
+
+      const data = response.data
+      const resultCode = Number(data.resultCode)
+      const success = resultCode === 0
+
+      if (!success) {
+        Logger.apiWarn('[MoMo] Refund request failed', {
+          orderId,
+          resultCode,
+          message: data.message,
+        })
+      } else {
+        Logger.apiInfo('[MoMo] Refund request succeeded', {
+          orderId,
+          transId: data.transId,
+        })
+      }
+
+      return {
+        success,
+        transactionId: data.transId ? String(data.transId) : undefined,
+        resultCode,
+        message: String(data.message || ''),
+      }
+    } catch (err: any) {
+      Logger.apiError('[MoMo] Refund request threw error', { orderId, error: err?.message })
+      return {
+        success: false,
+        resultCode: -1,
+        message: err?.message || 'MoMo refund request failed',
+      }
+    }
+  }
+
+  /**
+   * Query the status of a previously submitted refund.
+   * POST /v2/gateway/api/refund/query
+   */
+  async queryRefundStatus(params: { orderId: string; requestId: string }): Promise<RefundResult> {
+    const { orderId, requestId } = params
+
+    const rawSignature = [
+      `accessKey=${ACCESS_KEY}`,
+      `orderId=${orderId}`,
+      `partnerCode=${PARTNER_CODE}`,
+      `requestId=${requestId}`,
+    ].join('&')
+
+    const signature = hmacSha256(rawSignature, SECRET_KEY)
+
+    const requestBody = {
+      partnerCode: PARTNER_CODE,
+      orderId,
+      requestId,
+      signature,
+      lang: 'vi',
+    }
+
+    Logger.apiInfo('[MoMo] Querying refund status', { orderId, requestId })
+
+    try {
+      const response = await axios.post(
+        `${MOMO_ENDPOINT}/v2/gateway/api/refund/query`,
+        requestBody,
+        {
+          timeout: 30000,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
+
+      const data = response.data
+      const resultCode = Number(data.resultCode)
+      // MoMo resultCode 0 = success, 1000/7000 = pending, others = failed
+      const success = resultCode === 0
+      const isPending = resultCode === 1000 || resultCode === 7000
+
+      return {
+        success,
+        transactionId: data.transId ? String(data.transId) : undefined,
+        resultCode: isPending ? 'PENDING' : resultCode,
+        message: String(data.message || ''),
+      }
+    } catch (err: any) {
+      Logger.apiError('[MoMo] Refund status query threw error', { orderId, error: err?.message })
+      return {
+        success: false,
+        resultCode: 'PENDING', // treat errors as pending — will retry next poll
+        message: err?.message || 'MoMo refund status query failed',
+      }
+    }
   }
 }

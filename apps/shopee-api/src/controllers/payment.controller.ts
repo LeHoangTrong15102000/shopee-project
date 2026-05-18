@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
-import { stripeService } from '../container'
+import { stripeService, refundService } from '../container'
 import { OrderModel, PAYMENT_STATUS } from '@database/models/order.model'
+import { RefundModel, REFUND_STATUS } from '@database/models/refund.model'
 import { PaymentLogModel } from '@database/models/payment-log.model'
 import { Logger } from '@utils/logger'
 import { emitToUser } from '../socket/utils/emit'
@@ -39,7 +40,7 @@ export const stripeWebhook = async (req: Request, res: Response): Promise<void> 
     return
   }
 
-  const paymentIntent = (event.data.object as any)
+  const paymentIntent = event.data.object as any
   const paymentIntentId: string = paymentIntent.id
   const orderId: string | undefined = paymentIntent.metadata?.orderId
 
@@ -57,6 +58,28 @@ export const stripeWebhook = async (req: Request, res: Response): Promise<void> 
     case 'payment_intent.canceled':
       paymentStatus = PAYMENT_STATUS.FAILED
       break
+    case 'charge.refunded': {
+      // Extract refund data from charge object — may contain multiple refunds
+      const charge = event.data.object as any
+      const refunds = charge.refunds?.data || []
+      for (const refundObj of refunds) {
+        await handleStripeRefundUpdate(refundObj.id, refundObj.status, refundObj.failure_reason)
+      }
+      res.status(200).json({ received: true })
+      return
+    }
+    case 'refund.updated': {
+      const refundObj = event.data.object as any
+      await handleStripeRefundUpdate(refundObj.id, refundObj.status, refundObj.failure_reason)
+      res.status(200).json({ received: true })
+      return
+    }
+    case 'refund.failed': {
+      const refundObj = event.data.object as any
+      await handleStripeRefundUpdate(refundObj.id, 'failed', refundObj.failure_reason)
+      res.status(200).json({ received: true })
+      return
+    }
     default:
       // Unhandled event type — acknowledge and skip
       res.status(200).json({ received: true })
@@ -118,4 +141,45 @@ export const stripeWebhook = async (req: Request, res: Response): Promise<void> 
   }
 
   res.status(200).json({ received: true })
+}
+
+/**
+ * Handle a Stripe refund status update.
+ * Finds the refund by gateway_refund_id and transitions it based on Stripe status.
+ *
+ * - succeeded: auto-complete the refund and set order payment_status = 'refunded'
+ * - failed: revert to APPROVED so admin can retry; store failure_reason
+ */
+async function handleStripeRefundUpdate(
+  stripeRefundId: string,
+  status: string,
+  failureReason?: string,
+): Promise<void> {
+  const refund = await RefundModel.findOne({ gateway_refund_id: stripeRefundId }).lean()
+  if (!refund) {
+    // Not our refund or already processed — silently skip
+    return
+  }
+
+  if (status === 'succeeded' && refund.status === REFUND_STATUS.PROCESSING) {
+    // Auto-complete the refund (also sets order payment_status via completeRefund)
+    await refundService.completeRefund(refund._id.toString())
+
+    Logger.apiInfo('[StripeWebhook] Refund auto-completed', {
+      refundId: refund._id.toString(),
+      stripeRefundId,
+    })
+  } else if (status === 'failed') {
+    // Revert to APPROVED so admin can retry
+    await RefundModel.findByIdAndUpdate(refund._id, {
+      status: REFUND_STATUS.APPROVED,
+      failure_reason: failureReason || 'Stripe refund failed',
+    })
+
+    Logger.apiError('[StripeWebhook] Stripe refund failed — reverted to APPROVED', {
+      refundId: refund._id.toString(),
+      stripeRefundId,
+      failureReason,
+    })
+  }
 }

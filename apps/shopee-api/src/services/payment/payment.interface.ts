@@ -15,12 +15,12 @@ export enum PaymentProvider {
 
 export interface CreatePaymentParams {
   orderId: string
-  amount: number        // VND, integer
+  amount: number // VND, integer
   orderInfo: string
   returnUrl: string
   ipnUrl: string
   clientIp: string
-  requestId: string     // UUID v4
+  requestId: string // UUID v4
 }
 
 export interface PaymentResult {
@@ -46,9 +46,26 @@ export interface QueryStatusParams {
   transactionId?: string
 }
 
+export interface RefundParams {
+  transactionId: string | number // MoMo transId or provider transaction ID
+  amount: number // VND integer
+  orderId: string // unique refund order ID for this refund request
+  requestId: string // idempotency key
+  description?: string
+}
+
+export interface RefundResult {
+  success: boolean
+  transactionId?: string // provider's refund transaction ID
+  resultCode: number | string
+  message: string
+}
+
 export interface IPaymentProvider {
   createPayment(params: CreatePaymentParams): Promise<PaymentResult>
   verifyIpn(payload: Record<string, unknown>): boolean
   parseIpnResult(payload: Record<string, unknown>): IpnResult
   queryStatus(params: QueryStatusParams): Promise<PaymentStatus>
+  refund?(params: RefundParams): Promise<RefundResult>
+  queryRefundStatus?(params: { orderId: string; requestId: string }): Promise<RefundResult>
 }

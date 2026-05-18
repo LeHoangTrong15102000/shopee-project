@@ -4,6 +4,8 @@ import * as orderController from '@controllers/order.controller'
 import { asyncHandler } from '@utils/async-handler'
 import { validate, adminUpdateStatusSchema, adminGetOrderSchema } from '@schemas/index'
 import { adminOrderListSchema, adminBulkUpdateStatusSchema } from '@schemas/admin-order-list.schema'
+import { withAuditLog } from '@utils/audit-log.wrapper'
+import { OrderModel } from '@database/models/order.model'
 
 const adminOrderRouter = Router()
 
@@ -48,7 +50,13 @@ adminOrderRouter.put(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   validate(adminUpdateStatusSchema),
-  asyncHandler(orderController.adminUpdateStatus),
+  asyncHandler(withAuditLog(orderController.adminUpdateStatus, {
+    action: 'order.status_change',
+    resource: 'order',
+    getResourceId: (req) => req.params.id,
+    getBeforeSnapshot: async (req) => OrderModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
+    getAfterSnapshot: async (req) => OrderModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
+  })),
 )
 
 export default adminOrderRouter

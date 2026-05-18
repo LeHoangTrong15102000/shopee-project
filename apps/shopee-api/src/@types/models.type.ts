@@ -10,6 +10,12 @@ export interface IUser {
   phone?: string
   roles: string[]
   avatar?: string
+  /** AES-256-GCM encrypted TOTP secret (format: iv:authTag:ciphertext hex) */
+  twoFactorSecret?: string
+  /** Whether TOTP 2FA is currently enabled for this user */
+  twoFactorEnabled?: boolean
+  /** PBKDF2-hashed single-use backup codes */
+  backupCodes?: string[]
   createdAt?: Date
   updatedAt?: Date
 }
@@ -89,4 +95,6 @@ export interface IPayloadToken {
   created_at: string
   /** JWT ID — unique per token, used for refresh token reuse detection */
   jti?: string
+  /** Token scope — "2fa_pending" for partial tokens issued mid-login when 2FA is required */
+  scope?: string
 }

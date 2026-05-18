@@ -1,6 +1,8 @@
 import { Router } from 'express'
 import authController from '@controllers/auth.controller'
 import * as passwordResetController from '@controllers/password-reset.controller'
+import totpController from '@controllers/totp.controller'
+import sessionController from '@controllers/session.controller'
 import authMiddleware from '@middleware/auth.middleware'
 import { asyncHandler } from '@utils/async-handler'
 import { bruteForceProtectionMiddleware } from '@middleware/security.middleware'
@@ -13,6 +15,12 @@ import {
   resetPasswordSchema,
   googleLoginSchema,
 } from '@schemas/index'
+import {
+  twoFactorVerifySetupSchema,
+  twoFactorDisableSchema,
+  twoFactorBackupCodesSchema,
+  twoFactorCompleteSchema,
+} from '@schemas/totp.schema'
 
 const commonAuthRouter = Router()
 
@@ -65,6 +73,70 @@ commonAuthRouter.post(
   authRateLimit,
   validate(googleLoginSchema),
   asyncHandler(authController.googleLoginController),
+)
+
+// ── 2FA routes ──────────────────────────────────────────────────────────────
+
+commonAuthRouter.post(
+  '/2fa/setup',
+  authMiddleware.verifyAccessToken,
+  asyncHandler(totpController.setupTwoFactor),
+)
+
+commonAuthRouter.post(
+  '/2fa/verify-setup',
+  authMiddleware.verifyAccessToken,
+  validate(twoFactorVerifySetupSchema),
+  asyncHandler(totpController.verifySetup),
+)
+
+commonAuthRouter.post(
+  '/2fa/disable',
+  authMiddleware.verifyAccessToken,
+  validate(twoFactorDisableSchema),
+  asyncHandler(totpController.disableTwoFactor),
+)
+
+commonAuthRouter.post(
+  '/2fa/backup-codes',
+  authMiddleware.verifyAccessToken,
+  validate(twoFactorBackupCodesSchema),
+  asyncHandler(totpController.regenerateBackupCodes),
+)
+
+commonAuthRouter.post(
+  '/2fa/complete',
+  authRateLimit, // Protect against brute-force on partial tokens
+  validate(twoFactorCompleteSchema),
+  asyncHandler(totpController.completeTwoFactorLogin),
+)
+
+// ── Session management routes ────────────────────────────────────────────────
+
+commonAuthRouter.get(
+  '/sessions',
+  authMiddleware.verifyAccessToken,
+  asyncHandler(sessionController.listSessions),
+)
+
+commonAuthRouter.delete(
+  '/sessions',
+  authMiddleware.verifyAccessToken,
+  asyncHandler(sessionController.revokeAllSessions),
+)
+
+commonAuthRouter.delete(
+  '/sessions/:id',
+  authMiddleware.verifyAccessToken,
+  asyncHandler(sessionController.revokeSession),
+)
+
+// ── Login history route ──────────────────────────────────────────────────────
+
+commonAuthRouter.get(
+  '/login-history',
+  authMiddleware.verifyAccessToken,
+  asyncHandler(sessionController.getLoginHistory),
 )
 
 export default commonAuthRouter

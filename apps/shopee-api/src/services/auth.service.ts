@@ -34,6 +34,16 @@ export interface AuthResult {
   refresh_token: string
   expires_refresh_token: number
   user: Omit<IUser, 'password'>
+  /** Access token JTI — passed to sessionService.createSession() by the controller */
+  accessJti: string
+  /** Refresh token JTI — passed to sessionService.createSession() by the controller */
+  refreshJti: string
+}
+
+/** Returned by login() when the user has 2FA enabled — caller must complete via /auth/2fa/complete */
+export interface TwoFactorRequiredResult {
+  requires2FA: true
+  partial_token: string
 }
 
 export class AuthService extends BaseService {
@@ -52,7 +62,7 @@ export class AuthService extends BaseService {
   private async generateTokens(
     payload: IPayloadToken,
     tokenConfig: TokenConfig,
-  ): Promise<{ accessToken: string; refreshToken: string; refreshJti: string }> {
+  ): Promise<{ accessToken: string; refreshToken: string; accessJti: string; refreshJti: string }> {
     const accessJti = this.generateJti()
     const refreshJti = this.generateJti()
 
@@ -66,6 +76,7 @@ export class AuthService extends BaseService {
     return {
       accessToken: accessToken as string,
       refreshToken: refreshToken as string,
+      accessJti,
       refreshJti,
     }
   }
@@ -90,7 +101,7 @@ export class AuthService extends BaseService {
       created_at: new Date().toISOString(),
     }
 
-    const { accessToken, refreshToken, refreshJti } = await this.generateTokens(payload, tokenConfig)
+    const { accessToken, refreshToken, accessJti, refreshJti } = await this.generateTokens(payload, tokenConfig)
 
     const expiresAt = new Date(Date.now() + tokenConfig.expireRefreshToken * 1000)
 
@@ -110,10 +121,12 @@ export class AuthService extends BaseService {
       refresh_token: refreshToken,
       expires_refresh_token: tokenConfig.expireRefreshToken,
       user: omit(user, ['password']) as Omit<IUser, 'password'>,
+      accessJti,
+      refreshJti,
     }
   }
 
-  async login(data: LoginDTO, tokenConfig: TokenConfig): Promise<AuthResult> {
+  async login(data: LoginDTO, tokenConfig: TokenConfig): Promise<AuthResult | TwoFactorRequiredResult> {
     const user = await this.userRepository.findByEmailWithPassword(data.email)
     if (!user) {
       throw new ValidationError('Email hoặc password không đúng', 'password')
@@ -124,6 +137,24 @@ export class AuthService extends BaseService {
       throw new ValidationError('Email hoặc password không đúng', 'password')
     }
 
+    // If 2FA is enabled, issue a short-lived partial token instead of full tokens
+    if (user.twoFactorEnabled) {
+      const partialPayload: IPayloadToken = {
+        id: user._id!.toString(),
+        email: user.email,
+        roles: user.roles || [ROLE.USER],
+        created_at: new Date().toISOString(),
+        jti: this.generateJti(),
+        scope: '2fa_pending',
+      }
+      // 5-minute expiry for partial token
+      const partialToken = (await signToken(partialPayload, config.SECRET_KEY, 300)) as string
+
+      Logger.apiInfo('auth.login.2fa_required', { userId: user._id!.toString() })
+
+      return { requires2FA: true, partial_token: partialToken }
+    }
+
     const payload: IPayloadToken = {
       id: user._id!.toString(),
       email: user.email,
@@ -131,7 +162,7 @@ export class AuthService extends BaseService {
       created_at: new Date().toISOString(),
     }
 
-    const { accessToken, refreshToken, refreshJti } = await this.generateTokens(payload, tokenConfig)
+    const { accessToken, refreshToken, accessJti, refreshJti } = await this.generateTokens(payload, tokenConfig)
 
     const expiresAt = new Date(Date.now() + tokenConfig.expireRefreshToken * 1000)
 
@@ -151,6 +182,8 @@ export class AuthService extends BaseService {
       refresh_token: refreshToken,
       expires_refresh_token: tokenConfig.expireRefreshToken,
       user: omit(user, ['password']) as Omit<IUser, 'password'>,
+      accessJti,
+      refreshJti,
     }
   }
 
@@ -168,7 +201,7 @@ export class AuthService extends BaseService {
     oldRefreshToken: string,
     oldJti: string | undefined,
     tokenConfig: TokenConfig,
-  ): Promise<{ access_token: string; refresh_token: string; expires: number; expires_refresh_token: number }> {
+  ): Promise<{ access_token: string; refresh_token: string; expires: number; expires_refresh_token: number; accessJti: string; refreshJti: string }> {
     const user = await this.userRepository.findById(userId)
     if (!user) {
       throw new UnauthorizedError('User không tồn tại')
@@ -221,7 +254,7 @@ export class AuthService extends BaseService {
       created_at: new Date().toISOString(),
     }
 
-    const { accessToken, refreshToken, refreshJti } = await this.generateTokens(payload, tokenConfig)
+    const { accessToken, refreshToken, accessJti, refreshJti } = await this.generateTokens(payload, tokenConfig)
 
     const expiresAt = new Date(Date.now() + tokenConfig.expireRefreshToken * 1000)
 
@@ -245,6 +278,8 @@ export class AuthService extends BaseService {
       refresh_token: refreshToken,
       expires: tokenConfig.expireAccessToken,
       expires_refresh_token: tokenConfig.expireRefreshToken,
+      accessJti,
+      refreshJti,
     }
   }
 
@@ -316,7 +351,7 @@ export class AuthService extends BaseService {
       created_at: new Date().toISOString(),
     }
 
-    const { accessToken, refreshToken, refreshJti } = await this.generateTokens(tokenPayload, tokenConfig)
+    const { accessToken, refreshToken, accessJti, refreshJti } = await this.generateTokens(tokenPayload, tokenConfig)
 
     const expiresAt = new Date(Date.now() + tokenConfig.expireRefreshToken * 1000)
     await this.authRepository.createRefreshTokenWithJti(
@@ -334,12 +369,33 @@ export class AuthService extends BaseService {
       refresh_token: refreshToken,
       expires_refresh_token: tokenConfig.expireRefreshToken,
       user: omit(user, ['password']) as Omit<IUser, 'password'>,
+      accessJti,
+      refreshJti,
     }
   }
 
   async logout(refreshToken: string): Promise<void> {
     // Delete refresh token to prevent new access tokens from being issued
     await this.authRepository.deleteRefreshToken(refreshToken)
+  }
+
+  /**
+   * Persist a refresh token for a session — used by the 2FA complete flow
+   * where the token pair is generated inside TotpService.
+   */
+  async createRefreshTokenForSession(
+    userId: string,
+    refreshToken: string,
+    refreshJti: string,
+    expiresAt: Date,
+  ): Promise<void> {
+    const { Types } = await import('mongoose')
+    await this.authRepository.createRefreshTokenWithJti(
+      new Types.ObjectId(userId),
+      refreshToken,
+      refreshJti,
+      expiresAt,
+    )
   }
 
   async logoutAll(userId: string): Promise<void> {

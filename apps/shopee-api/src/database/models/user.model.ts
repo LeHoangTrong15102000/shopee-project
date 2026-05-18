@@ -11,6 +11,10 @@ const UserSchema = new Schema(
     phone: { type: String, maxlength: 20 },
     roles: { type: [String], required: true, default: [ROLE.USER] },
     avatar: { type: String, maxlength: 1000 },
+    // Two-factor authentication fields (all optional — 2FA is opt-in)
+    twoFactorSecret: { type: String },
+    twoFactorEnabled: { type: Boolean, default: false },
+    backupCodes: { type: [String], default: [] },
   },
   {
     timestamps: true,

@@ -152,6 +152,8 @@ const updateMe = async (req: CustomRequest, res: Response) => {
 
     const form: User = req.body
     const { email, password, new_password, address, date_of_birth, name, phone, avatar } = form
+    const isPasswordChange = !!(password && new_password)
+
     const user = await userService.updateProfile(req.jwtDecoded.id, {
       email,
       password,
@@ -162,6 +164,26 @@ const updateMe = async (req: CustomRequest, res: Response) => {
       phone,
       avatar,
     })
+
+    // Audit log: user.password_change when password fields are present (fire-and-forget)
+    if (isPasswordChange) {
+      const userId = req.jwtDecoded.id
+      const forwarded = req.headers['x-forwarded-for']
+      const ip = typeof forwarded === 'string'
+        ? forwarded.split(',')[0].trim()
+        : req.ip || req.socket?.remoteAddress || 'unknown'
+      const { auditLogService } = await import('../container')
+      auditLogService.writeLog({
+        action: 'user.password_change',
+        resource: 'user',
+        resourceId: userId,
+        actor: { userId, roles: req.jwtDecoded.roles ?? [] },
+        ip,
+        userAgent: req.headers['user-agent'] || '',
+        status: 'success',
+      })
+    }
+
     const response = {
       message: 'Cập nhật thông tin thành công',
       data: user,

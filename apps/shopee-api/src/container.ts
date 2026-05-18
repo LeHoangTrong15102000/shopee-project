@@ -21,6 +21,9 @@ import { VoucherRepository } from '@repositories/voucher.repository'
 import { SKURepository } from '@repositories/sku.repository'
 import { ProductSkuSnapshotRepository } from '@repositories/product-sku-snapshot.repository'
 import { PaymentRepository } from '@repositories/payment.repository'
+import { SessionRepository } from '@repositories/session.repository'
+import { LoginHistoryRepository } from '@repositories/login-history.repository'
+import { AuditLogRepository } from '@repositories/audit-log.repository'
 
 // Services
 import { ProductService } from '@services/product.service'
@@ -45,6 +48,10 @@ import { PaymentService } from '@services/payment.service'
 import { MomoProvider } from '@services/payment/momo.provider'
 import { VnpayProvider } from '@services/payment/vnpay.provider'
 import { PaymentProvider } from '@services/payment/payment.interface'
+import { TotpService } from '@services/totp.service'
+import { SessionService } from '@services/session.service'
+import { LoginHistoryService } from '@services/login-history.service'
+import { AuditLogService } from '@services/audit-log.service'
 
 // Jobs
 import { PaymentReconciliationJob } from './jobs/payment-reconciliation.job'
@@ -67,6 +74,9 @@ const voucherRepository = new VoucherRepository()
 const skuRepository = new SKURepository(productRepository)
 const productSkuSnapshotRepository = new ProductSkuSnapshotRepository()
 const paymentRepository = new PaymentRepository()
+const sessionRepository = new SessionRepository()
+const loginHistoryRepository = new LoginHistoryRepository()
+const auditLogRepository = new AuditLogRepository()
 
 // Service instances (singletons with injected repositories)
 const productService = new ProductService(productRepository, skuRepository)
@@ -101,6 +111,10 @@ const paymentProviders = new Map([
   [PaymentProvider.VNPAY, vnpayProvider],
 ])
 const paymentService = new PaymentService(paymentRepository, paymentProviders)
+const totpService = new TotpService()
+const sessionService = new SessionService(sessionRepository)
+const loginHistoryService = new LoginHistoryService(loginHistoryRepository)
+const auditLogService = new AuditLogService(auditLogRepository)
 
 // Job instances
 const paymentReconciliationJob = new PaymentReconciliationJob(paymentService)
@@ -126,6 +140,9 @@ export const container = {
     sku: skuRepository,
     productSkuSnapshot: productSkuSnapshotRepository,
     payment: paymentRepository,
+    session: sessionRepository,
+    loginHistory: loginHistoryRepository,
+    auditLog: auditLogRepository,
   },
   // Services (main interface for controllers)
   services: {
@@ -148,6 +165,10 @@ export const container = {
     price: priceService,
     stripe: stripeService,
     payment: paymentService,
+    totp: totpService,
+    session: sessionService,
+    loginHistory: loginHistoryService,
+    auditLog: auditLogService,
   },
   // Jobs
   jobs: {
@@ -180,4 +201,8 @@ export {
   paymentRepository,
   paymentService,
   paymentReconciliationJob,
+  totpService,
+  sessionService,
+  loginHistoryService,
+  auditLogService,
 }

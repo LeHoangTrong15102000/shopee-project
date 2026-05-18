@@ -80,6 +80,16 @@ const envSchema = z.object({
     .string()
     .min(1, 'STRIPE_WEBHOOK_SECRET is required for webhook signature verification')
     .startsWith('whsec_', 'STRIPE_WEBHOOK_SECRET must start with whsec_'),
+
+  // Two-Factor Authentication — AES-256-GCM key for encrypting TOTP secrets at rest.
+  // Must be a 64-character hex string (32 bytes).
+  // Generate: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+  TWO_FACTOR_ENCRYPTION_KEY: z
+    .string()
+    .regex(
+      /^[0-9a-f]{64}$/i,
+      'TWO_FACTOR_ENCRYPTION_KEY must be a 64-character hex string (32 bytes)',
+    ),
 })
 
 export type Env = z.infer<typeof envSchema>
@@ -123,6 +133,7 @@ export function validateEnv(rawEnv: NodeJS.ProcessEnv = process.env): Env {
       STRIPE_SECRET_KEY: 'sk_test_placeholder',
       STRIPE_PUBLISHABLE_KEY: 'pk_test_placeholder',
       STRIPE_WEBHOOK_SECRET: 'whsec_placeholder',
+      TWO_FACTOR_ENCRYPTION_KEY: '0'.repeat(64),
     }
   }
 

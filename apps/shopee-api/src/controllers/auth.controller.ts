@@ -11,6 +11,7 @@ import {
   ValidationError as ServiceValidationError,
   UnauthorizedError as ServiceUnauthorizedError,
 } from '@services/base.service'
+import { AuthResult } from '@services/auth.service'
 
 /**
  * Lấy IP thực của client
@@ -41,6 +42,25 @@ const registerController = async (req: Request, res: Response) => {
       { expireAccessToken: expireAccessTokenConfig, expireRefreshToken: expireRefreshTokenConfig },
     )
 
+    const userId = result.user._id!.toString()
+
+    // Create session record (fire-and-forget — don't block response on session creation)
+    const { sessionService, auditLogService } = await import('../container')
+    sessionService.createSession(userId, result.accessJti, result.refreshJti, req).catch((err) => {
+      Logger.apiWarn('session.create.failed_on_register', { error: err?.message })
+    })
+
+    // Audit log: user.register (fire-and-forget)
+    auditLogService.writeLog({
+      action: 'user.register',
+      resource: 'user',
+      resourceId: userId,
+      actor: { userId, roles: result.user.roles ?? [] },
+      ip: getClientIP(req),
+      userAgent: req.headers['user-agent'] || '',
+      status: 'success',
+    })
+
     const response = {
       message: AUTH_MESSAGES.REGISTER_SUCCESS,
       data: result,
@@ -65,18 +85,54 @@ const loginController = async (req: Request, res: Response) => {
       { expireAccessToken: expireAccessTokenConfig, expireRefreshToken: expireRefreshTokenConfig },
     )
 
+    // 2FA required — return partial token, do NOT issue full tokens yet
+    if ('requires2FA' in result && result.requires2FA) {
+      return responseSuccess(res, {
+        message: '2FA verification required',
+        data: {
+          requires2FA: true,
+          partial_token: result.partial_token,
+        },
+      })
+    }
+
+    // TypeScript narrowing: after early return above, result is always AuthResult
+    const authResult = result as AuthResult
+
     // Đăng nhập thành công - reset login attempts
     resetLoginAttempts(clientIP, email)
+
+    const userId = authResult.user._id!.toString()
+
+    // Create session record (fire-and-forget)
+    const { sessionService, auditLogService, loginHistoryService } = await import('../container')
+    sessionService.createSession(userId, authResult.accessJti, authResult.refreshJti, req).catch((err) => {
+      Logger.apiWarn('session.create.failed_on_login', { error: err?.message })
+    })
+
+    // Record successful login (fire-and-forget)
+    loginHistoryService.recordAttempt(userId, req, 'success', 'password')
+
+    // Audit log: user.login (fire-and-forget)
+    auditLogService.writeLog({
+      action: 'user.login',
+      resource: 'user',
+      resourceId: userId,
+      actor: { userId, roles: authResult.user.roles ?? [] },
+      ip: clientIP,
+      userAgent: req.headers['user-agent'] || '',
+      status: 'success',
+    })
 
     Logger.apiInfo('Đăng nhập thành công', {
       ip: clientIP,
       email,
-      userId: result.user._id?.toString(),
+      userId,
     })
 
     const response = {
       message: AUTH_MESSAGES.LOGIN_SUCCESS,
-      data: result,
+      data: authResult,
     }
     return responseSuccess(res, response)
   } catch (error) {
@@ -86,6 +142,20 @@ const loginController = async (req: Request, res: Response) => {
     if (error instanceof ServiceValidationError) {
       recordFailedLogin(clientIP, email)
       Logger.apiWarn('Đăng nhập thất bại', { ip: clientIP, email })
+      // Record failed login attempt (fire-and-forget)
+      const { loginHistoryService, auditLogService } = await import('../container')
+      loginHistoryService.recordAttempt(null, req, 'failed', 'password')
+      // Audit log: user.login_failed (fire-and-forget)
+      auditLogService.writeLog({
+        action: 'user.login_failed',
+        resource: 'user',
+        resourceId: null,
+        actor: { userId: 'anonymous', roles: [] },
+        ip: clientIP,
+        userAgent: req.headers['user-agent'] || '',
+        status: 'failed',
+        errorMessage: 'Invalid credentials',
+      })
       throw new ValidationError({ password: AUTH_MESSAGES.INVALID_CREDENTIALS })
     }
     throw error
@@ -108,6 +178,14 @@ const refreshTokenController = async (req: Request, res: Response) => {
       },
     )
 
+    // Update session with new JTIs (fire-and-forget)
+    if (decoded.jti) {
+      const { sessionService } = await import('../container')
+      sessionService.updateSessionOnRefresh(decoded.jti, result.accessJti, result.refreshJti).catch((err) => {
+        Logger.apiWarn('session.update.failed_on_refresh', { error: err?.message })
+      })
+    }
+
     const response = {
       message: AUTH_MESSAGES.REFRESH_TOKEN_SUCCESS,
       data: result,
@@ -127,6 +205,20 @@ const logoutController = async (req: Request, res: Response) => {
     await authService.logout(refresh_token)
   }
   // Graceful handling: if no RT provided, AT will expire naturally (15 min)
+
+  // Audit log: user.logout (fire-and-forget)
+  const userId = req.jwtDecoded?.id || 'anonymous'
+  const { auditLogService } = await import('../container')
+  auditLogService.writeLog({
+    action: 'user.logout',
+    resource: 'user',
+    resourceId: userId !== 'anonymous' ? userId : null,
+    actor: { userId, roles: req.jwtDecoded?.roles ?? [] },
+    ip: getClientIP(req),
+    userAgent: req.headers['user-agent'] || '',
+    status: 'success',
+  })
+
   return responseSuccess(res, { message: AUTH_MESSAGES.LOGOUT_SUCCESS })
 }
 

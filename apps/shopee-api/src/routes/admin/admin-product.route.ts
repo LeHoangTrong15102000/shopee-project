@@ -10,6 +10,8 @@ import {
   addProductSchema,
   updateProductSchema,
 } from '@schemas/index'
+import { withAuditLog } from '@utils/audit-log.wrapper'
+import { ProductModel } from '@database/models/product.model'
 
 const adminProductRouter = Router()
 /**
@@ -51,7 +53,11 @@ adminProductRouter.post(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   validate(addProductSchema),
-  asyncHandler(ProductController.addProduct),
+  asyncHandler(withAuditLog(ProductController.addProduct, {
+    action: 'product.create',
+    resource: 'product',
+    getResourceId: (_req, result: any) => result?.data?._id?.toString() ?? null,
+  })),
 )
 adminProductRouter.put(
   '/:product_id',
@@ -59,7 +65,13 @@ adminProductRouter.put(
   authMiddleware.verifyAdmin,
   validate(productIdParamSchema),
   validate(updateProductSchema),
-  asyncHandler(ProductController.updateProduct),
+  asyncHandler(withAuditLog(ProductController.updateProduct, {
+    action: 'product.update',
+    resource: 'product',
+    getResourceId: (req) => req.params.product_id,
+    getBeforeSnapshot: async (req) => ProductModel.findById(req.params.product_id).lean() as Promise<Record<string, unknown> | null>,
+    getAfterSnapshot: async (req) => ProductModel.findById(req.params.product_id).lean() as Promise<Record<string, unknown> | null>,
+  })),
 )
 
 adminProductRouter.delete(
@@ -67,7 +79,12 @@ adminProductRouter.delete(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   validate(productIdParamSchema),
-  asyncHandler(ProductController.deleteProduct),
+  asyncHandler(withAuditLog(ProductController.deleteProduct, {
+    action: 'product.delete',
+    resource: 'product',
+    getResourceId: (req) => req.params.product_id,
+    getBeforeSnapshot: async (req) => ProductModel.findById(req.params.product_id).lean() as Promise<Record<string, unknown> | null>,
+  })),
 )
 
 adminProductRouter.delete(

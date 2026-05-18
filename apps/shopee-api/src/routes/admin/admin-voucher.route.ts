@@ -10,6 +10,8 @@ import {
   adminVoucherUsageSchema,
 } from '@schemas/admin-voucher.schema'
 import * as ctrl from '@controllers/admin-voucher.controller'
+import { withAuditLog } from '@utils/audit-log.wrapper'
+import { VoucherModel } from '@database/models/voucher.model'
 
 const adminVoucherRouter = Router()
 
@@ -30,17 +32,32 @@ adminVoucherRouter.get(
 adminVoucherRouter.post(
   '/',
   validate(adminCreateVoucherSchema),
-  asyncHandler(ctrl.adminCreateVoucher),
+  asyncHandler(withAuditLog(ctrl.adminCreateVoucher, {
+    action: 'voucher.create',
+    resource: 'voucher',
+    getResourceId: (_req, result: any) => result?.data?._id?.toString() ?? null,
+  })),
 )
 adminVoucherRouter.put(
   '/:id',
   validate(adminUpdateVoucherSchema),
-  asyncHandler(ctrl.adminUpdateVoucher),
+  asyncHandler(withAuditLog(ctrl.adminUpdateVoucher, {
+    action: 'voucher.update',
+    resource: 'voucher',
+    getResourceId: (req) => req.params.id,
+    getBeforeSnapshot: async (req) => VoucherModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
+    getAfterSnapshot: async (req) => VoucherModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
+  })),
 )
 adminVoucherRouter.delete(
   '/:id',
   validate(adminVoucherIdSchema),
-  asyncHandler(ctrl.adminDeleteVoucher),
+  asyncHandler(withAuditLog(ctrl.adminDeleteVoucher, {
+    action: 'voucher.delete',
+    resource: 'voucher',
+    getResourceId: (req) => req.params.id,
+    getBeforeSnapshot: async (req) => VoucherModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
+  })),
 )
 adminVoucherRouter.patch(
   '/:id/toggle',

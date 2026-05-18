@@ -16,6 +16,8 @@ interface PayloadToken {
   created_at: string
   /** JWT ID — for reuse detection */
   jti?: string
+  /** Token scope — "2fa_pending" for partial tokens issued mid-login when 2FA is required */
+  scope?: string
 }
 
 const verifyAccessToken = async (
@@ -27,6 +29,11 @@ const verifyAccessToken = async (
   if (access_token) {
     try {
       const decoded = (await verifyToken(access_token, config.SECRET_KEY)) as PayloadToken
+      // Reject partial tokens — they are only valid for /auth/2fa/complete
+      if (decoded.scope === '2fa_pending') {
+        responseError(res, new ErrorHandler(STATUS.UNAUTHORIZED, 'Partial token cannot be used to access protected routes'))
+        return
+      }
       req.jwtDecoded = decoded
       // Pure JWT verification — no database lookup needed
       return next()

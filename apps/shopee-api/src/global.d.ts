@@ -11,6 +11,8 @@ declare namespace Express {
       created_at: string
       /** JWT ID — unique per token, used for reuse detection */
       jti?: string
+      /** Token scope — "2fa_pending" for partial tokens issued mid-login when 2FA is required */
+      scope?: string
     }
   }
 }
@@ -49,6 +51,8 @@ interface PayloadToken {
   created_at: string
   /** JWT ID — unique per token */
   jti?: string
+  /** Token scope — "2fa_pending" for partial tokens issued mid-login when 2FA is required */
+  scope?: string
 }
 
 interface Token {

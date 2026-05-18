@@ -516,7 +516,7 @@ const qaHandlers = [
 const importHandlers = [
   http.post(`${BASE}/admin/import/products`, async () => {
     await delay(1000)
-    return ok({ imported: 15, deleted: 2, locationStats: importStats.locationStats })
+    return ok({ created: 12, updated: 3, failed: 0, errors: [] })
   }),
   http.get(`${BASE}/admin/import/products/stats`, () => ok(importStats)),
 ]

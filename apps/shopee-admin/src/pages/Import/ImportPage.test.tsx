@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, fireEvent } from '@testing-library/react'
 import { renderWithProviders } from 'src/test-utils'
 import ImportPage from './ImportPage'
 
@@ -8,6 +8,16 @@ vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom')
   return { ...actual, useNavigate: () => mockNavigate, useParams: () => ({}) }
 })
+
+function createMockFile(name = 'products.csv') {
+  return new File(['col1,col2\nval1,val2'], name, { type: 'text/csv' })
+}
+
+async function selectFile(container: HTMLElement) {
+  const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement
+  const file = createMockFile()
+  fireEvent.change(fileInput, { target: { files: [file] } })
+}
 
 describe('ImportPage', () => {
   it('renders page title', async () => {
@@ -79,13 +89,12 @@ describe('ImportPage', () => {
     expect(screen.getByText('stats.locations')).toBeInTheDocument()
   })
 
-  it('opens confirm dialog when import button clicked', async () => {
-    const { user } = renderWithProviders(<ImportPage />)
+  it('opens confirm dialog when file is selected', async () => {
+    const { container } = renderWithProviders(<ImportPage />)
     await waitFor(() => {
       expect(screen.getByText('title')).toBeInTheDocument()
     })
-    const importBtn = screen.getByRole('button', { name: /actions.import/i })
-    await user.click(importBtn)
+    await selectFile(container)
     await waitFor(() => {
       expect(screen.getByText('confirm.title')).toBeInTheDocument()
     })
@@ -102,14 +111,12 @@ describe('ImportPage', () => {
     })
   })
 
-  it('clicks import button and opens confirm dialog', async () => {
-    const { user } = renderWithProviders(<ImportPage />)
+  it('selects file and opens confirm dialog', async () => {
+    const { container } = renderWithProviders(<ImportPage />)
     await waitFor(() => {
       expect(screen.getByText('title')).toBeInTheDocument()
     })
-    const importButtons = screen.getAllByRole('button', { name: /actions.importProducts/i })
-    const cardImportBtn = importButtons.find((btn) => btn.closest('.card, [class*="card"]'))
-    await user.click(cardImportBtn || importButtons[0])
+    await selectFile(container)
     await waitFor(() => {
       expect(screen.getByText('confirm.title')).toBeInTheDocument()
     })
@@ -127,13 +134,12 @@ describe('ImportPage', () => {
   })
 
   it('confirms import and shows result', async () => {
-    const { user } = renderWithProviders(<ImportPage />)
+    const { container } = renderWithProviders(<ImportPage />)
     await waitFor(() => {
       expect(screen.getByText('title')).toBeInTheDocument()
     })
-    // Click import button to open confirm dialog
-    const importBtn = screen.getByRole('button', { name: /actions.import/i })
-    await user.click(importBtn)
+    // Select a file to open confirm dialog
+    await selectFile(container)
     await waitFor(() => {
       expect(screen.getByText('confirm.title')).toBeInTheDocument()
     })
@@ -143,17 +149,17 @@ describe('ImportPage', () => {
       (btn) => btn.textContent === 'actions.importProducts' && btn.closest('[role="alertdialog"]'),
     )
     if (confirmBtn) {
-      await user.click(confirmBtn)
-      // Wait for import result to appear (MSW has 1s delay)
+      fireEvent.click(confirmBtn)
+      // Wait for import result to appear
       await waitFor(
         () => {
           expect(screen.getByText('result.title')).toBeInTheDocument()
         },
         { timeout: 5000 },
       )
-      // Result card should contain imported/deleted info
-      expect(screen.getByText(/result.imported/)).toBeInTheDocument()
-      expect(screen.getByText(/result.deleted/)).toBeInTheDocument()
+      // Result card should contain created/updated/failed info
+      expect(screen.getByText(/result.created/)).toBeInTheDocument()
+      expect(screen.getByText(/result.updated/)).toBeInTheDocument()
     }
   })
 })

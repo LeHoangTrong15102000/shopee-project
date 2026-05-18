@@ -18,10 +18,10 @@ export const userApi = {
     return http.get<SuccessResponseApi<User>>('/me')
   },
   updateProfile: (body: BodyUpdateProfile) => {
-    return http.put<SuccessResponseApi<User>>('/user', body)
+    return http.put<SuccessResponseApi<User>>('/me', body)
   },
   uploadAvatar: (body: FormData) => {
-    return http.post<SuccessResponseApi<string>>('/user/upload-avatar', body, {
+    return http.post<SuccessResponseApi<string>>('/me/upload-avatar', body, {
       // Và phải truyền lên cái headers định dạng như này để có thể uploadAvatar
       headers: {
         'Content-Type': 'multipart/form-data',

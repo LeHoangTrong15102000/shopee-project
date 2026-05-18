@@ -1,7 +1,8 @@
 export interface ImportResult {
-  imported: number
-  deleted: number
-  locationStats: Array<{ _id: string; count: number }>
+  created: number
+  updated: number
+  failed: number
+  errors: Array<{ index: number; row: unknown; errors: string[] }>
 }
 
 export interface ImportStats {

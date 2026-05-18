@@ -18,11 +18,16 @@ export function useImportStats() {
 export function useImportProducts(onSuccess?: () => void) {
   const { qc } = useAdminMutationContext()
   return useMutation({
-    mutationFn: () => importApi.importProducts(),
+    mutationFn: (file: File) => importApi.importProducts(file),
     onSuccess: (res) => {
       const d = res.data.data
       toast.success(
-        i18n.t('toast.imported', { ns: 'import', imported: d.imported, deleted: d.deleted }),
+        i18n.t('toast.imported', {
+          ns: 'import',
+          created: d.created,
+          updated: d.updated,
+          failed: d.failed,
+        }),
       )
       qc.invalidateQueries({ queryKey: IMPORT_KEYS.stats })
       onSuccess?.()

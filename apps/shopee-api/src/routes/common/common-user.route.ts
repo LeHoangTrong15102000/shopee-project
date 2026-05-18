@@ -17,4 +17,9 @@ commonUserRouter.put(
   validate(updateMeSchema),
   asyncHandler(userController.updateMe),
 )
+commonUserRouter.post(
+  '/me/upload-avatar',
+  authMiddleware.verifyAccessToken,
+  asyncHandler(userController.uploadAvatar),
+)
 export default commonUserRouter

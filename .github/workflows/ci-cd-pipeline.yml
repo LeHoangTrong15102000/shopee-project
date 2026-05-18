@@ -9,6 +9,7 @@ on:
     paths:
       - 'apps/shopee-web/**'
       - 'apps/shopee-admin/**'
+      - 'apps/shopee-api/**'
       - 'libs/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
@@ -20,6 +21,7 @@ on:
     paths:
       - 'apps/shopee-web/**'
       - 'apps/shopee-admin/**'
+      - 'apps/shopee-api/**'
       - 'libs/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
@@ -42,6 +44,8 @@ jobs:
       web-tests: ${{ steps.filter.outputs.web-tests }}
       admin-src: ${{ steps.filter.outputs.admin-src }}
       admin-tests: ${{ steps.filter.outputs.admin-tests }}
+      api-src: ${{ steps.filter.outputs.api-src }}
+      api-tests: ${{ steps.filter.outputs.api-tests }}
     steps:
       - uses: actions/checkout@v4
 
@@ -83,6 +87,18 @@ jobs:
               - 'apps/shopee-admin/src/**/*.test.{ts,tsx}'
               - 'apps/shopee-admin/test/**'
               - 'apps/shopee-admin/vitest.setup.ts'
+            api-src:
+              - 'apps/shopee-api/src/**'
+              - 'apps/shopee-api/package.json'
+              - 'apps/shopee-api/tsconfig.json'
+              - 'apps/shopee-api/jest.config.js'
+              - '.github/workflows/**'
+              - 'pnpm-lock.yaml'
+              - 'package.json'
+            api-tests:
+              - 'apps/shopee-api/src/**/*.test.ts'
+              - 'apps/shopee-api/src/**/*.spec.ts'
+              - 'apps/shopee-api/src/__tests__/**'
 
   # ==================== SHOPEE-WEB: LINT ====================
   lint-web:
@@ -368,3 +384,88 @@ jobs:
           }
           EOF
           vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+  # ==================== SHOPEE-API: LINT ====================
+  lint-api:
+    name: Lint (shopee-api)
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.api-src == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: TypeScript Type Check
+        run: cd apps/shopee-api && npx tsc --noEmit
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+
+  # ==================== SHOPEE-API: TEST ====================
+  test-api:
+    name: Test (shopee-api)
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.api-src == 'true' || needs.changes.outputs.api-tests == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Run Tests
+        run: cd apps/shopee-api && pnpm test -- --coverage --forceExit
+        env:
+          CI: 'true'
+          NODE_OPTIONS: '--max-old-space-size=4096'
+
+      - name: Upload Coverage
+        if: always()
+        uses: codecov/codecov-action@v5
+        with:
+          files: apps/shopee-api/coverage/lcov.info
+          flags: shopee-api
+          fail_ci_if_error: false
+
+  # ==================== SHOPEE-API: BUILD ====================
+  build-api:
+    name: Build (shopee-api)
+    runs-on: ubuntu-latest
+    needs: [lint-api]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build shopee-api
+        run: cd apps/shopee-api && pnpm run build
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: shopee-api-build
+          path: apps/shopee-api/build/
+          retention-days: 3

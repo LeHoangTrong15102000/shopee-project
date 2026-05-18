@@ -98,3 +98,28 @@ export interface IPayloadToken {
   /** Token scope — "2fa_pending" for partial tokens issued mid-login when 2FA is required */
   scope?: string
 }
+
+export type FlashSaleStatus = 'DRAFT' | 'SCHEDULED' | 'ACTIVE' | 'ENDED' | 'CANCELLED'
+
+export interface IFlashSaleProduct {
+  productId: Types.ObjectId
+  skuId?: Types.ObjectId
+  originalPrice: number
+  flashPrice: number
+  totalQuantity: number
+  soldQuantity: number
+  limitPerUser: number
+}
+
+export interface IFlashSale {
+  _id?: Types.ObjectId
+  name: string
+  description?: string
+  startTime: Date
+  endTime: Date
+  status: FlashSaleStatus
+  products: IFlashSaleProduct[]
+  createdBy: Types.ObjectId | IUser
+  createdAt?: Date
+  updatedAt?: Date
+}

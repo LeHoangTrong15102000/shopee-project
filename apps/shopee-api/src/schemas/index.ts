@@ -228,3 +228,14 @@ export {
   type AdminOrderListQuery,
   type AdminBulkUpdateStatusBody,
 } from './admin-order-list.schema'
+
+// Flash sale schemas
+export {
+  createFlashSaleSchema,
+  updateFlashSaleSchema,
+  listFlashSalesSchema,
+  flashSaleIdParamSchema,
+  type CreateFlashSaleInput,
+  type UpdateFlashSaleInput,
+  type ListFlashSalesQuery,
+} from './flash-sale.schema'

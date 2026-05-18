@@ -8,19 +8,18 @@
 import { z, ZodError } from 'zod'
 
 const envSchema = z.object({
-  NODE_ENV: z
-    .enum(['development', 'production', 'test'])
-    .default('development'),
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 
   PORT: z.coerce.number().int().positive().default(4000),
 
-  MONGO_URI: z
-    .string()
-    .min(1, 'MONGO_URI is required'),
+  MONGO_URI: z.string().min(1, 'MONGO_URI is required'),
 
   SECRET_KEY_JWT: z
     .string()
-    .min(32, 'JWT_SECRET (SECRET_KEY_JWT) must be at least 32 characters — use a strong random value'),
+    .min(
+      32,
+      'JWT_SECRET (SECRET_KEY_JWT) must be at least 32 characters — use a strong random value',
+    ),
 
   // Access token TTL in seconds. Default: 900 (15 minutes).
   JWT_ACCESS_TTL: z.coerce.number().int().positive().default(900),
@@ -90,6 +89,9 @@ const envSchema = z.object({
       /^[0-9a-f]{64}$/i,
       'TWO_FACTOR_ENCRYPTION_KEY must be a 64-character hex string (32 bytes)',
     ),
+
+  // Flash sale scheduler check interval in seconds (default 60s)
+  FLASH_SALE_CHECK_INTERVAL: z.coerce.number().int().positive().default(60),
 })
 
 export type Env = z.infer<typeof envSchema>
@@ -134,6 +136,7 @@ export function validateEnv(rawEnv: NodeJS.ProcessEnv = process.env): Env {
       STRIPE_PUBLISHABLE_KEY: 'pk_test_placeholder',
       STRIPE_WEBHOOK_SECRET: 'whsec_placeholder',
       TWO_FACTOR_ENCRYPTION_KEY: '0'.repeat(64),
+      FLASH_SALE_CHECK_INTERVAL: 60,
     }
   }
 

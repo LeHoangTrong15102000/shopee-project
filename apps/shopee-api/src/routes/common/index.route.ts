@@ -7,6 +7,7 @@ import healthRouter from './health.route'
 import { shopRouter } from './shop.route'
 import paymentRouter from './payment.route'
 import ipnRouter from './ipn.route'
+import flashSaleRouter from './flash-sale.route'
 
 const commonRoutes = {
   prefix: '/',
@@ -47,6 +48,10 @@ const commonRoutes = {
     {
       path: 'payment',
       route: ipnRouter,
+    },
+    {
+      path: 'flash-sales',
+      route: flashSaleRouter,
     },
   ],
 }

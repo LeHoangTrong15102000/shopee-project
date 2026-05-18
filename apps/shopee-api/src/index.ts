@@ -40,7 +40,7 @@ import { Logger } from '@utils/logger'
 import { initializeSocket } from './socket/socket.init'
 import { viewCounterService } from '@utils/view-counter.service'
 import { disconnectRedis } from '@utils/redis.client'
-import { paymentReconciliationJob } from './container'
+import { paymentReconciliationJob, flashSaleScheduler } from './container'
 
 const app: express.Application = express()
 connectMongoDB()
@@ -272,6 +272,7 @@ httpServer.listen(PORT, () => {
 
   // Start background jobs after server is ready
   paymentReconciliationJob.start()
+  flashSaleScheduler.start()
 })
 
 // ==================== GRACEFUL SHUTDOWN ====================
@@ -286,6 +287,9 @@ const SHUTDOWN_TIMEOUT = 30000
 const gracefulShutdown = async (signal: string) => {
   console.log(chalk.yellow(`\n${signal} received. Starting graceful shutdown...`))
   Logger.apiInfo(`Graceful shutdown initiated`, { signal })
+
+  // Stop flash sale scheduler (clears setInterval)
+  flashSaleScheduler.stop()
 
   // Flush buffered view counts to database before shutdown
   try {

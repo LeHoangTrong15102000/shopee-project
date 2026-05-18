@@ -19,7 +19,7 @@ import { emitCurrentSellerMetrics } from '../socket/utils/seller-metrics.service
 import { emitAdminNewOrderNotification } from '../socket/utils/order-emit'
 import { getIO } from '../socket/socket.init'
 import { SOCKET_CONFIG } from '@constants/socket'
-import { purchaseService } from '../container'
+import { purchaseService, flashSaleService } from '../container'
 import { NotFoundError, ValidationError } from '@services/base.service'
 
 interface IPurchasePopulated extends Omit<IPurchase, 'product'> {
@@ -200,39 +200,66 @@ export const buyProducts = async (req: Request, res: Response) => {
       }
     }
 
-    await session.commitTransaction()
+    // Flash sale stock decrement — blocking, inside transaction for atomicity.
+    // Auto-detect flash sale items by matching productId against active sales.
+    const activeSales = await flashSaleService.getActive()
+    const flashSaleUpdates: Array<{
+      saleId: string
+      productId: string
+      remainingQuantity: number
+      soldQuantity: number
+    }> = []
 
-    // Check flash sale stock updates (fire-and-forget, non-blocking)
-    void (async () => {
-      try {
-        const { getActiveFlashSales, decrementStock } =
-          await import('../socket/managers/flash-sale.manager')
-        const { emitFlashSaleStockUpdate } = await import('../socket/utils/flash-sale-emit')
-
-        const activeSales = getActiveFlashSales()
-        if (activeSales.length === 0) return
-
-        for (const item of items) {
-          for (const sale of activeSales) {
-            const product = sale.products.get(item.product_id)
-            if (product) {
-              const updated = decrementStock(sale.sale_id, item.product_id, item.buy_count)
-              if (updated) {
-                emitFlashSaleStockUpdate(
-                  sale.sale_id,
-                  item.product_id,
-                  updated.current_stock,
-                  updated.sold,
-                )
-              }
+    if (activeSales.length > 0) {
+      for (const item of items) {
+        for (const sale of activeSales) {
+          const saleProduct = sale.products.find((p) => p.productId.toString() === item.product_id)
+          if (saleProduct) {
+            // Blocking call inside transaction — throws if sold out or limit exceeded
+            const updated = await flashSaleService.purchaseFlashSaleItem(
+              sale._id!.toString(),
+              item.product_id,
+              req.jwtDecoded.id,
+              item.buy_count,
+              session,
+            )
+            // Collect updated stock for post-commit WebSocket broadcast
+            const updatedProduct = updated.products.find(
+              (p) => p.productId.toString() === item.product_id,
+            )
+            if (updatedProduct) {
+              flashSaleUpdates.push({
+                saleId: sale._id!.toString(),
+                productId: item.product_id,
+                remainingQuantity: updatedProduct.totalQuantity - updatedProduct.soldQuantity,
+                soldQuantity: updatedProduct.soldQuantity,
+              })
             }
           }
         }
-      } catch (error) {
-        // Non-critical: log and continue
-        console.error('Failed to update flash sale stock:', error)
       }
-    })()
+    }
+
+    await session.commitTransaction()
+
+    // Broadcast flash sale stock updates after successful commit (fire-and-forget)
+    if (flashSaleUpdates.length > 0) {
+      void (() => {
+        try {
+          const { emitFlashSaleStockUpdate } = require('../socket/utils/flash-sale-emit')
+          for (const update of flashSaleUpdates) {
+            emitFlashSaleStockUpdate(
+              update.saleId,
+              update.productId,
+              update.remainingQuantity,
+              update.soldQuantity,
+            )
+          }
+        } catch (_) {
+          /* non-critical */
+        }
+      })()
+    }
 
     // Emit cart update for cross-device sync
     emitCartUpdate(req.jwtDecoded.id, 'buy')

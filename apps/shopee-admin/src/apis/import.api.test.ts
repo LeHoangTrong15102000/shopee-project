@@ -12,8 +12,11 @@ describe('import.api', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('importProducts calls POST /admin/import/products', () => {
-    importApi.importProducts()
-    expect(mockHttp.post).toHaveBeenCalledWith('admin/import/products')
+    const file = new File(['test'], 'products.csv', { type: 'text/csv' })
+    importApi.importProducts(file)
+    expect(mockHttp.post).toHaveBeenCalledWith('admin/import/products', expect.any(FormData), {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
   })
 
   it('getImportStats calls GET /admin/import/products/stats', () => {

@@ -1,8 +1,10 @@
 import { Router } from 'express'
 import authMiddleware from '@middleware/auth.middleware'
 import * as orderController from '@controllers/order.controller'
+import * as refundController from '@controllers/refund.controller'
 import { asyncHandler } from '@utils/async-handler'
 import { validate, returnOrderSchema } from '@schemas/index'
+import { submitRefundSchema, cancelRefundSchema, refundStatusSchema } from '@schemas/refund.schema'
 import { GpsTrackingService } from '@services/gps-tracking.service'
 import { NotFoundError, ValidationError } from '@services/base.service'
 import { STATUS } from '@constants/status'
@@ -55,6 +57,31 @@ userOrderRouter.get(
   '/pending-payment',
   authMiddleware.verifyAccessToken,
   asyncHandler(orderController.getPendingPaymentOrder),
+)
+
+// Refund routes — registered BEFORE /:id to avoid wildcard conflict
+// POST /orders/:orderId/refund-request — submit a refund request
+userOrderRouter.post(
+  '/:orderId/refund-request',
+  authMiddleware.verifyAccessToken,
+  validate(submitRefundSchema),
+  asyncHandler(refundController.submitRefundRequest),
+)
+
+// GET /orders/:orderId/refund-status — check refund status
+userOrderRouter.get(
+  '/:orderId/refund-status',
+  authMiddleware.verifyAccessToken,
+  validate(refundStatusSchema),
+  asyncHandler(refundController.getRefundStatus),
+)
+
+// DELETE /orders/:orderId/refund-request — cancel a pending refund request
+userOrderRouter.delete(
+  '/:orderId/refund-request',
+  authMiddleware.verifyAccessToken,
+  validate(cancelRefundSchema),
+  asyncHandler(refundController.cancelRefundRequest),
 )
 
 // Get order by ID

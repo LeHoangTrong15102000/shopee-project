@@ -10,6 +10,9 @@ export const ORDER_STATUS = {
   DELIVERED: 'delivered',
   CANCELLED: 'cancelled',
   RETURNED: 'returned',
+  REFUND_REQUESTED: 'refund_requested',
+  REFUND_APPROVED: 'refund_approved',
+  REFUND_COMPLETED: 'refund_completed',
 } as const
 
 export type OrderStatusType = (typeof ORDER_STATUS)[keyof typeof ORDER_STATUS]

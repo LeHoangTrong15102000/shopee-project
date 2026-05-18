@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { ORDER_STATUS } from '@database/models/order.model'
 
 /**
  * Return order request body validation
@@ -20,7 +21,7 @@ export type ReturnOrderInput = z.infer<typeof returnOrderSchema>
 export const adminUpdateStatusSchema = z.object({
   body: z.object({
     status: z.enum(
-      ['confirmed', 'processing', 'shipping', 'delivered', 'cancelled', 'returned'],
+      Object.values(ORDER_STATUS) as [string, ...string[]],
       'Trạng thái không hợp lệ',
     ),
     reason: z.string().optional(),

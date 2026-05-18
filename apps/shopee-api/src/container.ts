@@ -25,6 +25,7 @@ import { SessionRepository } from '@repositories/session.repository'
 import { LoginHistoryRepository } from '@repositories/login-history.repository'
 import { AuditLogRepository } from '@repositories/audit-log.repository'
 import { FlashSaleRepository } from '@repositories/flash-sale.repository'
+import { RefundRepository } from '@repositories/refund.repository'
 
 // Services
 import { ProductService } from '@services/product.service'
@@ -54,6 +55,7 @@ import { SessionService } from '@services/session.service'
 import { LoginHistoryService } from '@services/login-history.service'
 import { AuditLogService } from '@services/audit-log.service'
 import { FlashSaleService } from '@services/flash-sale.service'
+import { RefundService } from '@services/refund.service'
 
 // Jobs
 import { PaymentReconciliationJob } from './jobs/payment-reconciliation.job'
@@ -81,6 +83,7 @@ const sessionRepository = new SessionRepository()
 const loginHistoryRepository = new LoginHistoryRepository()
 const auditLogRepository = new AuditLogRepository()
 const flashSaleRepository = new FlashSaleRepository()
+const refundRepository = new RefundRepository()
 
 // Service instances (singletons with injected repositories)
 const productService = new ProductService(productRepository, skuRepository)
@@ -120,6 +123,7 @@ const sessionService = new SessionService(sessionRepository)
 const loginHistoryService = new LoginHistoryService(loginHistoryRepository)
 const auditLogService = new AuditLogService(auditLogRepository)
 const flashSaleService = new FlashSaleService(flashSaleRepository)
+const refundService = new RefundService(refundRepository, orderRepository, notificationService)
 
 // Job instances
 const paymentReconciliationJob = new PaymentReconciliationJob(paymentService)
@@ -150,6 +154,7 @@ export const container = {
     loginHistory: loginHistoryRepository,
     auditLog: auditLogRepository,
     flashSale: flashSaleRepository,
+    refund: refundRepository,
   },
   // Services (main interface for controllers)
   services: {
@@ -177,6 +182,7 @@ export const container = {
     loginHistory: loginHistoryService,
     auditLog: auditLogService,
     flashSale: flashSaleService,
+    refund: refundService,
   },
   // Schedulers
   schedulers: {
@@ -220,4 +226,5 @@ export {
   flashSaleRepository,
   flashSaleService,
   flashSaleScheduler,
+  refundService,
 }

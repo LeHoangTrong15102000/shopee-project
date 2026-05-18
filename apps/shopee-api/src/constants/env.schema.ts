@@ -92,6 +92,9 @@ const envSchema = z.object({
 
   // Flash sale scheduler check interval in seconds (default 60s)
   FLASH_SALE_CHECK_INTERVAL: z.coerce.number().int().positive().default(60),
+
+  // Refund request deadline in days after delivery (default 7 days)
+  REFUND_REQUEST_DEADLINE_DAYS: z.coerce.number().int().positive().default(7),
 })
 
 export type Env = z.infer<typeof envSchema>
@@ -137,6 +140,7 @@ export function validateEnv(rawEnv: NodeJS.ProcessEnv = process.env): Env {
       STRIPE_WEBHOOK_SECRET: 'whsec_placeholder',
       TWO_FACTOR_ENCRYPTION_KEY: '0'.repeat(64),
       FLASH_SALE_CHECK_INTERVAL: 60,
+      REFUND_REQUEST_DEADLINE_DAYS: 7,
     }
   }
 

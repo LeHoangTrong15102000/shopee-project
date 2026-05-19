@@ -1,10 +1,26 @@
 /// <reference types="jest" />
 import { Request, Response } from 'express'
 
-// Mock the container to provide a controlled stripeService
+// Mock the container to provide a controlled stripeService and refundService
 jest.mock('../../container', () => ({
   stripeService: {
     constructWebhookEvent: jest.fn(),
+  },
+  refundService: {
+    completeRefund: jest.fn(),
+  },
+}))
+
+jest.mock('@database/models/refund.model', () => ({
+  RefundModel: {
+    findOne: jest.fn(),
+    findByIdAndUpdate: jest.fn(),
+  },
+  REFUND_STATUS: {
+    PENDING: 'PENDING',
+    APPROVED: 'APPROVED',
+    PROCESSING: 'PROCESSING',
+    COMPLETED: 'COMPLETED',
   },
 }))
 
@@ -35,15 +51,18 @@ jest.mock('../../socket/utils/emit', () => ({
   emitToUser: jest.fn(),
 }))
 
-import { stripeService } from '../../container'
+import { stripeService, refundService } from '../../container'
 import { OrderModel } from '@database/models/order.model'
 import { PaymentLogModel } from '@database/models/payment-log.model'
+import { RefundModel } from '@database/models/refund.model'
 import { emitToUser } from '../../socket/utils/emit'
 import { stripeWebhook } from '@controllers/payment.controller'
 
 const mockStripeService = stripeService as jest.Mocked<typeof stripeService>
 const mockOrderModel = OrderModel as jest.Mocked<typeof OrderModel>
 const mockPaymentLogModel = PaymentLogModel as jest.Mocked<typeof PaymentLogModel>
+const mockRefundModel = RefundModel as jest.Mocked<typeof RefundModel>
+const mockRefundService = refundService as jest.Mocked<typeof refundService>
 const mockEmitToUser = emitToUser as jest.Mock
 
 // ─── Request / Response helpers (matching checkout.controller.test.ts pattern) ─
@@ -346,5 +365,246 @@ describe('payment.controller — stripeWebhook', () => {
       received: true,
       error: 'Internal error processing webhook',
     })
+  })
+})
+
+// ─── Refund webhook events ───────────────────────────────────────────────────
+
+describe('payment.controller — stripeWebhook refund events', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  // ─── charge.refunded ──────────────────────────────────────────────────────
+
+  it('charge.refunded: processes each refund in charge.refunds.data and responds 200', async () => {
+    const req = createMockRequest({
+      headers: { 'stripe-signature': 'valid_sig' },
+    })
+    const res = createMockResponse()
+
+    const event = {
+      id: 'evt_refund_batch',
+      type: 'charge.refunded',
+      data: {
+        object: {
+          id: 'ch_test_001',
+          refunds: {
+            data: [
+              {
+                id: 're_test_001',
+                status: 'succeeded',
+                failure_reason: null,
+              },
+              {
+                id: 're_test_002',
+                status: 'failed',
+                failure_reason: 'Insufficient funds',
+              },
+            ],
+          },
+        },
+      },
+    }
+    mockStripeService.constructWebhookEvent.mockReturnValue(event as any)
+    ;(mockPaymentLogModel.exists as jest.Mock).mockResolvedValue(null)
+
+    // Both refunds are found in DB — findOne().lean() chain mirrors real Mongoose usage
+    ;(mockRefundModel.findOne as jest.Mock)
+      .mockReturnValueOnce({ lean: jest.fn().mockResolvedValue({ _id: 'refund_001', status: 'PROCESSING', gateway_refund_id: 're_test_001' }) })
+      .mockReturnValueOnce({ lean: jest.fn().mockResolvedValue({ _id: 'refund_002', status: 'PENDING', gateway_refund_id: 're_test_002' }) })
+    ;(mockRefundService.completeRefund as jest.Mock).mockResolvedValue(undefined)
+    ;(mockRefundModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({})
+
+    await stripeWebhook(req as Request, res as Response)
+
+    // completeRefund called for refund with PROCESSING status and succeeded Stripe status
+    expect(mockRefundService.completeRefund).toHaveBeenCalledWith('refund_001')
+    // findByIdAndUpdate called for refund with failed Stripe status
+    expect(mockRefundModel.findByIdAndUpdate).toHaveBeenCalledWith(
+      'refund_002',
+      expect.objectContaining({
+        status: 'APPROVED',
+        failure_reason: 'Insufficient funds',
+      }),
+    )
+    expect(res.status).toHaveBeenCalledWith(200)
+    expect(res.json).toHaveBeenCalledWith({ received: true })
+  })
+
+  it('charge.refunded: refund not found in DB → responds 200 without side effects', async () => {
+    const req = createMockRequest({
+      headers: { 'stripe-signature': 'valid_sig' },
+    })
+    const res = createMockResponse()
+
+    const event = {
+      id: 'evt_refund_notfound',
+      type: 'charge.refunded',
+      data: {
+        object: {
+          id: 'ch_test_002',
+          refunds: {
+            data: [{ id: 're_unknown', status: 'succeeded', failure_reason: null }],
+          },
+        },
+      },
+    }
+    mockStripeService.constructWebhookEvent.mockReturnValue(event as any)
+    ;(mockPaymentLogModel.exists as jest.Mock).mockResolvedValue(null)
+    ;(mockRefundModel.findOne as jest.Mock).mockReturnValue({ lean: jest.fn().mockResolvedValue(null) }) // not found
+
+    await stripeWebhook(req as Request, res as Response)
+
+    expect(mockRefundService.completeRefund).not.toHaveBeenCalled()
+    expect(mockRefundModel.findByIdAndUpdate).not.toHaveBeenCalled()
+    expect(res.status).toHaveBeenCalledWith(200)
+    expect(res.json).toHaveBeenCalledWith({ received: true })
+  })
+
+  // ─── refund.updated ───────────────────────────────────────────────────────
+
+  it('refund.updated with status succeeded and refund in PROCESSING → calls completeRefund', async () => {
+    const req = createMockRequest({
+      headers: { 'stripe-signature': 'valid_sig' },
+    })
+    const res = createMockResponse()
+
+    const event = {
+      id: 'evt_refund_updated',
+      type: 'refund.updated',
+      data: {
+        object: {
+          id: 're_test_003',
+          status: 'succeeded',
+          failure_reason: null,
+        },
+      },
+    }
+    mockStripeService.constructWebhookEvent.mockReturnValue(event as any)
+    ;(mockPaymentLogModel.exists as jest.Mock).mockResolvedValue(null)
+    ;(mockRefundModel.findOne as jest.Mock).mockReturnValue({
+      lean: jest.fn().mockResolvedValue({
+        _id: 'refund_003',
+        status: 'PROCESSING',
+        gateway_refund_id: 're_test_003',
+      }),
+    })
+    ;(mockRefundService.completeRefund as jest.Mock).mockResolvedValue(undefined)
+
+    await stripeWebhook(req as Request, res as Response)
+
+    expect(mockRefundService.completeRefund).toHaveBeenCalledWith('refund_003')
+    expect(mockRefundModel.findByIdAndUpdate).not.toHaveBeenCalled()
+    expect(res.status).toHaveBeenCalledWith(200)
+    expect(res.json).toHaveBeenCalledWith({ received: true })
+  })
+
+  it('refund.updated with status succeeded but refund NOT in PROCESSING → does NOT call completeRefund', async () => {
+    const req = createMockRequest({
+      headers: { 'stripe-signature': 'valid_sig' },
+    })
+    const res = createMockResponse()
+
+    const event = {
+      id: 'evt_refund_updated_notprocessing',
+      type: 'refund.updated',
+      data: {
+        object: {
+          id: 're_test_004',
+          status: 'succeeded',
+          failure_reason: null,
+        },
+      },
+    }
+    mockStripeService.constructWebhookEvent.mockReturnValue(event as any)
+    ;(mockPaymentLogModel.exists as jest.Mock).mockResolvedValue(null)
+    ;(mockRefundModel.findOne as jest.Mock).mockReturnValue({
+      lean: jest.fn().mockResolvedValue({
+        _id: 'refund_004',
+        status: 'COMPLETED',
+        gateway_refund_id: 're_test_004',
+      }),
+    })
+
+    await stripeWebhook(req as Request, res as Response)
+
+    expect(mockRefundService.completeRefund).not.toHaveBeenCalled()
+    expect(mockRefundModel.findByIdAndUpdate).not.toHaveBeenCalled()
+    expect(res.status).toHaveBeenCalledWith(200)
+    expect(res.json).toHaveBeenCalledWith({ received: true })
+  })
+
+  it('refund.updated: refund not found in DB → responds 200 without side effects', async () => {
+    const req = createMockRequest({
+      headers: { 'stripe-signature': 'valid_sig' },
+    })
+    const res = createMockResponse()
+
+    const event = {
+      id: 'evt_refund_updated_notfound',
+      type: 'refund.updated',
+      data: {
+        object: {
+          id: 're_unknown_002',
+          status: 'succeeded',
+          failure_reason: null,
+        },
+      },
+    }
+    mockStripeService.constructWebhookEvent.mockReturnValue(event as any)
+    ;(mockPaymentLogModel.exists as jest.Mock).mockResolvedValue(null)
+    ;(mockRefundModel.findOne as jest.Mock).mockReturnValue({ lean: jest.fn().mockResolvedValue(null) })
+
+    await stripeWebhook(req as Request, res as Response)
+
+    expect(mockRefundService.completeRefund).not.toHaveBeenCalled()
+    expect(mockRefundModel.findByIdAndUpdate).not.toHaveBeenCalled()
+    expect(res.status).toHaveBeenCalledWith(200)
+    expect(res.json).toHaveBeenCalledWith({ received: true })
+  })
+
+  // ─── refund.failed ────────────────────────────────────────────────────────
+
+  it('refund.failed: updates refund to APPROVED with failure_reason and responds 200', async () => {
+    const req = createMockRequest({
+      headers: { 'stripe-signature': 'valid_sig' },
+    })
+    const res = createMockResponse()
+
+    const event = {
+      id: 'evt_refund_failed',
+      type: 'refund.failed',
+      data: {
+        object: {
+          id: 're_test_005',
+          status: 'failed',
+          failure_reason: 'Card declined by issuer',
+        },
+      },
+    }
+    mockStripeService.constructWebhookEvent.mockReturnValue(event as any)
+    ;(mockPaymentLogModel.exists as jest.Mock).mockResolvedValue(null)
+    ;(mockRefundModel.findOne as jest.Mock).mockReturnValue({
+      lean: jest.fn().mockResolvedValue({
+        _id: 'refund_005',
+        status: 'PROCESSING',
+        gateway_refund_id: 're_test_005',
+      }),
+    })
+    ;(mockRefundModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({})
+
+    await stripeWebhook(req as Request, res as Response)
+
+    expect(mockRefundModel.findByIdAndUpdate).toHaveBeenCalledWith(
+      'refund_005',
+      expect.objectContaining({
+        status: 'APPROVED',
+        failure_reason: 'Card declined by issuer',
+      }),
+    )
+    expect(mockRefundService.completeRefund).not.toHaveBeenCalled()
+    expect(res.status).toHaveBeenCalledWith(200)
+    expect(res.json).toHaveBeenCalledWith({ received: true })
   })
 })

@@ -416,6 +416,193 @@ describe('MomoProvider', () => {
     })
   })
 
+  // ─── refund ───────────────────────────────────────────────────────────────
+
+  describe('refund', () => {
+    it('returns { success: true, transactionId, resultCode: 0 } on successful refund', async () => {
+      mockAxios.post = jest.fn().mockResolvedValue({
+        data: { resultCode: 0, transId: 111222333, message: 'Successful.' },
+      })
+
+      const provider = new MomoProvider()
+      const result = await provider.refund({
+        transactionId: '9876543210',
+        amount: 150000,
+        orderId: 'order_refund_001',
+        requestId: 'req_refund_001',
+        description: 'Customer requested refund',
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.transactionId).toBe('111222333')
+      expect(result.resultCode).toBe(0)
+    })
+
+    it('returns { success: false, resultCode, message } when MoMo returns non-zero resultCode', async () => {
+      mockAxios.post = jest.fn().mockResolvedValue({
+        data: { resultCode: 1001, message: 'Refund failed: insufficient balance' },
+      })
+
+      const provider = new MomoProvider()
+      const result = await provider.refund({
+        transactionId: '9876543210',
+        amount: 150000,
+        orderId: 'order_refund_002',
+        requestId: 'req_refund_002',
+      })
+
+      expect(result.success).toBe(false)
+      expect(result.resultCode).toBe(1001)
+      expect(result.message).toBe('Refund failed: insufficient balance')
+    })
+
+    it('returns { success: false, resultCode: -1, message } when axios throws a network error', async () => {
+      mockAxios.post = jest.fn().mockRejectedValue(new Error('Network timeout'))
+
+      const provider = new MomoProvider()
+      const result = await provider.refund({
+        transactionId: '9876543210',
+        amount: 150000,
+        orderId: 'order_refund_003',
+        requestId: 'req_refund_003',
+      })
+
+      expect(result.success).toBe(false)
+      expect(result.resultCode).toBe(-1)
+      expect(result.message).toBe('Network timeout')
+    })
+
+    it('uses empty string for description when not provided', async () => {
+      let capturedBody: any = null
+      mockAxios.post = jest.fn().mockImplementation((_url, body) => {
+        capturedBody = body
+        return Promise.resolve({
+          data: { resultCode: 0, transId: 999, message: 'Successful.' },
+        })
+      })
+
+      const provider = new MomoProvider()
+      await provider.refund({
+        transactionId: '9876543210',
+        amount: 50000,
+        orderId: 'order_refund_004',
+        requestId: 'req_refund_004',
+      })
+
+      expect(capturedBody.description).toBe('')
+    })
+  })
+
+  // ─── queryRefundStatus ────────────────────────────────────────────────────
+
+  describe('queryRefundStatus', () => {
+    it('returns { success: true, transactionId, resultCode: 0 } when resultCode is 0', async () => {
+      mockAxios.post = jest.fn().mockResolvedValue({
+        data: { resultCode: 0, transId: 555666777, message: 'Successful.' },
+      })
+
+      const provider = new MomoProvider()
+      const result = await provider.queryRefundStatus({
+        orderId: 'order_qr_001',
+        requestId: 'req_qr_001',
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.transactionId).toBe('555666777')
+      expect(result.resultCode).toBe(0)
+    })
+
+    it('returns { success: false, resultCode: "PENDING" } when resultCode is 1000', async () => {
+      mockAxios.post = jest.fn().mockResolvedValue({
+        data: { resultCode: 1000, message: 'Processing' },
+      })
+
+      const provider = new MomoProvider()
+      const result = await provider.queryRefundStatus({
+        orderId: 'order_qr_002',
+        requestId: 'req_qr_002',
+      })
+
+      expect(result.success).toBe(false)
+      expect(result.resultCode).toBe('PENDING')
+    })
+
+    it('returns { success: false, resultCode: "PENDING" } when resultCode is 7000', async () => {
+      mockAxios.post = jest.fn().mockResolvedValue({
+        data: { resultCode: 7000, message: 'Pending' },
+      })
+
+      const provider = new MomoProvider()
+      const result = await provider.queryRefundStatus({
+        orderId: 'order_qr_003',
+        requestId: 'req_qr_003',
+      })
+
+      expect(result.success).toBe(false)
+      expect(result.resultCode).toBe('PENDING')
+    })
+
+    it('returns { success: false, resultCode } when resultCode is a non-pending failure', async () => {
+      mockAxios.post = jest.fn().mockResolvedValue({
+        data: { resultCode: 1006, message: 'Refund rejected' },
+      })
+
+      const provider = new MomoProvider()
+      const result = await provider.queryRefundStatus({
+        orderId: 'order_qr_004',
+        requestId: 'req_qr_004',
+      })
+
+      expect(result.success).toBe(false)
+      expect(result.resultCode).toBe(1006)
+    })
+
+    it('returns { success: false, resultCode: "PENDING" } when axios throws a network error', async () => {
+      mockAxios.post = jest.fn().mockRejectedValue(new Error('Connection refused'))
+
+      const provider = new MomoProvider()
+      const result = await provider.queryRefundStatus({
+        orderId: 'order_qr_005',
+        requestId: 'req_qr_005',
+      })
+
+      expect(result.success).toBe(false)
+      expect(result.resultCode).toBe('PENDING')
+    })
+  })
+
+  // ─── queryStatus — additional result codes ────────────────────────────────
+
+  describe('queryStatus — additional result codes', () => {
+    it('returns PENDING when MoMo query returns resultCode 7000', async () => {
+      mockAxios.post = jest.fn().mockResolvedValue({
+        data: { resultCode: 7000, message: 'Pending' },
+      })
+
+      const provider = new MomoProvider()
+      const status = await provider.queryStatus({
+        orderId: 'order_qs_7000',
+        requestId: 'req_qs_7000',
+      })
+
+      expect(status).toBe('PENDING')
+    })
+
+    it('returns FAILED when MoMo query returns a non-zero, non-pending resultCode', async () => {
+      mockAxios.post = jest.fn().mockResolvedValue({
+        data: { resultCode: 9999, message: 'Unknown error' },
+      })
+
+      const provider = new MomoProvider()
+      const status = await provider.queryStatus({
+        orderId: 'order_qs_9999',
+        requestId: 'req_qs_9999',
+      })
+
+      expect(status).toBe('FAILED')
+    })
+  })
+
   // ─── IPN verification — round-trip ───────────────────────────────────────
   // We test the round-trip: build a payload whose signature was computed with
   // the same SECRET_KEY the module uses (whatever it loaded at import time).
@@ -674,6 +861,55 @@ describe('VnpayProvider', () => {
       })
 
       expect(status).toBe('PENDING')
+    })
+  })
+
+  // ─── refund ───────────────────────────────────────────────────────────────
+
+  describe('refund', () => {
+    it('returns { success: false, resultCode: "UNSUPPORTED" }', async () => {
+      const provider = new VnpayProvider()
+      const result = await provider.refund!({
+        transactionId: '12345678',
+        amount: 150000,
+        orderId: 'order_refund_001',
+        requestId: 'req_refund_001',
+        description: 'Test refund',
+      })
+
+      expect(result.success).toBe(false)
+      expect(result.resultCode).toBe('UNSUPPORTED')
+    })
+  })
+
+  // ─── queryRefundStatus ────────────────────────────────────────────────────
+
+  describe('queryRefundStatus', () => {
+    it('returns { success: false, resultCode: "UNSUPPORTED" }', async () => {
+      const provider = new VnpayProvider()
+      const result = await provider.queryRefundStatus!({
+        orderId: 'order_refund_002',
+        requestId: 'req_refund_002',
+      })
+
+      expect(result.success).toBe(false)
+      expect(result.resultCode).toBe('UNSUPPORTED')
+    })
+  })
+
+  // ─── verifyIpn — error path ───────────────────────────────────────────────
+
+  describe('verifyIpn — error path', () => {
+    it('returns false (does not throw) when vnpay.verifyIpnCall throws', () => {
+      const { verifyIpnCall } = getVnpayMocks()
+      verifyIpnCall.mockImplementation(() => {
+        throw new Error('Unexpected vnpay library error')
+      })
+
+      const provider = new VnpayProvider()
+      const result = provider.verifyIpn({ vnp_TxnRef: 'txn_err_001' })
+
+      expect(result).toBe(false)
     })
   })
 })

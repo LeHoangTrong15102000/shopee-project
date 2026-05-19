@@ -26,7 +26,7 @@ export const adminShopListSchema = z.object({
       order: z.enum(['asc', 'desc']).optional().default('desc'),
     })
     .optional()
-    .default({}),
+    .default({ page: 1, limit: 20, sort_by: 'createdAt' as const, order: 'desc' as const }),
 })
 
 // ─── Admin Shop ID Param ──────────────────────────────────────────
@@ -72,7 +72,7 @@ export const adminShopProductsSchema = z.object({
       limit: z.coerce.number().int().min(1).max(100).optional().default(20),
     })
     .optional()
-    .default({}),
+    .default({ page: 1, limit: 20 }),
 })
 
 // ─── Admin Shop Revenue Query ─────────────────────────────────────
@@ -86,5 +86,5 @@ export const adminShopRevenueSchema = z.object({
       period: z.enum(['7d', '30d', '90d', '1y']).optional().default('30d'),
     })
     .optional()
-    .default({}),
+    .default({ period: '30d' as const }),
 })

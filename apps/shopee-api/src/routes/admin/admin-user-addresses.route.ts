@@ -13,7 +13,7 @@ adminUserAddressesRouter.get(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   asyncHandler(async (req: Request, res: Response) => {
-    const { user_id } = req.params
+    const user_id = req.params.user_id as string
     const addressService = container.services.address
 
     if (!Types.ObjectId.isValid(user_id)) {

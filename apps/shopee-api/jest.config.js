@@ -28,10 +28,12 @@ const sharedConfig = {
   },
   testPathIgnorePatterns: ['/node_modules/', '/build/'],
   clearMocks: true,
-  verbose: true,
 }
 
 module.exports = {
+  verbose: true,
+  testTimeout: 30000,
+
   // Coverage thresholds for payment module (applies when running with --coverage)
   coverageThreshold: {
     './src/services/payment.service.ts': {

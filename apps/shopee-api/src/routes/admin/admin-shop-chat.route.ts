@@ -92,7 +92,7 @@ adminShopChatRouter.get(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params
+    const id = req.params.id as string
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(STATUS.BAD_REQUEST).json({ message: 'Invalid conversation ID' })
@@ -126,7 +126,7 @@ adminShopChatRouter.get(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params
+    const id = req.params.id as string
     const cursor = req.query.cursor as string | undefined
     const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 20))
 
@@ -164,7 +164,7 @@ adminShopChatRouter.patch(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params
+    const id = req.params.id as string
     const { flagged, reason } = req.body as { flagged: boolean; reason?: string }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {

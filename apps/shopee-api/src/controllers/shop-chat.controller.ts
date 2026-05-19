@@ -13,15 +13,15 @@ export const getConversations = async (req: Request, res: Response): Promise<voi
 }
 
 export const getMessages = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params
+  const id = req.params.id as string
   const cursor = req.query.cursor as string | undefined
   const limit = Number(req.query.limit) || 20
-  const result = await shopChatService.getMessages(String(id), cursor, limit)
+  const result = await shopChatService.getMessages(id, cursor, limit)
   res.status(STATUS.OK).json({ message: 'Lấy tin nhắn thành công', data: result })
 }
 
 export const sendMessage = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params
+  const id = req.params.id as string
   const userId = req.jwtDecoded.id
   const { content, type = 'text', imageUrl } = req.body
   if (!content) {
@@ -29,7 +29,7 @@ export const sendMessage = async (req: Request, res: Response): Promise<void> =>
     return
   }
   const message = await shopChatService.sendMessage(
-    String(id),
+    id,
     userId,
     'user',
     content,

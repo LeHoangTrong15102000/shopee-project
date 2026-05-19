@@ -17,7 +17,6 @@ import { PaymentService } from './payment.service'
 import { PaymentProvider } from './payment/payment.interface'
 import { IRefund, REFUND_STATUS, RefundStatusType } from '@database/models/refund.model'
 import { ORDER_STATUS, PAYMENT_METHOD, PAYMENT_STATUS, IOrder } from '@database/models/order.model'
-import { OrderModel } from '@database/models/order.model'
 import { config } from '@constants/config'
 import {
   PaginatedResult,
@@ -57,11 +56,6 @@ export class RefundService extends BaseService {
     const order = await this.orderRepository.findByIdAndUser(orderId, userId)
     if (!order) {
       throw new NotFoundError('Order', orderId)
-    }
-
-    // Validate order ownership
-    if (order.user.toString() !== userId) {
-      throw new ForbiddenError('Bạn không có quyền yêu cầu hoàn tiền cho đơn hàng này')
     }
 
     // Validate order status is DELIVERED or RETURNED
@@ -308,10 +302,11 @@ export class RefundService extends BaseService {
       ORDER_STATUS.REFUND_COMPLETED,
     )
 
-    // Update order payment_status to 'refunded'
-    await OrderModel.findByIdAndUpdate(refund.order_id, {
-      payment_status: PAYMENT_STATUS.REFUNDED,
-    })
+    // Update order payment_status to 'refunded' via repository
+    await this.orderRepository.updatePaymentStatus(
+      refund.order_id.toString(),
+      PAYMENT_STATUS.REFUNDED,
+    )
 
     // Notify user
     this.notificationService

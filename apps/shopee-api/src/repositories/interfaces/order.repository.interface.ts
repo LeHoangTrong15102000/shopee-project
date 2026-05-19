@@ -63,6 +63,8 @@ export interface IOrderRepository {
     additionalData?: Partial<IOrder>,
   ): Promise<IOrder | null>
 
+  updatePaymentStatus(orderId: string | Types.ObjectId, status: string): Promise<void>
+
   // Tracking
   findTrackingByOrderAndUser(
     orderId: string | Types.ObjectId,

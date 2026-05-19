@@ -13,15 +13,32 @@ import {
 import { Logger } from '@utils/logger'
 
 const MOMO_ENDPOINT = process.env.MOMO_ENDPOINT || 'https://test-payment.momo.vn'
-const PARTNER_CODE = process.env.MOMO_PARTNER_CODE || ''
-const ACCESS_KEY = process.env.MOMO_ACCESS_KEY || ''
-const SECRET_KEY = process.env.MOMO_SECRET_KEY || ''
 
 function hmacSha256(data: string, key: string): string {
   return crypto.createHmac('sha256', key).update(data).digest('hex')
 }
 
 export class MomoProvider implements IPaymentProvider {
+  private readonly partnerCode: string
+  private readonly accessKey: string
+  private readonly secretKey: string
+
+  constructor() {
+    this.partnerCode = process.env.MOMO_PARTNER_CODE ?? ''
+    this.accessKey = process.env.MOMO_ACCESS_KEY ?? ''
+    this.secretKey = process.env.MOMO_SECRET_KEY ?? ''
+
+    if (!this.partnerCode) {
+      throw new Error('MomoProvider: MOMO_PARTNER_CODE environment variable is required but not set')
+    }
+    if (!this.accessKey) {
+      throw new Error('MomoProvider: MOMO_ACCESS_KEY environment variable is required but not set')
+    }
+    if (!this.secretKey) {
+      throw new Error('MomoProvider: MOMO_SECRET_KEY environment variable is required but not set')
+    }
+  }
+
   async createPayment(params: CreatePaymentParams): Promise<PaymentResult> {
     const { orderId, amount, orderInfo, returnUrl, ipnUrl, requestId } = params
 
@@ -30,23 +47,23 @@ export class MomoProvider implements IPaymentProvider {
 
     // Signature string — fields in exact order per MoMo docs
     const rawSignature = [
-      `accessKey=${ACCESS_KEY}`,
+      `accessKey=${this.accessKey}`,
       `amount=${amount}`,
       `extraData=${extraData}`,
       `ipnUrl=${ipnUrl}`,
       `orderId=${orderId}`,
       `orderInfo=${orderInfo}`,
-      `partnerCode=${PARTNER_CODE}`,
+      `partnerCode=${this.partnerCode}`,
       `redirectUrl=${returnUrl}`,
       `requestId=${requestId}`,
       `requestType=${requestType}`,
     ].join('&')
 
-    const signature = hmacSha256(rawSignature, SECRET_KEY)
+    const signature = hmacSha256(rawSignature, this.secretKey)
 
     const requestBody = {
-      partnerCode: PARTNER_CODE,
-      accessKey: ACCESS_KEY,
+      partnerCode: this.partnerCode,
+      accessKey: this.accessKey,
       requestId,
       amount,
       orderId,
@@ -93,7 +110,7 @@ export class MomoProvider implements IPaymentProvider {
   verifyIpn(payload: Record<string, unknown>): boolean {
     // IPN signature string — fields alphabetically sorted per MoMo docs
     const rawSignature = [
-      `accessKey=${ACCESS_KEY}`,
+      `accessKey=${this.accessKey}`,
       `amount=${payload.amount}`,
       `extraData=${payload.extraData}`,
       `message=${payload.message}`,
@@ -108,7 +125,7 @@ export class MomoProvider implements IPaymentProvider {
       `transId=${payload.transId}`,
     ].join('&')
 
-    const computed = hmacSha256(rawSignature, SECRET_KEY)
+    const computed = hmacSha256(rawSignature, this.secretKey)
     const isValid = computed === payload.signature
 
     if (!isValid) {
@@ -139,17 +156,17 @@ export class MomoProvider implements IPaymentProvider {
     const { orderId, requestId } = params
 
     const rawSignature = [
-      `accessKey=${ACCESS_KEY}`,
+      `accessKey=${this.accessKey}`,
       `orderId=${orderId}`,
-      `partnerCode=${PARTNER_CODE}`,
+      `partnerCode=${this.partnerCode}`,
       `requestId=${requestId}`,
     ].join('&')
 
-    const signature = hmacSha256(rawSignature, SECRET_KEY)
+    const signature = hmacSha256(rawSignature, this.secretKey)
 
     const requestBody = {
-      partnerCode: PARTNER_CODE,
-      accessKey: ACCESS_KEY,
+      partnerCode: this.partnerCode,
+      accessKey: this.accessKey,
       requestId,
       orderId,
       signature,
@@ -181,19 +198,19 @@ export class MomoProvider implements IPaymentProvider {
     const { transactionId, amount, orderId, requestId, description = '' } = params
 
     const rawSignature = [
-      `accessKey=${ACCESS_KEY}`,
+      `accessKey=${this.accessKey}`,
       `amount=${amount}`,
       `description=${description}`,
       `orderId=${orderId}`,
-      `partnerCode=${PARTNER_CODE}`,
+      `partnerCode=${this.partnerCode}`,
       `requestId=${requestId}`,
       `transId=${transactionId}`,
     ].join('&')
 
-    const signature = hmacSha256(rawSignature, SECRET_KEY)
+    const signature = hmacSha256(rawSignature, this.secretKey)
 
     const requestBody = {
-      partnerCode: PARTNER_CODE,
+      partnerCode: this.partnerCode,
       orderId,
       requestId,
       amount,
@@ -252,16 +269,16 @@ export class MomoProvider implements IPaymentProvider {
     const { orderId, requestId } = params
 
     const rawSignature = [
-      `accessKey=${ACCESS_KEY}`,
+      `accessKey=${this.accessKey}`,
       `orderId=${orderId}`,
-      `partnerCode=${PARTNER_CODE}`,
+      `partnerCode=${this.partnerCode}`,
       `requestId=${requestId}`,
     ].join('&')
 
-    const signature = hmacSha256(rawSignature, SECRET_KEY)
+    const signature = hmacSha256(rawSignature, this.secretKey)
 
     const requestBody = {
-      partnerCode: PARTNER_CODE,
+      partnerCode: this.partnerCode,
       orderId,
       requestId,
       signature,

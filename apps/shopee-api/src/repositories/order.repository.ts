@@ -70,6 +70,10 @@ export class OrderRepository implements IOrderRepository {
       .lean<IOrder | null>()
   }
 
+  async updatePaymentStatus(orderId: string | Types.ObjectId, status: string): Promise<void> {
+    await OrderModel.findByIdAndUpdate(orderId, { payment_status: status })
+  }
+
   async findTrackingByOrderAndUser(
     orderId: string | Types.ObjectId,
     userId: string | Types.ObjectId,

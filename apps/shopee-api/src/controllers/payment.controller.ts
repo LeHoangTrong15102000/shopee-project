@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import Stripe from 'stripe'
 import { stripeService, refundService } from '../container'
 import { OrderModel, PAYMENT_STATUS } from '@database/models/order.model'
 import { RefundModel, REFUND_STATUS } from '@database/models/refund.model'
@@ -6,6 +7,13 @@ import { PaymentLogModel } from '@database/models/payment-log.model'
 import { Logger } from '@utils/logger'
 import { emitToUser } from '../socket/utils/emit'
 import { SocketEvent } from '../@types/socket.type'
+
+// Stripe v22 uses `export = StripeConstructor` (CJS). The Stripe namespace does not
+// auto-export resource types. Derive them from the instance API to stay type-safe.
+type StripeInstance = InstanceType<typeof Stripe>
+type StripePaymentIntent = Awaited<ReturnType<StripeInstance['paymentIntents']['retrieve']>>
+type StripeCharge = Awaited<ReturnType<StripeInstance['charges']['retrieve']>>
+type StripeRefund = Awaited<ReturnType<StripeInstance['refunds']['retrieve']>>
 
 /**
  * Handle Stripe webhook events.
@@ -40,43 +48,54 @@ export const stripeWebhook = async (req: Request, res: Response): Promise<void> 
     return
   }
 
-  const paymentIntent = event.data.object as any
-  const paymentIntentId: string = paymentIntent.id
-  const orderId: string | undefined = paymentIntent.metadata?.orderId
+  let paymentIntentId: string = ''
+  let orderId: string | undefined
 
   let paymentStatus: string
   let orderStatus: string | undefined
 
   switch (event.type) {
-    case 'payment_intent.succeeded':
+    case 'payment_intent.succeeded': {
+      const paymentIntent = event.data.object as StripePaymentIntent
+      paymentIntentId = paymentIntent.id
+      orderId = paymentIntent.metadata?.orderId
       paymentStatus = PAYMENT_STATUS.PAID
       orderStatus = 'confirmed'
       break
-    case 'payment_intent.payment_failed':
+    }
+    case 'payment_intent.payment_failed': {
+      const paymentIntent = event.data.object as StripePaymentIntent
+      paymentIntentId = paymentIntent.id
+      orderId = paymentIntent.metadata?.orderId
       paymentStatus = PAYMENT_STATUS.FAILED
       break
-    case 'payment_intent.canceled':
+    }
+    case 'payment_intent.canceled': {
+      const paymentIntent = event.data.object as StripePaymentIntent
+      paymentIntentId = paymentIntent.id
+      orderId = paymentIntent.metadata?.orderId
       paymentStatus = PAYMENT_STATUS.FAILED
       break
+    }
     case 'charge.refunded': {
       // Extract refund data from charge object — may contain multiple refunds
-      const charge = event.data.object as any
+      const charge = event.data.object as StripeCharge
       const refunds = charge.refunds?.data || []
       for (const refundObj of refunds) {
-        await handleStripeRefundUpdate(refundObj.id, refundObj.status, refundObj.failure_reason)
+        await handleStripeRefundUpdate(refundObj.id, refundObj.status ?? '', refundObj.failure_reason ?? undefined)
       }
       res.status(200).json({ received: true })
       return
     }
     case 'refund.updated': {
-      const refundObj = event.data.object as any
-      await handleStripeRefundUpdate(refundObj.id, refundObj.status, refundObj.failure_reason)
+      const refundObj = event.data.object as StripeRefund
+      await handleStripeRefundUpdate(refundObj.id, refundObj.status ?? '', refundObj.failure_reason ?? undefined)
       res.status(200).json({ received: true })
       return
     }
     case 'refund.failed': {
-      const refundObj = event.data.object as any
-      await handleStripeRefundUpdate(refundObj.id, 'failed', refundObj.failure_reason)
+      const refundObj = event.data.object as StripeRefund
+      await handleStripeRefundUpdate(refundObj.id, 'failed', refundObj.failure_reason ?? undefined)
       res.status(200).json({ received: true })
       return
     }

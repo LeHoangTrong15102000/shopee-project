@@ -24,6 +24,7 @@ import {
   incrementSuccess,
   incrementFailed,
 } from '@utils/payment-metrics'
+import type { OrderService } from './order.service'
 
 // Session prefix used to distinguish session-based IPN orderId values from real order IDs
 const SESSION_ID_PREFIX = 'session_'
@@ -53,12 +54,15 @@ const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000'
 
 export class PaymentService {
   private readonly providers: Map<PaymentProvider, IPaymentProvider>
+  private readonly getOrderService: () => OrderService
 
   constructor(
     private readonly paymentRepository: PaymentRepository,
     providers: Map<PaymentProvider, IPaymentProvider>,
+    getOrderService: () => OrderService,
   ) {
     this.providers = providers
+    this.getOrderService = getOrderService
   }
 
   getProvider(method: PaymentProvider): IPaymentProvider {
@@ -436,8 +440,7 @@ export class PaymentService {
           // The createOrderFromSession method has its own idempotency check
           setImmediate(async () => {
             try {
-              const { orderService } = require('../container')
-              await orderService.createOrderFromSession(sessionId)
+              await this.getOrderService().createOrderFromSession(sessionId)
             } catch (err) {
               Logger.apiError('[Payment] Failed to create order from session after IPN', {
                 sessionId,

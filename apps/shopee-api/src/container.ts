@@ -49,7 +49,7 @@ import { StripeService } from '@services/stripe.service'
 import { PaymentService } from '@services/payment.service'
 import { MomoProvider } from '@services/payment/momo.provider'
 import { VnpayProvider } from '@services/payment/vnpay.provider'
-import { PaymentProvider } from '@services/payment/payment.interface'
+import { IPaymentProvider, PaymentProvider } from '@services/payment/payment.interface'
 import { TotpService } from '@services/totp.service'
 import { SessionService } from '@services/session.service'
 import { LoginHistoryService } from '@services/login-history.service'
@@ -114,11 +114,11 @@ const priceService = new PriceService()
 const stripeService = new StripeService()
 const momoProvider = new MomoProvider()
 const vnpayProvider = new VnpayProvider()
-const paymentProviders = new Map([
+const paymentProviders = new Map<PaymentProvider, IPaymentProvider>([
   [PaymentProvider.MOMO, momoProvider],
   [PaymentProvider.VNPAY, vnpayProvider],
 ])
-const paymentService = new PaymentService(paymentRepository, paymentProviders)
+const paymentService = new PaymentService(paymentRepository, paymentProviders, () => orderService)
 const totpService = new TotpService()
 const sessionService = new SessionService(sessionRepository)
 const loginHistoryService = new LoginHistoryService(loginHistoryRepository)

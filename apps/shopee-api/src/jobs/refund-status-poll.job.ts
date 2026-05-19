@@ -16,7 +16,6 @@ import { PaymentService } from '@services/payment.service'
 import { RefundService } from '@services/refund.service'
 import { PaymentProvider } from '@services/payment/payment.interface'
 import { IRefund, REFUND_STATUS } from '@database/models/refund.model'
-import { OrderModel, PAYMENT_STATUS } from '@database/models/order.model'
 import { Logger } from '@utils/logger'
 
 const DEFAULT_POLL_INTERVAL_MS = 5 * 60 * 1000 // 5 minutes
@@ -91,15 +90,9 @@ export class RefundStatusPollJob {
       })
 
       if (result.success) {
-        // Refund succeeded — auto-complete
+        // Refund succeeded — auto-complete.
+        // completeRefund() handles the payment_status update (sets it to 'refunded').
         await this.refundService.completeRefund(refund._id.toString())
-
-        // completeRefund already sets payment_status via OrderModel.findByIdAndUpdate,
-        // but we set it here too for clarity and in case completeRefund is called
-        // from a context that doesn't update payment_status
-        await OrderModel.findByIdAndUpdate(refund.order_id, {
-          payment_status: PAYMENT_STATUS.REFUNDED,
-        })
 
         Logger.apiInfo('[RefundPollJob] MoMo refund auto-completed', {
           refundId: refund._id.toString(),

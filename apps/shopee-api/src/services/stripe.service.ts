@@ -10,12 +10,15 @@ type EventType = ReturnType<StripeInstance['webhooks']['constructEvent']>
 type RefundType = Awaited<ReturnType<StripeInstance['refunds']['retrieve']>>
 
 export class StripeService {
-  private readonly stripe: StripeInstance
+  private _stripe: StripeInstance | null = null
 
-  constructor() {
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: '2026-04-22.dahlia', // required by stripe@22.x — update when upgrading SDK
-    })
+  private get stripe(): StripeInstance {
+    if (!this._stripe) {
+      this._stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+        apiVersion: '2026-04-22.dahlia', // required by stripe@22.x — update when upgrading SDK
+      })
+    }
+    return this._stripe
   }
 
   /**

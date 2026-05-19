@@ -31,16 +31,19 @@ function toVnpayDateString(date: Date): string {
 }
 
 export class VnpayProvider implements IPaymentProvider {
-  private readonly vnpay: VNPay
+  private _vnpay: VNPay | null = null
 
-  constructor() {
-    this.vnpay = new VNPay({
-      tmnCode: VNPAY_TMN_CODE,
-      secureSecret: VNPAY_SECURE_SECRET,
-      vnpayHost: VNPAY_HOST,
-      testMode: process.env.NODE_ENV !== 'production',
-      hashAlgorithm: HashAlgorithm.SHA512,
-    })
+  private get vnpay(): VNPay {
+    if (!this._vnpay) {
+      this._vnpay = new VNPay({
+        tmnCode: VNPAY_TMN_CODE,
+        secureSecret: VNPAY_SECURE_SECRET,
+        vnpayHost: VNPAY_HOST,
+        testMode: process.env.NODE_ENV !== 'production',
+        hashAlgorithm: HashAlgorithm.SHA512,
+      })
+    }
+    return this._vnpay
   }
 
   async createPayment(params: CreatePaymentParams): Promise<PaymentResult> {

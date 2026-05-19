@@ -19,38 +19,28 @@ function hmacSha256(data: string, key: string): string {
 }
 
 export class MomoProvider implements IPaymentProvider {
-  private _partnerCode: string | null = null
-  private _accessKey: string | null = null
-  private _secretKey: string | null = null
+  private readonly partnerCode: string
+  private readonly accessKey: string
+  private readonly secretKey: string
 
-  private get partnerCode(): string {
-    if (this._partnerCode === null) {
-      this._partnerCode = process.env.MOMO_PARTNER_CODE ?? ''
-      if (!this._partnerCode) {
-        throw new Error('MomoProvider: MOMO_PARTNER_CODE environment variable is required but not set')
-      }
+  constructor() {
+    const partnerCode = process.env.MOMO_PARTNER_CODE
+    if (!partnerCode) {
+      throw new Error('MomoProvider: MOMO_PARTNER_CODE environment variable is required but not set')
     }
-    return this._partnerCode
-  }
+    this.partnerCode = partnerCode
 
-  private get accessKey(): string {
-    if (this._accessKey === null) {
-      this._accessKey = process.env.MOMO_ACCESS_KEY ?? ''
-      if (!this._accessKey) {
-        throw new Error('MomoProvider: MOMO_ACCESS_KEY environment variable is required but not set')
-      }
+    const accessKey = process.env.MOMO_ACCESS_KEY
+    if (!accessKey) {
+      throw new Error('MomoProvider: MOMO_ACCESS_KEY environment variable is required but not set')
     }
-    return this._accessKey
-  }
+    this.accessKey = accessKey
 
-  private get secretKey(): string {
-    if (this._secretKey === null) {
-      this._secretKey = process.env.MOMO_SECRET_KEY ?? ''
-      if (!this._secretKey) {
-        throw new Error('MomoProvider: MOMO_SECRET_KEY environment variable is required but not set')
-      }
+    const secretKey = process.env.MOMO_SECRET_KEY
+    if (!secretKey) {
+      throw new Error('MomoProvider: MOMO_SECRET_KEY environment variable is required but not set')
     }
-    return this._secretKey
+    this.secretKey = secretKey
   }
 
   async createPayment(params: CreatePaymentParams): Promise<PaymentResult> {

@@ -618,9 +618,9 @@ describe('Product Controller', () => {
       const req = createMockRequest({ query: { q: 'test' } })
       const res = createMockResponse()
 
-      await ProductController.getSearchSuggestions(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(500)
+      await expect(
+        ProductController.getSearchSuggestions(req as any, res as Response),
+      ).rejects.toThrow('DB error')
     })
   })
 
@@ -668,9 +668,9 @@ describe('Product Controller', () => {
       })
       const res = createMockResponse()
 
-      await ProductController.getSearchHistory(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(500)
+      await expect(
+        ProductController.getSearchHistory(req as any, res as Response),
+      ).rejects.toThrow('DB error')
     })
   })
 

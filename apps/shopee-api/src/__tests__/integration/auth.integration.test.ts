@@ -10,7 +10,7 @@ describe('Auth Integration', () => {
   describe('Register + Login flow', () => {
     it('should register, login, get profile, and logout', async () => {
       const email = 'test@test.com'
-      const password = 'Test123456'
+      const password = 'Test123456!'
 
       const registerRes = await supertest(app).post('/register').send({ email, password })
       expect(registerRes.status).toBeLessThan(400)
@@ -41,7 +41,7 @@ describe('Auth Integration', () => {
 
     it('should allow access token to work after logout until natural expiry (stateless)', async () => {
       const email = 'stateless@test.com'
-      const password = 'Test123456'
+      const password = 'Test123456!'
 
       await supertest(app).post('/register').send({ email, password })
 
@@ -67,7 +67,7 @@ describe('Auth Integration', () => {
 
     it('should return 422 when registering with duplicate email', async () => {
       const email = 'duplicate@test.com'
-      const password = 'Test123456'
+      const password = 'Test123456!'
 
       await supertest(app).post('/register').send({ email, password })
 
@@ -79,7 +79,7 @@ describe('Auth Integration', () => {
   describe('Login errors', () => {
     it('should return error when login with wrong password', async () => {
       const email = 'wrongpass@test.com'
-      const password = 'Test123456'
+      const password = 'Test123456!'
 
       await supertest(app).post('/register').send({ email, password })
 
@@ -92,7 +92,7 @@ describe('Auth Integration', () => {
     it('should return error when login with non-existent email', async () => {
       const loginRes = await supertest(app)
         .post('/login')
-        .send({ email: 'nonexistent@test.com', password: 'Test123456' })
+        .send({ email: 'nonexistent@test.com', password: 'Test123456!' })
       expect(loginRes.status).toBeGreaterThanOrEqual(400)
     })
   })

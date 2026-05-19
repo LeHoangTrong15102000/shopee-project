@@ -1,5 +1,23 @@
 /// <reference types="jest" />
 
+const mockConsume = jest.fn()
+
+jest.mock('rate-limiter-flexible', () => ({
+  RateLimiterMemory: jest.fn().mockImplementation(() => ({
+    consume: mockConsume,
+    delete: jest.fn().mockResolvedValue(true),
+  })),
+  RateLimiterRedis: jest.fn().mockImplementation(() => ({
+    consume: mockConsume,
+    delete: jest.fn().mockResolvedValue(true),
+  })),
+  RateLimiterAbstract: jest.fn(),
+}))
+
+jest.mock('@utils/redis.client', () => ({
+  redisClient: null,
+}))
+
 jest.mock('../../socket/managers/presence.manager', () => ({
   addUserSocket: jest.fn(),
   removeUserSocket: jest.fn(),
@@ -52,6 +70,8 @@ import {
 describe('connection.handler', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    // Default: consume resolves (within rate limit)
+    mockConsume.mockResolvedValue({ remainingPoints: 9 })
   })
 
   describe('handleConnect', () => {
@@ -125,18 +145,31 @@ describe('connection.handler', () => {
   })
 
   describe('createRateLimiter', () => {
-    it('should allow events within rate limit', () => {
+    it('should allow events within rate limit', async () => {
+      mockConsume.mockResolvedValue({ remainingPoints: 9 })
       const mockSocket = createMockSocket() as any
       const rateLimiter = createRateLimiter(mockSocket)
       const callback = jest.fn()
 
       rateLimiter(callback)
+      // Flush microtask queue so the .then() callback fires
+      await Promise.resolve()
 
       expect(callback).toHaveBeenCalled()
       expect(mockSocket.emit).not.toHaveBeenCalled()
     })
 
-    it('should block events exceeding rate limit', () => {
+    it('should block events exceeding rate limit', async () => {
+      // First 10 calls resolve, remaining reject (rate limited)
+      let callCount = 0
+      mockConsume.mockImplementation(() => {
+        callCount++
+        if (callCount <= 10) {
+          return Promise.resolve({ remainingPoints: 10 - callCount })
+        }
+        return Promise.reject(new Error('Rate limit exceeded'))
+      })
+
       const mockSocket = createMockSocket({ id: 'rate-limit-test-socket' }) as any
       const rateLimiter = createRateLimiter(mockSocket)
       const callback = jest.fn()
@@ -144,9 +177,12 @@ describe('connection.handler', () => {
       for (let i = 0; i < 15; i++) {
         rateLimiter(callback)
       }
+      // Flush all pending microtasks
+      await new Promise((resolve) => setTimeout(resolve, 0))
 
       expect(callback).toHaveBeenCalledTimes(10)
       expect(mockSocket.emit).toHaveBeenCalledWith('rate_limited', expect.any(Object))
     })
   })
 })
+

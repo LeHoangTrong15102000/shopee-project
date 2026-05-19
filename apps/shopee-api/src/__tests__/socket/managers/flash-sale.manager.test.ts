@@ -8,152 +8,108 @@ jest.mock('@utils/logger', () => ({
   },
 }))
 
+// Mock the flash-sale-emit re-export so clearFlashSaleTimer is a jest.fn()
+jest.mock('../../../socket/utils/flash-sale-emit', () => ({
+  clearFlashSaleTimer: jest.fn(),
+  startFlashSaleTimer: jest.fn(),
+  emitFlashSaleStockUpdate: jest.fn(),
+}))
+
 describe('Flash Sale Manager', () => {
   let flashSaleManager: typeof import('../../../socket/managers/flash-sale.manager')
 
   beforeEach(() => {
     jest.resetModules()
-  })
-
-  afterEach(() => {
     jest.clearAllMocks()
   })
 
-  describe('startFlashSale', () => {
-    it('should start a flash sale with products', async () => {
-      flashSaleManager = await import('../../../socket/managers/flash-sale.manager')
-
-      const endTime = new Date(Date.now() + 3600000)
-      flashSaleManager.startFlashSale('sale-1', endTime, [
-        { product_id: 'prod-1', stock: 100 },
-        { product_id: 'prod-2', stock: 50 },
-      ])
-
-      const sale = flashSaleManager.getFlashSale('sale-1')
-      expect(sale).toBeDefined()
-      expect(sale!.sale_id).toBe('sale-1')
-      expect(sale!.products.size).toBe(2)
-    })
-
-    it('should track initial and current stock correctly', async () => {
-      flashSaleManager = await import('../../../socket/managers/flash-sale.manager')
-
-      flashSaleManager.startFlashSale('sale-2', new Date(Date.now() + 3600000), [
-        { product_id: 'prod-a', stock: 75 },
-      ])
-
-      const sale = flashSaleManager.getFlashSale('sale-2')
-      const product = sale!.products.get('prod-a')
-      expect(product).toEqual({
-        product_id: 'prod-a',
-        initial_stock: 75,
-        current_stock: 75,
-        sold: 0,
-      })
-    })
-  })
-
-  describe('endFlashSale', () => {
-    it('should remove the flash sale', async () => {
-      flashSaleManager = await import('../../../socket/managers/flash-sale.manager')
-
-      flashSaleManager.startFlashSale('sale-end', new Date(Date.now() + 3600000), [
-        { product_id: 'prod-1', stock: 10 },
-      ])
-      flashSaleManager.endFlashSale('sale-end')
-
-      expect(flashSaleManager.getFlashSale('sale-end')).toBeUndefined()
-    })
-
-    it('should clear timer interval if set', async () => {
-      flashSaleManager = await import('../../../socket/managers/flash-sale.manager')
-
-      flashSaleManager.startFlashSale('sale-timer', new Date(Date.now() + 3600000), [])
-      const interval = setInterval(() => undefined, 1000)
-      flashSaleManager.setFlashSaleTimer('sale-timer', interval)
-      flashSaleManager.endFlashSale('sale-timer')
-
-      expect(flashSaleManager.getFlashSale('sale-timer')).toBeUndefined()
-      clearInterval(interval) // cleanup just in case
-    })
-
-    it('should handle ending non-existent sale gracefully', async () => {
-      flashSaleManager = await import('../../../socket/managers/flash-sale.manager')
-
-      expect(() => flashSaleManager.endFlashSale('non-existent')).not.toThrow()
-    })
-  })
-
   describe('getActiveFlashSales', () => {
-    it('should return empty array when no sales active', async () => {
-      flashSaleManager = await import('../../../socket/managers/flash-sale.manager')
+    it('should return active flash sales from the service', async () => {
+      const mockSales = [
+        { _id: 'sale-1', status: 'active' },
+        { _id: 'sale-2', status: 'active' },
+      ]
+      jest.doMock('../../../container', () => ({
+        flashSaleService: {
+          getActive: jest.fn().mockResolvedValue(mockSales),
+          purchaseFlashSaleItem: jest.fn(),
+        },
+      }))
 
-      expect(flashSaleManager.getActiveFlashSales()).toEqual([])
+      flashSaleManager = await import('../../../socket/managers/flash-sale.manager')
+      const result = await flashSaleManager.getActiveFlashSales()
+
+      expect(result).toEqual(mockSales)
     })
 
-    it('should return all active flash sales', async () => {
+    it('should return empty array when no active sales', async () => {
+      jest.doMock('../../../container', () => ({
+        flashSaleService: {
+          getActive: jest.fn().mockResolvedValue([]),
+          purchaseFlashSaleItem: jest.fn(),
+        },
+      }))
+
       flashSaleManager = await import('../../../socket/managers/flash-sale.manager')
+      const result = await flashSaleManager.getActiveFlashSales()
 
-      flashSaleManager.startFlashSale('s1', new Date(Date.now() + 3600000), [])
-      flashSaleManager.startFlashSale('s2', new Date(Date.now() + 3600000), [])
-
-      expect(flashSaleManager.getActiveFlashSales()).toHaveLength(2)
+      expect(result).toEqual([])
     })
   })
 
   describe('decrementStock', () => {
-    it('should decrement stock and increase sold count', async () => {
+    it('should call purchaseFlashSaleItem and return updated sale', async () => {
+      const mockUpdatedSale = { _id: 'sale-1', status: 'active' }
+      const mockPurchase = jest.fn().mockResolvedValue(mockUpdatedSale)
+      jest.doMock('../../../container', () => ({
+        flashSaleService: {
+          getActive: jest.fn(),
+          purchaseFlashSaleItem: mockPurchase,
+        },
+      }))
+
       flashSaleManager = await import('../../../socket/managers/flash-sale.manager')
+      const result = await flashSaleManager.decrementStock('sale-1', 'prod-1', 'user-1', 2)
 
-      flashSaleManager.startFlashSale('sale-dec', new Date(Date.now() + 3600000), [
-        { product_id: 'prod-x', stock: 10 },
-      ])
-
-      const result = flashSaleManager.decrementStock('sale-dec', 'prod-x', 3)
-      expect(result).toEqual({
-        product_id: 'prod-x',
-        initial_stock: 10,
-        current_stock: 7,
-        sold: 3,
-      })
+      expect(mockPurchase).toHaveBeenCalledWith('sale-1', 'prod-1', 'user-1', 2)
+      expect(result).toEqual(mockUpdatedSale)
     })
 
-    it('should return null for insufficient stock', async () => {
+    it('should return null when purchaseFlashSaleItem throws', async () => {
+      jest.doMock('../../../container', () => ({
+        flashSaleService: {
+          getActive: jest.fn(),
+          purchaseFlashSaleItem: jest.fn().mockRejectedValue(new Error('Out of stock')),
+        },
+      }))
+
       flashSaleManager = await import('../../../socket/managers/flash-sale.manager')
+      const result = await flashSaleManager.decrementStock('sale-1', 'prod-1', 'user-1')
 
-      flashSaleManager.startFlashSale('sale-low', new Date(Date.now() + 3600000), [
-        { product_id: 'prod-y', stock: 2 },
-      ])
-
-      expect(flashSaleManager.decrementStock('sale-low', 'prod-y', 5)).toBeNull()
+      expect(result).toBeNull()
     })
 
-    it('should return null for non-existent sale', async () => {
-      flashSaleManager = await import('../../../socket/managers/flash-sale.manager')
+    it('should use default quantity of 1 when not provided', async () => {
+      const mockPurchase = jest.fn().mockResolvedValue({ _id: 'sale-1' })
+      jest.doMock('../../../container', () => ({
+        flashSaleService: {
+          getActive: jest.fn(),
+          purchaseFlashSaleItem: mockPurchase,
+        },
+      }))
 
-      expect(flashSaleManager.decrementStock('no-sale', 'prod-z')).toBeNull()
+      flashSaleManager = await import('../../../socket/managers/flash-sale.manager')
+      await flashSaleManager.decrementStock('sale-1', 'prod-1', 'user-1')
+
+      expect(mockPurchase).toHaveBeenCalledWith('sale-1', 'prod-1', 'user-1', 1)
     })
+  })
 
-    it('should return null for non-existent product in sale', async () => {
+  describe('clearFlashSaleTimer (re-export)', () => {
+    it('should re-export clearFlashSaleTimer from flash-sale-emit', async () => {
       flashSaleManager = await import('../../../socket/managers/flash-sale.manager')
 
-      flashSaleManager.startFlashSale('sale-np', new Date(Date.now() + 3600000), [
-        { product_id: 'prod-1', stock: 10 },
-      ])
-
-      expect(flashSaleManager.decrementStock('sale-np', 'prod-missing')).toBeNull()
-    })
-
-    it('should default quantity to 1', async () => {
-      flashSaleManager = await import('../../../socket/managers/flash-sale.manager')
-
-      flashSaleManager.startFlashSale('sale-def', new Date(Date.now() + 3600000), [
-        { product_id: 'prod-d', stock: 5 },
-      ])
-
-      const result = flashSaleManager.decrementStock('sale-def', 'prod-d')
-      expect(result!.current_stock).toBe(4)
-      expect(result!.sold).toBe(1)
+      expect(typeof flashSaleManager.clearFlashSaleTimer).toBe('function')
     })
   })
 })

@@ -70,6 +70,8 @@ import {
   PAYMENT_STATUS,
   ORDER_STATUS,
 } from '@database/models/order.model'
+// Import ProductModel to register the 'products' schema so OrderRepository.populate works
+import '@database/models/product.model'
 import { RefundService } from '@services/refund.service'
 import { RefundRepository } from '@repositories/refund.repository'
 import { OrderRepository } from '@repositories/order.repository'

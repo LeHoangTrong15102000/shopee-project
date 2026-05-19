@@ -18,6 +18,30 @@ jest.mock('../../utils/transaction.helper', () => ({
   }),
 }))
 
+// Mock the container to prevent instantiation of real services/repositories
+jest.mock('../../container', () => ({
+  stripeService: { createRefund: jest.fn(), retrieveRefund: jest.fn() },
+  orderService: {},
+  auditLogService: { writeLog: jest.fn() },
+}))
+
+// Mock socket emit utilities
+jest.mock('../../socket/utils/order-emit', () => ({
+  emitOrderStatusUpdate: jest.fn(),
+  emitAdminNewOrderNotification: jest.fn(),
+}))
+
+jest.mock('@utils/logger', () => ({
+  Logger: {
+    apiInfo: jest.fn(),
+    apiWarn: jest.fn(),
+    apiError: jest.fn(),
+    dbInfo: jest.fn(),
+    dbError: jest.fn(),
+    performance: jest.fn(),
+  },
+}))
+
 const validObjectId = new Types.ObjectId()
 
 const mockOrderRepository: jest.Mocked<IOrderRepository> = {
@@ -26,6 +50,7 @@ const mockOrderRepository: jest.Mocked<IOrderRepository> = {
   findByIdAndUser: jest.fn(),
   create: jest.fn(),
   updateStatus: jest.fn(),
+  updatePaymentStatus: jest.fn().mockResolvedValue(undefined),
   findTrackingByOrderAndUser: jest.fn(),
   findTrackingByNumber: jest.fn(),
 }
@@ -632,6 +657,7 @@ describe('OrderService - createOrder transaction orchestration', () => {
     findByIdAndUser: jest.fn(),
     create: jest.fn(),
     updateStatus: jest.fn(),
+    updatePaymentStatus: jest.fn().mockResolvedValue(undefined),
     findTrackingByOrderAndUser: jest.fn(),
     findTrackingByNumber: jest.fn(),
   }

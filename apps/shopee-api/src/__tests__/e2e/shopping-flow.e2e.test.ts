@@ -40,7 +40,7 @@ describe('Shopping Flow E2E', () => {
   describe('Complete shopping journey', () => {
     it('should register new user and login', async () => {
       const email = `shopper-${Date.now()}@test.com`
-      const password = 'Shopper123456'
+      const password = 'Shopper123456!'
 
       const registerRes = await supertest(app).post('/register').send({ email, password })
       expect(registerRes.status).toBeLessThan(400)
@@ -140,8 +140,8 @@ describe('Shopping Flow E2E', () => {
 
     it('should validate product_id format', async () => {
       const email = `validator-${Date.now()}@test.com`
-      await supertest(app).post('/register').send({ email, password: 'Test123456' })
-      const loginRes = await supertest(app).post('/login').send({ email, password: 'Test123456' })
+      await supertest(app).post('/register').send({ email, password: 'Test123456!' })
+      const loginRes = await supertest(app).post('/login').send({ email, password: 'Test123456!' })
       const token = loginRes.body.data.access_token
 
       const addToCartRes = await supertest(app)

@@ -1,6 +1,15 @@
 /// <reference types="jest" />
 import crypto from 'crypto'
 
+// Set required MoMo environment variables before any imports that might read them
+process.env.MOMO_ACCESS_KEY = process.env.MOMO_ACCESS_KEY || 'test-access-key'
+process.env.MOMO_SECRET_KEY = process.env.MOMO_SECRET_KEY || 'test-secret-key'
+process.env.MOMO_PARTNER_CODE = process.env.MOMO_PARTNER_CODE || 'MOMO_TEST'
+
+jest.mock('@utils/logger', () => ({
+  Logger: { apiInfo: jest.fn(), apiWarn: jest.fn(), apiError: jest.fn() },
+}))
+
 // ─── Mock the vnpay package ───────────────────────────────────────────────────
 // VnpayProvider wraps the `vnpay` npm package. We mock it so tests run without
 // real network calls or valid credentials.

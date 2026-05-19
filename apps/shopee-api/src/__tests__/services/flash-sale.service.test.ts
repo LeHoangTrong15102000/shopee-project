@@ -113,7 +113,11 @@ describe('FlashSaleService', () => {
 
     it('throws ConflictError if product has overlapping flash sale', async () => {
       repo.findByProductId.mockResolvedValue([
-        makeSale({ status: 'SCHEDULED' as FlashSaleStatus }),
+        makeSale({
+          status: 'SCHEDULED' as FlashSaleStatus,
+          startTime: new Date('2026-07-01T00:00:00Z'),
+          endTime: new Date('2026-07-02T00:00:00Z'),
+        }),
       ])
 
       await expect(service.create(validData)).rejects.toThrow(/already has a flash sale/)

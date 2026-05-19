@@ -14,6 +14,26 @@ jest.mock('@database/database', () => ({
   getConnectionPoolStats: jest.fn(),
 }))
 
+// Mock redis client
+jest.mock('@utils/redis.client', () => ({
+  redisClient: null,
+}))
+
+// Mock request stats
+jest.mock('@utils/request-stats', () => ({
+  getRequestStats: jest.fn().mockReturnValue({
+    totalRequests: 0,
+    requestsPerMinute: 0,
+    avgResponseTimeMs: 0,
+    errorRate: 0,
+  }),
+}))
+
+// Mock payment metrics
+jest.mock('@utils/payment-metrics', () => ({
+  getSnapshot: jest.fn().mockReturnValue({}),
+}))
+
 import { checkDatabaseHealth, isDatabaseReady, getConnectionPoolStats } from '@database/database'
 
 const mockCheckDatabaseHealth = checkDatabaseHealth as jest.Mock
@@ -127,7 +147,7 @@ describe('HealthController', () => {
           message: 'Service is ready',
           data: expect.objectContaining({
             ready: true,
-            checks: { database: true },
+            checks: expect.objectContaining({ database: true }),
           }),
         }),
       )
@@ -147,7 +167,7 @@ describe('HealthController', () => {
           message: 'Service is not ready',
           data: expect.objectContaining({
             ready: false,
-            checks: { database: false },
+            checks: expect.objectContaining({ database: false }),
           }),
         }),
       )

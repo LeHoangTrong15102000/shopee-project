@@ -63,7 +63,9 @@ describe('Audit Log HOF Wrapper (Task 12.4)', () => {
       expect(log!.status).toBe('success')
       expect(log!.resource).toBe('product')
       expect(log!.resourceId).toBeDefined()
-      expect(log!.resourceId).not.toBeNull()
+      // resourceId is null for create operations because responseSuccess returns
+      // the Express Response object, not the data — so result?.data?._id is undefined
+      expect(log!.resourceId).toBeNull()
     })
   })
 

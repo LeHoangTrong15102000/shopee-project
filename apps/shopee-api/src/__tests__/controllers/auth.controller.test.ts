@@ -14,13 +14,23 @@ import {
   UnauthorizedError as ServiceUnauthorizedError,
 } from '@services/base.service'
 
-// Mock the container's authService
+// Mock the container's authService and fire-and-forget services
 jest.mock('../../container', () => ({
   authService: {
     register: jest.fn(),
     login: jest.fn(),
     logout: jest.fn(),
     refreshTokenWithRotation: jest.fn(),
+  },
+  sessionService: {
+    createSession: jest.fn().mockResolvedValue(undefined),
+    updateSessionOnRefresh: jest.fn().mockResolvedValue(undefined),
+  },
+  auditLogService: {
+    writeLog: jest.fn(),
+  },
+  loginHistoryService: {
+    recordAttempt: jest.fn(),
   },
 }))
 

@@ -13,17 +13,6 @@ jest.mock('@utils/logger', () => ({
   Logger: { apiInfo: jest.fn(), apiWarn: jest.fn(), apiError: jest.fn() },
 }))
 
-// Mock OrderModel used directly in completeRefund
-jest.mock('@database/models/order.model', () => {
-  const actual = jest.requireActual('@database/models/order.model')
-  return {
-    ...actual,
-    OrderModel: {
-      findByIdAndUpdate: jest.fn().mockResolvedValue(null),
-    },
-  }
-})
-
 // Mock dynamic import of PaymentModel used in getPaymentTransactionId
 jest.mock('@database/models/payment.model', () => ({
   PaymentModel: {
@@ -104,6 +93,7 @@ const createMockOrderRepo = (): jest.Mocked<IOrderRepository> =>
     findByUser: jest.fn(),
     create: jest.fn(),
     updateStatus: jest.fn(),
+    updatePaymentStatus: jest.fn().mockResolvedValue(undefined),
     findTrackingByOrderAndUser: jest.fn(),
     findTrackingByNumber: jest.fn(),
   }) as unknown as jest.Mocked<IOrderRepository>
@@ -193,7 +183,7 @@ describe('RefundService', () => {
       stripeService.createRefund.mockResolvedValue({ refundId: 're_test_abc', status: 'pending' })
 
       // Use fake timers to control setImmediate
-      jest.useFakeTimers()
+      jest.useFakeTimers({ legacyFakeTimers: true })
       const result = await service.approveRefund(refund._id.toString(), oid().toString(), 100000)
       jest.runAllImmediates()
       jest.useRealTimers()
@@ -548,20 +538,21 @@ describe('RefundService', () => {
 
   describe('completeRefund', () => {
     it('should complete an APPROVED refund and update order payment_status', async () => {
-      const { OrderModel } = require('@database/models/order.model')
       const refund = makeRefund({ status: REFUND_STATUS.APPROVED })
       const completed = { ...refund, status: REFUND_STATUS.COMPLETED }
 
       refundRepo.findById.mockResolvedValue(refund as any)
       refundRepo.updateById.mockResolvedValue(completed as any)
       orderRepo.updateStatus.mockResolvedValue(null)
+      orderRepo.updatePaymentStatus.mockResolvedValue(undefined)
 
       const result = await service.completeRefund(refund._id.toString())
 
       expect(result.status).toBe(REFUND_STATUS.COMPLETED)
-      expect(OrderModel.findByIdAndUpdate).toHaveBeenCalledWith(refund.order_id, {
-        payment_status: PAYMENT_STATUS.REFUNDED,
-      })
+      expect(orderRepo.updatePaymentStatus).toHaveBeenCalledWith(
+        refund.order_id.toString(),
+        PAYMENT_STATUS.REFUNDED,
+      )
     })
 
     it('should complete a PROCESSING refund', async () => {

@@ -24,6 +24,30 @@ jest.mock('../../container', () => ({
     adminBulkUpdateStatus: jest.fn(),
     adminGetOrderCountByStatus: jest.fn(),
   },
+  paymentService: {
+    getPaymentStatus: jest.fn(),
+    retryPayment: jest.fn(),
+  },
+}))
+
+// Mock Mongoose models used directly in the controller
+jest.mock('@database/models/shipping-method.model', () => ({
+  ShippingMethodModel: {
+    find: jest.fn().mockReturnValue({
+      sort: jest.fn().mockReturnValue({
+        lean: jest.fn().mockResolvedValue([]),
+      }),
+    }),
+  },
+}))
+jest.mock('@database/models/payment-method.model', () => ({
+  PaymentMethodModel: {
+    find: jest.fn().mockReturnValue({
+      sort: jest.fn().mockReturnValue({
+        lean: jest.fn().mockResolvedValue([]),
+      }),
+    }),
+  },
 }))
 
 import { orderService } from '../../container'

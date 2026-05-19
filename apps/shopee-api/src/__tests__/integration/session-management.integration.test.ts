@@ -17,12 +17,25 @@ import './setup'
 
 const app = createTestApp()
 
+// Session creation in loginController is fire-and-forget — allow it to settle
+const waitForSession = () => new Promise((resolve) => setTimeout(resolve, 150))
+
+/**
+ * Strip the 'Bearer ' prefix from an access token returned directly by the API.
+ * The auth-helper already strips it, but direct login calls do not.
+ */
+const stripBearer = (token: string | undefined): string => {
+  if (!token) return ''
+  return token.startsWith('Bearer ') ? token.slice(7) : token
+}
+
 describe('Session Management (Task 12.3)', () => {
   // ─── Login creates a session ────────────────────────────────────────────────
 
   describe('Login creates a session', () => {
     it('GET /sessions returns at least one session after login', async () => {
       const auth = await getAuthToken(app)
+      await waitForSession()
 
       const res = await supertest(app)
         .get('/sessions')
@@ -36,6 +49,7 @@ describe('Session Management (Task 12.3)', () => {
 
     it('the current session is marked isCurrent=true', async () => {
       const auth = await getAuthToken(app)
+      await waitForSession()
 
       const res = await supertest(app)
         .get('/sessions')
@@ -49,6 +63,7 @@ describe('Session Management (Task 12.3)', () => {
 
     it('session has expected fields: id, device, ip, location, lastActive, isCurrent', async () => {
       const auth = await getAuthToken(app)
+      await waitForSession()
 
       const res = await supertest(app)
         .get('/sessions')
@@ -69,6 +84,7 @@ describe('Session Management (Task 12.3)', () => {
   describe('Refresh updates the session', () => {
     it('session count stays the same after token refresh', async () => {
       const auth = await getAuthToken(app)
+      await waitForSession()
 
       const beforeRes = await supertest(app)
         .get('/sessions')
@@ -81,7 +97,7 @@ describe('Session Management (Task 12.3)', () => {
         .send({ refresh_token: auth.refresh_token })
       expect(refreshRes.status).toBe(200)
 
-      const newAccessToken = refreshRes.body.data.access_token
+      const newAccessToken = stripBearer(refreshRes.body.data.access_token)
 
       const afterRes = await supertest(app)
         .get('/sessions')
@@ -104,7 +120,8 @@ describe('Session Management (Task 12.3)', () => {
       const loginRes2 = await supertest(app)
         .post('/login')
         .send({ email: auth1.user.email, password: 'Test123456!' })
-      const auth2AccessToken = loginRes2.body.data.access_token
+      const auth2AccessToken = stripBearer(loginRes2.body.data.access_token)
+      await waitForSession()
 
       // List sessions from auth2's perspective
       const listRes = await supertest(app)
@@ -137,6 +154,7 @@ describe('Session Management (Task 12.3)', () => {
     it('DELETE /sessions/:id returns 404 for a session belonging to another user', async () => {
       const auth1 = await getAuthToken(app)
       const auth2 = await getAuthToken(app)
+      await waitForSession()
 
       // Get auth1's session ID
       const listRes = await supertest(app)
@@ -175,7 +193,8 @@ describe('Session Management (Task 12.3)', () => {
 
       // Create a second session by logging in again
       const loginRes2 = await supertest(app).post('/login').send({ email, password })
-      const auth2AccessToken = loginRes2.body.data.access_token
+      const auth2AccessToken = stripBearer(loginRes2.body.data.access_token)
+      await waitForSession()
 
       // Verify we have 2 sessions
       const beforeRes = await supertest(app)
@@ -209,7 +228,8 @@ describe('Session Management (Task 12.3)', () => {
 
       // Create a second session
       const loginRes2 = await supertest(app).post('/login').send({ email, password })
-      const auth2AccessToken = loginRes2.body.data.access_token
+      const auth2AccessToken = stripBearer(loginRes2.body.data.access_token)
+      await waitForSession()
 
       // Revoke all from auth2 (this revokes auth1's session)
       await supertest(app)
@@ -229,6 +249,7 @@ describe('Session Management (Task 12.3)', () => {
   describe('Login history', () => {
     it('GET /login-history returns entries after login', async () => {
       const auth = await getAuthToken(app)
+      await waitForSession()
 
       const res = await supertest(app)
         .get('/login-history')
@@ -241,6 +262,7 @@ describe('Session Management (Task 12.3)', () => {
 
     it('GET /login-history supports pagination', async () => {
       const auth = await getAuthToken(app)
+      await waitForSession()
 
       const res = await supertest(app)
         .get('/login-history?page=1&limit=5')
@@ -254,6 +276,7 @@ describe('Session Management (Task 12.3)', () => {
 
     it('GET /login-history?status=success filters by status', async () => {
       const auth = await getAuthToken(app)
+      await waitForSession()
 
       const res = await supertest(app)
         .get('/login-history?status=success')

@@ -164,10 +164,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { code: 'INVALID' } })
       const res = createMockResponse()
 
-      await getVoucherByCode(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(404)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Không tìm thấy voucher' })
+      await expect(getVoucherByCode(req as any, res as Response)).rejects.toThrow('Voucher not found')
     })
 
     it('should propagate other errors', async () => {
@@ -229,10 +226,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'INVALID', order_value: 100000 } })
       const res = createMockResponse()
 
-      await applyVoucher(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(404)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Không tìm thấy voucher' })
+      await expect(applyVoucher(req as any, res as Response)).rejects.toThrow('Voucher not found')
     })
 
     it('should return 400 on BusinessError', async () => {
@@ -242,10 +236,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_value: 100000 } })
       const res = createMockResponse()
 
-      await applyVoucher(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Voucher đã hết lượt sử dụng' })
+      await expect(applyVoucher(req as any, res as Response)).rejects.toThrow('Voucher đã hết lượt sử dụng')
     })
 
     it('should return 400 on ValidationError', async () => {
@@ -255,10 +246,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_value: 1000 } })
       const res = createMockResponse()
 
-      await applyVoucher(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Giá trị đơn hàng không đủ' })
+      await expect(applyVoucher(req as any, res as Response)).rejects.toThrow('Giá trị đơn hàng không đủ')
     })
 
     it('should propagate other errors', async () => {
@@ -293,10 +281,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { id: 'invalid' } })
       const res = createMockResponse()
 
-      await saveVoucher(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(404)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Không tìm thấy voucher' })
+      await expect(saveVoucher(req as any, res as Response)).rejects.toThrow('Voucher not found')
     })
 
     it('should return 400 on BusinessError', async () => {
@@ -304,10 +289,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { id: 'voucher123' } })
       const res = createMockResponse()
 
-      await saveVoucher(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Voucher đã được lưu' })
+      await expect(saveVoucher(req as any, res as Response)).rejects.toThrow('Voucher đã được lưu')
     })
 
     it('should return 400 on ValidationError', async () => {
@@ -315,10 +297,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { id: 'invalid' } })
       const res = createMockResponse()
 
-      await saveVoucher(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Invalid voucher id' })
+      await expect(saveVoucher(req as any, res as Response)).rejects.toThrow('Invalid voucher id')
     })
 
     it('should propagate other errors', async () => {
@@ -377,10 +356,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ query: { page: '-1' } })
       const res = createMockResponse()
 
-      await getSavedVouchers(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Invalid pagination' })
+      await expect(getSavedVouchers(req as any, res as Response)).rejects.toThrow('Invalid pagination')
     })
 
     it('should propagate other errors', async () => {
@@ -487,10 +463,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ query: { status: 'invalid' } })
       const res = createMockResponse()
 
-      await getMyVouchers(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Invalid status' })
+      await expect(getMyVouchers(req as any, res as Response)).rejects.toThrow('Invalid status')
     })
 
     it('should propagate other errors', async () => {
@@ -529,10 +502,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { id: 'invalid' } })
       const res = createMockResponse()
 
-      await collectVoucher(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(404)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Không tìm thấy voucher' })
+      await expect(collectVoucher(req as any, res as Response)).rejects.toThrow('Voucher not found')
     })
 
     it('should return 400 on BusinessError', async () => {
@@ -542,10 +512,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { id: 'voucher123' } })
       const res = createMockResponse()
 
-      await collectVoucher(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Voucher đã được thu thập' })
+      await expect(collectVoucher(req as any, res as Response)).rejects.toThrow('Voucher đã được thu thập')
     })
 
     it('should return 400 on ValidationError', async () => {
@@ -553,10 +520,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { id: 'invalid' } })
       const res = createMockResponse()
 
-      await collectVoucher(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ message: 'Invalid voucher id' })
+      await expect(collectVoucher(req as any, res as Response)).rejects.toThrow('Invalid voucher id')
     })
 
     it('should propagate other errors', async () => {
@@ -595,13 +559,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'INVALID', order_total: 100000 } })
       const res = createMockResponse()
 
-      await validateVoucher(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(404)
-      expect(res.json).toHaveBeenCalledWith({
-        message: 'Không tìm thấy voucher',
-        data: { is_valid: false },
-      })
+      await expect(validateVoucher(req as any, res as Response)).rejects.toThrow('Voucher not found')
     })
 
     it('should return 400 with is_valid: false on BusinessError', async () => {
@@ -609,13 +567,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_total: 100000 } })
       const res = createMockResponse()
 
-      await validateVoucher(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({
-        message: 'Voucher đã hết hạn',
-        data: { is_valid: false },
-      })
+      await expect(validateVoucher(req as any, res as Response)).rejects.toThrow('Voucher đã hết hạn')
     })
 
     it('should return 400 with is_valid: false on ValidationError', async () => {
@@ -625,13 +577,7 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_total: 1000 } })
       const res = createMockResponse()
 
-      await validateVoucher(req as any, res as Response)
-
-      expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({
-        message: 'Giá trị đơn hàng không đủ',
-        data: { is_valid: false },
-      })
+      await expect(validateVoucher(req as any, res as Response)).rejects.toThrow('Giá trị đơn hàng không đủ')
     })
 
     it('should propagate other errors', async () => {

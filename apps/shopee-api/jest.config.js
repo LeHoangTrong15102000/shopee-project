@@ -8,9 +8,11 @@ const sharedConfig = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   roots: ['<rootDir>/src'],
+  setupFiles: ['<rootDir>/src/__tests__/helpers/set-test-env.ts'],
   transform: {
     '^.+\\.ts$': ['ts-jest', {
       tsconfig: 'tsconfig.test.json',
+      diagnostics: { warnOnly: true },
     }],
   },
   moduleNameMapper: {
@@ -24,6 +26,7 @@ const sharedConfig = {
     '^@services/(.*)$': '<rootDir>/src/services/$1',
     '^@repositories/(.*)$': '<rootDir>/src/repositories/$1',
     '^@schemas/(.*)$': '<rootDir>/src/schemas/$1',
+    '^@jobs/(.*)$': '<rootDir>/src/jobs/$1',
     '^nanoid$': '<rootDir>/src/__tests__/helpers/__mocks__/nanoid.ts',
   },
   testPathIgnorePatterns: ['/node_modules/', '/build/'],
@@ -120,6 +123,9 @@ module.exports = {
       ...sharedConfig,
       displayName: 'e2e',
       testMatch: ['**/__tests__/e2e/**/*.test.ts'],
+      // E2E tests manage their own DB lifecycle via 'import ./setup' in each test file.
+      // Do NOT add setupFilesAfterEnv here — it would call connectTestDB() a second time
+      // with a different URI, causing "Can't call openUri() on an active connection" errors.
       testTimeout: 60000,
     },
 

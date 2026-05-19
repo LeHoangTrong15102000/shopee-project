@@ -20,14 +20,14 @@ describe('Password Reset Schemas', () => {
     it('should accept valid input', () => {
       expect(
         resetPasswordSchema.safeParse({
-          body: { token: 'valid-token', password: 'newPass123', confirm_password: 'newPass123' },
+          body: { token: 'valid-token', password: 'newPass123!', confirm_password: 'newPass123!' },
         }).success,
       ).toBe(true)
     })
     it('should reject mismatched passwords', () => {
       expect(
         resetPasswordSchema.safeParse({
-          body: { token: 'valid-token', password: 'newPass123', confirm_password: 'different' },
+          body: { token: 'valid-token', password: 'newPass123!', confirm_password: 'different' },
         }).success,
       ).toBe(false)
     })
@@ -41,7 +41,7 @@ describe('Password Reset Schemas', () => {
     it('should reject empty token', () => {
       expect(
         resetPasswordSchema.safeParse({
-          body: { token: '', password: 'newPass123', confirm_password: 'newPass123' },
+          body: { token: '', password: 'newPass123!', confirm_password: 'newPass123!' },
         }).success,
       ).toBe(false)
     })

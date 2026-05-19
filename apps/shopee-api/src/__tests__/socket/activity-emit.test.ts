@@ -8,6 +8,12 @@ jest.mock('@utils/logger', () => ({
   },
 }))
 
+jest.mock('@constants/socket', () => ({
+  SOCKET_CONFIG: {
+    ROOM_PREFIX: { PRODUCT: 'product:' },
+  },
+}))
+
 jest.mock('../../socket/socket.init', () => ({
   getIORequired: jest.fn(),
 }))
@@ -55,14 +61,14 @@ describe('Activity Emit Utils', () => {
     it('should emit when addActivity returns true', async () => {
       await setupMock()
       const { addActivity } = await import('../../socket/managers/activity-feed.manager')
-      ;(addActivity as jest.Mock).mockReturnValue(true)
+      ;(addActivity as jest.Mock).mockResolvedValue(true)
       const { emitActivityEvent } = await import('../../socket/utils/activity-emit')
 
       const productId = 'product-123'
       const type = 'purchase'
       const message = 'Someone just bought this product'
 
-      emitActivityEvent(productId, type, message)
+      await emitActivityEvent(productId, type, message)
 
       expect(addActivity).toHaveBeenCalledWith(
         productId,
@@ -88,14 +94,14 @@ describe('Activity Emit Utils', () => {
     it('should NOT emit when addActivity returns false (throttled)', async () => {
       await setupMock()
       const { addActivity } = await import('../../socket/managers/activity-feed.manager')
-      ;(addActivity as jest.Mock).mockReturnValue(false)
+      ;(addActivity as jest.Mock).mockResolvedValue(false)
       const { emitActivityEvent } = await import('../../socket/utils/activity-emit')
 
       const productId = 'product-456'
       const type = 'review'
       const message = 'Someone just reviewed this product'
 
-      emitActivityEvent(productId, type, message)
+      await emitActivityEvent(productId, type, message)
 
       expect(addActivity).toHaveBeenCalled()
       expect(mockIO.to).not.toHaveBeenCalled()
@@ -110,7 +116,7 @@ describe('Activity Emit Utils', () => {
       })
       const { emitActivityEvent } = await import('../../socket/utils/activity-emit')
 
-      expect(() => emitActivityEvent('product-err', 'purchase', 'test')).not.toThrow()
+      await expect(emitActivityEvent('product-err', 'purchase', 'test')).resolves.not.toThrow()
       expect(mockIO.to).not.toHaveBeenCalled()
     })
   })
@@ -181,3 +187,4 @@ describe('Activity Emit Utils', () => {
     })
   })
 })
+

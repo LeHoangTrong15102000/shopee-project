@@ -148,8 +148,8 @@ describe('Admin Management Flow E2E', () => {
     it('should deny access to non-admin users', async () => {
       // Register regular user
       const email = `regular-${Date.now()}@test.com`
-      await supertest(app).post('/register').send({ email, password: 'Test123456' })
-      const loginRes = await supertest(app).post('/login').send({ email, password: 'Test123456' })
+      await supertest(app).post('/register').send({ email, password: 'Test123456!' })
+      const loginRes = await supertest(app).post('/login').send({ email, password: 'Test123456!' })
       const regularToken = loginRes.body.data.access_token
 
       const usersRes = await supertest(app)

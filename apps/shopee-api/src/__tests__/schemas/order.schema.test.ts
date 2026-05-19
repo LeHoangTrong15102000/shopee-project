@@ -51,11 +51,11 @@ describe('Order Schemas', () => {
           .success,
       ).toBe(false)
     })
-    it('should reject pending status (not in enum)', () => {
+    it('should accept pending status (included in enum)', () => {
       expect(
         adminUpdateStatusSchema.safeParse({ body: { status: 'pending' }, params: { id: VALID_ID } })
           .success,
-      ).toBe(false)
+      ).toBe(true)
     })
   })
 

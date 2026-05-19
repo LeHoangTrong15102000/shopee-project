@@ -6,6 +6,11 @@
  * MoMo and VNPay HTTP calls are mocked via jest.mock so no real network calls occur.
  */
 
+// ─── Set MoMo env vars before any imports so MomoProvider constructor does not throw ──
+process.env.MOMO_PARTNER_CODE = 'TEST_PARTNER'
+process.env.MOMO_ACCESS_KEY = 'TEST_ACCESS_KEY'
+process.env.MOMO_SECRET_KEY = 'TEST_SECRET_KEY'
+
 // ─── Mock external dependencies ───────────────────────────────────────────────
 
 // Mock axios so MomoProvider never makes real HTTP calls

@@ -33,6 +33,10 @@ jest.mock('../../container', () => ({
     getPurchases: jest.fn(),
     removeFromCart: jest.fn(),
   },
+  flashSaleService: {
+    getActive: jest.fn().mockResolvedValue([]),
+    purchaseFlashSaleItem: jest.fn(),
+  },
 }))
 
 // Mock handleImageProduct from product controller

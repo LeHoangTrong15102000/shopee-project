@@ -14,7 +14,7 @@ jest.mock('@constants/socket', () => ({
     PING_TIMEOUT: 60000,
     PING_INTERVAL: 25000,
     MAX_HTTP_BUFFER_SIZE: 1e6,
-    ROOM_PREFIX: { USER: 'user:' },
+    ROOM_PREFIX: { USER: 'user:', BROADCAST: 'broadcast:' },
   },
 }))
 
@@ -55,6 +55,15 @@ jest.mock('../../socket/handlers/flash-sale.handler', () => ({
 
 jest.mock('../../socket/handlers/seller-dashboard.handler', () => ({
   registerSellerDashboardHandlers: jest.fn(),
+}))
+
+jest.mock('../../socket/handlers/shop-chat.handler', () => ({
+  registerShopChatHandlers: jest.fn(),
+}))
+
+jest.mock('../../socket/utils/seller-metrics.service', () => ({
+  startPeriodicSellerMetrics: jest.fn(),
+  stopPeriodicSellerMetrics: jest.fn(),
 }))
 
 const mockUse = jest.fn()
@@ -161,6 +170,7 @@ describe('socket.init', () => {
     const { registerFlashSaleHandlers } = await import('../../socket/handlers/flash-sale.handler')
     const { registerSellerDashboardHandlers } =
       await import('../../socket/handlers/seller-dashboard.handler')
+    const { registerShopChatHandlers } = await import('../../socket/handlers/shop-chat.handler')
     const { initializeSocket } = await import('../../socket/socket.init')
 
     initializeSocket({} as any)
@@ -178,6 +188,7 @@ describe('socket.init', () => {
     connectHandler(mockSocket)
 
     expect(mockSocket.join).toHaveBeenCalledWith('user:user-1')
+    expect(mockSocket.join).toHaveBeenCalledWith('broadcast:all')
     expect(mockSocket.emit).toHaveBeenCalledWith('connected', {
       user_id: 'user-1',
       socket_id: 'socket-1',
@@ -192,6 +203,7 @@ describe('socket.init', () => {
     expect(registerOrderHandlers).toHaveBeenCalledWith(mockSocket)
     expect(registerFlashSaleHandlers).toHaveBeenCalledWith(mockSocket)
     expect(registerSellerDashboardHandlers).toHaveBeenCalledWith(mockSocket)
+    expect(registerShopChatHandlers).toHaveBeenCalledWith(mockSocket)
     expect(sendPendingNotifications).toHaveBeenCalledWith(mockSocket)
   })
 })

@@ -55,6 +55,10 @@ describe('ENV validation schema', () => {
       const env: any = {
         SECRET_KEY_JWT: 'a_valid_secret_that_is_exactly_32_chars_long',
         MONGO_URI: 'mongodb://localhost:27017/test',
+        STRIPE_SECRET_KEY: 'sk_test_placeholder',
+        STRIPE_PUBLISHABLE_KEY: 'pk_test_placeholder',
+        STRIPE_WEBHOOK_SECRET: 'whsec_placeholder',
+        TWO_FACTOR_ENCRYPTION_KEY: '0'.repeat(64),
       }
       const result = validateEnv(env)
       expect(result.SECRET_KEY_JWT).toBe('a_valid_secret_that_is_exactly_32_chars_long')
@@ -67,6 +71,10 @@ describe('ENV validation schema', () => {
       const env: any = {
         SECRET_KEY_JWT: 'a_valid_secret_that_is_exactly_32_chars_long',
         MONGO_URI: 'mongodb://localhost:27017/test',
+        STRIPE_SECRET_KEY: 'sk_test_placeholder',
+        STRIPE_PUBLISHABLE_KEY: 'pk_test_placeholder',
+        STRIPE_WEBHOOK_SECRET: 'whsec_placeholder',
+        TWO_FACTOR_ENCRYPTION_KEY: '0'.repeat(64),
         JWT_ACCESS_TTL: '1800',
         JWT_REFRESH_TTL: '86400',
       }
@@ -89,16 +97,22 @@ describe('ENV validation schema', () => {
     })
 
     it('should parse AUTH_STRICT_MODE string to boolean', () => {
-      const envTrue: any = {
+      const requiredFields = {
         SECRET_KEY_JWT: 'a_valid_secret_that_is_exactly_32_chars_long',
         MONGO_URI: 'mongodb://localhost:27017/test',
+        STRIPE_SECRET_KEY: 'sk_test_placeholder',
+        STRIPE_PUBLISHABLE_KEY: 'pk_test_placeholder',
+        STRIPE_WEBHOOK_SECRET: 'whsec_placeholder',
+        TWO_FACTOR_ENCRYPTION_KEY: '0'.repeat(64),
+      }
+      const envTrue: any = {
+        ...requiredFields,
         AUTH_STRICT_MODE: 'true',
       }
       expect(validateEnv(envTrue).AUTH_STRICT_MODE).toBe(true)
 
       const envFalse: any = {
-        SECRET_KEY_JWT: 'a_valid_secret_that_is_exactly_32_chars_long',
-        MONGO_URI: 'mongodb://localhost:27017/test',
+        ...requiredFields,
         AUTH_STRICT_MODE: 'false',
       }
       expect(validateEnv(envFalse).AUTH_STRICT_MODE).toBe(false)

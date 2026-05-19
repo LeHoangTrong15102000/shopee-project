@@ -14,6 +14,15 @@ import './setup'
 
 const app = createTestApp()
 
+/**
+ * Strip the 'Bearer ' prefix from an access token returned directly by the API.
+ * The auth-helper already strips it, but direct API calls do not.
+ */
+const stripBearer = (token: string | undefined): string => {
+  if (!token) return ''
+  return token.startsWith('Bearer ') ? token.slice(7) : token
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 /**
@@ -31,7 +40,7 @@ async function setupUserWith2FA(email: string, password: string) {
     .set('Authorization', `Bearer ${accessToken}`)
   expect(setupRes.status).toBe(200)
 
-  const { secret, backupCodes } = setupRes.body.data
+  const { secret, backup_codes: backupCodes } = setupRes.body.data
 
   // Verify setup with a valid TOTP code
   // In integration tests we use the real otplib to generate a valid code
@@ -121,7 +130,7 @@ describe('2FA Login Flow (Task 12.1)', () => {
       .post('/2fa/complete')
       .send({ partial_token: partialToken, code: totpCode })
 
-    const fullAccessToken = completeRes.body.data.access_token
+    const fullAccessToken = stripBearer(completeRes.body.data.access_token)
 
     const meRes = await supertest(app)
       .get('/me')
@@ -241,7 +250,7 @@ describe('Backup Code Login (Task 12.2)', () => {
       .post('/2fa/complete')
       .send({ partial_token: partialToken, code: backupCodes[0] })
 
-    const fullAccessToken = completeRes.body.data.access_token
+    const fullAccessToken = stripBearer(completeRes.body.data.access_token)
 
     const meRes = await supertest(app)
       .get('/me')

@@ -11,7 +11,16 @@ jest.mock('../../socket/utils/seller-emit', () => ({
   emitSellerQANotification: jest.fn(),
 }))
 jest.mock('../../socket/utils/seller-metrics.service', () => ({
-  emitCurrentSellerMetrics: jest.fn(),
+  emitCurrentSellerMetrics: jest.fn().mockResolvedValue(undefined),
+}))
+jest.mock('../../socket/socket.init', () => ({
+  getIO: jest.fn().mockReturnValue({
+    sockets: {
+      adapter: {
+        rooms: new Map([['seller:seller123', { size: 1 }]]),
+      },
+    },
+  }),
 }))
 jest.mock('../../container', () => ({
   container: {

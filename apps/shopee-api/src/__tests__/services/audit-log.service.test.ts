@@ -156,7 +156,7 @@ describe('withAuditLog HOF', () => {
   // Mock the container import used inside withAuditLog
   const mockWriteLog = jest.fn()
 
-  jest.mock('../container', () => ({
+  jest.mock('../../container', () => ({
     auditLogService: { writeLog: mockWriteLog },
   }))
 

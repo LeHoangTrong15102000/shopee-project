@@ -5,12 +5,12 @@ import { createHash } from 'crypto'
 
 describe('crypt utils', () => {
   describe('hashValue', () => {
-    it('returns string in format $12$salt$hash with correct lengths', () => {
+    it('returns string in format $13$salt$hash with correct lengths', () => {
       const result = hashValue('password123')
 
       const parts = result.split('$').filter(Boolean)
       expect(parts).toHaveLength(3)
-      expect(parts[0]).toBe('12')
+      expect(parts[0]).toBe('13')
       expect(parts[1]).toHaveLength(22)
       expect(parts[2]).toHaveLength(128)
       expect(parts[2]).toMatch(/^[a-f0-9]+$/)

@@ -47,6 +47,12 @@ export interface CreatePaymentSessionInput {
   note?: string
   amount: number
   clientIp: string
+  /**
+   * Optional return URL for mobile deep-link flows (e.g. `shopeeapp://payment-return`).
+   * When provided, the backend appends `?sessionId=<id>` and uses it as the provider return URL.
+   * When omitted, falls back to the default `FRONTEND_URL`-based return URL for web consumers.
+   */
+  returnUrl?: string
 }
 
 const APP_BASE_URL = process.env.APP_BASE_URL || 'http://localhost:4000'
@@ -118,7 +124,13 @@ export class PaymentService {
     const requestId = uuidv4()
     const idempotencyKey = `session-${sessionId}-${requestId}`
     const ipnUrl = `${APP_BASE_URL}/payment/${input.eWalletProvider.toLowerCase()}/ipn`
-    const returnUrl = `${FRONTEND_URL}/payment/return?provider=${input.eWalletProvider.toLowerCase()}&sessionId=${sessionId}`
+    // Use caller-supplied returnUrl (mobile deep-link) when provided; otherwise fall back to
+    // the web FRONTEND_URL. The mobile client passes the base URL without sessionId — we append
+    // it here so the provider redirects back with the correct session context.
+    const separator = input.returnUrl && input.returnUrl.includes('?') ? '&' : '?'
+    const returnUrl = input.returnUrl
+      ? `${input.returnUrl}${separator}sessionId=${sessionId}`
+      : `${FRONTEND_URL}/payment/return?provider=${input.eWalletProvider.toLowerCase()}&sessionId=${sessionId}`
     const orderInfo = `Thanh toan don hang #${sessionId}`
 
     // Create payment record linked to session (no orderId yet)

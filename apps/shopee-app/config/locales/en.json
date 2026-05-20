@@ -574,6 +574,18 @@
     "bankTransfer": {
       "name": "Bank Transfer"
     },
+    "creditCard": {
+      "name": "Credit/Debit Card",
+      "description": "Visa, Mastercard, JCB"
+    },
+    "momo": {
+      "name": "MoMo Wallet",
+      "description": "Pay with MoMo e-wallet"
+    },
+    "vnpay": {
+      "name": "VNPay",
+      "description": "Pay with VNPay"
+    },
     "title": "Payment Method"
   },
   "priceBreakdown": {
@@ -954,6 +966,29 @@
       "deleteAction": "Delete",
       "currentPrice": "Current",
       "targetPrice": "Target"
+    }
+  },
+  "paymentStatus": {
+    "processing": {
+      "title": "Processing Payment",
+      "subtitle": "Please wait while we confirm your payment..."
+    },
+    "success": {
+      "title": "Payment Successful!",
+      "orderId": "Order ID: {{orderId}}",
+      "viewOrder": "View Order",
+      "continueShopping": "Continue Shopping"
+    },
+    "failed": {
+      "title": "Payment Failed",
+      "subtitle": "Your payment could not be processed. Please try again.",
+      "tryAgain": "Try Again",
+      "changeMethod": "Change Payment Method"
+    },
+    "timeout": {
+      "title": "Payment Processing",
+      "message": "Your payment is still being processed. You will receive a notification when it's confirmed.",
+      "goHome": "Go to Home"
     }
   }
 }

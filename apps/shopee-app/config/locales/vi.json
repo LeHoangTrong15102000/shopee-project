@@ -574,6 +574,18 @@
     "bankTransfer": {
       "name": "Chuyển khoản ngân hàng"
     },
+    "creditCard": {
+      "name": "Thẻ tín dụng/ghi nợ",
+      "description": "Visa, Mastercard, JCB"
+    },
+    "momo": {
+      "name": "Ví MoMo",
+      "description": "Thanh toán bằng ví MoMo"
+    },
+    "vnpay": {
+      "name": "VNPay",
+      "description": "Thanh toán bằng VNPay"
+    },
     "title": "Phương thức thanh toán"
   },
   "priceBreakdown": {
@@ -954,6 +966,29 @@
       "deleteAction": "Xóa",
       "currentPrice": "Hiện tại",
       "targetPrice": "Mục tiêu"
+    }
+  },
+  "paymentStatus": {
+    "processing": {
+      "title": "Đang xử lý thanh toán",
+      "subtitle": "Vui lòng chờ trong khi chúng tôi xác nhận thanh toán..."
+    },
+    "success": {
+      "title": "Thanh toán thành công!",
+      "orderId": "Mã đơn hàng: {{orderId}}",
+      "viewOrder": "Xem đơn hàng",
+      "continueShopping": "Tiếp tục mua sắm"
+    },
+    "failed": {
+      "title": "Thanh toán thất bại",
+      "subtitle": "Thanh toán không thể xử lý. Vui lòng thử lại.",
+      "tryAgain": "Thử lại",
+      "changeMethod": "Đổi phương thức thanh toán"
+    },
+    "timeout": {
+      "title": "Đang xử lý thanh toán",
+      "message": "Thanh toán của bạn vẫn đang được xử lý. Bạn sẽ nhận được thông báo khi được xác nhận.",
+      "goHome": "Về trang chủ"
     }
   }
 }

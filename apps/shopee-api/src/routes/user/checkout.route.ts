@@ -43,6 +43,7 @@ const initiatePaymentSchema = z.object({
     voucher_code: z.string().optional(),
     coins_used: z.coerce.number().min(0).optional(),
     note: z.string().max(500).optional(),
+    return_url: z.string().url().optional(),
   }),
 })
 

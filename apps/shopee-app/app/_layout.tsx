@@ -17,6 +17,8 @@ import { ToastProvider } from '@/components/ui/ToastProvider'
 import { DialogProvider } from '@/components/ui/DialogProvider'
 import { View } from 'react-native'
 import { useEffect, useState } from 'react'
+import StripeProvider from '@/providers/StripeProvider'
+import * as Linking from 'expo-linking'
 
 function AppContent() {
   const theme = useAppStore((state) => state.theme)
@@ -62,6 +64,37 @@ function AppContent() {
     }
   }, [isAuthenticated])
 
+  // ─── Deep link handler for payment returns ────────────────────────────────
+  // Handles shopeeapp://payment-return?sessionId=xxx (e-wallet return)
+  // and shopeeapp://stripe-return (Stripe 3DS return — handled by PaymentSheet internally)
+  useEffect(() => {
+    function handleUrl(event: { url: string }) {
+      const parsed = Linking.parse(event.url)
+      // expo-linking puts the host segment in `hostname` for scheme URLs
+      // e.g. shopeeapp://payment-return?sessionId=x → hostname='payment-return', path=''
+      const host = parsed.hostname ?? ''
+
+      if (host === 'payment-return') {
+        const sessionId = parsed.queryParams?.sessionId as string | undefined
+        if (sessionId) {
+          router.push({ pathname: '/payment-status', params: { sessionId } })
+        }
+      }
+    }
+
+    // Handle deep link when app is already open (foreground)
+    const subscription = Linking.addEventListener('url', handleUrl)
+
+    // Handle deep link that launched the app from background/closed
+    Linking.getInitialURL().then((url) => {
+      if (url) handleUrl({ url })
+    })
+
+    return () => {
+      subscription.remove()
+    }
+  }, [router])
+
   const navigationTheme = {
     ...(theme === 'dark' ? DarkTheme : DefaultTheme),
     dark: theme === 'dark',
@@ -94,6 +127,7 @@ function AppContent() {
                   <Stack.Screen name="search" options={{ headerShown: false }} />
                   <Stack.Screen name="checkout" options={{ headerShown: false }} />
                   <Stack.Screen name="order-success" options={{ headerShown: false }} />
+                  <Stack.Screen name="payment-status" options={{ headerShown: false }} />
                   <Stack.Screen name="orders" options={{ headerShown: false }} />
                   <Stack.Screen name="order/[id]/index" options={{ headerShown: false }} />
                   <Stack.Screen name="addresses" options={{ headerShown: false }} />
@@ -136,7 +170,9 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
-        <AppContent />
+        <StripeProvider>
+          <AppContent />
+        </StripeProvider>
       </ToastProvider>
     </QueryClientProvider>
   )

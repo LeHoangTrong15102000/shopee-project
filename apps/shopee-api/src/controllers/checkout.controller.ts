@@ -240,6 +240,7 @@ export const initiatePayment = async (req: Request, res: Response) => {
       voucher_code,
       coins_used = 0,
       note,
+      return_url,
     } = req.body
 
     // Validate e_wallet_provider
@@ -328,6 +329,7 @@ export const initiatePayment = async (req: Request, res: Response) => {
       note,
       amount,
       clientIp,
+      returnUrl: return_url,
     })
 
     return responseSuccess(res, {

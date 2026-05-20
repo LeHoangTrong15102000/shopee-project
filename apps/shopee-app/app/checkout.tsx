@@ -24,6 +24,8 @@ import { Address } from '@/apis/address.api'
 import { ShippingMethod } from '@/apis/checkout.api'
 import { useQueryClient } from '@tanstack/react-query'
 import { handleMutationError } from '@/utils/mutationErrorHandler'
+import { useCreditCardPayment } from '@/components/checkout/CreditCardPayment'
+import { useEWalletPayment } from '@/components/checkout/EWalletPayment'
 
 export default function CheckoutScreen() {
   const { t } = useTranslation()
@@ -54,8 +56,12 @@ export default function CheckoutScreen() {
     cartItemIds: purchaseIds,
     shippingMethodId: selectedShippingId ?? undefined,
   })
-  const { mutate: createOrder, isPending: isCreating } = useCreateOrder()
+  const { mutate: createOrder, isPending: isCreatingCod } = useCreateOrder()
   const { mutate: applyVoucher, isPending: isApplyingVoucher } = useApplyVoucher()
+
+  // Payment method hooks
+  const { pay: payCreditCard, isProcessing: isProcessingCard } = useCreditCardPayment()
+  const { pay: payEWallet, isProcessing: isProcessingEWallet } = useEWalletPayment()
 
   const addresses = addressesData?.data ?? []
   const shippingMethods = shippingData?.data ?? []
@@ -90,13 +96,45 @@ export default function CheckoutScreen() {
   const coinDiscount = summary?.coins_discount ?? 0
   const total = summary?.total ?? (subtotal + shippingFee - voucherDiscount - coinDiscount)
 
+  // Combined loading state across all payment methods
+  const isCreating = isCreatingCod || isProcessingCard || isProcessingEWallet
+
   const handlePlaceOrder = () => {
     if (!selectedAddressId) return
+
+    const shippingMethodId = selectedShippingId ?? ''
+
+    if (selectedPaymentId === 'credit_card') {
+      // Stripe PaymentSheet flow
+      payCreditCard({
+        purchaseIds,
+        shippingAddressId: selectedAddressId,
+        shippingMethodId,
+        voucherCode: voucherCode || undefined,
+        coinsUsed: useCoins ? coinBalance : 0,
+      })
+      return
+    }
+
+    if (selectedPaymentId === 'momo' || selectedPaymentId === 'vnpay') {
+      // E-wallet redirect flow
+      payEWallet({
+        purchaseIds,
+        shippingAddressId: selectedAddressId,
+        shippingMethodId,
+        provider: selectedPaymentId as 'momo' | 'vnpay',
+        voucherCode: voucherCode || undefined,
+        coinsUsed: useCoins ? coinBalance : 0,
+      })
+      return
+    }
+
+    // COD / bank_transfer — existing flow
     createOrder(
       {
         purchase_ids: purchaseIds,
         address_id: selectedAddressId,
-        shipping_method_id: selectedShippingId ?? '',
+        shipping_method_id: shippingMethodId,
         payment_method: selectedPaymentId,
         voucher_code: voucherCode || undefined,
         coins_used: useCoins ? coinBalance : 0,

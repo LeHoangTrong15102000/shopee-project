@@ -12,6 +12,17 @@
 
 // ─── Gateway mocks (must be before imports) ───────────────────────────────────
 
+jest.mock('bullmq', () => ({
+  Worker: jest.fn().mockImplementation(() => ({
+    on: jest.fn(),
+    close: jest.fn().mockResolvedValue(undefined),
+  })),
+  Queue: jest.fn().mockImplementation(() => ({
+    add: jest.fn().mockResolvedValue({ id: 'job-1' }),
+    close: jest.fn().mockResolvedValue(undefined),
+  })),
+}))
+
 jest.mock('@utils/logger', () => ({
   Logger: { apiInfo: jest.fn(), apiWarn: jest.fn(), apiError: jest.fn() },
 }))
@@ -83,7 +94,7 @@ import { PaymentRepository } from '@repositories/payment.repository'
 import { MomoProvider } from '@services/payment/momo.provider'
 import { VnpayProvider } from '@services/payment/vnpay.provider'
 import { PaymentProvider } from '@services/payment/payment.interface'
-import { RefundStatusPollJob } from '@jobs/refund-status-poll.job'
+import { RefundStatusPollWorker } from '../../workers/refund-status-poll.worker'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -162,7 +173,7 @@ const buildService = () => {
     paymentService,
   )
 
-  const pollJob = new RefundStatusPollJob(refundRepo, paymentService, refundService, orderRepo)
+  const pollJob = new RefundStatusPollWorker(refundRepo, paymentService, refundService, orderRepo)
 
   return {
     refundService,

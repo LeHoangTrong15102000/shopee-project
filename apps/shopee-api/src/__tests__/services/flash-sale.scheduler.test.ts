@@ -1,11 +1,25 @@
 /// <reference types="jest" />
 
 /**
- * Unit Tests for FlashSaleScheduler (Task 10.3)
- * - activate on startTime
- * - end on endTime
- * - startup recovery
+ * Unit Tests for FlashSaleScheduler (BullMQ repeatable job registration)
+ * - registers repeatable job on start()
+ * - uses correct interval from config
+ * - stop() is a no-op (backward compat)
  */
+
+const mockFlashSaleSchedulerQueueAdd = jest.fn().mockResolvedValue({ id: 'job-1' })
+
+jest.mock('../../queues', () => ({
+  flashSaleSchedulerQueue: {
+    add: mockFlashSaleSchedulerQueueAdd,
+  },
+  emailQueue: { add: jest.fn() },
+  notificationQueue: { add: jest.fn() },
+  searchSyncQueue: { add: jest.fn() },
+  cleanupQueue: { add: jest.fn() },
+  paymentReconciliationQueue: { add: jest.fn() },
+  refundStatusPollQueue: { add: jest.fn() },
+}))
 
 jest.mock('@utils/logger', () => ({
   Logger: { apiInfo: jest.fn(), apiWarn: jest.fn(), apiError: jest.fn() },
@@ -15,121 +29,47 @@ jest.mock('@constants/config', () => ({
   config: { FLASH_SALE_CHECK_INTERVAL: 60 },
 }))
 
-jest.mock('@database/models/flash-sale.model', () => {
-  const mockFind = jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue([]) })
-  const mockFindByIdAndUpdate = jest.fn().mockResolvedValue({})
-  return {
-    FlashSaleModel: {
-      find: mockFind,
-      findByIdAndUpdate: mockFindByIdAndUpdate,
-    },
-  }
-})
-
-jest.mock('../../socket/socket.init', () => ({
-  getIO: jest.fn().mockReturnValue({ emit: jest.fn() }),
-}))
-
-jest.mock('../../socket/utils/flash-sale-emit', () => ({
-  startFlashSaleTimer: jest.fn(),
-  clearFlashSaleTimer: jest.fn(),
-}))
-
-jest.mock('../../container', () => ({
-  auditLogService: { writeLog: jest.fn() },
-}))
-
 import { FlashSaleScheduler } from '@services/flash-sale.scheduler'
-import { FlashSaleService } from '@services/flash-sale.service'
-import { Types } from 'mongoose'
 
 describe('FlashSaleScheduler', () => {
   let scheduler: FlashSaleScheduler
-  let mockService: jest.Mocked<FlashSaleService>
-  let FlashSaleModel: any
 
-  beforeEach(async () => {
+  beforeEach(() => {
     jest.clearAllMocks()
-    jest.useFakeTimers()
-
-    mockService = {} as jest.Mocked<FlashSaleService>
-    scheduler = new FlashSaleScheduler(mockService)
-
-    FlashSaleModel = (await import('@database/models/flash-sale.model')).FlashSaleModel
+    scheduler = new FlashSaleScheduler()
   })
 
-  afterEach(() => {
-    scheduler.stop()
-    jest.useRealTimers()
-  })
-
-  it('activates SCHEDULED flash sales whose startTime has passed', async () => {
-    const saleId = new Types.ObjectId()
-    const scheduledSale = {
-      _id: saleId,
-      name: 'Test Sale',
-      status: 'SCHEDULED',
-      startTime: new Date(Date.now() - 1000),
-      endTime: new Date(Date.now() + 3600_000),
-      products: [],
-    }
-
-    // First call (SCHEDULED check) returns the sale, second call (ACTIVE check) returns empty
-    FlashSaleModel.find
-      .mockReturnValueOnce({ lean: jest.fn().mockResolvedValue([scheduledSale]) })
-      .mockReturnValueOnce({ lean: jest.fn().mockResolvedValue([]) })
-
+  it('registers a BullMQ repeatable job on start()', async () => {
     await scheduler.start()
 
-    expect(FlashSaleModel.findByIdAndUpdate).toHaveBeenCalledWith(saleId, {
-      $set: { status: 'ACTIVE' },
-    })
+    expect(mockFlashSaleSchedulerQueueAdd).toHaveBeenCalledTimes(1)
+    const [jobName, payload, options] = mockFlashSaleSchedulerQueueAdd.mock.calls[0]
+    expect(jobName).toBe('flash-sale-check')
+    expect(payload.triggeredAt).toBeDefined()
+    expect(options.repeat).toBeDefined()
+    expect(options.repeat.every).toBe(60000)
+    expect(options.jobId).toBe('flash-sale-check-repeatable')
   })
 
-  it('ends ACTIVE flash sales whose endTime has passed', async () => {
-    const saleId = new Types.ObjectId()
-    const expiredSale = {
-      _id: saleId,
-      name: 'Expired Sale',
-      status: 'ACTIVE',
-      startTime: new Date(Date.now() - 7200_000),
-      endTime: new Date(Date.now() - 1000),
-      products: [],
-    }
-
-    // First call (SCHEDULED check) returns empty, second call (ACTIVE check) returns the sale
-    FlashSaleModel.find
-      .mockReturnValueOnce({ lean: jest.fn().mockResolvedValue([]) })
-      .mockReturnValueOnce({ lean: jest.fn().mockResolvedValue([expiredSale]) })
-
+  it('uses FLASH_SALE_CHECK_INTERVAL from config for repeat interval', async () => {
     await scheduler.start()
 
-    expect(FlashSaleModel.findByIdAndUpdate).toHaveBeenCalledWith(saleId, {
-      $set: { status: 'ENDED' },
-    })
+    const [, , options] = mockFlashSaleSchedulerQueueAdd.mock.calls[0]
+    // config.FLASH_SALE_CHECK_INTERVAL = 60 seconds → 60000 ms
+    expect(options.repeat.every).toBe(60 * 1000)
   })
 
-  it('does nothing when no flash sales need status change', async () => {
-    FlashSaleModel.find.mockReturnValue({ lean: jest.fn().mockResolvedValue([]) })
-
-    await scheduler.start()
-
-    expect(FlashSaleModel.findByIdAndUpdate).not.toHaveBeenCalled()
+  it('stop() does not throw and is a no-op', () => {
+    // stop() should not throw — it's kept for backward compat with graceful shutdown
+    expect(() => scheduler.stop()).not.toThrow()
   })
 
-  it('stops the interval on stop()', async () => {
-    FlashSaleModel.find.mockReturnValue({ lean: jest.fn().mockResolvedValue([]) })
-
+  it('includes a triggeredAt ISO timestamp in the payload', async () => {
     await scheduler.start()
-    scheduler.stop()
 
-    // Advance time past the interval — no more checks should run
-    FlashSaleModel.find.mockClear()
-    jest.advanceTimersByTime(120_000)
-
-    // Give any pending promises a chance to resolve
-    await Promise.resolve()
-
-    expect(FlashSaleModel.find).not.toHaveBeenCalled()
+    const [, payload] = mockFlashSaleSchedulerQueueAdd.mock.calls[0]
+    expect(payload.triggeredAt).toBeDefined()
+    // Verify it's a valid ISO date string
+    expect(new Date(payload.triggeredAt).toISOString()).toBe(payload.triggeredAt)
   })
 })

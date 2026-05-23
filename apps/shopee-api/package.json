@@ -5,7 +5,7 @@
   "main": "build/src/index.js",
   "scripts": {
     "test": "jest",
-    "test:ci": "jest --coverage --forceExit --passWithNoTests",
+    "test:ci": "jest --coverage --forceExit --passWithNoTests --maxWorkers=2",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "start": "nodemon --files -r tsconfig-paths/register src/index.ts",

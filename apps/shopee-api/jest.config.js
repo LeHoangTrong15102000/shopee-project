@@ -36,6 +36,7 @@ const sharedConfig = {
 module.exports = {
   verbose: true,
   testTimeout: 30000,
+  workerIdleMemoryLimit: '512MB',
 
   // Coverage thresholds for payment module (applies when running with --coverage)
   coverageThreshold: {

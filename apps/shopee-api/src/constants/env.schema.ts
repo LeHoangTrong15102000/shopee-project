@@ -98,6 +98,14 @@ const envSchema = z.object({
 
   // MoMo refund status polling interval in milliseconds (default 300000 = 5 minutes)
   MOMO_REFUND_POLL_INTERVAL_MS: z.coerce.number().int().positive().default(300000),
+
+  // Firebase Admin SDK credentials for FCM push notifications
+  // Provide either the JSON string or a file path — both are optional
+  FIREBASE_SERVICE_ACCOUNT_JSON: z.string().optional(),
+  FIREBASE_SERVICE_ACCOUNT_PATH: z.string().optional(),
+
+  // Bull Board admin dashboard — set to false to disable
+  BULL_BOARD_ENABLED: z.coerce.boolean().default(true),
 })
 
 export type Env = z.infer<typeof envSchema>
@@ -145,6 +153,9 @@ export function validateEnv(rawEnv: NodeJS.ProcessEnv = process.env): Env {
       FLASH_SALE_CHECK_INTERVAL: 60,
       REFUND_REQUEST_DEADLINE_DAYS: 7,
       MOMO_REFUND_POLL_INTERVAL_MS: 300000,
+      FIREBASE_SERVICE_ACCOUNT_JSON: undefined,
+      FIREBASE_SERVICE_ACCOUNT_PATH: undefined,
+      BULL_BOARD_ENABLED: true,
     }
   }
 

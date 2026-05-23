@@ -26,6 +26,7 @@ import { LoginHistoryRepository } from '@repositories/login-history.repository'
 import { AuditLogRepository } from '@repositories/audit-log.repository'
 import { FlashSaleRepository } from '@repositories/flash-sale.repository'
 import { RefundRepository } from '@repositories/refund.repository'
+import { DeviceTokenRepository } from '@repositories/device-token.repository'
 
 // Services
 import { ProductService } from '@services/product.service'
@@ -56,13 +57,50 @@ import { LoginHistoryService } from '@services/login-history.service'
 import { AuditLogService } from '@services/audit-log.service'
 import { FlashSaleService } from '@services/flash-sale.service'
 import { RefundService } from '@services/refund.service'
+import { DeviceTokenService } from '@services/device-token.service'
+import { FcmService } from '@services/fcm.service'
 
-// Jobs
+// Jobs (now register BullMQ repeatable jobs)
 import { PaymentReconciliationJob } from './jobs/payment-reconciliation.job'
 import { RefundStatusPollJob } from './jobs/refund-status-poll.job'
 import { FlashSaleScheduler } from './services/flash-sale.scheduler'
 
-// Repository instances (singletons)
+// Event bus
+import { EventBus } from './events/event-bus'
+import { registerEventHandlers } from './events/on-event.decorator'
+
+// Event listeners
+import {
+  OrderEventListener,
+  ProductEventListener,
+  UserEventListener,
+  FlashSaleEventListener,
+} from './events/listeners'
+
+// Workers
+import {
+  EmailWorker,
+  NotificationWorker,
+  SearchSyncWorker,
+  CleanupWorker,
+  FlashSaleSchedulerWorker,
+  PaymentReconciliationWorker,
+  RefundStatusPollWorker,
+} from './workers'
+
+// Queues
+import {
+  emailQueue,
+  notificationQueue,
+  searchSyncQueue,
+  cleanupQueue,
+  flashSaleSchedulerQueue,
+  paymentReconciliationQueue,
+  refundStatusPollQueue,
+} from './queues'
+
+// ─── Repository instances (singletons) ───────────────────────────────────────
+
 const productRepository = new ProductRepository()
 const userRepository = new UserRepository()
 const authRepository = new AuthRepository()
@@ -85,8 +123,10 @@ const loginHistoryRepository = new LoginHistoryRepository()
 const auditLogRepository = new AuditLogRepository()
 const flashSaleRepository = new FlashSaleRepository()
 const refundRepository = new RefundRepository()
+const deviceTokenRepository = new DeviceTokenRepository()
 
-// Service instances (singletons with injected repositories)
+// ─── Service instances (singletons with injected repositories) ───────────────
+
 const productService = new ProductService(productRepository, skuRepository)
 const userService = new UserService(userRepository)
 const authService = new AuthService(authRepository, userRepository)
@@ -131,18 +171,53 @@ const refundService = new RefundService(
   stripeService,
   paymentService,
 )
+const deviceTokenService = new DeviceTokenService(deviceTokenRepository)
+const fcmService = new FcmService(deviceTokenRepository)
 
-// Job instances
-const paymentReconciliationJob = new PaymentReconciliationJob(paymentService)
-const refundStatusPollJob = new RefundStatusPollJob(
+// ─── Event bus singleton ──────────────────────────────────────────────────────
+
+const eventBus = new EventBus()
+
+// ─── Event listeners (register handlers with event bus) ──────────────────────
+
+const orderEventListener = new OrderEventListener(emailQueue, notificationQueue)
+const productEventListener = new ProductEventListener(searchSyncQueue)
+const userEventListener = new UserEventListener(emailQueue)
+const flashSaleEventListener = new FlashSaleEventListener(notificationQueue)
+
+registerEventHandlers(orderEventListener, eventBus)
+registerEventHandlers(productEventListener, eventBus)
+registerEventHandlers(userEventListener, eventBus)
+registerEventHandlers(flashSaleEventListener, eventBus)
+
+// ─── Wire event bus into services ────────────────────────────────────────────
+
+authService.eventBus = eventBus
+orderService.eventBus = eventBus
+
+// ─── Workers (auto-start on instantiation) ───────────────────────────────────
+
+const emailWorker = new EmailWorker()
+const notificationWorker = new NotificationWorker(notificationService, fcmService)
+const searchSyncWorker = new SearchSyncWorker()
+const cleanupWorker = new CleanupWorker()
+const flashSaleSchedulerWorker = new FlashSaleSchedulerWorker(eventBus)
+const paymentReconciliationWorker = new PaymentReconciliationWorker(paymentService)
+const refundStatusPollWorker = new RefundStatusPollWorker(
   refundRepository,
   paymentService,
   refundService,
   orderRepository,
 )
-const flashSaleScheduler = new FlashSaleScheduler(flashSaleService)
 
-// Export container with all services
+// ─── Job instances (register BullMQ repeatable jobs on start()) ──────────────
+
+const paymentReconciliationJob = new PaymentReconciliationJob(paymentReconciliationWorker)
+const refundStatusPollJob = new RefundStatusPollJob()
+const flashSaleScheduler = new FlashSaleScheduler()
+
+// ─── Container export ─────────────────────────────────────────────────────────
+
 export const container = {
   // Repositories (for direct access if needed)
   repositories: {
@@ -168,6 +243,7 @@ export const container = {
     auditLog: auditLogRepository,
     flashSale: flashSaleRepository,
     refund: refundRepository,
+    deviceToken: deviceTokenRepository,
   },
   // Services (main interface for controllers)
   services: {
@@ -196,6 +272,8 @@ export const container = {
     auditLog: auditLogService,
     flashSale: flashSaleService,
     refund: refundService,
+    deviceToken: deviceTokenService,
+    fcm: fcmService,
   },
   // Schedulers
   schedulers: {
@@ -206,9 +284,22 @@ export const container = {
     paymentReconciliation: paymentReconciliationJob,
     refundStatusPoll: refundStatusPollJob,
   },
+  // Workers
+  workers: {
+    email: emailWorker,
+    notification: notificationWorker,
+    searchSync: searchSyncWorker,
+    cleanup: cleanupWorker,
+    flashSaleScheduler: flashSaleSchedulerWorker,
+    paymentReconciliation: paymentReconciliationWorker,
+    refundStatusPoll: refundStatusPollWorker,
+  },
+  // Event bus
+  eventBus,
 }
 
-// Named exports for convenience
+// ─── Named exports for convenience ───────────────────────────────────────────
+
 export {
   productService,
   userService,
@@ -242,4 +333,8 @@ export {
   flashSaleScheduler,
   refundService,
   refundStatusPollJob,
+  deviceTokenRepository,
+  deviceTokenService,
+  fcmService,
+  eventBus,
 }

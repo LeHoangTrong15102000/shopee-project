@@ -147,7 +147,7 @@ export interface NotificationPayload {
   _id: string
   title: string
   content: string
-  type: 'order' | 'promotion' | 'system' | 'other' | 'new_message'
+  type: 'order' | 'promotion' | 'system' | 'other' | 'new_message' | 'flash_sale' | 'price_drop'
   link?: string
   created_at: string
 }

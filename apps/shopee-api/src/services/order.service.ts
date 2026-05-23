@@ -43,6 +43,7 @@ import { emitOrderStatusUpdate, emitAdminNewOrderNotification } from '../socket/
 import { withTransaction } from '@utils/transaction.helper'
 import { Logger } from '@utils/logger'
 import { stripeService } from '../container'
+import type { EventBus } from '../events/event-bus'
 
 const SHIPPING_METHODS = [
   { id: 'standard', name: 'Giao hàng tiêu chuẩn', price: 30000, estimated_days: '3-5 ngày' },
@@ -125,6 +126,8 @@ interface ValidatedInput {
 }
 
 export class OrderService extends BaseService {
+  eventBus?: EventBus
+
   constructor(
     private readonly orderRepository: IOrderRepository,
     private readonly productRepository: IProductRepository,
@@ -215,6 +218,20 @@ export class OrderService extends BaseService {
         itemCount: input.items.length,
       })
       Logger.performance('order.create.duration', duration, { correlationId, userId })
+
+      // Emit domain event
+      this.eventBus?.emit({
+        type: 'order.created',
+        payload: {
+          orderId: String(order._id),
+          userId,
+          totalAmount: order.total,
+          items: input.items.map((item) => ({
+            productId: item.product_id,
+            quantity: item.buy_count,
+          })),
+        },
+      })
 
       // Credit card: create Stripe PaymentIntent and attach to order
       if (order.payment_method === PAYMENT_METHOD.CREDIT_CARD) {

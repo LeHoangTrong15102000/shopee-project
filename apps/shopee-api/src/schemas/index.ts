@@ -239,3 +239,10 @@ export {
   type UpdateFlashSaleInput,
   type ListFlashSalesQuery,
 } from './flash-sale.schema'
+
+// Device token schemas
+export {
+  registerDeviceTokenSchema,
+  deleteDeviceTokenSchema,
+  type RegisterDeviceTokenInput,
+} from './device-token.schema'

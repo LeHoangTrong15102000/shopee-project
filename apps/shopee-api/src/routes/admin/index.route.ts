@@ -29,6 +29,7 @@ import adminAuditLogRouter from './admin-audit-log.route'
 import adminFlashSaleRouter from './admin-flash-sale.route'
 import { adminRefundRouter } from './admin-refund.route'
 import { adminRateLimit } from '@middleware/rateLimiter.middleware'
+import { bullBoardRouter } from '../../queues/bull-board'
 
 // Wrap every admin sub-router with the admin rate limiter (300 req/min per user)
 function withAdminRateLimit(router: Router): Router {
@@ -152,6 +153,10 @@ const adminRoutes = {
     {
       path: 'refunds',
       route: withAdminRateLimit(adminRefundRouter),
+    },
+    {
+      path: 'queues',
+      route: withAdminRateLimit(bullBoardRouter),
     },
     {
       path: '',

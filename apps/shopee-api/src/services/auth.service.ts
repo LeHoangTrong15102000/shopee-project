@@ -10,6 +10,7 @@ import { config } from '@constants/config'
 import { ROLE } from '@constants/role.enum'
 import { omit } from 'lodash'
 import { Logger } from '@utils/logger'
+import type { EventBus } from '../events/event-bus'
 
 const googleOAuthClient = new OAuth2Client()
 
@@ -47,6 +48,8 @@ export interface TwoFactorRequiredResult {
 }
 
 export class AuthService extends BaseService {
+  eventBus?: EventBus
+
   constructor(
     private readonly authRepository: IAuthRepository,
     private readonly userRepository: IUserRepository,
@@ -114,6 +117,16 @@ export class AuthService extends BaseService {
     )
 
     Logger.apiInfo('auth.refresh.rotation', { event: 'register', userId: user._id!.toString() })
+
+    // Emit domain event
+    this.eventBus?.emit({
+      type: 'user.registered',
+      payload: {
+        userId: user._id!.toString(),
+        email: user.email,
+        registeredAt: new Date(),
+      },
+    })
 
     return {
       access_token: 'Bearer ' + accessToken,

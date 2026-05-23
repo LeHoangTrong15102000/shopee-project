@@ -96,6 +96,8 @@ module.exports = {
         '**/__tests__/schemas/**/*.test.ts',
         '**/__tests__/repositories/**/*.test.ts',
         '**/__tests__/constants/**/*.test.ts',
+        '**/__tests__/events/**/*.test.ts',
+        '**/__tests__/workers/**/*.test.ts',
       ],
       setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts'],
       testTimeout: 10000,

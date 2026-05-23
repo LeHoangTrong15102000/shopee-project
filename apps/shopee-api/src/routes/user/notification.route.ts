@@ -1,12 +1,15 @@
 import { Router } from 'express'
 import authMiddleware from '@middleware/auth.middleware'
 import * as notificationController from '@controllers/notification.controller'
+import * as deviceTokenController from '@controllers/device-token.controller'
 import { asyncHandler } from '@utils/async-handler'
 import {
   validate,
   getNotificationsSchema,
   markAsReadSchema,
   deleteNotificationSchema,
+  registerDeviceTokenSchema,
+  deleteDeviceTokenSchema,
 } from '@schemas/index'
 
 export const userNotificationRouter = Router()
@@ -47,4 +50,20 @@ userNotificationRouter.delete(
   validate(deleteNotificationSchema),
   authMiddleware.verifyAccessToken,
   asyncHandler(notificationController.deleteNotification),
+)
+
+// Đăng ký device token
+userNotificationRouter.post(
+  '/device-token',
+  validate(registerDeviceTokenSchema),
+  authMiddleware.verifyAccessToken,
+  asyncHandler(deviceTokenController.registerDeviceToken),
+)
+
+// Xóa device token
+userNotificationRouter.delete(
+  '/device-token/:id',
+  validate(deleteDeviceTokenSchema),
+  authMiddleware.verifyAccessToken,
+  asyncHandler(deviceTokenController.deleteDeviceToken),
 )

@@ -270,10 +270,16 @@ httpServer.listen(PORT, () => {
     websocket: true,
   })
 
-  // Start background jobs after server is ready
-  paymentReconciliationJob.start()
-  flashSaleScheduler.start()
-  refundStatusPollJob.start()
+  // Register BullMQ repeatable jobs after server is ready
+  paymentReconciliationJob.start().catch((err) => {
+    Logger.apiError('[index] Failed to register payment reconciliation job', { error: err?.message })
+  })
+  flashSaleScheduler.start().catch((err) => {
+    Logger.apiError('[index] Failed to register flash sale scheduler job', { error: err?.message })
+  })
+  refundStatusPollJob.start().catch((err) => {
+    Logger.apiError('[index] Failed to register refund status poll job', { error: err?.message })
+  })
 })
 
 // ==================== GRACEFUL SHUTDOWN ====================
@@ -289,7 +295,7 @@ const gracefulShutdown = async (signal: string) => {
   console.log(chalk.yellow(`\n${signal} received. Starting graceful shutdown...`))
   Logger.apiInfo(`Graceful shutdown initiated`, { signal })
 
-  // Stop flash sale scheduler (clears setInterval)
+  // Stop flash sale scheduler (removes BullMQ repeatable job)
   flashSaleScheduler.stop()
 
   // Flush buffered view counts to database before shutdown

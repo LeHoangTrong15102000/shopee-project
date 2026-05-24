@@ -7,7 +7,7 @@
  *
  * Results are cached in Redis to avoid repeated heavy queries.
  */
-import { Types } from 'mongoose'
+import { Types, PipelineStage } from 'mongoose'
 import { ProductModel } from '@database/models/product.model'
 import { OrderModel } from '@database/models/order.model'
 import { redisClient } from '@utils/redis.client'
@@ -101,23 +101,17 @@ export class RecommendationService {
     }
 
     // Aggregate: find orders containing this product, collect co-purchased product IDs
-    const pipeline = [
-      // Match orders that contain the target product
+    const pipeline: PipelineStage[] = [
       { $match: { 'items.product': productObjectId } },
-      // Unwind items to get individual product refs
       { $unwind: '$items' },
-      // Exclude the target product itself
       { $match: { 'items.product': { $ne: productObjectId } } },
-      // Group by co-purchased product, count occurrences
       {
         $group: {
           _id: '$items.product',
           count: { $sum: 1 },
         },
       },
-      // Sort by co-occurrence count descending
       { $sort: { count: -1 } },
-      // Limit to top 12
       { $limit: 12 },
     ]
 

@@ -12,6 +12,7 @@ import { getWorkerConnection } from './worker.connection'
 import { MeilisearchService, ProductDocument } from '@services/meilisearch.service'
 import { ProductModel } from '@database/models/product.model'
 import { CategoryModel } from '@database/models/category.model'
+import { IProduct } from '../@types/models.type'
 import { Types } from 'mongoose'
 
 /**
@@ -20,7 +21,7 @@ import { Types } from 'mongoose'
  * Returns null if the product is not found.
  */
 async function buildProductDocument(productId: string): Promise<ProductDocument | null> {
-  const product = await ProductModel.findById(productId).lean()
+  const product = await ProductModel.findById(productId).lean<IProduct>()
   if (!product) {
     Logger.apiWarn('[SearchSyncWorker] Product not found for indexing', { productId })
     return null
@@ -32,11 +33,11 @@ async function buildProductDocument(productId: string): Promise<ProductDocument 
   if (product.category) {
     const catId = product.category instanceof Types.ObjectId
       ? product.category
-      : new Types.ObjectId(product.category.toString())
+      : new Types.ObjectId(String(product.category))
     category_id = catId.toString()
     const category = await CategoryModel.findById(catId).lean()
     if (category) {
-      category_name = category.name ?? ''
+      category_name = (category as { name?: string }).name ?? ''
     }
   }
 
@@ -44,9 +45,9 @@ async function buildProductDocument(productId: string): Promise<ProductDocument 
   const stock_status: 'in_stock' | 'out_of_stock' = stock > 0 ? 'in_stock' : 'out_of_stock'
 
   const doc: ProductDocument = {
-    id: product._id.toString(),
+    id: product._id!.toString(),
     name: product.name,
-    description: product.description,
+    description: product.description ?? undefined,
     category_id,
     category_name,
     price: product.price ?? 0,
@@ -56,7 +57,7 @@ async function buildProductDocument(productId: string): Promise<ProductDocument 
     stock_status,
     image: product.image,
     images: product.images,
-    shop_id: product.shop_id?.toString(),
+    shop_id: undefined,
     createdAt: product.createdAt?.toISOString(),
   }
 

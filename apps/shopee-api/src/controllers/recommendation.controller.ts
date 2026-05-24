@@ -36,7 +36,7 @@ function getRecommendationService() {
  * GET /products/:id/similar
  */
 const getSimilarProducts = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params
+  const id = req.params.id as string
   const service = getRecommendationService()
   const products = await service.getSimilarProducts(id)
 
@@ -50,7 +50,7 @@ const getSimilarProducts = async (req: Request, res: Response): Promise<void> =>
  * GET /products/:id/bought-together
  */
 const getBoughtTogether = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params
+  const id = req.params.id as string
   const service = getRecommendationService()
   const products = await service.getBoughtTogether(id)
 
@@ -70,7 +70,7 @@ const recordView = async (req: Request, res: Response): Promise<void> => {
     throw new ErrorHandler(STATUS.UNAUTHORIZED, 'Yêu cầu đăng nhập')
   }
 
-  const { id: productId } = req.params
+  const productId = req.params.id as string
 
   if (!redisClient) {
     // Redis unavailable — silently succeed
@@ -83,7 +83,9 @@ const recordView = async (req: Request, res: Response): Promise<void> => {
 
   try {
     // Add product to sorted set with score = timestamp
-    await redisClient.zadd(key, score, productId)
+    // ioredis overload resolution requires spread for score-member pairs
+    const args: [string, ...Array<string | number>] = [key, score, productId]
+    await redisClient.zadd(...args)
     // Cap at RECENTLY_VIEWED_CAP items — remove oldest (lowest scores)
     // ZREMRANGEBYRANK key 0 -(cap+1) removes all but the top `cap` items
     await redisClient.zremrangebyrank(key, 0, -(RECENTLY_VIEWED_CAP + 1))

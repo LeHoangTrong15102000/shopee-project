@@ -18,6 +18,7 @@ import { FOLDERS, FOLDER_UPLOAD, ROUTE_IMAGE } from '@constants/config'
 import { cacheService, CacheKeys, CacheTTL } from '@utils/cache.service'
 import { generateSKUCombinations, generateVariantValues, VariantInput } from '@utils/variant.helper'
 import fs from 'fs'
+import type { EventBus } from '../events/event-bus'
 
 export interface CreateProductWithSKUsInput extends CreateProductDTO {
   variants?: Array<{
@@ -50,6 +51,8 @@ export interface UpdateProductWithSKUsInput extends UpdateProductDTO {
 }
 
 export class ProductService extends BaseService {
+  eventBus?: EventBus
+
   constructor(
     private readonly productRepository: IProductRepository,
     private readonly skuRepository?: ISKURepository,
@@ -147,7 +150,17 @@ export class ProductService extends BaseService {
     }
 
     const result = this.handleImageProduct(product)
-    return skus ? { ...result, skus } : result
+    const finalResult = skus ? { ...result, skus } : result
+
+    this.eventBus?.emit({
+      type: 'product.created',
+      payload: {
+        productId: String(product._id),
+        name: product.name,
+      },
+    })
+
+    return finalResult
   }
 
   async getProducts(
@@ -303,7 +316,18 @@ export class ProductService extends BaseService {
     cacheService.del(CacheKeys.productDetail(productId))
     cacheService.del(CacheKeys.productsPattern())
     const result = this.handleImageProduct(product)
-    return skus ? { ...result, skus } : result
+    const finalResult = skus ? { ...result, skus } : result
+
+    this.eventBus?.emit({
+      type: 'product.updated',
+      payload: {
+        productId,
+        name: product.name,
+        changedFields: Object.keys(productData),
+      },
+    })
+
+    return finalResult
   }
 
   async deleteProduct(productId: string): Promise<void> {
@@ -325,6 +349,14 @@ export class ProductService extends BaseService {
     this.removeManyImageProduct(product.images)
     cacheService.del(CacheKeys.productDetail(productId))
     cacheService.del(CacheKeys.productsPattern())
+
+    this.eventBus?.emit({
+      type: 'product.deleted',
+      payload: {
+        productId,
+        name: product.name,
+      },
+    })
   }
 
   async deleteManyProducts(productIds: string[]): Promise<number> {

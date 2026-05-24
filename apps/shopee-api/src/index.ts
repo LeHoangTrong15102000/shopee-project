@@ -40,7 +40,7 @@ import { Logger } from '@utils/logger'
 import { initializeSocket } from './socket/socket.init'
 import { viewCounterService } from '@utils/view-counter.service'
 import { disconnectRedis } from '@utils/redis.client'
-import { paymentReconciliationJob, flashSaleScheduler, refundStatusPollJob } from './container'
+import { paymentReconciliationJob, flashSaleScheduler, refundStatusPollJob, meilisearchService } from './container'
 
 const app: express.Application = express()
 connectMongoDB()
@@ -279,6 +279,11 @@ httpServer.listen(PORT, () => {
   })
   refundStatusPollJob.start().catch((err) => {
     Logger.apiError('[index] Failed to register refund status poll job', { error: err?.message })
+  })
+
+  // Configure Meilisearch index (idempotent — safe to call on every startup)
+  meilisearchService.configureIndex().catch((err) => {
+    Logger.apiError('[index] Failed to configure Meilisearch index', { error: err?.message })
   })
 })
 

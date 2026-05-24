@@ -39,6 +39,11 @@ export interface ProductUpdatedPayload {
   changedFields?: string[]
 }
 
+export interface ProductDeletedPayload {
+  productId: string
+  name?: string
+}
+
 export interface ProductStockChangedPayload {
   productId: string
   previousStock: number
@@ -98,6 +103,7 @@ export type DomainEvent =
   | { type: 'order.cancelled'; payload: OrderCancelledPayload }
   | { type: 'product.created'; payload: ProductCreatedPayload }
   | { type: 'product.updated'; payload: ProductUpdatedPayload }
+  | { type: 'product.deleted'; payload: ProductDeletedPayload }
   | { type: 'product.stock_changed'; payload: ProductStockChangedPayload }
   | { type: 'user.registered'; payload: UserRegisteredPayload }
   | { type: 'user.login'; payload: UserLoginPayload }

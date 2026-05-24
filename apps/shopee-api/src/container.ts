@@ -59,6 +59,8 @@ import { FlashSaleService } from '@services/flash-sale.service'
 import { RefundService } from '@services/refund.service'
 import { DeviceTokenService } from '@services/device-token.service'
 import { FcmService } from '@services/fcm.service'
+import { MeilisearchService } from '@services/meilisearch.service'
+import { RecommendationService } from '@services/recommendation.service'
 
 // Jobs (now register BullMQ repeatable jobs)
 import { PaymentReconciliationJob } from './jobs/payment-reconciliation.job'
@@ -173,6 +175,8 @@ const refundService = new RefundService(
 )
 const deviceTokenService = new DeviceTokenService(deviceTokenRepository)
 const fcmService = new FcmService(deviceTokenRepository)
+const meilisearchService = new MeilisearchService()
+const recommendationService = new RecommendationService()
 
 // ─── Event bus singleton ──────────────────────────────────────────────────────
 
@@ -180,7 +184,7 @@ const eventBus = new EventBus()
 
 // ─── Event listeners (register handlers with event bus) ──────────────────────
 
-const orderEventListener = new OrderEventListener(emailQueue, notificationQueue)
+const orderEventListener = new OrderEventListener(emailQueue, notificationQueue, recommendationService)
 const productEventListener = new ProductEventListener(searchSyncQueue)
 const userEventListener = new UserEventListener(emailQueue)
 const flashSaleEventListener = new FlashSaleEventListener(notificationQueue)
@@ -194,12 +198,13 @@ registerEventHandlers(flashSaleEventListener, eventBus)
 
 authService.eventBus = eventBus
 orderService.eventBus = eventBus
+productService.eventBus = eventBus
 
 // ─── Workers (auto-start on instantiation) ───────────────────────────────────
 
 const emailWorker = new EmailWorker()
 const notificationWorker = new NotificationWorker(notificationService, fcmService)
-const searchSyncWorker = new SearchSyncWorker()
+const searchSyncWorker = new SearchSyncWorker(meilisearchService)
 const cleanupWorker = new CleanupWorker()
 const flashSaleSchedulerWorker = new FlashSaleSchedulerWorker(eventBus)
 const paymentReconciliationWorker = new PaymentReconciliationWorker(paymentService)
@@ -274,6 +279,8 @@ export const container = {
     refund: refundService,
     deviceToken: deviceTokenService,
     fcm: fcmService,
+    meilisearch: meilisearchService,
+    recommendation: recommendationService,
   },
   // Schedulers
   schedulers: {
@@ -336,5 +343,7 @@ export {
   deviceTokenRepository,
   deviceTokenService,
   fcmService,
+  meilisearchService,
+  recommendationService,
   eventBus,
 }

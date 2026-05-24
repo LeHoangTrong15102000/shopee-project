@@ -21,6 +21,26 @@ services:
       retries: 5
       start_period: 30s
 
+  meilisearch:
+    image: getmeili/meilisearch:v1.7
+    container_name: shopee-meilisearch
+    restart: unless-stopped
+    ports:
+      - "7700:7700"
+    environment:
+      MEILI_MASTER_KEY: ${MEILISEARCH_MASTER_KEY:-shopee_meili_master_key}
+      MEILI_ENV: development
+    volumes:
+      - ./docker/docker_data/meilisearch_data:/meili_data
+    networks:
+      - shopee-nw
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--spider", "http://localhost:7700/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
 networks:
   shopee-nw:
     driver: bridge

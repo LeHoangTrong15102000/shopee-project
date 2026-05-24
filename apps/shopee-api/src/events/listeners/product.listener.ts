@@ -45,4 +45,21 @@ export class ProductEventListener {
       operation: 'index',
     })
   }
+
+  @OnEvent('product.deleted')
+  async onProductDeleted(
+    event: Extract<DomainEvent, { type: 'product.deleted' }>,
+  ): Promise<void> {
+    const { productId } = event.payload
+
+    Logger.apiInfo('[ProductEventListener] product.deleted — enqueuing search-sync delete', {
+      productId,
+    })
+
+    await this.searchSyncQueue.add('product-delete', {
+      entityType: 'product',
+      entityId: productId,
+      operation: 'delete',
+    })
+  }
 }

@@ -28,6 +28,7 @@ import adminGatewayPaymentRouter from './admin-gateway-payment.route'
 import adminAuditLogRouter from './admin-audit-log.route'
 import adminFlashSaleRouter from './admin-flash-sale.route'
 import { adminRefundRouter } from './admin-refund.route'
+import adminSearchRouter from './admin-search.route'
 import { adminRateLimit } from '@middleware/rateLimiter.middleware'
 import { bullBoardRouter } from '../../queues/bull-board'
 
@@ -153,6 +154,10 @@ const adminRoutes = {
     {
       path: 'refunds',
       route: withAdminRateLimit(adminRefundRouter),
+    },
+    {
+      path: 'search',
+      route: withAdminRateLimit(adminSearchRouter),
     },
     {
       path: 'queues',

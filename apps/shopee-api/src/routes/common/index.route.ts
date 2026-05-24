@@ -8,6 +8,8 @@ import { shopRouter } from './shop.route'
 import paymentRouter from './payment.route'
 import ipnRouter from './ipn.route'
 import flashSaleRouter from './flash-sale.route'
+import searchRouter from './search.route'
+import productRecommendationRouter from './product-recommendations.route'
 
 const commonRoutes = {
   prefix: '/',
@@ -52,6 +54,14 @@ const commonRoutes = {
     {
       path: 'flash-sales',
       route: flashSaleRouter,
+    },
+    {
+      path: 'search',
+      route: searchRouter,
+    },
+    {
+      path: 'products',
+      route: productRecommendationRouter,
     },
   ],
 }

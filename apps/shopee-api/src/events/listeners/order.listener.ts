@@ -6,16 +6,18 @@ import { OnEvent } from '../on-event.decorator'
 import { DomainEvent } from '../domain-events'
 import { EmailJobPayload, NotificationJobPayload } from '../../queues/job-payloads'
 import { Logger } from '@utils/logger'
+import type { RecommendationService } from '../../services/recommendation.service'
 
 export class OrderEventListener {
   constructor(
     private readonly emailQueue: Queue<EmailJobPayload>,
     private readonly notificationQueue: Queue<NotificationJobPayload>,
+    private readonly recommendationService?: RecommendationService,
   ) {}
 
   @OnEvent('order.created')
   async onOrderCreated(event: Extract<DomainEvent, { type: 'order.created' }>): Promise<void> {
-    const { orderId, userId, totalAmount } = event.payload
+    const { orderId, userId, totalAmount, items } = event.payload
 
     Logger.apiInfo('[OrderEventListener] order.created — enqueuing email + notification', {
       orderId,
@@ -39,6 +41,12 @@ export class OrderEventListener {
       type: 'order',
       link: `/orders/${orderId}`,
     })
+
+    // Invalidate bought-together cache for all products in this order
+    if (this.recommendationService && items && items.length > 0) {
+      const productIds = items.map((item) => item.productId)
+      await this.recommendationService.invalidateBoughtTogetherCache(productIds)
+    }
   }
 
   @OnEvent('order.status_changed')

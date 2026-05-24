@@ -50,6 +50,7 @@
     "ioredis": "^5.10.1",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
+    "meilisearch": "0.40.0",
     "mongoose": "^8.8.4",
     "multer": "1.4.5-lts.1",
     "mv": "^2.1.1",

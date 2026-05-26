@@ -238,6 +238,12 @@ export class ProductService extends BaseService {
     const { skus: skuData, ...productData } = data
     // Note: Variant validation is handled by Zod schema at the request boundary
 
+    // Capture old price before update for price-drop detection
+    const oldProduct = productData.price !== undefined
+      ? await this.productRepository.findById(productId)
+      : null
+    const oldPrice = oldProduct?.price
+
     const product = await this.productRepository.updateById(productId, productData)
     if (!product) {
       throw new NotFoundError('Product', productId)
@@ -324,6 +330,9 @@ export class ProductService extends BaseService {
         productId,
         name: product.name,
         changedFields: Object.keys(productData),
+        ...(oldPrice !== undefined && product.price !== undefined
+          ? { oldPrice, newPrice: product.price }
+          : {}),
       },
     })
 

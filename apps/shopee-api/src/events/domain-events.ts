@@ -37,6 +37,9 @@ export interface ProductUpdatedPayload {
   productId: string
   name: string
   changedFields?: string[]
+  /** Present when price changed — used for price-drop FCM notifications */
+  oldPrice?: number
+  newPrice?: number
 }
 
 export interface ProductDeletedPayload {
@@ -95,6 +98,38 @@ export interface PaymentFailedPayload {
   reason?: string
 }
 
+export interface ProductLikedPayload {
+  productId: string
+  productName: string
+  productImage?: string
+  productPrice?: number
+  userId: string
+  userName: string
+  userAvatar?: string
+}
+
+export interface ProductSharedPayload {
+  productId: string
+  productName: string
+  productImage?: string
+  productPrice?: number
+  userId: string
+  userName: string
+  userAvatar?: string
+  shareUrl: string
+}
+
+export interface ProductReviewedPayload {
+  productId: string
+  productName: string
+  productImage?: string
+  userId: string
+  userName: string
+  userAvatar?: string
+  rating: number
+  reviewId: string
+}
+
 // ─── Discriminated union ──────────────────────────────────────────────────────
 
 export type DomainEvent =
@@ -112,5 +147,8 @@ export type DomainEvent =
   | { type: 'flash_sale.ended'; payload: FlashSaleEndedPayload }
   | { type: 'payment.completed'; payload: PaymentCompletedPayload }
   | { type: 'payment.failed'; payload: PaymentFailedPayload }
+  | { type: 'product.liked'; payload: ProductLikedPayload }
+  | { type: 'product.shared'; payload: ProductSharedPayload }
+  | { type: 'product.reviewed'; payload: ProductReviewedPayload }
 
 export type DomainEventType = DomainEvent['type']

@@ -51,3 +51,22 @@ export interface RefundStatusPollJobPayload {
   /** Timestamp when the job was enqueued */
   triggeredAt: string
 }
+
+export interface FeedFanOutJobPayload {
+  /** ID of the user who performed the action (actor) */
+  actorId: string
+  /** Display name of the actor */
+  actorName: string
+  /** Avatar URL of the actor (optional) */
+  actorAvatar?: string
+  /** The action type that triggered the feed event */
+  actionType: 'product.liked' | 'product.shared' | 'product.reviewed' | 'order.created'
+  /** The type of the target entity */
+  targetType: 'product' | 'order'
+  /** The ID of the target entity */
+  targetId: string
+  /** Snapshot of target data at time of event */
+  targetSnapshot: Record<string, unknown>
+  /** IDs of users who should receive this feed item */
+  recipientIds: string[]
+}

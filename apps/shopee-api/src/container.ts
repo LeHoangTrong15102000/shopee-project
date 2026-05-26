@@ -61,6 +61,10 @@ import { DeviceTokenService } from '@services/device-token.service'
 import { FcmService } from '@services/fcm.service'
 import { MeilisearchService } from '@services/meilisearch.service'
 import { RecommendationService } from '@services/recommendation.service'
+import { FeedService } from '@services/feed.service'
+import { ShareService } from '@services/share.service'
+import { ReferralService } from '@services/referral.service'
+import { BundleService } from '@services/bundle.service'
 
 // Jobs (now register BullMQ repeatable jobs)
 import { PaymentReconciliationJob } from './jobs/payment-reconciliation.job'
@@ -77,6 +81,8 @@ import {
   ProductEventListener,
   UserEventListener,
   FlashSaleEventListener,
+  FeedEventListener,
+  ReferralEventListener,
 } from './events/listeners'
 
 // Workers
@@ -88,6 +94,7 @@ import {
   FlashSaleSchedulerWorker,
   PaymentReconciliationWorker,
   RefundStatusPollWorker,
+  FeedWorker,
 } from './workers'
 
 // Queues
@@ -99,6 +106,7 @@ import {
   flashSaleSchedulerQueue,
   paymentReconciliationQueue,
   refundStatusPollQueue,
+  feedFanOutQueue,
 } from './queues'
 
 // ─── Repository instances (singletons) ───────────────────────────────────────
@@ -177,6 +185,10 @@ const deviceTokenService = new DeviceTokenService(deviceTokenRepository)
 const fcmService = new FcmService(deviceTokenRepository)
 const meilisearchService = new MeilisearchService()
 const recommendationService = new RecommendationService()
+const feedService = new FeedService()
+const shareService = new ShareService()
+const referralService = new ReferralService()
+const bundleService = new BundleService()
 
 // ─── Event bus singleton ──────────────────────────────────────────────────────
 
@@ -185,20 +197,25 @@ const eventBus = new EventBus()
 // ─── Event listeners (register handlers with event bus) ──────────────────────
 
 const orderEventListener = new OrderEventListener(emailQueue, notificationQueue, recommendationService)
-const productEventListener = new ProductEventListener(searchSyncQueue)
+const productEventListener = new ProductEventListener(searchSyncQueue, fcmService)
 const userEventListener = new UserEventListener(emailQueue)
 const flashSaleEventListener = new FlashSaleEventListener(notificationQueue)
+const feedEventListener = new FeedEventListener(feedFanOutQueue)
+const referralEventListener = new ReferralEventListener(referralService)
 
 registerEventHandlers(orderEventListener, eventBus)
 registerEventHandlers(productEventListener, eventBus)
 registerEventHandlers(userEventListener, eventBus)
 registerEventHandlers(flashSaleEventListener, eventBus)
+registerEventHandlers(feedEventListener, eventBus)
+registerEventHandlers(referralEventListener, eventBus)
 
 // ─── Wire event bus into services ────────────────────────────────────────────
 
 authService.eventBus = eventBus
 orderService.eventBus = eventBus
 productService.eventBus = eventBus
+shareService.eventBus = eventBus
 
 // ─── Workers (auto-start on instantiation) ───────────────────────────────────
 
@@ -214,6 +231,7 @@ const refundStatusPollWorker = new RefundStatusPollWorker(
   refundService,
   orderRepository,
 )
+const feedWorker = new FeedWorker()
 
 // ─── Job instances (register BullMQ repeatable jobs on start()) ──────────────
 
@@ -281,6 +299,10 @@ export const container = {
     fcm: fcmService,
     meilisearch: meilisearchService,
     recommendation: recommendationService,
+    feed: feedService,
+    share: shareService,
+    referral: referralService,
+    bundle: bundleService,
   },
   // Schedulers
   schedulers: {
@@ -300,6 +322,7 @@ export const container = {
     flashSaleScheduler: flashSaleSchedulerWorker,
     paymentReconciliation: paymentReconciliationWorker,
     refundStatusPoll: refundStatusPollWorker,
+    feed: feedWorker,
   },
   // Event bus
   eventBus,
@@ -345,5 +368,9 @@ export {
   fcmService,
   meilisearchService,
   recommendationService,
+  feedService,
+  shareService,
+  referralService,
+  bundleService,
   eventBus,
 }

@@ -8,6 +8,7 @@ import {
   loyaltyService,
   voucherService,
   paymentService,
+  bundleService,
 } from '../container'
 import { ValidationError, NotFoundError, BusinessError } from '@services/base.service'
 import { emitAdminNewOrderNotification } from '../socket/utils/order-emit'
@@ -67,6 +68,34 @@ export const getCheckoutSummary = async (req: Request, res: Response) => {
       }
     }
 
+    // Calculate bundle discount
+    const cartItemsForBundle = purchases.map((purchase) => {
+      const product = purchase.product as any
+      return {
+        productId: product._id.toString(),
+        quantity: purchase.buy_count,
+        price: product.price,
+      }
+    })
+    let bundleDiscount = 0
+    let appliedBundle = null
+    try {
+      const activeBundles = await bundleService.getActiveBundles()
+      const bundleResult = bundleService.calculateBundleDiscount(activeBundles, cartItemsForBundle)
+      if (bundleResult) {
+        bundleDiscount = bundleResult.discountAmount
+        appliedBundle = {
+          bundleId: bundleResult.bundle._id?.toString(),
+          name: bundleResult.bundle.name,
+          discountAmount: bundleResult.discountAmount,
+        }
+      }
+    } catch (err) {
+      Logger.apiWarn('[Checkout] Bundle discount calculation failed', {
+        error: err instanceof Error ? err.message : String(err),
+      })
+    }
+
     // Get user's loyalty coins using loyaltyService
     const loyaltyInfo = await loyaltyService.getPoints(user_id)
     const availableCoins = loyaltyInfo?.points?.available_points || 0
@@ -74,7 +103,7 @@ export const getCheckoutSummary = async (req: Request, res: Response) => {
     const coinsDiscount = coinsToUse
 
     // Calculate total
-    const total = Math.max(0, subtotal + shippingFee - voucherDiscount - coinsDiscount)
+    const total = Math.max(0, subtotal + shippingFee - voucherDiscount - coinsDiscount - bundleDiscount)
 
     // Get default address using addressService
     const defaultAddress = await addressService.getDefaultAddress(user_id)
@@ -88,6 +117,8 @@ export const getCheckoutSummary = async (req: Request, res: Response) => {
         shipping_methods: shippingMethods,
         voucher_discount: voucherDiscount,
         applied_voucher: appliedVoucher,
+        bundle_discount: bundleDiscount,
+        applied_bundle: appliedBundle,
         coins_discount: coinsDiscount,
         coins_used: coinsToUse,
         available_coins: availableCoins,

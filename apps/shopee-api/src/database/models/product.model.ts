@@ -14,6 +14,8 @@ const ProductSchema = new Schema(
     quantity: { type: Number, default: 0 },
     sold: { type: Number, default: 0 },
     view: { type: Number, default: 0 },
+    likeCount: { type: Number, default: 0 },
+    shareCount: { type: Number, default: 0 },
     location: { type: String, maxlength: 50 },
     variants: [
       {

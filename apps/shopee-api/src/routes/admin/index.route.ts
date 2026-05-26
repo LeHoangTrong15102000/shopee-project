@@ -29,6 +29,8 @@ import adminAuditLogRouter from './admin-audit-log.route'
 import adminFlashSaleRouter from './admin-flash-sale.route'
 import { adminRefundRouter } from './admin-refund.route'
 import adminSearchRouter from './admin-search.route'
+import adminReferralRouter from './admin-referral.route'
+import adminBundlesRouter from './admin-bundles.route'
 import { adminRateLimit } from '@middleware/rateLimiter.middleware'
 import { bullBoardRouter } from '../../queues/bull-board'
 
@@ -158,6 +160,14 @@ const adminRoutes = {
     {
       path: 'search',
       route: withAdminRateLimit(adminSearchRouter),
+    },
+    {
+      path: 'referral',
+      route: withAdminRateLimit(adminReferralRouter),
+    },
+    {
+      path: 'bundles',
+      route: withAdminRateLimit(adminBundlesRouter),
     },
     {
       path: 'queues',

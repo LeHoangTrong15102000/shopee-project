@@ -10,6 +10,9 @@ import ipnRouter from './ipn.route'
 import flashSaleRouter from './flash-sale.route'
 import searchRouter from './search.route'
 import productRecommendationRouter from './product-recommendations.route'
+import { bundleRouter } from './bundles.route'
+import { productBundleRouter } from './product-bundles.route'
+import { shareRouter as productShareRouter } from './product-share.route'
 
 const commonRoutes = {
   prefix: '/',
@@ -62,6 +65,18 @@ const commonRoutes = {
     {
       path: 'products',
       route: productRecommendationRouter,
+    },
+    {
+      path: 'bundles',
+      route: bundleRouter,
+    },
+    {
+      path: 'products',
+      route: productBundleRouter,
+    },
+    {
+      path: 'products',
+      route: productShareRouter,
     },
   ],
 }

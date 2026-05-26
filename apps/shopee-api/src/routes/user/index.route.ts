@@ -14,6 +14,8 @@ import conversationRouter from './conversation.route'
 import { userPriceRouter } from './price.route'
 import { shopChatRouter } from './shop-chat.route'
 import { userRefundRouter } from './refund.route'
+import { feedRouter } from './feed.route'
+import { referralRouter } from './referral.route'
 
 const userRoutes = {
   prefix: '/',
@@ -86,6 +88,14 @@ const userRoutes = {
     {
       path: 'refunds',
       route: userRefundRouter,
+    },
+    {
+      path: 'feed',
+      route: feedRouter,
+    },
+    {
+      path: 'referral',
+      route: referralRouter,
     },
   ],
 }

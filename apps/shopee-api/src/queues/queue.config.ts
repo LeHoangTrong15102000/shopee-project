@@ -11,6 +11,7 @@ export const CLEANUP_QUEUE = 'cleanup'
 export const FLASH_SALE_SCHEDULER_QUEUE = 'flash-sale-scheduler'
 export const PAYMENT_RECONCILIATION_QUEUE = 'payment-reconciliation'
 export const REFUND_STATUS_POLL_QUEUE = 'refund-status-poll'
+export const FEED_FAN_OUT_QUEUE = 'feed.fan-out'
 
 /**
  * Shared default job options applied to all queues.

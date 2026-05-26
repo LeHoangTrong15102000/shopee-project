@@ -61,7 +61,7 @@ feedRouter.patch(
   authMiddleware.verifyAccessToken,
   asyncHandler(async (req: Request, res: Response) => {
     const userId = req.jwtDecoded.id
-    const feedItemId = req.params.id
+    const feedItemId = req.params.id as string
 
     const updated = await container.services.feed.markAsRead(userId, feedItemId)
 

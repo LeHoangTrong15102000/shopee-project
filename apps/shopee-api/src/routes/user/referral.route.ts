@@ -43,7 +43,7 @@ referralRouter.post(
     const { code } = req.body as { code: string }
 
     if (!code) {
-      throw new ValidationError('code is required')
+      throw new ValidationError({ code: 'code is required' })
     }
 
     const reward = await container.services.referral.applyCode(userId, code)

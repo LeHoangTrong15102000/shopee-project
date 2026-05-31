@@ -19,7 +19,7 @@ describe('cors.config constants', () => {
     })
 
     it('should include production origins when combined in dev mode', () => {
-      expect(ALLOWED_ORIGINS).toContain('https://shopee-clone.com')
+      expect(ALLOWED_ORIGINS).toContain('https://lehoangtrong.com')
     })
   })
 

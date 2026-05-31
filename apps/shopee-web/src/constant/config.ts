@@ -1,9 +1,9 @@
 const config = {
-  baseUrl: import.meta.env.VITE_API_BASE_URL ?? 'https://api-ecom.duthanhduoc.com/',
+  baseUrl: import.meta.env.VITE_API_BASE_URL ?? 'https://api-ecom.lehoangtrong.com/',
   // baseUrl: 'http://localhost:3000/',
-  socketUrl: import.meta.env.VITE_SOCKET_URL ?? 'https://api-ecom.duthanhduoc.com',
+  socketUrl: import.meta.env.VITE_SOCKET_URL ?? 'https://api-ecom.lehoangtrong.com',
   // socketUrl: 'http://localhost:3000',
-  siteUrl: import.meta.env.VITE_SITE_URL ?? 'https://shop.lehoangtrong.com',
+  siteUrl: import.meta.env.VITE_SITE_URL ?? 'https://lehoangtrong.com',
   maxSizeUploadAvatar: 1048576, // bytes
 
   /**

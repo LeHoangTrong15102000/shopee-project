@@ -12,8 +12,9 @@ const ALLOWED_ORIGINS_DEV = [
 ]
 
 const ALLOWED_ORIGINS_PROD = [
-  'https://shopee-clone.com',
-  'https://www.shopee-clone.com',
+  'https://lehoangtrong.com',
+  'https://www.lehoangtrong.com',
+  'https://shop-admin.lehoangtrong.com',
   // Localhost origins cho development/testing (kể cả khi chạy prod mode)
   'http://localhost:3000',
   'http://localhost:4000',

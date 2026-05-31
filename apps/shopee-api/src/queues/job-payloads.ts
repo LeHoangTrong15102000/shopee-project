@@ -70,3 +70,8 @@ export interface FeedFanOutJobPayload {
   /** IDs of users who should receive this feed item */
   recipientIds: string[]
 }
+
+export interface AnalyticsAggregationJobPayload {
+  /** Timestamp when the job was enqueued */
+  triggeredAt: string
+}

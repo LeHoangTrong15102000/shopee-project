@@ -13,6 +13,8 @@ import productRecommendationRouter from './product-recommendations.route'
 import { bundleRouter } from './bundles.route'
 import { productBundleRouter } from './product-bundles.route'
 import { shareRouter as productShareRouter } from './product-share.route'
+import pagesRouter from './pages.route'
+import featureFlagsRouter from './feature-flags.route'
 
 const commonRoutes = {
   prefix: '/',
@@ -77,6 +79,14 @@ const commonRoutes = {
     {
       path: 'products',
       route: productShareRouter,
+    },
+    {
+      path: 'pages',
+      route: pagesRouter,
+    },
+    {
+      path: 'feature-flags',
+      route: featureFlagsRouter,
     },
   ],
 }

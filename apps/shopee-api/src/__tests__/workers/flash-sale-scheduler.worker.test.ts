@@ -8,6 +8,11 @@
 /// <reference types="jest" />
 import { Types } from 'mongoose'
 
+// ── Mock logger ───────────────────────────────────────────────────────────────
+jest.mock('@utils/logger', () => ({
+  Logger: { apiInfo: jest.fn(), apiWarn: jest.fn(), apiError: jest.fn() },
+}))
+
 // ── Mock BullMQ Worker so no real Redis connection is made ──────────────────
 jest.mock('bullmq', () => {
   const mockWorkerInstance = {
@@ -127,6 +132,37 @@ describe('FlashSaleSchedulerWorker', () => {
       expect(mockFindByIdAndUpdate).not.toHaveBeenCalled()
       expect(mockIoEmit).not.toHaveBeenCalled()
     })
+
+    it('writes audit log FLASH_SALE_AUTO_ACTIVATE for each activated sale', async () => {
+      const sale = makeSale()
+      mockFind.mockReturnValueOnce({ lean: jest.fn().mockResolvedValue([sale]) })
+
+      await worker._activateScheduled(new Date())
+      // Flush microtasks so the floating import().then() resolves
+      await new Promise(process.nextTick)
+
+      const { auditLogService } = await import('../../container')
+      expect(auditLogService.writeLog).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'FLASH_SALE_AUTO_ACTIVATE',
+          resource: 'flash-sale',
+          resourceId: sale._id.toString(),
+        }),
+      )
+    })
+
+    it('does NOT emit domain event when constructed without an eventBus', async () => {
+      const workerNoEventBus = new FlashSaleSchedulerWorker()
+      const sale = makeSale()
+      mockFind.mockReturnValueOnce({ lean: jest.fn().mockResolvedValue([sale]) })
+
+      // Spy on EventBus.emit to confirm it is never called
+      const emitSpy = jest.spyOn(eventBus, 'emit')
+
+      await workerNoEventBus._activateScheduled(new Date())
+
+      expect(emitSpy).not.toHaveBeenCalled()
+    })
   })
 
   describe('_endExpired', () => {
@@ -171,6 +207,24 @@ describe('FlashSaleSchedulerWorker', () => {
       await worker._endExpired(new Date())
 
       expect(mockFindByIdAndUpdate).not.toHaveBeenCalled()
+    })
+
+    it('writes audit log FLASH_SALE_AUTO_DEACTIVATE for each ended sale', async () => {
+      const sale = makeSale({ endTime: new Date(Date.now() - 1000) })
+      mockFind.mockReturnValueOnce({ lean: jest.fn().mockResolvedValue([sale]) })
+
+      await worker._endExpired(new Date())
+      // Flush microtasks so the floating import().then() resolves
+      await new Promise(process.nextTick)
+
+      const { auditLogService } = await import('../../container')
+      expect(auditLogService.writeLog).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'FLASH_SALE_AUTO_DEACTIVATE',
+          resource: 'flash-sale',
+          resourceId: sale._id.toString(),
+        }),
+      )
     })
   })
 

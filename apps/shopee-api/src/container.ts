@@ -27,6 +27,9 @@ import { AuditLogRepository } from '@repositories/audit-log.repository'
 import { FlashSaleRepository } from '@repositories/flash-sale.repository'
 import { RefundRepository } from '@repositories/refund.repository'
 import { DeviceTokenRepository } from '@repositories/device-token.repository'
+import { PageRepository } from '@repositories/page.repository'
+import { FeatureFlagRepository } from '@repositories/feature-flag.repository'
+import { JobStatsRepository } from '@repositories/job-stats.repository'
 
 // Services
 import { ProductService } from '@services/product.service'
@@ -65,11 +68,16 @@ import { FeedService } from '@services/feed.service'
 import { ShareService } from '@services/share.service'
 import { ReferralService } from '@services/referral.service'
 import { BundleService } from '@services/bundle.service'
+import { CmsService } from '@services/cms.service'
+import { FeatureFlagService } from '@services/feature-flag.service'
 
 // Jobs (now register BullMQ repeatable jobs)
 import { PaymentReconciliationJob } from './jobs/payment-reconciliation.job'
 import { RefundStatusPollJob } from './jobs/refund-status-poll.job'
 import { FlashSaleScheduler } from './services/flash-sale.scheduler'
+import { AnalyticsAggregationJob } from './jobs/analytics-aggregation.job'
+import { CleanupJob } from './jobs/cleanup.job'
+import { SearchReindexJob } from './jobs/search-reindex.job'
 
 // Event bus
 import { EventBus } from './events/event-bus'
@@ -95,6 +103,7 @@ import {
   PaymentReconciliationWorker,
   RefundStatusPollWorker,
   FeedWorker,
+  AnalyticsAggregationWorker,
 } from './workers'
 
 // Queues
@@ -107,7 +116,11 @@ import {
   paymentReconciliationQueue,
   refundStatusPollQueue,
   feedFanOutQueue,
+  analyticsAggregationQueue,
 } from './queues'
+
+// Utilities
+import { redisClient } from '@utils/redis.client'
 
 // ─── Repository instances (singletons) ───────────────────────────────────────
 
@@ -134,6 +147,9 @@ const auditLogRepository = new AuditLogRepository()
 const flashSaleRepository = new FlashSaleRepository()
 const refundRepository = new RefundRepository()
 const deviceTokenRepository = new DeviceTokenRepository()
+const pageRepository = new PageRepository()
+const featureFlagRepository = new FeatureFlagRepository()
+const jobStatsRepository = new JobStatsRepository()
 
 // ─── Service instances (singletons with injected repositories) ───────────────
 
@@ -189,6 +205,8 @@ const feedService = new FeedService()
 const shareService = new ShareService()
 const referralService = new ReferralService()
 const bundleService = new BundleService()
+const cmsService = new CmsService(pageRepository)
+const featureFlagService = new FeatureFlagService(featureFlagRepository, redisClient)
 
 // ─── Event bus singleton ──────────────────────────────────────────────────────
 
@@ -232,12 +250,29 @@ const refundStatusPollWorker = new RefundStatusPollWorker(
   orderRepository,
 )
 const feedWorker = new FeedWorker()
+const analyticsAggregationWorker = new AnalyticsAggregationWorker(
+  [
+    emailQueue,
+    notificationQueue,
+    searchSyncQueue,
+    cleanupQueue,
+    flashSaleSchedulerQueue,
+    paymentReconciliationQueue,
+    refundStatusPollQueue,
+    feedFanOutQueue,
+    analyticsAggregationQueue,
+  ],
+  jobStatsRepository,
+)
 
 // ─── Job instances (register BullMQ repeatable jobs on start()) ──────────────
 
 const paymentReconciliationJob = new PaymentReconciliationJob(paymentReconciliationWorker)
 const refundStatusPollJob = new RefundStatusPollJob()
 const flashSaleScheduler = new FlashSaleScheduler()
+const analyticsAggregationJob = new AnalyticsAggregationJob()
+const cleanupJob = new CleanupJob()
+const searchReindexJob = new SearchReindexJob()
 
 // ─── Container export ─────────────────────────────────────────────────────────
 
@@ -267,6 +302,9 @@ export const container = {
     flashSale: flashSaleRepository,
     refund: refundRepository,
     deviceToken: deviceTokenRepository,
+    page: pageRepository,
+    featureFlag: featureFlagRepository,
+    jobStats: jobStatsRepository,
   },
   // Services (main interface for controllers)
   services: {
@@ -303,6 +341,8 @@ export const container = {
     share: shareService,
     referral: referralService,
     bundle: bundleService,
+    cms: cmsService,
+    featureFlag: featureFlagService,
   },
   // Schedulers
   schedulers: {
@@ -312,6 +352,9 @@ export const container = {
   jobs: {
     paymentReconciliation: paymentReconciliationJob,
     refundStatusPoll: refundStatusPollJob,
+    analyticsAggregation: analyticsAggregationJob,
+    cleanup: cleanupJob,
+    searchReindex: searchReindexJob,
   },
   // Workers
   workers: {
@@ -323,6 +366,7 @@ export const container = {
     paymentReconciliation: paymentReconciliationWorker,
     refundStatusPoll: refundStatusPollWorker,
     feed: feedWorker,
+    analyticsAggregation: analyticsAggregationWorker,
   },
   // Event bus
   eventBus,
@@ -372,5 +416,14 @@ export {
   shareService,
   referralService,
   bundleService,
+  cmsService,
+  featureFlagService,
+  pageRepository,
+  featureFlagRepository,
+  jobStatsRepository,
+  analyticsAggregationJob,
+  analyticsAggregationWorker,
+  cleanupJob,
+  searchReindexJob,
   eventBus,
 }

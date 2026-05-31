@@ -31,6 +31,8 @@ import { adminRefundRouter } from './admin-refund.route'
 import adminSearchRouter from './admin-search.route'
 import adminReferralRouter from './admin-referral.route'
 import adminBundlesRouter from './admin-bundles.route'
+import adminPagesRouter from './admin-pages.route'
+import adminFeatureFlagsRouter from './admin-feature-flags.route'
 import { adminRateLimit } from '@middleware/rateLimiter.middleware'
 import { bullBoardRouter } from '../../queues/bull-board'
 
@@ -168,6 +170,14 @@ const adminRoutes = {
     {
       path: 'bundles',
       route: withAdminRateLimit(adminBundlesRouter),
+    },
+    {
+      path: 'pages',
+      route: withAdminRateLimit(adminPagesRouter),
+    },
+    {
+      path: 'feature-flags',
+      route: withAdminRateLimit(adminFeatureFlagsRouter),
     },
     {
       path: 'queues',

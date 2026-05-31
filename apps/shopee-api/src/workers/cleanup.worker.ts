@@ -8,6 +8,10 @@ import { Logger } from '@utils/logger'
 import { CLEANUP_QUEUE } from '../queues/queue.config'
 import { CleanupJobPayload } from '../queues/job-payloads'
 import { getWorkerConnection } from './worker.connection'
+import { PurchaseModel } from '@database/models/purchase.model'
+import { RefreshTokenModel } from '@database/models/refresh-token.model'
+import { NotificationModel } from '@database/models/notification.model'
+import { STATUS_PURCHASE } from '@constants/purchase'
 
 export class CleanupWorker {
   readonly worker: Worker
@@ -50,24 +54,38 @@ export class CleanupWorker {
     })
   }
 
-  private async handleExpiredCarts(payload: CleanupJobPayload): Promise<void> {
-    Logger.apiInfo('[CleanupWorker] Handling expired-carts cleanup', {
-      cutoffDate: payload.cutoffDate,
+  private async handleExpiredCarts(_payload: CleanupJobPayload): Promise<void> {
+    const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+    Logger.apiInfo('[CleanupWorker] Handling expired-carts cleanup', { cutoff })
+
+    const result = await PurchaseModel.deleteMany({
+      status: STATUS_PURCHASE.IN_CART,
+      updatedAt: { $lt: cutoff },
     })
-    // TODO: implement expired cart cleanup logic
+
+    Logger.apiInfo('[CleanupWorker] Expired carts deleted', { deletedCount: result.deletedCount })
   }
 
-  private async handleExpiredSessions(payload: CleanupJobPayload): Promise<void> {
-    Logger.apiInfo('[CleanupWorker] Handling expired-sessions cleanup', {
-      cutoffDate: payload.cutoffDate,
+  private async handleExpiredSessions(_payload: CleanupJobPayload): Promise<void> {
+    const now = new Date()
+    Logger.apiInfo('[CleanupWorker] Handling expired-sessions cleanup', { now })
+
+    const result = await RefreshTokenModel.deleteMany({
+      $or: [{ expiresAt: { $lt: now } }, { revokedAt: { $ne: null } }],
     })
-    // TODO: implement expired session cleanup logic
+
+    Logger.apiInfo('[CleanupWorker] Expired sessions deleted', { deletedCount: result.deletedCount })
   }
 
-  private async handleOldNotifications(payload: CleanupJobPayload): Promise<void> {
-    Logger.apiInfo('[CleanupWorker] Handling old-notifications cleanup', {
-      cutoffDate: payload.cutoffDate,
+  private async handleOldNotifications(_payload: CleanupJobPayload): Promise<void> {
+    const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    Logger.apiInfo('[CleanupWorker] Handling old-notifications cleanup', { cutoff })
+
+    const result = await NotificationModel.deleteMany({
+      is_read: true,
+      createdAt: { $lt: cutoff },
     })
-    // TODO: implement old notification cleanup logic
+
+    Logger.apiInfo('[CleanupWorker] Old notifications deleted', { deletedCount: result.deletedCount })
   }
 }

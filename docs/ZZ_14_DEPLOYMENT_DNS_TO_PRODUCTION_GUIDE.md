@@ -3,7 +3,7 @@
 > **Hướng dẫn từng bước triển khai shopee-project lên server production — từ cấu hình DNS, cài đặt server, build ứng dụng, đến cấu hình reverse proxy với Caddy/Nginx. Dành cho developer mới lần đầu deploy.**
 >
 > **Ngày tạo:** 30/05/2026
-> **Phiên bản:** 1.0
+> **Phiên bản:** 1.1 (cập nhật 01/06/2026 — bổ sung Section 14: So sánh Static SPA vs NextJS SSR)
 
 ---
 
@@ -22,6 +22,7 @@
 11. [Bước 9 — Kiểm tra end-to-end](#11-buoc-9-kiem-tra)
 12. [Phụ lục — Bảng tổng hợp & Troubleshooting](#12-phu-luc)
 13. [Triển khai chung VPS với project khác (twitter-api)](#13-trien-khai-chung-vps)
+14. [So sánh deploy: Static SPA vs NextJS SSR](#14-so-sanh-static-vs-ssr)
 
 ---
 
@@ -1540,5 +1541,178 @@ Kết quả mong đợi:
 
 ---
 
-*Tài liệu này được tạo ngày 30/05/2026. Phiên bản 1.0.*
+## 14. So sánh deploy: Static SPA vs NextJS SSR {#14-so-sanh-static-vs-ssr}
+
+Phần này giải thích **vì sao shopee-web/shopee-admin không cần port** (chỉ trỏ thẳng vào `dist/`), trong khi một ứng dụng **NextJS chạy SSR lại bắt buộc phải có port** (giống hệt API). Đây là điểm gây nhầm lẫn phổ biến: nhiều người tưởng "frontend thì không cần port, backend mới cần". **Sai.** Ranh giới thật sự là **TĨNH (static) vs ĐỘNG (server-side)**, không phải frontend vs backend.
+
+### 14.1 Nguyên tắc cốt lõi — TĨNH vs ĐỘNG
+
+> **TĨNH → `root` + `try_files` (trỏ thẳng dist/). ĐỘNG → `proxy_pass` (trỏ vào port của process đang sống).**
+
+Cách phân biệt nhanh: **sau khi build xong, có còn một tiến trình Node.js đang chạy và lắng nghe port hay không?**
+
+- Có process sống lắng nghe port → **trỏ port** (`proxy_pass`).
+- Chỉ còn file tĩnh "chết" → **trỏ thẳng vào `dist/`** (`root` + `try_files`).
+
+| | shopee-web / shopee-admin | NextJS (mặc định) | shopee-api / twitter-api |
+|---|---|---|---|
+| Công cụ | Vite | Next.js | Express / Node |
+| Kiểu render | CSR (render ở **browser**) | SSR (render ở **server**) | Không render UI, trả JSON |
+| Lệnh "lên sóng" | `vite build` → tắt | `next build` + **`next start`** (sống) | `node index.js` (sống) |
+| Sau khi xong còn process? | ❌ Không | ✅ Có, nghe :3000 | ✅ Có, nghe :4000 |
+| Nginx trỏ kiểu gì | `root dist` + `try_files` | **`proxy_pass :3000`** | `proxy_pass :4000` |
+| Cần PM2 nuôi? | ❌ | ✅ | ✅ |
+
+→ Để ý: **NextJS nằm CÙNG CỘT với API**, không cùng cột với shopee-web. Đó là lý do nó cần port.
+
+### 14.2 BLOCK A — Static SPA (shopee-web kiểu trỏ thẳng `dist/`)
+
+```nginx
+# ============================================================
+# BLOCK A — STATIC SPA (Vite)
+# Vi du: shopee.lehoangtrong.com  ->  shopee-web/dist
+# Khong co process, khong co port. Nginx tu doc file tra ve.
+# ============================================================
+server {
+    listen 80;
+    listen [::]:80;
+    server_name shopee.lehoangtrong.com;
+
+    # (1) Thu muc goc — tro THANG vao output cua "vite build"
+    root /var/www/shopee-project/apps/shopee-web/dist;
+
+    # (2) File mac dinh khi truy cap mot thu muc
+    index index.html;
+
+    # (3) Nen on-the-fly cho text/js/css
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml;
+
+    # (4) Cache manh cho asset co hash trong ten file
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # (5) SPA fallback — TRAI TIM cua block nay
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+**Giải thích từng directive (Block A):**
+
+| # | Directive | Làm gì | Vì sao cần |
+|---|-----------|--------|------------|
+| (1) | `root .../dist` | Khai báo thư mục gốc chứa file tĩnh. Mọi request `/x/y` → nginx tìm file tại `dist/x/y` trên ổ đĩa. | Đây chính là điểm "trỏ thẳng vào dist". Không có `proxy_pass` nào cả vì **không có process nào để trỏ tới** — chỉ có file chết. |
+| (2) | `index index.html` | Khi URL kết thúc bằng `/`, trả `index.html`. | SPA chỉ có 1 file HTML duy nhất làm entry. |
+| (3) | `gzip on` | Nén response trước khi gửi. | Bundle JS của React khá nặng, nén giảm 60-70% dung lượng. (Nếu đã có file `.br`/`.gz` từ plugin build thì có thể dùng `gzip_static`/`brotli_static` thay vì nén lại on-the-fly.) |
+| (4) | `location /assets/` + `expires 1y` | Cache vĩnh viễn các file trong `assets/`. | Vite đặt hash vào tên file (`index-abc123.js`). Nội dung đổi → tên đổi → cache cũ tự bị bỏ. Nên cache 1 năm là an toàn tuyệt đối. |
+| (5) | `try_files $uri $uri/ /index.html` | Thử 3 bước: tìm file đúng tên → tìm thư mục → **nếu không có thì trả `index.html`**. | **Đây là directive sống còn của SPA.** Khi user F5 ở `/products/123`, trên đĩa không có file đó. Không có dòng này → nginx trả 404. Có dòng này → nginx trả `index.html`, React Router đọc URL ở client và vẽ đúng trang. |
+
+**Cốt lõi Block A:** Nginx đóng vai một **người phục vụ file** thuần túy. Nó đọc byte từ đĩa, gửi về browser, xong. Toàn bộ việc dựng giao diện do React làm **trong trình duyệt của khách**.
+
+### 14.3 BLOCK B — NextJS SSR (kiểu `proxy_pass :3000`)
+
+```nginx
+# ============================================================
+# BLOCK B — NEXTJS SERVER MODE (SSR)
+# Vi du: web-ssr.lehoangtrong.com  ->  next start (port 3000)
+# Co MOT process Node.js song, PM2 nuoi, om port 3000.
+# Nginx KHONG doc file — no chuyen tiep request cho process.
+# ============================================================
+server {
+    listen 80;
+    listen [::]:80;
+    server_name web-ssr.lehoangtrong.com;
+
+    # KHONG co "root", KHONG co "try_files".
+    # Vi giao dien duoc render BOI PROCESS, khong nam san tren dia.
+
+    location / {
+        # (1) Chuyen tiep request den process NextJS dang nghe :3000
+        proxy_pass http://localhost:3000;
+
+        # (2) Dung HTTP/1.1 (bat buoc cho keep-alive & WebSocket)
+        proxy_http_version 1.1;
+
+        # (3) Cho phep nang cap len WebSocket (HMR/streaming neu co)
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+
+        # (4) Cac header chuyen tiep — de NextJS biet client THAT
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # (5) Bo qua cache khi co Upgrade
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # (6) Asset tinh cua NextJS van duoc nginx cache giup (tuy chon)
+    location /_next/static/ {
+        proxy_pass http://localhost:3000;
+        proxy_cache_valid 200 60m;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+}
+```
+
+**Giải thích từng directive (Block B):**
+
+| # | Directive | Làm gì | Vì sao cần |
+|---|-----------|--------|------------|
+| (1) | `proxy_pass http://localhost:3000` | Chuyển tiếp request tới process Node đang nghe `:3000` (chính là `next start`). | **Đây là khác biệt cốt lõi.** Vì có một server đang sống render HTML động, nginx không thể "đọc file" — nó phải hỏi process. Giống hệt cách trỏ API `:4000`. |
+| (2) | `proxy_http_version 1.1` | Ép dùng HTTP/1.1 giữa nginx ↔ process. | Mặc định nginx nói HTTP/1.0 với upstream, vốn không hỗ trợ `Upgrade`/keep-alive. Bắt buộc bật 1.1 để WebSocket và streaming chạy. |
+| (3) | `Upgrade` + `Connection 'upgrade'` | Cho phép bắt tay nâng cấp HTTP → WebSocket. | NextJS dùng cho streaming SSR / HMR (dev) / hoặc nếu app có realtime. Để sẵn cho an toàn. |
+| (4) | 4 header `Host`/`X-Real-IP`/`X-Forwarded-*` | Báo cho process biết tên miền gốc, IP thật của khách, và scheme (http/https). | SSR cần `Host` đúng để render link tuyệt đối, redirect, và sinh canonical URL. Thiếu `X-Forwarded-Proto` → app tưởng đang chạy http → sinh link sai/redirect loop. |
+| (5) | `proxy_cache_bypass $http_upgrade` | Không cache khi đang nâng cấp WebSocket. | Tránh nginx cache nhầm một kết nối realtime. |
+| (6) | `location /_next/static/` | Cache riêng asset tĩnh của NextJS. | NextJS cũng tạo file hash trong `/_next/static/`. Cache giúp giảm tải process. (Tùy chọn — bỏ qua vẫn chạy.) |
+
+**Cốt lõi Block B:** Nginx đóng vai **người chuyển tiếp (middleman)**. Mỗi request nó gõ cửa process `:3000`, process render HTML rồi đưa lại, nginx chuyển về khách. Process **phải sống liên tục** — đó là lý do cần PM2 và cần port.
+
+### 14.4 So sánh trực diện 2 block
+
+```
+        BLOCK A (Static SPA)              BLOCK B (NextJS SSR)
+        ----------------------           ----------------------
+URL ->  nginx                            nginx
+          |                                |
+          | doc file tu dia                | proxy_pass :3000
+          v                                v
+        dist/index.html                  process Node (PM2)
+        (file CHET)                      next start (SONG)
+          |                                | render HTML dong
+          v                                v
+        browser tu chay React            HTML san -> browser
+```
+
+| Tiêu chí | Block A — Static | Block B — NextJS SSR |
+|----------|------------------|----------------------|
+| Directive định tuyến | `root` + `try_files` | `proxy_pass :3000` |
+| Có `root`? | ✅ Có (trỏ dist/) | ❌ Không |
+| Có `try_files ... /index.html`? | ✅ Bắt buộc (SPA fallback) | ❌ Không (NextJS tự lo routing) |
+| Có process sống? | ❌ Không | ✅ Có, nghe :3000 |
+| Cần PM2? | ❌ | ✅ |
+| Nginx làm gì | Đọc & trả file | Chuyển tiếp cho process |
+| F5 deep route hỏng nếu thiếu | thiếu `try_files` → 404 | NextJS tự xử lý, không cần fallback nginx |
+| Cùng nhóm với | (không có process) | shopee-api / twitter-api `proxy_pass :4000` |
+
+### 14.5 Ba ghi chú đáng nhớ (gotchas)
+
+1. **Tuyệt đối không trộn 2 kiểu.** Đừng vừa `root dist` vừa `proxy_pass` trong cùng một block — nginx sẽ ưu tiên `proxy_pass` và `root` thành vô nghĩa, hoặc ngược lại gây 404 khó hiểu.
+
+2. **Block B không cần `try_files`.** Đây là lỗi hay gặp: nhiều người copy `try_files ... /index.html` từ block SPA sang block NextJS. **Sai.** NextJS server tự định tuyến mọi URL — nhét fallback vào sẽ phá routing động của nó.
+
+3. **`X-Forwarded-Proto $scheme` cực kỳ quan trọng với SSR.** Nếu thiếu, NextJS chạy sau HTTPS nginx vẫn tưởng mình ở `http://`, dẫn đến sinh link sai hoặc vòng lặp redirect khi dùng `next-auth`, `getServerSideProps` có redirect, v.v. Block A (static) không quan tâm điều này vì không có server nào render.
+
+> **Tóm tắt một câu:** shopee-web/admin không cần port vì chúng là SPA tĩnh (Vite, render ở browser) — build xong là file chết. NextJS SSR cần port vì `next start` tạo ra một server Node.js sống ở port 3000, đúng bản chất "động" như API, nên phải `proxy_pass` y hệt. Việc cần port hay không do **TĨNH vs ĐỘNG** quyết định, không do **frontend vs backend**.
+
+---
+
+*Tài liệu này được tạo ngày 30/05/2026. Phiên bản 1.1 — cập nhật ngày 01/06/2026 (bổ sung Section 14: So sánh Static SPA vs NextJS SSR).*
+
+
 

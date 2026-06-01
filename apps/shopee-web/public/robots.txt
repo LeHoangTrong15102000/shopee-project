@@ -1,8 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /user/
-Disallow: /cart
-Disallow: /checkout
-
-Sitemap: https://lehoangtrong.com/sitemap.xml
-

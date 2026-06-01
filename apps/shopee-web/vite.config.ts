@@ -1,11 +1,16 @@
 /// <reference types="vitest" />
 import { defineConfig, type PluginOption } from 'vitest/config'
+import { loadEnv, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
+import fs from 'fs'
 import { visualizer } from 'rollup-plugin-visualizer'
 import compression from 'vite-plugin-compression'
 import os from 'os'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // Workaround cho Windows path length issues
 const isWindows = os.platform() === 'win32'
@@ -16,6 +21,82 @@ const customCacheDir = isWindows
 // Tách riêng config cho test và production
 export default defineConfig(({ mode }) => {
   const isTest = mode === 'test'
+
+  // Load VITE_ env vars với fallback về domain mặc định
+  const env = loadEnv(mode, process.cwd(), 'VITE_')
+  const SITE_URL = (env.VITE_SITE_URL || 'https://lehoangtrong.com').replace(/\/+$/, '')
+  const API_ORIGIN = (() => {
+    try {
+      return new URL(env.VITE_API_BASE_URL || 'https://api-ecom.lehoangtrong.com/').origin
+    } catch {
+      return 'https://api-ecom.lehoangtrong.com'
+    }
+  })()
+
+  // Plugin thay thế token domain trong index.html và sinh sitemap/robots khi build
+  const domainInjectPlugin: Plugin = {
+    name: 'shopee-domain-inject',
+    transformIndexHtml(html: string): string {
+      return html
+        .replaceAll('%API_ORIGIN%', API_ORIGIN)
+        .replaceAll('%SITE_URL%', SITE_URL)
+    },
+    closeBundle(): void {
+      const distDir = path.resolve(__dirname, 'dist')
+
+      // Sinh sitemap.xml với domain từ env
+      const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${SITE_URL}/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/products</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/compare</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/login</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/register</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/forgot-password</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/reset-password</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+</urlset>
+`
+      // Sinh robots.txt với Sitemap URL từ env
+      const robotsTxt = `User-agent: *
+Allow: /
+Disallow: /user/
+Disallow: /cart
+Disallow: /checkout
+
+Sitemap: ${SITE_URL}/sitemap.xml
+`
+      fs.writeFileSync(path.resolve(distDir, 'sitemap.xml'), sitemapXml, 'utf-8')
+      fs.writeFileSync(path.resolve(distDir, 'robots.txt'), robotsTxt, 'utf-8')
+    },
+  }
 
   const baseConfig = {
     plugins: [
@@ -35,6 +116,7 @@ export default defineConfig(({ mode }) => {
               deleteOriginalAssets: false,
               ext: '.br',
             }),
+            domainInjectPlugin,
           ]
         : []),
     ] as PluginOption[],

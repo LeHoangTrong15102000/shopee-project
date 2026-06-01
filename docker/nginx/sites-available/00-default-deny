@@ -1,0 +1,31 @@
+# =============================================================================
+# VPS system nginx catch-all server block — default_server deny
+#
+# This file MUST be loaded before the named virtual host configs.
+# The "00-" prefix ensures alphabetical load order puts it first.
+#
+# Purpose: reject any request whose Host header does not match a known
+# server_name. Without this block nginx would silently serve the first
+# loaded virtual host for unrecognised hostnames (host-header injection /
+# information-disclosure risk).
+#
+# Deploy to: /etc/nginx/sites-available/00-default-deny
+# Enable with: ln -s /etc/nginx/sites-available/00-default-deny \
+#                     /etc/nginx/sites-enabled/00-default-deny
+# Reload: nginx -t && systemctl reload nginx
+#
+# NOTE: default_server may only be declared ONCE per listen port across all
+# enabled server blocks. Do NOT add default_server to any other config file.
+# =============================================================================
+
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    # No server_name — this block matches everything nginx cannot route
+    # to a named virtual host.
+    server_name _;
+
+    # Return 444: nginx closes the TCP connection immediately with no response.
+    return 444;
+}

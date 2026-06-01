@@ -1,0 +1,156 @@
+# =============================================================================
+# docker-compose.prod.yaml — Production stack
+#
+# Usage:
+#   Cloud mode (MongoDB Atlas + Redis Cloud):
+#     docker compose -f docker-compose.prod.yaml up -d --build
+#
+#   Self-hosted mode (MongoDB + Redis on VPS):
+#     docker compose -f docker-compose.prod.yaml --profile self-hosted up -d --build
+#
+# Profile-scoped depends_on mechanism:
+#   mongodb and redis have profiles: [self-hosted] so they only start when
+#   --profile self-hosted is passed. shopee-api declares depends_on on both
+#   with required: false and condition: service_healthy. When required: false,
+#   Compose does NOT error if the dependency service is absent (cloud mode) —
+#   it simply skips the wait. When --profile self-hosted is active, both
+#   services exist and shopee-api waits for them to be healthy before starting.
+#   This gives correct ordering in self-hosted mode and no errors in cloud mode.
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # MongoDB — self-hosted only (profiles: [self-hosted])
+  # ---------------------------------------------------------------------------
+  mongodb:
+    image: mongo:7
+    profiles: [self-hosted]
+    # Mirror the dev compose replica-set command so the API's change streams
+    # and transactions work correctly in self-hosted mode.
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    env_file: .env.prod
+    volumes:
+      - shopee_mongodb_data:/data/db
+    networks:
+      - shopee-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # Redis — self-hosted only (profiles: [self-hosted])
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    profiles: [self-hosted]
+    command: redis-server --appendonly yes
+    volumes:
+      - shopee_redis_data:/data
+    networks:
+      - shopee-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # shopee-api — always starts (no profile restriction)
+  # ---------------------------------------------------------------------------
+  shopee-api:
+    build:
+      context: .
+      dockerfile: apps/shopee-api/Dockerfile
+    env_file: .env.prod
+    volumes:
+      - shopee_api_uploads:/app/upload
+    ports:
+      - "127.0.0.1:8083:4000"
+    # depends_on with required: false — see profile-scoped mechanism comment above.
+    # In self-hosted mode: waits for mongodb and redis to be healthy.
+    # In cloud mode: mongodb/redis services are absent; required: false prevents errors.
+    depends_on:
+      mongodb:
+        condition: service_healthy
+        required: false
+      redis:
+        condition: service_healthy
+        required: false
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:4000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - shopee-network
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # shopee-web — always starts (no profile restriction)
+  # ---------------------------------------------------------------------------
+  shopee-web:
+    build:
+      context: .
+      dockerfile: apps/shopee-web/Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_SOCKET_URL: ${VITE_SOCKET_URL}
+        VITE_SITE_URL: ${VITE_SITE_URL}
+        VITE_STRIPE_PUBLISHABLE_KEY: ${VITE_STRIPE_PUBLISHABLE_KEY}
+    ports:
+      - "127.0.0.1:8081:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - shopee-network
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # shopee-admin — always starts (no profile restriction)
+  # ---------------------------------------------------------------------------
+  shopee-admin:
+    build:
+      context: .
+      dockerfile: apps/shopee-admin/Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_SOCKET_URL: ${VITE_SOCKET_URL}
+        VITE_APP_VERSION: ${VITE_APP_VERSION}
+    ports:
+      - "127.0.0.1:8082:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - shopee-network
+    restart: unless-stopped
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  shopee-network:
+    driver: bridge
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  shopee_mongodb_data:
+  shopee_redis_data:
+  shopee_api_uploads:

@@ -41,10 +41,16 @@ import { initializeSocket } from './socket/socket.init'
 import { viewCounterService } from '@utils/view-counter.service'
 import { disconnectRedis } from '@utils/redis.client'
 import { paymentReconciliationJob, flashSaleScheduler, refundStatusPollJob, meilisearchService, analyticsAggregationJob, cleanupJob, searchReindexJob } from './container'
+import dockerHealthRouter from '@routes/health.route'
 
 const app: express.Application = express()
 connectMongoDB()
 const routes = [{ ...commonRoutes }, { ...userRoutes }, { ...adminRoutes }]
+
+// Health check endpoint — registered BEFORE the HTTPS redirect middleware so
+// that in-container wget http://localhost:4000/health returns 200 (not 301).
+// This is required for the Docker health check to pass in production.
+app.use('/health', dockerHealthRouter)
 
 // Middleware redirect HTTP sang HTTPS trong môi trường production
 if (isProduction) {

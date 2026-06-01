@@ -22,8 +22,10 @@ const customCacheDir = isWindows
 export default defineConfig(({ mode }) => {
   const isTest = mode === 'test'
 
-  // Load VITE_ env vars với fallback về domain mặc định
-  const env = loadEnv(mode, process.cwd(), 'VITE_')
+  // Load VITE_ env vars với fallback về domain mặc định.
+  // Dùng __dirname (config root) thay vì process.cwd() để khớp với cách
+  // runtime đọc import.meta.env — tránh đọc nhầm .env ở thư mục khác.
+  const env = loadEnv(mode, __dirname, 'VITE_')
   const SITE_URL = (env.VITE_SITE_URL || 'https://lehoangtrong.com').replace(/\/+$/, '')
   const API_ORIGIN = (() => {
     try {

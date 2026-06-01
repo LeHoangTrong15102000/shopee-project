@@ -23,9 +23,14 @@ import { ErrorResponseApi } from 'src/types/utils.type'
 // type InternalAxiosRequestConfig chỉ xuất hiện ở phiên bản axios 1.2.4
 
 // Sử dụng import.meta.env của Vite thay vì process.env (không hoạt động trong browser)
+// Ưu tiên VITE_LOGIN_REDIRECT_URL; nếu không có thì:
+// - DEV: trỏ về dev server (localhost:4000)
+// - PROD: dẫn xuất từ config.siteUrl (single source of truth, tránh hard-code lặp domain)
 const LOGIN_REDIRECT_URL =
   import.meta.env.VITE_LOGIN_REDIRECT_URL ??
-  (import.meta.env.DEV ? 'http://localhost:4000/login' : 'https://lehoangtrong.com/login')
+  (import.meta.env.DEV
+    ? 'http://localhost:4000/login'
+    : `${config.siteUrl.replace(/\/+$/, '')}/login`)
 
 interface HttpOptions {
   redirectOnTokenExpiry?: boolean

@@ -2,9 +2,6 @@ name: Setup Node + pnpm
 description: Composite action — checkout, corepack enable, Node 22, pnpm store cache, pnpm install
 
 inputs:
-  fetch-depth:
-    description: 'Number of commits to fetch (0 = full history for Nx affected)'
-    default: '1'
   install:
     description: 'Whether to run pnpm install --frozen-lockfile'
     default: 'true'
@@ -12,11 +9,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: ${{ inputs.fetch-depth }}
-
     - name: Enable corepack
       shell: bash
       run: corepack enable

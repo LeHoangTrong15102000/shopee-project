@@ -1,0 +1,44 @@
+name: Setup Node + pnpm
+description: Composite action — checkout, corepack enable, Node 22, pnpm store cache, pnpm install
+
+inputs:
+  fetch-depth:
+    description: 'Number of commits to fetch (0 = full history for Nx affected)'
+    default: '1'
+  install:
+    description: 'Whether to run pnpm install --frozen-lockfile'
+    default: 'true'
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: ${{ inputs.fetch-depth }}
+
+    - name: Enable corepack
+      shell: bash
+      run: corepack enable
+
+    - name: Setup Node 22
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    - name: Get pnpm store directory
+      shell: bash
+      run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+    - name: Cache pnpm store
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.STORE_PATH }}
+        key: pnpm-store-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: |
+          pnpm-store-${{ runner.os }}-
+
+    - name: Install dependencies
+      if: ${{ inputs.install == 'true' }}
+      shell: bash
+      run: pnpm install --frozen-lockfile

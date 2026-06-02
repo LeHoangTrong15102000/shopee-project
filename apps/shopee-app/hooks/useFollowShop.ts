@@ -21,9 +21,7 @@ export function useFollowShop(shopId: string) {
         return {
           ...old,
           isFollowing: !isCurrentlyFollowing,
-          followerCount: isCurrentlyFollowing
-            ? old.followerCount - 1
-            : old.followerCount + 1,
+          followerCount: isCurrentlyFollowing ? old.followerCount - 1 : old.followerCount + 1,
         }
       })
 

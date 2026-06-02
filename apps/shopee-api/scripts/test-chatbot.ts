@@ -1,8 +1,5 @@
 import chalk from 'chalk'
-import {
-  generateChatResponse,
-  generateConversationTitle,
-} from '../src/utils/chatbot.service'
+import { generateChatResponse, generateConversationTitle } from '../src/utils/chatbot.service'
 import { createMessage } from '@utils/conversation.helper'
 import { MessageRole } from '@database/models/conversation.model'
 
@@ -84,7 +81,7 @@ class ChatbotTester {
       // Test response generation
       const response = await this.withTimeout(
         generateChatResponse([], testCase.input),
-        testCase.timeout || 5000
+        testCase.timeout || 5000,
       )
 
       const duration = Date.now() - startTime
@@ -97,10 +94,8 @@ class ChatbotTester {
         console.log(chalk.green(`✅ PASS (${duration}ms)`))
         console.log(
           chalk.gray(
-            `   Response: "${response.substring(0, 100)}${
-              response.length > 100 ? '...' : ''
-            }"`
-          )
+            `   Response: "${response.substring(0, 100)}${response.length > 100 ? '...' : ''}"`,
+          ),
         )
 
         this.results.push({
@@ -113,11 +108,7 @@ class ChatbotTester {
         this.failedTests++
         console.log(chalk.red(`❌ FAIL (${duration}ms)`))
         console.log(chalk.gray(`   Response: "${response}"`))
-        console.log(
-          chalk.red(
-            `   Expected keywords: ${testCase.expectedKeywords?.join(', ')}`
-          )
-        )
+        console.log(chalk.red(`   Expected keywords: ${testCase.expectedKeywords?.join(', ')}`))
 
         this.results.push({
           test: testCase.name,
@@ -144,10 +135,7 @@ class ChatbotTester {
     console.log() // Empty line for readability
   }
 
-  private validateResponse(
-    response: string,
-    expectedKeywords?: string[]
-  ): boolean {
+  private validateResponse(response: string, expectedKeywords?: string[]): boolean {
     if (!response || response.trim().length === 0) {
       return false
     }
@@ -156,7 +144,7 @@ class ChatbotTester {
     if (expectedKeywords && expectedKeywords.length > 0) {
       const lowerResponse = response.toLowerCase()
       const hasKeywords = expectedKeywords.some((keyword) =>
-        lowerResponse.includes(keyword.toLowerCase())
+        lowerResponse.includes(keyword.toLowerCase()),
       )
       return hasKeywords
     }
@@ -164,17 +152,11 @@ class ChatbotTester {
     return true
   }
 
-  private async withTimeout<T>(
-    promise: Promise<T>,
-    timeoutMs: number
-  ): Promise<T> {
+  private async withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
     return Promise.race([
       promise,
       new Promise<never>((_, reject) =>
-        setTimeout(
-          () => reject(new Error(`Timeout after ${timeoutMs}ms`)),
-          timeoutMs
-        )
+        setTimeout(() => reject(new Error(`Timeout after ${timeoutMs}ms`)), timeoutMs),
       ),
     ])
   }
@@ -185,22 +167,14 @@ class ChatbotTester {
     console.log(chalk.green(`✅ Passed: ${this.passedTests}`))
     console.log(chalk.red(`❌ Failed: ${this.failedTests}`))
     console.log(
-      chalk.blue(
-        `📈 Success Rate: ${(
-          (this.passedTests / testCases.length) *
-          100
-        ).toFixed(1)}%`
-      )
+      chalk.blue(`📈 Success Rate: ${((this.passedTests / testCases.length) * 100).toFixed(1)}%`),
     )
 
     const avgDuration =
-      this.results
-        .filter((r) => r.duration)
-        .reduce((sum, r) => sum + (r.duration || 0), 0) / this.results.length
+      this.results.filter((r) => r.duration).reduce((sum, r) => sum + (r.duration || 0), 0) /
+      this.results.length
 
-    console.log(
-      chalk.gray(`⏱️  Average Response Time: ${avgDuration.toFixed(0)}ms`)
-    )
+    console.log(chalk.gray(`⏱️  Average Response Time: ${avgDuration.toFixed(0)}ms`))
     console.log()
 
     // Print failed tests details

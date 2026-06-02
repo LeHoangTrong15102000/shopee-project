@@ -194,8 +194,12 @@ describe('ProductFormPage', () => {
     await user.type(screen.getByLabelText('form.name'), 'New Test Product')
     await user.type(screen.getByLabelText('form.imageUrl'), 'https://example.com/image.jpg')
     // Use fireEvent.change for number inputs to reliably set valueAsNumber
-    fireEvent.change(screen.getByLabelText('form.price'), { target: { value: '10000', valueAsNumber: 10000 } })
-    fireEvent.change(screen.getByLabelText('form.quantity'), { target: { value: '5', valueAsNumber: 5 } })
+    fireEvent.change(screen.getByLabelText('form.price'), {
+      target: { value: '10000', valueAsNumber: 10000 },
+    })
+    fireEvent.change(screen.getByLabelText('form.quantity'), {
+      target: { value: '5', valueAsNumber: 5 },
+    })
     // Use the native select rendered by our mock to trigger onValueChange
     const nativeSelect = screen.getByTestId('select-native')
     fireEvent.change(nativeSelect, { target: { value: 'cat-1' } })
@@ -220,8 +224,12 @@ describe('ProductFormPage', () => {
     await user.type(screen.getByLabelText('form.name'), 'New Test Product')
     await user.type(screen.getByLabelText('form.imageUrl'), 'https://example.com/image.jpg')
     // Use fireEvent.change for number inputs to reliably set valueAsNumber
-    fireEvent.change(screen.getByLabelText('form.price'), { target: { value: '10000', valueAsNumber: 10000 } })
-    fireEvent.change(screen.getByLabelText('form.quantity'), { target: { value: '5', valueAsNumber: 5 } })
+    fireEvent.change(screen.getByLabelText('form.price'), {
+      target: { value: '10000', valueAsNumber: 10000 },
+    })
+    fireEvent.change(screen.getByLabelText('form.quantity'), {
+      target: { value: '5', valueAsNumber: 5 },
+    })
     // Use the native select rendered by our mock to trigger onValueChange
     const nativeSelect = screen.getByTestId('select-native')
     fireEvent.change(nativeSelect, { target: { value: 'cat-1' } })

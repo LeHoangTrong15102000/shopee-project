@@ -13,8 +13,7 @@ function getRedisConnection(): ConnectionOptions {
   const redisHost = process.env.REDIS_HOST
 
   const tlsEnabled =
-    process.env.REDIS_TLS_ENABLED === 'true' ||
-    (redisUrl?.startsWith('rediss://') ?? false)
+    process.env.REDIS_TLS_ENABLED === 'true' || (redisUrl?.startsWith('rediss://') ?? false)
 
   if (redisUrl) {
     return {
@@ -44,8 +43,7 @@ function getRedisConnection(): ConnectionOptions {
 export function createQueue(name: string): Queue {
   const redisUrl = process.env.REDIS_URL
   const tlsEnabled =
-    process.env.REDIS_TLS_ENABLED === 'true' ||
-    (redisUrl?.startsWith('rediss://') ?? false)
+    process.env.REDIS_TLS_ENABLED === 'true' || (redisUrl?.startsWith('rediss://') ?? false)
 
   let connection: ConnectionOptions
 

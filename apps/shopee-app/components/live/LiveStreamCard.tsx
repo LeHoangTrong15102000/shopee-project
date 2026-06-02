@@ -64,7 +64,11 @@ export default function LiveStreamCard({ stream }: LiveStreamCardProps) {
           </View>
         </View>
         <View style={{ padding: 8, gap: 4 }}>
-          <AppText variant="caption" weight="semibold" numberOfLines={2} style={{ color: colors.foreground }}>
+          <AppText
+            variant="caption"
+            weight="semibold"
+            numberOfLines={2}
+            style={{ color: colors.foreground }}>
             {stream.title}
           </AppText>
           <AppText variant="caption" style={{ color: colors.neutrals100 }} numberOfLines={1}>

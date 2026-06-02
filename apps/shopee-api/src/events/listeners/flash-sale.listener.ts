@@ -33,9 +33,7 @@ export class FlashSaleEventListener {
   }
 
   @OnEvent('flash_sale.ended')
-  async onFlashSaleEnded(
-    event: Extract<DomainEvent, { type: 'flash_sale.ended' }>,
-  ): Promise<void> {
+  async onFlashSaleEnded(event: Extract<DomainEvent, { type: 'flash_sale.ended' }>): Promise<void> {
     const { saleId, name } = event.payload
 
     Logger.apiInfo('[FlashSaleEventListener] flash_sale.ended — enqueuing notifications', {

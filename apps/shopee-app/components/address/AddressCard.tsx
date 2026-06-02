@@ -34,8 +34,8 @@ export default function AddressCard({
       onPress={selectable ? () => onSelect?.(address._id) : undefined}
       activeOpacity={selectable ? 0.7 : 1}
       className="border-b border-neutrals900 bg-background px-4 py-4">
-      <View className="flex-row items-start justify-between mb-1">
-        <View className="flex-row items-center gap-2 flex-1">
+      <View className="mb-1 flex-row items-start justify-between">
+        <View className="flex-1 flex-row items-center gap-2">
           <AppText raw variant="bodySmall" weight="semibold">
             {address.name}
           </AppText>

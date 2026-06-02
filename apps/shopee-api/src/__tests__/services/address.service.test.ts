@@ -187,16 +187,22 @@ describe('AddressService', () => {
 
   describe('getAddressById - validation', () => {
     it('should throw ValidationError for invalid userId', async () => {
-      await expect(addressService.getAddressById('invalid', validObjectId.toString())).rejects.toThrow(ValidationError)
+      await expect(
+        addressService.getAddressById('invalid', validObjectId.toString()),
+      ).rejects.toThrow(ValidationError)
     })
 
     it('should throw ValidationError for invalid addressId', async () => {
-      await expect(addressService.getAddressById(validObjectId.toString(), 'invalid')).rejects.toThrow(ValidationError)
+      await expect(
+        addressService.getAddressById(validObjectId.toString(), 'invalid'),
+      ).rejects.toThrow(ValidationError)
     })
 
     it('should throw NotFoundError when address not found', async () => {
       mockAddressRepository.findByIdAndUser.mockResolvedValue(null)
-      await expect(addressService.getAddressById(validObjectId.toString(), validObjectId.toString())).rejects.toThrow(NotFoundError)
+      await expect(
+        addressService.getAddressById(validObjectId.toString(), validObjectId.toString()),
+      ).rejects.toThrow(NotFoundError)
     })
   })
 
@@ -205,18 +211,27 @@ describe('AddressService', () => {
       mockAddressRepository.countByUser.mockResolvedValue(0)
       mockAddressRepository.create.mockResolvedValue({ ...mockAddress, is_default: true })
 
-      await addressService.createAddress(validObjectId.toString(), { ...mockAddress, is_default: false })
-      expect(mockAddressRepository.create).toHaveBeenCalledWith(expect.objectContaining({ is_default: true }))
+      await addressService.createAddress(validObjectId.toString(), {
+        ...mockAddress,
+        is_default: false,
+      })
+      expect(mockAddressRepository.create).toHaveBeenCalledWith(
+        expect.objectContaining({ is_default: true }),
+      )
     })
   })
 
   describe('updateAddress - validation', () => {
     it('should throw ValidationError for invalid userId', async () => {
-      await expect(addressService.updateAddress('invalid', validObjectId.toString(), {})).rejects.toThrow(ValidationError)
+      await expect(
+        addressService.updateAddress('invalid', validObjectId.toString(), {}),
+      ).rejects.toThrow(ValidationError)
     })
 
     it('should throw ValidationError for invalid addressId', async () => {
-      await expect(addressService.updateAddress(validObjectId.toString(), 'invalid', {})).rejects.toThrow(ValidationError)
+      await expect(
+        addressService.updateAddress(validObjectId.toString(), 'invalid', {}),
+      ).rejects.toThrow(ValidationError)
     })
 
     it('should throw NotFoundError when address not found', async () => {
@@ -239,18 +254,24 @@ describe('AddressService', () => {
       mockAddressRepository.clearDefaultFlags.mockResolvedValue(0)
       mockAddressRepository.updateById.mockResolvedValue({ ...mockAddress, is_default: true })
 
-      await addressService.updateAddress(validObjectId.toString(), validObjectId.toString(), { is_default: true })
+      await addressService.updateAddress(validObjectId.toString(), validObjectId.toString(), {
+        is_default: true,
+      })
       expect(mockAddressRepository.clearDefaultFlags).toHaveBeenCalled()
     })
   })
 
   describe('deleteAddress - error paths', () => {
     it('should throw ValidationError for invalid userId', async () => {
-      await expect(addressService.deleteAddress('invalid', validObjectId.toString())).rejects.toThrow(ValidationError)
+      await expect(
+        addressService.deleteAddress('invalid', validObjectId.toString()),
+      ).rejects.toThrow(ValidationError)
     })
 
     it('should throw ValidationError for invalid addressId', async () => {
-      await expect(addressService.deleteAddress(validObjectId.toString(), 'invalid')).rejects.toThrow(ValidationError)
+      await expect(
+        addressService.deleteAddress(validObjectId.toString(), 'invalid'),
+      ).rejects.toThrow(ValidationError)
     })
 
     it('should throw BusinessError when trying to delete only default address', async () => {

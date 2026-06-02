@@ -25,7 +25,12 @@ describe('PriceBreakdown', () => {
 
   it('renders voucher discount when provided', () => {
     const { getByText } = render(
-      <PriceBreakdown subtotal={200000} shippingFee={30000} voucherDiscount={20000} total={210000} />
+      <PriceBreakdown
+        subtotal={200000}
+        shippingFee={30000}
+        voucherDiscount={20000}
+        total={210000}
+      />
     )
     expect(getByText('-₫20,000')).toBeTruthy()
   })
@@ -39,7 +44,13 @@ describe('PriceBreakdown', () => {
 
   it('does not render discount rows when discounts are zero', () => {
     const { queryByText } = render(
-      <PriceBreakdown subtotal={200000} shippingFee={30000} voucherDiscount={0} coinDiscount={0} total={230000} />
+      <PriceBreakdown
+        subtotal={200000}
+        shippingFee={30000}
+        voucherDiscount={0}
+        coinDiscount={0}
+        total={230000}
+      />
     )
     expect(queryByText(/-₫/)).toBeNull()
   })

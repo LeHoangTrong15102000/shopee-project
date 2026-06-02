@@ -45,7 +45,7 @@ function ProductList() {
 // Trong Shopee Clone: src/components/Product/Product.tsx
 const ProductCard = memo(({ product }: { product: Product }) => {
   return (
-    <div className='product-card'>
+    <div className="product-card">
       <h3>{product.name}</h3>
       <span>{product.price}</span>
     </div>
@@ -63,7 +63,10 @@ function ProductList() {
   const [products, setProducts] = useState([])
 
   // Memoize filtered results
-  const filteredProducts = useMemo(() => products.filter((p) => p.name.includes(filter)), [products, filter])
+  const filteredProducts = useMemo(
+    () => products.filter((p) => p.name.includes(filter)),
+    [products, filter],
+  )
 
   return (
     <div>
@@ -169,7 +172,7 @@ function useProductData(productId: string) {
     const controller = new AbortController()
 
     fetch(`/api/products/${productId}`, {
-      signal: controller.signal
+      signal: controller.signal,
     })
       .then((response) => response.json())
       .then(setData)
@@ -251,7 +254,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       return {
         items: newItems,
         total: newTotal,
-        tax: newTax
+        tax: newTax,
       }
     default:
       return state
@@ -262,7 +265,7 @@ function ShoppingCart() {
   const [cartState, dispatch] = useReducer(cartReducer, {
     items: [],
     total: 0,
-    tax: 0
+    tax: 0,
   })
 
   const addItem = (item: CartItem) => {
@@ -296,7 +299,7 @@ function AppProvider({ children }) {
     theme,
     setTheme,
     language,
-    setLanguage
+    setLanguage,
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>
@@ -321,7 +324,9 @@ function AppProvider({ children }) {
   return (
     <UserContext.Provider value={{ user, setUser }}>
       <ThemeContext.Provider value={{ theme, setTheme }}>
-        <LanguageContext.Provider value={{ language, setLanguage }}>{children}</LanguageContext.Provider>
+        <LanguageContext.Provider value={{ language, setLanguage }}>
+          {children}
+        </LanguageContext.Provider>
       </ThemeContext.Provider>
     </UserContext.Provider>
   )
@@ -339,17 +344,17 @@ function AppProvider({ children }) {
   const userValue = useMemo(
     () => ({
       user,
-      setUser
+      setUser,
     }),
-    [user]
+    [user],
   )
 
   const themeValue = useMemo(
     () => ({
       theme,
-      setTheme
+      setTheme,
     }),
-    [theme]
+    [theme],
   )
 
   return (
@@ -372,7 +377,7 @@ const useAppStore = create((set) => ({
   language: 'vi',
   setUser: (user) => set({ user }),
   setTheme: (theme) => set({ theme }),
-  setLanguage: (language) => set({ language })
+  setLanguage: (language) => set({ language }),
 }))
 
 // Usage - No Provider needed, selective subscriptions
@@ -428,8 +433,8 @@ function App() {
   return (
     <Suspense fallback={<Loader />}>
       <Routes>
-        <Route path='/product/:id' element={<ProductDetail />} />
-        <Route path='/profile' element={<UserProfile />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/profile" element={<UserProfile />} />
       </Routes>
     </Suspense>
   )
@@ -448,11 +453,11 @@ export default defineConfig({
           'react-vendor': ['react', 'react-dom'],
           'ui-vendor': ['@heroui/react', '@floating-ui/react'],
           'http-vendor': ['axios', '@tanstack/react-query'],
-          'utils-vendor': ['classnames', 'query-string']
-        }
-      }
-    }
-  }
+          'utils-vendor': ['classnames', 'query-string'],
+        },
+      },
+    },
+  },
 })
 ```
 
@@ -540,7 +545,11 @@ function ProductList({ products }: { products: Product[] }) {
   return (
     <div onClick={handleClick}>
       {products.map((product) => (
-        <div key={product.id} data-product-id={product.id} className={selectedId === product.id ? 'selected' : ''}>
+        <div
+          key={product.id}
+          data-product-id={product.id}
+          className={selectedId === product.id ? 'selected' : ''}
+        >
           {product.name}
         </div>
       ))}

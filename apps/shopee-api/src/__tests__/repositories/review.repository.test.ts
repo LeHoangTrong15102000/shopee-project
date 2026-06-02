@@ -248,11 +248,9 @@ describe('ReviewRepository', () => {
       ;(ReviewCommentModel.find as jest.Mock)
         .mockReturnValueOnce({ populate: mockPopulate })
         .mockReturnValueOnce({
-          populate: jest
-            .fn()
-            .mockReturnValue({
-              sort: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue([]) }),
-            }),
+          populate: jest.fn().mockReturnValue({
+            sort: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue([]) }),
+          }),
         })
       ;(ReviewCommentModel.countDocuments as jest.Mock).mockResolvedValue(1)
 

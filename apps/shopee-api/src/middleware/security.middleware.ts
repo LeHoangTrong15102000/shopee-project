@@ -379,13 +379,15 @@ export const getSuspiciousActivities = async (limit = 100): Promise<SuspiciousAc
   if (redisClient) {
     try {
       const raw = await redisClient.lrange(REDIS_SUSPICIOUS_KEY, 0, limit - 1)
-      return raw.map((item) => {
-        try {
-          return JSON.parse(item) as SuspiciousActivity
-        } catch {
-          return null
-        }
-      }).filter(Boolean) as SuspiciousActivity[]
+      return raw
+        .map((item) => {
+          try {
+            return JSON.parse(item) as SuspiciousActivity
+          } catch {
+            return null
+          }
+        })
+        .filter(Boolean) as SuspiciousActivity[]
     } catch (err) {
       Logger.apiError('Failed to read suspicious activities from Redis', err)
       // Fall through to in-memory

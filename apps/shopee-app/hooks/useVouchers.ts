@@ -93,4 +93,3 @@ export function useApplyVoucher() {
     onError: handleMutationError,
   })
 }
-

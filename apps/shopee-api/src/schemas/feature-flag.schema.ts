@@ -7,7 +7,10 @@ const featureFlagConditionsSchema = z.object({
   userIds: z.array(z.string()).optional(),
   userRoles: z.array(z.string()).optional(),
   platform: z.array(z.enum(['web', 'mobile', 'admin'])).optional(),
-  startDate: z.string().datetime({ message: 'startDate must be a valid ISO 8601 datetime' }).optional(),
+  startDate: z
+    .string()
+    .datetime({ message: 'startDate must be a valid ISO 8601 datetime' })
+    .optional(),
   endDate: z.string().datetime({ message: 'endDate must be a valid ISO 8601 datetime' }).optional(),
 })
 
@@ -18,7 +21,11 @@ const featureFlagConditionsSchema = z.object({
  */
 export const createFeatureFlagSchema = z.object({
   body: z.object({
-    key: z.string().min(1).max(200).regex(/^[a-z0-9-]+$/, 'key must be lowercase alphanumeric with hyphens'),
+    key: z
+      .string()
+      .min(1)
+      .max(200)
+      .regex(/^[a-z0-9-]+$/, 'key must be lowercase alphanumeric with hyphens'),
     name: z.string().min(1).max(200),
     description: z.string().max(1000).optional(),
     enabled: z.boolean().optional().default(false),

@@ -18,7 +18,7 @@ export default function AddressSection({ selectedAddress, onChangeAddress }: Add
   if (!selectedAddress) {
     return (
       <View className="border-b border-neutrals900 px-4 py-4">
-        <View className="flex-row items-center gap-2 mb-2">
+        <View className="mb-2 flex-row items-center gap-2">
           <MapPin size={16} color={colors.primary} />
           <AppText raw variant="body" weight="semibold">
             {t('checkoutAddress.title')}
@@ -31,13 +31,18 @@ export default function AddressSection({ selectedAddress, onChangeAddress }: Add
     )
   }
 
-  const fullAddress = [selectedAddress.street, selectedAddress.ward, selectedAddress.district, selectedAddress.city]
+  const fullAddress = [
+    selectedAddress.street,
+    selectedAddress.ward,
+    selectedAddress.district,
+    selectedAddress.city,
+  ]
     .filter(Boolean)
     .join(', ')
 
   return (
     <View className="border-b border-neutrals900 px-4 py-4">
-      <View className="flex-row items-center justify-between mb-2">
+      <View className="mb-2 flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <MapPin size={16} color={colors.primary} />
           <AppText raw variant="body" weight="semibold">

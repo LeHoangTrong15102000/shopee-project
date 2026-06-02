@@ -159,9 +159,7 @@ describe('UserCategoryCharts', () => {
 
   it('renders empty state with mobile sizing when isMobile is true', () => {
     mockIsMobile.mockReturnValue(true)
-    renderWithProviders(
-      <UserCategoryCharts userGrowth={undefined} revenueByCategory={undefined} />,
-    )
+    renderWithProviders(<UserCategoryCharts userGrowth={undefined} revenueByCategory={undefined} />)
     expect(screen.getAllByText('charts.noData')).toHaveLength(2)
   })
 

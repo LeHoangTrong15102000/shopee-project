@@ -6,11 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { Plus, MapPin } from 'lucide-react-native'
 import { AppText, EmptyState } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
-import {
-  useAddresses,
-  useDeleteAddress,
-  useSetDefaultAddress,
-} from '@/hooks/useAddresses'
+import { useAddresses, useDeleteAddress, useSetDefaultAddress } from '@/hooks/useAddresses'
 import { useDialog } from '@/components/ui/DialogProvider'
 import AddressCard from '@/components/address/AddressCard'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
@@ -67,7 +63,9 @@ export default function AddressListScreen() {
                 selectable={isSelectMode}
                 onSelect={isSelectMode ? handleSelect : undefined}
                 onEdit={
-                  !isSelectMode ? (id) => router.push({ pathname: '/address-form', params: { id } }) : undefined
+                  !isSelectMode
+                    ? (id) => router.push({ pathname: '/address-form', params: { id } })
+                    : undefined
                 }
                 onDelete={!isSelectMode ? handleDelete : undefined}
                 onSetDefault={!isSelectMode ? (id) => setDefault(id) : undefined}

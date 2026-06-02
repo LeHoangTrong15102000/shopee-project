@@ -155,17 +155,23 @@ describe('ConversationService', () => {
 
   describe('getConversations - validation', () => {
     it('should throw ValidationError for invalid userId', async () => {
-      await expect(service.getConversations('invalid', {}, { page: 1, limit: 10 })).rejects.toThrow(ValidationError)
+      await expect(service.getConversations('invalid', {}, { page: 1, limit: 10 })).rejects.toThrow(
+        ValidationError,
+      )
     })
   })
 
   describe('getConversation - validation', () => {
     it('should throw ValidationError for invalid userId', async () => {
-      await expect(service.getConversation('invalid', validObjectId.toString())).rejects.toThrow(ValidationError)
+      await expect(service.getConversation('invalid', validObjectId.toString())).rejects.toThrow(
+        ValidationError,
+      )
     })
 
     it('should throw ValidationError for invalid conversationId', async () => {
-      await expect(service.getConversation(validObjectId.toString(), 'invalid')).rejects.toThrow(ValidationError)
+      await expect(service.getConversation(validObjectId.toString(), 'invalid')).rejects.toThrow(
+        ValidationError,
+      )
     })
   })
 
@@ -175,21 +181,29 @@ describe('ConversationService', () => {
     })
 
     it('should throw ValidationError for empty message', async () => {
-      await expect(service.createConversation(validObjectId.toString(), '')).rejects.toThrow(ValidationError)
+      await expect(service.createConversation(validObjectId.toString(), '')).rejects.toThrow(
+        ValidationError,
+      )
     })
   })
 
   describe('sendMessage - validation', () => {
     it('should throw ValidationError for invalid userId', async () => {
-      await expect(service.sendMessage('invalid', validObjectId.toString(), 'hi')).rejects.toThrow(ValidationError)
+      await expect(service.sendMessage('invalid', validObjectId.toString(), 'hi')).rejects.toThrow(
+        ValidationError,
+      )
     })
 
     it('should throw ValidationError for invalid conversationId', async () => {
-      await expect(service.sendMessage(validObjectId.toString(), 'invalid', 'hi')).rejects.toThrow(ValidationError)
+      await expect(service.sendMessage(validObjectId.toString(), 'invalid', 'hi')).rejects.toThrow(
+        ValidationError,
+      )
     })
 
     it('should throw ValidationError for empty message', async () => {
-      await expect(service.sendMessage(validObjectId.toString(), validObjectId.toString(), '')).rejects.toThrow(ValidationError)
+      await expect(
+        service.sendMessage(validObjectId.toString(), validObjectId.toString(), ''),
+      ).rejects.toThrow(ValidationError)
     })
 
     it('should throw BusinessError when conversation is archived', async () => {
@@ -206,11 +220,15 @@ describe('ConversationService', () => {
 
   describe('updateConversation - validation', () => {
     it('should throw ValidationError for invalid userId', async () => {
-      await expect(service.updateConversation('invalid', validObjectId.toString(), {})).rejects.toThrow(ValidationError)
+      await expect(
+        service.updateConversation('invalid', validObjectId.toString(), {}),
+      ).rejects.toThrow(ValidationError)
     })
 
     it('should throw ValidationError for invalid conversationId', async () => {
-      await expect(service.updateConversation(validObjectId.toString(), 'invalid', {})).rejects.toThrow(ValidationError)
+      await expect(
+        service.updateConversation(validObjectId.toString(), 'invalid', {}),
+      ).rejects.toThrow(ValidationError)
     })
 
     it('should throw NotFoundError when conversation not found', async () => {
@@ -223,11 +241,15 @@ describe('ConversationService', () => {
 
   describe('deleteConversation - validation', () => {
     it('should throw ValidationError for invalid userId', async () => {
-      await expect(service.deleteConversation('invalid', validObjectId.toString())).rejects.toThrow(ValidationError)
+      await expect(service.deleteConversation('invalid', validObjectId.toString())).rejects.toThrow(
+        ValidationError,
+      )
     })
 
     it('should throw ValidationError for invalid conversationId', async () => {
-      await expect(service.deleteConversation(validObjectId.toString(), 'invalid')).rejects.toThrow(ValidationError)
+      await expect(service.deleteConversation(validObjectId.toString(), 'invalid')).rejects.toThrow(
+        ValidationError,
+      )
     })
   })
 })

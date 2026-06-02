@@ -40,7 +40,10 @@ describe('JsonFormatter', () => {
 
   describe('meta fields', () => {
     it('includes meta fields when provided', () => {
-      const output = formatter.format('info', 'API', 'test message', { userId: 'u1', action: 'login' })
+      const output = formatter.format('info', 'API', 'test message', {
+        userId: 'u1',
+        action: 'login',
+      })
       const parsed = JSON.parse(output)
       expect(parsed).toHaveProperty('userId', 'u1')
       expect(parsed).toHaveProperty('action', 'login')

@@ -18,19 +18,13 @@ jest.mock('@/utils/price', () => ({
 
 describe('VoucherSection', () => {
   it('renders apply button when no voucher is applied', () => {
-    const { getByText } = render(
-      <VoucherSection onApplyVoucher={jest.fn()} />
-    )
+    const { getByText } = render(<VoucherSection onApplyVoucher={jest.fn()} />)
     expect(getByText('Apply')).toBeTruthy()
   })
 
   it('shows applied discount message when voucher is applied', () => {
     const { getByText, getByDisplayValue } = render(
-      <VoucherSection
-        appliedVoucher="SAVE10"
-        appliedDiscount={50000}
-        onApplyVoucher={jest.fn()}
-      />
+      <VoucherSection appliedVoucher="SAVE10" appliedDiscount={50000} onApplyVoucher={jest.fn()} />
     )
     expect(getByText(/₫50,000/)).toBeTruthy()
     expect(getByDisplayValue('SAVE10')).toBeTruthy()
@@ -38,10 +32,7 @@ describe('VoucherSection', () => {
 
   it('shows error message when errorMessage is provided', () => {
     const { getByText } = render(
-      <VoucherSection
-        onApplyVoucher={jest.fn()}
-        errorMessage="Invalid voucher code"
-      />
+      <VoucherSection onApplyVoucher={jest.fn()} errorMessage="Invalid voucher code" />
     )
     expect(getByText('Invalid voucher code')).toBeTruthy()
   })

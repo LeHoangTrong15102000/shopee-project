@@ -56,7 +56,7 @@ export default function ConversationItem({ conversation }: ConversationItemProps
       {/* Content */}
       <View className="flex-1">
         <View className="flex-row items-center justify-between">
-          <AppText raw variant="body" weight="semibold" numberOfLines={1} className="flex-1 mr-2">
+          <AppText raw variant="body" weight="semibold" numberOfLines={1} className="mr-2 flex-1">
             {conversation.shopName ?? 'Shop'}
           </AppText>
           <AppText raw variant="labelSmall" color="muted">
@@ -64,8 +64,8 @@ export default function ConversationItem({ conversation }: ConversationItemProps
           </AppText>
         </View>
 
-        <View className="flex-row items-center justify-between mt-0.5">
-          <AppText raw variant="bodySmall" color="muted" numberOfLines={1} className="flex-1 mr-2">
+        <View className="mt-0.5 flex-row items-center justify-between">
+          <AppText raw variant="bodySmall" color="muted" numberOfLines={1} className="mr-2 flex-1">
             {conversation.lastMessage?.content ?? 'Bắt đầu cuộc trò chuyện'}
           </AppText>
 

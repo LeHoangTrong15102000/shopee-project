@@ -311,7 +311,9 @@ describe('ProductRepository', () => {
       ;(ProductModel.bulkWrite as jest.Mock).mockResolvedValue({ modifiedCount: 1 })
       const mockSession = { id: 'session-abc' } as any
 
-      const updates = [{ product_id: '507f1f77bcf86cd799439011', quantity_change: -2, sold_change: 2 }]
+      const updates = [
+        { product_id: '507f1f77bcf86cd799439011', quantity_change: -2, sold_change: 2 },
+      ]
       await repository.bulkUpdateStock(updates, { session: mockSession })
 
       const callArgs = (ProductModel.bulkWrite as jest.Mock).mock.calls[0]

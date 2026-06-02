@@ -17,5 +17,9 @@ interface StripeProviderProps {
  * so it won't be fetched on any other page.
  */
 export function StripeProvider({ children }: StripeProviderProps) {
-  return <Elements stripe={stripePromise} options={{ locale: 'vi' }}>{children}</Elements>
+  return (
+    <Elements stripe={stripePromise} options={{ locale: 'vi' }}>
+      {children}
+    </Elements>
+  )
 }

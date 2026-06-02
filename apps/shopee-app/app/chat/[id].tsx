@@ -57,7 +57,12 @@ export default function ChatConversationScreen() {
   }
 
   const handleRetry = (message: Message) => {
-    send({ conversationId: id, content: message.content, type: message.type, imageUrl: message.imageUrl })
+    send({
+      conversationId: id,
+      content: message.content,
+      type: message.type,
+      imageUrl: message.imageUrl,
+    })
   }
 
   const handleTyping = () => {

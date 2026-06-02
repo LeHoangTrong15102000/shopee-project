@@ -1,15 +1,18 @@
 import http from 'src/utils/http'
 import type { SuccessResponse } from 'src/types'
-import type { PaymentMethod, CreatePaymentMethodBody, UpdatePaymentMethodBody, ReorderPaymentItem } from 'src/types/payment.types'
+import type {
+  PaymentMethod,
+  CreatePaymentMethodBody,
+  UpdatePaymentMethodBody,
+  ReorderPaymentItem,
+} from 'src/types/payment.types'
 
 const paymentsApi = {
   // ─── User-facing ────────────────────────────────────────────────
-  getPaymentMethods: () =>
-    http.get<SuccessResponse<PaymentMethod[]>>('orders/payment/methods'),
+  getPaymentMethods: () => http.get<SuccessResponse<PaymentMethod[]>>('orders/payment/methods'),
 
   // ─── Admin CRUD ──────────────────────────────────────────────────
-  getAdminPaymentMethods: () =>
-    http.get<SuccessResponse<PaymentMethod[]>>('admin/payment-methods'),
+  getAdminPaymentMethods: () => http.get<SuccessResponse<PaymentMethod[]>>('admin/payment-methods'),
 
   getAdminPaymentMethodById: (id: string) =>
     http.get<SuccessResponse<PaymentMethod>>(`admin/payment-methods/${id}`),

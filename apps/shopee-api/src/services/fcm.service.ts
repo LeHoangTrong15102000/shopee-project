@@ -82,10 +82,7 @@ export class FcmService {
       // Remove invalid tokens
       const invalidTokens: string[] = []
       response.responses.forEach((resp, idx) => {
-        if (
-          !resp.success &&
-          resp.error?.code === 'messaging/registration-token-not-registered'
-        ) {
+        if (!resp.success && resp.error?.code === 'messaging/registration-token-not-registered') {
           invalidTokens.push(tokenStrings[idx])
         }
       })

@@ -71,7 +71,11 @@ const runMiddleware = (
 ): Promise<void> =>
   new Promise<void>((resolve) => {
     const origJson = res.json.bind(res)
-    res.json = jest.fn((...args: any[]) => { origJson(...args); resolve(); return res })
+    res.json = jest.fn((...args: any[]) => {
+      origJson(...args)
+      resolve()
+      return res
+    })
     mw(req, res, () => resolve())
   })
 

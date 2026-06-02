@@ -13,27 +13,31 @@ interface FollowedShopCardProps {
   isUnfollowing?: boolean
 }
 
-export default function FollowedShopCard({ shop, onUnfollow, isUnfollowing }: FollowedShopCardProps) {
+export default function FollowedShopCard({
+  shop,
+  onUnfollow,
+  isUnfollowing,
+}: FollowedShopCardProps) {
   const { t } = useTranslation()
   const colors = useColors()
   const router = useRouter()
 
   const handleUnfollow = () => {
-    Alert.alert(
-      t('followedShops.confirmUnfollow'),
-      undefined,
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        { text: t('followedShops.unfollow'), style: 'destructive', onPress: () => onUnfollow(shop._id) },
-      ]
-    )
+    Alert.alert(t('followedShops.confirmUnfollow'), undefined, [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('followedShops.unfollow'),
+        style: 'destructive',
+        onPress: () => onUnfollow(shop._id),
+      },
+    ])
   }
 
   return (
     <TouchableOpacity
       onPress={() => router.push(`/shop/${shop._id}`)}
       accessibilityRole="button"
-      className="flex-row items-center px-4 py-3 border-b border-neutrals900">
+      className="flex-row items-center border-b border-neutrals900 px-4 py-3">
       {/* Avatar */}
       <Image
         source={{ uri: shop.avatar }}
@@ -43,7 +47,7 @@ export default function FollowedShopCard({ shop, onUnfollow, isUnfollowing }: Fo
       />
 
       {/* Info */}
-      <View className="flex-1 mx-3 gap-0.5">
+      <View className="mx-3 flex-1 gap-0.5">
         <AppText raw variant="body" weight="semibold" numberOfLines={1}>
           {shop.name}
         </AppText>
@@ -55,11 +59,7 @@ export default function FollowedShopCard({ shop, onUnfollow, isUnfollowing }: Fo
       </View>
 
       {/* Unfollow button */}
-      <AppButton
-        variant="outline"
-        size="sm"
-        onPress={handleUnfollow}
-        loading={isUnfollowing}>
+      <AppButton variant="outline" size="sm" onPress={handleUnfollow} loading={isUnfollowing}>
         {t('followedShops.unfollow')}
       </AppButton>
     </TouchableOpacity>

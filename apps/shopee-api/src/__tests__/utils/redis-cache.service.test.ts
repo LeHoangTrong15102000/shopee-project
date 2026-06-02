@@ -146,9 +146,7 @@ describe('RedisCacheService', () => {
     it('handles multi-page scan (cursor != 0 then 0)', async () => {
       const keys1 = [KEY_PREFIX + 'products:1']
       const keys2 = [KEY_PREFIX + 'products:2', KEY_PREFIX + 'products:3']
-      mockRedis.scan
-        .mockResolvedValueOnce(['42', keys1])
-        .mockResolvedValueOnce(['0', keys2])
+      mockRedis.scan.mockResolvedValueOnce(['42', keys1]).mockResolvedValueOnce(['0', keys2])
       mockRedis.del.mockResolvedValue(1)
 
       const result = await service.del('products:*')
@@ -172,13 +170,7 @@ describe('RedisCacheService', () => {
 
       await service.flush()
 
-      expect(mockRedis.scan).toHaveBeenCalledWith(
-        '0',
-        'MATCH',
-        KEY_PREFIX + '*',
-        'COUNT',
-        100,
-      )
+      expect(mockRedis.scan).toHaveBeenCalledWith('0', 'MATCH', KEY_PREFIX + '*', 'COUNT', 100)
       expect(mockRedis.del).toHaveBeenCalledWith(...keys)
     })
 
@@ -230,7 +222,7 @@ describe('RedisCacheService — graceful degradation when redisClient is null', 
       jest.doMock('@utils/logger', () => ({
         Logger: { apiError: jest.fn(), apiWarn: jest.fn(), apiInfo: jest.fn() },
       }))
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+
       NullService = require('@utils/cache/redis-cache.service').RedisCacheService
     })
     return NullService

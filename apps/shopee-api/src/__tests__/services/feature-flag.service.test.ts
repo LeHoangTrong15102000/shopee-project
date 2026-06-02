@@ -196,12 +196,7 @@ describe('FeatureFlagService', () => {
       await service.isEnabled('test-flag')
 
       expect(mockRepo.findByKey).toHaveBeenCalledWith('test-flag')
-      expect(mockRedis.set).toHaveBeenCalledWith(
-        'ff:test-flag',
-        JSON.stringify(flag),
-        'EX',
-        60,
-      )
+      expect(mockRedis.set).toHaveBeenCalledWith('ff:test-flag', JSON.stringify(flag), 'EX', 60)
     })
 
     it('falls back to MongoDB when Redis.get throws', async () => {
@@ -281,7 +276,12 @@ describe('FeatureFlagService', () => {
       mockRepo.findByKey.mockResolvedValue(null)
       mockRepo.create.mockResolvedValue(flag)
 
-      const result = await service.createFlag({ key: 'test-flag', name: 'Test', enabled: false, rolloutPercentage: 100 })
+      const result = await service.createFlag({
+        key: 'test-flag',
+        name: 'Test',
+        enabled: false,
+        rolloutPercentage: 100,
+      })
       expect(result).toBe(flag)
     })
 
@@ -289,7 +289,12 @@ describe('FeatureFlagService', () => {
       mockRepo.findByKey.mockResolvedValue(makeFlag())
 
       await expect(
-        service.createFlag({ key: 'test-flag', name: 'Test', enabled: false, rolloutPercentage: 100 }),
+        service.createFlag({
+          key: 'test-flag',
+          name: 'Test',
+          enabled: false,
+          rolloutPercentage: 100,
+        }),
       ).rejects.toThrow(ConflictError)
     })
   })

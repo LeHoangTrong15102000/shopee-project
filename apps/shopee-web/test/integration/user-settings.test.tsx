@@ -15,66 +15,50 @@ describe('User Settings Integration Tests', () => {
     clearLS()
   })
 
-  test(
-    'Authenticated user can access profile page',
-    { timeout: 10000 },
-    async () => {
-      setAccessTokenToLS(access_token)
-      renderWithRouter({ route: path.profile })
+  test('Authenticated user can access profile page', { timeout: 10000 }, async () => {
+    setAccessTokenToLS(access_token)
+    renderWithRouter({ route: path.profile })
 
-      await waitFor(
-        () => {
-          expect(window.location.pathname).toBe(path.profile)
-        },
-        { timeout: 5000 }
-      )
-    }
-  )
+    await waitFor(
+      () => {
+        expect(window.location.pathname).toBe(path.profile)
+      },
+      { timeout: 5000 },
+    )
+  })
 
-  test(
-    'Profile page renders user information',
-    { timeout: 10000 },
-    async () => {
-      setAccessTokenToLS(access_token)
-      renderWithRouter({ route: path.profile })
+  test('Profile page renders user information', { timeout: 10000 }, async () => {
+    setAccessTokenToLS(access_token)
+    renderWithRouter({ route: path.profile })
 
-      await waitFor(
-        () => {
-          expect(window.location.pathname).toBe(path.profile)
-        },
-        { timeout: 5000 }
-      )
-    }
-  )
+    await waitFor(
+      () => {
+        expect(window.location.pathname).toBe(path.profile)
+      },
+      { timeout: 5000 },
+    )
+  })
 
-  test(
-    'Authenticated user can access change password page',
-    { timeout: 10000 },
-    async () => {
-      setAccessTokenToLS(access_token)
-      renderWithRouter({ route: path.changePassword })
+  test('Authenticated user can access change password page', { timeout: 10000 }, async () => {
+    setAccessTokenToLS(access_token)
+    renderWithRouter({ route: path.changePassword })
 
-      await waitFor(
-        () => {
-          expect(window.location.pathname).toBe(path.changePassword)
-        },
-        { timeout: 5000 }
-      )
-    }
-  )
+    await waitFor(
+      () => {
+        expect(window.location.pathname).toBe(path.changePassword)
+      },
+      { timeout: 5000 },
+    )
+  })
 
-  test(
-    'Unauthenticated user gets redirected from profile',
-    { timeout: 10000 },
-    async () => {
-      renderWithRouter({ route: path.profile })
+  test('Unauthenticated user gets redirected from profile', { timeout: 10000 }, async () => {
+    renderWithRouter({ route: path.profile })
 
-      await waitFor(
-        () => {
-          expect(window.location.pathname).toBe('/login')
-        },
-        { timeout: 5000 }
-      )
-    }
-  )
+    await waitFor(
+      () => {
+        expect(window.location.pathname).toBe('/login')
+      },
+      { timeout: 5000 },
+    )
+  })
 })

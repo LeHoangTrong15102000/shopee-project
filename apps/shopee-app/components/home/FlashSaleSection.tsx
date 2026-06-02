@@ -129,7 +129,10 @@ export default function FlashSaleSection() {
               paddingVertical: 2,
               marginLeft: 4,
             }}>
-            <AppText raw variant="labelSmall" style={{ color: colors.primaryForeground, fontVariant: ['tabular-nums'] }}>
+            <AppText
+              raw
+              variant="labelSmall"
+              style={{ color: colors.primaryForeground, fontVariant: ['tabular-nums'] }}>
               {formatCountdown(secondsLeft)}
             </AppText>
           </View>

@@ -34,7 +34,12 @@
 
     // "types": ["node", "jest", "@testing-library/jest-dom/vitest"]
   },
-  "include": ["src", "../../libs/shared-types/src", "../../libs/shared-constants/src", "../../libs/shared-utils/src"],
+  "include": [
+    "src",
+    "../../libs/shared-types/src",
+    "../../libs/shared-constants/src",
+    "../../libs/shared-utils/src"
+  ],
   "exclude": [
     "src/**/__test__/**",
     "src/**/__tests__/**",

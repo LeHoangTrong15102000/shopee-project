@@ -189,7 +189,12 @@ export class CheckInService extends BaseService {
         $addFields: {
           current_streak: {
             $cond: [
-              { $or: [{ $eq: ['$last_checkin_date', today] }, { $eq: ['$last_checkin_date', yesterday] }] },
+              {
+                $or: [
+                  { $eq: ['$last_checkin_date', today] },
+                  { $eq: ['$last_checkin_date', yesterday] },
+                ],
+              },
               '$max_streak',
               0,
             ],

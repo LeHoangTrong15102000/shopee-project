@@ -3,11 +3,9 @@
 jest.mock('../../database/models/notification.model', () => ({
   NotificationModel: {
     findOne: jest.fn(),
-    find: jest
-      .fn()
-      .mockReturnValue({
-        sort: jest.fn().mockReturnValue({ limit: jest.fn().mockReturnValue({ lean: jest.fn() }) }),
-      }),
+    find: jest.fn().mockReturnValue({
+      sort: jest.fn().mockReturnValue({ limit: jest.fn().mockReturnValue({ lean: jest.fn() }) }),
+    }),
     create: jest.fn(),
     updateOne: jest.fn(),
   },

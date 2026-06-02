@@ -75,9 +75,9 @@ describe('redis.client', () => {
       jest.resetModules()
 
       const Redis = require('ioredis')
-      const eventHandlers: Record<string, Function> = {}
+      const eventHandlers: Record<string, (...args: unknown[]) => unknown> = {}
       const mockRedisInstance = {
-        on: jest.fn((event: string, handler: Function) => {
+        on: jest.fn((event: string, handler: (...args: unknown[]) => unknown) => {
           eventHandlers[event] = handler
         }),
         quit: jest.fn().mockResolvedValue('OK'),
@@ -103,9 +103,9 @@ describe('redis.client', () => {
       jest.resetModules()
 
       const Redis = require('ioredis')
-      const eventHandlers: Record<string, Function> = {}
+      const eventHandlers: Record<string, (...args: unknown[]) => unknown> = {}
       const mockRedisInstance = {
-        on: jest.fn((event: string, handler: Function) => {
+        on: jest.fn((event: string, handler: (...args: unknown[]) => unknown) => {
           eventHandlers[event] = handler
         }),
         quit: jest.fn().mockResolvedValue('OK'),
@@ -132,9 +132,9 @@ describe('redis.client', () => {
       jest.resetModules()
 
       const Redis = require('ioredis')
-      const eventHandlers: Record<string, Function> = {}
+      const eventHandlers: Record<string, (...args: unknown[]) => unknown> = {}
       const mockRedisInstance = {
-        on: jest.fn((event: string, handler: Function) => {
+        on: jest.fn((event: string, handler: (...args: unknown[]) => unknown) => {
           eventHandlers[event] = handler
         }),
         quit: jest.fn().mockResolvedValue('OK'),
@@ -160,9 +160,9 @@ describe('redis.client', () => {
       jest.resetModules()
 
       const Redis = require('ioredis')
-      const eventHandlers: Record<string, Function> = {}
+      const eventHandlers: Record<string, (...args: unknown[]) => unknown> = {}
       const mockRedisInstance = {
-        on: jest.fn((event: string, handler: Function) => {
+        on: jest.fn((event: string, handler: (...args: unknown[]) => unknown) => {
           eventHandlers[event] = handler
         }),
         quit: jest.fn().mockResolvedValue('OK'),

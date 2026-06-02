@@ -16,7 +16,9 @@ export default function OrderSuccessScreen() {
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
-      <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
+      <SafeAreaView
+        edges={['top', 'bottom']}
+        style={{ flex: 1, backgroundColor: colors.background }}>
         <View className="flex-1 items-center justify-center px-8">
           <CheckCircle size={80} color={colors.success} />
 
@@ -29,7 +31,11 @@ export default function OrderSuccessScreen() {
           </AppText>
 
           {orderId && (
-            <AppText raw variant="bodySmall" color="muted" style={{ textAlign: 'center', marginBottom: 32 }}>
+            <AppText
+              raw
+              variant="bodySmall"
+              color="muted"
+              style={{ textAlign: 'center', marginBottom: 32 }}>
               {t('orderSuccess.orderId', { orderId: orderId.slice(-8).toUpperCase() })}
             </AppText>
           )}
@@ -56,4 +62,3 @@ export default function OrderSuccessScreen() {
     </>
   )
 }
-

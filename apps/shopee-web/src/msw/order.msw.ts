@@ -61,7 +61,15 @@ const getOrderTrackingRequest = http.get(`${config.baseUrl}orders/tracking`, ({ 
   const url = new URL(request.url)
   const orderId = url.searchParams.get('order_id') || 'order-1'
   const statusParam = url.searchParams.get('status')
-  const validStatuses = ['pending', 'confirmed', 'processing', 'shipping', 'delivered', 'cancelled', 'returned']
+  const validStatuses = [
+    'pending',
+    'confirmed',
+    'processing',
+    'shipping',
+    'delivered',
+    'cancelled',
+    'returned',
+  ]
   const status = validStatuses.includes(statusParam ?? '') ? statusParam : 'shipping'
 
   const trackingData = {
@@ -116,6 +124,11 @@ const getOrderTrackingRequest = http.get(`${config.baseUrl}orders/tracking`, ({ 
   )
 })
 
-const orderRequests = [getOrdersRequest, getOrderTrackingRequest, getOrderDetailRequest, cancelOrderRequest]
+const orderRequests = [
+  getOrdersRequest,
+  getOrderTrackingRequest,
+  getOrderDetailRequest,
+  cancelOrderRequest,
+]
 
 export default orderRequests

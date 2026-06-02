@@ -58,8 +58,7 @@ function write(level: LogLevel, category: string, message: string, meta?: LogMet
 
   // Automatically inject requestId from AsyncLocalStorage when available
   const requestId = getRequestId()
-  const enrichedMeta: LogMeta | undefined =
-    requestId !== undefined ? { requestId, ...meta } : meta
+  const enrichedMeta: LogMeta | undefined = requestId !== undefined ? { requestId, ...meta } : meta
 
   const line = _formatter.format(level, category, message, enrichedMeta)
 

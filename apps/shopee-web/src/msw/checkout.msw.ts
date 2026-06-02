@@ -292,10 +292,7 @@ export const calculateCheckoutRequest = http.post(
       discount = 100000
     } else if (code && code !== '') {
       // Invalid voucher — return error
-      return HttpResponse.json(
-        { message: 'Invalid voucher code' },
-        { status: 400 },
-      )
+      return HttpResponse.json({ message: 'Invalid voucher code' }, { status: 400 })
     }
 
     const summary: CheckoutSummary = {

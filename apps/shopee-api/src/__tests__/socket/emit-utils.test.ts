@@ -87,11 +87,9 @@ describe('Emit Utils', () => {
       }))
       jest.mock('@database/models/user.model', () => ({
         UserModel: {
-          find: jest
-            .fn()
-            .mockReturnValue({
-              select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue([]) }),
-            }),
+          find: jest.fn().mockReturnValue({
+            select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue([]) }),
+          }),
         },
       }))
       jest.mock('@database/models/question.model', () => ({

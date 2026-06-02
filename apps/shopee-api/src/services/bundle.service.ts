@@ -22,7 +22,7 @@ export interface CreateBundleDTO {
   maxRedemptions?: number
 }
 
-export interface UpdateBundleDTO extends Partial<CreateBundleDTO> {}
+export type UpdateBundleDTO = Partial<CreateBundleDTO>
 
 export interface CartItem {
   productId: string
@@ -87,7 +87,8 @@ export class BundleService extends BaseService {
     if (dto.name !== undefined) update.name = dto.name.trim()
     if (dto.description !== undefined) update.description = dto.description
     if (dto.productIds !== undefined) {
-      if (dto.productIds.length < 2) throw new ValidationError('A bundle must contain at least 2 products')
+      if (dto.productIds.length < 2)
+        throw new ValidationError('A bundle must contain at least 2 products')
       update.productIds = dto.productIds.map((id) => new mongoose.Types.ObjectId(id))
     }
     if (dto.discountType !== undefined) update.discountType = dto.discountType
@@ -120,10 +121,9 @@ export class BundleService extends BaseService {
       throw new ValidationError('Invalid bundle ID format')
     }
 
-    const result = await BundleModel.findByIdAndUpdate(
-      new mongoose.Types.ObjectId(bundleId),
-      { $set: { isActive: false } },
-    ).lean()
+    const result = await BundleModel.findByIdAndUpdate(new mongoose.Types.ObjectId(bundleId), {
+      $set: { isActive: false },
+    }).lean()
 
     if (!result) throw new NotFoundError('Bundle', bundleId)
 
@@ -177,10 +177,7 @@ export class BundleService extends BaseService {
    * Calculate the best bundle discount for a given cart.
    * Returns the bundle with the highest discount amount, or null if none apply.
    */
-  calculateBundleDiscount(
-    bundles: IBundle[],
-    cartItems: CartItem[],
-  ): BundleDiscountResult | null {
+  calculateBundleDiscount(bundles: IBundle[], cartItems: CartItem[]): BundleDiscountResult | null {
     const cartProductIds = new Set(cartItems.map((item) => item.productId))
     const cartTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
@@ -188,9 +185,7 @@ export class BundleService extends BaseService {
 
     for (const bundle of bundles) {
       // Check if all bundle products are in the cart
-      const allPresent = bundle.productIds.every((pid) =>
-        cartProductIds.has(pid.toString()),
-      )
+      const allPresent = bundle.productIds.every((pid) => cartProductIds.has(pid.toString()))
       if (!allPresent) continue
 
       // Check min quantity
@@ -209,10 +204,7 @@ export class BundleService extends BaseService {
       }
 
       // Calculate discount amount
-      const bundleSubtotal = bundleItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0,
-      )
+      const bundleSubtotal = bundleItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
       let discountAmount = 0
       if (bundle.discountType === 'percentage') {

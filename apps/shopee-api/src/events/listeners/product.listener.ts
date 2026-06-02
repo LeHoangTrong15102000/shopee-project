@@ -18,9 +18,7 @@ export class ProductEventListener {
   ) {}
 
   @OnEvent('product.created')
-  async onProductCreated(
-    event: Extract<DomainEvent, { type: 'product.created' }>,
-  ): Promise<void> {
+  async onProductCreated(event: Extract<DomainEvent, { type: 'product.created' }>): Promise<void> {
     const { productId, name } = event.payload
 
     Logger.apiInfo('[ProductEventListener] product.created — enqueuing search-sync', {
@@ -36,9 +34,7 @@ export class ProductEventListener {
   }
 
   @OnEvent('product.updated')
-  async onProductUpdated(
-    event: Extract<DomainEvent, { type: 'product.updated' }>,
-  ): Promise<void> {
+  async onProductUpdated(event: Extract<DomainEvent, { type: 'product.updated' }>): Promise<void> {
     const { productId, name, oldPrice, newPrice } = event.payload
 
     Logger.apiInfo('[ProductEventListener] product.updated — enqueuing search-sync', {
@@ -64,9 +60,7 @@ export class ProductEventListener {
   }
 
   @OnEvent('product.deleted')
-  async onProductDeleted(
-    event: Extract<DomainEvent, { type: 'product.deleted' }>,
-  ): Promise<void> {
+  async onProductDeleted(event: Extract<DomainEvent, { type: 'product.deleted' }>): Promise<void> {
     const { productId } = event.payload
 
     Logger.apiInfo('[ProductEventListener] product.deleted — enqueuing search-sync delete', {
@@ -108,7 +102,12 @@ export class ProductEventListener {
 
       const title = 'Price Drop Alert!'
       const body = `${productName} is now cheaper — was ${oldPrice.toLocaleString()}, now ${newPrice.toLocaleString()}`
-      const data = { productId, oldPrice: String(oldPrice), newPrice: String(newPrice), type: 'price_drop' }
+      const data = {
+        productId,
+        oldPrice: String(oldPrice),
+        newPrice: String(newPrice),
+        type: 'price_drop',
+      }
 
       await Promise.allSettled(
         wishlistItems.map((item) =>

@@ -21,7 +21,11 @@ export interface CheckoutSummaryParams {
 export function useCheckoutSummary(params: CheckoutSummaryParams) {
   const { addressId, voucherId, useCoins, cartItemIds, shippingMethodId } = params
   return useQuery({
-    queryKey: ['checkout', 'summary', { addressId, voucherId, useCoins, cartItemIds, shippingMethodId }],
+    queryKey: [
+      'checkout',
+      'summary',
+      { addressId, voucherId, useCoins, cartItemIds, shippingMethodId },
+    ],
     queryFn: () =>
       getCheckoutSummary({
         purchase_ids: cartItemIds,

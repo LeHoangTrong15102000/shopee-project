@@ -17,7 +17,9 @@ const mockZrevrange = jest.fn()
 jest.mock('@utils/redis.client', () => ({
   redisClient: {
     zadd: jest.fn().mockImplementation((...args: unknown[]) => mockZadd(...args)),
-    zremrangebyrank: jest.fn().mockImplementation((...args: unknown[]) => mockZremrangebyrank(...args)),
+    zremrangebyrank: jest
+      .fn()
+      .mockImplementation((...args: unknown[]) => mockZremrangebyrank(...args)),
     zrevrange: jest.fn().mockImplementation((...args: unknown[]) => mockZrevrange(...args)),
   },
 }))
@@ -186,9 +188,7 @@ describe('RecommendationController — Redis sorted set operations', () => {
 
       await RecommendationController.getRecentlyViewed(req, res)
 
-      expect(res.send).toHaveBeenCalledWith(
-        expect.objectContaining({ data: [] }),
-      )
+      expect(res.send).toHaveBeenCalledWith(expect.objectContaining({ data: [] }))
       expect(mockProductFind).not.toHaveBeenCalled()
     })
 

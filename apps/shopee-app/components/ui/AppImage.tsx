@@ -8,7 +8,14 @@ interface AppImageProps extends Omit<ImageProps, 'style'> {
   fallbackStyle?: StyleProp<ViewStyle>
 }
 
-const AppImage: React.FC<AppImageProps> = ({ style, fallbackStyle, placeholder, transition, onError, ...rest }) => {
+const AppImage: React.FC<AppImageProps> = ({
+  style,
+  fallbackStyle,
+  placeholder,
+  transition,
+  onError,
+  ...rest
+}) => {
   const colors = useColors()
   const [hasError, setHasError] = useState(false)
 
@@ -19,13 +26,7 @@ const AppImage: React.FC<AppImageProps> = ({ style, fallbackStyle, placeholder, 
 
   if (hasError) {
     return (
-      <View
-        style={[
-          style as ViewStyle,
-          { backgroundColor: colors.neutrals800 },
-          fallbackStyle,
-        ]}
-      />
+      <View style={[style as ViewStyle, { backgroundColor: colors.neutrals800 }, fallbackStyle]} />
     )
   }
 

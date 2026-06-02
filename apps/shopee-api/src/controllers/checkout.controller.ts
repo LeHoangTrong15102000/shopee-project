@@ -103,7 +103,10 @@ export const getCheckoutSummary = async (req: Request, res: Response) => {
     const coinsDiscount = coinsToUse
 
     // Calculate total
-    const total = Math.max(0, subtotal + shippingFee - voucherDiscount - coinsDiscount - bundleDiscount)
+    const total = Math.max(
+      0,
+      subtotal + shippingFee - voucherDiscount - coinsDiscount - bundleDiscount,
+    )
 
     // Get default address using addressService
     const defaultAddress = await addressService.getDefaultAddress(user_id)

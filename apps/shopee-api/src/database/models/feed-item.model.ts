@@ -1,6 +1,10 @@
 import mongoose, { Schema } from 'mongoose'
 
-export type FeedActionType = 'product.liked' | 'product.shared' | 'product.reviewed' | 'order.created'
+export type FeedActionType =
+  | 'product.liked'
+  | 'product.shared'
+  | 'product.reviewed'
+  | 'order.created'
 export type FeedTargetType = 'product' | 'order'
 
 export interface IFeedItem {

@@ -112,9 +112,9 @@ describe('Review API', () => {
 
     it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      await expect(
-        reviewApi.createComment({ review_id: '1', content: 'Nice' }),
-      ).rejects.toThrow('Network error')
+      await expect(reviewApi.createComment({ review_id: '1', content: 'Nice' })).rejects.toThrow(
+        'Network error',
+      )
     })
   })
 

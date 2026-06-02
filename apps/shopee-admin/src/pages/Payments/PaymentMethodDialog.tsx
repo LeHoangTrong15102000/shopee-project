@@ -22,7 +22,11 @@ import {
   SelectValue,
 } from 'src/components/ui/select'
 import { useCreatePaymentMethod, useUpdatePaymentMethod } from 'src/hooks/usePayments'
-import { paymentMethodSchema, PAYMENT_TYPE_OPTIONS, type PaymentMethodFormValues } from 'src/lib/schemas/payment.schema'
+import {
+  paymentMethodSchema,
+  PAYMENT_TYPE_OPTIONS,
+  type PaymentMethodFormValues,
+} from 'src/lib/schemas/payment.schema'
 import type { PaymentMethod } from 'src/types/payment.types'
 
 interface Props {
@@ -100,9 +104,7 @@ export default function PaymentMethodDialog({ open, method, onOpenChange }: Prop
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>
-            {isEdit ? t('actions.edit') : t('actions.create')}
-          </DialogTitle>
+          <DialogTitle>{isEdit ? t('actions.edit') : t('actions.create')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">

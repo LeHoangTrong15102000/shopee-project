@@ -12,10 +12,7 @@ interface PriceAlertFilters {
 export class PriceService extends BaseService {
   // ─── Admin Methods ──────────────────────────────────────────────
 
-  async adminGetAlerts(
-    filters: PriceAlertFilters,
-    pagination: PaginationOptions,
-  ) {
+  async adminGetAlerts(filters: PriceAlertFilters, pagination: PaginationOptions) {
     const { page, limit } = this.normalizePagination(pagination)
     const skip = (page - 1) * limit
 

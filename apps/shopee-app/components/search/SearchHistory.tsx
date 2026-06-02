@@ -59,9 +59,7 @@ export default function SearchHistory({
             </Pressable>
           </Pressable>
         )}
-        ItemSeparatorComponent={() => (
-          <View className="h-px bg-neutrals900" />
-        )}
+        ItemSeparatorComponent={() => <View className="h-px bg-neutrals900" />}
       />
     </View>
   )

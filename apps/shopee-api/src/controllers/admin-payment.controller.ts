@@ -3,13 +3,20 @@ import { responseSuccess, ErrorHandler } from '@utils/response'
 import { STATUS } from '@constants/status'
 import { PaymentMethodModel } from '@database/models/payment-method.model'
 import { OrderModel } from '@database/models/order.model'
-import type { AdminCreatePaymentBody, AdminUpdatePaymentBody, AdminReorderPaymentBody } from '@schemas/admin-payment.schema'
+import type {
+  AdminCreatePaymentBody,
+  AdminUpdatePaymentBody,
+  AdminReorderPaymentBody,
+} from '@schemas/admin-payment.schema'
 
 // ─── List all payment methods (admin — includes inactive) ─────────
 
 export const adminGetPaymentMethods = async (_req: Request, res: Response) => {
   const methods = await PaymentMethodModel.find().sort({ sort_order: 1 }).lean()
-  return responseSuccess(res, { message: 'Lấy danh sách phương thức thanh toán thành công', data: methods })
+  return responseSuccess(res, {
+    message: 'Lấy danh sách phương thức thanh toán thành công',
+    data: methods,
+  })
 }
 
 // ─── Get single payment method ────────────────────────────────────
@@ -17,7 +24,10 @@ export const adminGetPaymentMethods = async (_req: Request, res: Response) => {
 export const adminGetPaymentMethodById = async (req: Request, res: Response) => {
   const method = await PaymentMethodModel.findById(req.params.id).lean()
   if (!method) throw new ErrorHandler(STATUS.NOT_FOUND, 'Không tìm thấy phương thức thanh toán')
-  return responseSuccess(res, { message: 'Lấy chi tiết phương thức thanh toán thành công', data: method })
+  return responseSuccess(res, {
+    message: 'Lấy chi tiết phương thức thanh toán thành công',
+    data: method,
+  })
 }
 
 // ─── Create payment method ────────────────────────────────────────
@@ -38,7 +48,10 @@ export const adminUpdatePaymentMethod = async (req: Request, res: Response) => {
     { new: true, runValidators: true },
   ).lean()
   if (!method) throw new ErrorHandler(STATUS.NOT_FOUND, 'Không tìm thấy phương thức thanh toán')
-  return responseSuccess(res, { message: 'Cập nhật phương thức thanh toán thành công', data: method })
+  return responseSuccess(res, {
+    message: 'Cập nhật phương thức thanh toán thành công',
+    data: method,
+  })
 }
 
 // ─── Delete payment method ────────────────────────────────────────
@@ -67,7 +80,10 @@ export const adminTogglePaymentMethod = async (req: Request, res: Response) => {
   if (!method) throw new ErrorHandler(STATUS.NOT_FOUND, 'Không tìm thấy phương thức thanh toán')
   method.is_active = !method.is_active
   await method.save()
-  return responseSuccess(res, { message: 'Cập nhật trạng thái phương thức thanh toán thành công', data: method })
+  return responseSuccess(res, {
+    message: 'Cập nhật trạng thái phương thức thanh toán thành công',
+    data: method,
+  })
 }
 
 // ─── Reorder payment methods ──────────────────────────────────────

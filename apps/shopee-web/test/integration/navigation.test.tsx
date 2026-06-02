@@ -15,7 +15,9 @@ describe('Navigation Integration Tests', () => {
     if (loginLink) {
       await user.click(loginLink)
       await waitFor(() => {
-        expect(window.location.pathname === '/login' || document.title.includes('Đăng nhập')).toBeTruthy()
+        expect(
+          window.location.pathname === '/login' || document.title.includes('Đăng nhập'),
+        ).toBeTruthy()
       })
     }
   })
@@ -26,7 +28,9 @@ describe('Navigation Integration Tests', () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByText(/page not found/i) || screen.queryByText(/404/i) || window.location.pathname === badRoute // App might render anyway
+        screen.queryByText(/page not found/i) ||
+          screen.queryByText(/404/i) ||
+          window.location.pathname === badRoute, // App might render anyway
       ).toBeTruthy()
     })
   })
@@ -38,7 +42,9 @@ describe('Navigation Integration Tests', () => {
 
     // Check if on register page
     await waitFor(() => {
-      expect(screen.queryByText(/Bạn đã có tài khoản?/i) || window.location.pathname === '/register').toBeTruthy()
+      expect(
+        screen.queryByText(/Bạn đã có tài khoản?/i) || window.location.pathname === '/register',
+      ).toBeTruthy()
     })
   })
 
@@ -53,7 +59,9 @@ describe('Navigation Integration Tests', () => {
       await user.click(loginLink)
 
       await waitFor(() => {
-        expect(window.location.pathname === '/login' || document.title.includes('Đăng nhập')).toBeTruthy()
+        expect(
+          window.location.pathname === '/login' || document.title.includes('Đăng nhập'),
+        ).toBeTruthy()
       })
 
       // Test navigation from login to register if available
@@ -62,7 +70,9 @@ describe('Navigation Integration Tests', () => {
         await user.click(registerLink)
 
         await waitFor(() => {
-          expect(window.location.pathname === '/register' || document.title.includes('Đăng ký')).toBeTruthy()
+          expect(
+            window.location.pathname === '/register' || document.title.includes('Đăng ký'),
+          ).toBeTruthy()
         })
       }
     }

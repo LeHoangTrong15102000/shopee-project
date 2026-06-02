@@ -1,4 +1,4 @@
-import { describe, it, expect} from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { BrowserRouter } from 'react-router'
 import EmptyCartState from '../EmptyCartState'
@@ -60,8 +60,7 @@ const defaultProps = {
   path: { home: '/' },
 }
 
-const renderWithRouter = (ui: React.ReactElement) =>
-  render(<BrowserRouter>{ui}</BrowserRouter>)
+const renderWithRouter = (ui: React.ReactElement) => render(<BrowserRouter>{ui}</BrowserRouter>)
 
 describe('EmptyCartState', () => {
   it('renders empty cart message', () => {

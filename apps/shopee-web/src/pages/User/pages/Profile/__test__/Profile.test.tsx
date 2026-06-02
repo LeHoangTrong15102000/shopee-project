@@ -1,4 +1,4 @@
-import { describe, it, expect} from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { renderWithProviders, createMockUser } from 'src/utils/testUtils'
 import Profile from '../Profile'

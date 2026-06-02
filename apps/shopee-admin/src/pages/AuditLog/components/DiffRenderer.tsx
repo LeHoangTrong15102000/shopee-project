@@ -65,11 +65,7 @@ export function DiffRenderer({ diff }: DiffRendererProps) {
   const { t } = useTranslation('activity-log')
 
   if (!diff || diff.length === 0) {
-    return (
-      <div className="text-sm text-muted-foreground italic p-4">
-        {t('detail.noDiff')}
-      </div>
-    )
+    return <div className="text-sm text-muted-foreground italic p-4">{t('detail.noDiff')}</div>
   }
 
   return (

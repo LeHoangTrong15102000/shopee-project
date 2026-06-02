@@ -81,9 +81,7 @@ describe('AdminShopsService', () => {
 
       await service.listShops({ status: 'active' as any })
 
-      expect(ShopModel.find).toHaveBeenCalledWith(
-        expect.objectContaining({ status: 'active' }),
-      )
+      expect(ShopModel.find).toHaveBeenCalledWith(expect.objectContaining({ status: 'active' }))
     })
 
     it('applies $text search filter', async () => {
@@ -172,7 +170,9 @@ describe('AdminShopsService', () => {
 
     it('updates shop to active status', async () => {
       ;(ShopModel.findById as jest.Mock).mockResolvedValue({ _id: VALID_ID, status: 'suspended' })
-      mockShopFindByIdAndUpdate.mockReturnValue({ lean: jest.fn().mockResolvedValue({ _id: VALID_ID, status: 'active' }) })
+      mockShopFindByIdAndUpdate.mockReturnValue({
+        lean: jest.fn().mockResolvedValue({ _id: VALID_ID, status: 'active' }),
+      })
 
       const result = await service.updateShopStatus(VALID_ID, 'active' as any)
       expect(ShopModel.findByIdAndUpdate).toHaveBeenCalledWith(

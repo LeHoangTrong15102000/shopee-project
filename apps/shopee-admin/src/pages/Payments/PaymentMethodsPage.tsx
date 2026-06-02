@@ -61,7 +61,9 @@ export default function PaymentMethodsPage() {
         const idx = sorted.findIndex((m) => m._id === row.original._id)
         return (
           <div className="flex items-center gap-1">
-            <span className="w-6 text-center text-sm text-muted-foreground">{row.original.sort_order}</span>
+            <span className="w-6 text-center text-sm text-muted-foreground">
+              {row.original.sort_order}
+            </span>
             <Button
               variant="ghost"
               size="sm"
@@ -97,9 +99,7 @@ export default function PaymentMethodsPage() {
     {
       accessorKey: 'type',
       header: t('columns.type'),
-      cell: ({ row }) => (
-        <Badge variant="outline">{t(`types.${row.original.type}`)}</Badge>
-      ),
+      cell: ({ row }) => <Badge variant="outline">{t(`types.${row.original.type}`)}</Badge>,
     },
     {
       accessorKey: 'description',

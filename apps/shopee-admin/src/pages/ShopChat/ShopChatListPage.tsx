@@ -82,9 +82,7 @@ export default function ShopChatListPage() {
     {
       accessorKey: 'shopId',
       header: t('columns.shop'),
-      cell: ({ row }) => (
-        <span className="font-medium">{getShopName(row.original)}</span>
-      ),
+      cell: ({ row }) => <span className="font-medium">{getShopName(row.original)}</span>,
     },
     {
       accessorKey: 'userId',
@@ -98,9 +96,7 @@ export default function ShopChatListPage() {
         const msg = row.original.lastMessage
         if (!msg) return <span className="text-muted-foreground text-xs">{t('noMessages')}</span>
         return (
-          <span className="line-clamp-1 max-w-xs text-sm text-muted-foreground">
-            {msg.content}
-          </span>
+          <span className="line-clamp-1 max-w-xs text-sm text-muted-foreground">{msg.content}</span>
         )
       },
     },
@@ -171,19 +167,28 @@ export default function ShopChatListPage() {
         <Input
           placeholder={t('filter.shopSearch')}
           value={shopSearch}
-          onChange={(e) => { setShopSearch(e.target.value); setPage(1) }}
+          onChange={(e) => {
+            setShopSearch(e.target.value)
+            setPage(1)
+          }}
           className="w-52"
         />
         <Input
           placeholder={t('filter.userSearch')}
           value={userSearch}
-          onChange={(e) => { setUserSearch(e.target.value); setPage(1) }}
+          onChange={(e) => {
+            setUserSearch(e.target.value)
+            setPage(1)
+          }}
           className="w-52"
         />
         <Input
           type="date"
           value={dateFrom}
-          onChange={(e) => { setDateFrom(e.target.value); setPage(1) }}
+          onChange={(e) => {
+            setDateFrom(e.target.value)
+            setPage(1)
+          }}
           className="w-40"
           title={t('filter.dateFrom')}
           aria-label={t('filter.dateFrom')}
@@ -191,7 +196,10 @@ export default function ShopChatListPage() {
         <Input
           type="date"
           value={dateTo}
-          onChange={(e) => { setDateTo(e.target.value); setPage(1) }}
+          onChange={(e) => {
+            setDateTo(e.target.value)
+            setPage(1)
+          }}
           className="w-40"
           title={t('filter.dateTo')}
           aria-label={t('filter.dateTo')}
@@ -200,7 +208,10 @@ export default function ShopChatListPage() {
           <Switch
             id="flagged-only"
             checked={flaggedOnly}
-            onCheckedChange={(v) => { setFlaggedOnly(v); setPage(1) }}
+            onCheckedChange={(v) => {
+              setFlaggedOnly(v)
+              setPage(1)
+            }}
           />
           <Label htmlFor="flagged-only" className="text-sm cursor-pointer">
             {t('filter.flaggedOnly')}

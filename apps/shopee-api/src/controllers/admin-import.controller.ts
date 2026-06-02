@@ -25,7 +25,13 @@ const upload = multer({
     if (ALLOWED_MIME_TYPES.has(file.mimetype) || ext === 'json' || ext === 'csv') {
       cb(null, true)
     } else {
-      cb(new ErrorHandler(STATUS.BAD_REQUEST, 'Only JSON and CSV files are supported') as unknown as null, false)
+      cb(
+        new ErrorHandler(
+          STATUS.BAD_REQUEST,
+          'Only JSON and CSV files are supported',
+        ) as unknown as null,
+        false,
+      )
     }
   },
 })
@@ -54,7 +60,12 @@ function parseCsv(content: string): Record<string, unknown>[] {
       const raw = values[idx] ?? ''
       // Attempt numeric coercion for known numeric fields
       const numericFields = new Set([
-        'price', 'rating', 'price_before_discount', 'quantity', 'sold', 'view',
+        'price',
+        'rating',
+        'price_before_discount',
+        'quantity',
+        'sold',
+        'view',
       ])
       if (numericFields.has(header) && raw !== '') {
         const num = Number(raw)
@@ -89,7 +100,10 @@ function handleMulterError(err: unknown): never {
 
 const _importProductsHandler = async (req: Request, res: Response): Promise<void> => {
   if (!req.file) {
-    throw new ErrorHandler(STATUS.BAD_REQUEST, 'No file uploaded. Send a JSON or CSV file in the "file" field.')
+    throw new ErrorHandler(
+      STATUS.BAD_REQUEST,
+      'No file uploaded. Send a JSON or CSV file in the "file" field.',
+    )
   }
 
   const dryRun = req.query.dryRun === 'true'
@@ -105,7 +119,10 @@ const _importProductsHandler = async (req: Request, res: Response): Promise<void
       rawRows = Array.isArray(parsed) ? parsed : [parsed]
     }
   } catch {
-    throw new ErrorHandler(STATUS.BAD_REQUEST, 'Failed to parse file. Ensure it is valid JSON or CSV.')
+    throw new ErrorHandler(
+      STATUS.BAD_REQUEST,
+      'Failed to parse file. Ensure it is valid JSON or CSV.',
+    )
   }
 
   Logger.apiInfo('import.products.start', {

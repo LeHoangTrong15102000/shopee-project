@@ -16,8 +16,22 @@ function SkeletonCard() {
       <View style={{ borderRadius: 12, overflow: 'hidden', backgroundColor: colors.neutrals800 }}>
         <View style={{ width: '100%', aspectRatio: 4 / 3, backgroundColor: colors.neutrals700 }} />
         <View style={{ padding: 8, gap: 6 }}>
-          <View style={{ height: 12, borderRadius: 4, backgroundColor: colors.neutrals700, width: '80%' }} />
-          <View style={{ height: 10, borderRadius: 4, backgroundColor: colors.neutrals700, width: '50%' }} />
+          <View
+            style={{
+              height: 12,
+              borderRadius: 4,
+              backgroundColor: colors.neutrals700,
+              width: '80%',
+            }}
+          />
+          <View
+            style={{
+              height: 10,
+              borderRadius: 4,
+              backgroundColor: colors.neutrals700,
+              width: '50%',
+            }}
+          />
         </View>
       </View>
     </View>
@@ -40,7 +54,14 @@ function EmptyState() {
   const { t } = useTranslation()
   const colors = useColors()
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, gap: 16 }}>
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 32,
+        gap: 16,
+      }}>
       <View
         style={{
           width: 80,
@@ -68,7 +89,13 @@ export default function LiveScreen() {
 
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={{ paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colors.border }}>
+      <View
+        style={{
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border,
+        }}>
         <AppText variant="heading2" weight="semibold" style={{ color: colors.foreground }} raw>
           {t('live.title')}
         </AppText>

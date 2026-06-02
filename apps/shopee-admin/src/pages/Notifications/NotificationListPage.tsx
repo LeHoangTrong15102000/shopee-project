@@ -255,11 +255,13 @@ export default function NotificationListPage() {
                   <SelectValue placeholder={t('form.selectType')} />
                 </SelectTrigger>
                 <SelectContent>
-                  {(['order', 'promotion', 'maintenance', 'system', 'other'] as const).map((opt) => (
-                    <SelectItem key={opt} value={opt}>
-                      {t(`form.typeOptions.${opt}`)}
-                    </SelectItem>
-                  ))}
+                  {(['order', 'promotion', 'maintenance', 'system', 'other'] as const).map(
+                    (opt) => (
+                      <SelectItem key={opt} value={opt}>
+                        {t(`form.typeOptions.${opt}`)}
+                      </SelectItem>
+                    ),
+                  )}
                 </SelectContent>
               </Select>
               {typeError && <p className="text-xs text-destructive">{typeError}</p>}

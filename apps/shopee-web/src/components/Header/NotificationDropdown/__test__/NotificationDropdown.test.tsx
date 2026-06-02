@@ -20,10 +20,7 @@ vi.mock('src/components/Popover', () => ({
 
 vi.mock('../NotificationItem', () => ({
   default: ({ notification, onMarkAsRead }: any) => (
-    <div
-      data-testid={`notif-${notification._id}`}
-      onClick={() => onMarkAsRead(notification._id)}
-    >
+    <div data-testid={`notif-${notification._id}`} onClick={() => onMarkAsRead(notification._id)}>
       {notification.title}
     </div>
   ),

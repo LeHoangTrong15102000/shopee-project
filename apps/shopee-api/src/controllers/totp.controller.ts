@@ -126,9 +126,8 @@ export const regenerateBackupCodes = async (req: Request, res: Response) => {
  * Completes the 2FA login flow: verifies partial token + TOTP/backup code, issues full tokens.
  */
 export const completeTwoFactorLogin = async (req: Request, res: Response) => {
-  const { totpService, sessionService, loginHistoryService, authService } = await import(
-    '../container'
-  )
+  const { totpService, sessionService, loginHistoryService, authService } =
+    await import('../container')
   const { partial_token, code } = req.body
 
   try {
@@ -136,7 +135,12 @@ export const completeTwoFactorLogin = async (req: Request, res: Response) => {
 
     // Persist refresh token via authRepository
     const expiresAt = new Date(Date.now() + config.EXPIRE_REFRESH_TOKEN * 1000)
-    await authService.createRefreshTokenForSession(result.userId, result.refreshToken, result.refreshJti, expiresAt)
+    await authService.createRefreshTokenForSession(
+      result.userId,
+      result.refreshToken,
+      result.refreshJti,
+      expiresAt,
+    )
 
     // Create session
     await sessionService.createSession(result.userId, result.accessJti, result.refreshJti, req)

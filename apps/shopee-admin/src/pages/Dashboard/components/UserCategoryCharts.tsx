@@ -65,7 +65,12 @@ export default function UserCategoryCharts({
                 <XAxis dataKey="date" fontSize={12} tickLine={false} />
                 <YAxis fontSize={12} tickLine={false} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="users" fill="var(--color-users)" radius={[4, 4, 0, 0]} isAnimationActive={true} />
+                <Bar
+                  dataKey="users"
+                  fill="var(--color-users)"
+                  radius={[4, 4, 0, 0]}
+                  isAnimationActive={true}
+                />
               </BarChart>
             </ChartContainer>
           )}

@@ -4,8 +4,7 @@ import { ProductModel } from '@database/models/product.model'
 
 // Copy exact function từ controller với debugging
 const handleImageProduct = (product: any, debugMode = false) => {
-  const isProduction =
-    process.env.NODE_ENV === 'production' || process.argv[2] === 'production'
+  const isProduction = process.env.NODE_ENV === 'production' || process.argv[2] === 'production'
   const HOST = isProduction
     ? process.env.PRODUCTION_HOST
     : `http://${process.env.HOST}:${process.env.PORT}`
@@ -28,9 +27,7 @@ const handleImageProduct = (product: any, debugMode = false) => {
 
   if (debugMode) {
     console.log(`   🔗 Final image: "${product.image}"`)
-    console.log(
-      `   🔗 Final images: [${product.images?.slice(0, 2).join(', ')}]`
-    )
+    console.log(`   🔗 Final images: [${product.images?.slice(0, 2).join(', ')}]`)
   }
 
   return product
@@ -54,13 +51,10 @@ const checkPortMismatch = () => {
 
   const configuredHost = process.env.HOST || 'localhost'
   const configuredPort = process.env.PORT || '4000'
-  const isProduction =
-    process.env.NODE_ENV === 'production' || process.argv[2] === 'production'
+  const isProduction = process.env.NODE_ENV === 'production' || process.argv[2] === 'production'
 
   console.log(`   📋 Configured: ${configuredHost}:${configuredPort}`)
-  console.log(
-    `   🌐 Environment: ${isProduction ? 'production' : 'development'}`
-  )
+  console.log(`   🌐 Environment: ${isProduction ? 'production' : 'development'}`)
 
   if (configuredPort !== '3000' && configuredPort !== '4000') {
     console.log(`   ⚠️  Unusual port: ${configuredPort}`)
@@ -97,11 +91,7 @@ const checkAPIEndpoints = ({ configuredHost, configuredPort }: any) => {
   console.log('   📡 Available endpoints:')
   endpoints.forEach((endpoint, index) => {
     const needsAuth = endpoint.includes('/admin/')
-    console.log(
-      `   ${index + 1}. ${endpoint} ${
-        needsAuth ? '🔒 (Requires Auth)' : '🌐 (Public)'
-      }`
-    )
+    console.log(`   ${index + 1}. ${endpoint} ${needsAuth ? '🔒 (Requires Auth)' : '🌐 (Public)'}`)
   })
 
   console.log('\n   💡 Frontend có thể đang gọi:')
@@ -125,9 +115,7 @@ const testAllAPIResponses = async () => {
       .lean()
       .limit(3)
 
-    publicProducts = publicProducts.map((product: any) =>
-      handleImageProduct(product, true)
-    )
+    publicProducts = publicProducts.map((product: any) => handleImageProduct(product, true))
 
     console.log('\n   📄 Public API Response Sample:')
     console.log(
@@ -140,8 +128,8 @@ const testAllAPIResponses = async () => {
           },
         },
         null,
-        2
-      )
+        2,
+      ),
     )
 
     // Test admin products endpoint
@@ -153,9 +141,7 @@ const testAllAPIResponses = async () => {
       .lean()
       .limit(2)
 
-    adminProducts = adminProducts.map((product: any) =>
-      handleImageProduct(product)
-    )
+    adminProducts = adminProducts.map((product: any) => handleImageProduct(product))
 
     console.log('\n   📄 Admin API Response Sample:')
     console.log(
@@ -165,8 +151,8 @@ const testAllAPIResponses = async () => {
           data: adminProducts.slice(0, 1),
         },
         null,
-        2
-      )
+        2,
+      ),
     )
   } catch (error) {
     console.error('❌ Error testing API responses:', error)
@@ -238,11 +224,9 @@ const generateTestData = () => {
 
   console.log('\n   🎯 Frontend should render:')
   console.log(
-    '   - <img src="http://localhost:4000/images/ff8f5319-92c1-4675-80a4-793a17fd3eb0.jpg" />'
+    '   - <img src="http://localhost:4000/images/ff8f5319-92c1-4675-80a4-793a17fd3eb0.jpg" />',
   )
-  console.log(
-    '   - NOT: <img src="ff8f5319-92c1-4675-80a4-793a17fd3eb0.jpg" />'
-  )
+  console.log('   - NOT: <img src="ff8f5319-92c1-4675-80a4-793a17fd3eb0.jpg" />')
 }
 
 // Tạo fix recommendations

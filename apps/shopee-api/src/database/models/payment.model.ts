@@ -15,18 +15,19 @@ export const GATEWAY_PAYMENT_STATUS = {
   REFUNDED: 'REFUNDED',
 } as const
 
-export type GatewayPaymentStatusType = (typeof GATEWAY_PAYMENT_STATUS)[keyof typeof GATEWAY_PAYMENT_STATUS]
+export type GatewayPaymentStatusType =
+  (typeof GATEWAY_PAYMENT_STATUS)[keyof typeof GATEWAY_PAYMENT_STATUS]
 
 export interface IPayment {
   _id: mongoose.Types.ObjectId
-  orderId?: mongoose.Types.ObjectId   // optional: populated after IPN success for session-based payments
-  sessionId?: mongoose.Types.ObjectId  // optional: set for e-wallet session-based payments
+  orderId?: mongoose.Types.ObjectId // optional: populated after IPN success for session-based payments
+  sessionId?: mongoose.Types.ObjectId // optional: set for e-wallet session-based payments
   provider: PaymentProviderType
-  transactionId?: string          // transaction ID from provider
-  amount: number                  // VND, integer
-  currency: string                // always 'VND'
+  transactionId?: string // transaction ID from provider
+  amount: number // VND, integer
+  currency: string // always 'VND'
   status: GatewayPaymentStatusType
-  idempotencyKey: string          // unique per payment attempt (UUID v4)
+  idempotencyKey: string // unique per payment attempt (UUID v4)
   requestPayload?: Record<string, unknown>
   responsePayload?: Record<string, unknown>
   ipnPayload?: Record<string, unknown>

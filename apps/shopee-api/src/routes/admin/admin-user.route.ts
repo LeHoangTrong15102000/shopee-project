@@ -18,11 +18,13 @@ adminUserRouter.post(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   validate(addUserSchema),
-  asyncHandler(withAuditLog(userController.addUser, {
-    action: 'user.create',
-    resource: 'user',
-    getResourceId: (_req, result: any) => result?.data?._id?.toString() ?? null,
-  })),
+  asyncHandler(
+    withAuditLog(userController.addUser, {
+      action: 'user.create',
+      resource: 'user',
+      getResourceId: (_req, result: any) => result?.data?._id?.toString() ?? null,
+    }),
+  ),
 )
 adminUserRouter.put(
   '/:user_id',
@@ -30,13 +32,17 @@ adminUserRouter.put(
   authMiddleware.verifyAdmin,
   validate(userIdParamSchema),
   validate(updateUserSchema),
-  asyncHandler(withAuditLog(userController.updateUser, {
-    action: 'user.update',
-    resource: 'user',
-    getResourceId: (req) => req.params.user_id,
-    getBeforeSnapshot: async (req) => UserModel.findById(req.params.user_id).lean() as Promise<Record<string, unknown> | null>,
-    getAfterSnapshot: async (req) => UserModel.findById(req.params.user_id).lean() as Promise<Record<string, unknown> | null>,
-  })),
+  asyncHandler(
+    withAuditLog(userController.updateUser, {
+      action: 'user.update',
+      resource: 'user',
+      getResourceId: (req) => req.params.user_id,
+      getBeforeSnapshot: async (req) =>
+        UserModel.findById(req.params.user_id).lean() as Promise<Record<string, unknown> | null>,
+      getAfterSnapshot: async (req) =>
+        UserModel.findById(req.params.user_id).lean() as Promise<Record<string, unknown> | null>,
+    }),
+  ),
 )
 adminUserRouter.get(
   '/:user_id',
@@ -50,11 +56,14 @@ adminUserRouter.delete(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   validate(userIdParamSchema),
-  asyncHandler(withAuditLog(userController.deleteUser, {
-    action: 'user.delete',
-    resource: 'user',
-    getResourceId: (req) => req.params.user_id,
-    getBeforeSnapshot: async (req) => UserModel.findById(req.params.user_id).lean() as Promise<Record<string, unknown> | null>,
-  })),
+  asyncHandler(
+    withAuditLog(userController.deleteUser, {
+      action: 'user.delete',
+      resource: 'user',
+      getResourceId: (req) => req.params.user_id,
+      getBeforeSnapshot: async (req) =>
+        UserModel.findById(req.params.user_id).lean() as Promise<Record<string, unknown> | null>,
+    }),
+  ),
 )
 export default adminUserRouter

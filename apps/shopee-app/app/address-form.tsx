@@ -103,70 +103,77 @@ export default function AddressFormScreen() {
       <Stack.Screen
         options={{
           header: (props) => <CustomScreenHeader {...props} />,
-          title: isEditMode ? t('addressForm.header.editTitle') : t('addressForm.header.createTitle'),
+          title: isEditMode
+            ? t('addressForm.header.editTitle')
+            : t('addressForm.header.createTitle'),
         }}
       />
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ padding: 16 }}>
-          <View className="gap-4">
-            <AppInput
-              label={t('addressForm.field.nameLabel')}
-              placeholder={t('addressForm.field.namePlaceholder')}
-              required
-              errorText={formState.errors.name?.message}
-              {...register('name')}
-            />
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ padding: 16 }}>
+            <View className="gap-4">
+              <AppInput
+                label={t('addressForm.field.nameLabel')}
+                placeholder={t('addressForm.field.namePlaceholder')}
+                required
+                errorText={formState.errors.name?.message}
+                {...register('name')}
+              />
 
-            <AppInput
-              label={t('addressForm.field.phoneLabel')}
-              placeholder={t('addressForm.field.phonePlaceholder')}
-              keyboardType="phone-pad"
-              required
-              errorText={formState.errors.phone?.message}
-              {...register('phone')}
-            />
+              <AppInput
+                label={t('addressForm.field.phoneLabel')}
+                placeholder={t('addressForm.field.phonePlaceholder')}
+                keyboardType="phone-pad"
+                required
+                errorText={formState.errors.phone?.message}
+                {...register('phone')}
+              />
 
-            <AppInput
-              label={t('addressForm.field.streetLabel')}
-              placeholder={t('addressForm.field.streetPlaceholder')}
-              required
-              errorText={formState.errors.street?.message}
-              {...register('street')}
-            />
+              <AppInput
+                label={t('addressForm.field.streetLabel')}
+                placeholder={t('addressForm.field.streetPlaceholder')}
+                required
+                errorText={formState.errors.street?.message}
+                {...register('street')}
+              />
 
-            <AppInput
-              label={t('addressForm.field.wardLabel')}
-              placeholder={t('addressForm.field.wardPlaceholder')}
-              errorText={formState.errors.ward?.message}
-              {...register('ward')}
-            />
+              <AppInput
+                label={t('addressForm.field.wardLabel')}
+                placeholder={t('addressForm.field.wardPlaceholder')}
+                errorText={formState.errors.ward?.message}
+                {...register('ward')}
+              />
 
-            <AppInput
-              label={t('addressForm.field.districtLabel')}
-              placeholder={t('addressForm.field.districtPlaceholder')}
-              errorText={formState.errors.district?.message}
-              {...register('district')}
-            />
+              <AppInput
+                label={t('addressForm.field.districtLabel')}
+                placeholder={t('addressForm.field.districtPlaceholder')}
+                errorText={formState.errors.district?.message}
+                {...register('district')}
+              />
 
-            <AppInput
-              label={t('addressForm.field.cityLabel')}
-              placeholder={t('addressForm.field.cityPlaceholder')}
-              required
-              errorText={formState.errors.city?.message}
-              {...register('city')}
-            />
-          </View>
+              <AppInput
+                label={t('addressForm.field.cityLabel')}
+                placeholder={t('addressForm.field.cityPlaceholder')}
+                required
+                errorText={formState.errors.city?.message}
+                {...register('city')}
+              />
+            </View>
 
-          <AppButton
-            variant="primary"
-            onPress={onSubmit}
-            loading={isLoading}
-            disabled={isLoading}
-            className="mt-8">
-            {t('addressForm.button.save')}
-          </AppButton>
-        </ScrollView>
+            <AppButton
+              variant="primary"
+              onPress={onSubmit}
+              loading={isLoading}
+              disabled={isLoading}
+              className="mt-8">
+              {t('addressForm.button.save')}
+            </AppButton>
+          </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </>

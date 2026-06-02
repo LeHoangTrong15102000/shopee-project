@@ -68,46 +68,61 @@ export default function HomeScreen() {
     []
   )
 
-  const ListHeader = useMemo(() => (
-    <>
-      {/* Banner */}
-      {productsLoading ? <BannerSkeleton /> : <BannerCarousel />}
+  const ListHeader = useMemo(
+    () => (
+      <>
+        {/* Banner */}
+        {productsLoading ? <BannerSkeleton /> : <BannerCarousel />}
 
-      {/* Flash Sale */}
-      {!productsLoading && <FlashSaleSection />}
+        {/* Flash Sale */}
+        {!productsLoading && <FlashSaleSection />}
 
-      {/* Recently Viewed */}
-      {!productsLoading && <RecentlyViewedSection />}
+        {/* Recently Viewed */}
+        {!productsLoading && <RecentlyViewedSection />}
 
-      {/* Categories */}
-      {categoriesLoading ? (
-        <CategorySkeleton />
-      ) : categoriesError ? (
-        <InlineError message={t('ERROR_LOAD_CATEGORIES')} onRetry={() => refetchCategories()} />
-      ) : (
-        <CategoryBar
-          categories={categories ?? []}
-          selectedCategory={selectedCategory}
-          onSelect={handleCategorySelect}
-        />
-      )}
+        {/* Categories */}
+        {categoriesLoading ? (
+          <CategorySkeleton />
+        ) : categoriesError ? (
+          <InlineError message={t('ERROR_LOAD_CATEGORIES')} onRetry={() => refetchCategories()} />
+        ) : (
+          <CategoryBar
+            categories={categories ?? []}
+            selectedCategory={selectedCategory}
+            onSelect={handleCategorySelect}
+          />
+        )}
 
-      {/* Product error state */}
-      {productsError && !productsLoading && (
-        <InlineError message={t('ERROR_LOAD_PRODUCTS')} onRetry={() => refetchProducts()} />
-      )}
+        {/* Product error state */}
+        {productsError && !productsLoading && (
+          <InlineError message={t('ERROR_LOAD_PRODUCTS')} onRetry={() => refetchProducts()} />
+        )}
 
-      {/* Product empty state */}
-      {!productsLoading && !productsError && products.length === 0 && (
-        <EmptyState
-          icon={ShoppingBag}
-          message={t('EMPTY_PRODUCTS')}
-          actionLabel={t('EMPTY_PRODUCTS_CTA')}
-          onAction={() => setSelectedCategory(undefined)}
-        />
-      )}
-    </>
-  ), [productsLoading, categoriesLoading, categoriesError, productsError, products.length, categories, selectedCategory, handleCategorySelect, refetchCategories, refetchProducts, t])
+        {/* Product empty state */}
+        {!productsLoading && !productsError && products.length === 0 && (
+          <EmptyState
+            icon={ShoppingBag}
+            message={t('EMPTY_PRODUCTS')}
+            actionLabel={t('EMPTY_PRODUCTS_CTA')}
+            onAction={() => setSelectedCategory(undefined)}
+          />
+        )}
+      </>
+    ),
+    [
+      productsLoading,
+      categoriesLoading,
+      categoriesError,
+      productsError,
+      products.length,
+      categories,
+      selectedCategory,
+      handleCategorySelect,
+      refetchCategories,
+      refetchProducts,
+      t,
+    ]
+  )
 
   const ListFooter = isFetchingNextPage ? (
     <View className="items-center py-4">

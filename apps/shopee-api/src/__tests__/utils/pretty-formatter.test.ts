@@ -103,9 +103,7 @@ describe('PrettyFormatter', () => {
     })
 
     it('does not append meta section when only requestId is in meta', () => {
-      const output = stripAnsi(
-        formatter.format('info', 'API', 'test', { requestId: 'req-xyz' }),
-      )
+      const output = stripAnsi(formatter.format('info', 'API', 'test', { requestId: 'req-xyz' }))
       // requestId gets its own bracket; no remaining meta JSON
       expect(output).not.toContain('{')
     })

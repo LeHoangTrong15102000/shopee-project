@@ -11,15 +11,13 @@ const main = async () => {
   console.log(`   Images served at: http://localhost:3000/images/`)
   console.log(`   API endpoint: http://localhost:3000/products`)
   console.log(
-    `   Sample working image: http://localhost:3000/images/ff8f5319-92c1-4675-80a4-793a17fd3eb0.jpg`
+    `   Sample working image: http://localhost:3000/images/ff8f5319-92c1-4675-80a4-793a17fd3eb0.jpg`,
   )
 
   // 2. API Response format
   console.log('\n📡 API RESPONSE FORMAT:')
   console.log('   Backend correctly generates URLs like:')
-  console.log(
-    '   "image": "http://localhost:3000/images/ff8f5319-92c1-4675-80a4-793a17fd3eb0.jpg"'
-  )
+  console.log('   "image": "http://localhost:3000/images/ff8f5319-92c1-4675-80a4-793a17fd3eb0.jpg"')
   console.log('   "images": ["http://localhost:3000/images/..."]')
 
   // 3. Frontend issues to check
@@ -49,9 +47,7 @@ const main = async () => {
   // 4. Testing steps
   console.log('\n🧪 TESTING STEPS:')
   console.log('   1. Test image directly in browser:')
-  console.log(
-    '      → http://localhost:3000/images/ff8f5319-92c1-4675-80a4-793a17fd3eb0.jpg'
-  )
+  console.log('      → http://localhost:3000/images/ff8f5319-92c1-4675-80a4-793a17fd3eb0.jpg')
   console.log('      → Should display the image ✅')
 
   console.log('\n   2. Test API response:')
@@ -109,9 +105,7 @@ const main = async () => {
   console.log('   3. 🎯 Browser cache showing old images')
   console.log('   4. 🎯 Frontend not handling API response correctly')
 
-  console.log(
-    '\n🎉 Your backend is PERFECT! The issue is in frontend integration.'
-  )
+  console.log('\n🎉 Your backend is PERFECT! The issue is in frontend integration.')
   console.log('📞 Next step: Check frontend code and API calls!')
 }
 

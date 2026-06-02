@@ -148,7 +148,9 @@ export default function OrderDetailScreen() {
                 <AppText raw variant="bodySmall" color="muted">
                   {t('orderDetail.payment.subtotal')}
                 </AppText>
-                <AppText raw variant="bodySmall">{formatPrice(subtotal)}</AppText>
+                <AppText raw variant="bodySmall">
+                  {formatPrice(subtotal)}
+                </AppText>
               </View>
               <View className="flex-row justify-between border-t border-neutrals900 pt-2">
                 <AppText raw variant="body" weight="semibold">

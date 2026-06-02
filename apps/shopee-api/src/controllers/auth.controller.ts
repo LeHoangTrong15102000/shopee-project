@@ -106,9 +106,11 @@ const loginController = async (req: Request, res: Response) => {
 
     // Create session record (fire-and-forget)
     const { sessionService, auditLogService, loginHistoryService } = await import('../container')
-    sessionService.createSession(userId, authResult.accessJti, authResult.refreshJti, req).catch((err) => {
-      Logger.apiWarn('session.create.failed_on_login', { error: err?.message })
-    })
+    sessionService
+      .createSession(userId, authResult.accessJti, authResult.refreshJti, req)
+      .catch((err) => {
+        Logger.apiWarn('session.create.failed_on_login', { error: err?.message })
+      })
 
     // Record successful login (fire-and-forget)
     loginHistoryService.recordAttempt(userId, req, 'success', 'password')
@@ -181,9 +183,11 @@ const refreshTokenController = async (req: Request, res: Response) => {
     // Update session with new JTIs (fire-and-forget)
     if (decoded.jti) {
       const { sessionService } = await import('../container')
-      sessionService.updateSessionOnRefresh(decoded.jti, result.accessJti, result.refreshJti).catch((err) => {
-        Logger.apiWarn('session.update.failed_on_refresh', { error: err?.message })
-      })
+      sessionService
+        .updateSessionOnRefresh(decoded.jti, result.accessJti, result.refreshJti)
+        .catch((err) => {
+          Logger.apiWarn('session.update.failed_on_refresh', { error: err?.message })
+        })
     }
 
     const response = {

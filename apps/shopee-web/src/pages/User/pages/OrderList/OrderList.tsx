@@ -138,7 +138,10 @@ export default function OrderList() {
     <div className="space-y-4">
       <SEO title={t('seo.title')} noindex />
       {/* Tabs */}
-      <div role="tablist" className="relative sticky top-0 z-20 scrollbar-hide flex items-center overflow-x-auto rounded-t-sm bg-white shadow-xs dark:bg-slate-800">
+      <div
+        role="tablist"
+        className="relative sticky top-0 z-20 scrollbar-hide flex items-center overflow-x-auto rounded-t-sm bg-white shadow-xs dark:bg-slate-800"
+      >
         {orderTabStatuses.map((status, index) => (
           <Button
             key={status}
@@ -160,7 +163,10 @@ export default function OrderList() {
             {t(orderTabKeys[index])}
           </Button>
         ))}
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-white to-transparent dark:from-slate-800 sm:hidden" aria-hidden="true" />
+        <div
+          className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-white to-transparent dark:from-slate-800 sm:hidden"
+          aria-hidden="true"
+        />
       </div>
 
       {/* Orders List */}

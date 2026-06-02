@@ -27,7 +27,7 @@ const ProductSchema = new mongoose.Schema(
   {
     collection: 'products',
     versionKey: false,
-  }
+  },
 )
 
 const Product = mongoose.model('Product', ProductSchema)
@@ -70,9 +70,7 @@ async function importToMongoDB() {
 
     // Insert tất cả sản phẩm mới
     const result = await Product.insertMany(transformedProducts)
-    console.log(
-      `✅ Đã import thành công ${result.length} sản phẩm vào MongoDB Atlas!`
-    )
+    console.log(`✅ Đã import thành công ${result.length} sản phẩm vào MongoDB Atlas!`)
 
     // Hiển thị thống kê
     const productsWithLocation = await Product.countDocuments({
@@ -110,20 +108,14 @@ async function main() {
     const importCount = await importToMongoDB()
 
     console.log('\n=== ✅ HOÀN THÀNH ===')
-    console.log(
-      `🎉 Đã import thành công ${importCount} sản phẩm vào MongoDB Atlas!`
-    )
+    console.log(`🎉 Đã import thành công ${importCount} sản phẩm vào MongoDB Atlas!`)
   } catch (error) {
     console.error('❌ Lỗi trong quá trình thực thi:', error)
 
     if (error.message.includes('authentication failed')) {
-      console.log(
-        '\n💡 Gợi ý: Kiểm tra USERNAME_DB và PASSWORD_DB trong file .env'
-      )
+      console.log('\n💡 Gợi ý: Kiểm tra USERNAME_DB và PASSWORD_DB trong file .env')
     } else if (error.message.includes('network')) {
-      console.log(
-        '\n💡 Gợi ý: Kiểm tra kết nối internet và whitelist IP trong MongoDB Atlas'
-      )
+      console.log('\n💡 Gợi ý: Kiểm tra kết nối internet và whitelist IP trong MongoDB Atlas')
     }
 
     process.exit(1)

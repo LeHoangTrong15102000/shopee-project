@@ -6,12 +6,14 @@ export default function VoucherSkeleton() {
   return (
     <View className="gap-0">
       {[1, 2, 3].map((i) => (
-        <View key={i} className="flex-row rounded-lg border border-neutrals900 overflow-hidden mx-4 my-1">
+        <View
+          key={i}
+          className="mx-4 my-1 flex-row overflow-hidden rounded-lg border border-neutrals900">
           {/* Left accent bar placeholder */}
           <SkeletonLoader width={6} height={90} borderRadius={0} />
 
           {/* Content placeholder */}
-          <View className="flex-1 flex-row items-center px-3 py-3 gap-3">
+          <View className="flex-1 flex-row items-center gap-3 px-3 py-3">
             <SkeletonLoader width={24} height={24} borderRadius={12} />
 
             <View className="flex-1 gap-2">

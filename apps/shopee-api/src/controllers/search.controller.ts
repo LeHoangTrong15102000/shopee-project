@@ -16,7 +16,11 @@ let _meilisearchService: import('@services/meilisearch.service').MeilisearchServ
 function getMeilisearchService() {
   if (!_meilisearchService) {
     // Lazy import to avoid circular dependency at module load time
-    const { container } = require('../container') as { container: { services: { meilisearch: import('@services/meilisearch.service').MeilisearchService } } }
+    const { container } = require('../container') as {
+      container: {
+        services: { meilisearch: import('@services/meilisearch.service').MeilisearchService }
+      }
+    }
     _meilisearchService = container.services.meilisearch
   }
   return _meilisearchService

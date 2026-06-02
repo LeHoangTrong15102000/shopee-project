@@ -47,7 +47,11 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
             {message.content}
           </AppText>
         </View>
-        <AppText raw variant="labelSmall" color="muted" style={{ alignSelf: 'flex-end', marginTop: 2 }}>
+        <AppText
+          raw
+          variant="labelSmall"
+          color="muted"
+          style={{ alignSelf: 'flex-end', marginTop: 2 }}>
           {formattedTime}
         </AppText>
       </TouchableOpacity>

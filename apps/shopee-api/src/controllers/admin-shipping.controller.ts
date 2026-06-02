@@ -3,13 +3,20 @@ import { responseSuccess, ErrorHandler } from '@utils/response'
 import { STATUS } from '@constants/status'
 import { ShippingMethodModel } from '@database/models/shipping-method.model'
 import { OrderModel } from '@database/models/order.model'
-import type { AdminCreateShippingBody, AdminUpdateShippingBody, AdminReorderShippingBody } from '@schemas/admin-shipping.schema'
+import type {
+  AdminCreateShippingBody,
+  AdminUpdateShippingBody,
+  AdminReorderShippingBody,
+} from '@schemas/admin-shipping.schema'
 
 // ─── List all shipping methods (admin — includes inactive) ────────
 
 export const adminGetShippingMethods = async (_req: Request, res: Response) => {
   const methods = await ShippingMethodModel.find().sort({ sort_order: 1 }).lean()
-  return responseSuccess(res, { message: 'Lấy danh sách phương thức vận chuyển thành công', data: methods })
+  return responseSuccess(res, {
+    message: 'Lấy danh sách phương thức vận chuyển thành công',
+    data: methods,
+  })
 }
 
 // ─── Get single shipping method ───────────────────────────────────
@@ -17,7 +24,10 @@ export const adminGetShippingMethods = async (_req: Request, res: Response) => {
 export const adminGetShippingMethodById = async (req: Request, res: Response) => {
   const method = await ShippingMethodModel.findById(req.params.id).lean()
   if (!method) throw new ErrorHandler(STATUS.NOT_FOUND, 'Không tìm thấy phương thức vận chuyển')
-  return responseSuccess(res, { message: 'Lấy chi tiết phương thức vận chuyển thành công', data: method })
+  return responseSuccess(res, {
+    message: 'Lấy chi tiết phương thức vận chuyển thành công',
+    data: method,
+  })
 }
 
 // ─── Create shipping method ───────────────────────────────────────
@@ -38,7 +48,10 @@ export const adminUpdateShippingMethod = async (req: Request, res: Response) => 
     { new: true, runValidators: true },
   ).lean()
   if (!method) throw new ErrorHandler(STATUS.NOT_FOUND, 'Không tìm thấy phương thức vận chuyển')
-  return responseSuccess(res, { message: 'Cập nhật phương thức vận chuyển thành công', data: method })
+  return responseSuccess(res, {
+    message: 'Cập nhật phương thức vận chuyển thành công',
+    data: method,
+  })
 }
 
 // ─── Delete shipping method ───────────────────────────────────────
@@ -67,7 +80,10 @@ export const adminToggleShippingMethod = async (req: Request, res: Response) => 
   if (!method) throw new ErrorHandler(STATUS.NOT_FOUND, 'Không tìm thấy phương thức vận chuyển')
   method.is_active = !method.is_active
   await method.save()
-  return responseSuccess(res, { message: 'Cập nhật trạng thái phương thức vận chuyển thành công', data: method })
+  return responseSuccess(res, {
+    message: 'Cập nhật trạng thái phương thức vận chuyển thành công',
+    data: method,
+  })
 }
 
 // ─── Reorder shipping methods ─────────────────────────────────────

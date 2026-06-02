@@ -95,9 +95,9 @@ State/Props thay đổi
 
 ```jsx
 // ❌ KHÔNG có key (hoặc dùng index làm key):
-{products.map((product, index) => (
-  <Product key={index} product={product} />
-))}
+{
+  products.map((product, index) => <Product key={index} product={product} />)
+}
 ```
 
 **Vấn đề khi dùng index làm key:**
@@ -114,9 +114,9 @@ key=2: Xiaomi 14                key=2: Samsung S24    ← React nghĩ: "key=2 th
 
 ```jsx
 // ✅ Dùng unique ID làm key (như trong project của bạn):
-{products.map((product) => (
-  <Product key={product._id} product={product} />
-))}
+{
+  products.map((product) => <Product key={product._id} product={product} />)
+}
 ```
 
 ```
@@ -135,11 +135,13 @@ Trong file `ProductListInfinite.tsx` (dòng 294):
 
 ```tsx
 // ✅ Project đang dùng product._id làm key - ĐÚNG CHUẨN
-{rowProducts.map((product) => (
-  <div className="col-span-1" key={product._id}>
-    <Product product={product} />
-  </div>
-))}
+{
+  rowProducts.map((product) => (
+    <div className="col-span-1" key={product._id}>
+      <Product product={product} />
+    </div>
+  ))
+}
 ```
 
 → Khi thêm sản phẩm mới (infinite scroll load thêm page), React chỉ mount các sản phẩm mới, không re-render sản phẩm cũ.
@@ -155,6 +157,7 @@ Trong file `ProductListInfinite.tsx` (dòng 294):
 ### 2.2 Đếm chi tiết từ code thực tế
 
 Dưới đây là cây DOM thực tế của 1 Product Card, đếm từ 3 file:
+
 - `Product.tsx` (component chính)
 - `OptimizedImage.tsx` (component ảnh)
 - `ProductRating.tsx` (component sao đánh giá)
@@ -209,16 +212,16 @@ div[role="link"]                              #1
 ### 2.3 Tổng kết DOM nodes
 
 | Phần                  | Số DOM Nodes |
-|-----------------------|:------------:|
-| Wrapper + Card        | 2            |
-| Image section         | 4            |
-| WishlistButton        | 3            |
-| Product name          | 1            |
-| Price section         | 7            |
-| ProductRating (5 sao) | **31**       |
-| Sold section          | 3            |
-| Location section      | 3            |
-| **TỔNG CỘNG**        | **~57**      |
+| --------------------- | :----------: |
+| Wrapper + Card        |      2       |
+| Image section         |      4       |
+| WishlistButton        |      3       |
+| Product name          |      1       |
+| Price section         |      7       |
+| ProductRating (5 sao) |    **31**    |
+| Sold section          |      3       |
+| Location section      |      3       |
+| **TỔNG CỘNG**         |   **~57**    |
 
 ### 2.4 Tại sao con số này quan trọng?
 
@@ -297,26 +300,26 @@ SP #73 đến #10000: KHÔNG TỒN TẠI trong DOM (chỉ có spacer)
 ```tsx
 // Grid view: virtualize theo HÀNG (mỗi hàng 5 sản phẩm)
 const gridVirtualizer = useVirtualizer({
-  count: gridRows.length,        // Tổng số hàng (10000/5 = 2000 hàng)
-  getScrollElement: () => scrollContainerRef.current,  // Container scroll
-  estimateSize: () => 320,       // Ước tính mỗi hàng cao 320px
-  overscan: 3,                   // Render thêm 3 hàng trên/dưới viewport
-});
+  count: gridRows.length, // Tổng số hàng (10000/5 = 2000 hàng)
+  getScrollElement: () => scrollContainerRef.current, // Container scroll
+  estimateSize: () => 320, // Ước tính mỗi hàng cao 320px
+  overscan: 3, // Render thêm 3 hàng trên/dưới viewport
+})
 
 // List view: virtualize theo TỪNG sản phẩm
 const listVirtualizer = useVirtualizer({
-  count: allProducts.length,     // Tổng số sản phẩm (10000)
+  count: allProducts.length, // Tổng số sản phẩm (10000)
   getScrollElement: () => scrollContainerRef.current,
-  estimateSize: () => 120,       // Ước tính mỗi item cao 120px
-  overscan: 5,                   // Render thêm 5 items trên/dưới viewport
-});
+  estimateSize: () => 120, // Ước tính mỗi item cao 120px
+  overscan: 5, // Render thêm 5 items trên/dưới viewport
+})
 ```
 
 **Bước 2: Render chỉ những items trong viewport**
 
 ```tsx
 // Lấy danh sách virtual items (CHỈ những cái cần render)
-const virtualItems = gridVirtualizer.getVirtualItems();
+const virtualItems = gridVirtualizer.getVirtualItems()
 // Ví dụ: nếu đang scroll ở vị trí sản phẩm 60-70
 // virtualItems = [row_11, row_12, row_13, row_14, row_15, row_16]
 // (bao gồm overscan 3 hàng trên + viewport + overscan 3 hàng dưới)
@@ -326,13 +329,13 @@ return (
     style={{
       // Container có chiều cao = TỔNG chiều cao tất cả items
       // Để thanh scrollbar có kích thước đúng
-      height: `${gridVirtualizer.getTotalSize()}px`,  // VD: 640,000px
+      height: `${gridVirtualizer.getTotalSize()}px`, // VD: 640,000px
       width: '100%',
       position: 'relative',
     }}
   >
     {virtualItems.map((virtualRow) => {
-      const rowProducts = gridRows[virtualRow.index];
+      const rowProducts = gridRows[virtualRow.index]
       return (
         <div
           key={virtualRow.index}
@@ -349,20 +352,20 @@ return (
             <Product key={product._id} product={product} />
           ))}
         </div>
-      );
+      )
     })}
   </div>
-);
+)
 ```
 
 ### 3.4 Giải thích từng tham số quan trọng
 
-| Tham số | Giá trị | Ý nghĩa |
-|---------|---------|----------|
-| `count` | `gridRows.length` | Tổng số items cần virtualize |
-| `getScrollElement` | `scrollContainerRef` | Element nào đang scroll |
-| `estimateSize` | `() => 320` | Ước tính chiều cao mỗi item (px) |
-| `overscan` | `3` | Số items render thêm ngoài viewport |
+| Tham số            | Giá trị              | Ý nghĩa                             |
+| ------------------ | -------------------- | ----------------------------------- |
+| `count`            | `gridRows.length`    | Tổng số items cần virtualize        |
+| `getScrollElement` | `scrollContainerRef` | Element nào đang scroll             |
+| `estimateSize`     | `() => 320`          | Ước tính chiều cao mỗi item (px)    |
+| `overscan`         | `3`                  | Số items render thêm ngoài viewport |
 
 **Tại sao cần `overscan`?**
 
@@ -396,6 +399,7 @@ Container (position: relative, height: 640,000px)
 ```
 
 **Tại sao dùng `transform` thay vì `top`?**
+
 - `transform: translateY()` được xử lý bởi **GPU** (hardware accelerated)
 - `top` được xử lý bởi **CPU** và trigger layout recalculation
 - → `transform` nhanh hơn rất nhiều khi scroll
@@ -423,12 +427,12 @@ Giả sử: Sản phẩm #42 được cập nhật giá từ 500k → 450k
 
 ### 4.2 So sánh: NextJS ISR vs React Client-Side
 
-| Khía cạnh | NextJS ISR | React Client-Side |
-|-----------|-----------|-------------------|
-| Nơi xử lý | Server-side | Browser |
-| Cơ chế | Revalidate HTML tĩnh theo thời gian | Re-render component khi state/props đổi |
-| Granularity | Cả trang | Từng component |
-| Phù hợp | SEO, static content | Interactive UI, real-time updates |
+| Khía cạnh   | NextJS ISR                          | React Client-Side                       |
+| ----------- | ----------------------------------- | --------------------------------------- |
+| Nơi xử lý   | Server-side                         | Browser                                 |
+| Cơ chế      | Revalidate HTML tĩnh theo thời gian | Re-render component khi state/props đổi |
+| Granularity | Cả trang                            | Từng component                          |
+| Phù hợp     | SEO, static content                 | Interactive UI, real-time updates       |
 
 **ISR (Incremental Static Regeneration)** giải quyết vấn đề ở tầng **server** - nó regenerate HTML tĩnh.
 Nhưng ở **client-side React**, chúng ta cần các kỹ thuật khác.
@@ -439,7 +443,7 @@ Nhưng ở **client-side React**, chúng ta cần các kỹ thuật khác.
 
 ```tsx
 // Product.tsx - dòng 135
-export default memo(Product);
+export default memo(Product)
 ```
 
 **Cách hoạt động:**
@@ -474,20 +478,20 @@ Product #5000: props cũ === props mới? → YES → SKIP
 ```tsx
 // ProductListInfinite.tsx - dòng 97-100
 const allProducts = useMemo(() => {
-  if (!productsData?.pages) return [];
-  return productsData.pages.flatMap((page) => page.data.data.products);
-}, [productsData?.pages]);
+  if (!productsData?.pages) return []
+  return productsData.pages.flatMap((page) => page.data.data.products)
+}, [productsData?.pages])
 // → Chỉ tính lại khi productsData.pages thay đổi
 // → Không tạo array mới mỗi lần component re-render
 
 // Dòng 123-129
 const gridRows = useMemo(() => {
-  const rows: (typeof allProducts)[] = [];
+  const rows: (typeof allProducts)[] = []
   for (let i = 0; i < allProducts.length; i += gridColumns) {
-    rows.push(allProducts.slice(i, i + gridColumns));
+    rows.push(allProducts.slice(i, i + gridColumns))
   }
-  return rows;
-}, [allProducts]);
+  return rows
+}, [allProducts])
 // → gridRows chỉ tính lại khi allProducts thay đổi
 ```
 
@@ -516,6 +520,7 @@ react({
 ```
 
 React Compiler **tự động** thêm memoization cho bạn:
+
 - Tự động memo components
 - Tự động useMemo cho expressions
 - Tự động useCallback cho functions
@@ -532,12 +537,10 @@ const [products, setProducts] = useState([
   { id: '1', name: 'iPhone', price: 500 },
   { id: '2', name: 'Samsung', price: 400 },
   // ... 5000 items
-]);
+])
 
 // Khi cập nhật 1 sản phẩm → tạo array MỚI → tất cả re-render
-setProducts(prev => prev.map(p =>
-  p.id === '42' ? { ...p, price: 450 } : p
-));
+setProducts((prev) => prev.map((p) => (p.id === '42' ? { ...p, price: 450 } : p)))
 ```
 
 ```tsx
@@ -566,13 +569,13 @@ setProductsById(prev => ({
 
 ```tsx
 // Thay vì invalidate toàn bộ products query:
-queryClient.invalidateQueries({ queryKey: ['products'] });
+queryClient.invalidateQueries({ queryKey: ['products'] })
 
 // Có thể update cache trực tiếp cho 1 sản phẩm:
 queryClient.setQueryData(['product', productId], (old) => ({
   ...old,
   price: newPrice,
-}));
+}))
 // → Chỉ component nào subscribe vào product đó mới re-render
 ```
 
@@ -784,19 +787,20 @@ Với Virtualization:
 
 ### Bảng so sánh hiệu năng cuối cùng
 
-| Metric | Không tối ưu | Có Virtualization + Memo |
-|--------|:------------:|:------------------------:|
-| DOM Nodes (10K SP) | 570,000 | ~1,140 |
-| JS Components chạy | 10,000 | ~20 |
-| Memory usage | ~500MB+ | ~10-20MB |
-| Scroll FPS | 10-20 fps | 60 fps |
-| Time to Interactive | 5-10s | <500ms |
-| Update 1 SP (trong viewport) | ~200-500ms | ~1-5ms |
-| Update 1 SP (ngoài viewport) | ~200-500ms | ~0ms |
+| Metric                       | Không tối ưu | Có Virtualization + Memo |
+| ---------------------------- | :----------: | :----------------------: |
+| DOM Nodes (10K SP)           |   570,000    |          ~1,140          |
+| JS Components chạy           |    10,000    |           ~20            |
+| Memory usage                 |   ~500MB+    |         ~10-20MB         |
+| Scroll FPS                   |  10-20 fps   |          60 fps          |
+| Time to Interactive          |    5-10s     |          <500ms          |
+| Update 1 SP (trong viewport) |  ~200-500ms  |          ~1-5ms          |
+| Update 1 SP (ngoài viewport) |  ~200-500ms  |           ~0ms           |
 
 ---
 
 > **Ghi chú:** Tài liệu này được phân tích dựa trên codebase thực tế của Shopee Project, với các file chính:
+>
 > - `apps/shopee-web/src/pages/ProductList/ProductListInfinite.tsx`
 > - `apps/shopee-web/src/pages/ProductList/components/Product/Product.tsx`
 > - `apps/shopee-web/src/components/ProductRating/ProductRating.tsx`

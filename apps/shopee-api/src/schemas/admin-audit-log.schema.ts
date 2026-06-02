@@ -18,10 +18,7 @@ export const adminAuditLogListSchema = z.object({
       .string()
       .datetime({ message: 'from must be a valid ISO 8601 datetime string' })
       .optional(),
-    to: z
-      .string()
-      .datetime({ message: 'to must be a valid ISO 8601 datetime string' })
-      .optional(),
+    to: z.string().datetime({ message: 'to must be a valid ISO 8601 datetime string' }).optional(),
   }),
 })
 

@@ -46,12 +46,14 @@ export type AdminUpdatePaymentBody = z.infer<typeof adminUpdatePaymentSchema>['b
 
 export const adminReorderPaymentSchema = z.object({
   body: z.object({
-    items: z.array(
-      z.object({
-        id: mongoIdSchema,
-        sort_order: z.number().int().min(0),
-      }),
-    ).min(1),
+    items: z
+      .array(
+        z.object({
+          id: mongoIdSchema,
+          sort_order: z.number().int().min(0),
+        }),
+      )
+      .min(1),
   }),
 })
 

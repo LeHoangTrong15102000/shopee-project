@@ -14,21 +14,17 @@ describe('Shopping Cart Integration Tests', () => {
     clearLS()
   })
 
-  test(
-    'Authenticated user can view cart page',
-    { timeout: 10000 },
-    async () => {
-      setAccessTokenToLS(access_token)
-      renderWithRouter({ route: '/cart' })
+  test('Authenticated user can view cart page', { timeout: 10000 }, async () => {
+    setAccessTokenToLS(access_token)
+    renderWithRouter({ route: '/cart' })
 
-      await waitFor(
-        () => {
-          expect(window.location.pathname).toBe('/cart')
-        },
-        { timeout: 5000 }
-      )
-    }
-  )
+    await waitFor(
+      () => {
+        expect(window.location.pathname).toBe('/cart')
+      },
+      { timeout: 5000 },
+    )
+  })
 
   test(
     'Cart page renders product information for authenticated user',
@@ -41,47 +37,39 @@ describe('Shopping Cart Integration Tests', () => {
         () => {
           expect(window.location.pathname).toBe('/cart')
         },
-        { timeout: 5000 }
+        { timeout: 5000 },
       )
 
       // Verify page rendered with content
       const bodyText = document.body.textContent || ''
       expect(bodyText.length).toBeGreaterThan(0)
-    }
+    },
   )
 
-  test(
-    'Unauthenticated user is redirected from cart',
-    { timeout: 10000 },
-    async () => {
-      renderWithRouter({ route: '/cart' })
+  test('Unauthenticated user is redirected from cart', { timeout: 10000 }, async () => {
+    renderWithRouter({ route: '/cart' })
 
-      await waitFor(
-        () => {
-          expect(window.location.pathname).toBe('/login')
-        },
-        { timeout: 5000 }
-      )
-    }
-  )
+    await waitFor(
+      () => {
+        expect(window.location.pathname).toBe('/login')
+      },
+      { timeout: 5000 },
+    )
+  })
 
-  test(
-    'Cart page shows price information',
-    { timeout: 10000 },
-    async () => {
-      setAccessTokenToLS(access_token)
-      renderWithRouter({ route: '/cart' })
+  test('Cart page shows price information', { timeout: 10000 }, async () => {
+    setAccessTokenToLS(access_token)
+    renderWithRouter({ route: '/cart' })
 
-      await waitFor(
-        () => {
-          expect(window.location.pathname).toBe('/cart')
-        },
-        { timeout: 5000 }
-      )
+    await waitFor(
+      () => {
+        expect(window.location.pathname).toBe('/cart')
+      },
+      { timeout: 5000 },
+    )
 
-      // Verify page rendered with content
-      const bodyText = document.body.textContent || ''
-      expect(bodyText.length).toBeGreaterThan(0)
-    }
-  )
+    // Verify page rendered with content
+    const bodyText = document.body.textContent || ''
+    expect(bodyText.length).toBeGreaterThan(0)
+  })
 })

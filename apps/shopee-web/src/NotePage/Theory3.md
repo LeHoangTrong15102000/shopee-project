@@ -30,21 +30,30 @@ import path from 'src/constant/path'
 
 export default function NotFound() {
   return (
-    <main className='h-screen w-full flex flex-col justify-center items-center bg-orange-50'>
-      <div className='text-center'>
-        <h1 className='text-9xl font-bold text-orange-600'>404</h1>
-        <p className='text-6xl md:text-7xl lg:text-9xl font-bold text-gray-800 tracking-wider'>Page Not Found</p>
-        <div className='text-xl md:text-3xl lg:text-5xl text-gray-600 mt-8'>Trang bạn tìm kiếm không tồn tại.</div>
+    <main className="h-screen w-full flex flex-col justify-center items-center bg-orange-50">
+      <div className="text-center">
+        <h1 className="text-9xl font-bold text-orange-600">404</h1>
+        <p className="text-6xl md:text-7xl lg:text-9xl font-bold text-gray-800 tracking-wider">
+          Page Not Found
+        </p>
+        <div className="text-xl md:text-3xl lg:text-5xl text-gray-600 mt-8">
+          Trang bạn tìm kiếm không tồn tại.
+        </div>
         <Link
           to={path.home}
-          className='flex items-center space-x-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 mt-12 rounded-sm transition duration-150 mx-auto w-fit'
-          title='Về trang chủ'
+          className="flex items-center space-x-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 mt-12 rounded-sm transition duration-150 mx-auto w-fit"
+          title="Về trang chủ"
         >
-          <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
             <path
-              fillRule='evenodd'
-              d='M9.707 14.707a1 1 0 01-1.414 0L3.586 10l4.707-4.707a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z'
-              clipRule='evenodd'
+              fillRule="evenodd"
+              d="M9.707 14.707a1 1 0 01-1.414 0L3.586 10l4.707-4.707a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
+              clipRule="evenodd"
             />
           </svg>
           <span>Về trang chủ</span>
@@ -88,7 +97,7 @@ interface State {
 
 export default class ErrorBoundary extends Component<Props, State> {
   public state: State = {
-    hasError: false
+    hasError: false,
   }
 
   public static getDerivedStateFromError(error: Error): State {
@@ -106,35 +115,44 @@ export default class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return (
-        <main className='h-screen w-full flex flex-col justify-center items-center bg-red-50'>
-          <div className='text-center px-4'>
-            <div className='text-red-500 mb-4'>
-              <svg className='w-24 h-24 mx-auto' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+        <main className="h-screen w-full flex flex-col justify-center items-center bg-red-50">
+          <div className="text-center px-4">
+            <div className="text-red-500 mb-4">
+              <svg
+                className="w-24 h-24 mx-auto"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   strokeWidth={2}
-                  d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.684-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z'
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.684-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"
                 />
               </svg>
             </div>
 
-            <h1 className='text-4xl font-bold text-gray-800 mb-4'>Oops! Có lỗi xảy ra</h1>
+            <h1 className="text-4xl font-bold text-gray-800 mb-4">Oops! Có lỗi xảy ra</h1>
 
-            <p className='text-xl text-gray-600 mb-8'>
+            <p className="text-xl text-gray-600 mb-8">
               Xin lỗi, đã có lỗi không mong muốn xảy ra. Vui lòng thử lại sau.
             </p>
 
             {process.env.NODE_ENV === 'development' && (
-              <details className='bg-red-100 p-4 rounded-lg text-left mb-8'>
-                <summary className='cursor-pointer font-semibold text-red-800'>Chi tiết lỗi (Development mode)</summary>
-                <pre className='mt-2 text-sm text-red-700 whitespace-pre-wrap'>{this.state.error?.stack}</pre>
+              <details className="bg-red-100 p-4 rounded-lg text-left mb-8">
+                <summary className="cursor-pointer font-semibold text-red-800">
+                  Chi tiết lỗi (Development mode)
+                </summary>
+                <pre className="mt-2 text-sm text-red-700 whitespace-pre-wrap">
+                  {this.state.error?.stack}
+                </pre>
               </details>
             )}
 
             <button
               onClick={() => window.location.reload()}
-              className='bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg transition duration-150'
+              className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg transition duration-150"
             >
               Tải lại trang
             </button>
@@ -157,7 +175,7 @@ import ErrorBoundary from 'src/components/ErrorBoundary'
 function App() {
   return (
     <ErrorBoundary>
-      <div className='App'>{/* App content */}</div>
+      <div className="App">{/* App content */}</div>
     </ErrorBoundary>
   )
 }
@@ -211,7 +229,7 @@ export default function useRouteElements() {
             <ProductList />
           </Suspense>
         </MainLayout>
-      )
+      ),
     },
     {
       path: path.productDetail,
@@ -221,7 +239,7 @@ export default function useRouteElements() {
             <ProductDetail />
           </Suspense>
         </MainLayout>
-      )
+      ),
     },
     // ... other routes
     {
@@ -230,8 +248,8 @@ export default function useRouteElements() {
         <Suspense fallback={<Loader />}>
           <NotFound />
         </Suspense>
-      )
-    }
+      ),
+    },
   ])
 
   return routeElements
@@ -244,8 +262,8 @@ export default function useRouteElements() {
 // components/Loader/Loader.tsx
 export default function Loader() {
   return (
-    <div className='flex justify-center items-center min-h-[400px]'>
-      <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500'></div>
+    <div className="flex justify-center items-center min-h-[400px]">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
     </div>
   )
 }
@@ -287,8 +305,8 @@ export default defineConfig({
       filename: 'bundle-analysis.html',
       open: true,
       gzipSize: true,
-      brotliSize: true
-    })
+      brotliSize: true,
+    }),
   ],
   build: {
     rollupOptions: {
@@ -300,11 +318,11 @@ export default defineConfig({
           query: ['@tanstack/react-query'],
           form: ['react-hook-form', '@hookform/resolvers'],
           ui: ['@headlessui/react', '@floating-ui/react'],
-          utils: ['lodash', 'date-fns']
-        }
-      }
-    }
-  }
+          utils: ['lodash', 'date-fns'],
+        },
+      },
+    },
+  },
 })
 ```
 
@@ -370,7 +388,7 @@ class Http {
           return this.handleRefreshToken(error)
         }
         return Promise.reject(error)
-      }
+      },
     )
   }
 
@@ -392,8 +410,8 @@ class Http {
           ...config,
           headers: {
             ...config?.headers,
-            authorization: newAccessToken
-          }
+            authorization: newAccessToken,
+          },
         })
       } catch (refreshError) {
         clearLS()
@@ -412,8 +430,8 @@ class Http {
         ...config,
         headers: {
           ...config?.headers,
-          authorization: newAccessToken
-        }
+          authorization: newAccessToken,
+        },
       })
     } catch (refreshError) {
       clearLS()
@@ -430,7 +448,7 @@ class Http {
     try {
       const refreshToken = getRefreshTokenFromLS()
       const response = await this.instance.post<AuthResponse>('/refresh-access-token', {
-        refresh_token: refreshToken
+        refresh_token: refreshToken,
       })
 
       const { access_token } = response.data.data
@@ -476,18 +494,18 @@ import PRODUCT_VI from 'src/locales/vi/product.json'
 
 export const locales = {
   en: 'English',
-  vi: 'Tiếng Việt'
+  vi: 'Tiếng Việt',
 } as const
 
 export const resources = {
   en: {
     home: HOME_EN,
-    product: PRODUCT_EN
+    product: PRODUCT_EN,
   },
   vi: {
     home: HOME_VI,
-    product: PRODUCT_VI
-  }
+    product: PRODUCT_VI,
+  },
 } as const
 
 export const defaultNS = 'home'
@@ -499,8 +517,8 @@ i18n.use(initReactI18next).init({
   defaultNS,
   fallbackLng: 'vi',
   interpolation: {
-    escapeValue: false
-  }
+    escapeValue: false,
+  },
 })
 
 export default i18n
@@ -569,24 +587,24 @@ export default function AsideFilter() {
   const { t } = useTranslation('home')
 
   return (
-    <div className='bg-white p-4 rounded-xs shadow-sm'>
-      <div className='flex items-center border-b border-gray-300 pb-3'>
-        <svg className='w-3 h-3 fill-current'>{/* Icon */}</svg>
-        <span className='text-sm font-bold uppercase ml-2'>{t('filter.aside filter')}</span>
+    <div className="bg-white p-4 rounded-xs shadow-sm">
+      <div className="flex items-center border-b border-gray-300 pb-3">
+        <svg className="w-3 h-3 fill-current">{/* Icon */}</svg>
+        <span className="text-sm font-bold uppercase ml-2">{t('filter.aside filter')}</span>
       </div>
 
       {/* Price Range */}
-      <div className='bg-gray-300 h-px my-4' />
-      <div className='text-sm'>
+      <div className="bg-gray-300 h-px my-4" />
+      <div className="text-sm">
         <div>{t('filter.price range')}</div>
 
-        <form className='mt-2'>
+        <form className="mt-2">
           {/* Form content */}
-          <Button className='w-full'>{t('filter.apply')}</Button>
+          <Button className="w-full">{t('filter.apply')}</Button>
         </form>
       </div>
 
-      <Button className='w-full mt-4' onClick={handleClearAll}>
+      <Button className="w-full mt-4" onClick={handleClearAll}>
         {t('filter.clear all')}
       </Button>
     </div>
@@ -613,17 +631,17 @@ export default function Header() {
   return (
     <Popover
       renderPopover={
-        <div className='bg-white border border-gray-200 rounded-xs shadow-md'>
-          <button className='py-2 px-3 hover:text-orange' onClick={() => changeLanguage('vi')}>
+        <div className="bg-white border border-gray-200 rounded-xs shadow-md">
+          <button className="py-2 px-3 hover:text-orange" onClick={() => changeLanguage('vi')}>
             Tiếng Việt
           </button>
-          <button className='py-2 px-3 hover:text-orange' onClick={() => changeLanguage('en')}>
+          <button className="py-2 px-3 hover:text-orange" onClick={() => changeLanguage('en')}>
             English
           </button>
         </div>
       }
     >
-      <span className='hover:text-gray-300 cursor-pointer'>{currentLanguage}</span>
+      <span className="hover:text-gray-300 cursor-pointer">{currentLanguage}</span>
     </Popover>
   )
 }
@@ -703,10 +721,10 @@ export default function useSearchProducts({ enabled }: UseSearchProductsProps) {
       productApi.getProducts({
         limit: '9',
         page: '1',
-        name: debouncedSearchValue
+        name: debouncedSearchValue,
       }),
     enabled: enabled && Boolean(debouncedSearchValue),
-    staleTime: 3 * 60 * 1000 // Cache 3 phút
+    staleTime: 3 * 60 * 1000, // Cache 3 phút
   })
 
   const searchResults = searchProductsQuery.data?.data.data.products || []
@@ -715,7 +733,7 @@ export default function useSearchProducts({ enabled }: UseSearchProductsProps) {
     searchValue,
     setSearchValue,
     searchResults,
-    isSearching: searchProductsQuery.isFetching
+    isSearching: searchProductsQuery.isFetching,
   }
 }
 ```
@@ -730,7 +748,9 @@ import useSearchProducts from 'src/hooks/useSearchProducts'
 export default function Header() {
   const [showResults, setShowResults] = useState(false)
 
-  const { searchValue, setSearchValue, searchResults, isSearching } = useSearchProducts({ enabled: showResults })
+  const { searchValue, setSearchValue, searchResults, isSearching } = useSearchProducts({
+    enabled: showResults,
+  })
 
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
@@ -751,39 +771,46 @@ export default function Header() {
       interactive
       visible={shouldShowResults}
       render={(attrs) => (
-        <div className='bg-white border border-gray-200 rounded-xs shadow-lg py-2' {...attrs}>
+        <div className="bg-white border border-gray-200 rounded-xs shadow-lg py-2" {...attrs}>
           {searchResults.map((product) => (
             <Link
               key={product._id}
               to={`${path.home}${generateNameId({ name: product.name, id: product._id })}`}
-              className='flex items-center py-2 px-4 hover:bg-gray-100'
+              className="flex items-center py-2 px-4 hover:bg-gray-100"
               onClick={() => setShowResults(false)}
             >
-              <img src={product.image} alt={product.name} className='w-10 h-10 object-cover rounded-sm' />
-              <span className='ml-3 text-sm text-gray-700 truncate'>{product.name}</span>
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-10 h-10 object-cover rounded-sm"
+              />
+              <span className="ml-3 text-sm text-gray-700 truncate">{product.name}</span>
             </Link>
           ))}
         </div>
       )}
       onClickOutside={() => setShowResults(false)}
     >
-      <form className='col-span-9' onSubmit={handleSubmit}>
-        <div className='flex rounded-xs bg-white p-1'>
+      <form className="col-span-9" onSubmit={handleSubmit}>
+        <div className="flex rounded-xs bg-white p-1">
           <input
-            type='text'
-            className='grow border-none bg-transparent px-3 py-2 text-sm outline-hidden'
-            placeholder='Tìm kiếm sản phẩm...'
+            type="text"
+            className="grow border-none bg-transparent px-3 py-2 text-sm outline-hidden"
+            placeholder="Tìm kiếm sản phẩm..."
             value={searchValue}
             onChange={handleChangeInput}
             onFocus={() => setShowResults(true)}
           />
-          <button type='submit' className='shrink-0 rounded-xs bg-orange py-2 px-6 hover:opacity-90'>
-            <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+          <button
+            type="submit"
+            className="shrink-0 rounded-xs bg-orange py-2 px-6 hover:opacity-90"
+          >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 strokeWidth={2}
-                d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
           </button>
@@ -833,7 +860,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         </QueryClientProvider>
       </HelmetProvider>
     </BrowserRouter>
-  </React.StrictMode>
+  </React.StrictMode>,
 )
 ```
 
@@ -856,7 +883,7 @@ export default function SEO({
   description = 'Mua sắm online hàng triệu sản phẩm ở tất cả ngành hàng',
   image = '/favicon.ico',
   url = window.location.href,
-  type = 'website'
+  type = 'website',
 }: SEOProps) {
   const fullTitle = title.includes('Shopee Clone') ? title : `${title} | Shopee Clone`
 
@@ -864,26 +891,26 @@ export default function SEO({
     <Helmet>
       {/* Basic Meta Tags */}
       <title>{fullTitle}</title>
-      <meta name='description' content={description} />
+      <meta name="description" content={description} />
 
       {/* Open Graph Meta Tags */}
-      <meta property='og:title' content={fullTitle} />
-      <meta property='og:description' content={description} />
-      <meta property='og:image' content={image} />
-      <meta property='og:url' content={url} />
-      <meta property='og:type' content={type} />
-      <meta property='og:site_name' content='Shopee Clone' />
+      <meta property="og:title" content={fullTitle} />
+      <meta property="og:description" content={description} />
+      <meta property="og:image" content={image} />
+      <meta property="og:url" content={url} />
+      <meta property="og:type" content={type} />
+      <meta property="og:site_name" content="Shopee Clone" />
 
       {/* Twitter Card Meta Tags */}
-      <meta name='twitter:card' content='summary_large_image' />
-      <meta name='twitter:title' content={fullTitle} />
-      <meta name='twitter:description' content={description} />
-      <meta name='twitter:image' content={image} />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={fullTitle} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={image} />
 
       {/* Additional Meta Tags */}
-      <meta name='keywords' content='mua sắm online, shopee, thương mại điện tử' />
-      <meta name='author' content='Shopee Clone' />
-      <link rel='canonical' href={url} />
+      <meta name="keywords" content="mua sắm online, shopee, thương mại điện tử" />
+      <meta name="author" content="Shopee Clone" />
+      <link rel="canonical" href={url} />
     </Helmet>
   )
 }
@@ -900,7 +927,10 @@ export default function ProductList() {
 
   return (
     <div>
-      <SEO title='Trang chủ' description='Khám phá hàng triệu sản phẩm với giá tốt nhất tại Shopee Clone' />
+      <SEO
+        title="Trang chủ"
+        description="Khám phá hàng triệu sản phẩm với giá tốt nhất tại Shopee Clone"
+      />
 
       {/* Page content */}
     </div>
@@ -917,7 +947,7 @@ export default function ProductDetail() {
         title={product?.name}
         description={product?.description || 'Chi tiết sản phẩm tại Shopee Clone'}
         image={product?.image}
-        type='product'
+        type="product"
       />
 
       {/* Product detail content */}
@@ -957,7 +987,7 @@ const addToCartMutation = useMutation({
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['purchases'] })
     setExtendedPurchases([]) // Reset để tránh checkbox auto-check
-  }
+  },
 })
 ```
 
@@ -978,7 +1008,7 @@ const handleAddToCart = () => {
 
   addToCartMutation.mutate({
     product_id: product._id,
-    buy_count: buyCount
+    buy_count: buyCount,
   })
 }
 ```

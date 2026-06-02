@@ -1,4 +1,4 @@
-import { describe, it, expect} from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { screen, waitFor, fireEvent } from '@testing-library/react'
 import { renderWithProviders } from 'src/utils/testUtils'
 import Popover from './Popover'

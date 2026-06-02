@@ -23,11 +23,7 @@ export default function VoucherSection({
   const [code, setCode] = React.useState(appliedVoucher ?? '')
   const hasApplied = appliedDiscount != null && appliedDiscount > 0
 
-  const borderColor = errorMessage
-    ? colors.error
-    : hasApplied
-      ? colors.success
-      : colors.neutrals900
+  const borderColor = errorMessage ? colors.error : hasApplied ? colors.success : colors.neutrals900
 
   return (
     <View className="border-b border-neutrals900 px-4 py-4">
@@ -35,14 +31,14 @@ export default function VoucherSection({
         {t('voucherInput.title')}
       </AppText>
       <View
-        className="flex-row items-center rounded-lg border overflow-hidden"
+        className="flex-row items-center overflow-hidden rounded-lg border"
         style={{ borderColor }}>
         <TextInput
           value={code}
           onChangeText={setCode}
           placeholder={t('voucherInput.placeholder')}
           placeholderTextColor={colors.neutrals600}
-          className="flex-1 px-3 py-3 font-sans-medium text-foreground bg-background"
+          className="flex-1 bg-background px-3 py-3 font-sans-medium text-foreground"
           autoCapitalize="characters"
         />
         <TouchableOpacity
@@ -54,7 +50,11 @@ export default function VoucherSection({
             backgroundColor: colors.primary,
             opacity: !code.trim() ? 0.5 : 1,
           }}>
-          <AppText raw variant="bodySmall" weight="semibold" style={{ color: colors.primaryForeground }}>
+          <AppText
+            raw
+            variant="bodySmall"
+            weight="semibold"
+            style={{ color: colors.primaryForeground }}>
             {t('voucherInput.button.apply')}
           </AppText>
         </TouchableOpacity>

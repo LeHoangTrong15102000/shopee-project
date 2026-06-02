@@ -48,9 +48,7 @@ function TrackingCard({ orderId }: { orderId: string }) {
             <Skeleton className="h-4 w-2/3" />
           </div>
         )}
-        {isError && (
-          <p className="text-muted-foreground">{t('tracking.errorState')}</p>
-        )}
+        {isError && <p className="text-muted-foreground">{t('tracking.errorState')}</p>}
         {!isLoading && !isError && !data && (
           <p className="text-muted-foreground">{t('tracking.emptyState')}</p>
         )}
@@ -94,9 +92,12 @@ function TrackingCard({ orderId }: { orderId: string }) {
                 ))}
               </div>
             )}
-            {(!data.carrier && !data.trackingNumber && !data.currentStatus && data.events.length === 0) && (
-              <p className="text-muted-foreground">{t('tracking.emptyState')}</p>
-            )}
+            {!data.carrier &&
+              !data.trackingNumber &&
+              !data.currentStatus &&
+              data.events.length === 0 && (
+                <p className="text-muted-foreground">{t('tracking.emptyState')}</p>
+              )}
           </>
         )}
       </CardContent>

@@ -13,9 +13,7 @@ export class ReferralEventListener {
   constructor(private readonly referralService: ReferralService) {}
 
   @OnEvent('order.created')
-  async onOrderCreated(
-    event: Extract<DomainEvent, { type: 'order.created' }>,
-  ): Promise<void> {
+  async onOrderCreated(event: Extract<DomainEvent, { type: 'order.created' }>): Promise<void> {
     const { orderId, userId } = event.payload
 
     Logger.apiInfo('[ReferralEventListener] order.created — checking referral reward', {

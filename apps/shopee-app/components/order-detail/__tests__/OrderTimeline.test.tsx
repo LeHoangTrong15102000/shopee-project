@@ -33,8 +33,7 @@ jest.mock('@/hooks/useColors', () => ({
 }))
 
 jest.mock('@/store/appStore', () => ({
-  useAppStore: (selector: (s: { language: string }) => string) =>
-    selector({ language: 'en' }),
+  useAppStore: (selector: (s: { language: string }) => string) => selector({ language: 'en' }),
 }))
 
 describe('OrderTimeline', () => {

@@ -163,14 +163,18 @@ describe('Admin Voucher Controller', () => {
     ;(mockVoucherService.adminDelete as jest.Mock).mockRejectedValue(new Error('Delete error'))
     const req = createMockRequest({ params: { id: 'v1' } })
     const res = createMockResponse()
-    await expect(adminDeleteVoucher(req as Request, res as Response)).rejects.toThrow('Delete error')
+    await expect(adminDeleteVoucher(req as Request, res as Response)).rejects.toThrow(
+      'Delete error',
+    )
   })
 
   it('adminToggleVoucher rethrows unknown errors', async () => {
     ;(mockVoucherService.adminToggle as jest.Mock).mockRejectedValue(new Error('Toggle error'))
     const req = createMockRequest({ params: { id: 'v1' } })
     const res = createMockResponse()
-    await expect(adminToggleVoucher(req as Request, res as Response)).rejects.toThrow('Toggle error')
+    await expect(adminToggleVoucher(req as Request, res as Response)).rejects.toThrow(
+      'Toggle error',
+    )
   })
 
   it('adminGetVoucherUsage rethrows unknown errors', async () => {

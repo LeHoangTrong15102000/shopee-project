@@ -125,9 +125,9 @@ describe('ShopChatService', () => {
 
   describe('sendMessage', () => {
     it('throws ValidationError for invalid conversationId', async () => {
-      await expect(
-        service.sendMessage(INVALID_ID, VALID_USER_ID, 'user', 'hello'),
-      ).rejects.toThrow('Invalid conversation id')
+      await expect(service.sendMessage(INVALID_ID, VALID_USER_ID, 'user', 'hello')).rejects.toThrow(
+        'Invalid conversation id',
+      )
     })
 
     it('throws NotFoundError when conversation not found', async () => {
@@ -184,7 +184,6 @@ describe('ShopChatService', () => {
       const mockEmit = jest.fn()
       const mockTo = jest.fn().mockReturnValue({ emit: mockEmit })
       mockGetIO.mockReturnValue({ to: mockTo })
-
       ;(ShopConversationModel.findById as jest.Mock).mockResolvedValue({ _id: VALID_CONV_ID })
       mockMsgCreate.mockResolvedValue({ _id: 'msg3', content: 'hello' })
       mockConvFindByIdAndUpdate.mockResolvedValue({})

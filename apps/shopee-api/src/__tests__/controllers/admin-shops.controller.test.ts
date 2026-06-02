@@ -53,7 +53,14 @@ describe('AdminShopsController', () => {
       mockListShops.mockResolvedValue({ data: [], pagination: {} })
 
       const req = createMockRequest({
-        query: { page: '2', limit: '10', status: 'active', search: 'test', sort_by: 'name', order: 'asc' },
+        query: {
+          page: '2',
+          limit: '10',
+          status: 'active',
+          search: 'test',
+          sort_by: 'name',
+          order: 'asc',
+        },
       })
       const res = createMockResponse()
 
@@ -78,9 +85,7 @@ describe('AdminShopsController', () => {
 
       await listShops(req as Request, res as Response)
 
-      expect(mockListShops).toHaveBeenCalledWith(
-        expect.objectContaining({ page: 1, limit: 20 }),
-      )
+      expect(mockListShops).toHaveBeenCalledWith(expect.objectContaining({ page: 1, limit: 20 }))
     })
   })
 

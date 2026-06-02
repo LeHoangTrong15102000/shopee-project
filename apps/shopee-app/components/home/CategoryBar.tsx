@@ -46,4 +46,3 @@ export default function CategoryBar({ categories, selectedCategory, onSelect }: 
     </ScrollView>
   )
 }
-

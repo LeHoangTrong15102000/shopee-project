@@ -39,12 +39,7 @@ function ipnRateLimit(req: Request, res: Response, next: NextFunction): void {
  * Error handler for body-parser 413 (payload too large) on MoMo IPN.
  * MoMo spec: respond with HTTP 204 on oversized payloads.
  */
-function momoPayloadErrorHandler(
-  err: any,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): void {
+function momoPayloadErrorHandler(err: any, req: Request, res: Response, next: NextFunction): void {
   if (err.status === 413 || err.type === 'entity.too.large') {
     res.status(204).end()
     return
@@ -56,12 +51,7 @@ function momoPayloadErrorHandler(
  * Error handler for body-parser 413 (payload too large) on VNPay IPN.
  * VNPay spec: respond with HTTP 200 + RspCode "99" on oversized payloads.
  */
-function vnpayPayloadErrorHandler(
-  err: any,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): void {
+function vnpayPayloadErrorHandler(err: any, req: Request, res: Response, next: NextFunction): void {
   if (err.status === 413 || err.type === 'entity.too.large') {
     res.status(200).json({ RspCode: '99', Message: 'Payload too large' })
     return
@@ -88,10 +78,6 @@ ipnRouter.post(
 // VNPay IPN uses GET with query params — no JSON body to size-limit.
 // The vnpayPayloadErrorHandler is registered for completeness but will not
 // trigger on GET requests since body-parser does not run on them.
-ipnRouter.get(
-  '/vnpay/ipn',
-  ipnRateLimit,
-  asyncHandler(vnpayIpn),
-)
+ipnRouter.get('/vnpay/ipn', ipnRateLimit, asyncHandler(vnpayIpn))
 
 export default ipnRouter

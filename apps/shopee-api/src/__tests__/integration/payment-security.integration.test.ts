@@ -175,14 +175,12 @@ describe('F.3 VNPay IPN endpoint accessible WITHOUT JWT', () => {
     const { verifyIpnCall } = getVnpayMocks()
     verifyIpnCall.mockReturnValue({ isVerified: false })
 
-    const res = await supertest(app)
-      .get('/payment/vnpay/ipn')
-      .query({
-        vnp_TxnRef: 'test-order',
-        vnp_Amount: '15000000',
-        vnp_ResponseCode: '00',
-        vnp_SecureHash: 'some-hash',
-      })
+    const res = await supertest(app).get('/payment/vnpay/ipn').query({
+      vnp_TxnRef: 'test-order',
+      vnp_Amount: '15000000',
+      vnp_ResponseCode: '00',
+      vnp_SecureHash: 'some-hash',
+    })
 
     // VNPay IPN is public — must not return 401
     expect(res.status).not.toBe(401)
@@ -382,11 +380,7 @@ describe('F.10 No secret keys in error messages', () => {
     const product = await seedProduct()
     const auth = await getAuthToken(app)
 
-    const orderRes = await createOrderViaCheckout(
-      auth.access_token,
-      product._id.toString(),
-      'momo',
-    )
+    const orderRes = await createOrderViaCheckout(auth.access_token, product._id.toString(), 'momo')
 
     // Order creation may succeed (payment failure is handled gracefully)
     // The important thing is that no secret key appears in the response

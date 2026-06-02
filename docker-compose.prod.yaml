@@ -19,7 +19,6 @@
 # =============================================================================
 
 services:
-
   # ---------------------------------------------------------------------------
   # MongoDB — self-hosted only (profiles: [self-hosted])
   # ---------------------------------------------------------------------------
@@ -28,14 +27,14 @@ services:
     profiles: [self-hosted]
     # Mirror the dev compose replica-set command so the API's change streams
     # and transactions work correctly in self-hosted mode.
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    command: ['mongod', '--replSet', 'rs0', '--bind_ip_all']
     env_file: .env.prod
     volumes:
       - shopee_mongodb_data:/data/db
     networks:
       - shopee-network
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -54,7 +53,7 @@ services:
     networks:
       - shopee-network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -65,6 +64,7 @@ services:
   # shopee-api — always starts (no profile restriction)
   # ---------------------------------------------------------------------------
   shopee-api:
+    image: ${REGISTRY:-myuser}/shopee-api:${IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: apps/shopee-api/Dockerfile
@@ -72,7 +72,7 @@ services:
     volumes:
       - shopee_api_uploads:/app/upload
     ports:
-      - "127.0.0.1:8083:4000"
+      - '127.0.0.1:8083:4000'
     # depends_on with required: false — see profile-scoped mechanism comment above.
     # In self-hosted mode: waits for mongodb and redis to be healthy.
     # In cloud mode: mongodb/redis services are absent; required: false prevents errors.
@@ -84,7 +84,7 @@ services:
         condition: service_healthy
         required: false
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:4000/health || exit 1"]
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:4000/health || exit 1']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -97,6 +97,7 @@ services:
   # shopee-web — always starts (no profile restriction)
   # ---------------------------------------------------------------------------
   shopee-web:
+    image: ${REGISTRY:-myuser}/shopee-web:${IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: apps/shopee-web/Dockerfile
@@ -106,9 +107,9 @@ services:
         VITE_SITE_URL: ${VITE_SITE_URL}
         VITE_STRIPE_PUBLISHABLE_KEY: ${VITE_STRIPE_PUBLISHABLE_KEY}
     ports:
-      - "127.0.0.1:8081:8080"
+      - '127.0.0.1:8081:8080'
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/ || exit 1"]
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:8080/ || exit 1']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -121,6 +122,7 @@ services:
   # shopee-admin — always starts (no profile restriction)
   # ---------------------------------------------------------------------------
   shopee-admin:
+    image: ${REGISTRY:-myuser}/shopee-admin:${IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: apps/shopee-admin/Dockerfile
@@ -129,9 +131,9 @@ services:
         VITE_SOCKET_URL: ${VITE_SOCKET_URL}
         VITE_APP_VERSION: ${VITE_APP_VERSION}
     ports:
-      - "127.0.0.1:8082:8080"
+      - '127.0.0.1:8082:8080'
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/ || exit 1"]
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:8080/ || exit 1']
       interval: 30s
       timeout: 10s
       retries: 3

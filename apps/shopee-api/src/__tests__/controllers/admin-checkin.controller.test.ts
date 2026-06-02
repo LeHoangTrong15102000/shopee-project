@@ -82,9 +82,7 @@ describe('AdminCheckinController', () => {
 
   describe('adminGetCheckinLeaderboard', () => {
     it('calls service and returns 200', async () => {
-      mockAdminGetLeaderboard.mockResolvedValue([
-        { user_id: 'u1', streak: 30, total_points: 500 },
-      ])
+      mockAdminGetLeaderboard.mockResolvedValue([{ user_id: 'u1', streak: 30, total_points: 500 }])
 
       const req = createMockRequest()
       const res = createMockResponse()

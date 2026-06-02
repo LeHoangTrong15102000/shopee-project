@@ -140,14 +140,8 @@ export default function CheckinPage() {
           ) : (
             <>
               <div className="grid gap-4 sm:grid-cols-2">
-                <StatCard
-                  label={t('stats.totalToday')}
-                  value={stats?.total_today ?? '—'}
-                />
-                <StatCard
-                  label={t('stats.activeStreaks')}
-                  value={stats?.active_streaks ?? '—'}
-                />
+                <StatCard label={t('stats.totalToday')} value={stats?.total_today ?? '—'} />
+                <StatCard label={t('stats.activeStreaks')} value={stats?.active_streaks ?? '—'} />
               </div>
               <Card>
                 <CardHeader>
@@ -199,7 +193,10 @@ export default function CheckinPage() {
           <Input
             placeholder={t('tabs.users.search')}
             value={userSearch}
-            onChange={(e) => { setUserSearch(e.target.value); setUserPage(1) }}
+            onChange={(e) => {
+              setUserSearch(e.target.value)
+              setUserPage(1)
+            }}
             className="max-w-sm"
           />
           <DataTable
@@ -216,11 +213,7 @@ export default function CheckinPage() {
 
         {/* Leaderboard Tab */}
         <TabsContent value="leaderboard" className="pt-4">
-          <DataTable
-            columns={leaderboardColumns}
-            data={leaderboard ?? []}
-            isLoading={lbLoading}
-          />
+          <DataTable columns={leaderboardColumns} data={leaderboard ?? []} isLoading={lbLoading} />
         </TabsContent>
       </Tabs>
     </div>

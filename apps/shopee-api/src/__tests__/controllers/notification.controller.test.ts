@@ -281,7 +281,9 @@ describe('Notification Controller', () => {
   describe('adminCreateNotification', () => {
     it('should return 404 when user does not exist', async () => {
       ;(UserModel.exists as jest.Mock).mockResolvedValue(null)
-      const req = createMockRequest({ body: { user_id: 'u999', title: 'T', content: 'C', type: 'order' } })
+      const req = createMockRequest({
+        body: { user_id: 'u999', title: 'T', content: 'C', type: 'order' },
+      })
       const res = createMockResponse()
 
       await adminCreateNotification(req as Request, res as Response)
@@ -292,26 +294,46 @@ describe('Notification Controller', () => {
 
     it('should create notification when user exists', async () => {
       ;(UserModel.exists as jest.Mock).mockResolvedValue({ _id: 'u1' })
-      const mockNotification = { _id: 'notif_new', title: 'T', content: 'C', type: 'order', link: null, createdAt: new Date() }
+      const mockNotification = {
+        _id: 'notif_new',
+        title: 'T',
+        content: 'C',
+        type: 'order',
+        link: null,
+        createdAt: new Date(),
+      }
       mockNotificationService.createNotification.mockResolvedValue(mockNotification as any)
-      const req = createMockRequest({ body: { user_id: 'u1', title: 'T', content: 'C', type: 'order' } })
+      const req = createMockRequest({
+        body: { user_id: 'u1', title: 'T', content: 'C', type: 'order' },
+      })
       const res = createMockResponse()
 
       await adminCreateNotification(req as Request, res as Response)
 
-      expect(mockNotificationService.createNotification).toHaveBeenCalledWith('u1', 'T', 'C', 'order')
+      expect(mockNotificationService.createNotification).toHaveBeenCalledWith(
+        'u1',
+        'T',
+        'C',
+        'order',
+      )
       expect(res.status).toHaveBeenCalledWith(201)
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ message: 'Tạo thông báo thành công' }))
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'Tạo thông báo thành công' }),
+      )
     })
   })
 
   describe('adminBroadcastNotification', () => {
     it('should broadcast to all users', async () => {
       ;(UserModel.find as jest.Mock).mockReturnValue({
-        select: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue([{ _id: 'u1' }, { _id: 'u2' }]) }),
+        select: jest
+          .fn()
+          .mockReturnValue({ lean: jest.fn().mockResolvedValue([{ _id: 'u1' }, { _id: 'u2' }]) }),
       })
       mockNotificationService.broadcastNotification.mockResolvedValue(undefined as any)
-      const req = createMockRequest({ body: { title: 'Broadcast', content: 'Msg', type: 'system' } })
+      const req = createMockRequest({
+        body: { title: 'Broadcast', content: 'Msg', type: 'system' },
+      })
       const res = createMockResponse()
 
       await adminBroadcastNotification(req as Request, res as Response)
@@ -323,7 +345,9 @@ describe('Notification Controller', () => {
         'system',
       )
       expect(res.status).toHaveBeenCalledWith(201)
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ data: { recipientCount: 2 } }))
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ data: { recipientCount: 2 } }),
+      )
     })
   })
 

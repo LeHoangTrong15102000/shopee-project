@@ -90,17 +90,11 @@ vi.mock('src/components/ProductVariantSelector', () => ({
 
 // Mock ProductImages, ProductInfo, etc. from components barrel
 vi.mock('../components', () => ({
-  ProductImages: ({ product }: any) => (
-    <div data-testid="product-images">{product?.name}</div>
-  ),
-  ProductInfo: ({ product }: any) => (
-    <div data-testid="product-info">{product?.name}</div>
-  ),
+  ProductImages: ({ product }: any) => <div data-testid="product-images">{product?.name}</div>,
+  ProductInfo: ({ product }: any) => <div data-testid="product-info">{product?.name}</div>,
   ProductActions: () => <div data-testid="product-actions">Actions</div>,
   RelatedProducts: () => <div data-testid="related-products">Related</div>,
-  Breadcrumb: ({ productName }: any) => (
-    <div data-testid="breadcrumb">{productName}</div>
-  ),
+  Breadcrumb: ({ productName }: any) => <div data-testid="breadcrumb">{productName}</div>,
   ProductSpecifications: () => <div data-testid="product-specs">Specs</div>,
   ShopInfo: () => <div data-testid="shop-info">ShopInfo</div>,
   ShopProducts: () => <div data-testid="shop-products">ShopProducts</div>,

@@ -27,10 +27,7 @@ export class PaymentRepository {
     return PaymentModel.findOne({ idempotencyKey }).lean<IPayment | null>()
   }
 
-  async updateById(
-    id: string | Types.ObjectId,
-    data: Partial<IPayment>,
-  ): Promise<IPayment | null> {
+  async updateById(id: string | Types.ObjectId, data: Partial<IPayment>): Promise<IPayment | null> {
     return PaymentModel.findByIdAndUpdate(id, data, { new: true }).lean<IPayment | null>()
   }
 

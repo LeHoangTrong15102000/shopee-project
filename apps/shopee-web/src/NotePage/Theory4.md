@@ -33,13 +33,13 @@ export default defineConfig({
   test: {
     environment: 'jsdom', // Browser-like environment
     setupFiles: ['./vitest.setup.js'],
-    globals: true
+    globals: true,
   },
   resolve: {
     alias: {
-      src: path.resolve(__dirname, './src')
-    }
-  }
+      src: path.resolve(__dirname, './src'),
+    },
+  },
 })
 ```
 
@@ -94,7 +94,7 @@ describe('isAxiosUnprocessableEntityError', () => {
     const error = new AxiosError('Validation error')
     error.response = {
       status: 422,
-      data: { message: 'Validation failed' }
+      data: { message: 'Validation failed' },
     } as any
 
     expect(isAxiosUnprocessableEntityError(error)).toBe(true)
@@ -104,7 +104,7 @@ describe('isAxiosUnprocessableEntityError', () => {
     const error = new AxiosError('Server error')
     error.response = {
       status: 500,
-      data: { message: 'Internal server error' }
+      data: { message: 'Internal server error' },
     } as any
 
     expect(isAxiosUnprocessableEntityError(error)).toBe(false)
@@ -175,8 +175,8 @@ Test HTTP interceptors, token handling, và error processing trong axios instanc
 export default defineConfig({
   test: {
     environment: 'jsdom', // Provides localStorage, window, etc.
-    setupFiles: ['./vitest.setup.js']
-  }
+    setupFiles: ['./vitest.setup.js'],
+  },
 })
 ```
 
@@ -185,7 +185,13 @@ export default defineConfig({
 ```typescript
 // utils/__test__/auth.test.ts
 import { describe, it, expect, beforeEach } from 'vitest'
-import { setAccessTokenToLS, getAccessTokenFromLS, setRefreshTokenToLS, getRefreshTokenFromLS, clearLS } from '../auth'
+import {
+  setAccessTokenToLS,
+  getAccessTokenFromLS,
+  setRefreshTokenToLS,
+  getRefreshTokenFromLS,
+  clearLS,
+} from '../auth'
 
 describe('localStorage functions', () => {
   beforeEach(() => {
@@ -329,15 +335,15 @@ const setupMockAdapter = (httpInstance: any) => {
     data: {
       access_token: 'mock-access-token',
       refresh_token: 'mock-refresh-token',
-      user: { id: 1, email: 'test@example.com' }
-    }
+      user: { id: 1, email: 'test@example.com' },
+    },
   })
 
   // Mock refresh token
   mock.onPost('/refresh-access-token').reply(200, {
     data: {
-      access_token: 'new-access-token'
-    }
+      access_token: 'new-access-token',
+    },
   })
 
   return mock
@@ -384,12 +390,12 @@ describe('Refresh Token Mechanism', () => {
 
     // Mock 401 response cho API call đầu tiên
     mockAdapter.onGet('/me').replyOnce(401, {
-      message: 'Token expired'
+      message: 'Token expired',
     })
 
     // Mock successful refresh token
     mockAdapter.onPost('/refresh-access-token').replyOnce(200, {
-      data: { access_token: newAccessToken }
+      data: { access_token: newAccessToken },
     })
 
     // Mock successful retry với token mới
@@ -453,7 +459,7 @@ describe('Refresh Token Mechanism', () => {
 
     // Mock failed refresh token
     mockAdapter.onPost('/refresh-access-token').replyOnce(401, {
-      message: 'Refresh token expired'
+      message: 'Refresh token expired',
     })
 
     try {
@@ -544,11 +550,11 @@ export default defineConfig({
           branches: 80,
           functions: 80,
           lines: 80,
-          statements: 80
-        }
-      }
-    }
-  }
+          statements: 80,
+        },
+      },
+    },
+  },
 })
 ```
 
@@ -877,7 +883,7 @@ describe('Protected Routes', () => {
     // Mock không có token
     vi.mock('../utils/auth', () => ({
       getAccessTokenFromLS: () => '',
-      getRefreshTokenFromLS: () => ''
+      getRefreshTokenFromLS: () => '',
     }))
 
     renderWithRouter(['/user/profile'])
@@ -891,7 +897,7 @@ describe('Protected Routes', () => {
     // Mock có token
     vi.mock('../utils/auth', () => ({
       getAccessTokenFromLS: () => 'valid-token',
-      getRefreshTokenFromLS: () => 'valid-refresh-token'
+      getRefreshTokenFromLS: () => 'valid-refresh-token',
     }))
 
     renderWithRouter(['/user/profile'])
@@ -997,7 +1003,7 @@ mockFn.mockResolvedValue('async mocked value')
 
 // Mock modules
 vi.mock('../api', () => ({
-  fetchProducts: vi.fn().mockResolvedValue([])
+  fetchProducts: vi.fn().mockResolvedValue([]),
 }))
 ```
 
@@ -1100,14 +1106,14 @@ describe('ProductList', () => {
 ```typescript
 // Mock API calls
 vi.mock('../apis/product.api', () => ({
-  getProducts: vi.fn().mockResolvedValue(mockProducts)
+  getProducts: vi.fn().mockResolvedValue(mockProducts),
 }))
 
 // Mock router
 const mockNavigate = vi.fn()
 vi.mock('react-router-dom', () => ({
   ...vi.importActual('react-router-dom'),
-  useNavigate: () => mockNavigate
+  useNavigate: () => mockNavigate,
 }))
 ```
 

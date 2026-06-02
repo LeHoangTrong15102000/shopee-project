@@ -135,9 +135,7 @@ describe('Audit Log HOF Wrapper (Task 12.4)', () => {
       const { UserModel } = await import('@database/models/user.model')
 
       // Get the admin user's ID from the token
-      const meRes = await supertest(app)
-        .get('/me')
-        .set('Authorization', `Bearer ${adminToken}`)
+      const meRes = await supertest(app).get('/me').set('Authorization', `Bearer ${adminToken}`)
       const userId = meRes.body.data._id
 
       // Trigger a user update via admin endpoint

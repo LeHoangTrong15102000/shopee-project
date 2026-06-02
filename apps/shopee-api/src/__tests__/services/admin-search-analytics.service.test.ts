@@ -60,9 +60,7 @@ describe('AdminSearchAnalyticsService', () => {
           { _id: 'iphone', count: 100 },
           { _id: 'samsung', count: 50 },
         ])
-        .mockResolvedValueOnce([
-          { _id: 'iphone', count: 10 },
-        ])
+        .mockResolvedValueOnce([{ _id: 'iphone', count: 10 }])
 
       const result = await service.getTrendingSearches()
 
@@ -91,9 +89,7 @@ describe('AdminSearchAnalyticsService', () => {
     })
 
     it('returns empty data when no searches', async () => {
-      mockSearchHistoryAggregate
-        .mockResolvedValueOnce([])
-        .mockResolvedValueOnce([])
+      mockSearchHistoryAggregate.mockResolvedValueOnce([]).mockResolvedValueOnce([])
 
       const result = await service.getTrendingSearches()
 
@@ -164,9 +160,7 @@ describe('AdminSearchAnalyticsService', () => {
     })
 
     it('returns zero values when no data', async () => {
-      mockSearchHistoryAggregate
-        .mockResolvedValueOnce([])
-        .mockResolvedValueOnce([])
+      mockSearchHistoryAggregate.mockResolvedValueOnce([]).mockResolvedValueOnce([])
 
       const result = await service.getOverview('7d')
 

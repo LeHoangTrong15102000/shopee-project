@@ -8,7 +8,11 @@ import Button from '../../src/components/Button'
 import Pagination from '../../src/components/Pagination'
 import ProductRating from '../../src/components/ProductRating'
 import Footer from '../../src/components/Footer'
-import { SkeletonBase, ProductCardSkeleton, NotificationSkeleton } from '../../src/components/Skeleton'
+import {
+  SkeletonBase,
+  ProductCardSkeleton,
+  NotificationSkeleton,
+} from '../../src/components/Skeleton'
 
 // Unmock nuqs hooks so real behavior works with NuqsTestingAdapter
 vi.unmock('src/hooks/nuqs')
@@ -24,8 +28,8 @@ describe('Component Snapshots', () => {
   test('Input component renders correctly', () => {
     const { container } = render(
       <TestWrapper>
-        <Input placeholder='Test input' name='test' />
-      </TestWrapper>
+        <Input placeholder="Test input" name="test" />
+      </TestWrapper>,
     )
     expect(container.firstChild).toMatchSnapshot('Input-default')
   })
@@ -33,8 +37,8 @@ describe('Component Snapshots', () => {
   test('Input component with error state', () => {
     const { container } = render(
       <TestWrapper>
-        <Input placeholder='Test input' errorMessage='This field is required' name='test-error' />
-      </TestWrapper>
+        <Input placeholder="Test input" errorMessage="This field is required" name="test-error" />
+      </TestWrapper>,
     )
     expect(container.firstChild).toMatchSnapshot('Input-error')
   })
@@ -43,7 +47,7 @@ describe('Component Snapshots', () => {
     const { container } = render(
       <TestWrapper>
         <Button>Click me</Button>
-      </TestWrapper>
+      </TestWrapper>,
     )
     expect(container.firstChild).toMatchSnapshot('Button-default')
   })
@@ -52,7 +56,7 @@ describe('Component Snapshots', () => {
     const { container } = render(
       <TestWrapper>
         <Button disabled>Disabled button</Button>
-      </TestWrapper>
+      </TestWrapper>,
     )
     expect(container.firstChild).toMatchSnapshot('Button-disabled')
   })
@@ -61,7 +65,7 @@ describe('Component Snapshots', () => {
     const { container } = render(
       <TestWrapper>
         <Pagination pageSize={20} />
-      </TestWrapper>
+      </TestWrapper>,
     )
     expect(container.firstChild).toMatchSnapshot('Pagination-default')
   })
@@ -70,7 +74,7 @@ describe('Component Snapshots', () => {
     const { container } = render(
       <TestWrapper>
         <ProductRating rating={4.5} />
-      </TestWrapper>
+      </TestWrapper>,
     )
     expect(container.firstChild).toMatchSnapshot('ProductRating-default')
   })
@@ -79,7 +83,7 @@ describe('Component Snapshots', () => {
     const { container } = render(
       <TestWrapper>
         <Footer />
-      </TestWrapper>
+      </TestWrapper>,
     )
     expect(container.firstChild).toMatchSnapshot('Footer-default')
   })
@@ -87,8 +91,8 @@ describe('Component Snapshots', () => {
   test('SkeletonBase component renders correctly', () => {
     const { container } = render(
       <TestWrapper>
-        <SkeletonBase className='h-4 w-full' />
-      </TestWrapper>
+        <SkeletonBase className="h-4 w-full" />
+      </TestWrapper>,
     )
     expect(container.firstChild).toMatchSnapshot('SkeletonBase-default')
   })
@@ -97,7 +101,7 @@ describe('Component Snapshots', () => {
     const { container } = render(
       <TestWrapper>
         <ProductCardSkeleton />
-      </TestWrapper>
+      </TestWrapper>,
     )
     expect(container.firstChild).toMatchSnapshot('ProductCardSkeleton-default')
   })
@@ -106,7 +110,7 @@ describe('Component Snapshots', () => {
     const { container } = render(
       <TestWrapper>
         <NotificationSkeleton count={2} />
-      </TestWrapper>
+      </TestWrapper>,
     )
     expect(container.firstChild).toMatchSnapshot('NotificationSkeleton-default')
   })

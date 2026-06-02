@@ -16,7 +16,9 @@ jest.mock('@database/models/user.model', () => ({
 jest.mock('otplib', () => ({
   authenticator: {
     generateSecret: jest.fn().mockReturnValue('MOCKSECRET123456'),
-    keyuri: jest.fn().mockReturnValue('otpauth://totp/ShopeeClone:test@example.com?secret=MOCKSECRET'),
+    keyuri: jest
+      .fn()
+      .mockReturnValue('otpauth://totp/ShopeeClone:test@example.com?secret=MOCKSECRET'),
     verify: jest.fn(),
   },
 }))
@@ -133,9 +135,9 @@ describe('TotpService', () => {
   describe('verifySetup', () => {
     it('enables 2FA when TOTP code is valid', async () => {
       ;(UserModel.findById as jest.Mock).mockReturnValue({
-        lean: jest.fn().mockResolvedValue(
-          makeMockUser({ twoFactorSecret: 'encrypted_MOCKSECRET123456' }),
-        ),
+        lean: jest
+          .fn()
+          .mockResolvedValue(makeMockUser({ twoFactorSecret: 'encrypted_MOCKSECRET123456' })),
       })
       ;(authenticator.verify as jest.Mock).mockReturnValue(true)
       ;(UserModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({})
@@ -152,9 +154,9 @@ describe('TotpService', () => {
 
     it('throws ValidationError when TOTP code is invalid', async () => {
       ;(UserModel.findById as jest.Mock).mockReturnValue({
-        lean: jest.fn().mockResolvedValue(
-          makeMockUser({ twoFactorSecret: 'encrypted_MOCKSECRET123456' }),
-        ),
+        lean: jest
+          .fn()
+          .mockResolvedValue(makeMockUser({ twoFactorSecret: 'encrypted_MOCKSECRET123456' })),
       })
       ;(authenticator.verify as jest.Mock).mockReturnValue(false)
 

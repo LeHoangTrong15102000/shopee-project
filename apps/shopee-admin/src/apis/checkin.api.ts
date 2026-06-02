@@ -47,8 +47,7 @@ export interface CheckinDailyStat {
 }
 
 const checkinApi = {
-  getCheckinStats: () =>
-    http.get<SuccessResponse<CheckinStats>>('admin/checkin'),
+  getCheckinStats: () => http.get<SuccessResponse<CheckinStats>>('admin/checkin'),
 
   getCheckinUsers: (params?: { page?: number; limit?: number; search?: string }) =>
     http.get<SuccessResponse<CheckinUserListResponse>>('admin/checkin/users', { params }),

@@ -103,9 +103,7 @@ export default function ReviewListPage() {
             variant="ghost"
             size="sm"
             title={t('actions.approve')}
-            onClick={() =>
-              moderateMut.mutate({ id: row.original._id, status: 'approved' })
-            }
+            onClick={() => moderateMut.mutate({ id: row.original._id, status: 'approved' })}
             disabled={row.original.moderation_status === 'approved'}
           >
             <CheckCircle className="size-4 text-green-600" />
@@ -114,9 +112,7 @@ export default function ReviewListPage() {
             variant="ghost"
             size="sm"
             title={t('actions.flag')}
-            onClick={() =>
-              moderateMut.mutate({ id: row.original._id, status: 'flagged' })
-            }
+            onClick={() => moderateMut.mutate({ id: row.original._id, status: 'flagged' })}
             disabled={row.original.moderation_status === 'flagged'}
           >
             <Flag className="size-4 text-amber-600" />
@@ -125,10 +121,10 @@ export default function ReviewListPage() {
             variant="ghost"
             size="sm"
             title={t('actions.resetPending')}
-            onClick={() =>
-              moderateMut.mutate({ id: row.original._id, status: 'pending' })
+            onClick={() => moderateMut.mutate({ id: row.original._id, status: 'pending' })}
+            disabled={
+              row.original.moderation_status === 'pending' || !row.original.moderation_status
             }
-            disabled={row.original.moderation_status === 'pending' || !row.original.moderation_status}
           >
             <RotateCcw className="size-4 text-muted-foreground" />
           </Button>

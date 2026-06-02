@@ -1,6 +1,7 @@
 # HƯỚNG DẪN TESTING CHO SHOPEE-API
 
 ## Mục Lục
+
 1. [Giới Thiệu](#giới-thiệu)
 2. [Cài Đặt và Cấu Hình](#cài-đặt-và-cấu-hình)
 3. [Cấu Trúc Testing](#cấu-trúc-testing)
@@ -17,6 +18,7 @@
 ## Giới Thiệu
 
 ### Tổng Quan
+
 Shopee-api là một RESTful API được xây dựng với Express.js và TypeScript, sử dụng MongoDB làm database. Testing framework sử dụng Jest với các công nghệ hỗ trợ:
 
 - **Jest**: Testing framework chính
@@ -26,6 +28,7 @@ Shopee-api là một RESTful API được xây dựng với Express.js và TypeS
 - **Socket.IO Client**: Testing WebSocket connections
 
 ### Mục Tiêu Testing
+
 - Đảm bảo API endpoints hoạt động đúng với các HTTP methods
 - Verify business logic trong services và repositories
 - Test database operations với real MongoDB (in-memory)
@@ -34,6 +37,7 @@ Shopee-api là một RESTful API được xây dựng với Express.js và TypeS
 - Maintain code coverage > 80%
 
 ### Các Loại Tests
+
 1. **Unit Tests**: Test controllers, services, repositories, middleware độc lập
 2. **Integration Tests**: Test API endpoints với real Express app và in-memory DB
 3. **E2E Tests**: Test complete user flows từ đầu đến cuối
@@ -115,12 +119,7 @@ const sharedConfig = {
 }
 
 module.exports = {
-  collectCoverageFrom: [
-    'src/**/*.ts',
-    '!src/**/*.d.ts',
-    '!src/__tests__/**',
-    '!src/index.ts',
-  ],
+  collectCoverageFrom: ['src/**/*.ts', '!src/**/*.d.ts', '!src/__tests__/**', '!src/index.ts'],
 
   projects: [
     // Unit tests
@@ -174,7 +173,7 @@ module.exports = {
 - **testTimeout**: Timeout khác nhau cho mỗi loại test
 - **setupFilesAfterEnv**: Setup files chạy trước mỗi test suite
 
-### Cấu Hình Setup File (src/__tests__/setup.ts)
+### Cấu Hình Setup File (src/**tests**/setup.ts)
 
 ```typescript
 import { Request, Response } from 'express'
@@ -245,7 +244,7 @@ afterAll(() => {
 })
 ```
 
-### Database Setup Helper (src/__tests__/helpers/db-setup.ts)
+### Database Setup Helper (src/**tests**/helpers/db-setup.ts)
 
 ```typescript
 import { MongoMemoryServer } from 'mongodb-memory-server'
@@ -352,24 +351,24 @@ describe('Auth Controller', () => {
         _id: 'user-1',
         email: 'test@shopee.vn',
         name: 'Test User',
-        roles: ['User']
+        roles: ['User'],
       }
 
       const mockTokens = {
         access_token: 'mock-access-token',
-        refresh_token: 'mock-refresh-token'
+        refresh_token: 'mock-refresh-token',
       }
 
       ;(authService.login as jest.Mock).mockResolvedValue({
         user: mockUser,
-        ...mockTokens
+        ...mockTokens,
       })
 
       const req = createMockRequest({
         body: {
           email: 'test@shopee.vn',
-          password: 'password123'
-        }
+          password: 'password123',
+        },
       })
       const res = createMockResponse()
       const next = createMockNext()
@@ -385,22 +384,22 @@ describe('Auth Controller', () => {
         data: {
           user: mockUser,
           access_token: mockTokens.access_token,
-          refresh_token: mockTokens.refresh_token
-        }
+          refresh_token: mockTokens.refresh_token,
+        },
       })
     })
 
     it('should return 401 when credentials are invalid', async () => {
       // Arrange
       ;(authService.login as jest.Mock).mockRejectedValue(
-        new Error('Email hoặc mật khẩu không đúng')
+        new Error('Email hoặc mật khẩu không đúng'),
       )
 
       const req = createMockRequest({
         body: {
           email: 'wrong@shopee.vn',
-          password: 'wrongpassword'
-        }
+          password: 'wrongpassword',
+        },
       })
       const res = createMockResponse()
       const next = createMockNext()
@@ -420,21 +419,21 @@ describe('Auth Controller', () => {
         _id: 'new-user-1',
         email: 'newuser@shopee.vn',
         name: 'New User',
-        roles: ['User']
+        roles: ['User'],
       }
 
       ;(authService.register as jest.Mock).mockResolvedValue({
         user: mockNewUser,
         access_token: 'new-access-token',
-        refresh_token: 'new-refresh-token'
+        refresh_token: 'new-refresh-token',
       })
 
       const req = createMockRequest({
         body: {
           email: 'newuser@shopee.vn',
           password: 'password123',
-          name: 'New User'
-        }
+          name: 'New User',
+        },
       })
       const res = createMockResponse()
       const next = createMockNext()
@@ -446,7 +445,7 @@ describe('Auth Controller', () => {
       expect(authService.register).toHaveBeenCalledWith({
         email: 'newuser@shopee.vn',
         password: 'password123',
-        name: 'New User'
+        name: 'New User',
       })
       expect(res.status).toHaveBeenCalledWith(201)
     })
@@ -479,7 +478,7 @@ describe('Auth Service', () => {
         email: 'test@shopee.vn',
         password: 'hashed-password',
         name: 'Test User',
-        roles: ['User']
+        roles: ['User'],
       }
 
       ;(userRepository.findByEmail as jest.Mock).mockResolvedValue(mockUser)
@@ -496,10 +495,10 @@ describe('Auth Service', () => {
       expect(result).toEqual({
         user: expect.objectContaining({
           _id: 'user-1',
-          email: 'test@shopee.vn'
+          email: 'test@shopee.vn',
         }),
         access_token: 'mock-token',
-        refresh_token: 'mock-token'
+        refresh_token: 'mock-token',
       })
     })
 
@@ -508,9 +507,9 @@ describe('Auth Service', () => {
       ;(userRepository.findByEmail as jest.Mock).mockResolvedValue(null)
 
       // Act & Assert
-      await expect(authService.login('notfound@shopee.vn', 'password123'))
-        .rejects
-        .toThrow('Email hoặc mật khẩu không đúng')
+      await expect(authService.login('notfound@shopee.vn', 'password123')).rejects.toThrow(
+        'Email hoặc mật khẩu không đúng',
+      )
     })
 
     it('should throw error when password is incorrect', async () => {
@@ -518,16 +517,16 @@ describe('Auth Service', () => {
       const mockUser = {
         _id: 'user-1',
         email: 'test@shopee.vn',
-        password: 'hashed-password'
+        password: 'hashed-password',
       }
 
       ;(userRepository.findByEmail as jest.Mock).mockResolvedValue(mockUser)
       ;(comparePassword as jest.Mock).mockResolvedValue(false)
 
       // Act & Assert
-      await expect(authService.login('test@shopee.vn', 'wrongpassword'))
-        .rejects
-        .toThrow('Email hoặc mật khẩu không đúng')
+      await expect(authService.login('test@shopee.vn', 'wrongpassword')).rejects.toThrow(
+        'Email hoặc mật khẩu không đúng',
+      )
     })
   })
 
@@ -540,7 +539,7 @@ describe('Auth Service', () => {
         _id: 'new-user-1',
         email: 'newuser@shopee.vn',
         name: 'New User',
-        roles: ['User']
+        roles: ['User'],
       })
       ;(signToken as jest.Mock).mockReturnValue('mock-token')
 
@@ -548,7 +547,7 @@ describe('Auth Service', () => {
       const result = await authService.register({
         email: 'newuser@shopee.vn',
         password: 'password123',
-        name: 'New User'
+        name: 'New User',
       })
 
       // Assert
@@ -557,7 +556,7 @@ describe('Auth Service', () => {
         email: 'newuser@shopee.vn',
         password: 'hashed-password',
         name: 'New User',
-        roles: ['User']
+        roles: ['User'],
       })
       expect(result.user.email).toBe('newuser@shopee.vn')
     })
@@ -566,15 +565,17 @@ describe('Auth Service', () => {
       // Arrange
       ;(userRepository.findByEmail as jest.Mock).mockResolvedValue({
         _id: 'existing-user',
-        email: 'existing@shopee.vn'
+        email: 'existing@shopee.vn',
       })
 
       // Act & Assert
-      await expect(authService.register({
-        email: 'existing@shopee.vn',
-        password: 'password123',
-        name: 'Test'
-      })).rejects.toThrow('Email đã tồn tại')
+      await expect(
+        authService.register({
+          email: 'existing@shopee.vn',
+          password: 'password123',
+          name: 'Test',
+        }),
+      ).rejects.toThrow('Email đã tồn tại')
     })
   })
 })
@@ -599,7 +600,7 @@ describe('User Repository', () => {
       const mockUser = {
         _id: 'user-1',
         email: 'test@shopee.vn',
-        name: 'Test User'
+        name: 'Test User',
       }
 
       ;(User.findOne as jest.Mock).mockResolvedValue(mockUser)
@@ -631,13 +632,13 @@ describe('User Repository', () => {
         email: 'newuser@shopee.vn',
         password: 'hashed-password',
         name: 'New User',
-        roles: ['User']
+        roles: ['User'],
       }
 
       const mockCreatedUser = {
         _id: 'new-user-1',
         ...userData,
-        save: jest.fn().mockResolvedValue(true)
+        save: jest.fn().mockResolvedValue(true),
       }
 
       ;(User as any).mockImplementation(() => mockCreatedUser)
@@ -646,10 +647,12 @@ describe('User Repository', () => {
       const result = await userRepository.create(userData)
 
       // Assert
-      expect(result).toEqual(expect.objectContaining({
-        email: 'newuser@shopee.vn',
-        name: 'New User'
-      }))
+      expect(result).toEqual(
+        expect.objectContaining({
+          email: 'newuser@shopee.vn',
+          name: 'New User',
+        }),
+      )
     })
   })
 
@@ -658,7 +661,7 @@ describe('User Repository', () => {
       // Arrange
       const mockUser = {
         _id: 'user-1',
-        email: 'test@shopee.vn'
+        email: 'test@shopee.vn',
       }
 
       ;(User.findById as jest.Mock).mockResolvedValue(mockUser)
@@ -679,7 +682,7 @@ describe('User Repository', () => {
       const mockUpdatedUser = {
         _id: 'user-1',
         email: 'test@shopee.vn',
-        name: 'Updated Name'
+        name: 'Updated Name',
       }
 
       ;(User.findByIdAndUpdate as jest.Mock).mockResolvedValue(mockUpdatedUser)
@@ -688,11 +691,7 @@ describe('User Repository', () => {
       const result = await userRepository.update('user-1', updateData)
 
       // Assert
-      expect(User.findByIdAndUpdate).toHaveBeenCalledWith(
-        'user-1',
-        updateData,
-        { new: true }
-      )
+      expect(User.findByIdAndUpdate).toHaveBeenCalledWith('user-1', updateData, { new: true })
       expect(result.name).toBe('Updated Name')
     })
   })
@@ -715,15 +714,15 @@ describe('Auth Middleware', () => {
     const mockDecoded = {
       id: 'user-1',
       email: 'test@shopee.vn',
-      roles: ['User']
+      roles: ['User'],
     }
 
     ;(verifyToken as jest.Mock).mockReturnValue(mockDecoded)
 
     const req = createMockRequest({
       headers: {
-        authorization: 'Bearer valid-token'
-      }
+        authorization: 'Bearer valid-token',
+      },
     })
     const res = createMockResponse()
     const next = createMockNext()
@@ -740,7 +739,7 @@ describe('Auth Middleware', () => {
   it('should return 401 when token is missing', async () => {
     // Arrange
     const req = createMockRequest({
-      headers: {}
+      headers: {},
     })
     const res = createMockResponse()
     const next = createMockNext()
@@ -751,7 +750,7 @@ describe('Auth Middleware', () => {
     // Assert
     expect(res.status).toHaveBeenCalledWith(401)
     expect(res.json).toHaveBeenCalledWith({
-      message: 'Unauthorized'
+      message: 'Unauthorized',
     })
   })
 
@@ -763,8 +762,8 @@ describe('Auth Middleware', () => {
 
     const req = createMockRequest({
       headers: {
-        authorization: 'Bearer invalid-token'
-      }
+        authorization: 'Bearer invalid-token',
+      },
     })
     const res = createMockResponse()
     const next = createMockNext()
@@ -779,7 +778,6 @@ describe('Auth Middleware', () => {
 ```
 
 ---
-
 
 ## Integration Testing
 
@@ -817,13 +815,11 @@ const app = createTestApp()
 describe('Auth Integration Tests', () => {
   describe('POST /api/auth/register', () => {
     it('should register new user successfully', async () => {
-      const response = await request(app)
-        .post('/api/auth/register')
-        .send({
-          email: 'newuser@shopee.vn',
-          password: 'password123',
-          name: 'New User'
-        })
+      const response = await request(app).post('/api/auth/register').send({
+        email: 'newuser@shopee.vn',
+        password: 'password123',
+        name: 'New User',
+      })
 
       expect(response.status).toBe(201)
       expect(response.body.data).toHaveProperty('access_token')
@@ -832,12 +828,10 @@ describe('Auth Integration Tests', () => {
 
   describe('POST /api/auth/login', () => {
     it('should login successfully with valid credentials', async () => {
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send({
-          email: 'test@shopee.vn',
-          password: 'password123'
-        })
+      const response = await request(app).post('/api/auth/login').send({
+        email: 'test@shopee.vn',
+        password: 'password123',
+      })
 
       expect(response.status).toBe(200)
       expect(response.body.data).toHaveProperty('access_token')
@@ -862,12 +856,10 @@ const app = createTestApp()
 describe('Checkout Flow E2E', () => {
   it('should complete full checkout flow', async () => {
     // Step 1: Login
-    const loginResponse = await request(app)
-      .post('/api/auth/login')
-      .send({
-        email: 'buyer@shopee.vn',
-        password: 'password123'
-      })
+    const loginResponse = await request(app).post('/api/auth/login').send({
+      email: 'buyer@shopee.vn',
+      password: 'password123',
+    })
 
     const accessToken = loginResponse.body.data.access_token
 
@@ -877,7 +869,7 @@ describe('Checkout Flow E2E', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         product_id: 'product-1',
-        buy_count: 2
+        buy_count: 2,
       })
 
     expect(addToCartResponse.status).toBe(200)
@@ -901,7 +893,7 @@ describe('Chat Socket Tests', () => {
   it('should emit message to room', (done) => {
     clientSocket.emit('send-message', {
       room: 'room-1',
-      message: 'Hello'
+      message: 'Hello',
     })
 
     clientSocket.on('receive-message', (data) => {
@@ -924,9 +916,7 @@ it('should create product', async () => {
   const productData = { name: 'Test', price: 100000 }
 
   // Act
-  const response = await request(app)
-    .post('/api/products')
-    .send(productData)
+  const response = await request(app).post('/api/products').send(productData)
 
   // Assert
   expect(response.status).toBe(201)
@@ -988,9 +978,7 @@ node --inspect-brk node_modules/.bin/jest --runInBand
 ### 3. Làm sao test file uploads?
 
 ```typescript
-await request(app)
-  .post('/api/upload')
-  .attach('image', Buffer.from('data'), 'file.jpg')
+await request(app).post('/api/upload').attach('image', Buffer.from('data'), 'file.jpg')
 ```
 
 ---
@@ -1000,12 +988,14 @@ await request(app)
 Testing là quan trọng cho API development. Với Jest, Supertest, và MongoDB Memory Server, chúng ta có thể viết tests reliable và maintainable.
 
 **Key Takeaways:**
+
 - Sử dụng Jest cho unit, integration, e2e tests
 - Sử dụng Supertest để test HTTP endpoints
 - Sử dụng MongoDB Memory Server cho isolated testing
 - Maintain high coverage (80%+)
 
 **Resources:**
+
 - [Jest Documentation](https://jestjs.io/)
 - [Supertest Documentation](https://github.com/visionmedia/supertest)
 - [MongoDB Memory Server](https://github.com/nodkz/mongodb-memory-server)

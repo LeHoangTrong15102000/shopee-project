@@ -80,7 +80,9 @@ export default function FilterBottomSheet({
               placeholderTextColor={colors.neutrals600}
               className="flex-1 rounded-lg border border-neutrals700 bg-background px-3 py-2 text-foreground"
             />
-            <AppText raw color="muted">—</AppText>
+            <AppText raw color="muted">
+              —
+            </AppText>
             <TextInput
               value={maxPrice}
               onChangeText={setMaxPrice}

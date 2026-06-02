@@ -93,9 +93,9 @@ describe('Chatbot API', () => {
 
     it('should throw on error', async () => {
       vi.mocked(http.put).mockRejectedValue(new Error('Network error'))
-      await expect(
-        chatbotApi.updateConversation('1', { title: 'New Title' }),
-      ).rejects.toThrow('Network error')
+      await expect(chatbotApi.updateConversation('1', { title: 'New Title' })).rejects.toThrow(
+        'Network error',
+      )
     })
   })
 

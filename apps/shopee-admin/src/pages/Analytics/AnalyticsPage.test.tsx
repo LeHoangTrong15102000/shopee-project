@@ -168,7 +168,14 @@ describe('AnalyticsPage', () => {
         return HttpResponse.json({
           message: 'ok',
           data: [
-            { _id: 'p-no-rating', name: 'No Rating Product', sold: 10, view: 100, rating: null, revenue: 500000 },
+            {
+              _id: 'p-no-rating',
+              name: 'No Rating Product',
+              sold: 10,
+              view: 100,
+              rating: null,
+              revenue: 500000,
+            },
           ],
         })
       }),
@@ -192,7 +199,14 @@ describe('AnalyticsPage', () => {
         return HttpResponse.json({
           message: 'ok',
           data: [
-            { _id: 'p-no-revenue', name: 'No Revenue Product', sold: 5, view: 50, rating: 4.2, revenue: 0 },
+            {
+              _id: 'p-no-revenue',
+              name: 'No Revenue Product',
+              sold: 5,
+              view: 50,
+              rating: 4.2,
+              revenue: 0,
+            },
           ],
         })
       }),

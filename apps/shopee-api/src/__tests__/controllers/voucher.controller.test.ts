@@ -164,7 +164,9 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { code: 'INVALID' } })
       const res = createMockResponse()
 
-      await expect(getVoucherByCode(req as any, res as Response)).rejects.toThrow('Voucher not found')
+      await expect(getVoucherByCode(req as any, res as Response)).rejects.toThrow(
+        'Voucher not found',
+      )
     })
 
     it('should propagate other errors', async () => {
@@ -236,7 +238,9 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_value: 100000 } })
       const res = createMockResponse()
 
-      await expect(applyVoucher(req as any, res as Response)).rejects.toThrow('Voucher đã hết lượt sử dụng')
+      await expect(applyVoucher(req as any, res as Response)).rejects.toThrow(
+        'Voucher đã hết lượt sử dụng',
+      )
     })
 
     it('should return 400 on ValidationError', async () => {
@@ -246,7 +250,9 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_value: 1000 } })
       const res = createMockResponse()
 
-      await expect(applyVoucher(req as any, res as Response)).rejects.toThrow('Giá trị đơn hàng không đủ')
+      await expect(applyVoucher(req as any, res as Response)).rejects.toThrow(
+        'Giá trị đơn hàng không đủ',
+      )
     })
 
     it('should propagate other errors', async () => {
@@ -356,7 +362,9 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ query: { page: '-1' } })
       const res = createMockResponse()
 
-      await expect(getSavedVouchers(req as any, res as Response)).rejects.toThrow('Invalid pagination')
+      await expect(getSavedVouchers(req as any, res as Response)).rejects.toThrow(
+        'Invalid pagination',
+      )
     })
 
     it('should propagate other errors', async () => {
@@ -512,7 +520,9 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { id: 'voucher123' } })
       const res = createMockResponse()
 
-      await expect(collectVoucher(req as any, res as Response)).rejects.toThrow('Voucher đã được thu thập')
+      await expect(collectVoucher(req as any, res as Response)).rejects.toThrow(
+        'Voucher đã được thu thập',
+      )
     })
 
     it('should return 400 on ValidationError', async () => {
@@ -520,7 +530,9 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ params: { id: 'invalid' } })
       const res = createMockResponse()
 
-      await expect(collectVoucher(req as any, res as Response)).rejects.toThrow('Invalid voucher id')
+      await expect(collectVoucher(req as any, res as Response)).rejects.toThrow(
+        'Invalid voucher id',
+      )
     })
 
     it('should propagate other errors', async () => {
@@ -559,7 +571,9 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'INVALID', order_total: 100000 } })
       const res = createMockResponse()
 
-      await expect(validateVoucher(req as any, res as Response)).rejects.toThrow('Voucher not found')
+      await expect(validateVoucher(req as any, res as Response)).rejects.toThrow(
+        'Voucher not found',
+      )
     })
 
     it('should return 400 with is_valid: false on BusinessError', async () => {
@@ -567,7 +581,9 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_total: 100000 } })
       const res = createMockResponse()
 
-      await expect(validateVoucher(req as any, res as Response)).rejects.toThrow('Voucher đã hết hạn')
+      await expect(validateVoucher(req as any, res as Response)).rejects.toThrow(
+        'Voucher đã hết hạn',
+      )
     })
 
     it('should return 400 with is_valid: false on ValidationError', async () => {
@@ -577,7 +593,9 @@ describe('Voucher Controller', () => {
       const req = createMockRequest({ body: { code: 'DISCOUNT10', order_total: 1000 } })
       const res = createMockResponse()
 
-      await expect(validateVoucher(req as any, res as Response)).rejects.toThrow('Giá trị đơn hàng không đủ')
+      await expect(validateVoucher(req as any, res as Response)).rejects.toThrow(
+        'Giá trị đơn hàng không đủ',
+      )
     })
 
     it('should propagate other errors', async () => {

@@ -1,5 +1,10 @@
 import { Types } from 'mongoose'
-import { LoginHistoryModel, ILoginHistory, LoginStatus, LoginMethod } from '@database/models/login-history.model'
+import {
+  LoginHistoryModel,
+  ILoginHistory,
+  LoginStatus,
+  LoginMethod,
+} from '@database/models/login-history.model'
 import { ILoginHistoryRepository } from './interfaces/login-history.repository.interface'
 
 export class LoginHistoryRepository implements ILoginHistoryRepository {

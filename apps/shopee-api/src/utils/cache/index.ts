@@ -116,8 +116,8 @@ export const CacheKeys = {
 
 // TTL constants (seconds)
 export const CacheTTL = {
-  PRODUCTS_LIST: 5 * 60,    // 5 minutes
-  PRODUCT_DETAIL: 10 * 60,  // 10 minutes
+  PRODUCTS_LIST: 5 * 60, // 5 minutes
+  PRODUCT_DETAIL: 10 * 60, // 10 minutes
   CATEGORIES_LIST: 30 * 60, // 30 minutes
 }
 

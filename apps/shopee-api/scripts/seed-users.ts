@@ -13,9 +13,7 @@ const generateSalt = (rounds: number): string => {
 const hashValue = (value: string): string => {
   const salt = generateSalt(BCRYPT_SALT_ROUNDS)
   const iterations = Math.pow(2, BCRYPT_SALT_ROUNDS)
-  const hash = crypto
-    .pbkdf2Sync(value, salt, iterations, 64, 'sha512')
-    .toString('hex')
+  const hash = crypto.pbkdf2Sync(value, salt, iterations, 64, 'sha512').toString('hex')
   return `$${BCRYPT_SALT_ROUNDS}$${salt}$${hash}`
 }
 
@@ -31,7 +29,7 @@ const UserSchema = new mongoose.Schema(
     roles: { type: [String], required: true, default: ['User'] },
     avatar: { type: String, maxlength: 1000 },
   },
-  { timestamps: true }
+  { timestamps: true },
 )
 UserSchema.index({ email: 1 }, { unique: true })
 

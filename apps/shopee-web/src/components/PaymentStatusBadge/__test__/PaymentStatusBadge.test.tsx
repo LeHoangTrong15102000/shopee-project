@@ -17,9 +17,7 @@ vi.mock('react-i18next', () => ({
 describe('PaymentStatusBadge', () => {
   describe('returns null for non-credit_card payment methods', () => {
     it('returns null for cod payment method', () => {
-      const { container } = render(
-        <PaymentStatusBadge paymentStatus="paid" paymentMethod="cod" />,
-      )
+      const { container } = render(<PaymentStatusBadge paymentStatus="paid" paymentMethod="cod" />)
       expect(container.firstChild).toBeNull()
     })
 

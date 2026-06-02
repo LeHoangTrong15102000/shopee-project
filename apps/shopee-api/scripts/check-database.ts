@@ -24,7 +24,7 @@ const ProductSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 const Category = mongoose.model('categories', CategorySchema)
@@ -53,10 +53,7 @@ async function main() {
 
     // Show products with locations
     console.log('\n🌍 PRODUCTS WITH LOCATIONS (Sample 10):')
-    const productsWithLocation = await Product.find(
-      {},
-      'name location category'
-    )
+    const productsWithLocation = await Product.find({}, 'name location category')
       .limit(10)
       .populate('category', 'name')
 
@@ -64,7 +61,7 @@ async function main() {
       console.log(
         `  ${index + 1}. ${product.name} - Location: ${
           product.location
-        } - Category: ${(product.category as any)?.name}`
+        } - Category: ${(product.category as any)?.name}`,
       )
     })
 

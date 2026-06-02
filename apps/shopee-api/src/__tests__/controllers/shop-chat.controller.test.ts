@@ -15,11 +15,7 @@ jest.mock('@services/shop-chat.service', () => ({
   })),
 }))
 
-import {
-  getConversations,
-  getMessages,
-  sendMessage,
-} from '../../controllers/shop-chat.controller'
+import { getConversations, getMessages, sendMessage } from '../../controllers/shop-chat.controller'
 
 const createMockRequest = (options: any = {}): Partial<Request> => ({
   body: options.body || {},
@@ -98,7 +94,14 @@ describe('ShopChatController', () => {
 
       await sendMessage(req as Request, res as Response)
 
-      expect(mockSendMessage).toHaveBeenCalledWith('conv1', 'user123', 'user', 'hello', 'text', undefined)
+      expect(mockSendMessage).toHaveBeenCalledWith(
+        'conv1',
+        'user123',
+        'user',
+        'hello',
+        'text',
+        undefined,
+      )
       expect(res.status).toHaveBeenCalledWith(201)
     })
 

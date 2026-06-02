@@ -10,7 +10,13 @@ interface Props {
   isLoading: boolean
 }
 
-export default function ShippingDeleteDialog({ open, method, onOpenChange, onConfirm, isLoading }: Props) {
+export default function ShippingDeleteDialog({
+  open,
+  method,
+  onOpenChange,
+  onConfirm,
+  isLoading,
+}: Props) {
   const { t } = useTranslation('shipping')
 
   return (
@@ -18,7 +24,9 @@ export default function ShippingDeleteDialog({ open, method, onOpenChange, onCon
       open={open}
       onOpenChange={onOpenChange}
       title={t('delete.title')}
-      description={method ? t('delete.description', { name: method.name }) : t('delete.descriptionFallback')}
+      description={
+        method ? t('delete.description', { name: method.name }) : t('delete.descriptionFallback')
+      }
       onConfirm={onConfirm}
       isLoading={isLoading}
     />

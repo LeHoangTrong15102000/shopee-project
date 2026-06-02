@@ -85,9 +85,7 @@ describe('2FA Login Flow (Task 12.1)', () => {
     const partialToken = loginRes.body.data.partial_token
 
     // Partial token must NOT grant access to protected routes
-    const meRes = await supertest(app)
-      .get('/me')
-      .set('Authorization', `Bearer ${partialToken}`)
+    const meRes = await supertest(app).get('/me').set('Authorization', `Bearer ${partialToken}`)
 
     expect(meRes.status).toBe(401)
   })
@@ -132,9 +130,7 @@ describe('2FA Login Flow (Task 12.1)', () => {
 
     const fullAccessToken = stripBearer(completeRes.body.data.access_token)
 
-    const meRes = await supertest(app)
-      .get('/me')
-      .set('Authorization', `Bearer ${fullAccessToken}`)
+    const meRes = await supertest(app).get('/me').set('Authorization', `Bearer ${fullAccessToken}`)
 
     expect(meRes.status).toBe(200)
     expect(meRes.body.data.email).toBe(email)
@@ -252,9 +248,7 @@ describe('Backup Code Login (Task 12.2)', () => {
 
     const fullAccessToken = stripBearer(completeRes.body.data.access_token)
 
-    const meRes = await supertest(app)
-      .get('/me')
-      .set('Authorization', `Bearer ${fullAccessToken}`)
+    const meRes = await supertest(app).get('/me').set('Authorization', `Bearer ${fullAccessToken}`)
 
     expect(meRes.status).toBe(200)
     expect(meRes.body.data.email).toBe(email)

@@ -20,12 +20,7 @@ export default function CheckinScreen() {
 
   const { data: streakData, isLoading } = useCheckinStreak()
   const { mutate: doCheckIn, isPending: isCheckingIn } = useCheckIn()
-  const {
-    data: historyData,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useCheckinHistory()
+  const { data: historyData, fetchNextPage, hasNextPage, isFetchingNextPage } = useCheckinHistory()
 
   const streak = streakData?.data as CheckinStreak | undefined
   const checkedInToday = streak?.checked_in_today ?? false
@@ -52,10 +47,13 @@ export default function CheckinScreen() {
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage])
 
-  const currentMonthLabel = new Date().toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US', {
-    month: 'long',
-    year: 'numeric',
-  })
+  const currentMonthLabel = new Date().toLocaleDateString(
+    i18n.language === 'vi' ? 'vi-VN' : 'en-US',
+    {
+      month: 'long',
+      year: 'numeric',
+    }
+  )
 
   const renderHistoryItem = ({ item }: { item: CheckinHistoryItem }) => {
     const formattedDate = new Date(item.date).toLocaleDateString(undefined, {
@@ -170,7 +168,11 @@ export default function CheckinScreen() {
                     raw
                     variant="body"
                     weight="semibold"
-                    style={{ paddingHorizontal: 16, marginBottom: 12, textTransform: 'capitalize' }}>
+                    style={{
+                      paddingHorizontal: 16,
+                      marginBottom: 12,
+                      textTransform: 'capitalize',
+                    }}>
                     {currentMonthLabel}
                   </AppText>
 

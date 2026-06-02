@@ -275,8 +275,12 @@ describe('AdminShippingController', () => {
       await adminReorderShippingMethods(req as Request, res as Response)
 
       expect(ShippingMethodModel.findByIdAndUpdate).toHaveBeenCalledTimes(3)
-      expect(ShippingMethodModel.findByIdAndUpdate).toHaveBeenCalledWith('m1', { $set: { sort_order: 1 } })
-      expect(ShippingMethodModel.findByIdAndUpdate).toHaveBeenCalledWith('m2', { $set: { sort_order: 2 } })
+      expect(ShippingMethodModel.findByIdAndUpdate).toHaveBeenCalledWith('m1', {
+        $set: { sort_order: 1 },
+      })
+      expect(ShippingMethodModel.findByIdAndUpdate).toHaveBeenCalledWith('m2', {
+        $set: { sort_order: 2 },
+      })
       expect(res.status).toHaveBeenCalledWith(200)
     })
   })

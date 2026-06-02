@@ -327,7 +327,10 @@ describe('LoyaltyRepository', () => {
 
   describe('createReward', () => {
     it('should create a reward and set is_active to true', async () => {
-      const result = await repository.createReward({ name: 'Gift Card', points_required: 200 } as any)
+      const result = await repository.createReward({
+        name: 'Gift Card',
+        points_required: 200,
+      } as any)
       expect(result).toEqual(mockReward)
     })
   })
@@ -372,10 +375,7 @@ describe('LoyaltyRepository', () => {
     it('should filter by type', async () => {
       ;(PointsTransactionModel.find as jest.Mock).mockReturnValue(chainMock([mockTransaction]))
       ;(PointsTransactionModel.countDocuments as jest.Mock).mockResolvedValue(1)
-      const result = await repository.findAllTransactions(
-        { type: 'earn' },
-        { page: 1, limit: 10 },
-      )
+      const result = await repository.findAllTransactions({ type: 'earn' }, { page: 1, limit: 10 })
       expect(result.data).toEqual([mockTransaction])
     })
 

@@ -7,7 +7,13 @@
 import mongoose from 'mongoose'
 import { ReferralCodeModel, IReferralCode } from '@database/models/referral-code.model'
 import { ReferralRewardModel, IReferralReward } from '@database/models/referral-reward.model'
-import { BaseService, NotFoundError, ValidationError, BusinessError, ConflictError } from './base.service'
+import {
+  BaseService,
+  NotFoundError,
+  ValidationError,
+  BusinessError,
+  ConflictError,
+} from './base.service'
 import { Logger } from '@utils/logger'
 
 const CODE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -140,10 +146,7 @@ export class ReferralService extends BaseService {
         rewardValue: referralCode.rewardPerReferral,
         status: 'pending',
       }),
-      ReferralCodeModel.updateOne(
-        { _id: referralCode._id },
-        { $inc: { usageCount: 1 } },
-      ),
+      ReferralCodeModel.updateOne({ _id: referralCode._id }, { $inc: { usageCount: 1 } }),
     ])
 
     Logger.apiInfo('[ReferralService] Referral code applied', {
@@ -173,9 +176,7 @@ export class ReferralService extends BaseService {
     ])
 
     // Auto-generate code if not present
-    const code = referralCode
-      ? referralCode.code
-      : (await this.generateCode(userId)).code
+    const code = referralCode ? referralCode.code : (await this.generateCode(userId)).code
 
     return {
       code,

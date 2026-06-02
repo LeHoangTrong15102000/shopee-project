@@ -16,20 +16,13 @@ export class ShopService extends BaseService {
       throw new NotFoundError('Shop', shopId)
     }
 
-    const isFollowing = userId
-      ? shop.followers.some((f) => f.toString() === userId)
-      : false
+    const isFollowing = userId ? shop.followers.some((f) => f.toString() === userId) : false
 
     const { followers, ...rest } = shop
     return { ...rest, followers, isFollowing }
   }
 
-  async getShopProducts(
-    shopId: string,
-    page = 1,
-    limit = 20,
-    sort = 'createdAt',
-  ) {
+  async getShopProducts(shopId: string, page = 1, limit = 20, sort = 'createdAt') {
     if (!this.isValidObjectId(shopId)) {
       throw new ValidationError('Invalid shop id')
     }

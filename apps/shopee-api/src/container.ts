@@ -214,7 +214,11 @@ const eventBus = new EventBus()
 
 // ─── Event listeners (register handlers with event bus) ──────────────────────
 
-const orderEventListener = new OrderEventListener(emailQueue, notificationQueue, recommendationService)
+const orderEventListener = new OrderEventListener(
+  emailQueue,
+  notificationQueue,
+  recommendationService,
+)
 const productEventListener = new ProductEventListener(searchSyncQueue, fcmService)
 const userEventListener = new UserEventListener(emailQueue)
 const flashSaleEventListener = new FlashSaleEventListener(notificationQueue)

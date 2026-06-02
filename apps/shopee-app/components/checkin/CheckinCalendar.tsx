@@ -45,10 +45,7 @@ export default function CheckinCalendar({ calendar, checkedInToday }: CheckinCal
   const startDayOfWeek = firstDate.getDay() // 0=Sun, 6=Sat
 
   // Pad with nulls for alignment
-  const cells: (CalendarDay | null)[] = [
-    ...Array(startDayOfWeek).fill(null),
-    ...calendar,
-  ]
+  const cells: (CalendarDay | null)[] = [...Array(startDayOfWeek).fill(null), ...calendar]
 
   return (
     <View style={{ paddingHorizontal: 16 }}>
@@ -67,7 +64,12 @@ export default function CheckinCalendar({ calendar, checkedInToday }: CheckinCal
       <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
         {cells.map((cell, idx) => {
           if (!cell) {
-            return <View key={`empty-${idx}`} style={{ width: `${100 / 7}%`, alignItems: 'center', marginBottom: 8 }} />
+            return (
+              <View
+                key={`empty-${idx}`}
+                style={{ width: `${100 / 7}%`, alignItems: 'center', marginBottom: 8 }}
+              />
+            )
           }
 
           const state = getDayState(cell.date, cell.checked, checkedInToday)

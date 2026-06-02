@@ -33,7 +33,7 @@ export default function ChatListScreen() {
             keyExtractor={(item) => item._id}
             renderItem={({ item }) => <ConversationItem conversation={item} />}
             ItemSeparatorComponent={() => (
-              <View className="h-px mx-4" style={{ backgroundColor: colors.neutrals800 }} />
+              <View className="mx-4 h-px" style={{ backgroundColor: colors.neutrals800 }} />
             )}
             refreshControl={
               <RefreshControl
@@ -43,10 +43,7 @@ export default function ChatListScreen() {
               />
             }
             ListEmptyComponent={
-              <EmptyState
-                icon={MessageCircle}
-                message="Chưa có cuộc trò chuyện nào"
-              />
+              <EmptyState icon={MessageCircle} message="Chưa có cuộc trò chuyện nào" />
             }
           />
         )}

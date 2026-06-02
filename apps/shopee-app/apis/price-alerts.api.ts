@@ -35,7 +35,10 @@ export async function getPriceAlerts(): Promise<PriceAlert[]> {
   return res.data.data
 }
 
-export async function createPriceAlert(productId: string, targetPrice: number): Promise<PriceAlert> {
+export async function createPriceAlert(
+  productId: string,
+  targetPrice: number
+): Promise<PriceAlert> {
   const res = await http.post<ApiResponse<PriceAlert>>('price-alerts', { productId, targetPrice })
   return res.data.data
 }

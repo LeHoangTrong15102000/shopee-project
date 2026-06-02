@@ -22,8 +22,7 @@ export const orderKeys = {
 export function useOrders(status?: OrderStatusType) {
   return useInfiniteQuery({
     queryKey: orderKeys.all(status),
-    queryFn: ({ pageParam }) =>
-      getOrders({ status, page: pageParam as number, limit: 10 }),
+    queryFn: ({ pageParam }) => getOrders({ status, page: pageParam as number, limit: 10 }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       const { page, total_pages } = lastPage.data.pagination

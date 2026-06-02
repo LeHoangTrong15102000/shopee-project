@@ -1,5 +1,11 @@
 import http from 'src/utils/http'
-import type { SuccessResponse, Voucher, VoucherUsage, DiscountType, PaginationMeta } from 'src/types'
+import type {
+  SuccessResponse,
+  Voucher,
+  VoucherUsage,
+  DiscountType,
+  PaginationMeta,
+} from 'src/types'
 
 interface VoucherListParams {
   page?: number
@@ -57,7 +63,8 @@ const vouchersApi = {
 
   deleteVoucher: (id: string) => http.delete<SuccessResponse<null>>(`admin/vouchers/${id}`),
 
-  toggleVoucher: (id: string) => http.patch<SuccessResponse<Voucher>>(`admin/vouchers/${id}/toggle`),
+  toggleVoucher: (id: string) =>
+    http.patch<SuccessResponse<Voucher>>(`admin/vouchers/${id}/toggle`),
 }
 
 export default vouchersApi

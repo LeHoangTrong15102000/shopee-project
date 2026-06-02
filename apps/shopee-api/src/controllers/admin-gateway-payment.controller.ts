@@ -13,15 +13,7 @@ import { transitionOrderPaymentStatus } from '@services/order/order_state_machin
  * List payments with filters: status, provider, date range, orderId
  */
 export const adminListPayments = async (req: Request, res: Response) => {
-  const {
-    status,
-    provider,
-    orderId,
-    startDate,
-    endDate,
-    page = '1',
-    limit = '20',
-  } = req.query
+  const { status, provider, orderId, startDate, endDate, page = '1', limit = '20' } = req.query
 
   const filters: Record<string, unknown> = {
     page: Number(page),

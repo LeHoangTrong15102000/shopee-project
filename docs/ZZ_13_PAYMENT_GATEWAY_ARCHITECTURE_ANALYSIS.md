@@ -20,7 +20,6 @@
 
 ---
 
-
 ## 1. Tổng quan kiến trúc Payment Gateway hiện tại
 
 ### 1.1 Kiến trúc tổng thể
@@ -28,6 +27,7 @@
 Hệ thống payment trong shopee-project được xây dựng theo mô hình **multi-provider gateway** với Strategy Pattern làm nền tảng. Thay vì hard-code logic cho từng provider, toàn bộ interaction được chuẩn hóa qua một interface duy nhất.
 
 Có ba provider chính:
+
 - **Stripe** — thẻ tín dụng quốc tế, PaymentIntent-based, client-side confirmation
 - **MoMo** — ví điện tử Việt Nam, redirect-based, direct HTTP integration
 - **VNPay** — cổng thanh toán Việt Nam, URL-based, community package wrapper (vnpay v2.5.0)
@@ -84,12 +84,12 @@ export interface IPaymentProvider {
 
 Interface này định nghĩa **4 operations** mà mọi provider đều phải implement:
 
-| Operation | Mục đích |
-|-----------|----------|
-| `createPayment` | Tạo payment URL / transaction tại provider |
-| `verifyIpn` | Xác minh chữ ký HMAC của IPN callback |
-| `parseIpnResult` | Chuẩn hóa IPN payload thành `IpnResult` |
-| `queryStatus` | Chủ động query trạng thái giao dịch (dùng cho reconciliation) |
+| Operation        | Mục đích                                                      |
+| ---------------- | ------------------------------------------------------------- |
+| `createPayment`  | Tạo payment URL / transaction tại provider                    |
+| `verifyIpn`      | Xác minh chữ ký HMAC của IPN callback                         |
+| `parseIpnResult` | Chuẩn hóa IPN payload thành `IpnResult`                       |
+| `queryStatus`    | Chủ động query trạng thái giao dịch (dùng cho reconciliation) |
 
 ### 1.3 PaymentService — Orchestrator
 
@@ -173,11 +173,11 @@ PaymentSessionSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 })
 `PaymentRepository` cung cap data access layer voi cac query methods chuyen biet:
 
 ```typescript
-findPendingByOrderId(orderId)    // Idempotency check khi initiate payment
-findBySessionId(sessionId)       // Session-based IPN lookup
-findByIdempotencyKey(key)        // Duplicate detection
-findLatestByOrderId(orderId)     // Lay payment moi nhat cho order
-findWithFilters(filters)         // Admin dashboard pagination
+findPendingByOrderId(orderId) // Idempotency check khi initiate payment
+findBySessionId(sessionId) // Session-based IPN lookup
+findByIdempotencyKey(key) // Duplicate detection
+findLatestByOrderId(orderId) // Lay payment moi nhat cho order
+findWithFilters(filters) // Admin dashboard pagination
 ```
 
 ---
@@ -260,11 +260,11 @@ export const stripeWebhook = async (req: Request, res: Response): Promise<void> 
 // payment-log.model.ts
 export interface IPaymentLog {
   order_id: mongoose.Types.ObjectId
-  stripe_event_id: string        // unique index — idempotency key
-  stripe_event_type: string      // 'payment_intent.succeeded' | 'payment_intent.payment_failed'
+  stripe_event_id: string // unique index — idempotency key
+  stripe_event_type: string // 'payment_intent.succeeded' | 'payment_intent.payment_failed'
   stripe_payment_intent_id: string
   status: string
-  raw_data: Record<string, unknown>  // full Stripe event — audit trail
+  raw_data: Record<string, unknown> // full Stripe event — audit trail
 }
 ```
 
@@ -303,7 +303,7 @@ const rawSignature = [
   `redirectUrl=${returnUrl}`,
   `requestId=${requestId}`,
   `requestType=${requestType}`,
-].join('&')  // Thu tu fields la bat buoc theo MoMo docs
+].join('&') // Thu tu fields la bat buoc theo MoMo docs
 
 const signature = hmacSha256(rawSignature, SECRET_KEY)
 ```
@@ -338,12 +338,12 @@ MoMo yêu cầu **HTTP 204** (không có body) trong vòng 15 giây. Nếu khôn
 
 ```typescript
 // momoIpWhitelist.middleware.ts
-const DEFAULT_WHITELIST = ['118.69.210.244', '116.103.110.134']  // MoMo production IPs
+const DEFAULT_WHITELIST = ['118.69.210.244', '116.103.110.134'] // MoMo production IPs
 
 export function momoIpWhitelist(req: Request, res: Response, next: NextFunction): void {
-  if (process.env.NODE_ENV !== 'production') return next()  // Skip in dev/test
+  if (process.env.NODE_ENV !== 'production') return next() // Skip in dev/test
 
-  const clientIp = extractClientIp(req)  // Handles X-Forwarded-For
+  const clientIp = extractClientIp(req) // Handles X-Forwarded-For
   if (clientIp && whitelist.includes(clientIp)) return next()
 
   res.status(403).json({ success: false, message: 'Forbidden: IP not whitelisted' })
@@ -357,8 +357,13 @@ IPN endpoint được bảo vệ bởi rate limiter (100 req/min per IP), sử d
 ```typescript
 // ipn.route.ts
 const ipnLimiter = redisClient
-  ? new RateLimiterRedis({ storeClient: redisClient, keyPrefix: 'rl:ipn', points: 100, duration: 60,
-      insuranceLimiter: new RateLimiterMemory({ points: 100, duration: 60 }) })
+  ? new RateLimiterRedis({
+      storeClient: redisClient,
+      keyPrefix: 'rl:ipn',
+      points: 100,
+      duration: 60,
+      insuranceLimiter: new RateLimiterMemory({ points: 100, duration: 60 }),
+    })
   : new RateLimiterMemory({ keyPrefix: 'rl:ipn', points: 100, duration: 60 })
 ```
 
@@ -377,7 +382,7 @@ this.vnpay = new VNPay({
   secureSecret: VNPAY_SECURE_SECRET,
   vnpayHost: VNPAY_HOST,
   testMode: process.env.NODE_ENV !== 'production',
-  hashAlgorithm: HashAlgorithm.SHA512,  // VNPay dung HMAC-SHA512
+  hashAlgorithm: HashAlgorithm.SHA512, // VNPay dung HMAC-SHA512
 })
 ```
 
@@ -387,10 +392,10 @@ VNPay không có REST API — toàn bộ payment data được encode vào URL:
 
 ```typescript
 const paymentUrl = this.vnpay.buildPaymentUrl({
-  vnp_Amount: amount,        // Library tu nhan x100
+  vnp_Amount: amount, // Library tu nhan x100
   vnp_IpAddr: clientIp,
   vnp_ReturnUrl: returnUrl,
-  vnp_TxnRef: requestId,     // Unique transaction ref (max 34 chars)
+  vnp_TxnRef: requestId, // Unique transaction ref (max 34 chars)
   vnp_OrderInfo: orderInfo.substring(0, 255),
 })
 // Ket qua: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=...&vnp_SecureHash=...
@@ -417,6 +422,7 @@ export const vnpayIpn = async (req: Request, res: Response): Promise<void> => {
 ```
 
 VNPay yêu cầu response là **JSON với RspCode** (không phải HTTP status code):
+
 - `RspCode: "00"` — xử lý thành công
 - `RspCode: "97"` — sai checksum
 - `RspCode: "99"` — lỗi không xác định
@@ -508,6 +514,7 @@ async findPendingByOrderId(orderId): Promise<IPayment | null> {
 ### 3.3 Session Pattern — PaymentSession
 
 Pre-order payment flow: lưu cart state vào session trước khi redirect, tạo order sau khi IPN confirm. Giải quyết vấn đề:
+
 - Không tạo order "ghost" khi user abandon payment
 - Cart data được preserve trong 15 phút TTL
 - Order chỉ được tạo khi payment thực sự thành công
@@ -529,12 +536,12 @@ getProvider(method: PaymentProvider): IPaymentProvider {
 
 Được implement ở nhiều tầng:
 
-| Tầng | Mechanism | Mục đích |
-|------|-----------|----------|
-| Stripe webhook | `PaymentLogModel.exists({ stripe_event_id })` | Tránh xử lý duplicate webhook |
-| MoMo/VNPay IPN | Check `session.status === PAID` | Tránh tạo order 2 lần |
-| initiatePayment | `findPendingByOrderId` | Tránh tạo 2 payment records |
-| Payment record | `idempotencyKey` unique index | Database-level dedup |
+| Tầng            | Mechanism                                     | Mục đích                      |
+| --------------- | --------------------------------------------- | ----------------------------- |
+| Stripe webhook  | `PaymentLogModel.exists({ stripe_event_id })` | Tránh xử lý duplicate webhook |
+| MoMo/VNPay IPN  | Check `session.status === PAID`               | Tránh tạo order 2 lần         |
+| initiatePayment | `findPendingByOrderId`                        | Tránh tạo 2 payment records   |
+| Payment record  | `idempotencyKey` unique index                 | Database-level dedup          |
 
 ### 3.6 Observer Pattern — WebSocket Notifications
 
@@ -558,10 +565,10 @@ Module `payment-metrics.ts` implement sliding-window failure rate alert:
 
 ```typescript
 // payment-metrics.ts
-const WINDOW_MS = 5 * 60_000          // 5-minute window
-const FAILURE_RATE_THRESHOLD = 0.1    // Alert khi > 10% failure rate
-const MIN_EVENTS_FOR_ALERT = 5        // Can it nhat 5 events
-const ALERT_DEBOUNCE_MS = 60_000      // Debounce 60s de tranh log flooding
+const WINDOW_MS = 5 * 60_000 // 5-minute window
+const FAILURE_RATE_THRESHOLD = 0.1 // Alert khi > 10% failure rate
+const MIN_EVENTS_FOR_ALERT = 5 // Can it nhat 5 events
+const ALERT_DEBOUNCE_MS = 60_000 // Debounce 60s de tranh log flooding
 
 // Circular buffer cua timestamped outcome events
 const outcomeBuffer: OutcomeEvent[] = []
@@ -792,18 +799,18 @@ Mô hình enterprise payment orchestration có 5 layers:
 
 ### 5.1 Bảng so sánh tổng quan
 
-| Tiêu chí | Hệ thống hiện tại | ShopeePay/GrabPay | Enterprise Standard |
-|----------|-------------------|-------------------|---------------------|
-| **Provider abstraction** | Strategy Pattern (IPaymentProvider) | Internal SDK per provider | Unified Payment Orchestration API |
-| **State management** | Implicit (DB status field) | Explicit state machine | Formal FSM với audit log |
-| **Idempotency** | idempotencyKey unique index + session check | reference_id (ShopeePay) | Distributed idempotency với TTL |
-| **Webhook security** | HMAC verify + IP whitelist (MoMo) | Bidirectional HMAC (ShopeePay) | mTLS + HMAC + IP allowlist |
-| **Failure recovery** | ReconciliationJob (24h polling) | Temporal workflow (checkpoint resume) | Saga pattern + compensating transactions |
-| **Real-time notification** | Socket.IO emit sau IPN | Push notification + webhook | Event streaming (Kafka) |
-| **Observability** | Sliding-window metrics (5min) | Distributed tracing (Jaeger) | Full APM: traces + metrics + logs |
-| **Routing** | Manual switch/case | BIN-based routing engine | ML-based dynamic routing |
-| **Compliance** | Basic validation | KYC/KYB tích hợp | Full AML + sanctions screening |
-| **Settlement** | Không có | T+1/T+2 cycles | Double-entry ledger + auto-reconciliation |
+| Tiêu chí                   | Hệ thống hiện tại                           | ShopeePay/GrabPay                     | Enterprise Standard                       |
+| -------------------------- | ------------------------------------------- | ------------------------------------- | ----------------------------------------- |
+| **Provider abstraction**   | Strategy Pattern (IPaymentProvider)         | Internal SDK per provider             | Unified Payment Orchestration API         |
+| **State management**       | Implicit (DB status field)                  | Explicit state machine                | Formal FSM với audit log                  |
+| **Idempotency**            | idempotencyKey unique index + session check | reference_id (ShopeePay)              | Distributed idempotency với TTL           |
+| **Webhook security**       | HMAC verify + IP whitelist (MoMo)           | Bidirectional HMAC (ShopeePay)        | mTLS + HMAC + IP allowlist                |
+| **Failure recovery**       | ReconciliationJob (24h polling)             | Temporal workflow (checkpoint resume) | Saga pattern + compensating transactions  |
+| **Real-time notification** | Socket.IO emit sau IPN                      | Push notification + webhook           | Event streaming (Kafka)                   |
+| **Observability**          | Sliding-window metrics (5min)               | Distributed tracing (Jaeger)          | Full APM: traces + metrics + logs         |
+| **Routing**                | Manual switch/case                          | BIN-based routing engine              | ML-based dynamic routing                  |
+| **Compliance**             | Basic validation                            | KYC/KYB tích hợp                      | Full AML + sanctions screening            |
+| **Settlement**             | Không có                                    | T+1/T+2 cycles                        | Double-entry ledger + auto-reconciliation |
 
 ### 5.2 So sánh Flow xử lý IPN
 
@@ -841,13 +848,13 @@ GrabPay (Temporal Workflow):
 
 ### 5.3 So sánh Error Handling
 
-| Scenario | Hệ thống hiện tại | Enterprise approach |
-|----------|-------------------|---------------------|
-| IPN không nhận được | ReconciliationJob sau 24h | Temporal retry với exponential backoff |
-| Provider timeout | Không có circuit breaker | Istio circuit breaker (error rate > threshold) |
-| Duplicate IPN | Session status check | Distributed lock + idempotency store |
-| Payment stuck PENDING | Reconciliation query sau 30min | Workflow timeout signal + compensate |
-| Provider down | Throw error, no fallback | BIN routing failover sang provider khác |
+| Scenario              | Hệ thống hiện tại              | Enterprise approach                            |
+| --------------------- | ------------------------------ | ---------------------------------------------- |
+| IPN không nhận được   | ReconciliationJob sau 24h      | Temporal retry với exponential backoff         |
+| Provider timeout      | Không có circuit breaker       | Istio circuit breaker (error rate > threshold) |
+| Duplicate IPN         | Session status check           | Distributed lock + idempotency store           |
+| Payment stuck PENDING | Reconciliation query sau 30min | Workflow timeout signal + compensate           |
+| Provider down         | Throw error, no fallback       | BIN routing failover sang provider khác        |
 
 ---
 
@@ -856,27 +863,35 @@ GrabPay (Temporal Workflow):
 ### 6.1 Điểm mạnh của hệ thống hiện tại
 
 #### Clean Architecture
+
 Strategy Pattern + Repository Pattern được implement đúng cách. Thêm provider mới (ZaloPay, PayOS) chỉ cần:
+
 1. Implement `IPaymentProvider` (4 methods)
 2. Register trong `PaymentService.getProvider()`
 3. Không sửa bất kỳ business logic nào khác
 
 #### Pre-order Session Pattern
+
 Giải quyết vấn đề "ghost order" — order chỉ được tạo khi payment thực sự thành công. Đây là pattern đúng cho e-wallet redirect flows, tránh:
+
 - Order tồn tại nhưng không có payment
 - Inventory bị lock không cần thiết
 - User confusion khi thấy order "pending" mãi
 
 #### Multi-layer Idempotency
+
 Idempotency được implement ở nhiều tầng độc lập — nếu một tầng fail, tầng khác vẫn bảo vệ:
+
 - Database unique index (`idempotencyKey`)
 - Session status check trước khi process
 - `stripe_event_id` unique index cho Stripe
 
 #### Proactive Monitoring
+
 Sliding-window failure rate alert (5 phút, 10% threshold) phát hiện vấn đề trước khi user report. Debounce 60s tránh alert flooding.
 
 #### Safety Net Reconciliation
+
 `PaymentReconciliationJob` đảm bảo không có payment nào bị stuck mãi mãi — ngay cả khi IPN bị miss hoàn toàn.
 
 ---
@@ -884,6 +899,7 @@ Sliding-window failure rate alert (5 phút, 10% threshold) phát hiện vấn đ
 ### 6.2 Gaps so với Enterprise Standard
 
 #### Gap 1: Không có Circuit Breaker
+
 **Vấn đề**: Nếu MoMo API down, mọi payment request sẽ timeout và throw error. Không có fallback.
 
 **Enterprise solution**: Circuit breaker pattern — sau N failures, "open" circuit và fail fast (không chờ timeout). Sau cooldown period, "half-open" để test recovery.
@@ -898,29 +914,35 @@ const breaker = new CircuitBreaker(momoProvider.createPayment, {
 ```
 
 #### Gap 2: Không có Provider Failover
+
 **Vấn đề**: Nếu VNPay down, không có cơ chế tự động route sang provider khác.
 
 **Enterprise solution**: Routing engine với health check — monitor error rate per provider, tự động failover khi error rate > threshold.
 
 #### Gap 3: Reconciliation Interval quá dài (24h)
+
 **Vấn đề**: Payment bị stuck có thể tồn tại 24h trước khi được resolve.
 
 **Enterprise solution**: Giảm interval xuống 15-30 phút cho stale payments. Hoặc dùng event-driven approach — provider gửi webhook khi status thay đổi.
 
 #### Gap 4: Không có Distributed Tracing
+
 **Vấn đề**: Khi payment fail, khó trace được request đi qua những service nào, tốn bao nhiêu thời gian ở mỗi bước.
 
 **Enterprise solution**: OpenTelemetry + Jaeger/Zipkin — mỗi request có trace_id, span cho mỗi operation.
 
 #### Gap 5: Không có Settlement Layer
+
 **Vấn đề**: Hệ thống không track tiền thực sự đã được transfer chưa (payment success != funds settled).
 
 **Enterprise solution**: Double-entry ledger — mỗi payment tạo debit/credit entries. Reconcile với provider statements hàng ngày.
 
 #### Gap 6: Implicit State Machine
+
 **Vấn đề**: Payment status transitions không được enforce — code có thể set bất kỳ status nào từ bất kỳ status nào.
 
 **Enterprise solution**: Explicit FSM với allowed transitions:
+
 ```
 PENDING -> SUCCESS | FAILED | CANCELLED
 SUCCESS -> REFUNDED
@@ -936,49 +958,49 @@ Dựa trên gap analysis, đây là roadmap theo 5 layers từ nền tảng đ�
 
 ### Layer 1: Stability (Ưu tiên cao — 1-2 tháng)
 
-| Task | Mô tả | Impact |
-|------|-------|--------|
-| [x] Idempotency multi-layer | idempotencyKey + session check + stripe_event_id | Đã có |
-| [x] Reconciliation job | 24h polling cho stale payments | Đã có |
-| [x] Sliding-window metrics | 5min failure rate alert | Đã có |
-| [ ] Circuit breaker | opossum hoặc custom implementation | Tránh cascade failure |
-| [ ] Giảm reconciliation interval | 24h -> 15-30 phút | Giảm thời gian stuck |
+| Task                             | Mô tả                                            | Impact                |
+| -------------------------------- | ------------------------------------------------ | --------------------- |
+| [x] Idempotency multi-layer      | idempotencyKey + session check + stripe_event_id | Đã có                 |
+| [x] Reconciliation job           | 24h polling cho stale payments                   | Đã có                 |
+| [x] Sliding-window metrics       | 5min failure rate alert                          | Đã có                 |
+| [ ] Circuit breaker              | opossum hoặc custom implementation               | Tránh cascade failure |
+| [ ] Giảm reconciliation interval | 24h -> 15-30 phút                                | Giảm thời gian stuck  |
 
 ### Layer 2: Resilience (Ưu tiên trung bình — 2-3 tháng)
 
-| Task | Mô tả | Impact |
-|------|-------|--------|
-| [ ] Provider health check | Monitor error rate per provider | Basis cho failover |
-| [ ] Automatic failover | Route sang backup provider khi primary down | Zero-downtime payments |
-| [ ] Explicit state machine | FSM với allowed transitions enforcement | Prevent invalid states |
-| [ ] Distributed lock | Redis lock cho concurrent IPN processing | Prevent race conditions |
+| Task                       | Mô tả                                       | Impact                  |
+| -------------------------- | ------------------------------------------- | ----------------------- |
+| [ ] Provider health check  | Monitor error rate per provider             | Basis cho failover      |
+| [ ] Automatic failover     | Route sang backup provider khi primary down | Zero-downtime payments  |
+| [ ] Explicit state machine | FSM với allowed transitions enforcement     | Prevent invalid states  |
+| [ ] Distributed lock       | Redis lock cho concurrent IPN processing    | Prevent race conditions |
 
 ### Layer 3: Observability (Ưu tiên trung bình — 2-3 tháng)
 
-| Task | Mô tả | Impact |
-|------|-------|--------|
-| [ ] OpenTelemetry integration | Distributed tracing cho payment flows | Debug production issues |
-| [ ] Structured logging | Correlation ID qua toàn bộ request lifecycle | Faster incident response |
-| [ ] Prometheus metrics | Payment success rate, latency histograms | SLA monitoring |
-| [ ] Grafana dashboard | Real-time payment health visualization | Ops visibility |
+| Task                          | Mô tả                                        | Impact                   |
+| ----------------------------- | -------------------------------------------- | ------------------------ |
+| [ ] OpenTelemetry integration | Distributed tracing cho payment flows        | Debug production issues  |
+| [ ] Structured logging        | Correlation ID qua toàn bộ request lifecycle | Faster incident response |
+| [ ] Prometheus metrics        | Payment success rate, latency histograms     | SLA monitoring           |
+| [ ] Grafana dashboard         | Real-time payment health visualization       | Ops visibility           |
 
 ### Layer 4: Compliance (Ưu tiên thấp — 3-6 tháng)
 
-| Task | Mô tả | Impact |
-|------|-------|--------|
-| [ ] Velocity checks | Max N transactions per user per hour | Fraud prevention |
-| [ ] Amount anomaly detection | Alert khi amount bất thường | AML basic |
-| [ ] Audit trail | Immutable log cho mọi payment state change | Compliance requirement |
-| [ ] PCI-DSS review | Đảm bảo không lưu card data | Security compliance |
+| Task                         | Mô tả                                      | Impact                 |
+| ---------------------------- | ------------------------------------------ | ---------------------- |
+| [ ] Velocity checks          | Max N transactions per user per hour       | Fraud prevention       |
+| [ ] Amount anomaly detection | Alert khi amount bất thường                | AML basic              |
+| [ ] Audit trail              | Immutable log cho mọi payment state change | Compliance requirement |
+| [ ] PCI-DSS review           | Đảm bảo không lưu card data                | Security compliance    |
 
 ### Layer 5: Scale (Dài hạn — 6+ tháng)
 
-| Task | Mô tả | Impact |
-|------|-------|--------|
-| [ ] Settlement layer | Double-entry ledger + T+1 reconciliation | Financial accuracy |
-| [ ] Event sourcing | Kafka-backed payment events | Audit + replay capability |
-| [ ] BIN-based routing | Route theo card type/issuer | Optimize success rate |
-| [ ] ML fraud detection | Pattern-based anomaly detection | Reduce chargebacks |
+| Task                   | Mô tả                                    | Impact                    |
+| ---------------------- | ---------------------------------------- | ------------------------- |
+| [ ] Settlement layer   | Double-entry ledger + T+1 reconciliation | Financial accuracy        |
+| [ ] Event sourcing     | Kafka-backed payment events              | Audit + replay capability |
+| [ ] BIN-based routing  | Route theo card type/issuer              | Optimize success rate     |
+| [ ] ML fraud detection | Pattern-based anomaly detection          | Reduce chargebacks        |
 
 ---
 
@@ -1000,13 +1022,13 @@ Kiến trúc này phù hợp cho scale hiện tại và có thể handle hàng n
 
 ShopeePay và GrabPay được thiết kế cho scale hàng triệu giao dịch/ngày với các yêu cầu khác:
 
-| Yếu tố | Hệ thống hiện tại | ShopeePay/GrabPay |
-|--------|-------------------|-------------------|
-| Scale target | Nghìn tx/ngày | Triệu tx/ngày |
-| Team size | Small team | Hundreds of engineers |
-| Compliance | Basic | PCI-DSS Level 1, MAS, BNM |
-| Infrastructure | Single service | Microservices + service mesh |
-| Failure tolerance | Minutes (reconciliation) | Seconds (Temporal workflow) |
+| Yếu tố            | Hệ thống hiện tại        | ShopeePay/GrabPay            |
+| ----------------- | ------------------------ | ---------------------------- |
+| Scale target      | Nghìn tx/ngày            | Triệu tx/ngày                |
+| Team size         | Small team               | Hundreds of engineers        |
+| Compliance        | Basic                    | PCI-DSS Level 1, MAS, BNM    |
+| Infrastructure    | Single service           | Microservices + service mesh |
+| Failure tolerance | Minutes (reconciliation) | Seconds (Temporal workflow)  |
 
 Sự khác biệt này không có nghĩa là hệ thống hiện tại "kém" — nó phù hợp với context và constraints hiện tại.
 
@@ -1022,12 +1044,12 @@ Nhìn lại toàn bộ codebase, có 3 nguyên tắc nhất quán:
 
 ### 8.4 Tài liệu liên quan
 
-| Tài liệu | Nội dung |
-|----------|----------|
-| ZZ_11_STRIPE_PAYMENT_INTEGRATION_DEEP_DIVE.md | Chi tiết Stripe PaymentIntent flow |
-| ZZ_12_SECURITY_ARCHITECTURE_ANALYSIS.md | Security patterns toàn hệ thống |
-| ZZ_13_PAYMENT_GATEWAY_ARCHITECTURE_ANALYSIS.md | Tài liệu này |
+| Tài liệu                                       | Nội dung                           |
+| ---------------------------------------------- | ---------------------------------- |
+| ZZ_11_STRIPE_PAYMENT_INTEGRATION_DEEP_DIVE.md  | Chi tiết Stripe PaymentIntent flow |
+| ZZ_12_SECURITY_ARCHITECTURE_ANALYSIS.md        | Security patterns toàn hệ thống    |
+| ZZ_13_PAYMENT_GATEWAY_ARCHITECTURE_ANALYSIS.md | Tài liệu này                       |
 
 ---
 
-*Tài liệu này được tạo dựa trên phân tích trực tiếp source code của shopee-project. Các so sánh với ShopeePay/GrabPay dựa trên tài liệu công khai và engineering blog posts của các công ty.*
+_Tài liệu này được tạo dựa trên phân tích trực tiếp source code của shopee-project. Các so sánh với ShopeePay/GrabPay dựa trên tài liệu công khai và engineering blog posts của các công ty._

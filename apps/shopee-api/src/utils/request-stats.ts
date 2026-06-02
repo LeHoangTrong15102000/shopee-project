@@ -40,9 +40,7 @@ export function recordRequest(statusCode: number, responseTimeMs: number): void 
 
 export function getRequestStats() {
   const avgResponseTimeMs =
-    stats.totalRequests > 0
-      ? Math.round(stats.totalResponseTimeMs / stats.totalRequests)
-      : 0
+    stats.totalRequests > 0 ? Math.round(stats.totalResponseTimeMs / stats.totalRequests) : 0
 
   const errorRate =
     stats.totalRequests > 0

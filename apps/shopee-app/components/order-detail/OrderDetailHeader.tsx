@@ -25,9 +25,7 @@ export default function OrderDetailHeader({ orderId, status }: OrderDetailHeader
   const { t } = useTranslation()
 
   const config = STATUS_CONFIG[status as OrderStatusType]
-  const label = config
-    ? t(config.labelKey)
-    : t('orderDetail.status.unknown', { status })
+  const label = config ? t(config.labelKey) : t('orderDetail.status.unknown', { status })
   const variant: BadgeVariant = config?.variant ?? 'warning'
 
   return (

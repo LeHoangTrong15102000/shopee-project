@@ -5,7 +5,12 @@ import http from 'src/utils/http'
 
 const URL = '/orders'
 
-const createMockProduct = (id: string, name: string, price: number, priceBeforeDiscount: number): Product => ({
+const createMockProduct = (
+  id: string,
+  name: string,
+  price: number,
+  priceBeforeDiscount: number,
+): Product => ({
   _id: id,
   name,
   price,
@@ -20,7 +25,7 @@ const createMockProduct = (id: string, name: string, price: number, priceBeforeD
   category: { _id: 'cat1', name: 'Thời trang' },
   location: 'TP. Hồ Chí Minh',
   createdAt: '2024-01-01T00:00:00.000Z',
-  updatedAt: '2024-01-01T00:00:00.000Z'
+  updatedAt: '2024-01-01T00:00:00.000Z',
 })
 
 const mockShippingAddress = {
@@ -34,7 +39,7 @@ const mockShippingAddress = {
   street: '123 Đường Lê Lợi',
   isDefault: true,
   createdAt: '2024-01-01T00:00:00.000Z',
-  updatedAt: '2024-01-01T00:00:00.000Z'
+  updatedAt: '2024-01-01T00:00:00.000Z',
 }
 
 const mockShippingStandard = {
@@ -43,7 +48,7 @@ const mockShippingStandard = {
   description: 'Delivery in 3-5 days',
   price: 30000,
   estimatedDays: '3-5 days',
-  icon: '🚚'
+  icon: '🚚',
 }
 
 const mockShippingExpress = {
@@ -52,7 +57,7 @@ const mockShippingExpress = {
   description: 'Delivery in 1-2 days',
   price: 50000,
   estimatedDays: '1-2 days',
-  icon: '⚡'
+  icon: '⚡',
 }
 
 const mockOrders: Order[] = [
@@ -65,14 +70,14 @@ const mockOrders: Order[] = [
         product: createMockProduct('p1', 'Áo thun nam basic', 199000, 250000),
         buyCount: 2,
         price: 199000,
-        priceBeforeDiscount: 250000
+        priceBeforeDiscount: 250000,
       },
       {
         product: createMockProduct('p2', 'Quần jean slim fit', 450000, 550000),
         buyCount: 1,
         price: 450000,
-        priceBeforeDiscount: 550000
-      }
+        priceBeforeDiscount: 550000,
+      },
     ],
     shippingAddress: mockShippingAddress,
     shippingMethod: mockShippingStandard,
@@ -85,7 +90,7 @@ const mockOrders: Order[] = [
     total: 828000,
     status: 'pending',
     createdAt: '2024-02-10T08:30:00.000Z',
-    updatedAt: '2024-02-10T08:30:00.000Z'
+    updatedAt: '2024-02-10T08:30:00.000Z',
   },
   {
     _id: '65a1b2c3d4e5f6a7b8c9d0e2',
@@ -95,8 +100,8 @@ const mockOrders: Order[] = [
         product: createMockProduct('p3', 'Giày sneaker trắng', 890000, 1200000),
         buyCount: 1,
         price: 890000,
-        priceBeforeDiscount: 1200000
-      }
+        priceBeforeDiscount: 1200000,
+      },
     ],
     shippingAddress: { ...mockShippingAddress, _id: 'addr2', street: '456 Nguyễn Huệ' },
     shippingMethod: mockShippingExpress,
@@ -109,7 +114,7 @@ const mockOrders: Order[] = [
     total: 930000,
     status: 'pending',
     createdAt: '2024-02-09T14:20:00.000Z',
-    updatedAt: '2024-02-09T14:20:00.000Z'
+    updatedAt: '2024-02-09T14:20:00.000Z',
   },
   // CONFIRMED - Chờ lấy hàng
   {
@@ -120,14 +125,14 @@ const mockOrders: Order[] = [
         product: createMockProduct('p4', 'Túi xách nữ thời trang', 350000, 450000),
         buyCount: 1,
         price: 350000,
-        priceBeforeDiscount: 450000
+        priceBeforeDiscount: 450000,
       },
       {
         product: createMockProduct('p5', 'Ví da nam cao cấp', 280000, 350000),
         buyCount: 1,
         price: 280000,
-        priceBeforeDiscount: 350000
-      }
+        priceBeforeDiscount: 350000,
+      },
     ],
     shippingAddress: mockShippingAddress,
     shippingMethod: mockShippingStandard,
@@ -140,7 +145,7 @@ const mockOrders: Order[] = [
     total: 630000,
     status: 'confirmed',
     createdAt: '2024-02-08T10:15:00.000Z',
-    updatedAt: '2024-02-08T12:00:00.000Z'
+    updatedAt: '2024-02-08T12:00:00.000Z',
   },
   {
     _id: '65b2c3d4e5f6a7b8c9d0e1f3',
@@ -150,10 +155,16 @@ const mockOrders: Order[] = [
         product: createMockProduct('p6', 'Đồng hồ thông minh', 1500000, 2000000),
         buyCount: 1,
         price: 1500000,
-        priceBeforeDiscount: 2000000
-      }
+        priceBeforeDiscount: 2000000,
+      },
     ],
-    shippingAddress: { ...mockShippingAddress, _id: 'addr3', district: 'Quận 3', ward: 'Phường 1', street: '789 Võ Văn Tần' },
+    shippingAddress: {
+      ...mockShippingAddress,
+      _id: 'addr3',
+      district: 'Quận 3',
+      ward: 'Phường 1',
+      street: '789 Võ Văn Tần',
+    },
     shippingMethod: mockShippingExpress,
     paymentMethod: 'bank_transfer',
     subtotal: 1500000,
@@ -164,7 +175,7 @@ const mockOrders: Order[] = [
     total: 1380000,
     status: 'confirmed',
     createdAt: '2024-02-07T16:45:00.000Z',
-    updatedAt: '2024-02-07T18:30:00.000Z'
+    updatedAt: '2024-02-07T18:30:00.000Z',
   },
   // SHIPPING - Đang giao
   {
@@ -175,8 +186,8 @@ const mockOrders: Order[] = [
         product: createMockProduct('p7', 'Áo khoác dù unisex', 320000, 400000),
         buyCount: 2,
         price: 320000,
-        priceBeforeDiscount: 400000
-      }
+        priceBeforeDiscount: 400000,
+      },
     ],
     shippingAddress: mockShippingAddress,
     shippingMethod: mockShippingStandard,
@@ -189,7 +200,7 @@ const mockOrders: Order[] = [
     total: 665000,
     status: 'shipping',
     createdAt: '2024-02-05T09:00:00.000Z',
-    updatedAt: '2024-02-06T14:00:00.000Z'
+    updatedAt: '2024-02-06T14:00:00.000Z',
   },
   {
     _id: '65c3d4e5f6a7b8c9d0e1f2a4',
@@ -199,16 +210,23 @@ const mockOrders: Order[] = [
         product: createMockProduct('p8', 'Balo laptop chống nước', 550000, 700000),
         buyCount: 1,
         price: 550000,
-        priceBeforeDiscount: 700000
+        priceBeforeDiscount: 700000,
       },
       {
         product: createMockProduct('p9', 'Chuột không dây', 250000, 300000),
         buyCount: 1,
         price: 250000,
-        priceBeforeDiscount: 300000
-      }
+        priceBeforeDiscount: 300000,
+      },
     ],
-    shippingAddress: { ...mockShippingAddress, _id: 'addr4', province: 'Hà Nội', district: 'Quận Hoàn Kiếm', ward: 'Phường Hàng Bạc', street: '12 Hàng Đào' },
+    shippingAddress: {
+      ...mockShippingAddress,
+      _id: 'addr4',
+      province: 'Hà Nội',
+      district: 'Quận Hoàn Kiếm',
+      ward: 'Phường Hàng Bạc',
+      street: '12 Hàng Đào',
+    },
     shippingMethod: mockShippingExpress,
     paymentMethod: 'bank_transfer',
     subtotal: 800000,
@@ -219,7 +237,7 @@ const mockOrders: Order[] = [
     total: 770000,
     status: 'shipping',
     createdAt: '2024-02-04T11:30:00.000Z',
-    updatedAt: '2024-02-05T08:00:00.000Z'
+    updatedAt: '2024-02-05T08:00:00.000Z',
   },
   // DELIVERED - Hoàn thành
   {
@@ -230,8 +248,8 @@ const mockOrders: Order[] = [
         product: createMockProduct('p10', 'Tai nghe bluetooth', 450000, 600000),
         buyCount: 1,
         price: 450000,
-        priceBeforeDiscount: 600000
-      }
+        priceBeforeDiscount: 600000,
+      },
     ],
     shippingAddress: mockShippingAddress,
     shippingMethod: mockShippingStandard,
@@ -244,7 +262,7 @@ const mockOrders: Order[] = [
     total: 480000,
     status: 'delivered',
     createdAt: '2024-01-28T15:00:00.000Z',
-    updatedAt: '2024-02-01T10:30:00.000Z'
+    updatedAt: '2024-02-01T10:30:00.000Z',
   },
   {
     _id: '65d4e5f6a7b8c9d0e1f2a3b5',
@@ -254,14 +272,14 @@ const mockOrders: Order[] = [
         product: createMockProduct('p11', 'Áo sơ mi công sở', 380000, 450000),
         buyCount: 3,
         price: 380000,
-        priceBeforeDiscount: 450000
+        priceBeforeDiscount: 450000,
       },
       {
         product: createMockProduct('p12', 'Cà vạt lụa', 150000, 200000),
         buyCount: 2,
         price: 150000,
-        priceBeforeDiscount: 200000
-      }
+        priceBeforeDiscount: 200000,
+      },
     ],
     shippingAddress: mockShippingAddress,
     shippingMethod: mockShippingExpress,
@@ -274,7 +292,7 @@ const mockOrders: Order[] = [
     total: 1260000,
     status: 'delivered',
     createdAt: '2024-01-20T08:45:00.000Z',
-    updatedAt: '2024-01-23T16:00:00.000Z'
+    updatedAt: '2024-01-23T16:00:00.000Z',
   },
   {
     _id: '65d4e5f6a7b8c9d0e1f2a3b6',
@@ -284,8 +302,8 @@ const mockOrders: Order[] = [
         product: createMockProduct('p13', 'Kính mát thời trang', 290000, 350000),
         buyCount: 1,
         price: 290000,
-        priceBeforeDiscount: 350000
-      }
+        priceBeforeDiscount: 350000,
+      },
     ],
     shippingAddress: { ...mockShippingAddress, _id: 'addr5', street: '99 Trần Hưng Đạo' },
     shippingMethod: mockShippingStandard,
@@ -298,7 +316,7 @@ const mockOrders: Order[] = [
     total: 300000,
     status: 'delivered',
     createdAt: '2024-01-15T12:00:00.000Z',
-    updatedAt: '2024-01-18T09:00:00.000Z'
+    updatedAt: '2024-01-18T09:00:00.000Z',
   },
   // CANCELLED - Đã hủy
   {
@@ -309,8 +327,8 @@ const mockOrders: Order[] = [
         product: createMockProduct('p14', 'Váy đầm dự tiệc', 650000, 800000),
         buyCount: 1,
         price: 650000,
-        priceBeforeDiscount: 800000
-      }
+        priceBeforeDiscount: 800000,
+      },
     ],
     shippingAddress: mockShippingAddress,
     shippingMethod: mockShippingExpress,
@@ -324,7 +342,7 @@ const mockOrders: Order[] = [
     status: 'cancelled',
     note: 'Đổi ý không muốn mua nữa',
     createdAt: '2024-02-01T10:00:00.000Z',
-    updatedAt: '2024-02-01T12:30:00.000Z'
+    updatedAt: '2024-02-01T12:30:00.000Z',
   },
   {
     _id: '65e5f6a7b8c9d0e1f2a3b4c6',
@@ -334,16 +352,22 @@ const mockOrders: Order[] = [
         product: createMockProduct('p15', 'Giày cao gót', 420000, 500000),
         buyCount: 1,
         price: 420000,
-        priceBeforeDiscount: 500000
+        priceBeforeDiscount: 500000,
       },
       {
         product: createMockProduct('p16', 'Clutch dự tiệc', 280000, 350000),
         buyCount: 1,
         price: 280000,
-        priceBeforeDiscount: 350000
-      }
+        priceBeforeDiscount: 350000,
+      },
     ],
-    shippingAddress: { ...mockShippingAddress, _id: 'addr6', district: 'Quận 7', ward: 'Phường Tân Phú', street: '55 Nguyễn Lương Bằng' },
+    shippingAddress: {
+      ...mockShippingAddress,
+      _id: 'addr6',
+      district: 'Quận 7',
+      ward: 'Phường Tân Phú',
+      street: '55 Nguyễn Lương Bằng',
+    },
     shippingMethod: mockShippingStandard,
     paymentMethod: 'cod',
     subtotal: 700000,
@@ -355,7 +379,7 @@ const mockOrders: Order[] = [
     status: 'cancelled',
     note: 'Tìm được sản phẩm rẻ hơn',
     createdAt: '2024-01-25T14:30:00.000Z',
-    updatedAt: '2024-01-25T16:00:00.000Z'
+    updatedAt: '2024-01-25T16:00:00.000Z',
   },
   // RETURNED - Trả hàng
   {
@@ -366,8 +390,8 @@ const mockOrders: Order[] = [
         product: createMockProduct('p17', 'Áo len mùa đông', 350000, 450000),
         buyCount: 1,
         price: 350000,
-        priceBeforeDiscount: 450000
-      }
+        priceBeforeDiscount: 450000,
+      },
     ],
     shippingAddress: mockShippingAddress,
     shippingMethod: mockShippingStandard,
@@ -381,8 +405,8 @@ const mockOrders: Order[] = [
     status: 'returned',
     note: 'Sản phẩm không đúng mô tả',
     createdAt: '2024-01-10T09:00:00.000Z',
-    updatedAt: '2024-01-14T11:00:00.000Z'
-  }
+    updatedAt: '2024-01-14T11:00:00.000Z',
+  },
 ]
 
 const getFilteredOrders = (status?: string): Order[] => {
@@ -418,9 +442,9 @@ const orderApi = {
           message: 'Lấy danh sách đơn hàng thành công',
           data: {
             orders: paginatedOrders,
-            pagination: { page, limit, total, totalPages }
-          }
-        }
+            pagination: { page, limit, total, totalPages },
+          },
+        },
       }
     }
   },
@@ -435,8 +459,8 @@ const orderApi = {
       return {
         data: {
           message: 'Lấy chi tiết đơn hàng thành công',
-          data: order
-        }
+          data: order,
+        },
       }
     }
   },
@@ -451,8 +475,13 @@ const orderApi = {
       return {
         data: {
           message: 'Hủy đơn hàng thành công (mock)',
-          data: { ...order, _id: id, status: 'cancelled' as const, updatedAt: new Date().toISOString() }
-        }
+          data: {
+            ...order,
+            _id: id,
+            status: 'cancelled' as const,
+            updatedAt: new Date().toISOString(),
+          },
+        },
       }
     }
   },
@@ -467,8 +496,13 @@ const orderApi = {
       return {
         data: {
           message: 'Yêu cầu trả hàng thành công (mock)',
-          data: { ...order, _id: id, status: 'returned' as const, updatedAt: new Date().toISOString() }
-        }
+          data: {
+            ...order,
+            _id: id,
+            status: 'returned' as const,
+            updatedAt: new Date().toISOString(),
+          },
+        },
       }
     }
   },
@@ -483,8 +517,13 @@ const orderApi = {
       return {
         data: {
           message: 'Xác nhận đã nhận hàng thành công (mock)',
-          data: { ...order, _id: id, status: 'delivered' as const, updatedAt: new Date().toISOString() }
-        }
+          data: {
+            ...order,
+            _id: id,
+            status: 'delivered' as const,
+            updatedAt: new Date().toISOString(),
+          },
+        },
       }
     }
   },
@@ -494,12 +533,14 @@ const orderApi = {
   },
 
   getPaymentStatus: async (orderId: string) => {
-    return http.get<SuccessResponseApi<{
-      status: string
-      paymentUrl: string | null
-      canRetry: boolean
-      provider: string | null
-    }>>(`${URL}/${orderId}/payment-status`)
+    return http.get<
+      SuccessResponseApi<{
+        status: string
+        paymentUrl: string | null
+        canRetry: boolean
+        provider: string | null
+      }>
+    >(`${URL}/${orderId}/payment-status`)
   },
 
   retryPayment: async (orderId: string) => {

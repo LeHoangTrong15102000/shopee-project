@@ -26,7 +26,9 @@ export class MomoProvider implements IPaymentProvider {
   constructor() {
     const partnerCode = process.env.MOMO_PARTNER_CODE
     if (!partnerCode) {
-      throw new Error('MomoProvider: MOMO_PARTNER_CODE environment variable is required but not set')
+      throw new Error(
+        'MomoProvider: MOMO_PARTNER_CODE environment variable is required but not set',
+      )
     }
     this.partnerCode = partnerCode
 

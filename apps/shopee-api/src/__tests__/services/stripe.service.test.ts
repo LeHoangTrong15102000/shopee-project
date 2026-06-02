@@ -119,11 +119,7 @@ describe('StripeService', () => {
 
       const result = service.constructWebhookEvent(rawBody, signature)
 
-      expect(webhooksConstructEvent).toHaveBeenCalledWith(
-        rawBody,
-        signature,
-        'whsec_test_mock',
-      )
+      expect(webhooksConstructEvent).toHaveBeenCalledWith(rawBody, signature, 'whsec_test_mock')
       expect(result).toEqual(mockEvent)
     })
 

@@ -108,12 +108,10 @@ async function updateProductsFile() {
         (file) =>
           file.toLowerCase().endsWith('.jpg') ||
           file.toLowerCase().endsWith('.jpeg') ||
-          file.toLowerCase().endsWith('.png')
+          file.toLowerCase().endsWith('.png'),
       )
 
-    console.log(
-      `Tìm thấy ${imageFiles.length} hình ảnh trong thư mục upload/product`
-    )
+    console.log(`Tìm thấy ${imageFiles.length} hình ảnh trong thư mục upload/product`)
 
     // Lấy danh sách hình ảnh đã được sử dụng
     const usedImages = new Set()
@@ -133,9 +131,7 @@ async function updateProductsFile() {
     if (unusedImages.length === 0) {
       // Sử dụng lại 50 hình ảnh đầu tiên để tạo biến thể sản phẩm
       imagesToUse = imageFiles.slice(0, Math.min(50, imageFiles.length))
-      console.log(
-        `Sẽ tạo thêm ${imagesToUse.length} sản phẩm biến thể từ hình ảnh hiện có`
-      )
+      console.log(`Sẽ tạo thêm ${imagesToUse.length} sản phẩm biến thể từ hình ảnh hiện có`)
     }
 
     // Tạo sản phẩm mới cho mỗi hình ảnh
@@ -157,9 +153,7 @@ async function updateProductsFile() {
         quantity: getRandomQuantity(),
         sold: getRandomSold(),
         view: getRandomView(),
-        name:
-          productNames[index % productNames.length] +
-          ` - Phiên bản ${index + 1}`,
+        name: productNames[index % productNames.length] + ` - Phiên bản ${index + 1}`,
         description: descriptions[index % descriptions.length],
         category: {
           $oid: categoryId,
@@ -182,11 +176,7 @@ async function updateProductsFile() {
     console.log(`Tổng cộng hiện có ${products.length} sản phẩm`)
 
     // Ghi lại file JSON
-    fs.writeFileSync(
-      '../main.products.json',
-      JSON.stringify(products, null, 2),
-      'utf8'
-    )
+    fs.writeFileSync('../main.products.json', JSON.stringify(products, null, 2), 'utf8')
     console.log('Đã cập nhật file main.products.json thành công!')
 
     return {
@@ -233,9 +223,7 @@ async function importToMongoDB() {
 
     // Insert tất cả sản phẩm mới
     const result = await collection.insertMany(transformedProducts)
-    console.log(
-      `Đã import thành công ${result.insertedCount} sản phẩm vào MongoDB!`
-    )
+    console.log(`Đã import thành công ${result.insertedCount} sản phẩm vào MongoDB!`)
 
     return result.insertedCount
   } catch (error) {

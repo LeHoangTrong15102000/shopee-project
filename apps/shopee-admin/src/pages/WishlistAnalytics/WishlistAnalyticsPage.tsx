@@ -209,7 +209,9 @@ export default function WishlistAnalyticsPage() {
                   >
                     <span className="text-muted-foreground font-mono text-xs">{idx + 1}</span>
                     <span className="truncate font-medium">{item.name}</span>
-                    <span className="text-right tabular-nums">{item.wishlist_count.toLocaleString()}</span>
+                    <span className="text-right tabular-nums">
+                      {item.wishlist_count.toLocaleString()}
+                    </span>
                     <span className="text-right tabular-nums">
                       {item.quantity < 5 ? (
                         <span className="text-red-600 dark:text-red-400">{item.quantity}</span>

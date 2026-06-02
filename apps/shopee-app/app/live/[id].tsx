@@ -17,9 +17,20 @@ function DetailSkeleton() {
     <View style={{ flex: 1 }}>
       <View style={{ width: '100%', aspectRatio: 16 / 9, backgroundColor: colors.neutrals700 }} />
       <View style={{ padding: 16, gap: 12 }}>
-        <View style={{ height: 20, borderRadius: 4, backgroundColor: colors.neutrals700, width: '70%' }} />
-        <View style={{ height: 14, borderRadius: 4, backgroundColor: colors.neutrals700, width: '40%' }} />
-        <View style={{ height: 100, borderRadius: 8, backgroundColor: colors.neutrals700, marginTop: 16 }} />
+        <View
+          style={{ height: 20, borderRadius: 4, backgroundColor: colors.neutrals700, width: '70%' }}
+        />
+        <View
+          style={{ height: 14, borderRadius: 4, backgroundColor: colors.neutrals700, width: '40%' }}
+        />
+        <View
+          style={{
+            height: 100,
+            borderRadius: 8,
+            backgroundColor: colors.neutrals700,
+            marginTop: 16,
+          }}
+        />
       </View>
     </View>
   )
@@ -53,7 +64,10 @@ export default function LiveStreamDetailScreen() {
         style={{ width: 120, height: 120, borderRadius: 8 }}
         contentFit="cover"
       />
-      <AppText variant="caption" numberOfLines={2} style={{ marginTop: 4, color: colors.foreground }}>
+      <AppText
+        variant="caption"
+        numberOfLines={2}
+        style={{ marginTop: 4, color: colors.foreground }}>
         {item.name}
       </AppText>
       <AppText variant="caption" weight="semibold" style={{ color: colors.primary }}>
@@ -65,11 +79,24 @@ export default function LiveStreamDetailScreen() {
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
       {/* Header */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12 }}>
-        <Pressable onPress={() => router.back()} accessibilityRole="button" accessibilityLabel="Go back">
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+        }}>
+        <Pressable
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel="Go back">
           <ChevronLeft size={24} color={colors.foreground} />
         </Pressable>
-        <AppText variant="heading3" weight="semibold" style={{ flex: 1, marginLeft: 12, color: colors.foreground }} numberOfLines={1}>
+        <AppText
+          variant="heading3"
+          weight="semibold"
+          style={{ flex: 1, marginLeft: 12, color: colors.foreground }}
+          numberOfLines={1}>
           {stream?.title || t('live.title')}
         </AppText>
       </View>
@@ -92,7 +119,12 @@ export default function LiveStreamDetailScreen() {
           {/* Stream Info */}
           <View style={{ padding: 16, gap: 12 }}>
             {/* Viewer count + Like */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                 <Eye size={18} color={colors.neutrals100} />
                 <AppText variant="body" color="muted">
@@ -104,7 +136,11 @@ export default function LiveStreamDetailScreen() {
                 style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
                 accessibilityRole="button"
                 accessibilityLabel={liked ? 'Unlike' : 'Like'}>
-                <Heart size={22} color={liked ? '#EF4444' : colors.neutrals100} fill={liked ? '#EF4444' : 'none'} />
+                <Heart
+                  size={22}
+                  color={liked ? '#EF4444' : colors.neutrals100}
+                  fill={liked ? '#EF4444' : 'none'}
+                />
                 <AppText variant="body" style={{ color: liked ? '#EF4444' : colors.neutrals100 }}>
                   {likeCount.toLocaleString()} {t('live.likes')}
                 </AppText>
@@ -125,7 +161,10 @@ export default function LiveStreamDetailScreen() {
             {/* Featured Products */}
             {stream.featuredProducts.length > 0 && (
               <View style={{ marginTop: 8 }}>
-                <AppText variant="body" weight="semibold" style={{ marginBottom: 12, color: colors.foreground }}>
+                <AppText
+                  variant="body"
+                  weight="semibold"
+                  style={{ marginBottom: 12, color: colors.foreground }}>
                   {t('live.featuredProducts')}
                 </AppText>
                 <FlatList

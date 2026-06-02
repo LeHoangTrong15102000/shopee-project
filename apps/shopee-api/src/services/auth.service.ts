@@ -104,7 +104,10 @@ export class AuthService extends BaseService {
       created_at: new Date().toISOString(),
     }
 
-    const { accessToken, refreshToken, accessJti, refreshJti } = await this.generateTokens(payload, tokenConfig)
+    const { accessToken, refreshToken, accessJti, refreshJti } = await this.generateTokens(
+      payload,
+      tokenConfig,
+    )
 
     const expiresAt = new Date(Date.now() + tokenConfig.expireRefreshToken * 1000)
 
@@ -139,7 +142,10 @@ export class AuthService extends BaseService {
     }
   }
 
-  async login(data: LoginDTO, tokenConfig: TokenConfig): Promise<AuthResult | TwoFactorRequiredResult> {
+  async login(
+    data: LoginDTO,
+    tokenConfig: TokenConfig,
+  ): Promise<AuthResult | TwoFactorRequiredResult> {
     const user = await this.userRepository.findByEmailWithPassword(data.email)
     if (!user) {
       throw new ValidationError('Email hoặc password không đúng', 'password')
@@ -175,7 +181,10 @@ export class AuthService extends BaseService {
       created_at: new Date().toISOString(),
     }
 
-    const { accessToken, refreshToken, accessJti, refreshJti } = await this.generateTokens(payload, tokenConfig)
+    const { accessToken, refreshToken, accessJti, refreshJti } = await this.generateTokens(
+      payload,
+      tokenConfig,
+    )
 
     const expiresAt = new Date(Date.now() + tokenConfig.expireRefreshToken * 1000)
 
@@ -214,7 +223,14 @@ export class AuthService extends BaseService {
     oldRefreshToken: string,
     oldJti: string | undefined,
     tokenConfig: TokenConfig,
-  ): Promise<{ access_token: string; refresh_token: string; expires: number; expires_refresh_token: number; accessJti: string; refreshJti: string }> {
+  ): Promise<{
+    access_token: string
+    refresh_token: string
+    expires: number
+    expires_refresh_token: number
+    accessJti: string
+    refreshJti: string
+  }> {
     const user = await this.userRepository.findById(userId)
     if (!user) {
       throw new UnauthorizedError('User không tồn tại')
@@ -267,7 +283,10 @@ export class AuthService extends BaseService {
       created_at: new Date().toISOString(),
     }
 
-    const { accessToken, refreshToken, accessJti, refreshJti } = await this.generateTokens(payload, tokenConfig)
+    const { accessToken, refreshToken, accessJti, refreshJti } = await this.generateTokens(
+      payload,
+      tokenConfig,
+    )
 
     const expiresAt = new Date(Date.now() + tokenConfig.expireRefreshToken * 1000)
 
@@ -321,10 +340,7 @@ export class AuthService extends BaseService {
     return { access_token: 'Bearer ' + accessToken }
   }
 
-  async googleLogin(
-    idToken: string,
-    tokenConfig: TokenConfig,
-  ): Promise<AuthResult> {
+  async googleLogin(idToken: string, tokenConfig: TokenConfig): Promise<AuthResult> {
     let payload
     try {
       const ticket = await googleOAuthClient.verifyIdToken({
@@ -364,7 +380,10 @@ export class AuthService extends BaseService {
       created_at: new Date().toISOString(),
     }
 
-    const { accessToken, refreshToken, accessJti, refreshJti } = await this.generateTokens(tokenPayload, tokenConfig)
+    const { accessToken, refreshToken, accessJti, refreshJti } = await this.generateTokens(
+      tokenPayload,
+      tokenConfig,
+    )
 
     const expiresAt = new Date(Date.now() + tokenConfig.expireRefreshToken * 1000)
     await this.authRepository.createRefreshTokenWithJti(

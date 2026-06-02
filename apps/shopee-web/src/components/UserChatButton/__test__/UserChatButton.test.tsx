@@ -4,9 +4,7 @@ import UserChatButton from '../UserChatButton'
 import { AppContext } from 'src/contexts/app.context'
 
 vi.mock('src/components/Chat/ChatWindow', () => ({
-  default: ({ conversationId }: any) => (
-    <div data-testid="chat-window">{conversationId}</div>
-  ),
+  default: ({ conversationId }: any) => <div data-testid="chat-window">{conversationId}</div>,
 }))
 
 const renderWith = (isAuthenticated: boolean, profile: any = null) => {

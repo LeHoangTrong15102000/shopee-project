@@ -1,11 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import {
-  View,
-  ScrollView,
-  TextInput,
-  TouchableOpacity,
-  Linking,
-} from 'react-native'
+import { View, ScrollView, TextInput, TouchableOpacity, Linking } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack } from 'expo-router'
 import { useTranslation } from 'react-i18next'
@@ -62,8 +56,7 @@ export default function HelpScreen() {
       .map((section) => ({
         ...section,
         items: section.items.filter(
-          (item) =>
-            item.question.toLowerCase().includes(q) || item.answer.toLowerCase().includes(q)
+          (item) => item.question.toLowerCase().includes(q) || item.answer.toLowerCase().includes(q)
         ),
       }))
       .filter((section) => section.items.length > 0)
@@ -106,7 +99,9 @@ export default function HelpScreen() {
           />
         </View>
 
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 24 }}>
           {filteredSections.length === 0 ? (
             <View style={{ alignItems: 'center', paddingTop: 40 }}>
               <AppText raw variant="bodySmall" color="muted">

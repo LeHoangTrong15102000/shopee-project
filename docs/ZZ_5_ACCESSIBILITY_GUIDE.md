@@ -538,10 +538,12 @@ const Cart = () => {
 ### 7.1. WCAG Color Contrast Requirements
 
 **WCAG AA (Target):**
+
 - Normal text (< 18pt): Contrast ratio ≥ 4.5:1
 - Large text (≥ 18pt or bold ≥ 14pt): Contrast ratio ≥ 3:1
 
 **WCAG AAA:**
+
 - Normal text: Contrast ratio ≥ 7:1
 - Large text: Contrast ratio ≥ 4.5:1
 
@@ -864,18 +866,21 @@ if (import.meta.env.DEV) {
 ### 11.2. Manual Testing Checklist
 
 **Keyboard Navigation:**
+
 - [ ] Tab through all interactive elements
 - [ ] Enter/Space activates buttons
 - [ ] Escape closes modals
 - [ ] Arrow keys navigate menus
 
 **Screen Reader:**
+
 - [ ] Test với NVDA (Windows) hoặc VoiceOver (Mac)
 - [ ] All content được đọc đúng
 - [ ] Headings có hierarchy đúng
 - [ ] Form labels được announce
 
 **Visual:**
+
 - [ ] Zoom to 200% - content vẫn readable
 - [ ] Color contrast pass WCAG AA
 - [ ] Focus indicators visible
@@ -893,18 +898,21 @@ if (import.meta.env.DEV) {
 ## 12. ACCESSIBILITY CHECKLIST
 
 ### ✅ Semantic HTML
+
 - [ ] Sử dụng semantic elements (`<header>`, `<nav>`, `<main>`, `<footer>`)
 - [ ] Heading hierarchy đúng (h1 → h2 → h3)
 - [ ] Buttons cho actions, links cho navigation
 - [ ] Lists sử dụng `<ul>`, `<ol>`, `<li>`
 
 ### ✅ ARIA
+
 - [ ] ARIA roles khi cần thiết
 - [ ] ARIA labels cho icon buttons
 - [ ] ARIA states (expanded, selected, checked)
 - [ ] ARIA live regions cho dynamic content
 
 ### ✅ Keyboard Navigation
+
 - [ ] Tất cả interactive elements có thể tab được
 - [ ] Tab order logical
 - [ ] Skip links implemented
@@ -912,6 +920,7 @@ if (import.meta.env.DEV) {
 - [ ] Keyboard shortcuts documented
 
 ### ✅ Screen Reader
+
 - [ ] Alt text cho tất cả images
 - [ ] Visually hidden text cho icon-only buttons
 - [ ] Form labels associated với inputs
@@ -919,6 +928,7 @@ if (import.meta.env.DEV) {
 - [ ] Loading states announced
 
 ### ✅ Visual Design
+
 - [ ] Color contrast ≥ 4.5:1 (normal text)
 - [ ] Color contrast ≥ 3:1 (large text)
 - [ ] Don't rely on color alone
@@ -926,6 +936,7 @@ if (import.meta.env.DEV) {
 - [ ] Text resizable to 200%
 
 ### ✅ Forms
+
 - [ ] Labels associated với inputs
 - [ ] Required fields marked
 - [ ] Error messages descriptive
@@ -933,6 +944,7 @@ if (import.meta.env.DEV) {
 - [ ] Autocomplete attributes
 
 ### ✅ Testing
+
 - [ ] Automated testing với axe-core
 - [ ] Manual keyboard testing
 - [ ] Screen reader testing
@@ -943,12 +955,14 @@ if (import.meta.env.DEV) {
 **Kết luận:**
 
 Accessibility không phải là "nice to have", mà là **requirement**. Hãy:
+
 - Implement accessibility từ đầu, không phải sau
 - Test với real users (bao gồm người khuyết tật)
 - Keep learning và improving
 - Educate team về accessibility
 
 **Tài liệu tham khảo:**
+
 - [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
 - [MDN Accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility)
 - [WebAIM](https://webaim.org/)

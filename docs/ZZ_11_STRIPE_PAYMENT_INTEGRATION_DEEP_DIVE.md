@@ -174,11 +174,11 @@ Frontend                    Backend                     Stripe
 
 ### Events quan trọng
 
-| Event | Ý nghĩa | Action |
-|-------|----------|--------|
-| `payment_intent.succeeded` | Payment thành công | Set `payment_status: 'paid'`, clear `stripe_client_secret` |
-| `payment_intent.payment_failed` | Card bị decline | Set `payment_status: 'failed'` |
-| `payment_intent.canceled` | PI expired/cancelled | Clear `stripe_client_secret` |
+| Event                           | Ý nghĩa              | Action                                                     |
+| ------------------------------- | -------------------- | ---------------------------------------------------------- |
+| `payment_intent.succeeded`      | Payment thành công   | Set `payment_status: 'paid'`, clear `stripe_client_secret` |
+| `payment_intent.payment_failed` | Card bị decline      | Set `payment_status: 'failed'`                             |
+| `payment_intent.canceled`       | PI expired/cancelled | Clear `stripe_client_secret`                               |
 
 ### Idempotency
 
@@ -300,6 +300,7 @@ if (error) {
 ### Stripe tự động handle 3DS
 
 Developer KHÔNG cần code gì thêm cho 3DS. `confirmCardPayment` tự động:
+
 1. Detect card cần 3DS hay không
 2. Mở popup/modal cho user xác thực
 3. Đợi user hoàn thành
@@ -316,12 +317,12 @@ const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
 
 ### 3DS failure cases
 
-| Trường hợp | `error.code` | Xử lý |
-|-------------|-------------|--------|
-| User cancel 3DS popup | `payment_intent_authentication_failure` | Toast "Xác thực bị hủy" |
-| OTP sai 3 lần | `payment_intent_authentication_failure` | Toast "Xác thực thất bại" |
-| Bank timeout | `payment_intent_authentication_failure` | Toast "Hết thời gian xác thực" |
-| Card không hỗ trợ 3DS nhưng bank yêu cầu | `card_declined` | Toast error.message |
+| Trường hợp                               | `error.code`                            | Xử lý                          |
+| ---------------------------------------- | --------------------------------------- | ------------------------------ |
+| User cancel 3DS popup                    | `payment_intent_authentication_failure` | Toast "Xác thực bị hủy"        |
+| OTP sai 3 lần                            | `payment_intent_authentication_failure` | Toast "Xác thực thất bại"      |
+| Bank timeout                             | `payment_intent_authentication_failure` | Toast "Hết thời gian xác thực" |
+| Card không hỗ trợ 3DS nhưng bank yêu cầu | `card_declined`                         | Toast error.message            |
 
 ### Khi nào 3DS được trigger
 
@@ -374,10 +375,7 @@ HTTP Request arrives
 // src/index.ts — TRƯỚC express.json()
 
 // Webhook route cần raw body
-app.use(
-  '/payment/stripe/webhook',
-  express.raw({ type: 'application/json' })
-)
+app.use('/payment/stripe/webhook', express.raw({ type: 'application/json' }))
 
 // Tất cả route khác dùng JSON parsing bình thường
 app.use(express.json({ limit: '10mb' }))
@@ -388,14 +386,17 @@ app.use(express.json({ limit: '10mb' }))
 Có cách khác: dùng `verify` callback để lưu raw body:
 
 ```typescript
-app.use(express.json({
-  verify: (req, res, buf) => {
-    req.rawBody = buf // Lưu raw body trước khi parse
-  }
-}))
+app.use(
+  express.json({
+    verify: (req, res, buf) => {
+      req.rawBody = buf // Lưu raw body trước khi parse
+    },
+  }),
+)
 ```
 
 Nhưng cách này **không tốt** vì:
+
 - Lưu raw body cho MỌI request (waste memory)
 - Phải cast `req` sang custom type
 - Không rõ ràng — dễ quên khi refactor
@@ -409,6 +410,7 @@ Cách route-specific `express.raw()` tốt hơn vì chỉ áp dụng cho webhook
 ### Vấn đề
 
 Khi user đặt order credit card:
+
 1. Backend tạo PaymentIntent, lưu `stripe_client_secret` vào Order document
 2. Frontend nhận `client_secret` trong response, lưu vào React state
 3. User nhập card, click "Thanh toán"
@@ -439,6 +441,7 @@ User refresh trang → vào /checkout
 ### PaymentIntent expiry
 
 Stripe PaymentIntent mặc định expire sau **24 giờ** (configurable). Khi expire:
+
 - Stripe fire webhook `payment_intent.canceled`
 - Backend set `stripe_client_secret: null` trên Order
 - Lần sau user vào checkout → query trả `null` → không show recovery prompt
@@ -472,14 +475,11 @@ Checkout.tsx
 
 ```typescript
 // Thêm vào useCheckout hook
-const {
-  data: pendingPaymentData,
-  isLoading: isPendingPaymentLoading,
-} = useQuery({
+const { data: pendingPaymentData, isLoading: isPendingPaymentLoading } = useQuery({
   queryKey: ['pendingPayment'],
   queryFn: () => orderApi.getPendingPaymentOrder(),
-  staleTime: Infinity,  // Chỉ fetch 1 lần
-  retry: false,         // Fail-open: không retry
+  staleTime: Infinity, // Chỉ fetch 1 lần
+  retry: false, // Fail-open: không retry
 })
 
 const pendingPaymentOrder = pendingPaymentData?.data?.data ?? null
@@ -512,14 +512,13 @@ const handleResume = async () => {
 
   const { error, paymentIntent } = await stripe.confirmCardPayment(
     pendingOrder.stripe_client_secret,
-    { payment_method: { card: cardElement } }
+    { payment_method: { card: cardElement } },
   )
 
   setIsConfirming(false)
 
   if (error) {
-    if (error.code === 'payment_intent_unexpected_state' ||
-        error.code === 'resource_missing') {
+    if (error.code === 'payment_intent_unexpected_state' || error.code === 'resource_missing') {
       // PaymentIntent expired
       toast.error(t('recovery.expiredError'))
       setShowExpiredHint(true) // Highlight cancel button
@@ -565,14 +564,14 @@ pnpm --filter shopee-web dev
 
 ### Test cards cho các scenarios
 
-| Card Number | Behavior | Use case |
-|-------------|----------|----------|
-| `4242 4242 4242 4242` | Succeeds immediately (no 3DS) | Happy path |
-| `4000 0025 0000 3155` | Requires 3DS authentication | Test 3DS popup |
-| `4000 0000 0000 9995` | Always declined | Test decline handling |
-| `4000 0000 0000 0002` | Declined after 3DS | Test 3DS + decline |
-| `4000 0027 6000 3184` | 3DS required, authentication fails | Test 3DS failure |
-| `4000 0000 0000 3220` | 3DS2 frictionless (auto-approve) | Test 3DS2 no-popup |
+| Card Number           | Behavior                           | Use case              |
+| --------------------- | ---------------------------------- | --------------------- |
+| `4242 4242 4242 4242` | Succeeds immediately (no 3DS)      | Happy path            |
+| `4000 0025 0000 3155` | Requires 3DS authentication        | Test 3DS popup        |
+| `4000 0000 0000 9995` | Always declined                    | Test decline handling |
+| `4000 0000 0000 0002` | Declined after 3DS                 | Test 3DS + decline    |
+| `4000 0027 6000 3184` | 3DS required, authentication fails | Test 3DS failure      |
+| `4000 0000 0000 3220` | 3DS2 frictionless (auto-approve)   | Test 3DS2 no-popup    |
 
 ### Test 3DS popup trong development
 
@@ -619,17 +618,20 @@ stripe listen --forward-to localhost:4000/payment/stripe/webhook --events paymen
 ### Thực tế ở các doanh nghiệp lớn
 
 **Shopee (thực tế):**
+
 - Cho phép nhiều order pending cùng lúc (vì user mua từ nhiều seller)
 - Mỗi order là independent — cancel 1 không ảnh hưởng order khác
 - Credit card orders: giới hạn số lượng pending (thường 1-3) để tránh fraud
 - COD orders: giới hạn cao hơn (5-10) vì risk thấp hơn
 
 **Tiki:**
+
 - Tương tự Shopee — nhiều COD pending OK
 - Credit card: thường chỉ cho 1 pending tại một thời điểm
 - Có mechanism auto-cancel order pending quá 24h
 
 **Lazada:**
+
 - Cho phép nhiều pending orders
 - Credit card orders auto-cancel sau 30 phút nếu không complete payment
 
@@ -645,8 +647,8 @@ const order = await OrderModel.findOne({
   payment_status: PAYMENT_STATUS.PENDING,
   stripe_client_secret: { $ne: null },
 })
-.sort({ createdAt: -1 }) // Mới nhất
-.lean()
+  .sort({ createdAt: -1 }) // Mới nhất
+  .lean()
 ```
 
 ### Tại sao chỉ recover 1 order
@@ -684,6 +686,7 @@ return newest
 ### Recommendation
 
 Cho project hiện tại, **recover 1 order mới nhất** là đủ. Nếu sau này cần support multiple:
+
 - Thêm endpoint `GET /orders/pending-payments` (plural) trả array
 - UI: show list với "Thanh toán" / "Hủy" cho mỗi order
 - Auto-cancel orders pending > 24h via cron job (không phụ thuộc Stripe webhook)
@@ -694,11 +697,11 @@ Cho project hiện tại, **recover 1 order mới nhất** là đủ. Nếu sau 
 
 Spec đã được verify và fix 3 lỗi critical:
 
-| # | Lỗi | Status |
-|---|------|--------|
-| C1 | Task 2.1 thiếu dependency `stripe-payment-integration` Task 3 | Fixed |
-| C2 | Sort field `created_at` sai → phải là `createdAt` (Mongoose timestamps) | Fixed |
-| C3 | Task 4.1 dependency "none" sai → cần `stripe-payment-integration` Task 13 | Fixed |
+| #   | Lỗi                                                                       | Status |
+| --- | ------------------------------------------------------------------------- | ------ |
+| C1  | Task 2.1 thiếu dependency `stripe-payment-integration` Task 3             | Fixed  |
+| C2  | Sort field `created_at` sai → phải là `createdAt` (Mongoose timestamps)   | Fixed  |
+| C3  | Task 4.1 dependency "none" sai → cần `stripe-payment-integration` Task 13 | Fixed  |
 
 ### Warnings cần lưu ý khi implement
 

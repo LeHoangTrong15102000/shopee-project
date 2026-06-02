@@ -33,7 +33,10 @@ export async function getConversations(): Promise<Conversation[]> {
   return res.data.data
 }
 
-export async function createConversation(message: string, title?: string): Promise<ConversationDetail> {
+export async function createConversation(
+  message: string,
+  title?: string
+): Promise<ConversationDetail> {
   const res = await http.post<ApiResponse<ConversationDetail>>('conversations', { message, title })
   return res.data.data
 }

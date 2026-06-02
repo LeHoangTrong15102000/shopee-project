@@ -51,7 +51,7 @@ export default function VoucherCard({
 
   return (
     <View
-      className="flex-row rounded-lg border border-neutrals900 overflow-hidden mx-4 my-1"
+      className="mx-4 my-1 flex-row overflow-hidden rounded-lg border border-neutrals900"
       style={{ opacity: isExpiredOrUsed ? 0.5 : 1 }}>
       {/* Left accent bar */}
       <View
@@ -62,7 +62,7 @@ export default function VoucherCard({
       />
 
       {/* Content */}
-      <View className="flex-1 flex-row items-center px-3 py-3 gap-3">
+      <View className="flex-1 flex-row items-center gap-3 px-3 py-3">
         <Tag size={24} color={isExpiredOrUsed ? colors.neutrals400 : colors.primary} />
 
         <View className="flex-1">
@@ -82,9 +82,7 @@ export default function VoucherCard({
           {(voucher.is_expired || voucher.is_used) && (
             <View style={{ marginTop: 4 }}>
               <Badge variant="error" size="sm">
-                {voucher.is_used
-                  ? t('voucherCard.status.used')
-                  : t('voucherCard.status.expired')}
+                {voucher.is_used ? t('voucherCard.status.used') : t('voucherCard.status.expired')}
               </Badge>
             </View>
           )}
@@ -117,7 +115,9 @@ export default function VoucherCard({
                     raw
                     variant="labelSmall"
                     style={{ color: voucher.is_saved ? colors.neutrals400 : colors.primary }}>
-                    {voucher.is_saved ? t('voucherCard.button.saved') : t('voucherCard.button.save')}
+                    {voucher.is_saved
+                      ? t('voucherCard.button.saved')
+                      : t('voucherCard.button.save')}
                   </AppText>
                 )}
               </TouchableOpacity>

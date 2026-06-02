@@ -11,9 +11,7 @@ export class UserEventListener {
   constructor(private readonly emailQueue: Queue<EmailJobPayload>) {}
 
   @OnEvent('user.registered')
-  async onUserRegistered(
-    event: Extract<DomainEvent, { type: 'user.registered' }>,
-  ): Promise<void> {
+  async onUserRegistered(event: Extract<DomainEvent, { type: 'user.registered' }>): Promise<void> {
     const { userId, email } = event.payload
 
     Logger.apiInfo('[UserEventListener] user.registered — enqueuing welcome email', {

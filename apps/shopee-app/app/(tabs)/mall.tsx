@@ -39,7 +39,9 @@ export default function MallScreen() {
 
   return (
     <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 24 }}>
         {/* Header */}
         <View
           style={{
@@ -50,7 +52,10 @@ export default function MallScreen() {
           <AppText raw variant="heading2" style={{ color: '#fff', fontWeight: 'bold' }}>
             Shopee Mall
           </AppText>
-          <AppText raw variant="labelSmall" style={{ color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>
+          <AppText
+            raw
+            variant="labelSmall"
+            style={{ color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>
             {t('mall.section.authentic')}
           </AppText>
         </View>
@@ -72,7 +77,10 @@ export default function MallScreen() {
                 justifyContent: 'center',
                 paddingHorizontal: 16,
               }}>
-              <AppText raw variant="body" style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>
+              <AppText
+                raw
+                variant="body"
+                style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>
                 {banner.label}
               </AppText>
             </View>
@@ -91,7 +99,12 @@ export default function MallScreen() {
               {categories.slice(0, 8).map((cat) => (
                 <TouchableOpacity
                   key={cat._id}
-                  onPress={() => router.push({ pathname: '/search', params: { category: cat._id, categoryName: cat.name } })}
+                  onPress={() =>
+                    router.push({
+                      pathname: '/search',
+                      params: { category: cat._id, categoryName: cat.name },
+                    })
+                  }
                   style={{
                     width: (SCREEN_WIDTH - 32 - 24) / 4,
                     alignItems: 'center',
@@ -147,4 +160,3 @@ export default function MallScreen() {
     </SafeAreaView>
   )
 }
-

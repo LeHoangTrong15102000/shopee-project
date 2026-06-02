@@ -247,5 +247,4 @@ describe('ConversationListPage', () => {
       expect(pageSpan.textContent).toContain('1')
     })
   })
-
 })

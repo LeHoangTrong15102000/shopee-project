@@ -31,7 +31,13 @@ const verifyAccessToken = async (
       const decoded = (await verifyToken(access_token, config.SECRET_KEY)) as PayloadToken
       // Reject partial tokens — they are only valid for /auth/2fa/complete
       if (decoded.scope === '2fa_pending') {
-        responseError(res, new ErrorHandler(STATUS.UNAUTHORIZED, 'Partial token cannot be used to access protected routes'))
+        responseError(
+          res,
+          new ErrorHandler(
+            STATUS.UNAUTHORIZED,
+            'Partial token cannot be used to access protected routes',
+          ),
+        )
         return
       }
       req.jwtDecoded = decoded
@@ -66,7 +72,10 @@ const verifyRefreshToken = async (
         if (refreshTokenDB) {
           return next()
         }
-        responseError(res, new ErrorHandler(STATUS.UNAUTHORIZED, 'Refresh token đã hết hạn hoặc bị thu hồi'))
+        responseError(
+          res,
+          new ErrorHandler(STATUS.UNAUTHORIZED, 'Refresh token đã hết hạn hoặc bị thu hồi'),
+        )
         return
       }
 

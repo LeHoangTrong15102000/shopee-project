@@ -20,10 +20,7 @@ export type ReturnOrderInput = z.infer<typeof returnOrderSchema>
  */
 export const adminUpdateStatusSchema = z.object({
   body: z.object({
-    status: z.enum(
-      Object.values(ORDER_STATUS) as [string, ...string[]],
-      'Trạng thái không hợp lệ',
-    ),
+    status: z.enum(Object.values(ORDER_STATUS) as [string, ...string[]], 'Trạng thái không hợp lệ'),
     reason: z.string().optional(),
   }),
   params: z.object({

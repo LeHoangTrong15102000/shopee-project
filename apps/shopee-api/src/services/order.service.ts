@@ -95,7 +95,7 @@ export interface CreateOrderInput {
   voucher_discount?: number
   coins_used?: number
   note?: string
-  _clientIp?: string   // passed from controller for MoMo/VNPay payment initiation
+  _clientIp?: string // passed from controller for MoMo/VNPay payment initiation
 }
 
 // Shape returned by validateOrderInput — all expensive lookups happen before the transaction.
@@ -111,7 +111,13 @@ interface ValidatedInput {
   shippingMethod: IShippingMethod
   orderItems: IOrderItem[]
   snapshotData: CreateProductSkuSnapshotDTO[]
-  skuItems: Array<{ skuId: string; quantity: number; productName: string; skuValue: string; skuStock: number }>
+  skuItems: Array<{
+    skuId: string
+    quantity: number
+    productName: string
+    skuValue: string
+    skuStock: number
+  }>
   legacyItems: Array<{ product_id: string; buy_count: number }>
   subtotal: number
   productIds: string[]
@@ -149,7 +155,10 @@ export class OrderService extends BaseService {
 
   // ─── Public createOrder — orchestration only ──────────────────────────────
 
-  async createOrder(userId: string, input: CreateOrderInput): Promise<IOrder & { client_secret?: string }> {
+  async createOrder(
+    userId: string,
+    input: CreateOrderInput,
+  ): Promise<IOrder & { client_secret?: string }> {
     if (!this.isValidObjectId(userId)) throw new ValidationError('Invalid user ID format')
 
     // MoMo and VNPay must use the new /checkout/initiate-payment endpoint
@@ -159,7 +168,7 @@ export class OrderService extends BaseService {
     ) {
       throw new ValidationError(
         'MoMo and VNPay payments must use POST /checkout/initiate-payment. ' +
-        'Use payment_method "e_wallet" with e_wallet_provider "momo" or "vnpay".',
+          'Use payment_method "e_wallet" with e_wallet_provider "momo" or "vnpay".',
       )
     }
 
@@ -453,9 +462,7 @@ export class OrderService extends BaseService {
             payment_method: session.eWalletProvider as PaymentMethodType,
             payment_status: PAYMENT_STATUS.PAID,
             status: ORDER_STATUS.CONFIRMED,
-            payment_id: session.payment_id
-              ? new Types.ObjectId(session.payment_id)
-              : undefined,
+            payment_id: session.payment_id ? new Types.ObjectId(session.payment_id) : undefined,
             payment_session_id: new Types.ObjectId(sessionId),
             subtotal: session.amount - shippingFee + discount + coinsDiscount,
             shipping_fee: shippingFee,
@@ -537,7 +544,10 @@ export class OrderService extends BaseService {
    * Validate address, shipping method, products, and SKUs.
    * Runs OUTSIDE the transaction — expensive reads should not hold locks.
    */
-  private async validateOrderInput(userId: string, input: CreateOrderInput): Promise<ValidatedInput> {
+  private async validateOrderInput(
+    userId: string,
+    input: CreateOrderInput,
+  ): Promise<ValidatedInput> {
     const address = await this.addressRepository.findByIdAndUser(input.shipping_address_id, userId)
     if (!address) throw new NotFoundError('Address', input.shipping_address_id)
 
@@ -656,7 +666,13 @@ export class OrderService extends BaseService {
    * Also syncs Product.quantity via SKU repository.
    */
   private async reserveStock(
-    skuItems: Array<{ skuId: string; quantity: number; productName: string; skuValue: string; skuStock: number }>,
+    skuItems: Array<{
+      skuId: string
+      quantity: number
+      productName: string
+      skuValue: string
+      skuStock: number
+    }>,
     session: ClientSession,
   ): Promise<void> {
     if (!this.skuRepository) return

@@ -27,9 +27,7 @@ const backupCategories = async (backupDir: string) => {
     if (categories.length > 0) {
       const categoriesPath = path.join(backupDir, 'categories-backup.json')
       fs.writeFileSync(categoriesPath, JSON.stringify(categories, null, 2))
-      console.log(
-        `✅ Đã backup ${categories.length} categories vào ${categoriesPath}`
-      )
+      console.log(`✅ Đã backup ${categories.length} categories vào ${categoriesPath}`)
     } else {
       console.log('ℹ️  Không có categories để backup')
     }
@@ -51,9 +49,7 @@ const backupProducts = async (backupDir: string) => {
     if (products.length > 0) {
       const productsPath = path.join(backupDir, 'products-backup.json')
       fs.writeFileSync(productsPath, JSON.stringify(products, null, 2))
-      console.log(
-        `✅ Đã backup ${products.length} products vào ${productsPath}`
-      )
+      console.log(`✅ Đã backup ${products.length} products vào ${productsPath}`)
     } else {
       console.log('ℹ️  Không có products để backup')
     }

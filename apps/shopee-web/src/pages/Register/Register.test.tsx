@@ -1,4 +1,4 @@
-import { describe, it, expect} from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
 import { renderWithRouter } from 'src/utils/testUtils'
 import path from 'src/constant/path'

@@ -10,27 +10,27 @@
 
 ## MỤC LỤC
 
-| # | Chủ đề | Mô tả |
-|---|--------|-------|
-| 1 | [Framework trả lời phỏng vấn](#1-framework-trả-lời-phỏng-vấn) | RADIO Framework, cấu trúc 60 phút |
-| 2 | [Rendering Strategies](#2-rendering-strategies) | CSR, SSR, SSG, ISR, Streaming, Partial Hydration |
-| 3 | [State Management](#3-state-management) | Client state, Server state, URL state, Form state |
-| 4 | [Data Fetching & API Design](#4-data-fetching--api-design) | REST, GraphQL, caching, pagination, optimistic updates |
-| 5 | [Networking & Real-time Communication](#5-networking--real-time-communication) | HTTP/2, HTTP/3, WebSocket, SSE, Long Polling |
-| 6 | [Performance Optimization](#6-performance-optimization) | Core Web Vitals, code splitting, lazy loading, virtualization |
-| 7 | [Caching Strategies](#7-caching-strategies) | Browser cache, CDN, service worker, in-memory |
-| 8 | [Component Architecture](#8-component-architecture) | Design patterns, composition, scalability |
-| 9 | [Security](#9-security) | XSS, CSRF, CSP, CORS, authentication |
-| 10 | [Accessibility (A11y)](#10-accessibility-a11y) | WCAG, ARIA, keyboard navigation, screen readers |
-| 11 | [Internationalization (i18n)](#11-internationalization-i18n) | Locale, RTL, dynamic loading, SEO |
-| 12 | [Offline-First & PWA](#12-offline-first--pwa) | Service Workers, caching patterns, background sync |
-| 13 | [Micro-Frontends](#13-micro-frontends) | Module Federation, Web Components, iframe |
-| 14 | [Testing & Observability](#14-testing--observability) | Testing pyramid, monitoring, error tracking, logging |
-| 15 | [Design Patterns](#15-design-patterns) | Observer, Pub/Sub, MVC/MVVM/Flux, HOC, Render Props |
-| 16 | [Scalability](#16-scalability) | Data scale, feature scale, team scale, device scale |
-| 17 | [Câu hỏi thực hành](#17-câu-hỏi-thực-hành) | 25+ bài system design thực tế với hướng dẫn |
-| 18 | [Tiêu chí đánh giá](#18-tiêu-chí-đánh-giá) | Interviewer đánh giá gì? |
-| 19 | [Tài liệu tham khảo](#19-tài-liệu-tham-khảo) | Sách, khóa học, website |
+| #   | Chủ đề                                                                         | Mô tả                                                         |
+| --- | ------------------------------------------------------------------------------ | ------------------------------------------------------------- |
+| 1   | [Framework trả lời phỏng vấn](#1-framework-trả-lời-phỏng-vấn)                  | RADIO Framework, cấu trúc 60 phút                             |
+| 2   | [Rendering Strategies](#2-rendering-strategies)                                | CSR, SSR, SSG, ISR, Streaming, Partial Hydration              |
+| 3   | [State Management](#3-state-management)                                        | Client state, Server state, URL state, Form state             |
+| 4   | [Data Fetching & API Design](#4-data-fetching--api-design)                     | REST, GraphQL, caching, pagination, optimistic updates        |
+| 5   | [Networking & Real-time Communication](#5-networking--real-time-communication) | HTTP/2, HTTP/3, WebSocket, SSE, Long Polling                  |
+| 6   | [Performance Optimization](#6-performance-optimization)                        | Core Web Vitals, code splitting, lazy loading, virtualization |
+| 7   | [Caching Strategies](#7-caching-strategies)                                    | Browser cache, CDN, service worker, in-memory                 |
+| 8   | [Component Architecture](#8-component-architecture)                            | Design patterns, composition, scalability                     |
+| 9   | [Security](#9-security)                                                        | XSS, CSRF, CSP, CORS, authentication                          |
+| 10  | [Accessibility (A11y)](#10-accessibility-a11y)                                 | WCAG, ARIA, keyboard navigation, screen readers               |
+| 11  | [Internationalization (i18n)](#11-internationalization-i18n)                   | Locale, RTL, dynamic loading, SEO                             |
+| 12  | [Offline-First & PWA](#12-offline-first--pwa)                                  | Service Workers, caching patterns, background sync            |
+| 13  | [Micro-Frontends](#13-micro-frontends)                                         | Module Federation, Web Components, iframe                     |
+| 14  | [Testing & Observability](#14-testing--observability)                          | Testing pyramid, monitoring, error tracking, logging          |
+| 15  | [Design Patterns](#15-design-patterns)                                         | Observer, Pub/Sub, MVC/MVVM/Flux, HOC, Render Props           |
+| 16  | [Scalability](#16-scalability)                                                 | Data scale, feature scale, team scale, device scale           |
+| 17  | [Câu hỏi thực hành](#17-câu-hỏi-thực-hành)                                     | 25+ bài system design thực tế với hướng dẫn                   |
+| 18  | [Tiêu chí đánh giá](#18-tiêu-chí-đánh-giá)                                     | Interviewer đánh giá gì?                                      |
+| 19  | [Tài liệu tham khảo](#19-tài-liệu-tham-khảo)                                   | Sách, khóa học, website                                       |
 
 ---
 
@@ -53,6 +53,7 @@ O — Optimizations & Deep Dive    (~30-40% thời gian, ~15-20 phút)
 Hỏi rõ ràng trước khi thiết kế:
 
 **Functional Requirements (FR):**
+
 - User có thể làm gì? (core features)
 - User flow chính là gì?
 - Cái gì in-scope, cái gì out-of-scope?
@@ -60,6 +61,7 @@ Hỏi rõ ràng trước khi thiết kế:
 - Có cần collaborative editing không?
 
 **Non-Functional Requirements (NFR):**
+
 - Performance targets? (load time < 3s? TTI < 5s?)
 - Scale? (bao nhiêu users? bao nhiêu data?)
 - SEO quan trọng không?
@@ -70,6 +72,7 @@ Hỏi rõ ràng trước khi thiết kế:
 - Browser support? (IE11? modern only?)
 
 **Ví dụ với "Design Facebook News Feed":**
+
 ```
 FR:
 - User xem feed posts (text, image, video)
@@ -189,15 +192,15 @@ socket.on('post:reaction-update', (data: { postId, reactions }) => void)
 
 ### 1.3. Những sai lầm thường gặp
 
-| Sai lầm | Nên làm |
-|---------|---------|
-| Nhảy thẳng vào solution | Hỏi requirements trước |
-| Không vẽ diagram | Luôn vẽ architecture diagram |
-| Chỉ nói 1 solution duy nhất | Nêu trade-offs giữa 2-3 options |
-| Im lặng khi suy nghĩ | Think out loud, giải thích reasoning |
-| Dùng buzzwords mà không giải thích | Giải thích WHY chứ không chỉ WHAT |
-| Đi quá sâu vào 1 chi tiết | Bao quát trước, deep dive sau |
-| Không đề cập edge cases | Luôn consider error states, loading, empty states |
+| Sai lầm                            | Nên làm                                           |
+| ---------------------------------- | ------------------------------------------------- |
+| Nhảy thẳng vào solution            | Hỏi requirements trước                            |
+| Không vẽ diagram                   | Luôn vẽ architecture diagram                      |
+| Chỉ nói 1 solution duy nhất        | Nêu trade-offs giữa 2-3 options                   |
+| Im lặng khi suy nghĩ               | Think out loud, giải thích reasoning              |
+| Dùng buzzwords mà không giải thích | Giải thích WHY chứ không chỉ WHAT                 |
+| Đi quá sâu vào 1 chi tiết          | Bao quát trước, deep dive sau                     |
+| Không đề cập edge cases            | Luôn consider error states, loading, empty states |
 
 ---
 
@@ -205,13 +208,13 @@ socket.on('post:reaction-update', (data: { postId, reactions }) => void)
 
 ### 2.1. Tổng quan
 
-| Strategy | Render ở đâu | Khi nào render | SEO | TTFB | FCP | TTI |
-|----------|--------------|----------------|-----|------|-----|-----|
-| **CSR** | Browser | Mỗi lần visit | Kém | Nhanh | Chậm | Chậm |
-| **SSR** | Server | Mỗi request | Tốt | Chậm hơn | Nhanh | Trung bình |
-| **SSG** | Build time | Lúc build | Tốt | Rất nhanh | Rất nhanh | Nhanh |
-| **ISR** | Build + Background | Định kỳ | Tốt | Rất nhanh | Rất nhanh | Nhanh |
-| **Streaming** | Server → Client | Progressively | Tốt | Nhanh | Rất nhanh | Nhanh |
+| Strategy      | Render ở đâu       | Khi nào render | SEO | TTFB      | FCP       | TTI        |
+| ------------- | ------------------ | -------------- | --- | --------- | --------- | ---------- |
+| **CSR**       | Browser            | Mỗi lần visit  | Kém | Nhanh     | Chậm      | Chậm       |
+| **SSR**       | Server             | Mỗi request    | Tốt | Chậm hơn  | Nhanh     | Trung bình |
+| **SSG**       | Build time         | Lúc build      | Tốt | Rất nhanh | Rất nhanh | Nhanh      |
+| **ISR**       | Build + Background | Định kỳ        | Tốt | Rất nhanh | Rất nhanh | Nhanh      |
+| **Streaming** | Server → Client    | Progressively  | Tốt | Nhanh     | Rất nhanh | Nhanh      |
 
 ### 2.2. Client-Side Rendering (CSR)
 
@@ -220,6 +223,7 @@ Browser nhận HTML shell → Download JS bundle → Execute JS → Render UI
 ```
 
 **Khi nào dùng:**
+
 - SPA (Single Page App) với nhiều tương tác
 - Dashboard, admin panel
 - App behind authentication (không cần SEO)
@@ -235,6 +239,7 @@ Browser request → Server render full HTML → Gửi HTML → Browser hiển th
 ```
 
 **Khi nào dùng:**
+
 - Content-heavy pages cần SEO (product pages, blog)
 - Dynamic data thay đổi theo user (personalized content)
 - Social media sharing cần meta tags đúng
@@ -249,6 +254,7 @@ Build time: Generate HTML files → Deploy to CDN → Browser nhận pre-built H
 ```
 
 **Khi nào dùng:**
+
 - Blog, documentation
 - Marketing/landing pages
 - Content hiếm khi thay đổi
@@ -263,6 +269,7 @@ First visit: Serve static page → Background: Regenerate sau N giây → Next v
 ```
 
 **Khi nào dùng:**
+
 - E-commerce product pages (hàng nghìn products)
 - News articles
 - Content thay đổi nhưng không cần real-time
@@ -277,11 +284,13 @@ Server bắt đầu stream HTML → Browser render progressively → Chỉ hydra
 ```
 
 **React Server Components (RSC):**
+
 - Server Components: render trên server, không gửi JS đến client
 - Client Components: render + hydrate trên client
 - Giảm JS bundle size đáng kể
 
 **Selective/Partial Hydration:**
+
 - Chỉ hydrate components cần interactive
 - Islands Architecture (Astro): static HTML + interactive "islands"
 
@@ -336,23 +345,23 @@ Thay đổi thường xuyên? ─── Ít ──► ISR
 
 ### 3.2. Client State Solutions
 
-| Tool | Bundle Size | Boilerplate | Learning Curve | Best For |
-|------|-------------|-------------|----------------|----------|
-| `useState/useReducer` | 0 | Thấp | Thấp | Component-local state |
-| Context API | 0 | Trung bình | Thấp | Global state ít thay đổi |
-| Zustand | ~1KB | Rất thấp | Thấp | Client state cần performance |
-| Redux Toolkit | ~10KB | Trung bình | Trung bình | Complex state, large teams |
-| Jotai | ~3KB | Thấp | Thấp | Atomic state |
-| Valtio | ~3KB | Thấp | Thấp | Proxy-based reactive state |
+| Tool                  | Bundle Size | Boilerplate | Learning Curve | Best For                     |
+| --------------------- | ----------- | ----------- | -------------- | ---------------------------- |
+| `useState/useReducer` | 0           | Thấp        | Thấp           | Component-local state        |
+| Context API           | 0           | Trung bình  | Thấp           | Global state ít thay đổi     |
+| Zustand               | ~1KB        | Rất thấp    | Thấp           | Client state cần performance |
+| Redux Toolkit         | ~10KB       | Trung bình  | Trung bình     | Complex state, large teams   |
+| Jotai                 | ~3KB        | Thấp        | Thấp           | Atomic state                 |
+| Valtio                | ~3KB        | Thấp        | Thấp           | Proxy-based reactive state   |
 
 ### 3.3. Server State Solutions
 
-| Tool | Caching | Dedup | Background Refetch | Optimistic Updates |
-|------|---------|-------|--------------------|--------------------|
-| TanStack Query | Built-in | Built-in | Built-in | Built-in |
-| SWR | Built-in | Built-in | Built-in | Manual |
-| Apollo Client | Normalized | Built-in | Built-in | Built-in |
-| RTK Query | Built-in | Built-in | Built-in | Manual |
+| Tool           | Caching    | Dedup    | Background Refetch | Optimistic Updates |
+| -------------- | ---------- | -------- | ------------------ | ------------------ |
+| TanStack Query | Built-in   | Built-in | Built-in           | Built-in           |
+| SWR            | Built-in   | Built-in | Built-in           | Manual             |
+| Apollo Client  | Normalized | Built-in | Built-in           | Built-in           |
+| RTK Query      | Built-in   | Built-in | Built-in           | Manual             |
 
 ### 3.4. Câu hỏi phỏng vấn thường gặp
 
@@ -378,41 +387,47 @@ Thay đổi thường xuyên? ─── Ít ──► ISR
 
 ### 4.1. REST vs GraphQL
 
-| Aspect | REST | GraphQL |
-|--------|------|---------|
-| Endpoint | Multiple (1 per resource) | Single endpoint |
-| Data shape | Server quyết định | Client quyết định |
-| Over-fetching | Có thể | Không (chỉ lấy fields cần) |
-| Under-fetching | Có thể | Không (1 query lấy nhiều resources) |
-| Caching | HTTP caching dễ | Cache phức tạp hơn (normalized) |
-| File upload | Native support | Cần thêm library |
-| Learning curve | Thấp | Trung bình |
-| Versioning | URL versioning (/v1/) | Schema evolution |
-| Error handling | HTTP status codes | 200 OK + errors array |
+| Aspect         | REST                      | GraphQL                             |
+| -------------- | ------------------------- | ----------------------------------- |
+| Endpoint       | Multiple (1 per resource) | Single endpoint                     |
+| Data shape     | Server quyết định         | Client quyết định                   |
+| Over-fetching  | Có thể                    | Không (chỉ lấy fields cần)          |
+| Under-fetching | Có thể                    | Không (1 query lấy nhiều resources) |
+| Caching        | HTTP caching dễ           | Cache phức tạp hơn (normalized)     |
+| File upload    | Native support            | Cần thêm library                    |
+| Learning curve | Thấp                      | Trung bình                          |
+| Versioning     | URL versioning (/v1/)     | Schema evolution                    |
+| Error handling | HTTP status codes         | 200 OK + errors array               |
 
 ### 4.2. Pagination Strategies
 
 **Offset-based:**
+
 ```
 GET /products?page=3&limit=20
 ```
+
 - Dễ implement
 - Cho phép jump to page
 - Inconsistent khi data thay đổi (items bị lặp/mất)
 
 **Cursor-based:**
+
 ```
 GET /products?cursor=abc123&limit=20
 ```
+
 - Consistent results
 - Better performance (không cần COUNT)
 - Không cho phép jump to page
 - Phù hợp infinite scroll
 
 **Keyset-based:**
+
 ```
 GET /products?after_id=abc123&limit=20&sort=created_at
 ```
+
 - Variant của cursor-based
 - Sort key + unique ID
 
@@ -506,6 +521,7 @@ GraphQL Subscriptions  Server→Client  Low        Medium        Typed events
 ### 5.2. Khi nào dùng gì?
 
 **WebSocket:**
+
 - Chat applications
 - Multiplayer games
 - Collaborative editing (Google Docs)
@@ -513,6 +529,7 @@ GraphQL Subscriptions  Server→Client  Low        Medium        Typed events
 - Cần bidirectional real-time
 
 **Server-Sent Events (SSE):**
+
 - Notifications
 - Live feed updates
 - Progress tracking
@@ -520,23 +537,27 @@ GraphQL Subscriptions  Server→Client  Low        Medium        Typed events
 - Tự động reconnect
 
 **Long Polling:**
+
 - Khi WebSocket/SSE không available
 - Simple real-time cho older browsers
 - Low-frequency updates
 
 **GraphQL Subscriptions:**
+
 - Khi đã dùng GraphQL
 - Typed, schema-driven real-time events
 
 ### 5.3. HTTP/2 vs HTTP/3
 
 **HTTP/2:**
+
 - Multiplexing (nhiều requests trên 1 TCP connection)
 - Header compression (HPACK)
 - Server push
 - Vấn đề: Head-of-line blocking ở TCP level
 
 **HTTP/3 (QUIC):**
+
 - Dựa trên UDP, không phải TCP
 - Không còn head-of-line blocking
 - 0-RTT connection resumption
@@ -559,6 +580,7 @@ GraphQL Subscriptions  Server→Client  Low        Medium        Typed events
 ```
 
 **Scaling WebSocket:**
+
 - Sticky sessions (cùng user → cùng server)
 - Redis Pub/Sub cho cross-server messaging
 - Heartbeat/ping để detect stale connections
@@ -597,38 +619,38 @@ GraphQL Subscriptions  Server→Client  Low        Medium        Typed events
 
 ### 6.2. Optimize LCP
 
-| Technique | Giải thích |
-|-----------|-----------|
-| `fetchpriority="high"` | Ưu tiên tải hero image |
+| Technique                  | Giải thích                                   |
+| -------------------------- | -------------------------------------------- |
+| `fetchpriority="high"`     | Ưu tiên tải hero image                       |
 | Preload critical resources | `<link rel="preload" as="image" href="...">` |
-| Responsive images | `srcset` + `sizes` cho đúng kích thước |
-| Modern formats | WebP, AVIF thay cho JPEG/PNG |
-| CDN | Serve images từ edge server gần user |
-| SSR/SSG | HTML có content sẵn, không đợi JS |
-| Font optimization | `font-display: swap`, preload fonts |
+| Responsive images          | `srcset` + `sizes` cho đúng kích thước       |
+| Modern formats             | WebP, AVIF thay cho JPEG/PNG                 |
+| CDN                        | Serve images từ edge server gần user         |
+| SSR/SSG                    | HTML có content sẵn, không đợi JS            |
+| Font optimization          | `font-display: swap`, preload fonts          |
 
 ### 6.3. Optimize INP (Interaction to Next Paint)
 
-| Technique | Giải thích |
-|-----------|-----------|
-| Break long tasks | Chia task lớn thành chunks < 50ms |
-| `requestIdleCallback` | Chạy non-critical work khi browser rảnh |
-| `startTransition` | Đánh dấu low-priority updates (React 18+) |
-| Web Workers | Offload CPU-intensive work khỏi main thread |
-| `requestAnimationFrame` | Sync với browser paint cycle |
-| Debounce/Throttle | Giảm tần suất event handlers |
-| Virtualization | Chỉ render items visible trong viewport |
+| Technique               | Giải thích                                  |
+| ----------------------- | ------------------------------------------- |
+| Break long tasks        | Chia task lớn thành chunks < 50ms           |
+| `requestIdleCallback`   | Chạy non-critical work khi browser rảnh     |
+| `startTransition`       | Đánh dấu low-priority updates (React 18+)   |
+| Web Workers             | Offload CPU-intensive work khỏi main thread |
+| `requestAnimationFrame` | Sync với browser paint cycle                |
+| Debounce/Throttle       | Giảm tần suất event handlers                |
+| Virtualization          | Chỉ render items visible trong viewport     |
 
 ### 6.4. Optimize CLS
 
-| Technique | Giải thích |
-|-----------|-----------|
-| Explicit dimensions | Set `width` + `height` trên images/videos |
-| `aspect-ratio` CSS | Reserve space trước khi content load |
-| Font fallback | Match fallback font metrics với web font |
+| Technique               | Giải thích                                  |
+| ----------------------- | ------------------------------------------- |
+| Explicit dimensions     | Set `width` + `height` trên images/videos   |
+| `aspect-ratio` CSS      | Reserve space trước khi content load        |
+| Font fallback           | Match fallback font metrics với web font    |
 | Avoid injecting content | Không insert content above existing content |
-| `contain: layout` | CSS containment cho dynamic content |
-| Skeleton screens | Placeholder giữ chỗ cho content |
+| `contain: layout`       | CSS containment cho dynamic content         |
+| Skeleton screens        | Placeholder giữ chỗ cho content             |
 
 ### 6.5. Code Splitting & Lazy Loading
 
@@ -681,16 +703,16 @@ Khi render list hàng nghìn items, chỉ render items visible trong viewport.
 
 ### 6.7. Bundle Optimization
 
-| Technique | Công cụ/Cách |
-|-----------|-------------|
-| Tree Shaking | Vite/Webpack tự động loại bỏ unused exports |
-| Code Splitting | `React.lazy()` + `Suspense` |
-| Dynamic Imports | `import()` cho heavy libraries |
-| Minification | Terser, esbuild |
-| Compression | Gzip, Brotli |
-| Bundle Analysis | `vite-bundle-visualizer`, `webpack-bundle-analyzer` |
-| Dependency Audit | Check bundle size trước khi thêm dependency |
-| Modern builds | ES2020+ cho modern browsers, fallback cho cũ |
+| Technique        | Công cụ/Cách                                        |
+| ---------------- | --------------------------------------------------- |
+| Tree Shaking     | Vite/Webpack tự động loại bỏ unused exports         |
+| Code Splitting   | `React.lazy()` + `Suspense`                         |
+| Dynamic Imports  | `import()` cho heavy libraries                      |
+| Minification     | Terser, esbuild                                     |
+| Compression      | Gzip, Brotli                                        |
+| Bundle Analysis  | `vite-bundle-visualizer`, `webpack-bundle-analyzer` |
+| Dependency Audit | Check bundle size trước khi thêm dependency         |
+| Modern builds    | ES2020+ cho modern browsers, fallback cho cũ        |
 
 ### 6.8. Image Optimization
 
@@ -723,14 +745,15 @@ Request → [Browser Memory Cache] → [Browser Disk Cache] → [Service Worker]
 
 ### 7.2. HTTP Caching
 
-| Header | Giải thích | Ví dụ |
-|--------|-----------|-------|
-| `Cache-Control` | Điều khiển caching behavior | `max-age=3600, public` |
-| `ETag` | Fingerprint của resource | `"abc123"` |
+| Header          | Giải thích                  | Ví dụ                           |
+| --------------- | --------------------------- | ------------------------------- |
+| `Cache-Control` | Điều khiển caching behavior | `max-age=3600, public`          |
+| `ETag`          | Fingerprint của resource    | `"abc123"`                      |
 | `Last-Modified` | Thời gian resource thay đổi | `Thu, 01 Jan 2026 00:00:00 GMT` |
-| `Expires` | Thời gian hết hạn (legacy) | Date string |
+| `Expires`       | Thời gian hết hạn (legacy)  | Date string                     |
 
 **Strategies:**
+
 ```
 Static assets (JS/CSS/images):
   Cache-Control: public, max-age=31536000, immutable
@@ -773,6 +796,7 @@ Request → Cache có data?
 ### 7.4. Application-Level Caching
 
 **TanStack Query / SWR caching model:**
+
 ```
 staleTime: Thời gian data được coi là "fresh"
 gcTime:    Thời gian giữ data inactive trong cache
@@ -788,12 +812,12 @@ gcTime:    Thời gian giữ data inactive trong cache
 
 "There are only two hard things in Computer Science: cache invalidation and naming things." — Phil Karlton
 
-| Strategy | Khi nào | Cách |
-|----------|---------|------|
-| Time-based | Data ít thay đổi | `staleTime`, `max-age` |
-| Event-based | Sau mutation | `invalidateQueries()` |
-| Manual | User action | "Pull to refresh", clear cache button |
-| Optimistic | Trước response | Update cache → revalidate sau |
+| Strategy    | Khi nào          | Cách                                  |
+| ----------- | ---------------- | ------------------------------------- |
+| Time-based  | Data ít thay đổi | `staleTime`, `max-age`                |
+| Event-based | Sau mutation     | `invalidateQueries()`                 |
+| Manual      | User action      | "Pull to refresh", clear cache button |
+| Optimistic  | Trước response   | Update cache → revalidate sau         |
 
 ---
 
@@ -809,6 +833,7 @@ gcTime:    Thời gian giữ data inactive trong cache
 ### 8.2. Component Patterns
 
 **Container/Presentational Pattern:**
+
 ```
 ┌───────────────────────────┐
 │    Container (Smart)       │  ← Handles data, state, logic
@@ -820,6 +845,7 @@ gcTime:    Thời gian giữ data inactive trong cache
 ```
 
 **Compound Components:**
+
 ```tsx
 <Select>
   <Select.Trigger>Choose option</Select.Trigger>
@@ -831,13 +857,15 @@ gcTime:    Thời gian giữ data inactive trong cache
 ```
 
 **Render Props:**
+
 ```tsx
 <DataFetcher url="/api/users">
-  {({ data, loading }) => loading ? <Spinner /> : <UserList users={data} />}
+  {({ data, loading }) => (loading ? <Spinner /> : <UserList users={data} />)}
 </DataFetcher>
 ```
 
 **Custom Hooks (Logic Extraction):**
+
 ```tsx
 function useProducts(filters) {
   const { data, isLoading } = useQuery(...)
@@ -847,6 +875,7 @@ function useProducts(filters) {
 ```
 
 **Higher-Order Components (HOC):**
+
 ```tsx
 const withAuth = (Component) => (props) => {
   const { isAuthenticated } = useAuth()
@@ -856,14 +885,14 @@ const withAuth = (Component) => (props) => {
 
 ### 8.3. Component Tree Optimization
 
-| Problem | Solution |
-|---------|----------|
-| Unnecessary re-renders | `React.memo`, selector hooks |
-| Expensive computations | `useMemo` |
-| Unstable callback refs | `useCallback` |
-| Large component trees | Code splitting, lazy loading |
+| Problem                   | Solution                               |
+| ------------------------- | -------------------------------------- |
+| Unnecessary re-renders    | `React.memo`, selector hooks           |
+| Expensive computations    | `useMemo`                              |
+| Unstable callback refs    | `useCallback`                          |
+| Large component trees     | Code splitting, lazy loading           |
 | Prop drilling (5+ levels) | Context, state management, composition |
-| Layout thrashing | CSS containment, will-change |
+| Layout thrashing          | CSS containment, will-change           |
 
 ---
 
@@ -872,11 +901,13 @@ const withAuth = (Component) => (props) => {
 ### 9.1. XSS (Cross-Site Scripting)
 
 **Loại:**
+
 - **Stored XSS:** Script lưu trong DB, execute khi user xem
 - **Reflected XSS:** Script trong URL, execute khi click link
 - **DOM-based XSS:** Script manipulate DOM trực tiếp
 
 **Phòng chống:**
+
 ```
 1. Output encoding (escape HTML entities)
 2. KHÔNG dùng innerHTML / dangerouslySetInnerHTML
@@ -894,6 +925,7 @@ User logged in ─► Attacker's page ─► Gửi request đến your API
 ```
 
 **Phòng chống:**
+
 ```
 1. CSRF tokens (server generate, client gửi kèm)
 2. SameSite cookie attribute (Strict/Lax)
@@ -931,14 +963,15 @@ Browser ─► Preflight (OPTIONS) ─► Server checks origin
 
 ### 9.5. Authentication Patterns
 
-| Pattern | Stateful | Where stored | Scalability |
-|---------|----------|-------------|-------------|
-| Session cookie | Server | Cookie | Cần session store |
-| JWT (access + refresh) | Stateless | Memory/Cookie | Dễ scale |
-| OAuth 2.0 / OIDC | Depends | Cookie | Third-party auth |
-| BFF (Backend For Frontend) | Server | HttpOnly cookie | Secure + scalable |
+| Pattern                    | Stateful  | Where stored    | Scalability       |
+| -------------------------- | --------- | --------------- | ----------------- |
+| Session cookie             | Server    | Cookie          | Cần session store |
+| JWT (access + refresh)     | Stateless | Memory/Cookie   | Dễ scale          |
+| OAuth 2.0 / OIDC           | Depends   | Cookie          | Third-party auth  |
+| BFF (Backend For Frontend) | Server    | HttpOnly cookie | Secure + scalable |
 
 **JWT Flow:**
+
 ```
 Login → Server issues access_token (short-lived) + refresh_token (long-lived)
     │
@@ -969,11 +1002,11 @@ Request → Attach access_token in Authorization header
 
 ### 10.1. WCAG Levels
 
-| Level | Yêu cầu | Ví dụ |
-|-------|---------|-------|
-| **A** (minimum) | Basic accessibility | Alt text, keyboard navigable, color not only indicator |
-| **AA** (standard, phổ biến nhất) | Enhanced accessibility | Contrast ratio ≥ 4.5:1, resize text 200%, focus visible |
-| **AAA** (highest) | Maximum accessibility | Contrast ≥ 7:1, sign language, extended audio description |
+| Level                            | Yêu cầu                | Ví dụ                                                     |
+| -------------------------------- | ---------------------- | --------------------------------------------------------- |
+| **A** (minimum)                  | Basic accessibility    | Alt text, keyboard navigable, color not only indicator    |
+| **AA** (standard, phổ biến nhất) | Enhanced accessibility | Contrast ratio ≥ 4.5:1, resize text 200%, focus visible   |
+| **AAA** (highest)                | Maximum accessibility  | Contrast ≥ 7:1, sign language, extended audio description |
 
 ### 10.2. Semantic HTML
 
@@ -1003,13 +1036,13 @@ Request → Attach access_token in Authorization header
 </div>
 
 <!-- Live regions -->
-<div aria-live="polite" aria-atomic="true">
-  3 items added to cart
-</div>
+<div aria-live="polite" aria-atomic="true">3 items added to cart</div>
 
 <!-- States -->
 <button aria-expanded="false" aria-controls="menu">Menu</button>
-<ul id="menu" hidden>...</ul>
+<ul id="menu" hidden>
+  ...
+</ul>
 ```
 
 ### 10.4. Keyboard Navigation
@@ -1024,6 +1057,7 @@ Arrow keys → Navigate within widgets (tabs, menus, listbox)
 ```
 
 **Focus Management:**
+
 - Trap focus within modals
 - Return focus when modal closes
 - Skip-to-content link
@@ -1034,6 +1068,7 @@ Arrow keys → Navigate within widgets (tabs, menus, listbox)
 ### 10.5. A11y trong System Design
 
 Khi thiết kế, luôn đề cập:
+
 - Screen reader compatibility
 - Keyboard-only navigation
 - Color contrast ratios
@@ -1077,16 +1112,16 @@ Khi thiết kế, luôn đề cập:
 
 ### 11.2. Considerations
 
-| Concern | Details |
-|---------|---------|
-| String externalization | Không hardcode strings, dùng keys |
-| Dynamic loading | Load translation files on-demand per locale |
-| Pluralization | English: 1 item / 2 items. Tiếng Ả Rập: 6 dạng số nhiều |
-| RTL layout | CSS `direction: rtl`, logical properties (`margin-inline-start`) |
-| Date/Number format | `Intl.DateTimeFormat`, `Intl.NumberFormat` |
-| SEO | Locale-based URLs (`/en/products`, `/vi/products`), `hreflang` tags |
-| Currency | Format theo locale, exchange rates |
-| Content expansion | German text dài hơn English ~30% → UI phải accommodate |
+| Concern                | Details                                                             |
+| ---------------------- | ------------------------------------------------------------------- |
+| String externalization | Không hardcode strings, dùng keys                                   |
+| Dynamic loading        | Load translation files on-demand per locale                         |
+| Pluralization          | English: 1 item / 2 items. Tiếng Ả Rập: 6 dạng số nhiều             |
+| RTL layout             | CSS `direction: rtl`, logical properties (`margin-inline-start`)    |
+| Date/Number format     | `Intl.DateTimeFormat`, `Intl.NumberFormat`                          |
+| SEO                    | Locale-based URLs (`/en/products`, `/vi/products`), `hreflang` tags |
+| Currency               | Format theo locale, exchange rates                                  |
+| Content expansion      | German text dài hơn English ~30% → UI phải accommodate              |
 
 ---
 
@@ -1094,13 +1129,13 @@ Khi thiết kế, luôn đề cập:
 
 ### 12.1. Service Worker Caching Patterns
 
-| Pattern | Behavior | Best For |
-|---------|----------|----------|
-| Cache First | Luôn trả cache, update background | Static assets, fonts |
-| Network First | Ưu tiên network, fallback cache | API data, dynamic content |
+| Pattern                | Behavior                          | Best For                   |
+| ---------------------- | --------------------------------- | -------------------------- |
+| Cache First            | Luôn trả cache, update background | Static assets, fonts       |
+| Network First          | Ưu tiên network, fallback cache   | API data, dynamic content  |
 | Stale While Revalidate | Trả cache ngay, update background | Frequently updated content |
-| Cache Only | Chỉ từ cache | Offline-critical assets |
-| Network Only | Chỉ từ network | Non-cacheable requests |
+| Cache Only             | Chỉ từ cache                      | Offline-critical assets    |
+| Network Only           | Chỉ từ network                    | Non-cacheable requests     |
 
 ### 12.2. Offline Architecture
 
@@ -1117,6 +1152,7 @@ Khi thiết kế, luôn đề cập:
 ```
 
 **Offline data sync:**
+
 1. User tạo action offline → Queue vào IndexedDB
 2. Khi online → Replay queue lên server
 3. Conflict resolution: Last-write-wins / Merge / Manual resolve
@@ -1139,23 +1175,25 @@ Khi thiết kế, luôn đề cập:
 
 ### 13.1. Approaches
 
-| Approach | Isolation | Communication | Complexity |
-|----------|-----------|---------------|------------|
-| Module Federation (Webpack/Vite) | Medium | Shared state/events | Medium |
-| Web Components | Strong | Custom events, attributes | Medium |
-| iframes | Strongest | postMessage | Low |
-| Build-time integration | None | Shared modules | Low |
-| Server-side composition | Medium | Shared backend | High |
+| Approach                         | Isolation | Communication             | Complexity |
+| -------------------------------- | --------- | ------------------------- | ---------- |
+| Module Federation (Webpack/Vite) | Medium    | Shared state/events       | Medium     |
+| Web Components                   | Strong    | Custom events, attributes | Medium     |
+| iframes                          | Strongest | postMessage               | Low        |
+| Build-time integration           | None      | Shared modules            | Low        |
+| Server-side composition          | Medium    | Shared backend            | High       |
 
 ### 13.2. Khi nào dùng Micro-Frontends?
 
 **Nên dùng:**
+
 - Multiple teams independent deploy
 - Legacy migration (strangler fig pattern)
 - Very large application (50+ developers)
 - Different tech stacks cần coexist
 
 **Không nên dùng:**
+
 - Small teams (< 5 developers)
 - Single product team
 - Shared UI cần consistency
@@ -1201,13 +1239,13 @@ Khi thiết kế, luôn đề cập:
 
 ### 14.2. Observability Stack
 
-| Layer | Tool | Purpose |
-|-------|------|---------|
-| Error Tracking | Sentry, Bugsnag | Catch & report runtime errors |
-| Performance Monitoring | Lighthouse CI, SpeedCurve | Core Web Vitals tracking |
-| Analytics | Google Analytics, Mixpanel | User behavior tracking |
-| Logging | DataDog, LogRocket | Session replay, log aggregation |
-| Alerting | PagerDuty, OpsGenie | Notify on threshold breach |
+| Layer                  | Tool                       | Purpose                         |
+| ---------------------- | -------------------------- | ------------------------------- |
+| Error Tracking         | Sentry, Bugsnag            | Catch & report runtime errors   |
+| Performance Monitoring | Lighthouse CI, SpeedCurve  | Core Web Vitals tracking        |
+| Analytics              | Google Analytics, Mixpanel | User behavior tracking          |
+| Logging                | DataDog, LogRocket         | Session replay, log aggregation |
+| Alerting               | PagerDuty, OpsGenie        | Notify on threshold breach      |
 
 ### 14.3. Monitoring Checklist
 
@@ -1225,42 +1263,42 @@ Khi thiết kế, luôn đề cập:
 
 ### 15.1. Frontend-Specific Patterns
 
-| Pattern | Mô tả | Use Case |
-|---------|--------|----------|
-| **Observer** | Object notify subscribers khi state thay đổi | Event systems, reactive state |
-| **Pub/Sub** | Decoupled communication qua event bus | Cross-component events, analytics |
-| **Module** | Encapsulate code, expose public API | Code organization, plugins |
-| **Singleton** | 1 instance duy nhất | API client, WebSocket connection, store |
-| **Factory** | Tạo objects mà không specify exact class | Component factories, theme providers |
-| **Strategy** | Swap algorithms at runtime | Sorting, validation, rendering strategies |
-| **Decorator** | Thêm behavior mà không modify original | HOC, middleware, interceptors |
-| **Proxy** | Control access to another object | Caching proxy, validation proxy, lazy loading |
-| **Facade** | Simplified interface cho complex subsystem | API wrapper, SDK |
-| **Command** | Encapsulate actions as objects | Undo/Redo, action queues, offline sync |
+| Pattern       | Mô tả                                        | Use Case                                      |
+| ------------- | -------------------------------------------- | --------------------------------------------- |
+| **Observer**  | Object notify subscribers khi state thay đổi | Event systems, reactive state                 |
+| **Pub/Sub**   | Decoupled communication qua event bus        | Cross-component events, analytics             |
+| **Module**    | Encapsulate code, expose public API          | Code organization, plugins                    |
+| **Singleton** | 1 instance duy nhất                          | API client, WebSocket connection, store       |
+| **Factory**   | Tạo objects mà không specify exact class     | Component factories, theme providers          |
+| **Strategy**  | Swap algorithms at runtime                   | Sorting, validation, rendering strategies     |
+| **Decorator** | Thêm behavior mà không modify original       | HOC, middleware, interceptors                 |
+| **Proxy**     | Control access to another object             | Caching proxy, validation proxy, lazy loading |
+| **Facade**    | Simplified interface cho complex subsystem   | API wrapper, SDK                              |
+| **Command**   | Encapsulate actions as objects               | Undo/Redo, action queues, offline sync        |
 
 ### 15.2. State Management Patterns
 
-| Pattern | Mô tả | Framework |
-|---------|--------|-----------|
-| **Flux** | Unidirectional data flow: Action → Dispatcher → Store → View | Redux |
-| **MVVM** | Model-View-ViewModel, two-way binding | Vue, Angular |
-| **MVC** | Model-View-Controller, separation of concerns | Backbone |
-| **Atomic** | State split into independent atoms | Jotai, Recoil |
-| **Proxy-based** | Direct mutation with reactive tracking | Valtio, MobX |
-| **Signal-based** | Fine-grained reactivity without VDOM diffing | Solid, Preact Signals, Angular Signals |
+| Pattern          | Mô tả                                                        | Framework                              |
+| ---------------- | ------------------------------------------------------------ | -------------------------------------- |
+| **Flux**         | Unidirectional data flow: Action → Dispatcher → Store → View | Redux                                  |
+| **MVVM**         | Model-View-ViewModel, two-way binding                        | Vue, Angular                           |
+| **MVC**          | Model-View-Controller, separation of concerns                | Backbone                               |
+| **Atomic**       | State split into independent atoms                           | Jotai, Recoil                          |
+| **Proxy-based**  | Direct mutation with reactive tracking                       | Valtio, MobX                           |
+| **Signal-based** | Fine-grained reactivity without VDOM diffing                 | Solid, Preact Signals, Angular Signals |
 
 ### 15.3. React-Specific Patterns
 
-| Pattern | Mô tả |
-|---------|--------|
-| **Custom Hooks** | Extract reusable logic |
-| **Compound Components** | Components share implicit state |
-| **Render Props** | Share code via function-as-child |
-| **HOC** | Wrap component to add behavior |
-| **Provider Pattern** | Inject dependencies via Context |
+| Pattern                     | Mô tả                                            |
+| --------------------------- | ------------------------------------------------ |
+| **Custom Hooks**            | Extract reusable logic                           |
+| **Compound Components**     | Components share implicit state                  |
+| **Render Props**            | Share code via function-as-child                 |
+| **HOC**                     | Wrap component to add behavior                   |
+| **Provider Pattern**        | Inject dependencies via Context                  |
 | **Controlled/Uncontrolled** | Parent manages state vs component manages itself |
-| **Ref Forwarding** | Pass refs through component layers |
-| **Error Boundaries** | Catch errors in component tree |
+| **Ref Forwarding**          | Pass refs through component layers               |
+| **Error Boundaries**        | Catch errors in component tree                   |
 
 ---
 
@@ -1303,14 +1341,14 @@ Khi thiết kế, luôn đề cập:
 
 ### 16.2. Handling Large Data
 
-| Technique | Khi nào | Complexity |
-|-----------|---------|------------|
-| Pagination | < 10K items, traditional UI | Low |
-| Infinite Scroll | Social feeds, product lists | Medium |
-| Virtualization | 10K+ items in single view | Medium |
-| Search/Filter | Reduce visible dataset | Low |
-| IndexedDB | Large offline datasets | High |
-| Web Workers | CPU-intensive processing | Medium |
+| Technique       | Khi nào                     | Complexity |
+| --------------- | --------------------------- | ---------- |
+| Pagination      | < 10K items, traditional UI | Low        |
+| Infinite Scroll | Social feeds, product lists | Medium     |
+| Virtualization  | 10K+ items in single view   | Medium     |
+| Search/Filter   | Reduce visible dataset      | Low        |
+| IndexedDB       | Large offline datasets      | High       |
+| Web Workers     | CPU-intensive processing    | Medium     |
 
 ### 16.3. Performance Budgets
 
@@ -1334,43 +1372,43 @@ API response (P95):     < 500ms
 
 ### 17.1. Beginner Level
 
-| # | Câu hỏi | Focus areas |
-|---|---------|-------------|
-| 1 | **Design an Autocomplete/Typeahead** | Debounce, caching, keyboard a11y, request cancellation |
-| 2 | **Design an Image Carousel** | Touch/swipe, lazy load, a11y, transitions |
-| 3 | **Design a Star Rating Widget** | Component API, a11y, half-star, read-only mode |
-| 4 | **Design a Tooltip Component** | Positioning, overflow detection, a11y, portal |
-| 5 | **Design a Modal/Dialog** | Focus trap, a11y, portal, scroll lock, animations |
-| 6 | **Design a Dropdown Menu** | Keyboard nav, positioning, click outside, nested menus |
-| 7 | **Design a Toast/Notification System** | Queue management, auto-dismiss, stacking, a11y |
+| #   | Câu hỏi                                | Focus areas                                            |
+| --- | -------------------------------------- | ------------------------------------------------------ |
+| 1   | **Design an Autocomplete/Typeahead**   | Debounce, caching, keyboard a11y, request cancellation |
+| 2   | **Design an Image Carousel**           | Touch/swipe, lazy load, a11y, transitions              |
+| 3   | **Design a Star Rating Widget**        | Component API, a11y, half-star, read-only mode         |
+| 4   | **Design a Tooltip Component**         | Positioning, overflow detection, a11y, portal          |
+| 5   | **Design a Modal/Dialog**              | Focus trap, a11y, portal, scroll lock, animations      |
+| 6   | **Design a Dropdown Menu**             | Keyboard nav, positioning, click outside, nested menus |
+| 7   | **Design a Toast/Notification System** | Queue management, auto-dismiss, stacking, a11y         |
 
 ### 17.2. Intermediate Level
 
-| # | Câu hỏi | Focus areas |
-|---|---------|-------------|
-| 8 | **Design Facebook News Feed** | Infinite scroll, virtualization, real-time, optimistic updates |
-| 9 | **Design an E-commerce Product Page** | SEO (SSR), image gallery, reviews, add-to-cart |
-| 10 | **Design E-commerce Checkout Flow** | Multi-step form, validation, payment, error recovery |
-| 11 | **Design Instagram Photo Sharing** | Image upload/crop, filters, feed layout, lazy load |
-| 12 | **Design a Travel Booking (Airbnb)** | Search filters, map integration, date picker, responsive |
-| 13 | **Design a Kanban Board (Trello)** | Drag-and-drop, real-time sync, optimistic reorder |
-| 14 | **Design an Email Client (Gmail)** | List virtualization, thread view, offline, search |
-| 15 | **Design a Poll Widget** | Real-time results, vote tracking, animations |
+| #   | Câu hỏi                               | Focus areas                                                    |
+| --- | ------------------------------------- | -------------------------------------------------------------- |
+| 8   | **Design Facebook News Feed**         | Infinite scroll, virtualization, real-time, optimistic updates |
+| 9   | **Design an E-commerce Product Page** | SEO (SSR), image gallery, reviews, add-to-cart                 |
+| 10  | **Design E-commerce Checkout Flow**   | Multi-step form, validation, payment, error recovery           |
+| 11  | **Design Instagram Photo Sharing**    | Image upload/crop, filters, feed layout, lazy load             |
+| 12  | **Design a Travel Booking (Airbnb)**  | Search filters, map integration, date picker, responsive       |
+| 13  | **Design a Kanban Board (Trello)**    | Drag-and-drop, real-time sync, optimistic reorder              |
+| 14  | **Design an Email Client (Gmail)**    | List virtualization, thread view, offline, search              |
+| 15  | **Design a Poll Widget**              | Real-time results, vote tracking, animations                   |
 
 ### 17.3. Advanced Level
 
-| # | Câu hỏi | Focus areas |
-|---|---------|-------------|
-| 16 | **Design Google Docs (Collaborative Editor)** | CRDT/OT, real-time, conflict resolution, cursor tracking |
-| 17 | **Design a Video Streaming App (Netflix/YouTube)** | Adaptive bitrate, buffering, video player, recommendation |
-| 18 | **Design Pinterest (Masonry Layout)** | Masonry/waterfall layout, infinite scroll, image loading |
-| 19 | **Design a Rich Text Editor** | ContentEditable, formatting, plugins, collaborative |
-| 20 | **Design a Real-time Dashboard** | WebSocket, charting, data aggregation, time-series |
-| 21 | **Design Google Maps** | Tile rendering, zoom levels, markers, search, routing |
-| 22 | **Design an Analytics SDK** | Event batching, queue, offline storage, payload optimization |
-| 23 | **Design a Chat Application (Slack/Messenger)** | WebSocket, message queue, threads, presence, search |
-| 24 | **Design a Spreadsheet (Google Sheets)** | Cell rendering, formulas, virtualization, collaboration |
-| 25 | **Design a Frontend Micro-frontend Platform** | Module Federation, routing, shared state, independent deploy |
+| #   | Câu hỏi                                            | Focus areas                                                  |
+| --- | -------------------------------------------------- | ------------------------------------------------------------ |
+| 16  | **Design Google Docs (Collaborative Editor)**      | CRDT/OT, real-time, conflict resolution, cursor tracking     |
+| 17  | **Design a Video Streaming App (Netflix/YouTube)** | Adaptive bitrate, buffering, video player, recommendation    |
+| 18  | **Design Pinterest (Masonry Layout)**              | Masonry/waterfall layout, infinite scroll, image loading     |
+| 19  | **Design a Rich Text Editor**                      | ContentEditable, formatting, plugins, collaborative          |
+| 20  | **Design a Real-time Dashboard**                   | WebSocket, charting, data aggregation, time-series           |
+| 21  | **Design Google Maps**                             | Tile rendering, zoom levels, markers, search, routing        |
+| 22  | **Design an Analytics SDK**                        | Event batching, queue, offline storage, payload optimization |
+| 23  | **Design a Chat Application (Slack/Messenger)**    | WebSocket, message queue, threads, presence, search          |
+| 24  | **Design a Spreadsheet (Google Sheets)**           | Cell rendering, formulas, virtualization, collaboration      |
+| 25  | **Design a Frontend Micro-frontend Platform**      | Module Federation, routing, shared state, independent deploy |
 
 ### 17.4. Hướng dẫn giải mẫu: Design Autocomplete
 
@@ -1429,18 +1467,19 @@ API response (P95):     < 500ms
 
 ### 18.1. Interviewer đánh giá gì?
 
-| Tiêu chí | Weight | Mô tả |
-|-----------|--------|--------|
-| **Problem Exploration** | 15% | Hỏi đúng câu hỏi, clarify requirements, identify constraints |
-| **Architecture** | 25% | Component breakdown hợp lý, clean separation of concerns |
-| **Technical Depth** | 25% | Performance, networking, a11y, security knowledge |
-| **Trade-off Analysis** | 15% | Biết pros/cons, justify decisions, explore alternatives |
-| **Product Sense** | 10% | UX awareness, user-centric thinking, edge cases |
-| **Communication** | 10% | Clear explanation, structured thinking, good diagrams |
+| Tiêu chí                | Weight | Mô tả                                                        |
+| ----------------------- | ------ | ------------------------------------------------------------ |
+| **Problem Exploration** | 15%    | Hỏi đúng câu hỏi, clarify requirements, identify constraints |
+| **Architecture**        | 25%    | Component breakdown hợp lý, clean separation of concerns     |
+| **Technical Depth**     | 25%    | Performance, networking, a11y, security knowledge            |
+| **Trade-off Analysis**  | 15%    | Biết pros/cons, justify decisions, explore alternatives      |
+| **Product Sense**       | 10%    | UX awareness, user-centric thinking, edge cases              |
+| **Communication**       | 10%    | Clear explanation, structured thinking, good diagrams        |
 
 ### 18.2. Signals of a Strong Candidate
 
 **Senior signals:**
+
 - Hỏi "why" trước khi hỏi "how"
 - Đề cập trade-offs tự nhiên (không đợi hỏi)
 - Consider scale từ đầu
@@ -1449,6 +1488,7 @@ API response (P95):     < 500ms
 - "Ownership-level thinking" — không chỉ implement mà còn consider maintenance
 
 **Red flags:**
+
 - Nhảy thẳng vào code/implementation
 - Chỉ biết 1 solution cho mọi vấn đề
 - Không đề cập edge cases, error states
@@ -1462,50 +1502,54 @@ API response (P95):     < 500ms
 
 ### 19.1. Websites
 
-| Resource | URL | Mô tả |
-|----------|-----|--------|
-| **GreatFrontEnd** | greatfrontend.com | Nền tảng #1 cho frontend interview prep, RADIO framework |
-| **Frontend System Design Handbook** | systemdesignhandbook.com | Comprehensive guide cho frontend SD |
-| **FrontendInterviews.dev** | frontendinterviews.dev | Architecture guide, question bank |
-| **Patterns.dev** | patterns.dev | JavaScript & React design patterns |
-| **web.dev** | web.dev | Google's web performance & best practices |
-| **Frontend Masters** | frontendmasters.com | Video courses on advanced topics |
+| Resource                            | URL                      | Mô tả                                                    |
+| ----------------------------------- | ------------------------ | -------------------------------------------------------- |
+| **GreatFrontEnd**                   | greatfrontend.com        | Nền tảng #1 cho frontend interview prep, RADIO framework |
+| **Frontend System Design Handbook** | systemdesignhandbook.com | Comprehensive guide cho frontend SD                      |
+| **FrontendInterviews.dev**          | frontendinterviews.dev   | Architecture guide, question bank                        |
+| **Patterns.dev**                    | patterns.dev             | JavaScript & React design patterns                       |
+| **web.dev**                         | web.dev                  | Google's web performance & best practices                |
+| **Frontend Masters**                | frontendmasters.com      | Video courses on advanced topics                         |
 
 ### 19.2. GitHub Repositories
 
-| Repo | Mô tả |
-|------|--------|
+| Repo                                            | Mô tả                                      |
+| ----------------------------------------------- | ------------------------------------------ |
 | `greatfrontend/awesome-front-end-system-design` | Curated list of FE system design resources |
-| `nickytonline/awesome-frontend-system-design` | Community collection |
-| `ArenBjworx/awesome-frontend-interview` | Interview prep collection |
+| `nickytonline/awesome-frontend-system-design`   | Community collection                       |
+| `ArenBjworx/awesome-frontend-interview`         | Interview prep collection                  |
 
 ### 19.3. Books
 
-| Book | Author | Focus |
-|------|--------|-------|
-| **Front End System Design Guidebook** | Yangshun Tay (GreatFrontEnd) | RADIO framework, solved questions |
-| **Designing Data-Intensive Applications** | Martin Kleppmann | Distributed systems fundamentals |
-| **Web Performance in Action** | Jeremy Wagner | Performance optimization |
-| **Inclusive Design Patterns** | Heydon Pickering | Accessible component design |
+| Book                                      | Author                       | Focus                             |
+| ----------------------------------------- | ---------------------------- | --------------------------------- |
+| **Front End System Design Guidebook**     | Yangshun Tay (GreatFrontEnd) | RADIO framework, solved questions |
+| **Designing Data-Intensive Applications** | Martin Kleppmann             | Distributed systems fundamentals  |
+| **Web Performance in Action**             | Jeremy Wagner                | Performance optimization          |
+| **Inclusive Design Patterns**             | Heydon Pickering             | Accessible component design       |
 
 ### 19.4. Practice Plan
 
 **Tuần 1-2: Foundations**
+
 - Đọc RADIO framework
 - Ôn luyện: Rendering strategies, State management, Data fetching
 - Practice: Autocomplete, Image Carousel, Modal
 
 **Tuần 3-4: Intermediate**
+
 - Ôn luyện: Performance, Caching, Networking
 - Practice: News Feed, E-commerce, Chat App
 - Mock interviews với bạn bè
 
 **Tuần 5-6: Advanced**
+
 - Ôn luyện: Security, A11y, Micro-frontends, Scalability
 - Practice: Google Docs, Video Streaming, Dashboard
 - Focus on trade-off analysis
 
 **Tuần 7-8: Polish**
+
 - Review tất cả notes
 - Mock interviews (aim for 4-6 mock sessions)
 - Focus on communication & diagram skills

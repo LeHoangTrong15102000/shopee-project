@@ -6,8 +6,13 @@ import type { OrderStatus } from 'src/types'
 import { useAdminMutationContext } from './useAdminMutationContext'
 
 export const ORDER_KEYS = {
-  list: (page: number, status: string, start_date?: string, end_date?: string, payment_method?: string) =>
-    ['admin-orders', page, status, start_date, end_date, payment_method] as const,
+  list: (
+    page: number,
+    status: string,
+    start_date?: string,
+    end_date?: string,
+    payment_method?: string,
+  ) => ['admin-orders', page, status, start_date, end_date, payment_method] as const,
   all: ['admin-orders'] as const,
   countByStatus: ['admin-orders-count-by-status'] as const,
 }

@@ -71,9 +71,7 @@ export class OrderEventListener {
   }
 
   @OnEvent('order.cancelled')
-  async onOrderCancelled(
-    event: Extract<DomainEvent, { type: 'order.cancelled' }>,
-  ): Promise<void> {
+  async onOrderCancelled(event: Extract<DomainEvent, { type: 'order.cancelled' }>): Promise<void> {
     const { orderId, userId, reason } = event.payload
 
     Logger.apiInfo('[OrderEventListener] order.cancelled — enqueuing notification', {

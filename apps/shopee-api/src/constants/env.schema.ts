@@ -111,7 +111,10 @@ const envSchema = z.object({
   // MEILISEARCH_HOST — URL of the Meilisearch instance
   MEILISEARCH_HOST: z.string().url().default('http://localhost:7700'),
   // MEILISEARCH_MASTER_KEY — master key for Meilisearch authentication
-  MEILISEARCH_MASTER_KEY: z.string().min(1, 'MEILISEARCH_MASTER_KEY is required').default('shopee_meili_master_key'),
+  MEILISEARCH_MASTER_KEY: z
+    .string()
+    .min(1, 'MEILISEARCH_MASTER_KEY is required')
+    .default('shopee_meili_master_key'),
 })
 
 export type Env = z.infer<typeof envSchema>

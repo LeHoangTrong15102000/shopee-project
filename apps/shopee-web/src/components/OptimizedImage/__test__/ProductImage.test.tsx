@@ -3,7 +3,15 @@ import { render, screen } from '@testing-library/react'
 import ProductImage from '../ProductImage'
 
 vi.mock('../OptimizedImage', () => ({
-  default: ({ src, alt, containerClassName, className, fallbackSrc, aspectRatio, objectFit }: any) => (
+  default: ({
+    src,
+    alt,
+    containerClassName,
+    className,
+    fallbackSrc,
+    aspectRatio,
+    objectFit,
+  }: any) => (
     <div
       data-testid="optimized-image"
       data-container={containerClassName}
@@ -32,16 +40,12 @@ describe('ProductImage', () => {
 
   it('applies md size class', () => {
     render(<ProductImage src="a.jpg" alt="a" size="md" />)
-    expect(screen.getByTestId('optimized-image').getAttribute('data-container')).toContain(
-      'w-20',
-    )
+    expect(screen.getByTestId('optimized-image').getAttribute('data-container')).toContain('w-20')
   })
 
   it('applies lg size class', () => {
     render(<ProductImage src="a.jpg" alt="a" size="lg" />)
-    expect(screen.getByTestId('optimized-image').getAttribute('data-container')).toContain(
-      'w-32',
-    )
+    expect(screen.getByTestId('optimized-image').getAttribute('data-container')).toContain('w-32')
   })
 
   it('does not apply size class when xl (default)', () => {
@@ -68,9 +72,7 @@ describe('ProductImage', () => {
 
   it('accepts custom fallbackSrc', () => {
     render(<ProductImage src="a.jpg" alt="a" fallbackSrc="custom.png" />)
-    expect(screen.getByTestId('optimized-image').getAttribute('data-fallback')).toBe(
-      'custom.png',
-    )
+    expect(screen.getByTestId('optimized-image').getAttribute('data-fallback')).toBe('custom.png')
   })
 
   it('merges custom className', () => {

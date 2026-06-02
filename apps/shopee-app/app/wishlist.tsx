@@ -43,18 +43,14 @@ export default function WishlistScreen() {
   }
 
   const handleClearAll = () => {
-    Alert.alert(
-      t('wishlist.confirm.clearAll'),
-      t('wishlist.confirm.clearAllMessage'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('wishlist.button.clearAll'),
-          style: 'destructive',
-          onPress: () => clearWishlist(),
-        },
-      ]
-    )
+    Alert.alert(t('wishlist.confirm.clearAll'), t('wishlist.confirm.clearAllMessage'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('wishlist.button.clearAll'),
+        style: 'destructive',
+        onPress: () => clearWishlist(),
+      },
+    ])
   }
 
   const renderItem = useCallback(
@@ -108,7 +104,10 @@ export default function WishlistScreen() {
                   paddingVertical: 2,
                   borderRadius: 4,
                 }}>
-                <AppText raw variant="labelSmall" style={{ color: colors.primaryForeground, fontSize: 10 }}>
+                <AppText
+                  raw
+                  variant="labelSmall"
+                  style={{ color: colors.primaryForeground, fontSize: 10 }}>
                   -{discount}%
                 </AppText>
               </View>
@@ -123,7 +122,7 @@ export default function WishlistScreen() {
               {formatPrice(product.price)}
             </AppText>
             {product.rating > 0 && (
-              <View className="flex-row items-center gap-1 mt-1">
+              <View className="mt-1 flex-row items-center gap-1">
                 <Star size={10} color={colors.warning} fill={colors.warning} />
                 <AppText raw variant="labelSmall" color="muted">
                   {product.rating.toFixed(1)}

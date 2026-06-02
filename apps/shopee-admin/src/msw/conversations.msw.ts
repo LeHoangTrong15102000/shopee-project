@@ -6,8 +6,20 @@ const mockConversations = [
     _id: 'conv-001',
     user: { _id: 'user-1', name: 'Nguyen Van A', email: 'a@example.com' },
     messages: [
-      { _id: 'msg-1', sender: 'user-1', sender_type: 'user', content: 'Hello', createdAt: '2024-01-01T10:00:00.000Z' },
-      { _id: 'msg-2', sender: 'admin-1', sender_type: 'admin', content: 'Hi, how can I help?', createdAt: '2024-01-01T10:01:00.000Z' },
+      {
+        _id: 'msg-1',
+        sender: 'user-1',
+        sender_type: 'user',
+        content: 'Hello',
+        createdAt: '2024-01-01T10:00:00.000Z',
+      },
+      {
+        _id: 'msg-2',
+        sender: 'admin-1',
+        sender_type: 'admin',
+        content: 'Hi, how can I help?',
+        createdAt: '2024-01-01T10:01:00.000Z',
+      },
     ],
     message_count: 2,
     status: 'open',

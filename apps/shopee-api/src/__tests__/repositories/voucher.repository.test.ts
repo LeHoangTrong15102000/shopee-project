@@ -442,9 +442,9 @@ describe('VoucherRepository', () => {
     it('should return overview stats with counts and total_used', async () => {
       ;(VoucherModel.countDocuments as jest.Mock)
         .mockResolvedValueOnce(100) // total
-        .mockResolvedValueOnce(30)  // active
-        .mockResolvedValueOnce(20)  // expired
-        .mockResolvedValueOnce(5)   // upcoming
+        .mockResolvedValueOnce(30) // active
+        .mockResolvedValueOnce(20) // expired
+        .mockResolvedValueOnce(5) // upcoming
       ;(VoucherModel.aggregate as jest.Mock).mockResolvedValue([{ total: 500 }])
 
       const result = await repository.getOverviewStats()

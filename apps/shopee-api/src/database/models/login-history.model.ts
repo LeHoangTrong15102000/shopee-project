@@ -46,4 +46,7 @@ LoginHistorySchema.index({ user_id: 1, timestamp: -1 })
 // Index for admin queries by status
 LoginHistorySchema.index({ status: 1, timestamp: -1 })
 
-export const LoginHistoryModel = mongoose.model<ILoginHistory>('login_histories', LoginHistorySchema)
+export const LoginHistoryModel = mongoose.model<ILoginHistory>(
+  'login_histories',
+  LoginHistorySchema,
+)

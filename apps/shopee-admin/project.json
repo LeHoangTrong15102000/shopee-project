@@ -8,10 +8,7 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          "tsc --noEmit",
-          "vite build"
-        ],
+        "commands": ["tsc --noEmit", "vite build"],
         "cwd": "apps/shopee-admin",
         "parallel": false
       }

@@ -193,16 +193,16 @@ import { Outlet } from 'react-router-dom'
 
 export default function UserLayout() {
   return (
-    <div className='bg-neutral-100 py-16 text-sm text-gray-600'>
-      <div className='container'>
-        <div className='grid grid-cols-1 gap-6 md:grid-cols-12'>
+    <div className="bg-neutral-100 py-16 text-sm text-gray-600">
+      <div className="container">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
           {/* Sidebar */}
-          <div className='md:col-span-3 lg:col-span-2'>
+          <div className="md:col-span-3 lg:col-span-2">
             <UserSideNav />
           </div>
 
           {/* Main Content */}
-          <div className='md:col-span-9 lg:col-span-10'>
+          <div className="md:col-span-9 lg:col-span-10">
             <Outlet /> {/* Render các child routes */}
           </div>
         </div>
@@ -242,50 +242,52 @@ export default function UserSideNav() {
   return (
     <div>
       {/* User Info */}
-      <div className='flex items-center border-b border-b-gray-200 py-4'>
-        <Link to={path.profile} className='h-12 w-12 shrink-0 overflow-hidden rounded-full border'>
+      <div className="flex items-center border-b border-b-gray-200 py-4">
+        <Link to={path.profile} className="h-12 w-12 shrink-0 overflow-hidden rounded-full border">
           <img
             src={profile?.avatar || '/src/assets/images/user.svg'}
-            alt='avatar'
-            className='h-full w-full object-cover'
+            alt="avatar"
+            className="h-full w-full object-cover"
           />
         </Link>
-        <div className='grow pl-4'>
-          <div className='mb-1 truncate font-semibold text-gray-600'>{profile?.name || profile?.email}</div>
-          <Link to={path.profile} className='flex items-center capitalize text-gray-500'>
-            <svg width='12' height='12' viewBox='0 0 12 12' fill='none'>
+        <div className="grow pl-4">
+          <div className="mb-1 truncate font-semibold text-gray-600">
+            {profile?.name || profile?.email}
+          </div>
+          <Link to={path.profile} className="flex items-center capitalize text-gray-500">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
               {/* Edit icon */}
             </svg>
-            <span className='ml-1'>Sửa hồ sơ</span>
+            <span className="ml-1">Sửa hồ sơ</span>
           </Link>
         </div>
       </div>
 
       {/* Navigation Menu */}
-      <div className='mt-7'>
+      <div className="mt-7">
         <Link
           to={path.profile}
-          className='flex items-center capitalize text-orange transition-colors hover:text-orange'
+          className="flex items-center capitalize text-orange transition-colors hover:text-orange"
         >
-          <div className='mr-3 h-[22px] w-[22px]'>
-            <img src='/src/assets/images/user.svg' alt='' className='h-full w-full' />
+          <div className="mr-3 h-[22px] w-[22px]">
+            <img src="/src/assets/images/user.svg" alt="" className="h-full w-full" />
           </div>
           Tài khoản của tôi
         </Link>
 
         <Link
           to={path.changePassword}
-          className='mt-4 flex items-center capitalize text-gray-600 transition-colors hover:text-orange'
+          className="mt-4 flex items-center capitalize text-gray-600 transition-colors hover:text-orange"
         >
-          <div className='mr-3 h-[22px] w-[22px]'>{/* Password icon */}</div>
+          <div className="mr-3 h-[22px] w-[22px]">{/* Password icon */}</div>
           Đổi mật khẩu
         </Link>
 
         <Link
           to={path.historyPurchases}
-          className='mt-4 flex items-center capitalize text-gray-600 transition-colors hover:text-orange'
+          className="mt-4 flex items-center capitalize text-gray-600 transition-colors hover:text-orange"
         >
-          <div className='mr-3 h-[22px] w-[22px]'>{/* Order icon */}</div>
+          <div className="mr-3 h-[22px] w-[22px]">{/* Order icon */}</div>
           Đơn mua
         </Link>
       </div>
@@ -317,74 +319,76 @@ Tạo form chỉnh sửa thông tin cá nhân với layout responsive và upload
 // pages/User/pages/Profile/Profile.tsx
 export default function Profile() {
   return (
-    <div className='rounded-xs bg-white px-2 pb-10 shadow-sm md:px-7 md:pb-20'>
-      <div className='border-b border-b-gray-200 py-6'>
-        <h1 className='text-lg font-medium capitalize text-gray-900'>Hồ Sơ Của Tôi</h1>
-        <div className='mt-1 text-sm text-gray-700'>Quản lý thông tin hồ sơ để bảo mật tài khoản</div>
+    <div className="rounded-xs bg-white px-2 pb-10 shadow-sm md:px-7 md:pb-20">
+      <div className="border-b border-b-gray-200 py-6">
+        <h1 className="text-lg font-medium capitalize text-gray-900">Hồ Sơ Của Tôi</h1>
+        <div className="mt-1 text-sm text-gray-700">
+          Quản lý thông tin hồ sơ để bảo mật tài khoản
+        </div>
       </div>
 
-      <form className='mt-8 flex flex-col-reverse md:flex-row md:items-start'>
+      <form className="mt-8 flex flex-col-reverse md:flex-row md:items-start">
         {/* Form Fields */}
-        <div className='mt-6 grow md:mt-0 md:pr-12'>
+        <div className="mt-6 grow md:mt-0 md:pr-12">
           {/* Email Field */}
-          <div className='flex flex-col flex-wrap sm:flex-row'>
-            <div className='truncate pt-3 capitalize sm:w-[20%] sm:text-right'>Email</div>
-            <div className='sm:w-[80%] sm:pl-5'>
-              <div className='pt-3 text-gray-700'>example@email.com</div>
+          <div className="flex flex-col flex-wrap sm:flex-row">
+            <div className="truncate pt-3 capitalize sm:w-[20%] sm:text-right">Email</div>
+            <div className="sm:w-[80%] sm:pl-5">
+              <div className="pt-3 text-gray-700">example@email.com</div>
             </div>
           </div>
 
           {/* Name Field */}
-          <div className='mt-6 flex flex-col flex-wrap sm:flex-row'>
-            <div className='truncate pt-3 capitalize sm:w-[20%] sm:text-right'>Tên</div>
-            <div className='sm:w-[80%] sm:pl-5'>
+          <div className="mt-6 flex flex-col flex-wrap sm:flex-row">
+            <div className="truncate pt-3 capitalize sm:w-[20%] sm:text-right">Tên</div>
+            <div className="sm:w-[80%] sm:pl-5">
               <Input
-                classNameInput='w-full rounded-xs border border-gray-300 px-3 py-2 outline-hidden focus:border-gray-500 focus:shadow-xs'
-                name='name'
-                placeholder='Tên'
+                classNameInput="w-full rounded-xs border border-gray-300 px-3 py-2 outline-hidden focus:border-gray-500 focus:shadow-xs"
+                name="name"
+                placeholder="Tên"
               />
             </div>
           </div>
 
           {/* Phone Field */}
-          <div className='mt-2 flex flex-col flex-wrap sm:flex-row'>
-            <div className='truncate pt-3 capitalize sm:w-[20%] sm:text-right'>Số điện thoại</div>
-            <div className='sm:w-[80%] sm:pl-5'>
+          <div className="mt-2 flex flex-col flex-wrap sm:flex-row">
+            <div className="truncate pt-3 capitalize sm:w-[20%] sm:text-right">Số điện thoại</div>
+            <div className="sm:w-[80%] sm:pl-5">
               <Input
-                classNameInput='w-full rounded-xs border border-gray-300 px-3 py-2 outline-hidden focus:border-gray-500 focus:shadow-xs'
-                name='phone'
-                placeholder='Số điện thoại'
+                classNameInput="w-full rounded-xs border border-gray-300 px-3 py-2 outline-hidden focus:border-gray-500 focus:shadow-xs"
+                name="phone"
+                placeholder="Số điện thoại"
               />
             </div>
           </div>
 
           {/* Address Field */}
-          <div className='mt-2 flex flex-col flex-wrap sm:flex-row'>
-            <div className='truncate pt-3 capitalize sm:w-[20%] sm:text-right'>Địa chỉ</div>
-            <div className='sm:w-[80%] sm:pl-5'>
+          <div className="mt-2 flex flex-col flex-wrap sm:flex-row">
+            <div className="truncate pt-3 capitalize sm:w-[20%] sm:text-right">Địa chỉ</div>
+            <div className="sm:w-[80%] sm:pl-5">
               <Input
-                classNameInput='w-full rounded-xs border border-gray-300 px-3 py-2 outline-hidden focus:border-gray-500 focus:shadow-xs'
-                name='address'
-                placeholder='Địa chỉ'
+                classNameInput="w-full rounded-xs border border-gray-300 px-3 py-2 outline-hidden focus:border-gray-500 focus:shadow-xs"
+                name="address"
+                placeholder="Địa chỉ"
               />
             </div>
           </div>
 
           {/* Date of Birth */}
-          <div className='mt-2 flex flex-col flex-wrap sm:flex-row'>
-            <div className='truncate pt-3 capitalize sm:w-[20%] sm:text-right'>Ngày sinh</div>
-            <div className='sm:w-[80%] sm:pl-5'>
+          <div className="mt-2 flex flex-col flex-wrap sm:flex-row">
+            <div className="truncate pt-3 capitalize sm:w-[20%] sm:text-right">Ngày sinh</div>
+            <div className="sm:w-[80%] sm:pl-5">
               <DateSelect />
             </div>
           </div>
 
           {/* Submit Button */}
-          <div className='mt-2 flex flex-col flex-wrap sm:flex-row'>
-            <div className='truncate pt-3 capitalize sm:w-[20%] sm:text-right' />
-            <div className='sm:w-[80%] sm:pl-5'>
+          <div className="mt-2 flex flex-col flex-wrap sm:flex-row">
+            <div className="truncate pt-3 capitalize sm:w-[20%] sm:text-right" />
+            <div className="sm:w-[80%] sm:pl-5">
               <Button
-                className='flex h-9 items-center rounded-xs bg-orange px-5 text-center text-sm text-white hover:bg-orange/80'
-                type='submit'
+                className="flex h-9 items-center rounded-xs bg-orange px-5 text-center text-sm text-white hover:bg-orange/80"
+                type="submit"
               >
                 Lưu
               </Button>
@@ -393,13 +397,17 @@ export default function Profile() {
         </div>
 
         {/* Avatar Section */}
-        <div className='flex justify-center md:w-72 md:border-l md:border-l-gray-200'>
-          <div className='flex flex-col items-center'>
-            <div className='my-5 h-24 w-24'>
-              <img src='/src/assets/images/user.svg' alt='' className='h-full w-full rounded-full object-cover' />
+        <div className="flex justify-center md:w-72 md:border-l md:border-l-gray-200">
+          <div className="flex flex-col items-center">
+            <div className="my-5 h-24 w-24">
+              <img
+                src="/src/assets/images/user.svg"
+                alt=""
+                className="h-full w-full rounded-full object-cover"
+              />
             </div>
             <InputFile />
-            <div className='mt-3 text-gray-400'>
+            <div className="mt-3 text-gray-400">
               <div>Dung lượng file tối đa 1 MB</div>
               <div>Định dạng:.JPEG, .PNG</div>
             </div>
@@ -480,10 +488,10 @@ const userApi = {
   uploadAvatar(body: FormData) {
     return http.post<SuccessResponseApi<string>>('user/upload-avatar', body, {
       headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+        'Content-Type': 'multipart/form-data',
+      },
     })
-  }
+  },
 }
 
 export default userApi
@@ -503,7 +511,7 @@ const testUserApi = async () => {
     const updateData: UserUpdateBody = {
       name: 'John Doe',
       phone: '0123456789',
-      address: 'Hà Nội'
+      address: 'Hà Nội',
     }
     const updateResult = await userApi.updateProfile(updateData)
     console.log('Update result:', updateResult.data.data)
@@ -549,7 +557,7 @@ const userSchemaWithValidation = userSchema.extend({
   date_of_birth: yup.date().max(new Date(), 'Ngày sinh không thể lớn hơn ngày hiện tại'),
   password: schema.fields.password,
   new_password: schema.fields.password,
-  confirm_password: handleConfirmPasswordYup('new_password')
+  confirm_password: handleConfirmPasswordYup('new_password'),
 })
 
 export type UserSchema = yup.InferType<typeof userSchemaWithValidation>
@@ -571,7 +579,7 @@ export default function Profile() {
   // Fetch user profile
   const { data: profileData } = useQuery({
     queryKey: ['profile'],
-    queryFn: userApi.getProfile
+    queryFn: userApi.getProfile,
   })
 
   const profile = profileData?.data.data
@@ -583,21 +591,21 @@ export default function Profile() {
     formState: { errors },
     handleSubmit,
     setValue,
-    watch
+    watch,
   } = useForm<FormData>({
     defaultValues: {
       name: '',
       phone: '',
       address: '',
       avatar: '',
-      date_of_birth: new Date(1990, 0, 1)
+      date_of_birth: new Date(1990, 0, 1),
     },
-    resolver: yupResolver(userSchema)
+    resolver: yupResolver(userSchema),
   })
 
   // Update profile mutation
   const updateProfileMutation = useMutation({
-    mutationFn: userApi.updateProfile
+    mutationFn: userApi.updateProfile,
   })
 
   // Set form values when profile data is loaded
@@ -607,7 +615,10 @@ export default function Profile() {
       setValue('phone', profile.phone || '')
       setValue('address', profile.address || '')
       setValue('avatar', profile.avatar || '')
-      setValue('date_of_birth', profile.date_of_birth ? new Date(profile.date_of_birth) : new Date(1990, 0, 1))
+      setValue(
+        'date_of_birth',
+        profile.date_of_birth ? new Date(profile.date_of_birth) : new Date(1990, 0, 1),
+      )
     }
   }, [profile, setValue])
 
@@ -616,7 +627,7 @@ export default function Profile() {
     try {
       const body = {
         ...data,
-        date_of_birth: data.date_of_birth?.toISOString()
+        date_of_birth: data.date_of_birth?.toISOString(),
       }
 
       await updateProfileMutation.mutateAsync(body)
@@ -629,28 +640,32 @@ export default function Profile() {
   return (
     <form onSubmit={onSubmit}>
       {/* Form fields */}
-      <div className='mt-6 flex flex-col flex-wrap sm:flex-row'>
-        <div className='truncate pt-3 capitalize sm:w-[20%] sm:text-right'>Tên</div>
-        <div className='sm:w-[80%] sm:pl-5'>
+      <div className="mt-6 flex flex-col flex-wrap sm:flex-row">
+        <div className="truncate pt-3 capitalize sm:w-[20%] sm:text-right">Tên</div>
+        <div className="sm:w-[80%] sm:pl-5">
           <Input
-            classNameInput='w-full rounded-xs border border-gray-300 px-3 py-2 outline-hidden focus:border-gray-500 focus:shadow-xs'
+            classNameInput="w-full rounded-xs border border-gray-300 px-3 py-2 outline-hidden focus:border-gray-500 focus:shadow-xs"
             register={register}
-            name='name'
-            placeholder='Tên'
+            name="name"
+            placeholder="Tên"
             errorMessage={errors.name?.message}
           />
         </div>
       </div>
 
       {/* Date of Birth với Controller */}
-      <div className='mt-2 flex flex-col flex-wrap sm:flex-row'>
-        <div className='truncate pt-3 capitalize sm:w-[20%] sm:text-right'>Ngày sinh</div>
-        <div className='sm:w-[80%] sm:pl-5'>
+      <div className="mt-2 flex flex-col flex-wrap sm:flex-row">
+        <div className="truncate pt-3 capitalize sm:w-[20%] sm:text-right">Ngày sinh</div>
+        <div className="sm:w-[80%] sm:pl-5">
           <Controller
             control={control}
-            name='date_of_birth'
+            name="date_of_birth"
             render={({ field }) => (
-              <DateSelect errorMessage={errors.date_of_birth?.message} value={field.value} onChange={field.onChange} />
+              <DateSelect
+                errorMessage={errors.date_of_birth?.message}
+                value={field.value}
+                onChange={field.onChange}
+              />
             )}
           />
         </div>
@@ -658,8 +673,8 @@ export default function Profile() {
 
       {/* Submit button */}
       <Button
-        className='flex h-9 items-center rounded-xs bg-orange px-5 text-center text-sm text-white hover:bg-orange/80'
-        type='submit'
+        className="flex h-9 items-center rounded-xs bg-orange px-5 text-center text-sm text-white hover:bg-orange/80"
+        type="submit"
         isLoading={updateProfileMutation.isPending}
       >
         Lưu

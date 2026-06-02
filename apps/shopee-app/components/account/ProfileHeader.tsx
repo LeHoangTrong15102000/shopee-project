@@ -30,7 +30,13 @@ export default function ProfileHeader({ user, isLoading }: ProfileHeaderProps) {
         {user?.avatar ? (
           <AppImage
             source={{ uri: user.avatar }}
-            style={{ width: 64, height: 64, borderRadius: 32, borderWidth: 2, borderColor: colors.primaryForeground }}
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: 32,
+              borderWidth: 2,
+              borderColor: colors.primaryForeground,
+            }}
           />
         ) : (
           <View
@@ -51,18 +57,30 @@ export default function ProfileHeader({ user, isLoading }: ProfileHeaderProps) {
         )}
 
         <View className="flex-1">
-          <AppText raw variant="body" weight="bold" style={{ color: colors.primaryForeground }} numberOfLines={1}>
+          <AppText
+            raw
+            variant="body"
+            weight="bold"
+            style={{ color: colors.primaryForeground }}
+            numberOfLines={1}>
             {isLoading ? '...' : displayName}
           </AppText>
           {user?.email && (
-            <AppText raw variant="bodySmall" style={{ color: colors.primaryForeground + 'CC' }} numberOfLines={1}>
+            <AppText
+              raw
+              variant="bodySmall"
+              style={{ color: colors.primaryForeground + 'CC' }}
+              numberOfLines={1}>
               {user.email}
             </AppText>
           )}
           <TouchableOpacity
             onPress={() => router.push('/profile-edit')}
             style={{ marginTop: 6, alignSelf: 'flex-start' }}>
-            <AppText raw variant="labelSmall" style={{ color: colors.primaryForeground + 'E6', textDecorationLine: 'underline' }}>
+            <AppText
+              raw
+              variant="labelSmall"
+              style={{ color: colors.primaryForeground + 'E6', textDecorationLine: 'underline' }}>
               {t('profileHeader.button.edit')}
             </AppText>
           </TouchableOpacity>

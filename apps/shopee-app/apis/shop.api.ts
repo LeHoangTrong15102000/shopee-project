@@ -11,7 +11,7 @@ export async function getShopProducts(
   id: string,
   page = 1,
   limit = 20,
-  sort = 'createdAt',
+  sort = 'createdAt'
 ): Promise<ShopProductsResponse> {
   const res = await http.get<ApiResponse<ShopProductsResponse>>(`shops/${id}/products`, {
     params: { page, limit, sort },

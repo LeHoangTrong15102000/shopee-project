@@ -17,11 +17,7 @@ function PaymentReturn() {
   // Track mount time for 2-minute polling timeout
   const mountTimeRef = useRef<number>(Date.now())
 
-  const {
-    data,
-    isLoading,
-    refetch,
-  } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ['paymentStatus', orderId],
     queryFn: () => orderApi.getPaymentStatus(orderId!),
     enabled: !!orderId,
@@ -224,9 +220,7 @@ function PaymentReturn() {
         <h1 className="mb-3 text-2xl font-bold text-gray-800 dark:text-gray-100">
           Đang xác nhận thanh toán
         </h1>
-        <p className="mb-2 text-gray-500 dark:text-gray-400">
-          Vui lòng chờ trong giây lát...
-        </p>
+        <p className="mb-2 text-gray-500 dark:text-gray-400">Vui lòng chờ trong giây lát...</p>
         {provider && (
           <p className="text-sm text-gray-400 dark:text-gray-500">
             Nhà cung cấp: {provider.toUpperCase()}

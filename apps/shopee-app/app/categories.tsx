@@ -45,9 +45,7 @@ export default function CategoriesScreen() {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage])
 
   const renderProduct = useCallback(
-    ({ item }: { item: Product }) => (
-      <ProductCard product={item} />
-    ),
+    ({ item }: { item: Product }) => <ProductCard product={item} />,
     []
   )
 

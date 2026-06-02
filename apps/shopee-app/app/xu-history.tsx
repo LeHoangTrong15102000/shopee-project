@@ -21,7 +21,11 @@ function XuTransactionItem({ item }: { item: XuTransaction }) {
   const { t, i18n } = useTranslation()
 
   const amountColor =
-    item.type === 'earned' ? colors.success : item.type === 'spent' ? colors.error : colors.neutrals400
+    item.type === 'earned'
+      ? colors.success
+      : item.type === 'spent'
+        ? colors.error
+        : colors.neutrals400
   const amountPrefix = item.type === 'earned' ? '+' : '-'
   const absAmount = Math.abs(item.amount)
 
@@ -39,7 +43,11 @@ function XuTransactionItem({ item }: { item: XuTransaction }) {
         ? t('xuHistory.transaction.spent')
         : t('xuHistory.transaction.expired')
   const typeBgColor =
-    item.type === 'earned' ? colors.success : item.type === 'spent' ? colors.error : colors.neutrals600
+    item.type === 'earned'
+      ? colors.success
+      : item.type === 'spent'
+        ? colors.error
+        : colors.neutrals600
 
   return (
     <View className="flex-row items-center justify-between px-4 py-3">
@@ -65,7 +73,8 @@ function XuTransactionItem({ item }: { item: XuTransaction }) {
         </AppText>
       </View>
       <AppText raw variant="body" weight="semibold" style={{ color: amountColor }}>
-        {amountPrefix}{absAmount} Xu
+        {amountPrefix}
+        {absAmount} Xu
       </AppText>
     </View>
   )
@@ -73,10 +82,10 @@ function XuTransactionItem({ item }: { item: XuTransaction }) {
 
 function XuSkeletonList() {
   return (
-    <View className="px-4 py-3 gap-4">
+    <View className="gap-4 px-4 py-3">
       {[1, 2, 3, 4, 5].map((i) => (
         <View key={i} className="flex-row items-center justify-between">
-          <View className="gap-2 flex-1">
+          <View className="flex-1 gap-2">
             <SkeletonLoader width={60} height={18} borderRadius={4} />
             <SkeletonLoader width="80%" height={14} borderRadius={4} />
             <SkeletonLoader width={80} height={12} borderRadius={4} />
@@ -139,9 +148,7 @@ export default function XuHistoryScreen() {
       />
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
         {/* Balance header */}
-        <View
-          style={{ backgroundColor: colors.coin }}
-          className="items-center px-4 py-6">
+        <View style={{ backgroundColor: colors.coin }} className="items-center px-4 py-6">
           <AppText raw variant="bodySmall" style={{ color: 'rgba(255,255,255,0.8)' }}>
             {t('xuHistory.subtitle')}
           </AppText>
@@ -157,7 +164,7 @@ export default function XuHistoryScreen() {
         </View>
 
         {/* Tab chips */}
-        <View className="flex-row gap-2 px-4 py-3 border-b border-neutrals900">
+        <View className="flex-row gap-2 border-b border-neutrals900 px-4 py-3">
           {TABS.map((tab) => (
             <Chip
               key={tab.key}

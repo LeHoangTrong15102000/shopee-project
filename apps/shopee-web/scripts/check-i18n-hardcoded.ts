@@ -9,20 +9,20 @@
  * Exit code 0 = clean, 1 = violations found
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import { fileURLToPath } from 'url';
+import * as fs from 'fs'
+import * as path from 'path'
+import { fileURLToPath } from 'url'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const SRC_DIR = path.resolve(__dirname, '..', 'src');
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const SRC_DIR = path.resolve(__dirname, '..', 'src')
 
 // Vietnamese diacritical character ranges
 // U+1E00-U+1EFF covers Vietnamese-specific diacritical combinations (ắ, ằ, ẳ, ẵ, ặ, etc.)
 // U+00C0-U+00FF covers common accented Latin chars shared with Vietnamese (à, á, â, ã, è, é, ê, etc.)
 // U+0100-U+01B0 covers ơ (U+01A0), ư (U+01AF) and other Vietnamese-used extended Latin
 // U+0300-U+036F covers combining diacritical marks used in Vietnamese
-const VIETNAMESE_REGEX = /[\u00C0-\u00FF\u0100-\u01B0\u0300-\u036F\u1E00-\u1EFF]/;
+const VIETNAMESE_REGEX = /[\u00C0-\u00FF\u0100-\u01B0\u0300-\u036F\u1E00-\u1EFF]/
 
 // Files/directories to exclude from scanning
 const EXCLUDED_PATHS = [
@@ -31,7 +31,7 @@ const EXCLUDED_PATHS = [
   'src/NotePage/', // documentation/notes
   'src/msw/', // mock service workers (test infrastructure)
   'src/utils/testUtils.tsx', // test utility mock data
-];
+]
 
 // Baseline: files with known hardcoded Vietnamese not yet extracted (out of scope for initial i18n change).
 // These will be addressed in future i18n extraction passes.
@@ -91,42 +91,42 @@ const BASELINE_EXCLUDED_PATHS = [
   'src/pages/ProductList/ProductListInfinite.tsx',
   'src/pages/User/',
   'src/useRouteElements.tsx',
-];
+]
 
 // File patterns to exclude
 const EXCLUDED_PATTERNS = [
   /\.test\.(tsx?|jsx?)$/, // test files
   /\.spec\.(tsx?|jsx?)$/, // spec files
   /\.stories\.(tsx?|jsx?)$/, // storybook files
-];
+]
 
 interface Violation {
-  file: string;
-  line: number;
-  text: string;
+  file: string
+  line: number
+  text: string
 }
 
 function isExcludedPath(filePath: string): boolean {
-  const relative = path.relative(path.resolve(__dirname, '..'), filePath).replace(/\\/g, '/');
+  const relative = path.relative(path.resolve(__dirname, '..'), filePath).replace(/\\/g, '/')
   return (
     EXCLUDED_PATHS.some((exc) => relative.startsWith(exc) || relative === exc) ||
     BASELINE_EXCLUDED_PATHS.some((exc) => relative.startsWith(exc) || relative === exc)
-  );
+  )
 }
 
 function isExcludedPattern(filePath: string): boolean {
-  const basename = path.basename(filePath);
-  return EXCLUDED_PATTERNS.some((pattern) => pattern.test(basename));
+  const basename = path.basename(filePath)
+  return EXCLUDED_PATTERNS.some((pattern) => pattern.test(basename))
 }
 
 function isCommentLine(line: string): boolean {
-  const trimmed = line.trim();
+  const trimmed = line.trim()
   return (
     trimmed.startsWith('//') ||
     trimmed.startsWith('/*') ||
     trimmed.startsWith('*') ||
     trimmed.startsWith('{/*')
-  );
+  )
 }
 
 /**
@@ -135,108 +135,109 @@ function isCommentLine(line: string): boolean {
  * Simple heuristic: find // that's not inside a string literal.
  */
 function stripInlineComment(line: string): string {
-  let inSingle = false;
-  let inDouble = false;
-  let inTemplate = false;
+  let inSingle = false
+  let inDouble = false
+  let inTemplate = false
 
   for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    const prev = i > 0 ? line[i - 1] : '';
+    const ch = line[i]
+    const prev = i > 0 ? line[i - 1] : ''
 
-    if (prev === '\\') continue;
+    if (prev === '\\') continue
 
-    if (ch === "'" && !inDouble && !inTemplate) inSingle = !inSingle;
-    else if (ch === '"' && !inSingle && !inTemplate) inDouble = !inDouble;
-    else if (ch === '`' && !inSingle && !inDouble) inTemplate = !inTemplate;
+    if (ch === "'" && !inDouble && !inTemplate) inSingle = !inSingle
+    else if (ch === '"' && !inSingle && !inTemplate) inDouble = !inDouble
+    else if (ch === '`' && !inSingle && !inDouble) inTemplate = !inTemplate
     else if (ch === '/' && line[i + 1] === '/' && !inSingle && !inDouble && !inTemplate) {
-      return line.substring(0, i);
+      return line.substring(0, i)
     }
   }
-  return line;
+  return line
 }
 
 function isImportLine(line: string): boolean {
-  const trimmed = line.trim();
-  return trimmed.startsWith('import ') || trimmed.startsWith('from ');
+  const trimmed = line.trim()
+  return trimmed.startsWith('import ') || trimmed.startsWith('from ')
 }
 
 function hasIgnoreDirective(line: string): boolean {
-  return line.includes('// i18n-ignore');
+  return line.includes('// i18n-ignore')
 }
 
 function scanFile(filePath: string): Violation[] {
-  const violations: Violation[] = [];
-  const content = fs.readFileSync(filePath, 'utf-8');
-  const lines = content.split('\n');
+  const violations: Violation[] = []
+  const content = fs.readFileSync(filePath, 'utf-8')
+  const lines = content.split('\n')
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const lineNum = i + 1;
+    const line = lines[i]
+    const lineNum = i + 1
 
     // Skip exclusions
-    if (hasIgnoreDirective(line)) continue;
-    if (isCommentLine(line)) continue;
-    if (isImportLine(line)) continue;
+    if (hasIgnoreDirective(line)) continue
+    if (isCommentLine(line)) continue
+    if (isImportLine(line)) continue
 
     // Strip inline comments before checking for Vietnamese
-    const codeOnly = stripInlineComment(line);
+    const codeOnly = stripInlineComment(line)
 
     // Check for Vietnamese characters in code (not comments)
     if (VIETNAMESE_REGEX.test(codeOnly)) {
       // Extract the Vietnamese text snippet for reporting
-      const match = line.match(/[\u00C0-\u024F\u1E00-\u1EFF][^\n'"`,;)}\]]*/) ;
-      const text = match ? match[0].trim().substring(0, 60) : '(Vietnamese text detected)';
+      const match = line.match(/[\u00C0-\u024F\u1E00-\u1EFF][^\n'"`,;)}\]]*/)
+      const text = match ? match[0].trim().substring(0, 60) : '(Vietnamese text detected)'
 
       violations.push({
         file: path.relative(path.resolve(__dirname, '..'), filePath).replace(/\\/g, '/'),
         line: lineNum,
         text,
-      });
+      })
     }
   }
 
-  return violations;
+  return violations
 }
 
 function findSourceFiles(dir: string): string[] {
-  const files: string[] = [];
+  const files: string[] = []
 
   function walk(currentDir: string) {
-    const entries = fs.readdirSync(currentDir, { withFileTypes: true });
+    const entries = fs.readdirSync(currentDir, { withFileTypes: true })
     for (const entry of entries) {
-      const fullPath = path.join(currentDir, entry.name);
+      const fullPath = path.join(currentDir, entry.name)
       if (entry.isDirectory()) {
-        if (entry.name === 'node_modules' || entry.name === '.git') continue;
-        walk(fullPath);
+        if (entry.name === 'node_modules' || entry.name === '.git') continue
+        walk(fullPath)
       } else if (entry.name.endsWith('.tsx')) {
         if (!isExcludedPath(fullPath) && !isExcludedPattern(fullPath)) {
-          files.push(fullPath);
+          files.push(fullPath)
         }
       }
     }
   }
 
-  walk(dir);
-  return files;
+  walk(dir)
+  return files
 }
 
 // Main
-const files = findSourceFiles(SRC_DIR);
-const allViolations: Violation[] = [];
+const files = findSourceFiles(SRC_DIR)
+const allViolations: Violation[] = []
 
 for (const file of files) {
-  allViolations.push(...scanFile(file));
+  allViolations.push(...scanFile(file))
 }
 
 if (allViolations.length === 0) {
-  console.log('✅ No hardcoded Vietnamese strings found in source files.');
-  process.exit(0);
+  console.log('✅ No hardcoded Vietnamese strings found in source files.')
+  process.exit(0)
 } else {
-  console.log(`❌ Found ${allViolations.length} hardcoded Vietnamese string(s):\n`);
+  console.log(`❌ Found ${allViolations.length} hardcoded Vietnamese string(s):\n`)
   for (const v of allViolations) {
-    console.log(`${v.file}:${v.line} — Found Vietnamese text: "${v.text}" → Consider using t('<namespace>.<key>')`);
+    console.log(
+      `${v.file}:${v.line} — Found Vietnamese text: "${v.text}" → Consider using t('<namespace>.<key>')`,
+    )
   }
-  console.log(`\n💡 Extract these strings to locale JSON files and use t() instead.`);
-  process.exit(1);
+  console.log(`\n💡 Extract these strings to locale JSON files and use t() instead.`)
+  process.exit(1)
 }
-

@@ -128,7 +128,9 @@ describe('AuditLogDetailPage', () => {
     await waitFor(() => {
       expect(screen.getByRole('tab', { name: /detail.diffTabs.before/i })).toBeInTheDocument()
       expect(screen.getByRole('tab', { name: /detail.diffTabs.after/i })).toBeInTheDocument()
-      expect(screen.getAllByRole('tab', { name: /detail.diffTabs.changes/i }).length).toBeGreaterThan(0)
+      expect(
+        screen.getAllByRole('tab', { name: /detail.diffTabs.changes/i }).length,
+      ).toBeGreaterThan(0)
     })
   })
 

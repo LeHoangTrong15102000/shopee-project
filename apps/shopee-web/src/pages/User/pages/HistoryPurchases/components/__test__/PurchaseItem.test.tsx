@@ -1,4 +1,4 @@
-import { describe, it, expect} from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import PurchaseItem from '../PurchaseItem'
 import { Purchase } from 'src/types/purchases.type'

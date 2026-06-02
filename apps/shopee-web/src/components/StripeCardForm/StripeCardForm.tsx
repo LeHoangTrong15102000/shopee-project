@@ -47,10 +47,7 @@ export function StripeCardForm({ disabled = false, onError }: StripeCardFormProp
         className="rounded-lg border border-gray-300 bg-white px-4 py-3 transition-colors focus-within:border-orange dark:border-slate-600 dark:bg-slate-800"
         aria-label="Card details"
       >
-        <CardElement
-          options={{ ...CARD_ELEMENT_OPTIONS, disabled }}
-          onChange={handleChange}
-        />
+        <CardElement options={{ ...CARD_ELEMENT_OPTIONS, disabled }} onChange={handleChange} />
       </div>
       {cardError && (
         <p className="text-sm text-red-500" role="alert">

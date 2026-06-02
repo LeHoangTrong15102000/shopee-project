@@ -17,9 +17,7 @@ export default function DriverCard({ tracking }: DriverCardProps) {
   }
 
   return (
-    <View
-      className="rounded-t-2xl px-4 py-4"
-      style={{ backgroundColor: colors.background }}>
+    <View className="rounded-t-2xl px-4 py-4" style={{ backgroundColor: colors.background }}>
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-3">
           <View
@@ -49,9 +47,7 @@ export default function DriverCard({ tracking }: DriverCardProps) {
       </View>
 
       {tracking.estimatedArrival && (
-        <View
-          className="mt-3 rounded-lg px-3 py-2"
-          style={{ backgroundColor: colors.neutrals800 }}>
+        <View className="mt-3 rounded-lg px-3 py-2" style={{ backgroundColor: colors.neutrals800 }}>
           <AppText raw variant="bodySmall" color="muted">
             Dự kiến giao hàng
           </AppText>

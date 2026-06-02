@@ -74,12 +74,7 @@ export default function NotificationItem({ item, onPress, onDelete }: Notificati
             numberOfLines={1}>
             {item.title}
           </AppText>
-          <AppText
-            raw
-            variant="bodySmall"
-            color="muted"
-            numberOfLines={2}
-            style={{ marginTop: 2 }}>
+          <AppText raw variant="bodySmall" color="muted" numberOfLines={2} style={{ marginTop: 2 }}>
             {item.content}
           </AppText>
           <AppText raw variant="labelSmall" color="muted" style={{ marginTop: 4 }}>

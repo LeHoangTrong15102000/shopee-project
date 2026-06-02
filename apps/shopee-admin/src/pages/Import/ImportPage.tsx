@@ -54,10 +54,7 @@ export default function ImportPage() {
             className="hidden"
             onChange={handleFileChange}
           />
-          <Button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={importMut.isPending}
-          >
+          <Button onClick={() => fileInputRef.current?.click()} disabled={importMut.isPending}>
             {importMut.isPending ? (
               <Loader2 className="mr-2 size-4 animate-spin" />
             ) : (
@@ -70,13 +67,16 @@ export default function ImportPage() {
               <CardContent className="pt-4 text-sm">
                 <p className="font-medium">{t('result.title')}</p>
                 <p>
-                  {t('result.created', { defaultValue: 'Created:' })} {importMut.data.data.data.created}
+                  {t('result.created', { defaultValue: 'Created:' })}{' '}
+                  {importMut.data.data.data.created}
                 </p>
                 <p>
-                  {t('result.updated', { defaultValue: 'Updated:' })} {importMut.data.data.data.updated}
+                  {t('result.updated', { defaultValue: 'Updated:' })}{' '}
+                  {importMut.data.data.data.updated}
                 </p>
                 <p>
-                  {t('result.failed', { defaultValue: 'Failed:' })} {importMut.data.data.data.failed}
+                  {t('result.failed', { defaultValue: 'Failed:' })}{' '}
+                  {importMut.data.data.data.failed}
                 </p>
               </CardContent>
             </Card>

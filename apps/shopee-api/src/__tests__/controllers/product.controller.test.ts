@@ -379,10 +379,7 @@ describe('Product Controller', () => {
 
       await ProductController.updateProduct(req as any, res as Response)
 
-      expect(mockProductService.updateProduct).toHaveBeenCalledWith(
-        'product_1',
-        expect.any(Object),
-      )
+      expect(mockProductService.updateProduct).toHaveBeenCalledWith('product_1', expect.any(Object))
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
 
@@ -447,9 +444,9 @@ describe('Product Controller', () => {
       })
       const res = createMockResponse()
 
-      await expect(
-        ProductController.updateProduct(req as any, res as Response),
-      ).rejects.toThrow('DB error')
+      await expect(ProductController.updateProduct(req as any, res as Response)).rejects.toThrow(
+        'DB error',
+      )
     })
   })
 
@@ -483,9 +480,9 @@ describe('Product Controller', () => {
       const req = createMockRequest({ params: { product_id: 'product_1' } })
       const res = createMockResponse()
 
-      await expect(
-        ProductController.deleteProduct(req as any, res as Response),
-      ).rejects.toThrow('DB error')
+      await expect(ProductController.deleteProduct(req as any, res as Response)).rejects.toThrow(
+        'DB error',
+      )
     })
   })
 
@@ -668,9 +665,9 @@ describe('Product Controller', () => {
       })
       const res = createMockResponse()
 
-      await expect(
-        ProductController.getSearchHistory(req as any, res as Response),
-      ).rejects.toThrow('DB error')
+      await expect(ProductController.getSearchHistory(req as any, res as Response)).rejects.toThrow(
+        'DB error',
+      )
     })
   })
 
@@ -710,7 +707,6 @@ describe('Product Controller', () => {
       jest.doMock('@database/models/search-history.model', () => ({
         SearchHistoryModel: MockSearchHistory,
       }))
-
       ;(mockSearchHistoryModel.findOne as jest.Mock).mockResolvedValue(null)
       ;(mockSearchHistoryModel.countDocuments as jest.Mock).mockResolvedValue(5)
       ;(mockSearchHistoryModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({})

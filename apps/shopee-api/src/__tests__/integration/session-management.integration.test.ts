@@ -232,9 +232,7 @@ describe('Session Management (Task 12.3)', () => {
       await waitForSession()
 
       // Revoke all from auth2 (this revokes auth1's session)
-      await supertest(app)
-        .delete('/sessions')
-        .set('Authorization', `Bearer ${auth2AccessToken}`)
+      await supertest(app).delete('/sessions').set('Authorization', `Bearer ${auth2AccessToken}`)
 
       // auth1's refresh token should now be invalid
       const refreshRes = await supertest(app)

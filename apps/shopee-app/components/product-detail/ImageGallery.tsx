@@ -53,7 +53,9 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
             activeOpacity={0.95}
             onPress={() => setFullscreenVisible(true)}
             accessibilityRole="image"
-            accessibilityLabel={t('a11y.productImage', { index: index + 1, total: images.length }) + ', tap to zoom'}>
+            accessibilityLabel={
+              t('a11y.productImage', { index: index + 1, total: images.length }) + ', tap to zoom'
+            }>
             <AppImage
               source={{ uri: item }}
               style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
@@ -154,7 +156,10 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
                   source={{ uri: item }}
                   style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
                   contentFit="contain"
-                  accessibilityLabel={t('a11y.productImage', { index: index + 1, total: images.length })}
+                  accessibilityLabel={t('a11y.productImage', {
+                    index: index + 1,
+                    total: images.length,
+                  })}
                 />
               </ScrollView>
             )}

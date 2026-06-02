@@ -6,17 +6,17 @@ Express + MongoDB REST API for the Shopee project.
 
 Copy `.env.example` to `.env` and fill in the values. The server will exit immediately at startup and print a list of all missing/invalid variables if any required env var is misconfigured.
 
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `NODE_ENV` | No | `development` | `development`, `production`, or `test` |
-| `PORT` | No | `4000` | HTTP port |
-| `MONGO_URI` | **Yes** | — | MongoDB connection string |
-| `SECRET_KEY_JWT` | **Yes** | — | JWT signing secret. **Must be ≥ 32 characters.** Generate: `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"` |
-| `JWT_ACCESS_TTL` | No | `900` | Access token TTL in seconds (default: 15 minutes) |
-| `JWT_REFRESH_TTL` | No | `2592000` | Refresh token TTL in seconds (default: 30 days) |
-| `CLIENT_URL` | No | `http://localhost:3000` | Allowed CORS origin |
-| `UPLOAD_DIR` | No | `upload` | File upload directory |
-| `AUTH_STRICT_MODE` | No | `false` | When `true`, legacy tokens (without `jti`/`roles`) are rejected. See rollout section. |
+| Variable           | Required | Default                 | Description                                                                                                                           |
+| ------------------ | -------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `NODE_ENV`         | No       | `development`           | `development`, `production`, or `test`                                                                                                |
+| `PORT`             | No       | `4000`                  | HTTP port                                                                                                                             |
+| `MONGO_URI`        | **Yes**  | —                       | MongoDB connection string                                                                                                             |
+| `SECRET_KEY_JWT`   | **Yes**  | —                       | JWT signing secret. **Must be ≥ 32 characters.** Generate: `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"` |
+| `JWT_ACCESS_TTL`   | No       | `900`                   | Access token TTL in seconds (default: 15 minutes)                                                                                     |
+| `JWT_REFRESH_TTL`  | No       | `2592000`               | Refresh token TTL in seconds (default: 30 days)                                                                                       |
+| `CLIENT_URL`       | No       | `http://localhost:3000` | Allowed CORS origin                                                                                                                   |
+| `UPLOAD_DIR`       | No       | `upload`                | File upload directory                                                                                                                 |
+| `AUTH_STRICT_MODE` | No       | `false`                 | When `true`, legacy tokens (without `jti`/`roles`) are rejected. See rollout section.                                                 |
 
 ## Auth Architecture
 
@@ -69,37 +69,44 @@ The `verifyAdmin` middleware reads `roles` from the JWT payload instead of query
 The following security measures are implemented:
 
 ### Password Security
+
 - **Strong password requirements**: Minimum 8 characters with uppercase, lowercase, number, and special character
 - **Enhanced hashing**: PBKDF2 with 13 rounds (8192 iterations) for password storage
 - **Secure password reset**: Time-limited tokens (1 hour expiry) with automatic cleanup
 
 ### Authentication Security
+
 - **Short-lived access tokens**: 15-minute expiry reduces exposure window
 - **Refresh token rotation**: New token pair issued on each refresh, old token revoked
 - **Reuse detection**: Automatic revocation of all user tokens on suspected token theft
 - **JWT ID tracking**: Unique `jti` claim per token for rotation and reuse detection
 
 ### Rate Limiting & Brute Force Protection
+
 - **Account lockout**: 5 failed login attempts trigger 15-minute lockout
 - **Rate limiting**: Applied to login, register, password reset, and token refresh endpoints
 - **IP + email tracking**: Prevents bypass by changing email or IP alone
 
 ### Input Validation
+
 - **Email normalization**: Lowercase and trimmed before processing
 - **Strong password validation**: Enforced on registration and password reset
 - **Suspicious pattern detection**: SQL injection, XSS, path traversal, and command injection patterns blocked
 
 ### Security Headers
+
 - **Helmet.js**: Comprehensive security headers (CSP, HSTS, X-Frame-Options, etc.)
 - **HTTPS enforcement**: Automatic redirect in production
 - **CORS whitelist**: Only allowed origins can access the API
 
 ### Error Message Security
+
 - **No user enumeration**: Login errors don't reveal if email exists
 - **Password reset safety**: Same response whether email exists or not
 - **Generic error messages**: Avoid leaking implementation details
 
 ### Additional Protections
+
 - **Request size limits**: Prevents DoS attacks via large payloads
 - **Content-type validation**: Only allowed content types accepted
 - **Suspicious activity logging**: Security events logged for monitoring
@@ -118,6 +125,7 @@ npm run build    # Compile TypeScript
 Mongoose transactions require MongoDB to run as a replica set — even for local development with a single node.
 
 **First-time setup:**
+
 ```bash
 # Tear down any previous standalone container (removes volumes to allow fresh init)
 docker-compose down -v

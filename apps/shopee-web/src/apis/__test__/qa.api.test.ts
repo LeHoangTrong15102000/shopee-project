@@ -46,9 +46,9 @@ describe('QA API', () => {
 
     it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      await expect(
-        qaApi.askQuestion({ product_id: '1', question: 'test' }),
-      ).rejects.toThrow('Network error')
+      await expect(qaApi.askQuestion({ product_id: '1', question: 'test' })).rejects.toThrow(
+        'Network error',
+      )
     })
   })
 
@@ -63,9 +63,9 @@ describe('QA API', () => {
 
     it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      await expect(
-        qaApi.answerQuestion('1', { answer: 'test answer' }),
-      ).rejects.toThrow('Network error')
+      await expect(qaApi.answerQuestion('1', { answer: 'test answer' })).rejects.toThrow(
+        'Network error',
+      )
     })
   })
 

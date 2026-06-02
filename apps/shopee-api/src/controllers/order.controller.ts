@@ -10,7 +10,9 @@ import { PaymentMethodModel } from '@database/models/payment-method.model'
 
 export const getShippingMethods = async (_req: Request, res: Response) => {
   // Try DB first; fall back to static list if collection is empty (e.g. before seeding)
-  const dbMethods = await ShippingMethodModel.find({ is_active: true }).sort({ sort_order: 1 }).lean()
+  const dbMethods = await ShippingMethodModel.find({ is_active: true })
+    .sort({ sort_order: 1 })
+    .lean()
   if (dbMethods.length > 0) {
     return responseSuccess(res, {
       message: 'Lấy phương thức vận chuyển thành công',
@@ -25,7 +27,9 @@ export const getShippingMethods = async (_req: Request, res: Response) => {
 
 export const getPaymentMethods = async (_req: Request, res: Response) => {
   // Try DB first; fall back to static list if collection is empty (e.g. before seeding)
-  const dbMethods = await PaymentMethodModel.find({ is_active: true }).sort({ sort_order: 1 }).lean()
+  const dbMethods = await PaymentMethodModel.find({ is_active: true })
+    .sort({ sort_order: 1 })
+    .lean()
   if (dbMethods.length > 0) {
     return responseSuccess(res, {
       message: 'Lấy phương thức thanh toán thành công',
@@ -83,9 +87,7 @@ export const getPendingPaymentOrder = async (req: Request, res: Response) => {
     const order = await orderService.getPendingPaymentOrder(user_id)
 
     return responseSuccess(res, {
-      message: order
-        ? 'Tìm thấy đơn hàng chưa thanh toán'
-        : 'Không có đơn hàng chưa thanh toán',
+      message: order ? 'Tìm thấy đơn hàng chưa thanh toán' : 'Không có đơn hàng chưa thanh toán',
       data: order,
     })
   } catch (error) {

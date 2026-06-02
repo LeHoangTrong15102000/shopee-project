@@ -45,7 +45,9 @@ export default function SearchBar({
         <ArrowLeft size={24} color={colors.primaryForeground} />
       </Pressable>
 
-      <View className="flex-1 flex-row items-center rounded-sm px-3 py-2" style={{ backgroundColor: colors.neutrals900 }}>
+      <View
+        className="flex-1 flex-row items-center rounded-sm px-3 py-2"
+        style={{ backgroundColor: colors.neutrals900 }}>
         <Search size={16} color={colors.neutrals500} />
         <TextInput
           ref={inputRef}

@@ -43,4 +43,3 @@ export async function getCheckinHistory(page = 1, limit = 20) {
   })
   return res.data
 }
-

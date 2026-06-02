@@ -17,11 +17,7 @@ export class FeedService extends BaseService {
    * Get paginated feed for a user using cursor-based pagination.
    * Cursor is the _id of the last item seen (oldest in the current page).
    */
-  async getFeed(
-    userId: string,
-    limit = 20,
-    cursor?: string,
-  ): Promise<FeedCursorResult> {
+  async getFeed(userId: string, limit = 20, cursor?: string): Promise<FeedCursorResult> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')
     }
@@ -47,9 +43,7 @@ export class FeedService extends BaseService {
     const hasMore = items.length > safeLimit
     const pageItems = hasMore ? items.slice(0, safeLimit) : items
     const nextCursor =
-      hasMore && pageItems.length > 0
-        ? pageItems[pageItems.length - 1]._id!.toString()
-        : null
+      hasMore && pageItems.length > 0 ? pageItems[pageItems.length - 1]._id!.toString() : null
 
     return {
       items: pageItems as IFeedItem[],

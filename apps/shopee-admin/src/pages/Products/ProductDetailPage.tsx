@@ -74,9 +74,7 @@ export default function ProductDetailPage() {
               {product.price_before_discount > product.price && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{t('detail.original')}</span>
-                  <span className="line-through">
-                    {formatPrice(product.price_before_discount)}
-                  </span>
+                  <span className="line-through">{formatPrice(product.price_before_discount)}</span>
                 </div>
               )}
               <div className="flex justify-between">

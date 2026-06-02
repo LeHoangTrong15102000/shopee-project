@@ -21,9 +21,7 @@ export class FeedEventListener {
   constructor(private readonly feedFanOutQueue: Queue<FeedFanOutJobPayload>) {}
 
   @OnEvent('product.liked')
-  async onProductLiked(
-    event: Extract<DomainEvent, { type: 'product.liked' }>,
-  ): Promise<void> {
+  async onProductLiked(event: Extract<DomainEvent, { type: 'product.liked' }>): Promise<void> {
     const { productId, productName, productImage, productPrice, userId, userName, userAvatar } =
       event.payload
 
@@ -33,14 +31,9 @@ export class FeedEventListener {
     })
 
     // Fan-out to users who have this product wishlisted (they care about it)
-    const wishlistEntries = await WishlistModel.find(
-      { product: productId },
-      { user: 1 },
-    ).lean()
+    const wishlistEntries = await WishlistModel.find({ product: productId }, { user: 1 }).lean()
 
-    const recipientIds = wishlistEntries
-      .map((w) => w.user.toString())
-      .filter((id) => id !== userId) // exclude the actor
+    const recipientIds = wishlistEntries.map((w) => w.user.toString()).filter((id) => id !== userId) // exclude the actor
 
     if (recipientIds.length === 0) return
 
@@ -61,25 +54,26 @@ export class FeedEventListener {
   }
 
   @OnEvent('product.shared')
-  async onProductShared(
-    event: Extract<DomainEvent, { type: 'product.shared' }>,
-  ): Promise<void> {
-    const { productId, productName, productImage, productPrice, userId, userName, userAvatar, shareUrl } =
-      event.payload
+  async onProductShared(event: Extract<DomainEvent, { type: 'product.shared' }>): Promise<void> {
+    const {
+      productId,
+      productName,
+      productImage,
+      productPrice,
+      userId,
+      userName,
+      userAvatar,
+      shareUrl,
+    } = event.payload
 
     Logger.apiInfo('[FeedEventListener] product.shared — enqueuing feed fan-out', {
       productId,
       userId,
     })
 
-    const wishlistEntries = await WishlistModel.find(
-      { product: productId },
-      { user: 1 },
-    ).lean()
+    const wishlistEntries = await WishlistModel.find({ product: productId }, { user: 1 }).lean()
 
-    const recipientIds = wishlistEntries
-      .map((w) => w.user.toString())
-      .filter((id) => id !== userId)
+    const recipientIds = wishlistEntries.map((w) => w.user.toString()).filter((id) => id !== userId)
 
     if (recipientIds.length === 0) return
 
@@ -112,14 +106,9 @@ export class FeedEventListener {
       userId,
     })
 
-    const wishlistEntries = await WishlistModel.find(
-      { product: productId },
-      { user: 1 },
-    ).lean()
+    const wishlistEntries = await WishlistModel.find({ product: productId }, { user: 1 }).lean()
 
-    const recipientIds = wishlistEntries
-      .map((w) => w.user.toString())
-      .filter((id) => id !== userId)
+    const recipientIds = wishlistEntries.map((w) => w.user.toString()).filter((id) => id !== userId)
 
     if (recipientIds.length === 0) return
 
@@ -141,9 +130,7 @@ export class FeedEventListener {
   }
 
   @OnEvent('order.created')
-  async onOrderCreated(
-    event: Extract<DomainEvent, { type: 'order.created' }>,
-  ): Promise<void> {
+  async onOrderCreated(event: Extract<DomainEvent, { type: 'order.created' }>): Promise<void> {
     const { orderId, userId } = event.payload
 
     Logger.apiInfo('[FeedEventListener] order.created — enqueuing feed fan-out (self)', {

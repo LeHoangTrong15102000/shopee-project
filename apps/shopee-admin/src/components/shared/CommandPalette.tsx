@@ -85,13 +85,15 @@ export function CommandPalette() {
 
   const { data: productsData } = useQuery({
     queryKey: [...PRODUCT_KEYS.all, 'search', debouncedQuery],
-    queryFn: () => productsApi.getProducts({ name: debouncedQuery, limit: 5 }).then((r) => r.data.data),
+    queryFn: () =>
+      productsApi.getProducts({ name: debouncedQuery, limit: 5 }).then((r) => r.data.data),
     enabled: isSearchEnabled,
   })
 
   const { data: ordersData } = useQuery({
     queryKey: [...ORDER_KEYS.all, 'search', debouncedQuery],
-    queryFn: () => ordersApi.getOrders({ search: debouncedQuery, limit: 5 }).then((r) => r.data.data),
+    queryFn: () =>
+      ordersApi.getOrders({ search: debouncedQuery, limit: 5 }).then((r) => r.data.data),
     enabled: isSearchEnabled,
   })
 
@@ -160,7 +162,9 @@ export function CommandPalette() {
                   <CommandGroup heading={tc('search.searchResults')}>
                     {results.map((r) => (
                       <CommandItem key={r.id} onSelect={() => select(r.href)}>
-                        <span className="mr-2 text-xs text-muted-foreground capitalize">[{r.type}]</span>
+                        <span className="mr-2 text-xs text-muted-foreground capitalize">
+                          [{r.type}]
+                        </span>
                         {r.label}
                       </CommandItem>
                     ))}

@@ -30,6 +30,7 @@
 ### 1.2. Đặc điểm của PWA
 
 **Core Features:**
+
 - **Progressive**: Work cho mọi users, bất kể browser
 - **Responsive**: Fit mọi form factor (desktop, mobile, tablet)
 - **Connectivity independent**: Work offline hoặc slow network
@@ -44,6 +45,7 @@
 ### 1.3. Benefits
 
 **For Users:**
+
 - ✅ Fast loading
 - ✅ Work offline
 - ✅ Install to home screen
@@ -51,6 +53,7 @@
 - ✅ No app store required
 
 **For Developers:**
+
 - ✅ Single codebase (web + mobile)
 - ✅ No app store approval
 - ✅ Instant updates
@@ -59,16 +62,16 @@
 
 ### 1.4. PWA vs Native App
 
-| Feature | PWA | Native App |
-|---------|-----|------------|
-| **Installation** | Add to home screen | App store |
-| **Updates** | Automatic | Manual |
-| **Distribution** | URL | App store |
-| **Development** | Web technologies | Platform-specific |
-| **Offline** | ✅ Yes | ✅ Yes |
-| **Push Notifications** | ✅ Yes | ✅ Yes |
-| **Hardware Access** | ⚠️ Limited | ✅ Full |
-| **Performance** | ⚠️ Good | ✅ Excellent |
+| Feature                | PWA                | Native App        |
+| ---------------------- | ------------------ | ----------------- |
+| **Installation**       | Add to home screen | App store         |
+| **Updates**            | Automatic          | Manual            |
+| **Distribution**       | URL                | App store         |
+| **Development**        | Web technologies   | Platform-specific |
+| **Offline**            | ✅ Yes             | ✅ Yes            |
+| **Push Notifications** | ✅ Yes             | ✅ Yes            |
+| **Hardware Access**    | ⚠️ Limited         | ✅ Full           |
+| **Performance**        | ⚠️ Good            | ✅ Excellent      |
 
 ---
 
@@ -118,7 +121,7 @@ const urlsToCache = [
   '/index.html',
   '/assets/index.css',
   '/assets/index.js',
-  '/assets/logo.png'
+  '/assets/logo.png',
 ]
 
 // Install event: Cache static assets
@@ -127,7 +130,7 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME).then((cache) => {
       console.log('Opened cache')
       return cache.addAll(urlsToCache)
-    })
+    }),
   )
 })
 
@@ -141,9 +144,9 @@ self.addEventListener('activate', (event) => {
             console.log('Deleting old cache:', cacheName)
             return caches.delete(cacheName)
           }
-        })
+        }),
       )
-    })
+    }),
   )
 })
 
@@ -174,7 +177,7 @@ self.addEventListener('fetch', (event) => {
 
         return response
       })
-    })
+    }),
   )
 })
 ```
@@ -194,9 +197,12 @@ export const updateServiceWorker = () => {
 }
 
 // Check for updates every hour
-setInterval(() => {
-  updateServiceWorker()
-}, 60 * 60 * 1000)
+setInterval(
+  () => {
+    updateServiceWorker()
+  },
+  60 * 60 * 1000,
+)
 ```
 
 ### 2.6. Skip Waiting
@@ -210,7 +216,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(urlsToCache)
-    })
+    }),
   )
 })
 
@@ -234,7 +240,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.add(OFFLINE_URL)
-    })
+    }),
   )
 })
 
@@ -243,7 +249,7 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(event.request).catch(() => {
         return caches.match(OFFLINE_URL)
-      })
+      }),
     )
   }
 })
@@ -342,7 +348,7 @@ const dbPromise = openDB<ShopeeDB>('shopee-db', 1, {
   upgrade(db) {
     db.createObjectStore('products', { keyPath: 'id' })
     db.createObjectStore('cart', { keyPath: 'id' })
-  }
+  },
 })
 
 // Save product to IndexedDB
@@ -378,7 +384,7 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
       return response || fetch(event.request)
-    })
+    }),
   )
 })
 ```
@@ -402,7 +408,7 @@ self.addEventListener('fetch', (event) => {
       .catch(() => {
         // Fallback to cache
         return caches.match(event.request)
-      })
+      }),
   )
 })
 ```
@@ -425,7 +431,7 @@ self.addEventListener('fetch', (event) => {
         // Return cached response immediately, update in background
         return cachedResponse || fetchPromise
       })
-    })
+    }),
   )
 })
 ```
@@ -463,7 +469,11 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(networkFirst(request))
   }
   // Static assets: Cache First
-  else if (request.destination === 'image' || request.destination === 'style' || request.destination === 'script') {
+  else if (
+    request.destination === 'image' ||
+    request.destination === 'style' ||
+    request.destination === 'script'
+  ) {
     event.respondWith(cacheFirst(request))
   }
   // HTML: Stale While Revalidate
@@ -533,16 +543,14 @@ export const subscribeToPush = async () => {
 
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(
-      import.meta.env.VITE_VAPID_PUBLIC_KEY
-    )
+    applicationServerKey: urlBase64ToUint8Array(import.meta.env.VITE_VAPID_PUBLIC_KEY),
   })
 
   // Send subscription to server
   await fetch('/api/push/subscribe', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(subscription)
+    body: JSON.stringify(subscription),
   })
 
   return subscription
@@ -574,8 +582,8 @@ self.addEventListener('push', (event) => {
     icon: '/icon-192x192.png',
     badge: '/badge-72x72.png',
     data: {
-      url: data.url
-    }
+      url: data.url,
+    },
   }
 
   event.waitUntil(self.registration.showNotification(data.title, options))
@@ -584,9 +592,7 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
 
-  event.waitUntil(
-    clients.openWindow(event.notification.data.url)
-  )
+  event.waitUntil(clients.openWindow(event.notification.data.url))
 })
 ```
 
@@ -599,7 +605,7 @@ import webpush from 'web-push'
 webpush.setVapidDetails(
   'mailto:contact@shopee.com',
   process.env.VAPID_PUBLIC_KEY,
-  process.env.VAPID_PRIVATE_KEY
+  process.env.VAPID_PRIVATE_KEY,
 )
 
 export const sendPushNotification = async (
@@ -608,7 +614,7 @@ export const sendPushNotification = async (
     title: string
     body: string
     url: string
-  }
+  },
 ) => {
   try {
     await webpush.sendNotification(subscription, JSON.stringify(payload))
@@ -624,12 +630,10 @@ const notifyOrderStatus = async (userId: string, orderId: string) => {
   const payload = {
     title: 'Đơn hàng đã được giao',
     body: `Đơn hàng #${orderId} đã được giao thành công`,
-    url: `/orders/${orderId}`
+    url: `/orders/${orderId}`,
   }
 
-  await Promise.all(
-    subscriptions.map((sub) => sendPushNotification(sub, payload))
-  )
+  await Promise.all(subscriptions.map((sub) => sendPushNotification(sub, payload)))
 }
 ```
 
@@ -898,7 +902,7 @@ const syncCartToServer = async () => {
     const response = await fetch('/api/cart/sync', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(cart)
+      body: JSON.stringify(cart),
     })
 
     if (response.ok) {
@@ -937,14 +941,14 @@ const PRECACHE_URLS = [
   '/index.html',
   '/assets/index.css',
   '/assets/index.js',
-  '/icon-192x192.png'
+  '/icon-192x192.png',
 ]
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(PRECACHE_URLS)
-    })
+    }),
   )
 })
 ```
@@ -963,7 +967,7 @@ self.addEventListener('fetch', (event) => {
             return response
           })
           .catch(() => cache.match(event.request))
-      })
+      }),
     )
   }
 })
@@ -976,6 +980,7 @@ self.addEventListener('fetch', (event) => {
 ### 10.1. PWA Checklist
 
 **Core:**
+
 - [ ] HTTPS enabled
 - [ ] Service worker registered
 - [ ] Web app manifest
@@ -983,6 +988,7 @@ self.addEventListener('fetch', (event) => {
 - [ ] Fast loading (< 3s)
 
 **Offline:**
+
 - [ ] Offline page
 - [ ] Offline indicator
 - [ ] Cache static assets
@@ -990,17 +996,20 @@ self.addEventListener('fetch', (event) => {
 - [ ] Background sync
 
 **Installability:**
+
 - [ ] Manifest với icons
 - [ ] Install prompt
 - [ ] Standalone display mode
 - [ ] Theme color
 
 **Engagement:**
+
 - [ ] Push notifications
 - [ ] App shortcuts
 - [ ] Share target
 
 **Performance:**
+
 - [ ] Lighthouse score > 90
 - [ ] First Contentful Paint < 1.8s
 - [ ] Time to Interactive < 3.8s
@@ -1044,6 +1053,7 @@ navigator.serviceWorker.ready.then((registration) => {
 PWA là future của web development, combining best của web và native apps:
 
 **Khi nào nên build PWA:**
+
 - E-commerce sites
 - News/media sites
 - Social networks
@@ -1051,6 +1061,7 @@ PWA là future của web development, combining best của web và native apps:
 - Content platforms
 
 **Benefits:**
+
 - Better user experience
 - Increased engagement
 - Lower development cost
@@ -1058,6 +1069,7 @@ PWA là future của web development, combining best của web và native apps:
 - Cross-platform
 
 **Tài liệu tham khảo:**
+
 - [PWA Documentation](https://web.dev/progressive-web-apps/)
 - [Service Worker API](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API)
 - [Web App Manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest)

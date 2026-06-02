@@ -22,7 +22,7 @@ export function useMessages(conversationId: string) {
     for (const m of historical) allById.set(m._id, m)
     for (const m of messageBuffer) allById.set(m._id, m)
     return Array.from(allById.values()).sort(
-      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     )
   }, [query.data, messageBuffer])
 

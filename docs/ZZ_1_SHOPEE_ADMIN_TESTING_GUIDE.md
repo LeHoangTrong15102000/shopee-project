@@ -26,15 +26,15 @@
 
 Project shopee-admin dùng **Vite** làm bundler. Vitest là test runner native cho Vite:
 
-| Tiêu chí | Jest | Vitest |
-|-----------|------|--------|
-| Tương thích Vite | Cần cấu hình phức tạp (babel, transform) | Native, zero-config |
-| Tốc độ | Chậm (transform qua babel) | Nhanh gấp 2-5x (dùng esbuild/SWC) |
-| ESM support | Hạn chế, cần workaround | Native ESM |
-| `import.meta.env` | Không hỗ trợ trực tiếp | Hỗ trợ native |
-| Path alias (`src/*`, `@/*`) | Cần `moduleNameMapper` | Tự đọc từ `vite.config.ts` |
-| API tương thích | — | 99% tương thích Jest API |
-| Hot Module Reload | Không | Có (watch mode) |
+| Tiêu chí                    | Jest                                     | Vitest                            |
+| --------------------------- | ---------------------------------------- | --------------------------------- |
+| Tương thích Vite            | Cần cấu hình phức tạp (babel, transform) | Native, zero-config               |
+| Tốc độ                      | Chậm (transform qua babel)               | Nhanh gấp 2-5x (dùng esbuild/SWC) |
+| ESM support                 | Hạn chế, cần workaround                  | Native ESM                        |
+| `import.meta.env`           | Không hỗ trợ trực tiếp                   | Hỗ trợ native                     |
+| Path alias (`src/*`, `@/*`) | Cần `moduleNameMapper`                   | Tự đọc từ `vite.config.ts`        |
+| API tương thích             | —                                        | 99% tương thích Jest API          |
+| Hot Module Reload           | Không                                    | Có (watch mode)                   |
 
 > **Kết luận**: Với Vite project, dùng Vitest là lựa chọn tối ưu. API gần như giống Jest nên không cần học lại.
 
@@ -83,14 +83,14 @@ export default defineConfig(({ mode }) => {
     return {
       ...baseConfig,
       test: {
-        globals: true,                    // Dùng describe/it/expect không cần import
-        environment: 'jsdom',             // Giả lập DOM
+        globals: true, // Dùng describe/it/expect không cần import
+        environment: 'jsdom', // Giả lập DOM
         setupFiles: ['./vitest.setup.ts'],
-        css: true,                        // Parse CSS (tránh lỗi import CSS)
+        css: true, // Parse CSS (tránh lỗi import CSS)
         testTimeout: 30000,
         include: [
-          'src/**/*.test.{ts,tsx}',       // Unit tests
-          'test/**/*.test.{ts,tsx}',      // Integration tests
+          'src/**/*.test.{ts,tsx}', // Unit tests
+          'test/**/*.test.{ts,tsx}', // Integration tests
         ],
         coverage: {
           provider: 'v8',
@@ -99,7 +99,7 @@ export default defineConfig(({ mode }) => {
           include: ['src/**/*.{ts,tsx}'],
           exclude: [
             'src/**/*.test.{ts,tsx}',
-            'src/components/ui/**',       // shadcn components — không cần test
+            'src/components/ui/**', // shadcn components — không cần test
             'src/types/**',
             'src/vite-env.d.ts',
             'src/main.tsx',
@@ -139,9 +139,15 @@ const localStorageMock = (() => {
   let store: Record<string, string> = {}
   return {
     getItem: (key: string) => store[key] || null,
-    setItem: (key: string, value: string) => { store[key] = value?.toString() },
-    removeItem: (key: string) => { delete store[key] },
-    clear: () => { store = {} },
+    setItem: (key: string, value: string) => {
+      store[key] = value?.toString()
+    },
+    removeItem: (key: string) => {
+      delete store[key]
+    },
+    clear: () => {
+      store = {}
+    },
   }
 })()
 
@@ -174,11 +180,21 @@ Object.defineProperty(window, 'scrollTo', {
 // IntersectionObserver mock
 global.IntersectionObserver = class IntersectionObserver {
   callback: Function
-  constructor(callback: Function) { this.callback = callback }
-  observe() { return null }
-  unobserve() { return null }
-  disconnect() { return null }
-  takeRecords() { return [] }
+  constructor(callback: Function) {
+    this.callback = callback
+  }
+  observe() {
+    return null
+  }
+  unobserve() {
+    return null
+  }
+  disconnect() {
+    return null
+  }
+  takeRecords() {
+    return []
+  }
 } as any
 
 // ResizeObserver mock (cần cho nhiều UI components)
@@ -352,6 +368,7 @@ it('should call axios.post')
 **Ưu tiên**: Integration > Component > Unit > E2E
 
 ---
+
 ## 5. Flow Test Cho Utility Function
 
 Utility function là loại đơn giản nhất — pure function, không side effect.
@@ -359,13 +376,15 @@ Utility function là loại đơn giản nhất — pure function, không side e
 ### 5.1. Ví dụ: Test `formatCurrency`
 
 File: `src/utils/format.ts`
+
 ```ts
 export function formatCurrency(value: number | string): string {
-  return `₫${Number(value).toLocaleString('vi-VN')}`;
+  return `₫${Number(value).toLocaleString('vi-VN')}`
 }
 ```
 
 File: `src/utils/format.test.ts`
+
 ```ts
 import { describe, it, expect } from 'vitest'
 import { formatCurrency } from './format'
@@ -412,6 +431,7 @@ describe('formatCurrency', () => {
 ### 5.2. Ví dụ: Test `cn` (class merge utility)
 
 File: `src/lib/utils.test.ts`
+
 ```ts
 import { describe, it, expect } from 'vitest'
 import { cn } from './utils'
@@ -470,6 +490,7 @@ Custom hooks trong shopee-admin chủ yếu wrap TanStack Query. Cần setup Que
 ### 6.1. Test Helper: `createQueryWrapper`
 
 File: `src/test-utils/index.tsx`
+
 ```tsx
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router-dom'
@@ -496,9 +517,7 @@ export function createTestQueryClient() {
 export function createQueryWrapper() {
   const queryClient = createTestQueryClient()
   return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   )
 }
 
@@ -508,10 +527,7 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   queryClient?: QueryClient
 }
 
-export function renderWithProviders(
-  ui: React.ReactElement,
-  options: CustomRenderOptions = {},
-) {
+export function renderWithProviders(ui: React.ReactElement, options: CustomRenderOptions = {}) {
   const {
     initialEntries = ['/'],
     queryClient = createTestQueryClient(),
@@ -521,9 +537,7 @@ export function renderWithProviders(
   function Wrapper({ children }: { children: React.ReactNode }) {
     return (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          {children}
-        </MemoryRouter>
+        <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
       </QueryClientProvider>
     )
   }
@@ -538,6 +552,7 @@ export function renderWithProviders(
 ### 6.2. Ví dụ: Test `useProducts` hook
 
 File: `src/hooks/useProducts.test.ts`
+
 ```ts
 import { describe, it, expect } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
@@ -581,10 +596,7 @@ describe('useProducts', () => {
     // Override handler cho test này
     server.use(
       http.get('*/admin/products', () => {
-        return HttpResponse.json(
-          { message: 'Server error' },
-          { status: 500 },
-        )
+        return HttpResponse.json({ message: 'Server error' }, { status: 500 })
       }),
     )
 
@@ -629,10 +641,7 @@ describe('useDeleteProduct', () => {
   it('should show error toast when delete fails', async () => {
     server.use(
       http.delete('*/admin/products/*', () => {
-        return HttpResponse.json(
-          { message: 'Not found' },
-          { status: 404 },
-        )
+        return HttpResponse.json({ message: 'Not found' }, { status: 404 })
       }),
     )
 
@@ -675,6 +684,7 @@ describe('useDeleteProduct', () => {
 ```
 
 ---
+
 ## 7. Flow Test Cho Component
 
 Component test là phần quan trọng nhất. Test behavior từ góc nhìn user, KHÔNG test implementation.
@@ -682,6 +692,7 @@ Component test là phần quan trọng nhất. Test behavior từ góc nhìn use
 ### 7.1. Ví dụ: Test `StatCard` (Simple Component)
 
 File: `src/components/shared/StatCard.test.tsx`
+
 ```tsx
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
@@ -699,21 +710,13 @@ describe('StatCard', () => {
 
   // 2. Props khác nhau
   it('should apply formatter to value', () => {
-    render(
-      <StatCard label="Revenue" value={150000} formatter={formatCurrency} />,
-    )
+    render(<StatCard label="Revenue" value={150000} formatter={formatCurrency} />)
 
     expect(screen.getByText(/₫150/)).toBeInTheDocument()
   })
 
   it('should render icon when provided', () => {
-    render(
-      <StatCard
-        label="Users"
-        value={100}
-        icon={<span data-testid="test-icon">icon</span>}
-      />,
-    )
+    render(<StatCard label="Users" value={100} icon={<span data-testid="test-icon">icon</span>} />)
 
     expect(screen.getByTestId('test-icon')).toBeInTheDocument()
   })
@@ -749,6 +752,7 @@ describe('StatCard', () => {
 ### 7.2. Ví dụ: Test `ConfirmDialog` (Interactive Component)
 
 File: `src/components/shared/ConfirmDialog.test.tsx`
+
 ```tsx
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
@@ -826,6 +830,7 @@ describe('ConfirmDialog', () => {
 ### 7.3. Ví dụ: Test `LoginPage` (Page Component với Form + API)
 
 File: `src/pages/Login/LoginPage.test.tsx`
+
 ```tsx
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
@@ -904,10 +909,7 @@ describe('LoginPage', () => {
   it('should show error message when credentials are invalid', async () => {
     server.use(
       http.post('*/login', () => {
-        return HttpResponse.json(
-          { message: 'Invalid credentials' },
-          { status: 401 },
-        )
+        return HttpResponse.json({ message: 'Invalid credentials' }, { status: 401 })
       }),
     )
 
@@ -1014,16 +1016,16 @@ describe('LoginPage', () => {
 
 Khi tìm element trong test, ưu tiên theo thứ tự:
 
-| Priority | Query | Khi nào dùng |
-|----------|-------|-------------|
-| 1 | `getByRole` | Mọi interactive element (button, input, link) |
-| 2 | `getByLabelText` | Form inputs có label |
-| 3 | `getByPlaceholderText` | Input không có label |
-| 4 | `getByText` | Text content hiển thị |
-| 5 | `getByDisplayValue` | Input đã có value |
-| 6 | `getByAltText` | Images |
-| 7 | `getByTitle` | Title attribute |
-| 8 | `getByTestId` | **Cuối cùng** — chỉ khi không có cách nào khác |
+| Priority | Query                  | Khi nào dùng                                   |
+| -------- | ---------------------- | ---------------------------------------------- |
+| 1        | `getByRole`            | Mọi interactive element (button, input, link)  |
+| 2        | `getByLabelText`       | Form inputs có label                           |
+| 3        | `getByPlaceholderText` | Input không có label                           |
+| 4        | `getByText`            | Text content hiển thị                          |
+| 5        | `getByDisplayValue`    | Input đã có value                              |
+| 6        | `getByAltText`         | Images                                         |
+| 7        | `getByTitle`           | Title attribute                                |
+| 8        | `getByTestId`          | **Cuối cùng** — chỉ khi không có cách nào khác |
 
 ```ts
 // ✅ TỐT
@@ -1037,6 +1039,7 @@ document.querySelector('.btn-primary')
 ```
 
 ---
+
 ## 8. Mock Service Worker (MSW) — API Mocking
 
 MSW intercept network requests ở tầng service worker, giống hệt real API. Đây là cách mock API tốt nhất hiện tại.
@@ -1064,6 +1067,7 @@ MSW intercept network requests ở tầng service worker, giống hệt real API
 ### 8.2. Cấu trúc MSW handlers
 
 File: `src/msw/data/products.mock.ts`
+
 ```ts
 import type { Product, Category } from 'src/types'
 
@@ -1112,6 +1116,7 @@ export const mockProducts: Product[] = [
 ```
 
 File: `src/msw/products.msw.ts`
+
 ```ts
 import { http, HttpResponse } from 'msw'
 import { mockProducts } from './data/products.mock'
@@ -1147,10 +1152,7 @@ export const productHandlers = [
   http.get(`${API_BASE}/admin/products/:id`, ({ params }) => {
     const product = mockProducts.find((p) => p._id === params.id)
     if (!product) {
-      return HttpResponse.json(
-        { message: 'Product not found' },
-        { status: 404 },
-      )
+      return HttpResponse.json({ message: 'Product not found' }, { status: 404 })
     }
     return HttpResponse.json({ message: 'Success', data: product })
   }),
@@ -1167,20 +1169,14 @@ export const productHandlers = [
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
-    return HttpResponse.json(
-      { message: 'Product created', data: newProduct },
-      { status: 201 },
-    )
+    return HttpResponse.json({ message: 'Product created', data: newProduct }, { status: 201 })
   }),
 
   // DELETE /admin/products/:id
   http.delete(`${API_BASE}/admin/products/:id`, ({ params }) => {
     const exists = mockProducts.find((p) => p._id === params.id)
     if (!exists) {
-      return HttpResponse.json(
-        { message: 'Product not found' },
-        { status: 404 },
-      )
+      return HttpResponse.json({ message: 'Product not found' }, { status: 404 })
     }
     return HttpResponse.json({ message: 'Product deleted' })
   }),
@@ -1188,6 +1184,7 @@ export const productHandlers = [
 ```
 
 File: `src/msw/auth.msw.ts`
+
 ```ts
 import { http, HttpResponse } from 'msw'
 
@@ -1199,10 +1196,7 @@ export const authHandlers = [
 
     // Simulate invalid credentials
     if (body.email === 'wrong@email.com') {
-      return HttpResponse.json(
-        { message: 'Invalid credentials' },
-        { status: 401 },
-      )
+      return HttpResponse.json({ message: 'Invalid credentials' }, { status: 401 })
     }
 
     return HttpResponse.json({
@@ -1235,6 +1229,7 @@ export const authHandlers = [
 ```
 
 File: `src/msw/handlers.ts` — Tổng hợp tất cả handlers
+
 ```ts
 import { authHandlers } from './auth.msw'
 import { productHandlers } from './products.msw'
@@ -1260,10 +1255,7 @@ it('should show error when API returns 500', async () => {
   // Override CHỈ cho test này — tự reset sau mỗi test (afterEach)
   server.use(
     http.get('*/admin/products', () => {
-      return HttpResponse.json(
-        { message: 'Internal Server Error' },
-        { status: 500 },
-      )
+      return HttpResponse.json({ message: 'Internal Server Error' }, { status: 500 })
     }),
   )
 
@@ -1322,18 +1314,19 @@ it('should handle network error', async () => {
 ```
 
 ---
+
 ## 9. Snapshot Testing
 
 Snapshot testing capture output của component và so sánh với lần chạy trước.
 
 ### 9.1. Khi nào NÊN dùng snapshot?
 
-| Nên dùng | Không nên dùng |
-|----------|----------------|
-| UI components ít thay đổi (StatCard, Badge) | Components thay đổi thường xuyên |
-| Kiểm tra structure tổng thể | Components có dynamic data (timestamps) |
-| Detect unintended UI changes | Components phức tạp (DataTable) |
-| Shared/reusable components | Page-level components |
+| Nên dùng                                    | Không nên dùng                          |
+| ------------------------------------------- | --------------------------------------- |
+| UI components ít thay đổi (StatCard, Badge) | Components thay đổi thường xuyên        |
+| Kiểm tra structure tổng thể                 | Components có dynamic data (timestamps) |
+| Detect unintended UI changes                | Components phức tạp (DataTable)         |
+| Shared/reusable components                  | Page-level components                   |
 
 ### 9.2. Ví dụ: Snapshot test cho `EmptyState`
 
@@ -1402,6 +1395,7 @@ Integration test kiểm tra nhiều components/modules hoạt động cùng nhau
 ### 10.1. Ví dụ: Test Login Flow (End-to-End trong browser)
 
 File: `test/integration/login-flow.test.tsx`
+
 ```tsx
 import { describe, it, expect, vi } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
@@ -1463,10 +1457,7 @@ describe('Login Flow Integration', () => {
       http.post('*/login', () => {
         attemptCount++
         if (attemptCount === 1) {
-          return HttpResponse.json(
-            { message: 'Invalid credentials' },
-            { status: 401 },
-          )
+          return HttpResponse.json({ message: 'Invalid credentials' }, { status: 401 })
         }
         return HttpResponse.json({
           message: 'Success',
@@ -1505,6 +1496,7 @@ describe('Login Flow Integration', () => {
 ### 10.2. Ví dụ: Test Zustand Store
 
 File: `src/stores/auth.store.test.ts`
+
 ```ts
 import { describe, it, expect, beforeEach } from 'vitest'
 import { useAuthStore } from './auth.store'
@@ -1608,6 +1600,7 @@ describe('useAuthStore', () => {
 ### 11.2. Mock data factories
 
 File: `src/test-utils/factories.ts`
+
 ```ts
 import type { Product, User, Category, Order } from 'src/types'
 
@@ -1655,6 +1648,7 @@ export function createMockProducts(count: number): Product[] {
 ```
 
 Sử dụng trong test:
+
 ```ts
 import { createMockProduct, createMockProducts } from 'src/test-utils/factories'
 
@@ -1680,6 +1674,7 @@ pnpm test:coverage
 ```
 
 Output sẽ hiển thị:
+
 ```
 --------------------|---------|----------|---------|---------|
 File                | % Stmts | % Branch | % Funcs | % Lines |
@@ -1694,10 +1689,10 @@ All files           |   72.5  |   65.3   |   70.1  |   72.5  |
 ### 12.2. Coverage thresholds khuyến nghị
 
 | Giai đoạn | Lines | Functions | Branches | Statements |
-|-----------|-------|-----------|----------|------------|
-| Bắt đầu | 50% | 50% | 40% | 50% |
-| Ổn định | 70% | 70% | 60% | 70% |
-| Mature | 80% | 80% | 70% | 80% |
+| --------- | ----- | --------- | -------- | ---------- |
+| Bắt đầu   | 50%   | 50%       | 40%      | 50%        |
+| Ổn định   | 70%   | 70%       | 60%      | 70%        |
+| Mature    | 80%   | 80%       | 70%      | 80%        |
 
 ### 12.3. Những gì KHÔNG cần coverage
 
@@ -1797,46 +1792,55 @@ Phase 6: Coverage & CI (1 ngày)
 ## 14. FAQ — Câu Hỏi Thường Gặp
 
 ### Q: Tại sao không dùng Jest?
+
 **A**: Project dùng Vite. Jest cần cấu hình babel transforms, `moduleNameMapper` cho path aliases, và không hỗ trợ `import.meta.env`. Vitest native với Vite, zero-config, nhanh hơn 10-20x trong watch mode, và API 99% tương thích Jest.
 
 ### Q: Khi nào dùng `getBy` vs `queryBy` vs `findBy`?
+
 **A**:
+
 - `getByRole(...)` — element PHẢI tồn tại, throw error nếu không tìm thấy → dùng cho assertions "có tồn tại"
 - `queryByText(...)` — trả về `null` nếu không tìm thấy → dùng cho assertions "KHÔNG tồn tại" (`expect(...).not.toBeInTheDocument()`)
 - `findByText(...)` — trả về Promise, chờ element xuất hiện → dùng cho async rendering (sau API call, sau state update)
 
 ### Q: Tại sao dùng `userEvent` thay vì `fireEvent`?
+
 **A**: `fireEvent` dispatch raw DOM events. `userEvent` simulate hành vi thật của user (focus → keydown → keypress → input → keyup). Nó bắt được nhiều bug hơn, ví dụ: button bị disabled nhưng `fireEvent.click` vẫn trigger, còn `userEvent.click` thì không.
 
 ### Q: Có cần test shadcn/ui components không?
+
 **A**: Không. Đây là third-party components đã được test upstream. Chỉ test khi bạn customize behavior của chúng. Coverage config đã exclude `src/components/ui/**`.
 
 ### Q: MSW handler bị lỗi "unhandled request" — làm sao fix?
+
 **A**: Kiểm tra URL trong handler có khớp với URL mà axios gọi không. Lưu ý `API_BASE_URL` trong `src/utils/http.ts` — mặc định là `http://localhost:3000/`. Handler phải match chính xác URL đó. Dùng wildcard `*/admin/products` khi override trong test cụ thể.
 
 ### Q: Test bị flaky (lúc pass lúc fail) — nguyên nhân phổ biến?
+
 **A**:
+
 1. Quên `retry: false` trong test QueryClient → TanStack Query retry 3 lần
 2. Quên `waitFor()` cho async assertions
 3. Shared state giữa tests (Zustand store, localStorage) → luôn reset trong `beforeEach`
 4. MSW handler không reset → `afterEach` phải gọi `server.resetHandlers()`
 
 ### Q: Nên test private functions không?
+
 **A**: Không. Test behavior thông qua public API. Nếu một private function quan trọng đến mức cần test riêng, có thể nó nên được extract thành utility function.
 
 ---
 
 ## 15. Tài Liệu Tham Khảo
 
-| Tài liệu | Link |
-|-----------|------|
-| Vitest Documentation | https://vitest.dev |
-| React Testing Library | https://testing-library.com/docs/react-testing-library/intro |
-| MSW v2 Documentation | https://mswjs.io/docs |
-| Testing Library Query Priority | https://testing-library.com/docs/queries/about#priority |
+| Tài liệu                                 | Link                                                                   |
+| ---------------------------------------- | ---------------------------------------------------------------------- |
+| Vitest Documentation                     | https://vitest.dev                                                     |
+| React Testing Library                    | https://testing-library.com/docs/react-testing-library/intro           |
+| MSW v2 Documentation                     | https://mswjs.io/docs                                                  |
+| Testing Library Query Priority           | https://testing-library.com/docs/queries/about#priority                |
 | Kent C. Dodds — Common Mistakes with RTL | https://kentcdodds.com/blog/common-mistakes-with-react-testing-library |
-| TanStack Query — Testing Guide | https://tanstack.com/query/latest/docs/react/guides/testing |
-| Zustand — Testing Stores | https://zustand.docs.pmnd.rs/guides/testing |
+| TanStack Query — Testing Guide           | https://tanstack.com/query/latest/docs/react/guides/testing            |
+| Zustand — Testing Stores                 | https://zustand.docs.pmnd.rs/guides/testing                            |
 
 ---
 

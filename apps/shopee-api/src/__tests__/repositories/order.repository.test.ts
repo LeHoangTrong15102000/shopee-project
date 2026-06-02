@@ -244,9 +244,13 @@ describe('OrderRepository', () => {
       const mockPopulate = jest.fn().mockReturnValue({ lean: mockLean })
       ;(OrderModel.findByIdAndUpdate as jest.Mock).mockReturnValue({ populate: mockPopulate })
 
-      await repository.updateStatus('507f1f77bcf86cd799439011', 'delivered' as any, {
-        total_amount: 300,
-      } as any)
+      await repository.updateStatus(
+        '507f1f77bcf86cd799439011',
+        'delivered' as any,
+        {
+          total_amount: 300,
+        } as any,
+      )
 
       expect(OrderModel.findByIdAndUpdate).toHaveBeenCalledWith(
         '507f1f77bcf86cd799439011',
@@ -351,11 +355,9 @@ describe('OrderRepository', () => {
 
     it('should filter by status', async () => {
       ;(OrderModel.populate as jest.Mock).mockResolvedValue([])
-      ;(OrderModel.aggregate as jest.Mock)
-        .mockResolvedValueOnce([])
-        .mockReturnValueOnce({
-          then: (cb: any) => Promise.resolve([]).then(cb),
-        })
+      ;(OrderModel.aggregate as jest.Mock).mockResolvedValueOnce([]).mockReturnValueOnce({
+        then: (cb: any) => Promise.resolve([]).then(cb),
+      })
 
       const result = await repository.findAllWithFilters(
         { status: 'pending' },
@@ -367,11 +369,9 @@ describe('OrderRepository', () => {
 
     it('should filter by payment_method', async () => {
       ;(OrderModel.populate as jest.Mock).mockResolvedValue([])
-      ;(OrderModel.aggregate as jest.Mock)
-        .mockResolvedValueOnce([])
-        .mockReturnValueOnce({
-          then: (cb: any) => Promise.resolve([]).then(cb),
-        })
+      ;(OrderModel.aggregate as jest.Mock).mockResolvedValueOnce([]).mockReturnValueOnce({
+        then: (cb: any) => Promise.resolve([]).then(cb),
+      })
 
       const result = await repository.findAllWithFilters(
         { payment_method: 'cod' },
@@ -382,11 +382,9 @@ describe('OrderRepository', () => {
 
     it('should filter by user_id', async () => {
       ;(OrderModel.populate as jest.Mock).mockResolvedValue([])
-      ;(OrderModel.aggregate as jest.Mock)
-        .mockResolvedValueOnce([])
-        .mockReturnValueOnce({
-          then: (cb: any) => Promise.resolve([]).then(cb),
-        })
+      ;(OrderModel.aggregate as jest.Mock).mockResolvedValueOnce([]).mockReturnValueOnce({
+        then: (cb: any) => Promise.resolve([]).then(cb),
+      })
 
       const result = await repository.findAllWithFilters(
         { user_id: '507f1f77bcf86cd799439012' },
@@ -397,11 +395,9 @@ describe('OrderRepository', () => {
 
     it('should add createdAt range when start_date is provided', async () => {
       ;(OrderModel.populate as jest.Mock).mockResolvedValue([])
-      ;(OrderModel.aggregate as jest.Mock)
-        .mockResolvedValueOnce([])
-        .mockReturnValueOnce({
-          then: (cb: any) => Promise.resolve([]).then(cb),
-        })
+      ;(OrderModel.aggregate as jest.Mock).mockResolvedValueOnce([]).mockReturnValueOnce({
+        then: (cb: any) => Promise.resolve([]).then(cb),
+      })
 
       const result = await repository.findAllWithFilters(
         { start_date: '2024-01-01' },
@@ -412,11 +408,9 @@ describe('OrderRepository', () => {
 
     it('should add createdAt range when end_date is provided', async () => {
       ;(OrderModel.populate as jest.Mock).mockResolvedValue([])
-      ;(OrderModel.aggregate as jest.Mock)
-        .mockResolvedValueOnce([])
-        .mockReturnValueOnce({
-          then: (cb: any) => Promise.resolve([]).then(cb),
-        })
+      ;(OrderModel.aggregate as jest.Mock).mockResolvedValueOnce([]).mockReturnValueOnce({
+        then: (cb: any) => Promise.resolve([]).then(cb),
+      })
 
       const result = await repository.findAllWithFilters(
         { end_date: '2024-12-31' },
@@ -427,11 +421,9 @@ describe('OrderRepository', () => {
 
     it('should add both start_date and end_date when both are provided', async () => {
       ;(OrderModel.populate as jest.Mock).mockResolvedValue([])
-      ;(OrderModel.aggregate as jest.Mock)
-        .mockResolvedValueOnce([])
-        .mockReturnValueOnce({
-          then: (cb: any) => Promise.resolve([]).then(cb),
-        })
+      ;(OrderModel.aggregate as jest.Mock).mockResolvedValueOnce([]).mockReturnValueOnce({
+        then: (cb: any) => Promise.resolve([]).then(cb),
+      })
 
       const result = await repository.findAllWithFilters(
         { start_date: '2024-01-01', end_date: '2024-12-31' },
@@ -442,26 +434,19 @@ describe('OrderRepository', () => {
 
     it('should use search pipeline when search is provided', async () => {
       ;(OrderModel.populate as jest.Mock).mockResolvedValue([])
-      ;(OrderModel.aggregate as jest.Mock)
-        .mockResolvedValueOnce([])
-        .mockReturnValueOnce({
-          then: (cb: any) => Promise.resolve([]).then(cb),
-        })
+      ;(OrderModel.aggregate as jest.Mock).mockResolvedValueOnce([]).mockReturnValueOnce({
+        then: (cb: any) => Promise.resolve([]).then(cb),
+      })
 
-      const result = await repository.findAllWithFilters(
-        { search: 'john' },
-        { page: 1, limit: 10 },
-      )
+      const result = await repository.findAllWithFilters({ search: 'john' }, { page: 1, limit: 10 })
       expect(result).toBeDefined()
     })
 
     it('should use ascending sort when order=asc', async () => {
       ;(OrderModel.populate as jest.Mock).mockResolvedValue([])
-      ;(OrderModel.aggregate as jest.Mock)
-        .mockResolvedValueOnce([])
-        .mockReturnValueOnce({
-          then: (cb: any) => Promise.resolve([]).then(cb),
-        })
+      ;(OrderModel.aggregate as jest.Mock).mockResolvedValueOnce([]).mockReturnValueOnce({
+        then: (cb: any) => Promise.resolve([]).then(cb),
+      })
 
       const result = await repository.findAllWithFilters(
         {},

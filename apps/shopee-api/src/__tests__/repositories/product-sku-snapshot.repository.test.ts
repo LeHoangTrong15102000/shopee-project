@@ -55,10 +55,9 @@ describe('ProductSkuSnapshotRepository', () => {
 
       await repo.createMany(mockData as any, { session: mockSession })
 
-      expect(ProductSkuSnapshotModel.bulkSave).toHaveBeenCalledWith(
-        expect.any(Array),
-        { session: mockSession },
-      )
+      expect(ProductSkuSnapshotModel.bulkSave).toHaveBeenCalledWith(expect.any(Array), {
+        session: mockSession,
+      })
     })
 
     it('calls bulkSave without session option when session is omitted', async () => {

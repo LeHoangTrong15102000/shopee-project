@@ -81,9 +81,7 @@ describe('ConversationHistory', () => {
   })
 
   it('should show empty state when no conversations', async () => {
-    mockGetConversations = vi.fn(() =>
-      Promise.resolve({ data: { data: { conversations: [] } } }),
-    )
+    mockGetConversations = vi.fn(() => Promise.resolve({ data: { data: { conversations: [] } } }))
     render(<ConversationHistory />, { wrapper })
     await waitFor(() => {
       expect(screen.getByText('No conversations yet')).toBeInTheDocument()

@@ -55,10 +55,7 @@ export const useCheckout = () => {
   pendingOrderIdRef.current = pendingOrderId
 
   // Detect pending payment order on mount — enables recovery flow
-  const {
-    data: pendingPaymentData,
-    isLoading: isPendingPaymentLoading,
-  } = useQuery({
+  const { data: pendingPaymentData, isLoading: isPendingPaymentLoading } = useQuery({
     queryKey: ['pendingPayment'],
     queryFn: () => orderApi.getPendingPaymentOrder(),
     // Only run once on mount — no refetch needed
@@ -143,7 +140,9 @@ export const useCheckout = () => {
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null)
   const [selectedShippingMethod, setSelectedShippingMethod] = useState<ShippingMethod | null>(null)
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethodType | null>(null)
-  const [selectedEWalletProvider, setSelectedEWalletProvider] = useState<EWalletProvider | null>(null)
+  const [selectedEWalletProvider, setSelectedEWalletProvider] = useState<EWalletProvider | null>(
+    null,
+  )
   const [voucherCode, setVoucherCode] = useState('')
   const [voucherDiscount, setVoucherDiscount] = useState(0)
   const [coinsUsed, setCoinsUsed] = useState(0)
@@ -179,7 +178,10 @@ export const useCheckout = () => {
 
           if (error) {
             const code = error.code || ''
-            const message = STRIPE_ERROR_MESSAGES[code] || error.message || t('stripe.paymentFailed', 'Thanh toán thất bại. Vui lòng thử lại.')
+            const message =
+              STRIPE_ERROR_MESSAGES[code] ||
+              error.message ||
+              t('stripe.paymentFailed', 'Thanh toán thất bại. Vui lòng thử lại.')
             toast.error(message)
             setIsConfirmingPayment(false)
             setPendingOrderId(null)

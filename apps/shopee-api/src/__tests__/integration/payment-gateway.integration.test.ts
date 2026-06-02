@@ -80,10 +80,7 @@ const app = createTestApp()
  * This avoids the complex checkout flow (cart, address, product stock checks)
  * and lets integration tests focus on the payment/IPN logic they actually test.
  */
-async function seedOrder(
-  userId: mongoose.Types.ObjectId,
-  overrides: Record<string, unknown> = {},
-) {
+async function seedOrder(userId: mongoose.Types.ObjectId, overrides: Record<string, unknown> = {}) {
   return OrderModel.create({
     user: userId,
     items: [],
@@ -618,15 +615,13 @@ describe('E.10 VNPay IPN success — order confirmed', () => {
     const { verifyIpnCall } = getVnpayMocks()
     verifyIpnCall.mockReturnValue({ isVerified: true, isSuccess: true })
 
-    const res = await supertest(app)
-      .get('/payment/vnpay/ipn')
-      .query({
-        vnp_TxnRef: orderId.toString(),
-        vnp_TransactionNo: '12345678',
-        vnp_Amount: '15000000',
-        vnp_ResponseCode: '00',
-        vnp_SecureHash: 'valid-hash',
-      })
+    const res = await supertest(app).get('/payment/vnpay/ipn').query({
+      vnp_TxnRef: orderId.toString(),
+      vnp_TransactionNo: '12345678',
+      vnp_Amount: '15000000',
+      vnp_ResponseCode: '00',
+      vnp_SecureHash: 'valid-hash',
+    })
 
     expect(res.status).toBe(200)
     expect(res.body.RspCode).toBe('00')
@@ -650,14 +645,12 @@ describe('E.11 VNPay IPN invalid signature — rejected', () => {
     const { verifyIpnCall } = getVnpayMocks()
     verifyIpnCall.mockReturnValue({ isVerified: false })
 
-    const res = await supertest(app)
-      .get('/payment/vnpay/ipn')
-      .query({
-        vnp_TxnRef: orderId.toString(),
-        vnp_Amount: '15000000',
-        vnp_ResponseCode: '00',
-        vnp_SecureHash: 'invalid-hash',
-      })
+    const res = await supertest(app).get('/payment/vnpay/ipn').query({
+      vnp_TxnRef: orderId.toString(),
+      vnp_Amount: '15000000',
+      vnp_ResponseCode: '00',
+      vnp_SecureHash: 'invalid-hash',
+    })
 
     expect(res.status).toBe(200)
     expect(res.body.RspCode).toBe('97')
@@ -1023,15 +1016,13 @@ describe('G.5 VNPay vnp_TxnRef max 34 chars', () => {
     // Verify the txnRef fits within VNPay's 34-char limit
     expect(txnRef.length).toBeLessThanOrEqual(34)
 
-    const res = await supertest(app)
-      .get('/payment/vnpay/ipn')
-      .query({
-        vnp_TxnRef: txnRef,
-        vnp_TransactionNo: '12345678',
-        vnp_Amount: '15000000',
-        vnp_ResponseCode: '00',
-        vnp_SecureHash: 'valid-hash',
-      })
+    const res = await supertest(app).get('/payment/vnpay/ipn').query({
+      vnp_TxnRef: txnRef,
+      vnp_TransactionNo: '12345678',
+      vnp_Amount: '15000000',
+      vnp_ResponseCode: '00',
+      vnp_SecureHash: 'valid-hash',
+    })
 
     expect(res.status).toBe(200)
     expect(res.body.RspCode).toBe('00')

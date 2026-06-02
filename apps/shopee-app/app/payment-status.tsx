@@ -55,7 +55,7 @@ export default function PaymentStatusScreen() {
       if (reason) setFailureReason(reason)
       setState(nextState)
     },
-    [stopPolling],
+    [stopPolling]
   )
 
   // ─── Polling ────────────────────────────────────────────────────────────────
@@ -157,7 +157,9 @@ export default function PaymentStatusScreen() {
           {state === 'success' && (
             <SuccessView colors={colors} t={t} orderId={resolvedOrderId} router={router} />
           )}
-          {state === 'failed' && <FailureView colors={colors} t={t} router={router} reason={failureReason} />}
+          {state === 'failed' && (
+            <FailureView colors={colors} t={t} router={router} reason={failureReason} />
+          )}
           {state === 'timeout' && <TimeoutView colors={colors} t={t} router={router} />}
         </View>
       </SafeAreaView>
@@ -199,7 +201,7 @@ function SuccessView({
   router: ReturnType<typeof useRouter>
 }) {
   return (
-    <View className="items-center w-full gap-4">
+    <View className="w-full items-center gap-4">
       <CheckCircle size={80} color={colors.success} />
 
       <AppText
@@ -251,7 +253,7 @@ function FailureView({
   reason?: string
 }) {
   return (
-    <View className="items-center w-full gap-4">
+    <View className="w-full items-center gap-4">
       <XCircle size={80} color={colors.error ?? colors.primary} />
 
       <AppText
@@ -267,7 +269,7 @@ function FailureView({
           ? reason
           : t(
               'paymentStatus.failed.subtitle',
-              'Đơn hàng chưa được xử lý. Vui lòng thử lại hoặc chọn phương thức khác.',
+              'Đơn hàng chưa được xử lý. Vui lòng thử lại hoặc chọn phương thức khác.'
             )}
       </AppText>
 
@@ -293,7 +295,7 @@ function TimeoutView({
   router: ReturnType<typeof useRouter>
 }) {
   return (
-    <View className="items-center w-full gap-4">
+    <View className="w-full items-center gap-4">
       <Clock size={80} color={colors.warning ?? colors.primary} />
 
       <AppText
@@ -307,7 +309,7 @@ function TimeoutView({
       <AppText raw variant="body" style={{ textAlign: 'center' }}>
         {t(
           'paymentStatus.timeout.message',
-          'Thanh toán đang được xử lý. Bạn sẽ nhận được thông báo khi hoàn tất.',
+          'Thanh toán đang được xử lý. Bạn sẽ nhận được thông báo khi hoàn tất.'
         )}
       </AppText>
 

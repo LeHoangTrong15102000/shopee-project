@@ -122,7 +122,9 @@ describe('Analytics Controller', () => {
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await expect(getChatbotOverview(req as Request, res as Response)).rejects.toThrow('Database error')
+      await expect(getChatbotOverview(req as Request, res as Response)).rejects.toThrow(
+        'Database error',
+      )
     })
   })
 
@@ -196,7 +198,9 @@ describe('Analytics Controller', () => {
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await expect(getChatbotPerformance(req as Request, res as Response)).rejects.toThrow('Aggregation error')
+      await expect(getChatbotPerformance(req as Request, res as Response)).rejects.toThrow(
+        'Aggregation error',
+      )
     })
   })
 

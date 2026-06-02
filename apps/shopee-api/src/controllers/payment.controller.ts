@@ -48,7 +48,7 @@ export const stripeWebhook = async (req: Request, res: Response): Promise<void> 
     return
   }
 
-  let paymentIntentId: string = ''
+  let paymentIntentId = ''
   let orderId: string | undefined
 
   let paymentStatus: string
@@ -82,14 +82,22 @@ export const stripeWebhook = async (req: Request, res: Response): Promise<void> 
       const charge = event.data.object as StripeCharge
       const refunds = charge.refunds?.data || []
       for (const refundObj of refunds) {
-        await handleStripeRefundUpdate(refundObj.id, refundObj.status ?? '', refundObj.failure_reason ?? undefined)
+        await handleStripeRefundUpdate(
+          refundObj.id,
+          refundObj.status ?? '',
+          refundObj.failure_reason ?? undefined,
+        )
       }
       res.status(200).json({ received: true })
       return
     }
     case 'refund.updated': {
       const refundObj = event.data.object as StripeRefund
-      await handleStripeRefundUpdate(refundObj.id, refundObj.status ?? '', refundObj.failure_reason ?? undefined)
+      await handleStripeRefundUpdate(
+        refundObj.id,
+        refundObj.status ?? '',
+        refundObj.failure_reason ?? undefined,
+      )
       res.status(200).json({ received: true })
       return
     }

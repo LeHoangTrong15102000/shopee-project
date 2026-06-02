@@ -1,4 +1,4 @@
-import { describe, it, expect} from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import AddressCard from '../AddressCard'
 import type { Address } from 'src/types/checkout.type'

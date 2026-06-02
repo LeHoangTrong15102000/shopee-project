@@ -17,25 +17,26 @@ interface TabIconProps {
 
 const TabIcon: React.FC<TabIconProps> = ({ name, color, size, badgeCount }) => {
   const colors = useColors()
-  const badge = badgeCount != null && badgeCount > 0 ? (
-    <View
-      style={{
-        position: 'absolute',
-        top: -4,
-        right: -6,
-        minWidth: 16,
-        height: 16,
-        borderRadius: 8,
-        backgroundColor: colors.primary,
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 3,
-      }}>
-      <Text style={{ color: colors.primaryForeground, fontSize: 9, fontWeight: 'bold' }}>
-        {badgeCount > 99 ? '99+' : badgeCount}
-      </Text>
-    </View>
-  ) : null
+  const badge =
+    badgeCount != null && badgeCount > 0 ? (
+      <View
+        style={{
+          position: 'absolute',
+          top: -4,
+          right: -6,
+          minWidth: 16,
+          height: 16,
+          borderRadius: 8,
+          backgroundColor: colors.primary,
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingHorizontal: 3,
+        }}>
+        <Text style={{ color: colors.primaryForeground, fontSize: 9, fontWeight: 'bold' }}>
+          {badgeCount > 99 ? '99+' : badgeCount}
+        </Text>
+      </View>
+    ) : null
 
   switch (name) {
     case 'home':
@@ -129,9 +130,11 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
                 color={iconColor}
                 size={24}
                 badgeCount={
-                  route.name === 'notifications' ? unreadCount
-                  : route.name === 'cart' ? cartCount
-                  : undefined
+                  route.name === 'notifications'
+                    ? unreadCount
+                    : route.name === 'cart'
+                      ? cartCount
+                      : undefined
                 }
               />
             </View>

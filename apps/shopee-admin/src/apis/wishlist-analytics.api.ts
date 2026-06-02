@@ -19,15 +19,12 @@ const wishlistAnalyticsApi = {
     ),
 
   getWishlistConversion: () =>
-    http.get<SuccessResponse<WishlistConversionResponse>>(
-      'admin/wishlist/analytics/conversion',
-    ),
+    http.get<SuccessResponse<WishlistConversionResponse>>('admin/wishlist/analytics/conversion'),
 
   getWishlistTrends: (period: WishlistPeriod = '30d') =>
-    http.get<SuccessResponse<WishlistTrendsResponse>>(
-      'admin/wishlist/analytics/trends',
-      { params: { period } },
-    ),
+    http.get<SuccessResponse<WishlistTrendsResponse>>('admin/wishlist/analytics/trends', {
+      params: { period },
+    }),
 }
 
 export default wishlistAnalyticsApi

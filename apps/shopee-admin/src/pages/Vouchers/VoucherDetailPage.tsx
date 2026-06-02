@@ -64,9 +64,7 @@ export default function VoucherDetailPage() {
                   <TableRow key={u._id}>
                     <TableCell>{typeof u.user === 'object' ? u.user.email : u.user}</TableCell>
                     <TableCell className="font-mono text-xs">{u.order.slice(-8)}</TableCell>
-                    <TableCell className="text-right">
-                      {formatPrice(u.discount_amount)}
-                    </TableCell>
+                    <TableCell className="text-right">{formatPrice(u.discount_amount)}</TableCell>
                     <TableCell>{format(new Date(u.createdAt), 'MMM d, yyyy')}</TableCell>
                   </TableRow>
                 ))}

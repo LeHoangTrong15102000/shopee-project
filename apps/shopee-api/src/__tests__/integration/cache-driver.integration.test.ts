@@ -33,10 +33,10 @@ describe('Cache factory — driver selection', () => {
       jest.doMock('@utils/logger', () => ({
         Logger: { apiError: jest.fn(), apiWarn: jest.fn(), apiInfo: jest.fn() },
       }))
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+
       const cacheModule = require('@utils/cache')
       cacheService = cacheModule.cacheService
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+
       IsolatedMemoryCacheService = require('@utils/cache/memory-cache.service').MemoryCacheService
     })
 
@@ -54,7 +54,7 @@ describe('Cache factory — driver selection', () => {
       jest.doMock('@utils/logger', () => ({
         Logger: { apiError: jest.fn(), apiWarn: jest.fn(), apiInfo: jest.fn() },
       }))
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+
       cacheService = require('@utils/cache').cacheService
     })
 
@@ -71,14 +71,12 @@ describe('Cache factory — driver selection', () => {
       jest.doMock('@utils/logger', () => ({
         Logger: { apiError: jest.fn(), apiWarn: warnMock, apiInfo: jest.fn() },
       }))
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+
       cacheService = require('@utils/cache').cacheService
     })
 
     expect((cacheService as object).constructor.name).toBe('MemoryCacheService')
-    expect(warnMock).toHaveBeenCalledWith(
-      expect.stringContaining('falling back to memory cache'),
-    )
+    expect(warnMock).toHaveBeenCalledWith(expect.stringContaining('falling back to memory cache'))
   })
 })
 

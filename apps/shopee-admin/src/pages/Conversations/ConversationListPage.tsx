@@ -54,9 +54,7 @@ export default function ConversationListPage() {
     {
       accessorKey: '_id',
       header: t('columns.id'),
-      cell: ({ row }) => (
-        <span className="font-mono text-xs">{row.original._id.slice(-8)}</span>
-      ),
+      cell: ({ row }) => <span className="font-mono text-xs">{row.original._id.slice(-8)}</span>,
     },
     {
       accessorKey: 'user',
@@ -115,11 +113,7 @@ export default function ConversationListPage() {
 
   const bulkActions = selectedConversations.length > 0 && (
     <div className="flex items-center gap-2">
-      <Button
-        variant="destructive"
-        size="sm"
-        onClick={() => setBulkDeleteOpen(true)}
-      >
+      <Button variant="destructive" size="sm" onClick={() => setBulkDeleteOpen(true)}>
         <Trash2 className="mr-1 size-4" />
         {t('bulk.deleteSelected', { count: selectedConversations.length })}
       </Button>
@@ -137,12 +131,18 @@ export default function ConversationListPage() {
         <Input
           placeholder={t('filter.userSearch')}
           value={userSearch}
-          onChange={(e) => { setUserSearch(e.target.value); setPage(1) }}
+          onChange={(e) => {
+            setUserSearch(e.target.value)
+            setPage(1)
+          }}
           className="w-60"
         />
         <Select
           value={status || 'all'}
-          onValueChange={(v) => { setStatus(v === 'all' || !v ? '' : v); setPage(1) }}
+          onValueChange={(v) => {
+            setStatus(v === 'all' || !v ? '' : v)
+            setPage(1)
+          }}
         >
           <SelectTrigger className="w-40">
             <SelectValue placeholder={t('filter.status')} />
@@ -157,7 +157,10 @@ export default function ConversationListPage() {
           type="date"
           placeholder={t('filter.dateFrom')}
           value={dateFrom}
-          onChange={(e) => { setDateFrom(e.target.value); setPage(1) }}
+          onChange={(e) => {
+            setDateFrom(e.target.value)
+            setPage(1)
+          }}
           className="w-40"
           title={t('filter.dateFrom')}
         />
@@ -165,7 +168,10 @@ export default function ConversationListPage() {
           type="date"
           placeholder={t('filter.dateTo')}
           value={dateTo}
-          onChange={(e) => { setDateTo(e.target.value); setPage(1) }}
+          onChange={(e) => {
+            setDateTo(e.target.value)
+            setPage(1)
+          }}
           className="w-40"
           title={t('filter.dateTo')}
         />

@@ -365,10 +365,12 @@ describe('VoucherListPage', () => {
     })
     await user.click(screen.getAllByLabelText('common:aria.actions')[0])
     await waitFor(() => {
-      const toggleItem = screen.queryByText('actions.deactivate') || screen.queryByText('actions.activate')
+      const toggleItem =
+        screen.queryByText('actions.deactivate') || screen.queryByText('actions.activate')
       expect(toggleItem).toBeInTheDocument()
     })
-    const toggleItem = screen.queryByText('actions.deactivate') || screen.queryByText('actions.activate')
+    const toggleItem =
+      screen.queryByText('actions.deactivate') || screen.queryByText('actions.activate')
     await user.click(toggleItem!)
   })
 })

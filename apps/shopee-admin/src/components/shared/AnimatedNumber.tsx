@@ -35,11 +35,7 @@ export function AnimatedNumber({ value, formatter, className }: AnimatedNumberPr
   }, [value, spring, prefersReducedMotion])
 
   if (prefersReducedMotion) {
-    return (
-      <span className={className}>
-        {formatter ? formatter(value) : String(value)}
-      </span>
-    )
+    return <span className={className}>{formatter ? formatter(value) : String(value)}</span>
   }
 
   return <span className={className}>{displayText}</span>

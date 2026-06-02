@@ -25,7 +25,13 @@ interface OrderTimelineProps {
   createdAt?: string
 }
 
-function StepList({ steps, colors }: { steps: TimelineStep[]; colors: ReturnType<typeof useColors> }) {
+function StepList({
+  steps,
+  colors,
+}: {
+  steps: TimelineStep[]
+  colors: ReturnType<typeof useColors>
+}) {
   const language = useAppStore((state) => state.language)
   const locale = language === 'vi' ? 'vi-VN' : 'en-US'
 
@@ -33,8 +39,10 @@ function StepList({ steps, colors }: { steps: TimelineStep[]; colors: ReturnType
     <View className="px-4 py-3">
       {steps.map((step, index) => {
         const iconBg = step.iconBg ?? (step.completed ? colors.primary : colors.neutrals800)
-        const connectorBg = step.connectorColor ?? (step.completed ? colors.primary : colors.neutrals800)
-        const textColor = step.textColor ?? (step.completed ? colors.foreground : colors.neutrals400)
+        const connectorBg =
+          step.connectorColor ?? (step.completed ? colors.primary : colors.neutrals800)
+        const textColor =
+          step.textColor ?? (step.completed ? colors.foreground : colors.neutrals400)
 
         return (
           <View key={index} className="flex-row gap-3">
@@ -145,27 +153,46 @@ export default function OrderTimeline({ status, createdAt }: OrderTimelineProps)
       label: t('orderTimeline.step.placed'),
       timestamp: createdAt,
       completed: currentIdx >= 0,
-      icon: <Clock size={16} color={currentIdx >= 0 ? colors.primaryForeground : colors.neutrals400} />,
+      icon: (
+        <Clock size={16} color={currentIdx >= 0 ? colors.primaryForeground : colors.neutrals400} />
+      ),
     },
     {
       label: t('orderTimeline.step.confirmed'),
       completed: currentIdx >= 1,
-      icon: <CheckCircle size={16} color={currentIdx >= 1 ? colors.primaryForeground : colors.neutrals400} />,
+      icon: (
+        <CheckCircle
+          size={16}
+          color={currentIdx >= 1 ? colors.primaryForeground : colors.neutrals400}
+        />
+      ),
     },
     {
       label: t('orderTimeline.step.processing'),
       completed: currentIdx >= 2,
-      icon: <Package size={16} color={currentIdx >= 2 ? colors.primaryForeground : colors.neutrals400} />,
+      icon: (
+        <Package
+          size={16}
+          color={currentIdx >= 2 ? colors.primaryForeground : colors.neutrals400}
+        />
+      ),
     },
     {
       label: t('orderTimeline.step.shipping'),
       completed: currentIdx >= 3,
-      icon: <Truck size={16} color={currentIdx >= 3 ? colors.primaryForeground : colors.neutrals400} />,
+      icon: (
+        <Truck size={16} color={currentIdx >= 3 ? colors.primaryForeground : colors.neutrals400} />
+      ),
     },
     {
       label: t('orderTimeline.step.delivered'),
       completed: currentIdx >= 4,
-      icon: <Package size={16} color={currentIdx >= 4 ? colors.primaryForeground : colors.neutrals400} />,
+      icon: (
+        <Package
+          size={16}
+          color={currentIdx >= 4 ? colors.primaryForeground : colors.neutrals400}
+        />
+      ),
     },
   ]
 

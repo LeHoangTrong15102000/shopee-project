@@ -263,7 +263,9 @@ export default function SettingsPage() {
                   <Label htmlFor="sound-toggle" className="text-sm font-medium">
                     {t('notifications.soundToggle')}
                   </Label>
-                  <p className="text-xs text-muted-foreground">{t('notifications.soundDescription')}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t('notifications.soundDescription')}
+                  </p>
                 </div>
                 <Switch
                   id="sound-toggle"
@@ -275,7 +277,9 @@ export default function SettingsPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="system">          <Card>
+        <TabsContent value="system">
+          {' '}
+          <Card>
             <CardHeader>
               <CardTitle>{t('system.title')}</CardTitle>
               <CardDescription>{t('system.description')}</CardDescription>

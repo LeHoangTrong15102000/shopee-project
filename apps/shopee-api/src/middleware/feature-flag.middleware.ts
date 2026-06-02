@@ -32,9 +32,7 @@ export function featureFlag(key: string) {
 
       const enabled = await featureFlagService.isEnabled(key, context)
       if (!enabled) {
-        res
-          .status(STATUS.FORBIDDEN)
-          .send({ message: `Feature '${key}' is not available` })
+        res.status(STATUS.FORBIDDEN).send({ message: `Feature '${key}' is not available` })
         return
       }
 

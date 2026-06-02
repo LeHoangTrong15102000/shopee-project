@@ -105,42 +105,47 @@ pending
 
 Full status list:
 
-| Status          | Description                                      |
-|-----------------|--------------------------------------------------|
-| `pending`       | Order created, awaiting payment initiation       |
-| `payment_pending` | Payment initiated, awaiting IPN callback       |
-| `payment_failed`  | Payment failed or timed out                    |
-| `confirmed`     | Payment succeeded, order confirmed               |
-| `processing`    | Order being prepared for shipment                |
-| `shipping`      | Order shipped                                    |
-| `delivered`     | Order delivered                                  |
-| `cancelled`     | Order cancelled                                  |
-| `returned`      | Order returned                                   |
+| Status            | Description                                |
+| ----------------- | ------------------------------------------ |
+| `pending`         | Order created, awaiting payment initiation |
+| `payment_pending` | Payment initiated, awaiting IPN callback   |
+| `payment_failed`  | Payment failed or timed out                |
+| `confirmed`       | Payment succeeded, order confirmed         |
+| `processing`      | Order being prepared for shipment          |
+| `shipping`        | Order shipped                              |
+| `delivered`       | Order delivered                            |
+| `cancelled`       | Order cancelled                            |
+| `returned`        | Order returned                             |
 
 ---
 
 ## Error Handling and Retry Logic
 
 ### IPN Signature Verification Failure
+
 - MoMo: HMAC-SHA256 signature checked against `MOMO_SECRET_KEY`
 - VNPay: HMAC-SHA512 signature checked against `VNPAY_HASH_SECRET`
 - On failure: HTTP 400 returned, payment not updated
 
 ### Amount Mismatch
+
 - IPN amount is compared against the stored order total
 - Tolerance: ±1 VND (floating-point rounding)
 - On mismatch: payment marked FAILED, warning logged
 
 ### Duplicate IPN Delivery
+
 - Idempotency check: if payment is already SUCCESS, IPN is silently ignored
 - Mongoose transaction used to prevent race conditions
 
 ### Retry Payment
+
 - `POST /orders/:id/retry-payment` creates a new payment attempt
 - Previous FAILED payment record is preserved for audit
 - Only allowed when latest payment is FAILED or PENDING with order in `payment_failed` state
 
 ### Reconciliation
+
 - `PaymentReconciliationJob` runs every `RECONCILIATION_INTERVAL_HOURS` hours (default 24)
 - Queries payments with status PENDING created more than 30 minutes ago
 - Calls provider `queryStatus()` and applies transitions
@@ -152,17 +157,17 @@ Full status list:
 
 All payment-related environment variables with their defaults:
 
-| Variable                       | Default                        | Description                                      |
-|-------------------------------|--------------------------------|--------------------------------------------------|
-| `MOMO_PARTNER_CODE`           | (required)                     | MoMo merchant partner code                      |
-| `MOMO_ACCESS_KEY`             | (required)                     | MoMo access key                                  |
-| `MOMO_SECRET_KEY`             | (required)                     | MoMo secret key for HMAC-SHA256 signature        |
-| `MOMO_ENDPOINT`               | `https://test-payment.momo.vn` | MoMo API base URL                                |
-| `MOMO_WHITELIST_IPS`          | `118.69.210.244,116.103.110.134` | Comma-separated MoMo IPN IP whitelist          |
-| `VNPAY_TMN_CODE`              | (required)                     | VNPay terminal merchant code                     |
-| `VNPAY_HASH_SECRET`           | (required)                     | VNPay hash secret for HMAC-SHA512 signature      |
-| `VNPAY_URL`                   | `https://sandbox.vnpayment.vn/paymentv2/vpcpay.html` | VNPay payment URL      |
-| `VNPAY_RETURN_URL`            | (derived from APP_BASE_URL)    | VNPay return URL after payment                   |
-| `APP_BASE_URL`                | `http://localhost:4000`        | Backend base URL (used for IPN URL construction) |
-| `FRONTEND_URL`                | `http://localhost:3000`        | Frontend base URL (used for return URL)          |
-| `RECONCILIATION_INTERVAL_HOURS` | `24`                         | Hours between reconciliation job runs            |
+| Variable                        | Default                                              | Description                                      |
+| ------------------------------- | ---------------------------------------------------- | ------------------------------------------------ |
+| `MOMO_PARTNER_CODE`             | (required)                                           | MoMo merchant partner code                       |
+| `MOMO_ACCESS_KEY`               | (required)                                           | MoMo access key                                  |
+| `MOMO_SECRET_KEY`               | (required)                                           | MoMo secret key for HMAC-SHA256 signature        |
+| `MOMO_ENDPOINT`                 | `https://test-payment.momo.vn`                       | MoMo API base URL                                |
+| `MOMO_WHITELIST_IPS`            | `118.69.210.244,116.103.110.134`                     | Comma-separated MoMo IPN IP whitelist            |
+| `VNPAY_TMN_CODE`                | (required)                                           | VNPay terminal merchant code                     |
+| `VNPAY_HASH_SECRET`             | (required)                                           | VNPay hash secret for HMAC-SHA512 signature      |
+| `VNPAY_URL`                     | `https://sandbox.vnpayment.vn/paymentv2/vpcpay.html` | VNPay payment URL                                |
+| `VNPAY_RETURN_URL`              | (derived from APP_BASE_URL)                          | VNPay return URL after payment                   |
+| `APP_BASE_URL`                  | `http://localhost:4000`                              | Backend base URL (used for IPN URL construction) |
+| `FRONTEND_URL`                  | `http://localhost:3000`                              | Frontend base URL (used for return URL)          |
+| `RECONCILIATION_INTERVAL_HOURS` | `24`                                                 | Hours between reconciliation job runs            |

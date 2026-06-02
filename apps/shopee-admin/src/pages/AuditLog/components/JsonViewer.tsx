@@ -31,9 +31,7 @@ function JsonNode({ label, data, depth, defaultExpanded }: JsonViewerProps & { l
   if (!isExpandable) {
     return (
       <div className="flex items-start gap-1 text-sm font-mono">
-        {label !== undefined && (
-          <span className="text-foreground/70 shrink-0">{label}:&nbsp;</span>
-        )}
+        {label !== undefined && <span className="text-foreground/70 shrink-0">{label}:&nbsp;</span>}
         <PrimitiveValue value={data} />
       </div>
     )
@@ -59,9 +57,7 @@ function JsonNode({ label, data, depth, defaultExpanded }: JsonViewerProps & { l
         ) : (
           <ChevronRight className="size-3 shrink-0" />
         )}
-        {label !== undefined && (
-          <span className="text-foreground/70">{label}:&nbsp;</span>
-        )}
+        {label !== undefined && <span className="text-foreground/70">{label}:&nbsp;</span>}
         <span className="text-foreground/50">{openBracket}</span>
         {!expanded && (
           <span className="text-foreground/40 text-xs ml-1">
@@ -90,11 +86,7 @@ function JsonNode({ label, data, depth, defaultExpanded }: JsonViewerProps & { l
 
 export function JsonViewer({ data, depth = 0, defaultExpanded = true }: JsonViewerProps) {
   if (data === null || data === undefined) {
-    return (
-      <div className="text-sm font-mono text-muted-foreground italic p-4">
-        No data
-      </div>
-    )
+    return <div className="text-sm font-mono text-muted-foreground italic p-4">No data</div>
   }
 
   return (

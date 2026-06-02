@@ -74,7 +74,9 @@ export class CleanupWorker {
       $or: [{ expiresAt: { $lt: now } }, { revokedAt: { $ne: null } }],
     })
 
-    Logger.apiInfo('[CleanupWorker] Expired sessions deleted', { deletedCount: result.deletedCount })
+    Logger.apiInfo('[CleanupWorker] Expired sessions deleted', {
+      deletedCount: result.deletedCount,
+    })
   }
 
   private async handleOldNotifications(_payload: CleanupJobPayload): Promise<void> {
@@ -86,6 +88,8 @@ export class CleanupWorker {
       createdAt: { $lt: cutoff },
     })
 
-    Logger.apiInfo('[CleanupWorker] Old notifications deleted', { deletedCount: result.deletedCount })
+    Logger.apiInfo('[CleanupWorker] Old notifications deleted', {
+      deletedCount: result.deletedCount,
+    })
   }
 }

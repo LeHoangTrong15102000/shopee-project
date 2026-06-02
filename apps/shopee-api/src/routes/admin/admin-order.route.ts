@@ -50,13 +50,17 @@ adminOrderRouter.put(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   validate(adminUpdateStatusSchema),
-  asyncHandler(withAuditLog(orderController.adminUpdateStatus, {
-    action: 'order.status_change',
-    resource: 'order',
-    getResourceId: (req) => req.params.id,
-    getBeforeSnapshot: async (req) => OrderModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
-    getAfterSnapshot: async (req) => OrderModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
-  })),
+  asyncHandler(
+    withAuditLog(orderController.adminUpdateStatus, {
+      action: 'order.status_change',
+      resource: 'order',
+      getResourceId: (req) => req.params.id,
+      getBeforeSnapshot: async (req) =>
+        OrderModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
+      getAfterSnapshot: async (req) =>
+        OrderModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
+    }),
+  ),
 )
 
 export default adminOrderRouter

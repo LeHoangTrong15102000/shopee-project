@@ -110,9 +110,7 @@ describe('AuditLogService', () => {
 
       await new Promise((r) => setImmediate(r))
 
-      expect(mockRepo.create).toHaveBeenCalledWith(
-        expect.objectContaining({ before, after, diff }),
-      )
+      expect(mockRepo.create).toHaveBeenCalledWith(expect.objectContaining({ before, after, diff }))
     })
   })
 
@@ -173,7 +171,7 @@ describe('withAuditLog HOF', () => {
       ...overrides,
     }) as any
 
-  const makeRes = () => ({} as any)
+  const makeRes = () => ({}) as any
 
   beforeEach(() => {
     jest.clearAllMocks()

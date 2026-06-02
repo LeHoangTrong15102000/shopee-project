@@ -1,17 +1,12 @@
 const CACHE_NAME = 'shopee-clone-v1'
 
-const STATIC_ASSETS = [
-  '/',
-  '/offline.html',
-  '/vite.svg',
-  '/manifest.json'
-]
+const STATIC_ASSETS = ['/', '/offline.html', '/vite.svg', '/manifest.json']
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(STATIC_ASSETS)
-    })
+    }),
   )
   self.skipWaiting()
 })
@@ -20,11 +15,9 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
+        cacheNames.filter((name) => name !== CACHE_NAME).map((name) => caches.delete(name)),
       )
-    })
+    }),
   )
   self.clients.claim()
 })
@@ -57,39 +50,45 @@ self.addEventListener('fetch', (event) => {
           return caches.match(request).then((cachedResponse) => {
             return cachedResponse || caches.match('/offline.html')
           })
-        })
+        }),
     )
     return
   }
 
-  const isStaticAsset = /\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/i.test(url.pathname)
+  const isStaticAsset = /\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/i.test(
+    url.pathname,
+  )
 
   if (isStaticAsset) {
     event.respondWith(
       caches.match(request).then((cachedResponse) => {
         if (cachedResponse) {
-          fetch(request).then((networkResponse) => {
-            if (networkResponse.ok) {
-              caches.open(CACHE_NAME).then((cache) => {
-                cache.put(request, networkResponse)
-              })
-            }
-          }).catch(() => {})
+          fetch(request)
+            .then((networkResponse) => {
+              if (networkResponse.ok) {
+                caches.open(CACHE_NAME).then((cache) => {
+                  cache.put(request, networkResponse)
+                })
+              }
+            })
+            .catch(() => {})
           return cachedResponse
         }
 
-        return fetch(request).then((networkResponse) => {
-          if (networkResponse.ok) {
-            const responseClone = networkResponse.clone()
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, responseClone)
-            })
-          }
-          return networkResponse
-        }).catch(() => {
-          return new Response('', { status: 404, statusText: 'Not Found' })
-        })
-      })
+        return fetch(request)
+          .then((networkResponse) => {
+            if (networkResponse.ok) {
+              const responseClone = networkResponse.clone()
+              caches.open(CACHE_NAME).then((cache) => {
+                cache.put(request, responseClone)
+              })
+            }
+            return networkResponse
+          })
+          .catch(() => {
+            return new Response('', { status: 404, statusText: 'Not Found' })
+          })
+      }),
     )
     return
   }
@@ -97,7 +96,6 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(request).catch(() => {
       return caches.match(request)
-    })
+    }),
   )
 })
-

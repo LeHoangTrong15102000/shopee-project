@@ -6,17 +6,21 @@
  */
 
 // ── Mock BullMQ Worker so no real Redis connection is made ──────────────────
-let capturedProcessor: ((job: { id: string; data: Record<string, unknown> }) => Promise<void>) | null = null
+let capturedProcessor:
+  | ((job: { id: string; data: Record<string, unknown> }) => Promise<void>)
+  | null = null
 
 const mockWorkerInstance = {
   on: jest.fn(),
 }
 
 jest.mock('bullmq', () => ({
-  Worker: jest.fn().mockImplementation((_queue: string, processor: Function) => {
-    capturedProcessor = processor as typeof capturedProcessor
-    return mockWorkerInstance
-  }),
+  Worker: jest
+    .fn()
+    .mockImplementation((_queue: string, processor: (...args: unknown[]) => unknown) => {
+      capturedProcessor = processor as typeof capturedProcessor
+      return mockWorkerInstance
+    }),
 }))
 
 // ── Mock worker connection helper ───────────────────────────────────────────
@@ -113,11 +117,13 @@ describe('SearchSyncWorker', () => {
       mockCategoryFindById.mockReturnValue({ lean: jest.fn().mockResolvedValue(sampleCategory) })
       mockUpsertProduct.mockResolvedValue(undefined)
 
-      await capturedProcessor!(makeJob({
-        entityType: 'product',
-        entityId: sampleProductId,
-        operation: 'index',
-      }))
+      await capturedProcessor!(
+        makeJob({
+          entityType: 'product',
+          entityId: sampleProductId,
+          operation: 'index',
+        }),
+      )
 
       expect(mockUpsertProduct).toHaveBeenCalledTimes(1)
       const doc = mockUpsertProduct.mock.calls[0][0]
@@ -135,11 +141,13 @@ describe('SearchSyncWorker', () => {
       mockCategoryFindById.mockReturnValue({ lean: jest.fn().mockResolvedValue(sampleCategory) })
       mockUpsertProduct.mockResolvedValue(undefined)
 
-      await capturedProcessor!(makeJob({
-        entityType: 'product',
-        entityId: sampleProductId,
-        operation: 'index',
-      }))
+      await capturedProcessor!(
+        makeJob({
+          entityType: 'product',
+          entityId: sampleProductId,
+          operation: 'index',
+        }),
+      )
 
       const doc = mockUpsertProduct.mock.calls[0][0]
       expect(doc.stock_status).toBe('out_of_stock')
@@ -148,11 +156,13 @@ describe('SearchSyncWorker', () => {
     it('skips upsert when product is not found', async () => {
       mockProductFindById.mockReturnValue({ lean: jest.fn().mockResolvedValue(null) })
 
-      await capturedProcessor!(makeJob({
-        entityType: 'product',
-        entityId: sampleProductId,
-        operation: 'index',
-      }))
+      await capturedProcessor!(
+        makeJob({
+          entityType: 'product',
+          entityId: sampleProductId,
+          operation: 'index',
+        }),
+      )
 
       expect(mockUpsertProduct).not.toHaveBeenCalled()
     })
@@ -162,11 +172,13 @@ describe('SearchSyncWorker', () => {
       mockCategoryFindById.mockReturnValue({ lean: jest.fn().mockResolvedValue(null) })
       mockUpsertProduct.mockResolvedValue(undefined)
 
-      await capturedProcessor!(makeJob({
-        entityType: 'product',
-        entityId: sampleProductId,
-        operation: 'index',
-      }))
+      await capturedProcessor!(
+        makeJob({
+          entityType: 'product',
+          entityId: sampleProductId,
+          operation: 'index',
+        }),
+      )
 
       const doc = mockUpsertProduct.mock.calls[0][0]
       expect(doc.category_name).toBe('')
@@ -177,11 +189,13 @@ describe('SearchSyncWorker', () => {
     it('calls deleteProduct with the entity ID', async () => {
       mockDeleteProduct.mockResolvedValue(undefined)
 
-      await capturedProcessor!(makeJob({
-        entityType: 'product',
-        entityId: sampleProductId,
-        operation: 'delete',
-      }))
+      await capturedProcessor!(
+        makeJob({
+          entityType: 'product',
+          entityId: sampleProductId,
+          operation: 'delete',
+        }),
+      )
 
       expect(mockDeleteProduct).toHaveBeenCalledWith(sampleProductId)
       expect(mockUpsertProduct).not.toHaveBeenCalled()
@@ -190,11 +204,13 @@ describe('SearchSyncWorker', () => {
 
   describe('unknown entityType', () => {
     it('skips processing for unknown entity types', async () => {
-      await capturedProcessor!(makeJob({
-        entityType: 'category',
-        entityId: 'cat-1',
-        operation: 'index',
-      }))
+      await capturedProcessor!(
+        makeJob({
+          entityType: 'category',
+          entityId: 'cat-1',
+          operation: 'index',
+        }),
+      )
 
       expect(mockUpsertProduct).not.toHaveBeenCalled()
       expect(mockDeleteProduct).not.toHaveBeenCalled()

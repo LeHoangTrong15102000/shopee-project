@@ -43,4 +43,7 @@ const PaymentMethodSchema = new Schema<IPaymentMethod>(
 
 PaymentMethodSchema.index({ is_active: 1, sort_order: 1 })
 
-export const PaymentMethodModel = mongoose.model<IPaymentMethod>('payment_methods', PaymentMethodSchema)
+export const PaymentMethodModel = mongoose.model<IPaymentMethod>(
+  'payment_methods',
+  PaymentMethodSchema,
+)

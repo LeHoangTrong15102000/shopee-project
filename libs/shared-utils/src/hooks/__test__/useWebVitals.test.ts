@@ -88,7 +88,9 @@ describe('useWebVitals', () => {
   })
 
   it('logs to console in dev mode when no reportFn provided', async () => {
-    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {
+      /* noop */
+    })
     const { useWebVitals } = await import('../useWebVitals')
     const { act } = require('react')
 

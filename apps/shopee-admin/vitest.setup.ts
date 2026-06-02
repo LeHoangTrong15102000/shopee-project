@@ -109,16 +109,33 @@ vi.mock('@tanstack/react-virtual', () => ({
 vi.mock('motion/react', async () => {
   const React = await import('react')
   const createMotionComponent = (tag: string) =>
-    React.forwardRef(({ children, ...props }: React.HTMLAttributes<HTMLElement> & { [key: string]: unknown }, ref: React.Ref<HTMLElement>) => {
-      // Strip motion-specific props before passing to DOM element
-      const {
-        initial: _i, animate: _a, exit: _e, transition: _t, variants: _v,
-        whileHover: _wh, whileTap: _wt, whileFocus: _wf, whileDrag: _wd,
-        whileInView: _wiv, layout: _l, layoutId: _lid, onAnimationStart: _oas,
-        onAnimationComplete: _oac, style: _style, ...domProps
-      } = props as Record<string, unknown>
-      return React.createElement(tag, { ...domProps, ref }, children)
-    })
+    React.forwardRef(
+      (
+        { children, ...props }: React.HTMLAttributes<HTMLElement> & { [key: string]: unknown },
+        ref: React.Ref<HTMLElement>,
+      ) => {
+        // Strip motion-specific props before passing to DOM element
+        const {
+          initial: _i,
+          animate: _a,
+          exit: _e,
+          transition: _t,
+          variants: _v,
+          whileHover: _wh,
+          whileTap: _wt,
+          whileFocus: _wf,
+          whileDrag: _wd,
+          whileInView: _wiv,
+          layout: _l,
+          layoutId: _lid,
+          onAnimationStart: _oas,
+          onAnimationComplete: _oac,
+          style: _style,
+          ...domProps
+        } = props as Record<string, unknown>
+        return React.createElement(tag, { ...domProps, ref }, children)
+      },
+    )
   const componentCache = new Map<string, ReturnType<typeof createMotionComponent>>()
   const motionProxy = new Proxy({} as Record<string, ReturnType<typeof createMotionComponent>>, {
     get: (_target, prop: string) => {
@@ -156,14 +173,16 @@ vi.mock('motion/react', async () => {
 
   return {
     motion: motionProxy,
-    AnimatePresence: ({ children }: { children: React.ReactNode }) => React.createElement(React.Fragment, null, children),
+    AnimatePresence: ({ children }: { children: React.ReactNode }) =>
+      React.createElement(React.Fragment, null, children),
     useReducedMotion: () => true,
     useSpring: (value: number) => createMotionValue(value),
     useTransform: (source: { get: () => unknown }, fnOrFrom: unknown, to?: unknown[]) => {
       // Handle both useTransform(mv, fn) and useTransform(mv, [from], [to]) forms
-      const fn = typeof fnOrFrom === 'function'
-        ? (fnOrFrom as (v: unknown) => unknown)
-        : (_v: unknown) => (to ? to[to.length - 1] : _v)
+      const fn =
+        typeof fnOrFrom === 'function'
+          ? (fnOrFrom as (v: unknown) => unknown)
+          : (_v: unknown) => (to ? to[to.length - 1] : _v)
       const initial = fn(source.get())
       const mv = createMotionValue(initial)
       // Subscribe to source changes
@@ -176,7 +195,8 @@ vi.mock('motion/react', async () => {
     useMotionValueEvent: (_mv: unknown, _event: string, _fn: unknown) => {
       // No-op in tests — AnimatedNumber initializes displayText with the correct value
     },
-    MotionConfig: ({ children }: { children: React.ReactNode }) => React.createElement(React.Fragment, null, children),
+    MotionConfig: ({ children }: { children: React.ReactNode }) =>
+      React.createElement(React.Fragment, null, children),
   }
 })
 

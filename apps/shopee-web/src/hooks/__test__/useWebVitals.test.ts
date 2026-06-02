@@ -82,7 +82,6 @@ describe('useWebVitals', () => {
 
   it('should pass handler function to each web vital metric', () => {
     renderHook(() => useWebVitals())
-
     ;[mockOnCLS, mockOnFCP, mockOnINP, mockOnLCP, mockOnTTFB].forEach((mockFn) => {
       expect(mockFn).toHaveBeenCalledWith(expect.any(Function))
     })

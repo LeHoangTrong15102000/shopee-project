@@ -170,4 +170,3 @@ export const registerConnectionHandlers = (socket: Socket): void => {
     handleError(socket, error)
   })
 }
-

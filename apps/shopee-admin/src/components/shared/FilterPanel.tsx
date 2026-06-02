@@ -24,11 +24,7 @@ export function FilterPanel({ onClear, children }: FilterPanelProps) {
           {tc('buttons.clearFilters')}
         </Button>
       </div>
-      {filtersOpen && (
-        <div className="rounded-lg border p-4">
-          {children}
-        </div>
-      )}
+      {filtersOpen && <div className="rounded-lg border p-4">{children}</div>}
     </>
   )
 }

@@ -24,7 +24,9 @@ function StatusTimeline({ status }: { status: string }) {
   const currentIndex = STATUS_ORDER.indexOf(status as (typeof STATUS_ORDER)[number])
 
   return (
-    <View className="flex-row items-center px-3 py-3" style={{ backgroundColor: colors.background }}>
+    <View
+      className="flex-row items-center px-3 py-3"
+      style={{ backgroundColor: colors.background }}>
       {TIMELINE_STEPS.map((step, index) => {
         const isDone = index <= currentIndex
         const isActive = index === currentIndex
@@ -92,7 +94,7 @@ export default function OrderTrackingScreen() {
         )}
 
         {isError && !tracking && (
-          <View className="flex-1 items-center justify-center px-4 gap-3">
+          <View className="flex-1 items-center justify-center gap-3 px-4">
             <AppText raw variant="body" color="muted" align="center">
               Không thể tải thông tin theo dõi
             </AppText>

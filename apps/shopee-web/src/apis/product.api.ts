@@ -39,13 +39,10 @@ const productApi = {
   },
 
   getSearchSuggestions: (params: { q: string }, options?: ApiOptions) => {
-    return http.get<SuccessResponseApi<SearchSuggestionsResponse>>(
-      'products/search/suggestions',
-      {
-        params,
-        signal: options?.signal,
-      },
-    )
+    return http.get<SuccessResponseApi<SearchSuggestionsResponse>>('products/search/suggestions', {
+      params,
+      signal: options?.signal,
+    })
   },
 
   getSearchHistory: (options?: ApiOptions) => {
@@ -65,12 +62,9 @@ const productApi = {
   },
 
   deleteSearchHistory: (options?: ApiOptions) => {
-    return http.delete<SuccessResponseApi<{ deleted_count: number }>>(
-      'products/search/history',
-      {
-        signal: options?.signal,
-      },
-    )
+    return http.delete<SuccessResponseApi<{ deleted_count: number }>>('products/search/history', {
+      signal: options?.signal,
+    })
   },
 
   deleteSearchHistoryItem: (keyword: string, options?: ApiOptions) => {
@@ -83,9 +77,7 @@ const productApi = {
   },
 
   getPriceHistory: (productId: string) => {
-    return http.get<SuccessResponseApi<PriceHistoryEntry[]>>(
-      `/products/${productId}/price-history`,
-    )
+    return http.get<SuccessResponseApi<PriceHistoryEntry[]>>(`/products/${productId}/price-history`)
   },
 }
 

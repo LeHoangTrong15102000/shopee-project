@@ -23,7 +23,11 @@ export default function SearchAnalyticsPage() {
   const navigate = useNavigate()
   const [period, setPeriod] = useState<SearchPeriod>('30d')
 
-  const { data: overview, isError: overviewError, refetch: refetchOverview } = useQuery({
+  const {
+    data: overview,
+    isError: overviewError,
+    refetch: refetchOverview,
+  } = useQuery({
     queryKey: ['search-analytics', 'overview', period],
     queryFn: () => searchAnalyticsApi.getOverview(period).then((r) => r.data.data),
   })
@@ -212,7 +216,10 @@ export default function SearchAnalyticsPage() {
                       <TrendingUp className="size-3.5 shrink-0 text-green-500" />
                       <span className="truncate text-sm font-medium">{item.keyword}</span>
                     </div>
-                    <Badge variant="outline" className="shrink-0 text-green-600 border-green-500 text-xs">
+                    <Badge
+                      variant="outline"
+                      className="shrink-0 text-green-600 border-green-500 text-xs"
+                    >
                       +{item.increase_percent.toFixed(0)}%
                     </Badge>
                   </div>
@@ -253,7 +260,9 @@ export default function SearchAnalyticsPage() {
                       variant="ghost"
                       size="sm"
                       className="h-6 px-2 text-xs text-primary"
-                      onClick={() => navigate(`/products/new?name=${encodeURIComponent(item.keyword)}`)}
+                      onClick={() =>
+                        navigate(`/products/new?name=${encodeURIComponent(item.keyword)}`)
+                      }
                     >
                       {t('zeroResults.createProduct')}
                     </Button>

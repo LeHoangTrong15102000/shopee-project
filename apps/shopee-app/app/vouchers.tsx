@@ -51,9 +51,18 @@ export default function VoucherScreen() {
   const { mutate: saveVoucher } = useSaveVoucher()
   const { mutate: lookupCode, isPending: isLookingUp } = useVoucherByCode()
 
-  const availableVouchers = (availableData?.data as unknown as { vouchers?: Voucher[] })?.vouchers ?? (availableData?.data as unknown as Voucher[]) ?? []
-  const personalizedVouchers = (personalizedData?.data as unknown as { vouchers?: Voucher[] })?.vouchers ?? (personalizedData?.data as unknown as Voucher[]) ?? []
-  const myVouchers = (myVouchersData?.data as unknown as { vouchers?: Voucher[] })?.vouchers ?? (myVouchersData?.data as unknown as Voucher[]) ?? []
+  const availableVouchers =
+    (availableData?.data as unknown as { vouchers?: Voucher[] })?.vouchers ??
+    (availableData?.data as unknown as Voucher[]) ??
+    []
+  const personalizedVouchers =
+    (personalizedData?.data as unknown as { vouchers?: Voucher[] })?.vouchers ??
+    (personalizedData?.data as unknown as Voucher[]) ??
+    []
+  const myVouchers =
+    (myVouchersData?.data as unknown as { vouchers?: Voucher[] })?.vouchers ??
+    (myVouchersData?.data as unknown as Voucher[]) ??
+    []
 
   const handleCollect = (id: string) => {
     setCollectingId(id)
@@ -103,7 +112,7 @@ export default function VoucherScreen() {
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
         {/* Tab chips */}
         <View
-          className="flex-row gap-2 px-4 py-3 border-b border-neutrals900"
+          className="flex-row gap-2 border-b border-neutrals900 px-4 py-3"
           style={{ backgroundColor: colors.background }}>
           {TABS.map((tab) => (
             <Chip
@@ -118,7 +127,7 @@ export default function VoucherScreen() {
 
         {/* Saved filter chips */}
         {activeTab === 'saved' && (
-          <View className="flex-row gap-2 px-4 py-2 border-b border-neutrals900">
+          <View className="flex-row gap-2 border-b border-neutrals900 px-4 py-2">
             {SAVED_FILTERS.map((f) => (
               <Chip
                 key={f.key}
@@ -132,15 +141,19 @@ export default function VoucherScreen() {
         )}
 
         {/* Code lookup input */}
-        <View className="px-4 py-3 border-b border-neutrals900">
-          <View className="flex-row items-center rounded-lg border overflow-hidden"
+        <View className="border-b border-neutrals900 px-4 py-3">
+          <View
+            className="flex-row items-center overflow-hidden rounded-lg border"
             style={{ borderColor: codeError ? colors.error : colors.neutrals900 }}>
             <TextInput
               value={codeInput}
-              onChangeText={(text) => { setCodeInput(text); setCodeError('') }}
+              onChangeText={(text) => {
+                setCodeInput(text)
+                setCodeError('')
+              }}
               placeholder={t('vouchers.code.placeholder')}
               placeholderTextColor={colors.neutrals600}
-              className="flex-1 px-3 py-3 font-sans-medium text-foreground bg-background"
+              className="flex-1 bg-background px-3 py-3 font-sans-medium text-foreground"
               autoCapitalize="characters"
             />
             <TouchableOpacity
@@ -155,7 +168,11 @@ export default function VoucherScreen() {
               {isLookingUp ? (
                 <ActivityIndicator size="small" color={colors.primaryForeground} />
               ) : (
-                <AppText raw variant="bodySmall" weight="semibold" style={{ color: colors.primaryForeground }}>
+                <AppText
+                  raw
+                  variant="bodySmall"
+                  weight="semibold"
+                  style={{ color: colors.primaryForeground }}>
                   {t('vouchers.code.lookup')}
                 </AppText>
               )}

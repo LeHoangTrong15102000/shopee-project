@@ -1,6 +1,7 @@
 import { io, Socket } from 'socket.io-client'
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL ?? import.meta.env.VITE_API_URL ?? 'http://localhost:4000'
+const SOCKET_URL =
+  import.meta.env.VITE_SOCKET_URL ?? import.meta.env.VITE_API_URL ?? 'http://localhost:4000'
 
 type EventCallback<T = unknown> = (data: T) => void
 
@@ -67,7 +68,9 @@ class SocketClient {
     return 'disconnected'
   }
 
-  onStatusChange(callback: (status: 'connected' | 'reconnecting' | 'disconnected') => void): () => void {
+  onStatusChange(
+    callback: (status: 'connected' | 'reconnecting' | 'disconnected') => void,
+  ): () => void {
     const onConnect = () => callback('connected')
     const onDisconnect = () => callback('disconnected')
     const onReconnecting = () => callback('reconnecting')

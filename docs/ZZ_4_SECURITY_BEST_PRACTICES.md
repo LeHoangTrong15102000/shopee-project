@@ -29,6 +29,7 @@
 **XSS** là lỗ hổng cho phép attacker inject malicious scripts vào web pages.
 
 **3 loại XSS:**
+
 - **Stored XSS**: Script được lưu trong database
 - **Reflected XSS**: Script trong URL parameters
 - **DOM-based XSS**: Script thực thi trong DOM
@@ -170,7 +171,7 @@ res.cookie('session', sessionId, {
   httpOnly: true,
   secure: true,
   sameSite: 'strict', // or 'lax'
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  maxAge: 24 * 60 * 60 * 1000, // 24 hours
 })
 ```
 
@@ -192,10 +193,10 @@ localStorage.setItem('access_token', token)
 ```typescript
 // Backend: Set httpOnly cookie
 res.cookie('access_token', token, {
-  httpOnly: true,  // Không thể access từ JavaScript
-  secure: true,    // Chỉ gửi qua HTTPS
+  httpOnly: true, // Không thể access từ JavaScript
+  secure: true, // Chỉ gửi qua HTTPS
   sameSite: 'strict',
-  maxAge: 15 * 60 * 1000 // 15 minutes
+  maxAge: 15 * 60 * 1000, // 15 minutes
 })
 ```
 
@@ -261,7 +262,9 @@ const isMatch = await bcrypt.compare(password, hashedPassword)
 
 ```typescript
 // src/utils/password.ts
-export const validatePasswordStrength = (password: string): {
+export const validatePasswordStrength = (
+  password: string,
+): {
   isValid: boolean
   errors: string[]
 } => {
@@ -289,7 +292,7 @@ export const validatePasswordStrength = (password: string): {
 
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   }
 }
 ```
@@ -324,7 +327,7 @@ ThrottlerModule.forRoot({
 export enum UserRole {
   ADMIN = 'admin',
   USER = 'user',
-  SELLER = 'seller'
+  SELLER = 'seller',
 }
 
 export interface User {
@@ -435,7 +438,7 @@ export const loginSchema = z.object({
   password: z
     .string()
     .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
-    .max(160, 'Mật khẩu tối đa 160 ký tự')
+    .max(160, 'Mật khẩu tối đa 160 ký tự'),
 })
 
 export type LoginFormData = z.infer<typeof loginSchema>
@@ -528,29 +531,31 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
   // Apply security headers
-  app.use(helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", 'data:', 'https:'],
-        connectSrc: ["'self'", 'https://api.example.com'],
-        fontSrc: ["'self'", 'https:', 'data:'],
-        objectSrc: ["'none'"],
-        mediaSrc: ["'self'"],
-        frameSrc: ["'none'"]
-      }
-    },
-    hsts: {
-      maxAge: 31536000,
-      includeSubDomains: true,
-      preload: true
-    },
-    noSniff: true,
-    xssFilter: true,
-    referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
-  }))
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'unsafe-inline'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", 'data:', 'https:'],
+          connectSrc: ["'self'", 'https://api.example.com'],
+          fontSrc: ["'self'", 'https:', 'data:'],
+          objectSrc: ["'none'"],
+          mediaSrc: ["'self'"],
+          frameSrc: ["'none'"],
+        },
+      },
+      hsts: {
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: true,
+      },
+      noSniff: true,
+      xssFilter: true,
+      referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+    }),
+  )
 
   await app.listen(3000)
 }
@@ -561,13 +566,10 @@ async function bootstrap() {
 ```typescript
 // src/main.ts
 app.enableCors({
-  origin: [
-    'http://localhost:4000',
-    'https://shop.lehoangtrong.online'
-  ],
+  origin: ['http://localhost:4000', 'https://shop.lehoangtrong.online'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
 })
 ```
 
@@ -671,10 +673,10 @@ npm install package@latest
 # .github/dependabot.yml
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     open-pull-requests-limit: 10
 ```
 
@@ -685,6 +687,7 @@ updates:
 ### 10.1. A01:2021 – Broken Access Control
 
 **Prevention:**
+
 - Implement proper authorization checks
 - Deny by default
 - Log access control failures
@@ -692,6 +695,7 @@ updates:
 ### 10.2. A02:2021 – Cryptographic Failures
 
 **Prevention:**
+
 - Use HTTPS everywhere
 - Encrypt sensitive data at rest
 - Use strong encryption algorithms
@@ -699,6 +703,7 @@ updates:
 ### 10.3. A03:2021 – Injection
 
 **Prevention:**
+
 - Use parameterized queries
 - Validate and sanitize input
 - Use ORM/ODM
@@ -706,6 +711,7 @@ updates:
 ### 10.4. A04:2021 – Insecure Design
 
 **Prevention:**
+
 - Threat modeling
 - Secure design patterns
 - Security requirements
@@ -713,6 +719,7 @@ updates:
 ### 10.5. A05:2021 – Security Misconfiguration
 
 **Prevention:**
+
 - Remove default accounts
 - Disable unnecessary features
 - Keep software updated
@@ -720,6 +727,7 @@ updates:
 ### 10.6. A06:2021 – Vulnerable Components
 
 **Prevention:**
+
 - Regular dependency audits
 - Use only trusted sources
 - Monitor for vulnerabilities
@@ -727,6 +735,7 @@ updates:
 ### 10.7. A07:2021 – Authentication Failures
 
 **Prevention:**
+
 - Multi-factor authentication
 - Strong password policies
 - Rate limiting
@@ -734,6 +743,7 @@ updates:
 ### 10.8. A08:2021 – Software and Data Integrity Failures
 
 **Prevention:**
+
 - Verify software signatures
 - Use CI/CD security
 - Integrity checks
@@ -741,6 +751,7 @@ updates:
 ### 10.9. A09:2021 – Security Logging Failures
 
 **Prevention:**
+
 - Log security events
 - Protect log data
 - Monitor logs
@@ -748,6 +759,7 @@ updates:
 ### 10.10. A10:2021 – Server-Side Request Forgery (SSRF)
 
 **Prevention:**
+
 - Validate URLs
 - Whitelist allowed domains
 - Network segmentation
@@ -757,6 +769,7 @@ updates:
 ## 11. SECURITY CHECKLIST
 
 ### ✅ Authentication & Authorization
+
 - [ ] Passwords hashed với bcrypt (saltRounds >= 12)
 - [ ] JWT tokens với short expiration (15 minutes)
 - [ ] Refresh tokens implemented
@@ -767,6 +780,7 @@ updates:
 - [ ] Permission-based access control
 
 ### ✅ Input Validation
+
 - [ ] Frontend validation với Zod
 - [ ] Backend validation với class-validator
 - [ ] Sanitize HTML content với DOMPurify
@@ -774,17 +788,20 @@ updates:
 - [ ] Escape user input in JSX
 
 ### ✅ XSS Prevention
+
 - [ ] Never use dangerouslySetInnerHTML without sanitization
 - [ ] Validate URL protocols
 - [ ] Avoid eval() and Function()
 - [ ] Content Security Policy configured
 
 ### ✅ CSRF Protection
+
 - [ ] CSRF tokens implemented
 - [ ] SameSite cookie attribute set
 - [ ] Verify origin header
 
 ### ✅ Secure Headers
+
 - [ ] Helmet.js configured
 - [ ] HSTS enabled
 - [ ] X-Content-Type-Options: nosniff
@@ -792,18 +809,21 @@ updates:
 - [ ] Referrer-Policy configured
 
 ### ✅ HTTPS & SSL/TLS
+
 - [ ] Force HTTPS in production
 - [ ] Valid SSL certificate
 - [ ] TLS 1.2+ only
 - [ ] Strong cipher suites
 
 ### ✅ Dependencies
+
 - [ ] Regular npm audit
 - [ ] Dependabot enabled
 - [ ] No known vulnerabilities
 - [ ] Dependencies up to date
 
 ### ✅ Logging & Monitoring
+
 - [ ] Log security events
 - [ ] Monitor for suspicious activity
 - [ ] Error tracking (Sentry)
@@ -814,6 +834,7 @@ updates:
 **Kết luận:**
 
 Security là một quá trình liên tục, không phải một lần setup xong. Hãy:
+
 - Regular security audits
 - Keep dependencies updated
 - Follow OWASP guidelines
@@ -821,6 +842,7 @@ Security là một quá trình liên tục, không phải một lần setup xong
 - Implement defense in depth
 
 **Tài liệu tham khảo:**
+
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/)
 - [MDN Web Security](https://developer.mozilla.org/en-US/docs/Web/Security)

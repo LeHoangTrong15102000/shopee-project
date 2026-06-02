@@ -75,10 +75,7 @@ export async function initiateEWalletFlow({
       if (canOpen) {
         await Linking.openURL(payment_url)
       } else {
-        showError(
-          'Không thể mở ứng dụng thanh toán',
-          'Vui lòng chọn phương thức thanh toán khác.',
-        )
+        showError('Không thể mở ứng dụng thanh toán', 'Vui lòng chọn phương thức thanh toán khác.')
       }
     }
 

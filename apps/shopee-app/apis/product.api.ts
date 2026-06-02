@@ -17,7 +17,9 @@ interface GetProductsParams {
 
 // ─── Product API ──────────────────────────────────────────────────────────────
 
-export async function getProducts(params: GetProductsParams): Promise<{ products: Product[]; pagination: ProductListResponse['data']['pagination'] }> {
+export async function getProducts(
+  params: GetProductsParams
+): Promise<{ products: Product[]; pagination: ProductListResponse['data']['pagination'] }> {
   const queryParams: Record<string, string> = {
     page: String(params.page),
     limit: String(params.limit),

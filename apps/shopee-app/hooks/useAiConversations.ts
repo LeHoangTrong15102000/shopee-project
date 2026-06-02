@@ -53,16 +53,19 @@ export function useSendMessage(conversationId: string) {
     onMutate: async (message: string) => {
       await queryClient.cancelQueries({ queryKey: conversationKeys.detail(conversationId) })
       const previous = queryClient.getQueryData(conversationKeys.detail(conversationId))
-      queryClient.setQueryData(conversationKeys.detail(conversationId), (old: { messages: Message[] } | undefined) => {
-        if (!old) return old
-        const optimisticMessage: Message = {
-          _id: `optimistic-${Date.now()}`,
-          role: 'user',
-          content: message,
-          createdAt: new Date().toISOString(),
+      queryClient.setQueryData(
+        conversationKeys.detail(conversationId),
+        (old: { messages: Message[] } | undefined) => {
+          if (!old) return old
+          const optimisticMessage: Message = {
+            _id: `optimistic-${Date.now()}`,
+            role: 'user',
+            content: message,
+            createdAt: new Date().toISOString(),
+          }
+          return { ...old, messages: [...old.messages, optimisticMessage] }
         }
-        return { ...old, messages: [...old.messages, optimisticMessage] }
-      })
+      )
       return { previous }
     },
     onError: (err, _message, context) => {

@@ -38,7 +38,9 @@ describe('shop-chat.handler', () => {
 
   describe('shop_chat:join', () => {
     it('joins room when conversation belongs to user', async () => {
-      const socket = createMockSocket({ user: { id: USER_ID, email: 'test@test.com', roles: ['User'] } }) as any
+      const socket = createMockSocket({
+        user: { id: USER_ID, email: 'test@test.com', roles: ['User'] },
+      }) as any
       registerShopChatHandlers(socket)
 
       mockConvFindById.mockResolvedValue({
@@ -53,7 +55,9 @@ describe('shop-chat.handler', () => {
     })
 
     it('does not join room when conversation belongs to different user', async () => {
-      const socket = createMockSocket({ user: { id: USER_ID, email: 'test@test.com', roles: ['User'] } }) as any
+      const socket = createMockSocket({
+        user: { id: USER_ID, email: 'test@test.com', roles: ['User'] },
+      }) as any
       registerShopChatHandlers(socket)
 
       mockConvFindById.mockResolvedValue({
@@ -114,7 +118,9 @@ describe('shop-chat.handler', () => {
 
   describe('typing indicator', () => {
     it('broadcasts typing event to room using socket.to().emit pattern', () => {
-      const socket = createMockSocket({ user: { id: USER_ID, email: 'test@test.com', roles: ['User'] } }) as any
+      const socket = createMockSocket({
+        user: { id: USER_ID, email: 'test@test.com', roles: ['User'] },
+      }) as any
       registerShopChatHandlers(socket)
 
       const typingHandler = socket.on.mock.calls.find((c: any) => c[0] === 'typing')[1]

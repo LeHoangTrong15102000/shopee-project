@@ -13,9 +13,7 @@ jest.mock('@/hooks/useColors', () => ({
 
 describe('OrderTabs', () => {
   it('renders all tab labels', () => {
-    const { getByText } = render(
-      <OrderTabs activeTab="all" onTabChange={jest.fn()} />
-    )
+    const { getByText } = render(<OrderTabs activeTab="all" onTabChange={jest.fn()} />)
     expect(getByText('All')).toBeTruthy()
     expect(getByText('Pending')).toBeTruthy()
     expect(getByText('Shipping')).toBeTruthy()
@@ -25,26 +23,20 @@ describe('OrderTabs', () => {
 
   it('calls onTabChange with the correct tab value when a tab is pressed', () => {
     const onTabChange = jest.fn()
-    const { getByText } = render(
-      <OrderTabs activeTab="all" onTabChange={onTabChange} />
-    )
+    const { getByText } = render(<OrderTabs activeTab="all" onTabChange={onTabChange} />)
     fireEvent.press(getByText('Pending'))
     expect(onTabChange).toHaveBeenCalledWith('pending')
   })
 
   it('calls onTabChange with shipping when shipping tab is pressed', () => {
     const onTabChange = jest.fn()
-    const { getByText } = render(
-      <OrderTabs activeTab="all" onTabChange={onTabChange} />
-    )
+    const { getByText } = render(<OrderTabs activeTab="all" onTabChange={onTabChange} />)
     fireEvent.press(getByText('Shipping'))
     expect(onTabChange).toHaveBeenCalledWith('shipping')
   })
 
   it('visually distinguishes the active tab from inactive tabs', () => {
-    const { getByText } = render(
-      <OrderTabs activeTab="pending" onTabChange={jest.fn()} />
-    )
+    const { getByText } = render(<OrderTabs activeTab="pending" onTabChange={jest.fn()} />)
     const activeTabText = getByText('Pending')
     const inactiveTabText = getByText('All')
     // Active tab uses primary color; inactive tabs use neutrals300

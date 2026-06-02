@@ -6,8 +6,7 @@ const auditLogApi = {
   getList: (params?: AuditLogListParams) =>
     http.get<SuccessResponse<AuditLogListResponse>>('admin/audit-logs', { params }),
 
-  getDetail: (id: string) =>
-    http.get<SuccessResponse<AuditLogDetail>>(`admin/audit-logs/${id}`),
+  getDetail: (id: string) => http.get<SuccessResponse<AuditLogDetail>>(`admin/audit-logs/${id}`),
 }
 
 export default auditLogApi

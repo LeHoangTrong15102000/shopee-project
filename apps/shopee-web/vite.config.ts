@@ -39,9 +39,7 @@ export default defineConfig(({ mode }) => {
   const domainInjectPlugin: Plugin = {
     name: 'shopee-domain-inject',
     transformIndexHtml(html: string): string {
-      return html
-        .replaceAll('%API_ORIGIN%', API_ORIGIN)
-        .replaceAll('%SITE_URL%', SITE_URL)
+      return html.replaceAll('%API_ORIGIN%', API_ORIGIN).replaceAll('%SITE_URL%', SITE_URL)
     },
     closeBundle(): void {
       const distDir = path.resolve(__dirname, 'dist')

@@ -16,7 +16,9 @@ import { Logger } from '@utils/logger'
 const RECENTLY_VIEWED_CAP = 50
 
 // Lazy service resolution to avoid circular deps
-let _recommendationService: import('@services/recommendation.service').RecommendationService | null = null
+let _recommendationService:
+  | import('@services/recommendation.service').RecommendationService
+  | null = null
 
 function getRecommendationService() {
   if (!_recommendationService) {
@@ -128,8 +130,7 @@ const getRecentlyViewed = async (req: Request, res: Response): Promise<void> => 
   // Batch-fetch from MongoDB, omit deleted products
   const products = await ProductModel.find({
     _id: { $in: productIds },
-  })
-    .lean()
+  }).lean()
 
   // Preserve the Redis order (newest first)
   const productMap = new Map(products.map((p) => [p._id.toString(), p]))

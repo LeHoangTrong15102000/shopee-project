@@ -130,7 +130,10 @@ describe('VouchersPage', () => {
     const React = await import('react')
 
     const queryClient = new QueryClient({
-      defaultOptions: { queries: { retry: false, staleTime: 0, gcTime: 0 }, mutations: { retry: false } },
+      defaultOptions: {
+        queries: { retry: false, staleTime: 0, gcTime: 0 },
+        mutations: { retry: false },
+      },
     })
 
     render(
@@ -142,7 +145,15 @@ describe('VouchersPage', () => {
           null,
           React.createElement(
             AppContext.Provider,
-            { value: { isAuthenticated: true, setIsAuthenticated: vi.fn(), profile: null, setProfile: vi.fn(), reset: vi.fn() } },
+            {
+              value: {
+                isAuthenticated: true,
+                setIsAuthenticated: vi.fn(),
+                profile: null,
+                setProfile: vi.fn(),
+                reset: vi.fn(),
+              },
+            },
             React.createElement(VouchersPage),
           ),
         ),

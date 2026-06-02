@@ -18,8 +18,7 @@ const authApi = {
     await http.post('auth/forgot-password', { email })
   },
 
-  googleLogin: (body: { id_token: string }) =>
-    http.post<AuthResponse>('auth/google', body),
+  googleLogin: (body: { id_token: string }) => http.post<AuthResponse>('auth/google', body),
 }
 
 export default authApi

@@ -15,7 +15,12 @@ jest.mock('@services/shop.service', () => ({
   })),
 }))
 
-import { getShop, getShopProducts, followShop, unfollowShop } from '../../controllers/shop.controller'
+import {
+  getShop,
+  getShopProducts,
+  followShop,
+  unfollowShop,
+} from '../../controllers/shop.controller'
 
 const createMockRequest = (options: any = {}): Partial<Request> => ({
   body: options.body || {},

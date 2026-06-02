@@ -13,7 +13,9 @@ export class AnalyticsAggregationJob {
    * Runs daily at 01:00 UTC using a cron expression.
    */
   async start(): Promise<void> {
-    Logger.apiInfo('[AnalyticsAggregationJob] Registering BullMQ repeatable job (daily at 01:00 UTC)')
+    Logger.apiInfo(
+      '[AnalyticsAggregationJob] Registering BullMQ repeatable job (daily at 01:00 UTC)',
+    )
 
     await analyticsAggregationQueue.add(
       'analytics-aggregation',

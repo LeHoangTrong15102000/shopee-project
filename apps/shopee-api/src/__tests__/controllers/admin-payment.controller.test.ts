@@ -35,11 +35,13 @@ const mockOrderModel = OrderModel as jest.Mocked<typeof OrderModel>
 
 // ─── Request / Response helpers ───────────────────────────────────────────────
 
-const createMockRequest = (options: {
-  body?: any
-  params?: Record<string, string>
-  query?: Record<string, string>
-} = {}): Partial<Request> => ({
+const createMockRequest = (
+  options: {
+    body?: any
+    params?: Record<string, string>
+    query?: Record<string, string>
+  } = {},
+): Partial<Request> => ({
   body: options.body || {},
   params: options.params || {},
   query: options.query || {},
@@ -73,7 +75,10 @@ describe('admin-payment.controller', () => {
 
   describe('adminGetPaymentMethods', () => {
     it('returns 200 with sorted list of payment methods', async () => {
-      const methods = [makeMethod({ sort_order: 0 }), makeMethod({ sort_order: 1, type: 'bank_transfer' })]
+      const methods = [
+        makeMethod({ sort_order: 0 }),
+        makeMethod({ sort_order: 1, type: 'bank_transfer' }),
+      ]
       const mockLean = jest.fn().mockResolvedValue(methods)
       const mockSort = jest.fn().mockReturnValue({ lean: mockLean })
       ;(mockPaymentMethodModel.find as jest.Mock).mockReturnValue({ sort: mockSort })
@@ -86,19 +91,21 @@ describe('admin-payment.controller', () => {
       expect(mockPaymentMethodModel.find).toHaveBeenCalled()
       expect(mockSort).toHaveBeenCalledWith({ sort_order: 1 })
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.send).toHaveBeenCalledWith(
-        expect.objectContaining({ data: methods }),
-      )
+      expect(res.send).toHaveBeenCalledWith(expect.objectContaining({ data: methods }))
     })
 
     it('propagates error when find throws', async () => {
-      const mockSort = jest.fn().mockReturnValue({ lean: jest.fn().mockRejectedValue(new Error('DB error')) })
+      const mockSort = jest
+        .fn()
+        .mockReturnValue({ lean: jest.fn().mockRejectedValue(new Error('DB error')) })
       ;(mockPaymentMethodModel.find as jest.Mock).mockReturnValue({ sort: mockSort })
 
       const req = createMockRequest()
       const res = createMockResponse()
 
-      await expect(adminGetPaymentMethods(req as Request, res as Response)).rejects.toThrow('DB error')
+      await expect(adminGetPaymentMethods(req as Request, res as Response)).rejects.toThrow(
+        'DB error',
+      )
     })
   })
 
@@ -117,9 +124,7 @@ describe('admin-payment.controller', () => {
 
       expect(mockPaymentMethodModel.findById).toHaveBeenCalledWith(method._id)
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.send).toHaveBeenCalledWith(
-        expect.objectContaining({ data: method }),
-      )
+      expect(res.send).toHaveBeenCalledWith(expect.objectContaining({ data: method }))
     })
 
     it('throws ErrorHandler 404 when method not found', async () => {
@@ -129,7 +134,9 @@ describe('admin-payment.controller', () => {
       const req = createMockRequest({ params: { id: '507f1f77bcf86cd799439011' } })
       const res = createMockResponse()
 
-      await expect(adminGetPaymentMethodById(req as Request, res as Response)).rejects.toMatchObject({
+      await expect(
+        adminGetPaymentMethodById(req as Request, res as Response),
+      ).rejects.toMatchObject({
         status: 404,
       })
     })
@@ -150,18 +157,20 @@ describe('admin-payment.controller', () => {
 
       expect(mockPaymentMethodModel.create).toHaveBeenCalledWith(body)
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.send).toHaveBeenCalledWith(
-        expect.objectContaining({ data: created }),
-      )
+      expect(res.send).toHaveBeenCalledWith(expect.objectContaining({ data: created }))
     })
 
     it('propagates error when create rejects', async () => {
-      ;(mockPaymentMethodModel.create as jest.Mock).mockRejectedValue(new Error('Validation failed'))
+      ;(mockPaymentMethodModel.create as jest.Mock).mockRejectedValue(
+        new Error('Validation failed'),
+      )
 
       const req = createMockRequest({ body: { name: 'X', type: 'cod' } })
       const res = createMockResponse()
 
-      await expect(adminCreatePaymentMethod(req as Request, res as Response)).rejects.toThrow('Validation failed')
+      await expect(adminCreatePaymentMethod(req as Request, res as Response)).rejects.toThrow(
+        'Validation failed',
+      )
     })
   })
 
@@ -187,9 +196,7 @@ describe('admin-payment.controller', () => {
         { new: true, runValidators: true },
       )
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.send).toHaveBeenCalledWith(
-        expect.objectContaining({ data: updated }),
-      )
+      expect(res.send).toHaveBeenCalledWith(expect.objectContaining({ data: updated }))
     })
 
     it('throws ErrorHandler 404 when method not found', async () => {
@@ -202,9 +209,11 @@ describe('admin-payment.controller', () => {
       })
       const res = createMockResponse()
 
-      await expect(adminUpdatePaymentMethod(req as Request, res as Response)).rejects.toMatchObject({
-        status: 404,
-      })
+      await expect(adminUpdatePaymentMethod(req as Request, res as Response)).rejects.toMatchObject(
+        {
+          status: 404,
+        },
+      )
     })
   })
 
@@ -218,9 +227,11 @@ describe('admin-payment.controller', () => {
       const req = createMockRequest({ params: { id: '507f1f77bcf86cd799439011' } })
       const res = createMockResponse()
 
-      await expect(adminDeletePaymentMethod(req as Request, res as Response)).rejects.toMatchObject({
-        status: 404,
-      })
+      await expect(adminDeletePaymentMethod(req as Request, res as Response)).rejects.toMatchObject(
+        {
+          status: 404,
+        },
+      )
     })
 
     it('throws ErrorHandler 400 when method is referenced by orders', async () => {
@@ -232,9 +243,11 @@ describe('admin-payment.controller', () => {
       const req = createMockRequest({ params: { id: method._id } })
       const res = createMockResponse()
 
-      await expect(adminDeletePaymentMethod(req as Request, res as Response)).rejects.toMatchObject({
-        status: 400,
-      })
+      await expect(adminDeletePaymentMethod(req as Request, res as Response)).rejects.toMatchObject(
+        {
+          status: 400,
+        },
+      )
       expect(mockOrderModel.countDocuments).toHaveBeenCalledWith({ payment_method: 'cod' })
       expect(mockPaymentMethodModel.findByIdAndDelete).not.toHaveBeenCalled()
     })
@@ -295,9 +308,11 @@ describe('admin-payment.controller', () => {
       const req = createMockRequest({ params: { id: '507f1f77bcf86cd799439011' } })
       const res = createMockResponse()
 
-      await expect(adminTogglePaymentMethod(req as Request, res as Response)).rejects.toMatchObject({
-        status: 404,
-      })
+      await expect(adminTogglePaymentMethod(req as Request, res as Response)).rejects.toMatchObject(
+        {
+          status: 404,
+        },
+      )
     })
   })
 

@@ -27,8 +27,7 @@ vi.mock('src/utils/utils', () => ({
     return String(n)
   },
   formatCurrency: (n: number) => n.toLocaleString('vi-VN'),
-  rateSale: (original: number, sale: number) =>
-    -Math.round(((original - sale) / original) * 100),
+  rateSale: (original: number, sale: number) => -Math.round(((original - sale) / original) * 100),
   generateNameId: (name: string, id: string) => `${name}-i.${id}`,
   getIdFromNameId: (nameId: string) => nameId.split('-i.').at(-1) ?? '',
   isAxiosError: (error: unknown) => false,

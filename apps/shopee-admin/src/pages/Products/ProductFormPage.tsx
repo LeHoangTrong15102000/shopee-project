@@ -123,12 +123,21 @@ export default function ProductFormPage() {
               <Input
                 id="product-price-before"
                 type="number"
-                {...register('price_before_discount', { setValueAs: (v: string) => { const n = parseFloat(v); return isNaN(n) ? undefined : n } })}
+                {...register('price_before_discount', {
+                  setValueAs: (v: string) => {
+                    const n = parseFloat(v)
+                    return isNaN(n) ? undefined : n
+                  },
+                })}
               />
             </div>
             <div>
               <Label htmlFor="product-quantity">{t('form.quantity')}</Label>
-              <Input id="product-quantity" type="number" {...register('quantity', { valueAsNumber: true })} />
+              <Input
+                id="product-quantity"
+                type="number"
+                {...register('quantity', { valueAsNumber: true })}
+              />
             </div>
             <div>
               <Label htmlFor="product-category">{t('form.category')}</Label>

@@ -120,7 +120,12 @@ export default function ReviewSection({
       ) : (
         <>
           {reviews.map((review) => (
-            <ReviewCard key={review._id} review={review} productId={productId} onToggleLike={onToggleLike} />
+            <ReviewCard
+              key={review._id}
+              review={review}
+              productId={productId}
+              onToggleLike={onToggleLike}
+            />
           ))}
           {hasNextPage && (
             <AppButton variant="ghost" size="sm" onPress={onLoadMore}>

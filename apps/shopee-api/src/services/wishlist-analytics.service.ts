@@ -45,7 +45,9 @@ function periodToDays(period: string): number | null {
 }
 
 export class WishlistAnalyticsService {
-  async getTopProducts(period: string): Promise<{ products: TopWishlistedProduct[]; total: number }> {
+  async getTopProducts(
+    period: string,
+  ): Promise<{ products: TopWishlistedProduct[]; total: number }> {
     const days = periodToDays(period)
     const matchStage: Record<string, unknown> = {}
     if (days !== null) {
@@ -90,10 +92,7 @@ export class WishlistAnalyticsService {
     ]
 
     // Count total wishlist entries across all products (not just top 30)
-    const totalPipeline: mongoose.PipelineStage[] = [
-      ...baseMatch,
-      { $count: 'total' },
-    ]
+    const totalPipeline: mongoose.PipelineStage[] = [...baseMatch, { $count: 'total' }]
 
     const [results, totalResult] = await Promise.all([
       WishlistModel.aggregate(pipeline),

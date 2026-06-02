@@ -35,9 +35,7 @@ async function importToMongoDB() {
 
     // Insert tất cả sản phẩm mới
     const result = await collection.insertMany(transformedProducts)
-    console.log(
-      `✅ Đã import thành công ${result.insertedCount} sản phẩm vào MongoDB!`
-    )
+    console.log(`✅ Đã import thành công ${result.insertedCount} sản phẩm vào MongoDB!`)
 
     // Hiển thị thống kê
     const productsWithLocation = await collection.countDocuments({
@@ -82,11 +80,9 @@ async function main() {
     console.error('❌ Lỗi trong quá trình thực thi:', error)
 
     if (error.code === 'ECONNREFUSED') {
+      console.log('\n💡 Gợi ý: Hãy chắc chắn rằng MongoDB đang chạy trên localhost:27017')
       console.log(
-        '\n💡 Gợi ý: Hãy chắc chắn rằng MongoDB đang chạy trên localhost:27017'
-      )
-      console.log(
-        '   Hoặc cập nhật connection string trong file này nếu MongoDB chạy ở địa chỉ khác'
+        '   Hoặc cập nhật connection string trong file này nếu MongoDB chạy ở địa chỉ khác',
       )
     }
 

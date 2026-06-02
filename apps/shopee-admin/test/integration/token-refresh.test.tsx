@@ -57,4 +57,3 @@ describe('Token Refresh Integration', () => {
     expect(result.current.isError).toBe(true)
   })
 })
-

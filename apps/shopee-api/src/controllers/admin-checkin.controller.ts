@@ -40,11 +40,7 @@ export const adminGetCheckinStats = async (_req: Request, res: Response) => {
 
   const [total_today, recentActivity] = await Promise.all([
     CheckInModel.countDocuments({ date: today }),
-    CheckInModel.find()
-      .sort({ created_at: -1 })
-      .limit(10)
-      .populate('user_id', 'name email')
-      .lean(),
+    CheckInModel.find().sort({ created_at: -1 }).limit(10).populate('user_id', 'name email').lean(),
   ])
 
   // Active streaks = users who checked in today or yesterday

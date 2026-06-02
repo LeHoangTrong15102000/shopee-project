@@ -127,11 +127,7 @@ export default function ProfileEditScreen() {
     )
   })
 
-  const avatarSource = avatarUri
-    ? { uri: avatarUri }
-    : user?.avatar
-      ? { uri: user.avatar }
-      : null
+  const avatarSource = avatarUri ? { uri: avatarUri } : user?.avatar ? { uri: user.avatar } : null
 
   const displayInitial = (user?.name || user?.email || 'U').charAt(0).toUpperCase()
 
@@ -144,152 +140,155 @@ export default function ProfileEditScreen() {
         }}
       />
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ padding: 16 }}>
-          {/* Avatar */}
-          <View className="mb-6 items-center">
-            <TouchableOpacity onPress={handlePickAvatar} disabled={isUploadingAvatar}>
-              <View style={{ position: 'relative' }}>
-                {avatarSource ? (
-                  <AppImage
-                    source={avatarSource}
-                    style={{ width: 96, height: 96, borderRadius: 48 }}
-                    contentFit="cover"
-                  />
-                ) : (
-                  <View
-                    style={{
-                      width: 96,
-                      height: 96,
-                      borderRadius: 48,
-                      backgroundColor: colors.primary,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
-                    <AppText raw variant="heading1" style={{ color: colors.primaryForeground }}>
-                      {displayInitial}
-                    </AppText>
-                  </View>
-                )}
-                {isUploadingAvatar ? (
-                  <View
-                    style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      right: 0,
-                      width: 32,
-                      height: 32,
-                      borderRadius: 16,
-                      backgroundColor: colors.neutrals800,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
-                    <ActivityIndicator size="small" color={colors.primary} />
-                  </View>
-                ) : (
-                  <View
-                    style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      right: 0,
-                      width: 32,
-                      height: 32,
-                      borderRadius: 16,
-                      backgroundColor: colors.primary,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
-                    <Camera size={16} color={colors.primaryForeground} />
-                  </View>
-                )}
-              </View>
-            </TouchableOpacity>
-            <AppText raw variant="bodySmall" color="muted" style={{ marginTop: 8 }}>
-              {t('profileEdit.avatar.hint')}
-            </AppText>
-          </View>
-
-          {/* Form Fields */}
-          <View className="gap-4">
-            <AppInput
-              label={t('profileEdit.field.nameLabel')}
-              placeholder={t('profileEdit.field.namePlaceholder')}
-              required
-              errorText={formState.errors.name?.message}
-              {...register('name')}
-            />
-
-            <AppInput
-              label={t('profileEdit.field.phoneLabel')}
-              placeholder={t('profileEdit.field.phonePlaceholder')}
-              keyboardType="phone-pad"
-              errorText={formState.errors.phone?.message}
-              {...register('phone')}
-            />
-
-            <AppInput
-              label={t('profileEdit.field.addressLabel')}
-              placeholder={t('profileEdit.field.addressPlaceholder')}
-              errorText={formState.errors.address?.message}
-              {...register('address')}
-            />
-
-            {/* Date of Birth */}
-            <View>
-              <AppText raw variant="body" weight="medium" className="mb-1.5">
-                {t('profileEdit.field.birthdayLabel')}
-              </AppText>
-              <TouchableOpacity
-                onPress={() => setShowDatePicker(true)}
-                style={{
-                  borderWidth: 1,
-                  borderColor: colors.neutrals900,
-                  borderRadius: 8,
-                  paddingHorizontal: 16,
-                  paddingVertical: 12,
-                  backgroundColor: colors.background,
-                }}>
-                <AppText raw variant="body" color={dateOfBirth ? 'foreground' : 'muted'}>
-                  {dateOfBirth
-                    ? dateOfBirth.toLocaleDateString('vi-VN')
-                    : t('profileEdit.field.birthdayPlaceholder')}
-                </AppText>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ padding: 16 }}>
+            {/* Avatar */}
+            <View className="mb-6 items-center">
+              <TouchableOpacity onPress={handlePickAvatar} disabled={isUploadingAvatar}>
+                <View style={{ position: 'relative' }}>
+                  {avatarSource ? (
+                    <AppImage
+                      source={avatarSource}
+                      style={{ width: 96, height: 96, borderRadius: 48 }}
+                      contentFit="cover"
+                    />
+                  ) : (
+                    <View
+                      style={{
+                        width: 96,
+                        height: 96,
+                        borderRadius: 48,
+                        backgroundColor: colors.primary,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                      <AppText raw variant="heading1" style={{ color: colors.primaryForeground }}>
+                        {displayInitial}
+                      </AppText>
+                    </View>
+                  )}
+                  {isUploadingAvatar ? (
+                    <View
+                      style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        right: 0,
+                        width: 32,
+                        height: 32,
+                        borderRadius: 16,
+                        backgroundColor: colors.neutrals800,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                      <ActivityIndicator size="small" color={colors.primary} />
+                    </View>
+                  ) : (
+                    <View
+                      style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        right: 0,
+                        width: 32,
+                        height: 32,
+                        borderRadius: 16,
+                        backgroundColor: colors.primary,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                      <Camera size={16} color={colors.primaryForeground} />
+                    </View>
+                  )}
+                </View>
               </TouchableOpacity>
+              <AppText raw variant="bodySmall" color="muted" style={{ marginTop: 8 }}>
+                {t('profileEdit.avatar.hint')}
+              </AppText>
             </View>
 
-            {showDatePicker && (
-              <DateTimePicker
-                value={dateOfBirth ?? new Date()}
-                mode="date"
-                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                maximumDate={new Date()}
-                onChange={(_event: DateTimePickerEvent, selectedDate?: Date) => {
-                  setShowDatePicker(Platform.OS === 'ios')
-                  if (selectedDate) {
-                    setDateOfBirth(selectedDate)
-                  }
-                }}
+            {/* Form Fields */}
+            <View className="gap-4">
+              <AppInput
+                label={t('profileEdit.field.nameLabel')}
+                placeholder={t('profileEdit.field.namePlaceholder')}
+                required
+                errorText={formState.errors.name?.message}
+                {...register('name')}
               />
-            )}
 
-            {Platform.OS === 'ios' && showDatePicker && (
-              <AppButton
-                variant="outline"
-                onPress={() => setShowDatePicker(false)}>
-                {t('profileEdit.button.save')}
-              </AppButton>
-            )}
-          </View>
+              <AppInput
+                label={t('profileEdit.field.phoneLabel')}
+                placeholder={t('profileEdit.field.phonePlaceholder')}
+                keyboardType="phone-pad"
+                errorText={formState.errors.phone?.message}
+                {...register('phone')}
+              />
 
-          <AppButton
-            variant="primary"
-            onPress={onSubmit}
-            loading={isUpdating}
-            disabled={isUpdating || isUploadingAvatar}
-            className="mt-8">
-            {t('profileEdit.button.save')}
-          </AppButton>
-        </ScrollView>
+              <AppInput
+                label={t('profileEdit.field.addressLabel')}
+                placeholder={t('profileEdit.field.addressPlaceholder')}
+                errorText={formState.errors.address?.message}
+                {...register('address')}
+              />
+
+              {/* Date of Birth */}
+              <View>
+                <AppText raw variant="body" weight="medium" className="mb-1.5">
+                  {t('profileEdit.field.birthdayLabel')}
+                </AppText>
+                <TouchableOpacity
+                  onPress={() => setShowDatePicker(true)}
+                  style={{
+                    borderWidth: 1,
+                    borderColor: colors.neutrals900,
+                    borderRadius: 8,
+                    paddingHorizontal: 16,
+                    paddingVertical: 12,
+                    backgroundColor: colors.background,
+                  }}>
+                  <AppText raw variant="body" color={dateOfBirth ? 'foreground' : 'muted'}>
+                    {dateOfBirth
+                      ? dateOfBirth.toLocaleDateString('vi-VN')
+                      : t('profileEdit.field.birthdayPlaceholder')}
+                  </AppText>
+                </TouchableOpacity>
+              </View>
+
+              {showDatePicker && (
+                <DateTimePicker
+                  value={dateOfBirth ?? new Date()}
+                  mode="date"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  maximumDate={new Date()}
+                  onChange={(_event: DateTimePickerEvent, selectedDate?: Date) => {
+                    setShowDatePicker(Platform.OS === 'ios')
+                    if (selectedDate) {
+                      setDateOfBirth(selectedDate)
+                    }
+                  }}
+                />
+              )}
+
+              {Platform.OS === 'ios' && showDatePicker && (
+                <AppButton variant="outline" onPress={() => setShowDatePicker(false)}>
+                  {t('profileEdit.button.save')}
+                </AppButton>
+              )}
+            </View>
+
+            <AppButton
+              variant="primary"
+              onPress={onSubmit}
+              loading={isUpdating}
+              disabled={isUpdating || isUploadingAvatar}
+              className="mt-8">
+              {t('profileEdit.button.save')}
+            </AppButton>
+          </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </>

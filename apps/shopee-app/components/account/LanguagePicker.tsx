@@ -19,9 +19,11 @@ export default function LanguagePicker({ bottomSheetRef }: LanguagePickerProps) 
   const setLanguage = useAppStore((state) => state.setLanguage)
 
   const renderBackdrop = useCallback(
-    (props: Parameters<NonNullable<React.ComponentProps<typeof BottomSheetModal>['backdropComponent']>>[0]) => (
-      <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.5} />
-    ),
+    (
+      props: Parameters<
+        NonNullable<React.ComponentProps<typeof BottomSheetModal>['backdropComponent']>
+      >[0]
+    ) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.5} />,
     []
   )
 
@@ -43,7 +45,9 @@ export default function LanguagePicker({ bottomSheetRef }: LanguagePickerProps) 
             {t('languagePicker.title')}
           </AppText>
 
-          {(Object.values(LANGUAGES) as { code: LanguageCode; nativeName: string; name: string }[]).map((lang) => {
+          {(
+            Object.values(LANGUAGES) as { code: LanguageCode; nativeName: string; name: string }[]
+          ).map((lang) => {
             const isActive = language === lang.code
             return (
               <Pressable

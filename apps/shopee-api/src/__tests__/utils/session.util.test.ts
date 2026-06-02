@@ -63,7 +63,8 @@ describe('session.util', () => {
     })
 
     it('parses a Firefox on macOS desktop UA', () => {
-      const ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/109.0'
+      const ua =
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/109.0'
       const result = parseUserAgent(ua)
 
       expect(result.browser).toBe('Firefox')

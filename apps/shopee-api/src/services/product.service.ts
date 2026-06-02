@@ -239,9 +239,8 @@ export class ProductService extends BaseService {
     // Note: Variant validation is handled by Zod schema at the request boundary
 
     // Capture old price before update for price-drop detection
-    const oldProduct = productData.price !== undefined
-      ? await this.productRepository.findById(productId)
-      : null
+    const oldProduct =
+      productData.price !== undefined ? await this.productRepository.findById(productId) : null
     const oldPrice = oldProduct?.price
 
     const product = await this.productRepository.updateById(productId, productData)

@@ -257,9 +257,7 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
 
           <ProductDescription description={product.description} />
 
-          {product.shopSummary && (
-            <ShopSummaryCard shopSummary={product.shopSummary} />
-          )}
+          {product.shopSummary && <ShopSummaryCard shopSummary={product.shopSummary} />}
 
           <View style={{ height: 8, backgroundColor: colors.neutrals800 }} />
 
@@ -286,7 +284,9 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
             onAskQuestion={() => questionFormRef.current?.present()}
             onAnswerQuestion={handleOpenAnswer}
             onToggleLike={(id) => likeQuestion.mutate(id)}
-            onToggleLikeAnswer={(questionId, answerId) => likeAnswer.mutate({ questionId, answerId })}
+            onToggleLikeAnswer={(questionId, answerId) =>
+              likeAnswer.mutate({ questionId, answerId })
+            }
           />
 
           {relatedProducts.length > 0 && (

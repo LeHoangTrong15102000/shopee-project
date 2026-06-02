@@ -350,12 +350,7 @@ describe('DataTable', () => {
   it('does not show bulk actions when no rows selected', () => {
     const bulkActionsNode = <button>Delete Selected</button>
     render(
-      <DataTable
-        columns={columns}
-        data={data}
-        enableRowSelection
-        bulkActions={bulkActionsNode}
-      />,
+      <DataTable columns={columns} data={data} enableRowSelection bulkActions={bulkActionsNode} />,
     )
     expect(screen.queryByText(/pagination.rowsSelected/)).not.toBeInTheDocument()
   })

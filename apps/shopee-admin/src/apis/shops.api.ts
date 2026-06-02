@@ -30,8 +30,7 @@ const shopsApi = {
   getAdminShops: (params?: ShopListParams) =>
     http.get<SuccessResponse<ShopListResponse>>('admin/shops', { params }),
 
-  getAdminShopDetail: (id: string) =>
-    http.get<SuccessResponse<ShopDetail>>(`admin/shops/${id}`),
+  getAdminShopDetail: (id: string) => http.get<SuccessResponse<ShopDetail>>(`admin/shops/${id}`),
 
   updateShopStatus: (id: string, data: UpdateShopStatusBody) =>
     http.patch<SuccessResponse<ShopAdmin>>(`admin/shops/${id}/status`, data),

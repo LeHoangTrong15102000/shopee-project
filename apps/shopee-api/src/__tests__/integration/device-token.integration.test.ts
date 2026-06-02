@@ -61,9 +61,7 @@ describe('Device Token API Integration', () => {
     })
 
     it('requires authentication', async () => {
-      const res = await supertest(app)
-        .post('/notifications/device-token')
-        .send(validToken)
+      const res = await supertest(app).post('/notifications/device-token').send(validToken)
 
       expect(res.status).toBe(401)
     })

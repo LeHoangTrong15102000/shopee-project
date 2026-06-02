@@ -24,11 +24,7 @@ export const staggerItemVariants = {
   },
 }
 
-export function StaggerList({
-  children,
-  staggerDelay = 0.05,
-  className,
-}: StaggerListProps) {
+export function StaggerList({ children, staggerDelay = 0.05, className }: StaggerListProps) {
   const prefersReducedMotion = useReducedMotion()
 
   if (prefersReducedMotion) {

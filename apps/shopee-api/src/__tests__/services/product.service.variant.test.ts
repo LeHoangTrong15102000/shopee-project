@@ -255,18 +255,16 @@ describe('ProductService - Concurrent Variant Updates (Task 15.12)', () => {
       create: jest
         .fn()
         .mockImplementation((data) => Promise.resolve({ _id: new Types.ObjectId(), ...data })),
-      findByProduct: jest
-        .fn()
-        .mockResolvedValue([
-          {
-            _id: new Types.ObjectId(),
-            value: 'RED',
-            price: 100,
-            stock: 10,
-            variant_values: { color: 'red' },
-            product: productId,
-          },
-        ]),
+      findByProduct: jest.fn().mockResolvedValue([
+        {
+          _id: new Types.ObjectId(),
+          value: 'RED',
+          price: 100,
+          stock: 10,
+          variant_values: { color: 'red' },
+          product: productId,
+        },
+      ]),
       deleteMany: jest.fn().mockResolvedValue(1),
       findById: jest.fn(),
       findOne: jest.fn(),

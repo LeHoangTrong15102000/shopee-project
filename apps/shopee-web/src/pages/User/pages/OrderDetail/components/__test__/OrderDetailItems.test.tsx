@@ -110,7 +110,9 @@ describe('OrderDetailItems', () => {
   it('handles missing product gracefully', () => {
     wrap(
       <OrderDetailItems
-        order={makeOrder([{ product: null, buyCount: 1, price: 10000, priceBeforeDiscount: 10000 }])}
+        order={makeOrder([
+          { product: null, buyCount: 1, price: 10000, priceBeforeDiscount: 10000 },
+        ])}
         shouldReduceMotion={false}
       />,
     )

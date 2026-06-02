@@ -55,11 +55,7 @@ export default function OrderList({
       onEndReachedThreshold={0.5}
       ListFooterComponent={
         isFetchingNextPage ? (
-          <ActivityIndicator
-            size="small"
-            color={colors.primary}
-            style={{ marginVertical: 16 }}
-          />
+          <ActivityIndicator size="small" color={colors.primary} style={{ marginVertical: 16 }} />
         ) : null
       }
     />

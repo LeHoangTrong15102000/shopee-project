@@ -43,7 +43,9 @@ export default function AnalyticsPage() {
   const { data: byCategory, isLoading: loadingCategory } = useStatsByCategory({
     enabled: activeTab === 'by-category',
   })
-  const { data: chatbot, isLoading: loadingChatbot } = useChatbotOverview({ enabled: activeTab === 'chatbot' })
+  const { data: chatbot, isLoading: loadingChatbot } = useChatbotOverview({
+    enabled: activeTab === 'chatbot',
+  })
   const { data: chatbotPerf, isLoading: loadingChatbotPerf } = useChatbotPerformance(period, {
     enabled: activeTab === 'chatbot',
   })

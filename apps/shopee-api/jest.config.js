@@ -10,10 +10,13 @@ const sharedConfig = {
   roots: ['<rootDir>/src'],
   setupFiles: ['<rootDir>/src/__tests__/helpers/set-test-env.ts'],
   transform: {
-    '^.+\\.ts$': ['ts-jest', {
-      tsconfig: 'tsconfig.test.json',
-      diagnostics: { warnOnly: true },
-    }],
+    '^.+\\.ts$': [
+      'ts-jest',
+      {
+        tsconfig: 'tsconfig.test.json',
+        diagnostics: { warnOnly: true },
+      },
+    ],
   },
   moduleNameMapper: {
     '^@controllers/(.*)$': '<rootDir>/src/controllers/$1',
@@ -114,10 +117,13 @@ module.exports = {
       // Override transform to suppress pre-existing TS errors (e.g. admin-shops.schema.ts
       // overload mismatches) that are unrelated to integration test logic
       transform: {
-        '^.+\\.ts$': ['ts-jest', {
-          tsconfig: 'tsconfig.test.json',
-          diagnostics: { warnOnly: true },
-        }],
+        '^.+\\.ts$': [
+          'ts-jest',
+          {
+            tsconfig: 'tsconfig.test.json',
+            diagnostics: { warnOnly: true },
+          },
+        ],
       },
     },
 

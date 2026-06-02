@@ -162,48 +162,52 @@ export const useCartStore = create<CartStore>()(
   immer((set) => ({
     items: [],
 
-    setItems: (items) => set((state) => {
-      state.items = items
-    }),
+    setItems: (items) =>
+      set((state) => {
+        state.items = items
+      }),
 
-    toggleCheck: (purchaseIndex, checked) => set((state) => {
-      if (state.items[purchaseIndex]) {
-        state.items[purchaseIndex].isChecked = checked
-      }
-    }),
+    toggleCheck: (purchaseIndex, checked) =>
+      set((state) => {
+        if (state.items[purchaseIndex]) {
+          state.items[purchaseIndex].isChecked = checked
+        }
+      }),
 
-    selectAll: (checked) => set((state) => {
-      state.items.forEach((item) => {
-        item.isChecked = checked
-      })
-    }),
+    selectAll: (checked) =>
+      set((state) => {
+        state.items.forEach((item) => {
+          item.isChecked = checked
+        })
+      }),
 
-    updateQuantity: (productId, quantity) => set((state) => {
-      const item = state.items.find((p) => p.product._id === productId)
-      if (item) {
-        item.buy_count = quantity
-        item.disabled = false
-      }
-    }),
+    updateQuantity: (productId, quantity) =>
+      set((state) => {
+        const item = state.items.find((p) => p.product._id === productId)
+        if (item) {
+          item.buy_count = quantity
+          item.disabled = false
+        }
+      }),
 
-    clearCart: () => set((state) => {
-      state.items = []
-    })
-  }))
+    clearCart: () =>
+      set((state) => {
+        state.items = []
+      }),
+  })),
 )
 
 // Selector Hooks - Tối ưu re-render
 export const useCartItems = () => useCartStore((s) => s.items)
-export const useCheckedItems = () => useCartStore(
-  useShallow((s) => s.items.filter((item) => item.isChecked))
-)
-export const useIsAllChecked = () => useCartStore(
-  (s) => s.items.length > 0 && s.items.every((item) => item.isChecked)
-)
+export const useCheckedItems = () =>
+  useCartStore(useShallow((s) => s.items.filter((item) => item.isChecked)))
+export const useIsAllChecked = () =>
+  useCartStore((s) => s.items.length > 0 && s.items.every((item) => item.isChecked))
 export const useCartItemCount = () => useCartStore((s) => s.items.length)
 ```
 
 **Ưu điểm của Zustand:**
+
 - ✅ Không cần Provider wrapper
 - ✅ Performance tốt hơn Context API (không re-render toàn bộ tree)
 - ✅ API đơn giản, dễ học
@@ -212,6 +216,7 @@ export const useCartItemCount = () => useCartStore((s) => s.items.length)
 - ✅ Selector hooks tránh unnecessary re-renders
 
 **Khi nào dùng Zustand:**
+
 - Cart state (items, quantities, selections)
 - UI state phức tạp (modals, drawers, filters)
 - Form state không dùng React Hook Form
@@ -285,12 +290,14 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 ```
 
 **Tối ưu Context API:**
+
 1. **useMemo** cho value object → tránh re-render khi parent re-render
 2. **useCallback** cho functions → stable reference
 3. **Split contexts** → auth context riêng, theme context riêng
 4. **Selector pattern** → chỉ subscribe vào phần cần thiết
 
 **Khi nào dùng Context API:**
+
 - Authentication state (isAuthenticated, user profile)
 - Theme state (dark/light mode)
 - Locale/i18n state
@@ -355,15 +362,16 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false, // Không refetch khi focus window
-      retry: 0,                     // Không retry mặc định
-      staleTime: 3 * 60 * 1000,    // 3 phút
-      gcTime: 10 * 60 * 1000       // 10 phút
-    }
-  }
+      retry: 0, // Không retry mặc định
+      staleTime: 3 * 60 * 1000, // 3 phút
+      gcTime: 10 * 60 * 1000, // 10 phút
+    },
+  },
 })
 ```
 
 **Khi nào dùng React Query:**
+
 - Fetch data từ API
 - Caching API responses
 - Background refetching
@@ -375,15 +383,15 @@ const queryClient = new QueryClient({
 
 ### 2.2. So sánh 3 layers
 
-| Feature | Zustand | Context API | React Query |
-|---------|---------|-------------|-------------|
-| **Use Case** | Client UI State | Global Settings | Server Data |
-| **Performance** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| **Learning Curve** | Easy | Easy | Medium |
-| **Bundle Size** | 1.2KB | 0KB (built-in) | 13KB |
-| **DevTools** | ✅ | ❌ | ✅ |
-| **Persistence** | ✅ (middleware) | Manual | ✅ (built-in) |
-| **TypeScript** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| Feature            | Zustand         | Context API     | React Query   |
+| ------------------ | --------------- | --------------- | ------------- |
+| **Use Case**       | Client UI State | Global Settings | Server Data   |
+| **Performance**    | ⭐⭐⭐⭐⭐      | ⭐⭐⭐          | ⭐⭐⭐⭐⭐    |
+| **Learning Curve** | Easy            | Easy            | Medium        |
+| **Bundle Size**    | 1.2KB           | 0KB (built-in)  | 13KB          |
+| **DevTools**       | ✅              | ❌              | ✅            |
+| **Persistence**    | ✅ (middleware) | Manual          | ✅ (built-in) |
+| **TypeScript**     | ⭐⭐⭐⭐⭐      | ⭐⭐⭐⭐        | ⭐⭐⭐⭐⭐    |
 
 ---
 
@@ -425,6 +433,7 @@ const queryClient = new QueryClient({
 ### 3.1. TanStack React Query Architecture
 
 React Query giải quyết các vấn đề:
+
 - ✅ Caching & deduplication
 - ✅ Background refetching
 - ✅ Stale data management
@@ -452,7 +461,7 @@ queryKey: ['products', normalizeProductQueryKey(filters)]
 ```typescript
 // src/hooks/nuqs/productSearchParams.ts
 export function normalizeProductQueryKey(
-  filters: ProductQueryConfig
+  filters: ProductQueryConfig,
 ): Record<string, string | undefined> {
   return {
     page: String(filters.page),
@@ -463,12 +472,13 @@ export function normalizeProductQueryKey(
     price_min: filters.price_min != null ? String(filters.price_min) : undefined,
     price_max: filters.price_max != null ? String(filters.price_max) : undefined,
     rating_filter: filters.rating_filter != null ? String(filters.rating_filter) : undefined,
-    category: filters.category ?? undefined
+    category: filters.category ?? undefined,
   }
 }
 ```
 
 **Tại sao normalize:**
+
 - Consistent format (all strings)
 - Remove undefined values
 - Stable cache keys
@@ -501,6 +511,7 @@ export function normalizeProductQueryKey(
 ```
 
 **Chiến lược:**
+
 - **staleTime = 0**: Always refetch (real-time data)
 - **staleTime = 3min**: Normal data (products, orders)
 - **staleTime = Infinity**: Static data (categories, config)
@@ -517,7 +528,7 @@ const { data } = useQuery({
   queryFn: ({ signal }) => {
     // Truyền signal vào axios
     return productApi.getProducts(filters, { signal })
-  }
+  },
 })
 
 // API implementation
@@ -525,13 +536,14 @@ export const productApi = {
   getProducts: async (params: ProductListConfig, options?: ApiOptions) => {
     return await http.get<SuccessResponseApi<ProductList>>('/products', {
       params,
-      signal: options?.signal  // AbortSignal
+      signal: options?.signal, // AbortSignal
     })
-  }
+  },
 }
 ```
 
 **Khi user thay đổi filter:**
+
 ```
 User types "laptop" → Request A starts
 User types "laptop pro" → Request A cancelled, Request B starts
@@ -539,6 +551,7 @@ User types "laptop pro 2024" → Request B cancelled, Request C starts
 ```
 
 **Lợi ích:**
+
 - Tránh race conditions
 - Giảm network traffic
 - Improve UX (không hiển thị stale data)
@@ -553,7 +566,7 @@ User types "laptop pro 2024" → Request B cancelled, Request C starts
 const { data, isLoading, isFetching } = useQuery({
   queryKey: ['products', filters],
   queryFn: ({ signal }) => productApi.getProducts(filters, { signal }),
-  placeholderData: (previousData) => previousData  // ⭐ Key feature
+  placeholderData: (previousData) => previousData, // ⭐ Key feature
 })
 ```
 
@@ -573,6 +586,7 @@ Page 1 loaded ────► User clicks Page 2 ────► Page 2 loaded
 ```
 
 **Lợi ích:**
+
 - Không có loading spinner khi pagination
 - Smooth UX
 - User vẫn thấy content cũ
@@ -631,21 +645,21 @@ export const useQueryInvalidation = () => {
   return {
     invalidateCart: () => {
       queryClient.invalidateQueries({
-        queryKey: ['purchases', purchasesStatus.inCart]
+        queryKey: ['purchases', purchasesStatus.inCart],
       })
     },
 
     invalidateProductDetail: (productId: string) => {
       queryClient.invalidateQueries({
-        queryKey: ['product', productId]
+        queryKey: ['product', productId],
       })
     },
 
     invalidateProducts: () => {
       queryClient.invalidateQueries({
-        queryKey: ['products']
+        queryKey: ['products'],
       })
-    }
+    },
   }
 }
 ```
@@ -658,8 +672,8 @@ const { invalidateCart } = useQueryInvalidation()
 const addToCartMutation = useMutation({
   mutationFn: purchaseApi.addToCart,
   onSuccess: () => {
-    invalidateCart()  // Refetch cart data
-  }
+    invalidateCart() // Refetch cart data
+  },
 })
 ```
 
@@ -683,6 +697,7 @@ User Action → Update UI Immediately → Send Request → Success/Rollback
 ```
 
 **Ví dụ thực tế:**
+
 - User click "Add to Cart" → Sản phẩm xuất hiện trong cart ngay lập tức
 - User like review → Icon like đổi màu ngay
 - User delete item → Item biến mất ngay
@@ -709,7 +724,7 @@ export const useOptimisticAddToCart = () => {
     onMutate: async (newItem: AddToCartPayload) => {
       // Hủy các queries đang chờ để tránh override optimistic update
       await queryClient.cancelQueries({
-        queryKey: ['purchases', 'inCart']
+        queryKey: ['purchases', 'inCart'],
       })
 
       // Snapshot data hiện tại để rollback khi cần
@@ -723,7 +738,7 @@ export const useOptimisticAddToCart = () => {
         const optimisticPurchase = createOptimisticPurchase(
           productData,
           newItem.buy_count,
-          'inCart'
+          'inCart',
         )
 
         // Cập nhật cache ngay lập tức
@@ -731,16 +746,16 @@ export const useOptimisticAddToCart = () => {
           ...old,
           data: {
             ...old.data,
-            data: [...(old.data?.data || []), optimisticPurchase]
-          }
+            data: [...(old.data?.data || []), optimisticPurchase],
+          },
         }))
 
         // Cập nhật Zustand store
         addOptimisticItem(
           createExtendedPurchase(optimisticPurchase, {
             disabled: false,
-            isChecked: true
-          })
+            isChecked: true,
+          }),
         )
 
         // Hiển thị toast ngay lập tức
@@ -755,10 +770,7 @@ export const useOptimisticAddToCart = () => {
     onError: (err, _newItem, context) => {
       // Rollback cache
       if (context?.previousPurchases) {
-        queryClient.setQueryData(
-          ['purchases', 'inCart'],
-          context.previousPurchases
-        )
+        queryClient.setQueryData(['purchases', 'inCart'], context.previousPurchases)
       }
 
       // Rollback Zustand store
@@ -781,9 +793,9 @@ export const useOptimisticAddToCart = () => {
         data: {
           ...old.data,
           data: old.data?.data?.map((item: Purchase) =>
-            item._id.startsWith('temp-') ? realPurchase : item
-          ) || [realPurchase]
-        }
+            item._id.startsWith('temp-') ? realPurchase : item,
+          ) || [realPurchase],
+        },
       }))
 
       // Cập nhật Zustand store
@@ -794,16 +806,16 @@ export const useOptimisticAddToCart = () => {
     onSettled: (_data, _error, variables) => {
       // Invalidate để đảm bảo sync với server
       queryClient.invalidateQueries({
-        queryKey: ['purchases', 'inCart']
+        queryKey: ['purchases', 'inCart'],
       })
 
       // Invalidate product detail để update stock
       if (variables.product_id) {
         queryClient.invalidateQueries({
-          queryKey: ['product', variables.product_id]
+          queryKey: ['product', variables.product_id],
         })
       }
-    }
+    },
   })
 }
 ```
@@ -817,7 +829,7 @@ export const useOptimisticAddToCart = () => {
 export function createOptimisticPurchase(
   product: Product,
   buyCount: number,
-  status: PurchaseStatus
+  status: PurchaseStatus,
 ): Purchase {
   return {
     _id: `temp-${Date.now()}-${Math.random()}`, // Temp ID
@@ -828,27 +840,24 @@ export function createOptimisticPurchase(
     product,
     user: DEFAULT_USER_PLACEHOLDER,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   }
 }
 
 // Tìm product trong cache
 export function findProductInCache(
   queryClient: QueryClient,
-  productId: string
+  productId: string,
 ): Product | undefined {
   // Tìm trong product detail cache
-  const productDetail = queryClient.getQueryData<ProductDetailResponse>([
-    'product',
-    productId
-  ])
+  const productDetail = queryClient.getQueryData<ProductDetailResponse>(['product', productId])
   if (productDetail) {
     return productDetail.data.data
   }
 
   // Tìm trong product list cache
   const productLists = queryClient.getQueriesData<ProductListResponse>({
-    queryKey: ['products']
+    queryKey: ['products'],
   })
 
   for (const [_key, data] of productLists) {
@@ -865,17 +874,20 @@ export function findProductInCache(
 #### ✅ **Best Practices:**
 
 1. **Luôn cancel queries trước khi update**
+
 ```typescript
 await queryClient.cancelQueries({ queryKey: ['items'] })
 ```
 
 2. **Lưu snapshot để rollback**
+
 ```typescript
 const previous = queryClient.getQueryData(['items'])
 return { previous }
 ```
 
 3. **Validate data trước khi optimistic update**
+
 ```typescript
 if (!productData) {
   // Không có data trong cache → không optimistic update
@@ -884,6 +896,7 @@ if (!productData) {
 ```
 
 4. **Hiển thị visual feedback**
+
 ```typescript
 // Disable button khi đang processing
 <button disabled={mutation.isPending}>Add to Cart</button>
@@ -892,13 +905,14 @@ if (!productData) {
 #### ❌ **Anti-patterns:**
 
 1. **Không optimistic update cho critical operations**
+
 ```typescript
 // ❌ BAD: Payment, delete account
 const paymentMutation = useMutation({
   mutationFn: paymentApi.process,
   onMutate: () => {
     // Không nên optimistic update payment!
-  }
+  },
 })
 
 // ✅ GOOD: Chỉ optimistic update cho non-critical operations
@@ -906,11 +920,12 @@ const addToCartMutation = useMutation({
   mutationFn: cartApi.add,
   onMutate: () => {
     // OK để optimistic update cart
-  }
+  },
 })
 ```
 
 2. **Quên invalidate queries**
+
 ```typescript
 // ❌ BAD
 onSuccess: () => {
@@ -1014,6 +1029,7 @@ export default useRouteElements
 ```
 
 **Kết quả:**
+
 - Initial bundle: 500KB (chỉ code cần thiết cho trang đầu tiên)
 - Các route khác: Load on-demand khi user navigate
 
@@ -1086,7 +1102,7 @@ const connect = async () => {
     const newSocket = io(config.socketUrl, {
       auth: { token },
       transports: ['websocket'],
-      autoConnect: false
+      autoConnect: false,
     })
 
     newSocket.on('connect', () => {
@@ -1104,6 +1120,7 @@ const connect = async () => {
 ```
 
 **Lợi ích:**
+
 - socket.io-client (~50KB) chỉ load khi user authenticated
 - Giảm initial bundle size
 - Faster initial load
@@ -1164,7 +1181,7 @@ export default defineConfig({
           'state-vendor': ['zustand'],
 
           // i18n
-          'i18n-vendor': ['i18next', 'react-i18next']
+          'i18n-vendor': ['i18next', 'react-i18next'],
         },
 
         // Chunk naming strategy
@@ -1173,13 +1190,13 @@ export default defineConfig({
             ? chunkInfo.facadeModuleId.split('/').pop()
             : 'chunk'
           return `js/${facadeModuleId}-[hash].js`
-        }
-      }
+        },
+      },
     },
 
     // Chunk size warnings
-    chunkSizeWarningLimit: 1000 // 1MB
-  }
+    chunkSizeWarningLimit: 1000, // 1MB
+  },
 })
 ```
 
@@ -1370,7 +1387,7 @@ export const productSearchParams = {
   price_min: parseAsInteger,
   price_max: parseAsInteger,
   rating_filter: parseAsInteger,
-  category: parseAsString
+  category: parseAsString,
 }
 
 // Create cache
@@ -1410,6 +1427,7 @@ const ProductList = () => {
 ```
 
 **Lợi ích của nuqs:**
+
 - ✅ URL là single source of truth
 - ✅ Shareable URLs (copy/paste link giữ nguyên filters)
 - ✅ Browser back/forward hoạt động đúng
@@ -1460,6 +1478,7 @@ function App() {
 **File:** `src/utils/http.ts`
 
 Dự án sử dụng **Axios wrapper** với các tính năng:
+
 - ✅ Automatic token refresh
 - ✅ Request/Response interceptors
 - ✅ Error handling
@@ -1482,8 +1501,8 @@ export class Http {
       baseURL: config.baseUrl,
       timeout: 10000,
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     })
 
     // Request interceptor - Thêm token vào header
@@ -1494,7 +1513,7 @@ export class Http {
         }
         return config
       },
-      (error) => Promise.reject(error)
+      (error) => Promise.reject(error),
     )
 
     // Response interceptor - Handle errors và refresh token
@@ -1542,7 +1561,7 @@ export class Http {
             return this.refreshTokenRequest.then((access_token) => {
               return this.instance({
                 ...config,
-                headers: { ...config.headers, authorization: access_token }
+                headers: { ...config.headers, authorization: access_token },
               })
             })
           }
@@ -1558,14 +1577,14 @@ export class Http {
         }
 
         return Promise.reject(error)
-      }
+      },
     )
   }
 
   private async handleRefreshToken() {
     return this.instance
       .post<RefreshTokenResponse>('/refresh-token', {
-        refresh_token: this.refreshToken
+        refresh_token: this.refreshToken,
       })
       .then((res) => {
         const { access_token } = res.data.data
@@ -1601,6 +1620,7 @@ Request → 401 Unauthorized → Check if token expired
 ```
 
 **Key Points:**
+
 - Deduplicate refresh token requests (chỉ gọi 1 lần dù có nhiều requests fail)
 - Retry failed requests sau khi refresh
 - Logout nếu refresh token cũng expired
@@ -1629,29 +1649,29 @@ import { SuccessResponseApi } from 'src/types/utils.type'
 import http from 'src/utils/http'
 
 export interface ApiOptions {
-  signal?: AbortSignal  // Support request cancellation
+  signal?: AbortSignal // Support request cancellation
 }
 
 const productApi = {
   getProducts: async (params: ProductListConfig, options?: ApiOptions) => {
     return await http.get<SuccessResponseApi<ProductList>>('/products', {
       params,
-      signal: options?.signal  // Pass AbortSignal to axios
+      signal: options?.signal, // Pass AbortSignal to axios
     })
   },
 
   getProductDetail: async (id: string, options?: ApiOptions) => {
     return await http.get<SuccessResponseApi<Product>>(`/products/${id}`, {
-      signal: options?.signal
+      signal: options?.signal,
     })
   },
 
   getSearchSuggestions: async (params: { q: string }, options?: ApiOptions) => {
     return await http.get<SuccessResponseApi<SearchSuggestionsResponse>>(
       'products/search/suggestions',
-      { params, signal: options?.signal }
+      { params, signal: options?.signal },
     )
-  }
+  },
 }
 
 export default productApi
@@ -1677,6 +1697,7 @@ type ProductDetailResponse = SuccessResponseApi<Product>
 ```
 
 ---
+
 ## 8. PERFORMANCE OPTIMIZATION
 
 ### 8.1. Prefetching Strategies
@@ -1693,8 +1714,8 @@ export const usePrefetch = () => {
       queryClient.prefetchQuery({
         queryKey: ['product', productId],
         queryFn: ({ signal }) => productApi.getProductDetail(productId, { signal }),
-        staleTime: 5 * 60 * 1000,  // 5 phút
-        gcTime: 10 * 60 * 1000     // 10 phút
+        staleTime: 5 * 60 * 1000, // 5 phút
+        gcTime: 10 * 60 * 1000, // 10 phút
       })
     },
 
@@ -1705,10 +1726,10 @@ export const usePrefetch = () => {
         queryClient.prefetchQuery({
           queryKey: ['products', normalizeProductQueryKey(nextPageFilters)],
           queryFn: ({ signal }) => productApi.getProducts(nextPageFilters, { signal }),
-          staleTime: 2 * 60 * 1000
+          staleTime: 2 * 60 * 1000,
         })
-      }
-    }
+      },
+    },
   }
 }
 ```
@@ -1845,10 +1866,10 @@ import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals'
 
 export const useWebVitals = () => {
   useEffect(() => {
-    onCLS(console.log)  // Cumulative Layout Shift
-    onFCP(console.log)  // First Contentful Paint
-    onINP(console.log)  // Interaction to Next Paint
-    onLCP(console.log)  // Largest Contentful Paint
+    onCLS(console.log) // Cumulative Layout Shift
+    onFCP(console.log) // First Contentful Paint
+    onINP(console.log) // Interaction to Next Paint
+    onLCP(console.log) // Largest Contentful Paint
     onTTFB(console.log) // Time to First Byte
   }, [])
 }
@@ -1954,8 +1975,8 @@ export const useNotifications = () => {
         ...old,
         data: {
           ...old.data,
-          data: [notification, ...(old.data?.data || [])]
-        }
+          data: [notification, ...(old.data?.data || [])],
+        },
       }))
 
       // Show toast
@@ -2081,7 +2102,7 @@ this.instance.interceptors.response.use(
     }
 
     return Promise.reject(error)
-  }
+  },
 )
 ```
 
@@ -2104,7 +2125,7 @@ const { data } = useQuery({
     // Retry tối đa 2 lần
     return failureCount < 2
   },
-  retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)
+  retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
 })
 ```
 
@@ -2186,6 +2207,7 @@ useOptimisticAddToCart.mutate()
 **Q: Tại sao dự án sử dụng cả Zustand, Context API và React Query?**
 
 A: Mỗi tool phục vụ một mục đích khác nhau:
+
 - **Zustand**: Client UI state cần performance cao (cart items, selections)
 - **Context API**: Global settings ít thay đổi (auth, theme)
 - **React Query**: Server state với caching và synchronization
@@ -2195,6 +2217,7 @@ Việc kết hợp giúp tối ưu performance và developer experience.
 **Q: Zustand vs Redux - Tại sao chọn Zustand?**
 
 A:
+
 - Bundle size nhỏ hơn (1.2KB vs 10KB)
 - API đơn giản hơn, ít boilerplate
 - Không cần Provider wrapper
@@ -2219,10 +2242,12 @@ const itemCount = useCartStore((s) => s.items.length)
 **Q: Giải thích staleTime vs gcTime trong React Query?**
 
 A:
+
 - **staleTime**: Thời gian data được coi là "fresh". Trong thời gian này, không refetch.
 - **gcTime**: Thời gian giữ data trong cache sau khi inactive. Sau đó sẽ garbage collected.
 
 Example:
+
 ```typescript
 {
   staleTime: 3 * 60 * 1000,  // 3 phút - data fresh
@@ -2237,7 +2262,7 @@ A: React Query tự động cancel request cũ khi query key thay đổi:
 ```typescript
 const { data } = useQuery({
   queryKey: ['search', searchTerm],
-  queryFn: ({ signal }) => searchApi(searchTerm, { signal })
+  queryFn: ({ signal }) => searchApi(searchTerm, { signal }),
 })
 ```
 
@@ -2248,11 +2273,13 @@ Khi searchTerm thay đổi, request cũ bị cancel, chỉ request mới nhất 
 A: Optimistic Updates là pattern cập nhật UI ngay lập tức trước khi nhận response từ server.
 
 **Nên dùng khi:**
+
 - Non-critical operations (add to cart, like, bookmark)
 - User expect immediate feedback
 - Có thể rollback dễ dàng
 
 **Không nên dùng khi:**
+
 - Critical operations (payment, delete account)
 - Không thể rollback
 - Data phức tạp, khó validate
@@ -2262,6 +2289,7 @@ A: Optimistic Updates là pattern cập nhật UI ngay lập tức trước khi 
 **Q: Làm thế nào để optimize bundle size?**
 
 A:
+
 1. **Code splitting**: Lazy load routes và components
 2. **Tree shaking**: Remove unused code
 3. **Dynamic imports**: Load libraries khi cần
@@ -2271,6 +2299,7 @@ A:
 **Q: Giải thích về prefetching strategies?**
 
 A:
+
 - **Hover prefetch**: Prefetch khi user hover (delay 300ms)
 - **Intersection Observer**: Prefetch khi element gần viewport
 - **Next page prefetch**: Prefetch trang tiếp theo
@@ -2279,6 +2308,7 @@ A:
 **Q: React.memo vs useMemo vs useCallback - Khi nào dùng?**
 
 A:
+
 - **React.memo**: Prevent component re-render khi props không đổi
 - **useMemo**: Memoize expensive calculations
 - **useCallback**: Memoize functions (event handlers)
@@ -2299,6 +2329,7 @@ const handleClick = useCallback(() => { ... }, [])
 **Q: Làm thế nào để handle WebSocket reconnection?**
 
 A: Socket.IO tự động reconnect, nhưng cần handle:
+
 - Rejoin rooms sau reconnect
 - Resync data
 - Show connection status to user
@@ -2316,6 +2347,7 @@ socket.on('connect', () => {
 **Q: Tại sao dynamic import socket.io-client?**
 
 A: socket.io-client (~50KB) chỉ cần khi user authenticated. Dynamic import giúp:
+
 - Giảm initial bundle size
 - Faster initial load
 - Chỉ load khi cần
@@ -2325,6 +2357,7 @@ A: socket.io-client (~50KB) chỉ cần khi user authenticated. Dynamic import g
 **Q: Làm thế nào để handle token expiration?**
 
 A: Sử dụng refresh token flow:
+
 1. Detect token expired (401 + specific error message)
 2. Call refresh token API
 3. Retry failed request với token mới
@@ -2333,11 +2366,13 @@ A: Sử dụng refresh token flow:
 **Q: Error Boundary catch được những lỗi nào?**
 
 A: Error Boundary chỉ catch:
+
 - Rendering errors
 - Lifecycle method errors
 - Constructor errors
 
 **Không catch:**
+
 - Event handler errors (dùng try-catch)
 - Async errors (dùng .catch())
 - Server-side rendering errors
@@ -2446,6 +2481,7 @@ Average Response Times:
 - v1.0 (2026-03-15): Initial version
 
 **Contributors:**
+
 - AI Assistant (Primary Author)
 - Shopee Clone Development Team
 

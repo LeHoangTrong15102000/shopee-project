@@ -183,7 +183,9 @@ const ShopProfilePage = () => {
                   {shop.name}
                 </h1>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  {t('shopProfile.followers', { count: formatNumberToSocialStyle(shop.followerCount) })}
+                  {t('shopProfile.followers', {
+                    count: formatNumberToSocialStyle(shop.followerCount),
+                  })}
                 </p>
                 <div className="mt-3 flex items-center gap-2">
                   <Button
@@ -234,7 +236,10 @@ const ShopProfilePage = () => {
         {isProductsLoading ? (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {[...Array(10)].map((_, i) => (
-              <div key={i} className="animate-pulse rounded-sm bg-white shadow-sm dark:bg-slate-800">
+              <div
+                key={i}
+                className="animate-pulse rounded-sm bg-white shadow-sm dark:bg-slate-800"
+              >
                 <div className="w-full pt-[100%] bg-gray-200 dark:bg-slate-700" />
                 <div className="p-2">
                   <div className="mb-2 h-4 rounded bg-gray-200 dark:bg-slate-700" />
@@ -245,7 +250,7 @@ const ShopProfilePage = () => {
           </div>
         ) : products.length === 0 ? (
           <div className="flex items-center justify-center py-20">
-          <p className="text-gray-500 dark:text-gray-400">{t('shopProfile.noProducts')}</p>
+            <p className="text-gray-500 dark:text-gray-400">{t('shopProfile.noProducts')}</p>
           </div>
         ) : (
           <>
@@ -258,27 +263,27 @@ const ShopProfilePage = () => {
             {/* Pagination */}
             {totalPages > 1 && (
               <nav aria-label="Pagination">
-              <div className="mt-6 flex items-center justify-center gap-2">
-                <button
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  aria-label="Previous page"
-                  className="rounded-sm border border-gray-300 px-3 py-1.5 text-sm text-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:border-slate-600 dark:text-gray-300 dark:hover:bg-slate-700"
-                >
-                  {t('shopProfile.previous')}
-                </button>
-                <span aria-current="page" className="text-sm text-gray-600 dark:text-gray-400">
-                  {t('shopProfile.pageOf', { page, totalPages })}
-                </span>
-                <button
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                  aria-label="Next page"
-                  className="rounded-sm border border-gray-300 px-3 py-1.5 text-sm text-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:border-slate-600 dark:text-gray-300 dark:hover:bg-slate-700"
-                >
-                  {t('shopProfile.next')}
-                </button>
-              </div>
+                <div className="mt-6 flex items-center justify-center gap-2">
+                  <button
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    aria-label="Previous page"
+                    className="rounded-sm border border-gray-300 px-3 py-1.5 text-sm text-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:border-slate-600 dark:text-gray-300 dark:hover:bg-slate-700"
+                  >
+                    {t('shopProfile.previous')}
+                  </button>
+                  <span aria-current="page" className="text-sm text-gray-600 dark:text-gray-400">
+                    {t('shopProfile.pageOf', { page, totalPages })}
+                  </span>
+                  <button
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                    aria-label="Next page"
+                    className="rounded-sm border border-gray-300 px-3 py-1.5 text-sm text-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:border-slate-600 dark:text-gray-300 dark:hover:bg-slate-700"
+                  >
+                    {t('shopProfile.next')}
+                  </button>
+                </div>
               </nav>
             )}
           </>

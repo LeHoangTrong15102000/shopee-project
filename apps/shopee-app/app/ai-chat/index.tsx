@@ -7,7 +7,11 @@ import { MessageSquare, Plus } from 'lucide-react-native'
 import { useColors } from '@/hooks/useColors'
 import EmptyState from '@/components/ui/EmptyState'
 import SkeletonLoader from '@/components/ui/SkeletonLoader'
-import { useAiConversations, useCreateConversation, useDeleteConversation } from '@/hooks/useAiConversations'
+import {
+  useAiConversations,
+  useCreateConversation,
+  useDeleteConversation,
+} from '@/hooks/useAiConversations'
 import ConversationListItem from '@/components/ai-chat/ConversationListItem'
 
 function ConversationSkeletonList() {
@@ -46,18 +50,14 @@ export default function AiChatListScreen() {
   }
 
   const handleDelete = (id: string) => {
-    Alert.alert(
-      t('aiChat.list.deleteAction'),
-      '',
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('common.confirm'),
-          style: 'destructive',
-          onPress: () => deleteConversation.mutate(id),
-        },
-      ]
-    )
+    Alert.alert(t('aiChat.list.deleteAction'), '', [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('common.confirm'),
+        style: 'destructive',
+        onPress: () => deleteConversation.mutate(id),
+      },
+    ])
   }
 
   return (
@@ -96,7 +96,9 @@ export default function AiChatListScreen() {
               />
             )}
             ItemSeparatorComponent={() => (
-              <View style={{ height: 1, marginHorizontal: 16, backgroundColor: colors.neutrals800 }} />
+              <View
+                style={{ height: 1, marginHorizontal: 16, backgroundColor: colors.neutrals800 }}
+              />
             )}
             onRefresh={refetch}
             refreshing={isRefetching}

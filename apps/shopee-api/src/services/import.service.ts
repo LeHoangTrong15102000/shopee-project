@@ -230,7 +230,9 @@ export class ImportService {
     })
 
     try {
-      const result = await ProductModel.bulkWrite(bulkOps as Parameters<typeof ProductModel.bulkWrite>[0])
+      const result = await ProductModel.bulkWrite(
+        bulkOps as Parameters<typeof ProductModel.bulkWrite>[0],
+      )
       created = result.upsertedCount
       updated = result.modifiedCount
       failed = valid.length - created - updated

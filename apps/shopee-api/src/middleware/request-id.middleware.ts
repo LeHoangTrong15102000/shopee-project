@@ -19,6 +19,7 @@ export function getRequestId(): string | undefined {
  * Extend Express Request type to carry requestId.
  */
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       requestId: string

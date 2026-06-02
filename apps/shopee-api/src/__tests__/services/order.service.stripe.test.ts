@@ -177,14 +177,10 @@ describe('OrderService — Stripe branches', () => {
 
       await service.createOrder(userId.toString(), creditCardInput)
 
-      expect(mockStripeService.createPaymentIntent).toHaveBeenCalledWith(
-        180000,
-        'vnd',
-        {
-          orderId: orderId.toString(),
-          userId: userId.toString(),
-        },
-      )
+      expect(mockStripeService.createPaymentIntent).toHaveBeenCalledWith(180000, 'vnd', {
+        orderId: orderId.toString(),
+        userId: userId.toString(),
+      })
     })
 
     // ─── 3.3 createOrder returns order with client_secret ──────────────────
@@ -220,13 +216,10 @@ describe('OrderService — Stripe branches', () => {
       const result = await service.createOrder(userId.toString(), creditCardInput)
 
       // OrderModel.findByIdAndUpdate called with stripe fields
-      expect(mockOrderModelFindByIdAndUpdate).toHaveBeenCalledWith(
-        orderId,
-        {
-          stripe_payment_intent_id: 'pi_test_id_abc',
-          stripe_client_secret: 'pi_test_secret_abc',
-        },
-      )
+      expect(mockOrderModelFindByIdAndUpdate).toHaveBeenCalledWith(orderId, {
+        stripe_payment_intent_id: 'pi_test_id_abc',
+        stripe_client_secret: 'pi_test_secret_abc',
+      })
 
       // Returned order includes client_secret
       expect(result).toMatchObject({
@@ -254,7 +247,10 @@ describe('OrderService — Stripe branches', () => {
         ...mockOrder,
         status: ORDER_STATUS.CANCELLED,
       } as any)
-      mockStripeService.cancelPaymentIntent.mockResolvedValue({ id: 'pi_to_cancel', status: 'canceled' } as any)
+      mockStripeService.cancelPaymentIntent.mockResolvedValue({
+        id: 'pi_to_cancel',
+        status: 'canceled',
+      } as any)
 
       await service.cancelOrder(userId.toString(), orderId.toString(), 'Changed mind')
 

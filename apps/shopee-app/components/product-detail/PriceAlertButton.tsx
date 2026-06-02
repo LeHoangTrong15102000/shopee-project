@@ -90,9 +90,7 @@ export default function PriceAlertButton({ productId }: PriceAlertButtonProps) {
           borderRadius: 8,
           borderWidth: 1,
           borderColor: existingAlert ? colors.warning : colors.primary,
-          backgroundColor: existingAlert
-            ? `${colors.warning}15`
-            : `${colors.primary}10`,
+          backgroundColor: existingAlert ? `${colors.warning}15` : `${colors.primary}10`,
         }}>
         {existingAlert ? (
           <BellOff size={18} color={colors.warning} />
@@ -163,8 +161,8 @@ export default function PriceAlertButton({ productId }: PriceAlertButtonProps) {
                   borderColor: validationError
                     ? colors.error
                     : isFocused
-                    ? colors.primary
-                    : colors.neutrals700,
+                      ? colors.primary
+                      : colors.neutrals700,
                   marginBottom: 4,
                 }}
                 accessibilityLabel={t('priceAlerts.sheet.targetPrice')}

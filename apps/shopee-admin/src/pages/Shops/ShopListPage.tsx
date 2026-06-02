@@ -134,9 +134,7 @@ export default function ShopListPage() {
       accessorKey: 'owner',
       header: t('columns.owner'),
       cell: ({ row }) => (
-        <span className="text-sm text-muted-foreground">
-          {row.original.owner ?? '—'}
-        </span>
+        <span className="text-sm text-muted-foreground">{row.original.owner ?? '—'}</span>
       ),
     },
     {
@@ -147,10 +145,7 @@ export default function ShopListPage() {
     {
       accessorKey: 'revenue',
       header: t('columns.revenue'),
-      cell: ({ row }) =>
-        row.original.revenue != null
-          ? formatPrice(row.original.revenue)
-          : '—',
+      cell: ({ row }) => (row.original.revenue != null ? formatPrice(row.original.revenue) : '—'),
     },
     {
       accessorKey: 'followerCount',
@@ -292,9 +287,7 @@ export default function ShopListPage() {
             </Button>
             <Button
               onClick={confirmStatusChange}
-              disabled={
-                updateStatusMut.isPending || (needsReason && !statusReason.trim())
-              }
+              disabled={updateStatusMut.isPending || (needsReason && !statusReason.trim())}
             >
               {tc('buttons.confirm')}
             </Button>

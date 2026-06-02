@@ -2,7 +2,7 @@
 
 > **Nguồn:** Bài chia sẻ trên LinkedIn của một Engineering Manager 12+ năm kinh nghiệm
 >
-> **Trích dẫn gốc:** *"This is where mid and senior levels are getting filtered now."*
+> **Trích dẫn gốc:** _"This is where mid and senior levels are getting filtered now."_
 >
 > **Mục đích:** Phân tích sâu từng điểm trong bài chia sẻ — với lý do tại sao, cách implement, và cách trả lời trong phỏng vấn
 >
@@ -17,34 +17,35 @@ Engineering Manager nói thẳng: **"Đây là chỗ mid và senior bị loại.
 Không phải thuật toán. Không phải DSA. Mà là **system design + performance** ở frontend.
 
 Lý do:
+
 - Junior biết code component → ai cũng làm được
 - Mid/Senior phải biết **thiết kế hệ thống** — tại sao đặt state ở đây, tại sao gọi API lúc này, tại sao tách component theo cách này
 - Interviewer không cần bạn nhớ API, họ cần thấy bạn **suy nghĩ như người ship production**
 
-> *"Goal: if I design a feature on a whiteboard, it should look like something we can ship, not just fancy boxes."*
+> _"Goal: if I design a feature on a whiteboard, it should look like something we can ship, not just fancy boxes."_
 
 ---
 
 ## MỤC LỤC
 
-| # | Chủ đề | Loại |
-|---|--------|------|
-| **PHẦN A: PRACTICE DESIGNS** | | |
-| 1 | [Notification / Toast System](#1-notification--toast-system) | Small design |
-| 2 | [Search with Suggestions](#2-search-with-suggestions) | Small design |
-| 3 | [Carousel / Infinite Scroll](#3-carousel--infinite-scroll) | Small design |
-| 4 | [Form Flows with Complex Validation](#4-form-flows-with-complex-validation) | Small design |
-| **PHẦN B: THINKING FRAMEWORKS** | | |
-| 5 | [Where to Keep State and Why](#5-where-to-keep-state-and-why) | Thinking |
-| 6 | [How Many Network Calls Happen and When](#6-how-many-network-calls-happen-and-when) | Thinking |
-| 7 | [How to Break Features into Components and Modules](#7-how-to-break-features-into-components-and-modules) | Thinking |
-| **PHẦN C: PERFORMANCE** | | |
-| 8 | [Core Web Vitals](#8-core-web-vitals) | Performance |
-| 9 | [Code Splitting and Lazy Loading](#9-code-splitting-and-lazy-loading) | Performance |
-| 9.5 | [Vendor Splitting — Chiến Lược Tách Chunk Nâng Cao](#95-vendor-splitting--chiến-lược-tách-chunk-nâng-cao) | Performance |
-| 10 | [Bundle Size Basics](#10-bundle-size-basics) | Performance |
-| 11 | [memo, useCallback, useMemo — Khi Nào Dùng, Khi Nào Không](#11-memo-usecallback-usememo--khi-nào-dùng-khi-nào-không) | Performance |
-| 12 | [SSR vs CSR Tradeoffs](#12-ssr-vs-csr-tradeoffs) | Performance |
+| #                               | Chủ đề                                                                                                               | Loại         |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------ |
+| **PHẦN A: PRACTICE DESIGNS**    |                                                                                                                      |              |
+| 1                               | [Notification / Toast System](#1-notification--toast-system)                                                         | Small design |
+| 2                               | [Search with Suggestions](#2-search-with-suggestions)                                                                | Small design |
+| 3                               | [Carousel / Infinite Scroll](#3-carousel--infinite-scroll)                                                           | Small design |
+| 4                               | [Form Flows with Complex Validation](#4-form-flows-with-complex-validation)                                          | Small design |
+| **PHẦN B: THINKING FRAMEWORKS** |                                                                                                                      |              |
+| 5                               | [Where to Keep State and Why](#5-where-to-keep-state-and-why)                                                        | Thinking     |
+| 6                               | [How Many Network Calls Happen and When](#6-how-many-network-calls-happen-and-when)                                  | Thinking     |
+| 7                               | [How to Break Features into Components and Modules](#7-how-to-break-features-into-components-and-modules)            | Thinking     |
+| **PHẦN C: PERFORMANCE**         |                                                                                                                      |              |
+| 8                               | [Core Web Vitals](#8-core-web-vitals)                                                                                | Performance  |
+| 9                               | [Code Splitting and Lazy Loading](#9-code-splitting-and-lazy-loading)                                                | Performance  |
+| 9.5                             | [Vendor Splitting — Chiến Lược Tách Chunk Nâng Cao](#95-vendor-splitting--chiến-lược-tách-chunk-nâng-cao)            | Performance  |
+| 10                              | [Bundle Size Basics](#10-bundle-size-basics)                                                                         | Performance  |
+| 11                              | [memo, useCallback, useMemo — Khi Nào Dùng, Khi Nào Không](#11-memo-usecallback-usememo--khi-nào-dùng-khi-nào-không) | Performance  |
+| 12                              | [SSR vs CSR Tradeoffs](#12-ssr-vs-csr-tradeoffs)                                                                     | Performance  |
 
 ---
 
@@ -57,6 +58,7 @@ Lý do:
 ### Tại sao quan trọng?
 
 Toast system là bài tập **"nhỏ nhưng lộ hết"** — nó test:
+
 - Bạn có hiểu **global state** không?
 - Bạn có nghĩ đến **accessibility** không?
 - Bạn có handle **edge cases** (nhiều toast cùng lúc, memory leak, animation) không?
@@ -101,20 +103,21 @@ Toast system là bài tập **"nhỏ nhưng lộ hết"** — nó test:
 
 ```typescript
 interface Toast {
-  id: string           // uuid để identify
+  id: string // uuid để identify
   type: 'success' | 'error' | 'warning' | 'info'
   message: string
-  duration?: number    // ms, default 3000, 0 = không auto-dismiss
-  action?: {           // optional interactive button
+  duration?: number // ms, default 3000, 0 = không auto-dismiss
+  action?: {
+    // optional interactive button
     label: string
     onClick: () => void
   }
-  createdAt: number    // timestamp để sort
+  createdAt: number // timestamp để sort
 }
 
 interface ToastState {
   toasts: Toast[]
-  maxVisible: number   // default 5
+  maxVisible: number // default 5
 }
 ```
 
@@ -142,6 +145,7 @@ toast.success("File saved", {
 ### Key Technical Decisions
 
 **1. Tại sao dùng Portal?**
+
 ```
 Toast phải render ở top of z-index stack.
 Nếu render trong component tree bình thường → có thể bị clip bởi
@@ -153,19 +157,21 @@ ReactDOM.createPortal(<ToastContainer />, document.body)
 ```
 
 **2. Timer management — tránh memory leak**
+
 ```typescript
 useEffect(() => {
-  if (toast.duration === 0) return  // manual dismiss only
+  if (toast.duration === 0) return // manual dismiss only
 
   const timer = setTimeout(() => {
     removeToast(toast.id)
   }, toast.duration ?? 3000)
 
-  return () => clearTimeout(timer)  // cleanup khi unmount
+  return () => clearTimeout(timer) // cleanup khi unmount
 }, [toast.id])
 ```
 
 **3. Queue vs Discard khi quá nhiều toast**
+
 ```
 Option A — Queue: Lưu pending toasts, hiển thị khi slot trống
   → UX tốt hơn, không mất notifications
@@ -179,6 +185,7 @@ Option B — Discard oldest: Xóa toast cũ nhất khi đạt maxVisible
 ```
 
 **4. Accessibility (ARIA)**
+
 ```html
 <!-- Container: aria-live để screen reader announce -->
 <div
@@ -199,20 +206,20 @@ Option B — Discard oldest: Xóa toast cũ nhất khi đạt maxVisible
 
 ### Optimizations
 
-| Concern | Solution |
-|---------|----------|
-| Animation | CSS transitions, `framer-motion` AnimatePresence |
-| Stacking order | Newest on top (prepend) hoặc bottom (append) |
-| Mobile | Full-width bottom sheet thay vì corner toast |
-| Pause on hover | Clear timer khi hover, restart khi leave |
-| Reduced motion | `prefers-reduced-motion` → disable animations |
+| Concern              | Solution                                              |
+| -------------------- | ----------------------------------------------------- |
+| Animation            | CSS transitions, `framer-motion` AnimatePresence      |
+| Stacking order       | Newest on top (prepend) hoặc bottom (append)          |
+| Mobile               | Full-width bottom sheet thay vì corner toast          |
+| Pause on hover       | Clear timer khi hover, restart khi leave              |
+| Reduced motion       | `prefers-reduced-motion` → disable animations         |
 | Duplicate prevention | Hash message → skip nếu identical toast đang hiển thị |
 
 ### Câu hỏi interviewer hay hỏi thêm
 
-- *"Nếu user offline và có 10 actions pending, toast hiển thị thế nào?"*
+- _"Nếu user offline và có 10 actions pending, toast hiển thị thế nào?"_
   → Queue với "offline" indicator, flush khi online lại
-- *"Làm sao test toast system?"*
+- _"Làm sao test toast system?"_
   → Mock timer (jest.useFakeTimers), test ARIA announcements, test queue behavior
 
 ---
@@ -275,15 +282,15 @@ Search with suggestions là bài test **networking + UX + performance** cùng l�
 interface Suggestion {
   id: string
   text: string
-  category?: string    // "Product", "Brand", "Category"
+  category?: string // "Product", "Brand", "Category"
   icon?: string
-  url?: string         // direct navigation
+  url?: string // direct navigation
 }
 
 interface AutocompleteState {
   query: string
   suggestions: Suggestion[]
-  activeIndex: number   // -1 = none selected
+  activeIndex: number // -1 = none selected
   isOpen: boolean
   isLoading: boolean
   error: string | null
@@ -325,7 +332,7 @@ const useAutocomplete = (query: string) => {
 
     try {
       const res = await fetch(`/api/suggestions?q=${q}`, {
-        signal: abortRef.current.signal
+        signal: abortRef.current.signal,
       })
       const data = await res.json()
 
@@ -333,7 +340,7 @@ const useAutocomplete = (query: string) => {
       cache.current.set(normalized, data.suggestions)
       return data.suggestions
     } catch (err) {
-      if (err.name === 'AbortError') return  // Bỏ qua, request bị cancel
+      if (err.name === 'AbortError') return // Bỏ qua, request bị cancel
       throw err
     }
   }, [])
@@ -372,10 +379,7 @@ Visual: scroll active item into view
   aria-activedescendant="suggestion-2"
 />
 
-<ul
-  id="suggestions-listbox"
-  role="listbox"
->
+<ul id="suggestions-listbox" role="listbox">
   <li id="suggestion-0" role="option" aria-selected="false">Shopee</li>
   <li id="suggestion-1" role="option" aria-selected="false">Shopee Mall</li>
   <li id="suggestion-2" role="option" aria-selected="true">Shopee Pay</li>
@@ -384,14 +388,14 @@ Visual: scroll active item into view
 
 ### Performance Optimizations
 
-| Optimization | Giải thích |
-|-------------|-----------|
-| Debounce 200-300ms | Giảm số requests |
-| Min query length (2 chars) | Tránh quá nhiều results |
-| In-memory LRU cache | Instant results cho repeated queries |
-| AbortController | Cancel stale requests |
-| Virtualize suggestions | Nếu list > 100 items |
-| Highlight matching text | UX tốt hơn, dùng `<mark>` tag |
+| Optimization               | Giải thích                           |
+| -------------------------- | ------------------------------------ |
+| Debounce 200-300ms         | Giảm số requests                     |
+| Min query length (2 chars) | Tránh quá nhiều results              |
+| In-memory LRU cache        | Instant results cho repeated queries |
+| AbortController            | Cancel stale requests                |
+| Virtualize suggestions     | Nếu list > 100 items                 |
+| Highlight matching text    | UX tốt hơn, dùng `<mark>` tag        |
 
 ---
 
@@ -438,17 +442,23 @@ Hai bài này test **DOM performance** — đây là chỗ nhiều dev viết co
 #### Key Decisions
 
 **Lazy loading images:**
+
 ```html
 <!-- Chỉ load current + adjacent slides -->
 <img
-  src={isNearCurrent ? slide.url : undefined}
+  src="{isNearCurrent"
+  ?
+  slide.url
+  :
+  undefined}
   loading="lazy"
   decoding="async"
-  alt={slide.alt}
+  alt="{slide.alt}"
 />
 ```
 
 **Virtualization cho large carousels (1000+ slides):**
+
 ```
 Thay vì render tất cả slides → chỉ render 3 DOM nodes:
   [prev slide] [current slide] [next slide]
@@ -458,6 +468,7 @@ Khi navigate: swap DOM nodes + update content
 ```
 
 **CSS transition vs JS animation:**
+
 ```
 CSS: transform + transition
   → GPU-accelerated (composite layer)
@@ -471,17 +482,10 @@ JS: setInterval + left/margin
 ```
 
 **Accessibility:**
+
 ```html
-<div
-  role="region"
-  aria-label="Product images"
-  aria-roledescription="carousel"
->
-  <div
-    role="group"
-    aria-roledescription="slide"
-    aria-label="Slide 1 of 5"
-  >
+<div role="region" aria-label="Product images" aria-roledescription="carousel">
+  <div role="group" aria-roledescription="slide" aria-label="Slide 1 of 5">
     <img alt="Product front view" />
   </div>
 </div>
@@ -541,9 +545,9 @@ useEffect(() => {
       }
     },
     {
-      rootMargin: '200px',  // Trigger 200px trước khi sentinel visible
-      threshold: 0
-    }
+      rootMargin: '200px', // Trigger 200px trước khi sentinel visible
+      threshold: 0,
+    },
   )
 
   if (sentinelRef.current) {
@@ -712,15 +716,15 @@ Strategy 3: Hybrid
 
 ### UX Best Practices
 
-| Pattern | Giải thích |
-|---------|-----------|
-| Inline validation | Hiện error ngay dưới field, không đợi submit |
-| Progress indicator | "Step 2 of 4" hoặc progress bar |
-| Preserve data khi back | Không xóa data khi user back về step trước |
-| Disable submit khi invalid | Nhưng vẫn show tại sao disabled (tooltip) |
-| Focus first error | Sau submit fail → auto focus field đầu tiên có error |
-| Loading state | Disable form khi submitting, show spinner |
-| Success feedback | Clear confirmation, next steps |
+| Pattern                    | Giải thích                                           |
+| -------------------------- | ---------------------------------------------------- |
+| Inline validation          | Hiện error ngay dưới field, không đợi submit         |
+| Progress indicator         | "Step 2 of 4" hoặc progress bar                      |
+| Preserve data khi back     | Không xóa data khi user back về step trước           |
+| Disable submit khi invalid | Nhưng vẫn show tại sao disabled (tooltip)            |
+| Focus first error          | Sau submit fail → auto focus field đầu tiên có error |
+| Loading state              | Disable form khi submitting, show spinner            |
+| Success feedback           | Clear confirmation, next steps                       |
 
 ---
 
@@ -730,7 +734,7 @@ Strategy 3: Hybrid
 
 ## 5. WHERE TO KEEP STATE AND WHY
 
-> *"This is the question that separates engineers who just code from engineers who design."*
+> _"This is the question that separates engineers who just code from engineers who design."_
 
 ### Decision Framework
 
@@ -819,7 +823,7 @@ In-memory state:
 
 ## 6. HOW MANY NETWORK CALLS HAPPEN AND WHEN
 
-> *"Senior engineers think about network calls before writing a single line of code."*
+> _"Senior engineers think about network calls before writing a single line of code."_
 
 ### Request Waterfall — Kẻ Thù Của Performance
 
@@ -863,6 +867,7 @@ Parallel (GOOD):
 ### Strategies để Giảm Network Calls
 
 **1. Request Deduplication**
+
 ```
 Nhiều components cùng cần /api/user
 → TanStack Query tự động deduplicate: chỉ gửi 1 request
@@ -870,6 +875,7 @@ Nhiều components cùng cần /api/user
 ```
 
 **2. Batch Requests**
+
 ```
 Thay vì:
   GET /api/user/1
@@ -882,6 +888,7 @@ Dùng:
 ```
 
 **3. GraphQL / BFF (Backend for Frontend)**
+
 ```
 Vấn đề REST: over-fetching (lấy nhiều hơn cần) và under-fetching (cần nhiều requests)
 
@@ -895,6 +902,7 @@ GraphQL: 1 query lấy đúng data cần
 ```
 
 **4. Caching Strategy**
+
 ```
 Browser Cache (HTTP):
   Cache-Control: max-age=3600
@@ -910,20 +918,21 @@ CDN Cache:
 ```
 
 **5. Prefetching**
+
 ```typescript
 // Prefetch khi hover (300ms delay để tránh accidental hovers)
 const handleMouseEnter = debounce(() => {
   queryClient.prefetchQuery({
     queryKey: ['product', productId],
     queryFn: () => fetchProduct(productId),
-    staleTime: 5 * 60 * 1000
+    staleTime: 5 * 60 * 1000,
   })
 }, 300)
 ```
 
 ### Câu hỏi hay gặp trong phỏng vấn
 
-*"Design a page có 5 sections, mỗi section cần data khác nhau. Bạn fetch thế nào?"*
+_"Design a page có 5 sections, mỗi section cần data khác nhau. Bạn fetch thế nào?"_
 
 ```
 Trả lời theo 3 bước:
@@ -1193,35 +1202,35 @@ Dự án shopee-web sử dụng **5 pattern** Lazy Loading + Code Splitting kế
 // useRouteElements.tsx — Lazy load TOÀN BỘ layouts và pages
 
 // ─── Lazy load Layouts ───────────────────────────────────────────
-const MainLayout    = lazy(() => import('./layouts/MainLayout'))
+const MainLayout = lazy(() => import('./layouts/MainLayout'))
 const RegisterLayout = lazy(() => import('./layouts/RegisterLayout'))
-const CartLayout    = lazy(() => import('./layouts/CartLayout'))
-const UserLayout    = lazy(() => import('./pages/User/layouts/UserLayout'))
+const CartLayout = lazy(() => import('./layouts/CartLayout'))
+const UserLayout = lazy(() => import('./pages/User/layouts/UserLayout'))
 
 // ─── Lazy load Pages ─────────────────────────────────────────────
-const Login         = lazy(() => import('./pages/Login'))
-const Register      = lazy(() => import('./pages/Register'))
-const Home          = lazy(() => import('./pages/Home'))
-const ProductList   = lazy(() => import('./pages/ProductList'))
+const Login = lazy(() => import('./pages/Login'))
+const Register = lazy(() => import('./pages/Register'))
+const Home = lazy(() => import('./pages/Home'))
+const ProductList = lazy(() => import('./pages/ProductList'))
 const ProductDetail = lazy(() => import('./pages/ProductDetail'))
-const Cart          = lazy(() => import('./pages/Cart'))
-const Checkout      = lazy(() => import('./pages/Checkout'))
-const Wishlist      = lazy(() => import('./pages/Wishlist'))
-const Compare       = lazy(() => import('./pages/Compare'))
+const Cart = lazy(() => import('./pages/Cart'))
+const Checkout = lazy(() => import('./pages/Checkout'))
+const Wishlist = lazy(() => import('./pages/Wishlist'))
+const Compare = lazy(() => import('./pages/Compare'))
 // ... và tất cả User sub-pages
-const Profile       = lazy(() => import('./pages/User/pages/Profile'))
+const Profile = lazy(() => import('./pages/User/pages/Profile'))
 const ChangePassword = lazy(() => import('./pages/User/pages/ChangePassword'))
 const HistoryPurchases = lazy(() => import('./pages/User/pages/HistoryPurchases'))
-const OrderList     = lazy(() => import('./pages/User/pages/OrderList'))
-const OrderDetail   = lazy(() => import('./pages/User/pages/OrderDetail'))
-const MyVouchers    = lazy(() => import('./pages/User/pages/MyVouchers'))
+const OrderList = lazy(() => import('./pages/User/pages/OrderList'))
+const OrderDetail = lazy(() => import('./pages/User/pages/OrderDetail'))
+const MyVouchers = lazy(() => import('./pages/User/pages/MyVouchers'))
 const DailyCheckInPage = lazy(() => import('./pages/User/pages/DailyCheckIn'))
-const AddressBook   = lazy(() => import('./pages/User/pages/AddressBook'))
+const AddressBook = lazy(() => import('./pages/User/pages/AddressBook'))
 const Notifications = lazy(() => import('./pages/User/pages/Notifications'))
 const ConversationHistory = lazy(() => import('./pages/User/pages/ConversationHistory'))
-const NotFound      = lazy(() => import('./pages/NotFound'))
+const NotFound = lazy(() => import('./pages/NotFound'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword/ForgotPassword'))
-const ResetPassword  = lazy(() => import('./pages/ResetPassword/ResetPassword'))
+const ResetPassword = lazy(() => import('./pages/ResetPassword/ResetPassword'))
 ```
 
 **Điểm đặc biệt: Nested Suspense (2 lớp)**
@@ -1277,12 +1286,12 @@ Dự án dùng **nested Suspense** cho các route cần layout lồng nhau — l
 
 **Fallback strategy:**
 
-| Route group | Fallback |
-|---|---|
-| Public pages (Home, ProductList, ProductDetail) | `<Loader />` — spinner toàn trang |
-| Protected pages (Cart, Checkout, Wishlist) | `<Loader />` — spinner toàn trang |
-| User sub-pages (Profile, ChangePassword, ...) | `<Suspense>` không có fallback (silent) |
-| 404 NotFound | `<Suspense>` không có fallback |
+| Route group                                     | Fallback                                |
+| ----------------------------------------------- | --------------------------------------- |
+| Public pages (Home, ProductList, ProductDetail) | `<Loader />` — spinner toàn trang       |
+| Protected pages (Cart, Checkout, Wishlist)      | `<Loader />` — spinner toàn trang       |
+| User sub-pages (Profile, ChangePassword, ...)   | `<Suspense>` không có fallback (silent) |
+| 404 NotFound                                    | `<Suspense>` không có fallback          |
 
 ---
 
@@ -1583,9 +1592,10 @@ import { domAnimation, LazyMotion } from 'framer-motion'
 ```
 
 > **`domAnimation` vs `domMax`:**
+>
 > - `domAnimation` (~15KB gzipped): animations cơ bản — translate, scale, opacity, rotate
 > - `domMax` (~25KB gzipped): thêm drag, layout animations, advanced gestures
-> Dự án dùng `domAnimation` — đủ cho tất cả animations hiện tại, tiết kiệm ~10KB.
+>   Dự án dùng `domAnimation` — đủ cho tất cả animations hiện tại, tiết kiệm ~10KB.
 
 ---
 
@@ -1848,12 +1858,12 @@ Không phải cứ mỗi library là 1 chunk — cần **cân bằng** giữa s�
 
 **Tiêu chí quyết định nhóm một library vào chunk riêng:**
 
-| Tiêu chí | Nên tách riêng | Nên gộp chung |
-|---|---|---|
-| Kích thước | > 30KB gzipped | < 10KB gzipped |
-| Tần suất dùng | Dùng ở nhiều pages | Chỉ dùng 1-2 pages |
-| Tần suất update | Hiếm khi update | Update thường xuyên |
-| Dependency | Độc lập | Phụ thuộc lẫn nhau |
+| Tiêu chí        | Nên tách riêng     | Nên gộp chung       |
+| --------------- | ------------------ | ------------------- |
+| Kích thước      | > 30KB gzipped     | < 10KB gzipped      |
+| Tần suất dùng   | Dùng ở nhiều pages | Chỉ dùng 1-2 pages  |
+| Tần suất update | Hiếm khi update    | Update thường xuyên |
+| Dependency      | Độc lập            | Phụ thuộc lẫn nhau  |
 
 ---
 
@@ -1996,11 +2006,12 @@ Vendor Splitting chỉ có giá trị khi server cấu hình đúng HTTP cache h
 import { visualizer } from 'rollup-plugin-visualizer'
 
 plugins: [
-  visualizer(),  // ← tạo stats.html sau khi build
+  visualizer(), // ← tạo stats.html sau khi build
 ]
 ```
 
 Sau khi chạy `vite build`, mở `stats.html` để thấy:
+
 - Chunk nào lớn nhất
 - Library nào chiếm nhiều nhất trong mỗi chunk
 - Có module nào bị duplicate giữa các chunks không
@@ -2145,7 +2156,7 @@ Gợi ý cho e-commerce web:
 
 ## 11. MEMO, USECALLBACK, USEMEMO — KHI NÀO DÙNG, KHI NÀO KHÔNG
 
-> *"The biggest mistake is adding memoization everywhere 'just in case'."*
+> _"The biggest mistake is adding memoization everywhere 'just in case'."_
 
 ### Nguyên tắc vàng: **Profile trước, optimize sau**
 
@@ -2226,12 +2237,12 @@ const ProductList = ({ products, filters }) => {
 
   // ❌ Không cần: simple filter trên small array
   const activeItems = useMemo(() => {
-    return items.filter(i => i.active)  // 5 items, instant
+    return items.filter((i) => i.active) // 5 items, instant
   }, [items])
 
   // ❌ Không cần: primitive value
   const total = useMemo(() => {
-    return items.length  // không cần memo
+    return items.length // không cần memo
   }, [items])
 }
 ```
@@ -2309,36 +2320,39 @@ Fix:
 
 ## TỔNG KẾT: GOAL CỦA EM
 
-> *"If I design a feature on a whiteboard, it should look like something we can ship, not just fancy boxes."*
+> _"If I design a feature on a whiteboard, it should look like something we can ship, not just fancy boxes."_
 
 Đây là tiêu chí quan trọng nhất. Khi bạn vẽ diagram trong phỏng vấn, interviewer phải thấy:
 
-| Interviewer thấy | Ý nghĩa |
-|-----------------|---------|
-| Bạn hỏi clarifying questions | Bạn không assume, bạn verify |
-| Bạn đề cập error states | Bạn biết production không bao giờ happy path |
-| Bạn nói về loading states | Bạn nghĩ về UX, không chỉ data |
-| Bạn mention accessibility | Bạn build cho mọi người |
-| Bạn discuss trade-offs | Bạn có engineering judgment |
-| Bạn biết khi nào KHÔNG optimize | Bạn không over-engineer |
-| Bạn nói về network calls | Bạn hiểu performance từ gốc |
+| Interviewer thấy                | Ý nghĩa                                      |
+| ------------------------------- | -------------------------------------------- |
+| Bạn hỏi clarifying questions    | Bạn không assume, bạn verify                 |
+| Bạn đề cập error states         | Bạn biết production không bao giờ happy path |
+| Bạn nói về loading states       | Bạn nghĩ về UX, không chỉ data               |
+| Bạn mention accessibility       | Bạn build cho mọi người                      |
+| Bạn discuss trade-offs          | Bạn có engineering judgment                  |
+| Bạn biết khi nào KHÔNG optimize | Bạn không over-engineer                      |
+| Bạn nói về network calls        | Bạn hiểu performance từ gốc                  |
 
 ---
 
 ## CHECKLIST TRƯỚC PHỎNG VẤN
 
 ### Nhỏ nhưng thực tế (practice designs)
+
 - [ ] Tôi có thể design Toast system trong 15 phút không?
 - [ ] Tôi có thể giải thích race condition trong Autocomplete không?
 - [ ] Tôi có thể nói về Intersection Observer vs scroll event không?
 - [ ] Tôi có thể design multi-step form với state machine không?
 
 ### Thinking frameworks
+
 - [ ] Tôi có thể giải thích tại sao đặt state ở URL vs localStorage vs memory không?
 - [ ] Tôi có thể identify waterfall requests và fix chúng không?
 - [ ] Tôi có thể decompose một feature thành components + hooks + API không?
 
 ### Performance
+
 - [ ] Tôi biết LCP, INP, CLS là gì và cách fix không?
 - [ ] Tôi có thể giải thích code splitting và khi nào cần không?
 - [ ] Tôi biết khi nào KHÔNG dùng useMemo/useCallback không?
@@ -2346,7 +2360,7 @@ Fix:
 
 ---
 
-> **Lời khuyên cuối:** Engineering Manager nói *"keep your thinking clear"*.
+> **Lời khuyên cuối:** Engineering Manager nói _"keep your thinking clear"_.
 > Trong phỏng vấn, clarity > completeness. Một design đơn giản được giải thích rõ ràng
 > tốt hơn một design phức tạp được giải thích lộn xộn.
 >

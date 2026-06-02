@@ -190,7 +190,9 @@ describe('Order State Machine', () => {
 describe('Payment state machine transitions', () => {
   describe('payment_pending state', () => {
     it('should allow PAYMENT_SUCCESS from payment_pending', () => {
-      expect(isValidTransition(ORDER_STATUS.PAYMENT_PENDING, ORDER_EVENT.PAYMENT_SUCCESS)).toBe(true)
+      expect(isValidTransition(ORDER_STATUS.PAYMENT_PENDING, ORDER_EVENT.PAYMENT_SUCCESS)).toBe(
+        true,
+      )
     })
 
     it('should allow PAYMENT_FAIL from payment_pending', () => {
@@ -212,7 +214,9 @@ describe('Payment state machine transitions', () => {
     })
 
     it('should allow INITIATE_PAYMENT from payment_failed', () => {
-      expect(isValidTransition(ORDER_STATUS.PAYMENT_FAILED, ORDER_EVENT.INITIATE_PAYMENT)).toBe(true)
+      expect(isValidTransition(ORDER_STATUS.PAYMENT_FAILED, ORDER_EVENT.INITIATE_PAYMENT)).toBe(
+        true,
+      )
     })
 
     it('should allow CANCEL from payment_failed', () => {

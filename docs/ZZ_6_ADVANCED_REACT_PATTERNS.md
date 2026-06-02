@@ -343,11 +343,7 @@ export const compose = <P extends object>(
 }
 
 // Usage
-const EnhancedProfile = compose(
-  withAuth,
-  withLoading,
-  withErrorBoundary
-)(Profile)
+const EnhancedProfile = compose(withAuth, withLoading, withErrorBoundary)(Profile)
 ```
 
 ### 3.5. HOC Best Practices
@@ -875,7 +871,7 @@ export const useDropdown = () => {
     ...props,
     onClick: () => setIsOpen(!isOpen),
     'aria-expanded': isOpen,
-    'aria-haspopup': true
+    'aria-haspopup': true,
   })
 
   // Props getter for dropdown menu
@@ -883,7 +879,7 @@ export const useDropdown = () => {
     ...props,
     ref: dropdownRef,
     hidden: !isOpen,
-    role: 'menu'
+    role: 'menu',
   })
 
   // Props getter for menu items
@@ -893,14 +889,14 @@ export const useDropdown = () => {
     onClick: () => {
       props.onClick?.()
       setIsOpen(false)
-    }
+    },
   })
 
   return {
     isOpen,
     getTriggerProps,
     getMenuProps,
-    getItemProps
+    getItemProps,
   }
 }
 ```
@@ -1047,12 +1043,14 @@ export default Card
 **Kết luận:**
 
 Advanced React Patterns giúp:
+
 - **Reusability**: Code có thể reuse dễ dàng
 - **Flexibility**: Dễ dàng customize và extend
 - **Maintainability**: Code dễ maintain và scale
 - **Separation of concerns**: Logic và UI tách biệt rõ ràng
 
 **Khi nào dùng pattern nào?**
+
 - **Compound Components**: Khi cần flexible layout (Tabs, Accordion, Dropdown)
 - **Render Props**: Khi cần share logic với dynamic rendering
 - **HOC**: Khi cần enhance component với additional functionality
@@ -1065,6 +1063,7 @@ Advanced React Patterns giúp:
 - **Composition**: Khi cần flexible và reusable UI components
 
 **Tài liệu tham khảo:**
+
 - [React Patterns](https://reactpatterns.com/)
 - [Advanced React Patterns](https://kentcdodds.com/blog/advanced-react-patterns)
 - [React Hooks Patterns](https://blog.logrocket.com/react-hooks-patterns/)

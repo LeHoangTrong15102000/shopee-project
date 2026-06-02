@@ -40,7 +40,15 @@ import { Logger } from '@utils/logger'
 import { initializeSocket } from './socket/socket.init'
 import { viewCounterService } from '@utils/view-counter.service'
 import { disconnectRedis } from '@utils/redis.client'
-import { paymentReconciliationJob, flashSaleScheduler, refundStatusPollJob, meilisearchService, analyticsAggregationJob, cleanupJob, searchReindexJob } from './container'
+import {
+  paymentReconciliationJob,
+  flashSaleScheduler,
+  refundStatusPollJob,
+  meilisearchService,
+  analyticsAggregationJob,
+  cleanupJob,
+  searchReindexJob,
+} from './container'
 import dockerHealthRouter from '@routes/health.route'
 
 const app: express.Application = express()
@@ -278,7 +286,9 @@ httpServer.listen(PORT, () => {
 
   // Register BullMQ repeatable jobs after server is ready
   paymentReconciliationJob.start().catch((err) => {
-    Logger.apiError('[index] Failed to register payment reconciliation job', { error: err?.message })
+    Logger.apiError('[index] Failed to register payment reconciliation job', {
+      error: err?.message,
+    })
   })
   flashSaleScheduler.start().catch((err) => {
     Logger.apiError('[index] Failed to register flash sale scheduler job', { error: err?.message })

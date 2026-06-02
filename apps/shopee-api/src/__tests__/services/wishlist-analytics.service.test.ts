@@ -34,7 +34,15 @@ describe('WishlistAnalyticsService', () => {
     it('returns products and total for 7d period', async () => {
       mockWishlistAggregate
         .mockResolvedValueOnce([
-          { product_id: 'p1', name: 'Phone', image: 'phone.jpg', price: 5000000, quantity: 10, sold: 5, wishlist_count: 100 },
+          {
+            product_id: 'p1',
+            name: 'Phone',
+            image: 'phone.jpg',
+            price: 5000000,
+            quantity: 10,
+            sold: 5,
+            wishlist_count: 100,
+          },
         ])
         .mockResolvedValueOnce([{ total: 150 }])
 
@@ -46,9 +54,7 @@ describe('WishlistAnalyticsService', () => {
     })
 
     it('returns products and total for 30d period', async () => {
-      mockWishlistAggregate
-        .mockResolvedValueOnce([])
-        .mockResolvedValueOnce([{ total: 0 }])
+      mockWishlistAggregate.mockResolvedValueOnce([]).mockResolvedValueOnce([{ total: 0 }])
 
       const result = await service.getTopProducts('30d')
 
@@ -59,7 +65,15 @@ describe('WishlistAnalyticsService', () => {
     it('returns products and total for 90d period', async () => {
       mockWishlistAggregate
         .mockResolvedValueOnce([
-          { product_id: 'p2', name: 'Laptop', image: null, price: 20000000, quantity: 5, sold: 2, wishlist_count: 50 },
+          {
+            product_id: 'p2',
+            name: 'Laptop',
+            image: null,
+            price: 20000000,
+            quantity: 5,
+            sold: 2,
+            wishlist_count: 50,
+          },
         ])
         .mockResolvedValueOnce([{ total: 50 }])
 
@@ -71,7 +85,15 @@ describe('WishlistAnalyticsService', () => {
     it('returns all products when period is "all" (no date filter)', async () => {
       mockWishlistAggregate
         .mockResolvedValueOnce([
-          { product_id: 'p3', name: 'Tablet', image: 'tablet.jpg', price: 8000000, quantity: 20, sold: 10, wishlist_count: 200 },
+          {
+            product_id: 'p3',
+            name: 'Tablet',
+            image: 'tablet.jpg',
+            price: 8000000,
+            quantity: 20,
+            sold: 10,
+            wishlist_count: 200,
+          },
         ])
         .mockResolvedValueOnce([{ total: 200 }])
 
@@ -82,9 +104,7 @@ describe('WishlistAnalyticsService', () => {
     })
 
     it('returns 0 total when no wishlist entries', async () => {
-      mockWishlistAggregate
-        .mockResolvedValueOnce([])
-        .mockResolvedValueOnce([])
+      mockWishlistAggregate.mockResolvedValueOnce([]).mockResolvedValueOnce([])
 
       const result = await service.getTopProducts('30d')
 
@@ -95,7 +115,14 @@ describe('WishlistAnalyticsService', () => {
   describe('getConversion', () => {
     it('returns conversion items with conversion_rate calculated', async () => {
       mockWishlistAggregate.mockResolvedValue([
-        { product_id: 'p1', name: 'Phone', image: 'phone.jpg', price: 5000000, sold: 10, wishlist_count: 100 },
+        {
+          product_id: 'p1',
+          name: 'Phone',
+          image: 'phone.jpg',
+          price: 5000000,
+          sold: 10,
+          wishlist_count: 100,
+        },
       ])
 
       const result = await service.getConversion()
@@ -107,7 +134,14 @@ describe('WishlistAnalyticsService', () => {
 
     it('returns 0 conversion_rate when wishlist_count is 0', async () => {
       mockWishlistAggregate.mockResolvedValue([
-        { product_id: 'p2', name: 'Laptop', image: null, price: 20000000, sold: 5, wishlist_count: 0 },
+        {
+          product_id: 'p2',
+          name: 'Laptop',
+          image: null,
+          price: 20000000,
+          sold: 5,
+          wishlist_count: 0,
+        },
       ])
 
       const result = await service.getConversion()
@@ -117,7 +151,14 @@ describe('WishlistAnalyticsService', () => {
 
     it('caps conversion_rate at 100', async () => {
       mockWishlistAggregate.mockResolvedValue([
-        { product_id: 'p3', name: 'Tablet', image: null, price: 8000000, sold: 200, wishlist_count: 10 },
+        {
+          product_id: 'p3',
+          name: 'Tablet',
+          image: null,
+          price: 8000000,
+          sold: 200,
+          wishlist_count: 10,
+        },
       ])
 
       const result = await service.getConversion()

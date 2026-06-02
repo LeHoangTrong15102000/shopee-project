@@ -389,7 +389,11 @@ describe('OrderService - SKU Stock Sync', () => {
         expect.objectContaining({}),
       )
       expect(mockProductRepository.bulkUpdateStock).not.toHaveBeenCalled()
-      expect(mockProductRepository.incrementSold).toHaveBeenCalledWith(productId.toString(), 2, expect.objectContaining({}))
+      expect(mockProductRepository.incrementSold).toHaveBeenCalledWith(
+        productId.toString(),
+        2,
+        expect.objectContaining({}),
+      )
     })
 
     it('throws descriptive error with product name and variant on insufficient stock', async () => {
@@ -485,7 +489,11 @@ describe('OrderService - SKU Stock Sync', () => {
       await service.createOrder(validObjectId.toString(), input)
 
       // Should be called once with combined total (2+3=5), not twice
-      expect(mockProductRepository.incrementSold).toHaveBeenCalledWith(productId.toString(), 5, expect.objectContaining({}))
+      expect(mockProductRepository.incrementSold).toHaveBeenCalledWith(
+        productId.toString(),
+        5,
+        expect.objectContaining({}),
+      )
     })
 
     it('propagates Product sync failure from bulkAtomicDecrementStock', async () => {
@@ -794,7 +802,11 @@ describe('OrderService - createOrder transaction orchestration', () => {
       // Each product lookup returns a product variant
       productIds.forEach((pid, i) => {
         mockProductRepo.findById.mockResolvedValueOnce({ ...mockProduct, _id: pid } as any)
-        mockSkuRepo.findById.mockResolvedValueOnce({ ...mockSku, _id: skuIds[i], product: pid } as any)
+        mockSkuRepo.findById.mockResolvedValueOnce({
+          ...mockSku,
+          _id: skuIds[i],
+          product: pid,
+        } as any)
       })
       mockSkuRepo.bulkAtomicDecrementStock.mockResolvedValue(
         skuIds.map((sid) => ({ skuId: sid.toString(), success: true, sku: mockSku as any })),
@@ -898,7 +910,9 @@ describe('OrderService - createOrder transaction orchestration', () => {
       mockOrderRepo.create.mockResolvedValue(mockCreatedOrder as any)
       mockSnapshotRepo.createMany.mockResolvedValue([])
       mockProductRepo.incrementSold.mockResolvedValue(undefined as any)
-      mockPurchaseRepo.deleteManyByUserAndProducts.mockRejectedValue(new Error('Cart delete failed'))
+      mockPurchaseRepo.deleteManyByUserAndProducts.mockRejectedValue(
+        new Error('Cart delete failed'),
+      )
 
       await expect(service.createOrder(userId.toString(), baseInput)).rejects.toThrow(
         'Cart delete failed',
@@ -929,9 +943,7 @@ describe('OrderService - createOrder transaction orchestration', () => {
       const txError = new BusinessError('SKU không đủ tồn kho')
       mockSkuRepo.bulkAtomicDecrementStock.mockRejectedValue(txError)
 
-      await expect(service.createOrder(userId.toString(), baseInput)).rejects.toThrow(
-        BusinessError,
-      )
+      await expect(service.createOrder(userId.toString(), baseInput)).rejects.toThrow(BusinessError)
 
       // reserveStock wraps the BusinessError with product/SKU context
       // but still throws — order creation must not proceed

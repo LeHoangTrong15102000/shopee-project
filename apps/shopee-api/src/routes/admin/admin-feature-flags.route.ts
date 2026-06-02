@@ -111,9 +111,15 @@ adminFeatureFlagsRouter.put(
         resource: 'feature-flag',
         getResourceId: (req) => req.params.id,
         getBeforeSnapshot: async (req) =>
-          FeatureFlagModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
+          FeatureFlagModel.findById(req.params.id).lean() as Promise<Record<
+            string,
+            unknown
+          > | null>,
         getAfterSnapshot: async (req) =>
-          FeatureFlagModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
+          FeatureFlagModel.findById(req.params.id).lean() as Promise<Record<
+            string,
+            unknown
+          > | null>,
       },
     ),
   ),
@@ -140,7 +146,10 @@ adminFeatureFlagsRouter.delete(
         resource: 'feature-flag',
         getResourceId: (req) => req.params.id,
         getBeforeSnapshot: async (req) =>
-          FeatureFlagModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
+          FeatureFlagModel.findById(req.params.id).lean() as Promise<Record<
+            string,
+            unknown
+          > | null>,
       },
     ),
   ),
@@ -167,9 +176,15 @@ adminFeatureFlagsRouter.patch(
         resource: 'feature-flag',
         getResourceId: (req) => req.params.id,
         getBeforeSnapshot: async (req) =>
-          FeatureFlagModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
+          FeatureFlagModel.findById(req.params.id).lean() as Promise<Record<
+            string,
+            unknown
+          > | null>,
         getAfterSnapshot: async (req) =>
-          FeatureFlagModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
+          FeatureFlagModel.findById(req.params.id).lean() as Promise<Record<
+            string,
+            unknown
+          > | null>,
       },
     ),
   ),

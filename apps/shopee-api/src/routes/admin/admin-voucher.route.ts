@@ -32,32 +32,41 @@ adminVoucherRouter.get(
 adminVoucherRouter.post(
   '/',
   validate(adminCreateVoucherSchema),
-  asyncHandler(withAuditLog(ctrl.adminCreateVoucher, {
-    action: 'voucher.create',
-    resource: 'voucher',
-    getResourceId: (_req, result: any) => result?.data?._id?.toString() ?? null,
-  })),
+  asyncHandler(
+    withAuditLog(ctrl.adminCreateVoucher, {
+      action: 'voucher.create',
+      resource: 'voucher',
+      getResourceId: (_req, result: any) => result?.data?._id?.toString() ?? null,
+    }),
+  ),
 )
 adminVoucherRouter.put(
   '/:id',
   validate(adminUpdateVoucherSchema),
-  asyncHandler(withAuditLog(ctrl.adminUpdateVoucher, {
-    action: 'voucher.update',
-    resource: 'voucher',
-    getResourceId: (req) => req.params.id,
-    getBeforeSnapshot: async (req) => VoucherModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
-    getAfterSnapshot: async (req) => VoucherModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
-  })),
+  asyncHandler(
+    withAuditLog(ctrl.adminUpdateVoucher, {
+      action: 'voucher.update',
+      resource: 'voucher',
+      getResourceId: (req) => req.params.id,
+      getBeforeSnapshot: async (req) =>
+        VoucherModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
+      getAfterSnapshot: async (req) =>
+        VoucherModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
+    }),
+  ),
 )
 adminVoucherRouter.delete(
   '/:id',
   validate(adminVoucherIdSchema),
-  asyncHandler(withAuditLog(ctrl.adminDeleteVoucher, {
-    action: 'voucher.delete',
-    resource: 'voucher',
-    getResourceId: (req) => req.params.id,
-    getBeforeSnapshot: async (req) => VoucherModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
-  })),
+  asyncHandler(
+    withAuditLog(ctrl.adminDeleteVoucher, {
+      action: 'voucher.delete',
+      resource: 'voucher',
+      getResourceId: (req) => req.params.id,
+      getBeforeSnapshot: async (req) =>
+        VoucherModel.findById(req.params.id).lean() as Promise<Record<string, unknown> | null>,
+    }),
+  ),
 )
 adminVoucherRouter.patch(
   '/:id/toggle',

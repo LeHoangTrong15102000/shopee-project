@@ -61,9 +61,9 @@ describe('Checkout API', () => {
 
     it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      await expect(
-        checkoutApi.calculateSummary({ purchaseIds: ['1'] }),
-      ).rejects.toThrow('Network error')
+      await expect(checkoutApi.calculateSummary({ purchaseIds: ['1'] })).rejects.toThrow(
+        'Network error',
+      )
     })
   })
 

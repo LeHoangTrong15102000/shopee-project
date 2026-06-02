@@ -497,7 +497,11 @@ describe('ProductList', () => {
       const buttons = container.querySelectorAll('button')
       const retryButton = Array.from(buttons).find((btn) => btn.textContent === 'Retry')!
       expect(retryButton).toBeInTheDocument()
-      expect(retryButton.getAttribute('onclick') !== null || retryButton.closest('[onClick]') !== null || true).toBe(true)
+      expect(
+        retryButton.getAttribute('onclick') !== null ||
+          retryButton.closest('[onClick]') !== null ||
+          true,
+      ).toBe(true)
       fireEvent.click(retryButton) // should not throw
     })
   })

@@ -151,7 +151,11 @@ export class ProductRepository implements IProductRepository {
     count: number,
     options?: { session?: ClientSession },
   ): Promise<void> {
-    await ProductModel.findByIdAndUpdate(productId, { $inc: { sold: count } }, options?.session ? { session: options.session } : undefined)
+    await ProductModel.findByIdAndUpdate(
+      productId,
+      { $inc: { sold: count } },
+      options?.session ? { session: options.session } : undefined,
+    )
   }
 
   async decrementQuantity(

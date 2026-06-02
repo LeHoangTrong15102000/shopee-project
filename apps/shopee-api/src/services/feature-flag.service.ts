@@ -126,9 +126,7 @@ export class FeatureFlagService extends BaseService {
     // Step 7: rolloutPercentage
     if (flag.rolloutPercentage < 100) {
       const userId = context.userId ?? 'anonymous'
-      const hash = createHash('sha256')
-        .update(`${userId}:${flag.key}`)
-        .digest('hex')
+      const hash = createHash('sha256').update(`${userId}:${flag.key}`).digest('hex')
       const bucket = parseInt(hash.slice(0, 8), 16) % 100
       return bucket < flag.rolloutPercentage
     }

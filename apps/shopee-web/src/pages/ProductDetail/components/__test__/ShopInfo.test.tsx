@@ -55,7 +55,9 @@ describe('ShopInfo', () => {
   })
 
   it('renders offline indicator', () => {
-    render(<ShopInfo {...defaultProps} isSellerOnline={false} sellerLastSeen="2024-01-01T10:00:00Z" />)
+    render(
+      <ShopInfo {...defaultProps} isSellerOnline={false} sellerLastSeen="2024-01-01T10:00:00Z" />,
+    )
     expect(screen.getByText('Offline')).toBeInTheDocument()
   })
 

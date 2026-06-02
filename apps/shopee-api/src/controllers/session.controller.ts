@@ -23,7 +23,12 @@ export const listSessions = async (req: Request, res: Response) => {
   const page = Math.max(1, parseInt(req.query.page as string) || 1)
   const limit = Math.min(50, Math.max(1, parseInt(req.query.limit as string) || 20))
 
-  const { sessions, total } = await sessionService.listActiveSessions(userId, currentAccessJti, page, limit)
+  const { sessions, total } = await sessionService.listActiveSessions(
+    userId,
+    currentAccessJti,
+    page,
+    limit,
+  )
 
   return responseSuccess(res, {
     message: 'Sessions retrieved successfully',

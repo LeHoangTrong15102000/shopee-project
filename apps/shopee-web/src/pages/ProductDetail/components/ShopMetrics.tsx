@@ -11,13 +11,17 @@ interface ShopMetricsProps {
 
 // Inline skeleton for a metric value
 const ValueSkeleton = () => (
-  <span className='inline-block h-4 w-12 animate-pulse rounded bg-gray-200 dark:bg-slate-600' />
+  <span className="inline-block h-4 w-12 animate-pulse rounded bg-gray-200 dark:bg-slate-600" />
 )
 
 const ShopMetrics = ({ rating, shopId }: ShopMetricsProps) => {
   const { t } = useTranslation('product')
 
-  const { data: shopData, isLoading, isError } = useQuery({
+  const {
+    data: shopData,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ['shop', shopId],
     queryFn: () => shopApi.getShop(shopId!),
     enabled: Boolean(shopId),
@@ -61,7 +65,11 @@ const ShopMetrics = ({ rating, shopId }: ShopMetricsProps) => {
     },
     {
       label: t('shop.responseTime'),
-      value: shop ? shop.responseTime : (isError || !shopId ? t('shop.withinHours') : getMetricValue(undefined)),
+      value: shop
+        ? shop.responseTime
+        : isError || !shopId
+          ? t('shop.withinHours')
+          : getMetricValue(undefined),
       loading: isLoading && Boolean(shopId),
     },
     {
@@ -77,14 +85,14 @@ const ShopMetrics = ({ rating, shopId }: ShopMetricsProps) => {
   ]
 
   return (
-    <section className='grid grid-cols-2 gap-x-8 gap-y-3' aria-label={t('shop.statistics')}>
+    <section className="grid grid-cols-2 gap-x-8 gap-y-3" aria-label={t('shop.statistics')}>
       {metrics.map((m, i) => (
-        <div key={i} className='flex items-center gap-2 text-sm'>
-          <span className='text-gray-500 dark:text-gray-400'>{m.label}:</span>
+        <div key={i} className="flex items-center gap-2 text-sm">
+          <span className="text-gray-500 dark:text-gray-400">{m.label}:</span>
           {m.loading ? (
             <ValueSkeleton />
           ) : (
-            <span className='font-medium text-orange dark:text-orange-400'>{m.value}</span>
+            <span className="font-medium text-orange dark:text-orange-400">{m.value}</span>
           )}
         </div>
       ))}

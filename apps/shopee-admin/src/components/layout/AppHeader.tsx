@@ -182,7 +182,11 @@ export function AppHeader({ socketStatus }: AppHeaderProps) {
         >
           <AnimatePresence mode="wait" initial={false}>
             {prefersReducedMotion ? (
-              theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />
+              theme === 'dark' ? (
+                <Sun className="size-4" />
+              ) : (
+                <Moon className="size-4" />
+              )
             ) : (
               <motion.span
                 key={theme}

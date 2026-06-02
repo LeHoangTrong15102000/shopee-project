@@ -28,7 +28,8 @@ export default function OrdersScreen() {
     delivered: ORDER_STATUS.DELIVERED,
     cancelled: ORDER_STATUS.CANCELLED,
   }
-  const statusFilter: OrderStatusType | undefined = activeTab === 'all' ? undefined : tabToStatus[activeTab]
+  const statusFilter: OrderStatusType | undefined =
+    activeTab === 'all' ? undefined : tabToStatus[activeTab]
 
   const { data, isLoading, isRefetching, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useOrders(statusFilter)

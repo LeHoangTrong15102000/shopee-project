@@ -56,11 +56,7 @@ export default function ReturnRequestScreen() {
               key={reason.value}
               onPress={() => setSelectedReason(reason.value)}
               className="mb-2 flex-row items-center gap-3 rounded-xl border border-neutrals800 px-4 py-3"
-              style={
-                selectedReason === reason.value
-                  ? { borderColor: colors.primary }
-                  : undefined
-              }
+              style={selectedReason === reason.value ? { borderColor: colors.primary } : undefined}
               accessibilityRole="radio"
               accessibilityState={{ checked: selectedReason === reason.value }}>
               {selectedReason === reason.value ? (
@@ -74,7 +70,7 @@ export default function ReturnRequestScreen() {
             </TouchableOpacity>
           ))}
 
-          <View className="mt-4 mb-2">
+          <View className="mb-2 mt-4">
             <AppInput
               label="Mô tả thêm (tuỳ chọn)"
               variant="textarea"

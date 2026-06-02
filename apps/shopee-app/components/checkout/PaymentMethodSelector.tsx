@@ -26,11 +26,31 @@ export default function PaymentMethodSelector({
   const colors = useColors()
 
   const defaultMethods: PaymentMethod[] = [
-    { _id: 'cod', type: 'cod', name: t('paymentMethod.cod.name'), description: t('paymentMethod.cod.description') },
+    {
+      _id: 'cod',
+      type: 'cod',
+      name: t('paymentMethod.cod.name'),
+      description: t('paymentMethod.cod.description'),
+    },
     { _id: 'bank_transfer', type: 'bank_transfer', name: t('paymentMethod.bankTransfer.name') },
-    { _id: 'credit_card', type: 'credit_card', name: t('paymentMethod.creditCard.name', 'Thẻ tín dụng / ghi nợ'), description: t('paymentMethod.creditCard.description', 'Visa, Mastercard, JCB') },
-    { _id: 'momo', type: 'momo', name: t('paymentMethod.momo.name', 'Ví MoMo'), description: t('paymentMethod.momo.description', 'Thanh toán qua ứng dụng MoMo') },
-    { _id: 'vnpay', type: 'vnpay', name: t('paymentMethod.vnpay.name', 'VNPay'), description: t('paymentMethod.vnpay.description', 'Thanh toán qua VNPay') },
+    {
+      _id: 'credit_card',
+      type: 'credit_card',
+      name: t('paymentMethod.creditCard.name', 'Thẻ tín dụng / ghi nợ'),
+      description: t('paymentMethod.creditCard.description', 'Visa, Mastercard, JCB'),
+    },
+    {
+      _id: 'momo',
+      type: 'momo',
+      name: t('paymentMethod.momo.name', 'Ví MoMo'),
+      description: t('paymentMethod.momo.description', 'Thanh toán qua ứng dụng MoMo'),
+    },
+    {
+      _id: 'vnpay',
+      type: 'vnpay',
+      name: t('paymentMethod.vnpay.name', 'VNPay'),
+      description: t('paymentMethod.vnpay.description', 'Thanh toán qua VNPay'),
+    },
   ]
 
   const resolvedMethods = methods ?? defaultMethods
@@ -88,4 +108,3 @@ export default function PaymentMethodSelector({
     </View>
   )
 }
-

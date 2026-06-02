@@ -57,18 +57,14 @@ export default function ReviewCard({ review, productId, onToggleLike }: ReviewCa
   }
 
   const handleDelete = () => {
-    Alert.alert(
-      t('review.delete.confirm'),
-      undefined,
-      [
-        { text: t('review.delete.cancel'), style: 'cancel' },
-        {
-          text: t('review.delete.confirm'),
-          style: 'destructive',
-          onPress: () => deleteReviewMutate(review._id),
-        },
-      ]
-    )
+    Alert.alert(t('review.delete.confirm'), undefined, [
+      { text: t('review.delete.cancel'), style: 'cancel' },
+      {
+        text: t('review.delete.confirm'),
+        style: 'destructive',
+        onPress: () => deleteReviewMutate(review._id),
+      },
+    ])
   }
 
   return (
@@ -235,7 +231,7 @@ export default function ReviewCard({ review, productId, onToggleLike }: ReviewCa
 
       {/* Comments section */}
       {commentsOpen && (
-        <View className="mt-2 ml-2">
+        <View className="ml-2 mt-2">
           {isLoadingComments ? (
             <ActivityIndicator size="small" color={colors.primary} />
           ) : comments.length === 0 ? (

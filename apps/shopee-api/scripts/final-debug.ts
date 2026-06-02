@@ -4,8 +4,7 @@ import { ProductModel } from '@database/models/product.model'
 
 // Copy exact handleImageProduct function từ controller
 const handleImageProduct = (product: any) => {
-  const isProduction =
-    process.env.NODE_ENV === 'production' || process.argv[2] === 'production'
+  const isProduction = process.env.NODE_ENV === 'production' || process.argv[2] === 'production'
   const HOST = isProduction
     ? process.env.PRODUCTION_HOST
     : `http://${process.env.HOST}:${process.env.PORT}`
@@ -30,8 +29,7 @@ const main = async () => {
     console.log(`   HOST: ${process.env.HOST}`)
     console.log(`   PORT: ${process.env.PORT}`)
 
-    const isProduction =
-      process.env.NODE_ENV === 'production' || process.argv[2] === 'production'
+    const isProduction = process.env.NODE_ENV === 'production' || process.argv[2] === 'production'
     const HOST = isProduction
       ? process.env.PRODUCTION_HOST
       : `http://${process.env.HOST}:${process.env.PORT}`
@@ -52,9 +50,7 @@ const main = async () => {
       console.log('\n📦 Raw product từ database:')
       console.log(`   Name: ${sampleProduct.name}`)
       console.log(`   Raw image: "${sampleProduct.image}"`)
-      console.log(
-        `   Raw images: ["${sampleProduct.images?.slice(0, 2).join('", "')}"]`
-      )
+      console.log(`   Raw images: ["${sampleProduct.images?.slice(0, 2).join('", "')}"]`)
 
       // Process product với handleImageProduct
       const processedProduct = { ...sampleProduct }
@@ -62,11 +58,7 @@ const main = async () => {
 
       console.log('\n🔗 Processed product (sau khi xử lý):')
       console.log(`   Final image: "${processedProduct.image}"`)
-      console.log(
-        `   Final images: ["${processedProduct.images
-          ?.slice(0, 2)
-          .join('", "')}"]`
-      )
+      console.log(`   Final images: ["${processedProduct.images?.slice(0, 2).join('", "')}"]`)
 
       // Simulate complete API response
       const apiResponse = {
@@ -97,8 +89,8 @@ const main = async () => {
             },
           },
           null,
-          2
-        )
+          2,
+        ),
       )
     }
 

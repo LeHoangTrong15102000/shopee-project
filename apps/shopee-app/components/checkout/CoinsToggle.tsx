@@ -20,11 +20,13 @@ export default function CoinsToggle({ coinBalance, enabled, onToggle }: CoinsTog
           {t('coinsToggle.label')}
         </AppText>
         <AppText raw variant="bodySmall" color="muted">
-          {t('coinsToggle.balance', { coinBalance: coinBalance.toLocaleString('vi-VN'), formattedPrice: formatPrice(coinBalance) })}
+          {t('coinsToggle.balance', {
+            coinBalance: coinBalance.toLocaleString('vi-VN'),
+            formattedPrice: formatPrice(coinBalance),
+          })}
         </AppText>
       </View>
       <Switch value={enabled} onValueChange={onToggle} size="md" />
     </View>
   )
 }
-

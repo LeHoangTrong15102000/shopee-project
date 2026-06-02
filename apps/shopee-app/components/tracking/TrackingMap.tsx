@@ -23,7 +23,7 @@ export default function TrackingMap({
       longitude: tracking.location.lng,
       latitudeDelta: 0,
       longitudeDelta: 0,
-    }),
+    })
   )
 
   // Accumulate driver positions to draw the travelled route
@@ -33,14 +33,16 @@ export default function TrackingMap({
 
   // Animate driver marker on location update and append to path
   useEffect(() => {
-    driverCoord.current.timing({
-      latitude: tracking.location.lat,
-      longitude: tracking.location.lng,
-      latitudeDelta: 0,
-      longitudeDelta: 0,
-      duration: 500,
-      useNativeDriver: false,
-    }).start()
+    driverCoord.current
+      .timing({
+        latitude: tracking.location.lat,
+        longitude: tracking.location.lng,
+        latitudeDelta: 0,
+        longitudeDelta: 0,
+        duration: 500,
+        useNativeDriver: false,
+      })
+      .start()
 
     mapRef.current?.animateToRegion(
       {
@@ -49,7 +51,7 @@ export default function TrackingMap({
         latitudeDelta: DELTA,
         longitudeDelta: DELTA,
       },
-      500,
+      500
     )
 
     setDriverPath((prev) => {
@@ -106,11 +108,7 @@ export default function TrackingMap({
 
       {/* Route polyline — drawn from accumulated driver positions */}
       {routeCoords.length >= 2 && (
-        <Polyline
-          coordinates={routeCoords}
-          strokeColor="#EE4D2D"
-          strokeWidth={3}
-        />
+        <Polyline coordinates={routeCoords} strokeColor="#EE4D2D" strokeWidth={3} />
       )}
     </MapView>
   )

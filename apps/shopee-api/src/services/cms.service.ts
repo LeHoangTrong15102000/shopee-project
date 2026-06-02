@@ -1,6 +1,11 @@
 import { Types } from 'mongoose'
 import { IPage, IPageBlock } from '@database/models/page.model'
-import { PageRepository, CreatePageDTO, UpdatePageDTO, PageFilter } from '@repositories/page.repository'
+import {
+  PageRepository,
+  CreatePageDTO,
+  UpdatePageDTO,
+  PageFilter,
+} from '@repositories/page.repository'
 import { BaseService, NotFoundError, ConflictError, ValidationError } from './base.service'
 import { ProductModel } from '@database/models/product.model'
 import { CategoryModel } from '@database/models/category.model'
@@ -251,9 +256,7 @@ export class CmsService extends BaseService {
 
         if (data.productIds && data.productIds.length > 0) {
           // Static productIds — use pre-fetched map
-          const resolvedProducts = data.productIds
-            .map((id) => productMap.get(id))
-            .filter(Boolean)
+          const resolvedProducts = data.productIds.map((id) => productMap.get(id)).filter(Boolean)
 
           resolved.push({
             ...block,

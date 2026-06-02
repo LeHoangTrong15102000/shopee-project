@@ -18,9 +18,7 @@ async function addLocationToProducts() {
     console.log(`✅ Đã tìm thấy ${products.length} sản phẩm hiện tại`)
 
     // Đếm số sản phẩm chưa có location
-    const productsWithoutLocation = products.filter(
-      (product) => !product.location
-    ).length
+    const productsWithoutLocation = products.filter((product) => !product.location).length
     console.log(`📍 Số sản phẩm chưa có location: ${productsWithoutLocation}`)
 
     // Thêm location cho tất cả sản phẩm chưa có
@@ -35,19 +33,14 @@ async function addLocationToProducts() {
     console.log(`✅ Đã thêm location cho ${addedCount} sản phẩm`)
 
     // Ghi lại file JSON
-    fs.writeFileSync(
-      '../main.products.json',
-      JSON.stringify(products, null, 2),
-      'utf8'
-    )
+    fs.writeFileSync('../main.products.json', JSON.stringify(products, null, 2), 'utf8')
     console.log('💾 Đã cập nhật file main.products.json thành công!')
 
     // Hiển thị thống kê location
     const locationStats = {}
     products.forEach((product) => {
       if (product.location) {
-        locationStats[product.location] =
-          (locationStats[product.location] || 0) + 1
+        locationStats[product.location] = (locationStats[product.location] || 0) + 1
       }
     })
 
@@ -77,11 +70,9 @@ async function main() {
     const result = await addLocationToProducts()
 
     console.log('\n=== ✅ HOÀN THÀNH ===')
+    console.log(`🎉 Đã cập nhật thành công! Tổng ${result.totalProducts} sản phẩm có location.`)
     console.log(
-      `🎉 Đã cập nhật thành công! Tổng ${result.totalProducts} sản phẩm có location.`
-    )
-    console.log(
-      '\n💡 Bây giờ bạn có thể khởi động API server và dữ liệu sẽ được tự động sync với MongoDB.'
+      '\n💡 Bây giờ bạn có thể khởi động API server và dữ liệu sẽ được tự động sync với MongoDB.',
     )
   } catch (error) {
     console.error('❌ Lỗi trong quá trình thực thi:', error)

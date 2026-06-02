@@ -1,11 +1,15 @@
 import http from 'src/utils/http'
 import type { SuccessResponse } from 'src/types'
-import type { ShippingMethod, CreateShippingMethodBody, UpdateShippingMethodBody, ReorderShippingItem } from 'src/types/shipping.types'
+import type {
+  ShippingMethod,
+  CreateShippingMethodBody,
+  UpdateShippingMethodBody,
+  ReorderShippingItem,
+} from 'src/types/shipping.types'
 
 const shippingApi = {
   // ─── User-facing ────────────────────────────────────────────────
-  getShippingMethods: () =>
-    http.get<SuccessResponse<ShippingMethod[]>>('orders/shipping/methods'),
+  getShippingMethods: () => http.get<SuccessResponse<ShippingMethod[]>>('orders/shipping/methods'),
 
   // ─── Admin CRUD ──────────────────────────────────────────────────
   getAdminShippingMethods: () =>

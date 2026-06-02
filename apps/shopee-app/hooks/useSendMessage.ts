@@ -45,7 +45,7 @@ export function useSendMessage() {
       const store = useChatStore.getState()
       const buffer = store.messageBuffer[context.conversationId] ?? []
       const updated = buffer.map((m) =>
-        m._id === context.optimisticId ? { ...data, status: 'sent' as const } : m,
+        m._id === context.optimisticId ? { ...data, status: 'sent' as const } : m
       )
       useChatStore.setState((state) => ({
         messageBuffer: { ...state.messageBuffer, [context.conversationId]: updated },
@@ -59,7 +59,7 @@ export function useSendMessage() {
       const store = useChatStore.getState()
       const buffer = store.messageBuffer[context.conversationId] ?? []
       const updated = buffer.map((m) =>
-        m._id === context.optimisticId ? { ...m, status: 'failed' as const } : m,
+        m._id === context.optimisticId ? { ...m, status: 'failed' as const } : m
       )
       useChatStore.setState((state) => ({
         messageBuffer: { ...state.messageBuffer, [context.conversationId]: updated },

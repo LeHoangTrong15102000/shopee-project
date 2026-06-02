@@ -206,7 +206,7 @@ describe('AppSidebar', () => {
     if (listItem) {
       await user.hover(listItem)
       // Wait for the prefetch timeout (200ms) plus some buffer
-      await new Promise(resolve => setTimeout(resolve, 300))
+      await new Promise((resolve) => setTimeout(resolve, 300))
       // Should not crash, error is caught
       expect(screen.getByText('menu.users')).toBeInTheDocument()
     }
@@ -224,7 +224,7 @@ describe('AppSidebar', () => {
       // Immediately unhover to cancel
       await user.unhover(listItem)
       // Wait to ensure prefetch would have happened
-      await new Promise(resolve => setTimeout(resolve, 300))
+      await new Promise((resolve) => setTimeout(resolve, 300))
       // Should still render normally
       expect(screen.getByText('menu.users')).toBeInTheDocument()
     }
@@ -239,12 +239,12 @@ describe('AppSidebar', () => {
     if (listItem) {
       // First hover - triggers prefetch
       await user.hover(listItem)
-      await new Promise(resolve => setTimeout(resolve, 300))
+      await new Promise((resolve) => setTimeout(resolve, 300))
       await user.unhover(listItem)
 
       // Second hover - should not prefetch again
       await user.hover(listItem)
-      await new Promise(resolve => setTimeout(resolve, 300))
+      await new Promise((resolve) => setTimeout(resolve, 300))
 
       expect(screen.getByText('menu.users')).toBeInTheDocument()
     }
@@ -259,7 +259,7 @@ describe('AppSidebar', () => {
 
     if (brandParent) {
       await user.hover(brandParent)
-      await new Promise(resolve => setTimeout(resolve, 300))
+      await new Promise((resolve) => setTimeout(resolve, 300))
       expect(screen.getByText('brand')).toBeInTheDocument()
     }
   })
@@ -297,7 +297,7 @@ describe('AppSidebar', () => {
     rerender(
       <SidebarProvider>
         <AppSidebar />
-      </SidebarProvider>
+      </SidebarProvider>,
     )
 
     // Users link should still be present
@@ -313,7 +313,9 @@ describe('AppSidebar', () => {
     // SVG should have path/line/circle elements that can be animated
     expect(svg).toBeInTheDocument()
     if (svg) {
-      const animatableElements = svg.querySelectorAll('path, line, circle, rect, ellipse, polyline, polygon')
+      const animatableElements = svg.querySelectorAll(
+        'path, line, circle, rect, ellipse, polyline, polygon',
+      )
       expect(animatableElements.length).toBeGreaterThan(0)
     }
   })
@@ -417,7 +419,7 @@ describe('AppSidebar', () => {
     rerender(
       <SidebarProvider>
         <AppSidebar />
-      </SidebarProvider>
+      </SidebarProvider>,
     )
     usersLink = screen.getByText('menu.users').closest('a')
     expect(usersLink).toBeInTheDocument()
@@ -432,10 +434,10 @@ describe('AppSidebar', () => {
     if (listItem) {
       // Hover multiple times — second hover should be a no-op for prefetch
       await user.hover(listItem)
-      await new Promise(resolve => setTimeout(resolve, 350))
+      await new Promise((resolve) => setTimeout(resolve, 350))
       await user.unhover(listItem)
       await user.hover(listItem)
-      await new Promise(resolve => setTimeout(resolve, 350))
+      await new Promise((resolve) => setTimeout(resolve, 350))
       expect(screen.getByText('menu.users')).toBeInTheDocument()
     }
   })
@@ -449,7 +451,7 @@ describe('AppSidebar', () => {
     const listItem = settingsText.closest('li')
     if (listItem) {
       await user.hover(listItem)
-      await new Promise(resolve => setTimeout(resolve, 350))
+      await new Promise((resolve) => setTimeout(resolve, 350))
       expect(screen.getByText('menu.settings')).toBeInTheDocument()
     }
   })

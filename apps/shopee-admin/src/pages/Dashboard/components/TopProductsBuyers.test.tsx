@@ -26,18 +26,24 @@ const sampleTopBuyers = [
 
 describe('TopProductsBuyers', () => {
   it('renders both tables', () => {
-    renderWithProviders(<TopProductsBuyers topProducts={sampleTopProducts} topBuyers={sampleTopBuyers} />)
+    renderWithProviders(
+      <TopProductsBuyers topProducts={sampleTopProducts} topBuyers={sampleTopBuyers} />,
+    )
     const tables = screen.getAllByRole('table')
     expect(tables.length).toBe(2)
   })
 
   it('renders top products table title', () => {
-    renderWithProviders(<TopProductsBuyers topProducts={sampleTopProducts} topBuyers={sampleTopBuyers} />)
+    renderWithProviders(
+      <TopProductsBuyers topProducts={sampleTopProducts} topBuyers={sampleTopBuyers} />,
+    )
     expect(screen.getByText('tables.topProductsByRevenue')).toBeInTheDocument()
   })
 
   it('renders top buyers table title', () => {
-    renderWithProviders(<TopProductsBuyers topProducts={sampleTopProducts} topBuyers={sampleTopBuyers} />)
+    renderWithProviders(
+      <TopProductsBuyers topProducts={sampleTopProducts} topBuyers={sampleTopBuyers} />,
+    )
     expect(screen.getByText('tables.topBuyers')).toBeInTheDocument()
   })
 

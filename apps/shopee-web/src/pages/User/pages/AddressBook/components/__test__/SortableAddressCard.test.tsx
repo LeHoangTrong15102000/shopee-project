@@ -50,17 +50,13 @@ describe('SortableAddressCard', () => {
   })
 
   it('does not apply cursor-grab when selection mode', () => {
-    const { container } = render(
-      <SortableAddressCard {...baseProps} isSelectionMode={true} />,
-    )
+    const { container } = render(<SortableAddressCard {...baseProps} isSelectionMode={true} />)
     const wrapper = container.firstChild as HTMLElement
     expect(wrapper.className).not.toContain('cursor-grab')
   })
 
   it('applies ring class when isDragging prop true', () => {
-    const { container } = render(
-      <SortableAddressCard {...baseProps} isDragging={true} />,
-    )
+    const { container } = render(<SortableAddressCard {...baseProps} isDragging={true} />)
     const wrapper = container.firstChild as HTMLElement
     expect(wrapper.className).toContain('ring-')
   })

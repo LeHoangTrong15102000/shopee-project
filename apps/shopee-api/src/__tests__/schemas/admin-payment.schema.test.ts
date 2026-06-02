@@ -18,7 +18,9 @@ describe('Admin Payment Schemas', () => {
     })
 
     it('rejects a non-hex string', () => {
-      expect(adminPaymentIdSchema.safeParse({ params: { id: 'not-a-valid-objectid!!' } }).success).toBe(false)
+      expect(
+        adminPaymentIdSchema.safeParse({ params: { id: 'not-a-valid-objectid!!' } }).success,
+      ).toBe(false)
     })
 
     it('rejects when id is missing', () => {
@@ -26,11 +28,15 @@ describe('Admin Payment Schemas', () => {
     })
 
     it('rejects a string shorter than 24 chars', () => {
-      expect(adminPaymentIdSchema.safeParse({ params: { id: '507f1f77bcf86cd7994390' } }).success).toBe(false)
+      expect(
+        adminPaymentIdSchema.safeParse({ params: { id: '507f1f77bcf86cd7994390' } }).success,
+      ).toBe(false)
     })
 
     it('rejects a string longer than 24 chars', () => {
-      expect(adminPaymentIdSchema.safeParse({ params: { id: '507f1f77bcf86cd7994390111' } }).success).toBe(false)
+      expect(
+        adminPaymentIdSchema.safeParse({ params: { id: '507f1f77bcf86cd7994390111' } }).success,
+      ).toBe(false)
     })
   })
 
@@ -64,41 +70,53 @@ describe('Admin Payment Schemas', () => {
     })
 
     it('rejects when name is empty string', () => {
-      expect(adminCreatePaymentSchema.safeParse({ body: { ...minimalValid, name: '' } }).success).toBe(false)
+      expect(
+        adminCreatePaymentSchema.safeParse({ body: { ...minimalValid, name: '' } }).success,
+      ).toBe(false)
     })
 
     it('rejects when name exceeds 100 chars', () => {
       expect(
-        adminCreatePaymentSchema.safeParse({ body: { ...minimalValid, name: 'a'.repeat(101) } }).success,
+        adminCreatePaymentSchema.safeParse({ body: { ...minimalValid, name: 'a'.repeat(101) } })
+          .success,
       ).toBe(false)
     })
 
     it('rejects invalid type enum value', () => {
-      expect(adminCreatePaymentSchema.safeParse({ body: { name: 'X', type: 'paypal' } }).success).toBe(false)
+      expect(
+        adminCreatePaymentSchema.safeParse({ body: { name: 'X', type: 'paypal' } }).success,
+      ).toBe(false)
     })
 
     it('accepts all four valid enum values', () => {
       const types = ['cod', 'bank_transfer', 'e_wallet', 'credit_card'] as const
       for (const type of types) {
-        expect(adminCreatePaymentSchema.safeParse({ body: { name: 'Test', type } }).success).toBe(true)
+        expect(adminCreatePaymentSchema.safeParse({ body: { name: 'Test', type } }).success).toBe(
+          true,
+        )
       }
     })
 
     it('rejects description longer than 500 chars', () => {
       expect(
-        adminCreatePaymentSchema.safeParse({ body: { ...minimalValid, description: 'x'.repeat(501) } }).success,
+        adminCreatePaymentSchema.safeParse({
+          body: { ...minimalValid, description: 'x'.repeat(501) },
+        }).success,
       ).toBe(false)
     })
 
     it('rejects icon longer than 50 chars', () => {
       expect(
-        adminCreatePaymentSchema.safeParse({ body: { ...minimalValid, icon: 'i'.repeat(51) } }).success,
+        adminCreatePaymentSchema.safeParse({ body: { ...minimalValid, icon: 'i'.repeat(51) } })
+          .success,
       ).toBe(false)
     })
 
     it('rejects instructions longer than 1000 chars', () => {
       expect(
-        adminCreatePaymentSchema.safeParse({ body: { ...minimalValid, instructions: 'x'.repeat(1001) } }).success,
+        adminCreatePaymentSchema.safeParse({
+          body: { ...minimalValid, instructions: 'x'.repeat(1001) },
+        }).success,
       ).toBe(false)
     })
 
@@ -190,9 +208,7 @@ describe('Admin Payment Schemas', () => {
     })
 
     it('rejects empty items array', () => {
-      expect(
-        adminReorderPaymentSchema.safeParse({ body: { items: [] } }).success,
-      ).toBe(false)
+      expect(adminReorderPaymentSchema.safeParse({ body: { items: [] } }).success).toBe(false)
     })
 
     it('rejects item with invalid ObjectId', () => {

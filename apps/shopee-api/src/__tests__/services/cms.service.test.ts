@@ -65,7 +65,11 @@ describe('CmsService', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     // Default lean() chain for ProductModel.find
-    mockProductFind.mockReturnValue({ sort: jest.fn().mockReturnValue({ limit: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue([]) }) }) })
+    mockProductFind.mockReturnValue({
+      sort: jest.fn().mockReturnValue({
+        limit: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue([]) }),
+      }),
+    })
     mockCategoryFind.mockReturnValue({ lean: jest.fn().mockResolvedValue([]) })
     service = new CmsService(mockPageRepo as never)
   })
@@ -227,8 +231,12 @@ describe('CmsService', () => {
         lean: jest.fn().mockResolvedValue([product1, product2, product3]),
       })
 
-      const carousel1 = makeBlock('product_carousel', { productIds: [pid1.toString(), pid2.toString()] })
-      const carousel2 = makeBlock('product_carousel', { productIds: [pid2.toString(), pid3.toString()] })
+      const carousel1 = makeBlock('product_carousel', {
+        productIds: [pid1.toString(), pid2.toString()],
+      })
+      const carousel2 = makeBlock('product_carousel', {
+        productIds: [pid2.toString(), pid3.toString()],
+      })
 
       const result = await service.resolveBlocks([carousel1, carousel2])
 

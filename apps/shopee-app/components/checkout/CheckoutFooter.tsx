@@ -28,7 +28,7 @@ export default function CheckoutFooter({
       <View
         className="border-t border-neutrals900 bg-background px-4 py-3"
         style={{ paddingBottom: 16 }}>
-        <View className="flex-row items-center justify-between mb-3">
+        <View className="mb-3 flex-row items-center justify-between">
           <AppText raw variant="bodySmall" color="muted">
             {t('checkout.summary.total')}
           </AppText>

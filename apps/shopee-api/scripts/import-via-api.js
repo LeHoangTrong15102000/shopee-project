@@ -15,8 +15,7 @@ async function importViaAPI() {
     products.forEach((product) => {
       if (product.location) {
         productsWithLocation++
-        locationStats[product.location] =
-          (locationStats[product.location] || 0) + 1
+        locationStats[product.location] = (locationStats[product.location] || 0) + 1
       }
     })
 
@@ -29,9 +28,7 @@ async function importViaAPI() {
     console.log('\n✅ Dữ liệu đã sẵn sàng!')
     console.log('\n🚀 Để import vào MongoDB Atlas, bạn có thể:')
     console.log('1. Khởi động API server: npm run dev')
-    console.log(
-      '2. Server sẽ tự động đọc và sync dữ liệu từ main.products.json'
-    )
+    console.log('2. Server sẽ tự động đọc và sync dữ liệu từ main.products.json')
     console.log('3. Hoặc tạo endpoint API để import bulk data')
 
     return {

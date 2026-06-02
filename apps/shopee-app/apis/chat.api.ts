@@ -10,22 +10,22 @@ export async function getConversations(): Promise<Conversation[]> {
 export async function getMessages(
   conversationId: string,
   cursor?: string,
-  limit = 30,
+  limit = 30
 ): Promise<MessagesResponse> {
   const res = await http.get<ApiResponse<MessagesResponse>>(
     `shop-conversations/${conversationId}/messages`,
-    { params: { cursor, limit } },
+    { params: { cursor, limit } }
   )
   return res.data.data
 }
 
 export async function sendMessage(
   conversationId: string,
-  body: { content: string; type: 'text' | 'image'; imageUrl?: string },
+  body: { content: string; type: 'text' | 'image'; imageUrl?: string }
 ): Promise<Message> {
   const res = await http.post<ApiResponse<Message>>(
     `shop-conversations/${conversationId}/messages`,
-    body,
+    body
   )
   return res.data.data
 }

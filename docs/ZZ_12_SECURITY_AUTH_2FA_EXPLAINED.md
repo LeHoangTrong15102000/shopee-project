@@ -18,6 +18,7 @@
 ### TOTP là gì?
 
 TOTP (Time-based One-Time Password) là thuật toán tạo mã xác thực 6 số thay đổi mỗi 30 giây. Nó hoạt động dựa trên:
+
 - Một **secret key** (chuỗi base32) — chia sẻ giữa server và app authenticator
 - **Thời gian hiện tại** — chia thành các khoảng 30 giây
 
@@ -30,6 +31,7 @@ Server tạo secret ──► Mã hóa AES-256-GCM ──► Lưu vào user.twoF
 ```
 
 Server tạo secret vì:
+
 1. **Server là nguồn tin cậy** — secret phải được tạo ngẫu nhiên bởi server, không phải client
 2. **Cả hai bên cùng giữ secret** — server lưu (đã mã hóa), app authenticator cũng lưu (qua QR code)
 3. **Để verify mã TOTP** — khi user nhập mã 6 số, server dùng secret + thời gian hiện tại để tính lại mã và so sánh
@@ -58,6 +60,7 @@ Server tạo secret vì:
 ### Tại sao mã hóa secret bằng AES-256-GCM?
 
 Nếu database bị leak (bị hack), kẻ tấn công sẽ có tất cả TOTP secret → có thể tạo mã 6 số cho mọi user. Mã hóa bằng AES-256-GCM với key riêng (lưu trong env, KHÔNG lưu trong DB) đảm bảo:
+
 - DB bị leak → secret vẫn an toàn (vì không có key để giải mã)
 - Chỉ server có key mới decrypt được
 
@@ -68,6 +71,7 @@ Nếu database bị leak (bị hack), kẻ tấn công sẽ có tất cả TOTP 
 ### So sánh: Login thường vs Login có 2FA
 
 **Login thường (2FA tắt):**
+
 ```
 Client ──POST /auth/login { email, password }──► Server
        ◄── { access_token, refresh_token, expires, expires_refresh_token, user }
@@ -75,6 +79,7 @@ Client ──POST /auth/login { email, password }──► Server
 ```
 
 **Login có 2FA (2 bước):**
+
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │ BƯỚC 1: Xác thực mật khẩu                                           │
@@ -216,16 +221,19 @@ User có thể regenerate (tạo lại) 10 codes mới bằng `POST /auth/2fa/ba
 1. **Client không cần biết cấu trúc JWT** — token là opaque (hộp đen) đối với client
 2. **Tránh lỗi timezone** — nếu client decode `exp` claim và tính toán, có thể sai do clock skew giữa server và client
 3. **Đơn giản hóa logic client** — client chỉ cần:
+
    ```javascript
    // Lưu thời điểm nhận token
    const tokenReceivedAt = Date.now()
    const expiresAt = tokenReceivedAt + response.expires * 1000
 
    // Khi gọi API, kiểm tra:
-   if (Date.now() > expiresAt - 60000) { // refresh trước 1 phút
+   if (Date.now() > expiresAt - 60000) {
+     // refresh trước 1 phút
      await refreshTokens()
    }
    ```
+
 4. **Giảm kích thước bundle** — client không cần thư viện decode JWT (như `jwt-decode`)
 
 ---
@@ -235,6 +243,7 @@ User có thể regenerate (tạo lại) 10 codes mới bằng `POST /auth/2fa/ba
 ### Vấn đề cần giải quyết
 
 Khi user nhập đúng password nhưng chưa nhập mã 2FA, server cần "nhớ" rằng:
+
 - User này đã xác thực password thành công
 - User này cần hoàn thành bước 2FA
 - Thông tin này chỉ có hiệu lực trong 5 phút
@@ -242,12 +251,14 @@ Khi user nhập đúng password nhưng chưa nhập mã 2FA, server cần "nhớ
 ### Tại sao không để `/auth/2fa/complete` public (không cần token)?
 
 Nếu endpoint public, request sẽ là:
+
 ```json
 POST /auth/2fa/complete
 { "email": "user@example.com", "code": "123456" }
 ```
 
 **Vấn đề bảo mật nghiêm trọng:**
+
 - Kẻ tấn công có thể brute-force mã 6 số (chỉ 1 triệu tổ hợp) mà KHÔNG CẦN biết password
 - Kẻ tấn công chỉ cần biết email → thử 1 triệu mã → vào được tài khoản
 - 2FA trở thành yếu tố DUY NHẤT thay vì yếu tố THỨ HAI
@@ -265,6 +276,7 @@ partial_token = JWT {
 ```
 
 **Đảm bảo:**
+
 1. **Chứng minh đã qua bước 1** — chỉ ai có partial_token mới gọi được `/auth/2fa/complete`
 2. **Không thể giả mạo** — token được ký bằng SECRET_KEY của server
 3. **Hết hạn nhanh** — 5 phút, nếu user không hoàn thành thì phải login lại từ đầu
@@ -272,12 +284,12 @@ partial_token = JWT {
 
 ### So sánh với các giải pháp khác:
 
-| Giải pháp | Ưu điểm | Nhược điểm |
-|-----------|----------|------------|
+| Giải pháp                 | Ưu điểm                           | Nhược điểm                         |
+| ------------------------- | --------------------------------- | ---------------------------------- |
 | **Partial token (JWT)** ★ | Stateless, không cần lưu DB/Redis | Token phải mang theo trong request |
-| Session cookie | Quen thuộc | Thêm cookie logic, CSRF concerns |
-| Redis key | Đơn giản | Thêm Redis dependency cho flow này |
-| DB record | Persistent | Thêm model, cần cleanup |
+| Session cookie            | Quen thuộc                        | Thêm cookie logic, CSRF concerns   |
+| Redis key                 | Đơn giản                          | Thêm Redis dependency cho flow này |
+| DB record                 | Persistent                        | Thêm model, cần cleanup            |
 
 Chọn partial token vì: **stateless** (không cần lưu trạng thái ở server), phù hợp với kiến trúc JWT hiện tại.
 
@@ -297,6 +309,7 @@ RefreshToken model phục vụ mục đích **kỹ thuật**: phát hiện token
 ### Vấn đề: User không có visibility
 
 Hiện tại user KHÔNG THỂ:
+
 - Xem danh sách thiết bị đang đăng nhập
 - Biết có ai đang dùng tài khoản của mình
 - Đăng xuất khỏi một thiết bị cụ thể
@@ -306,15 +319,16 @@ Hiện tại user KHÔNG THỂ:
 
 ### Tại sao không dùng RefreshToken model luôn?
 
-| Tiêu chí | RefreshToken | Session (mới) |
-|-----------|-------------|---------------|
-| Mục đích | Rotation detection (kỹ thuật) | User visibility (UX) |
-| Thông tin | jti, token hash, revokedAt | device, IP, location, lastActive |
-| Lifecycle | Bị revoke + tạo mới mỗi lần refresh | Tồn tại xuyên suốt, chỉ update lastActive |
-| Hiển thị cho user | KHÔNG | CÓ |
-| Số lượng per session | Nhiều (mỗi lần refresh tạo mới) | 1 (cập nhật liên tục) |
+| Tiêu chí             | RefreshToken                        | Session (mới)                             |
+| -------------------- | ----------------------------------- | ----------------------------------------- |
+| Mục đích             | Rotation detection (kỹ thuật)       | User visibility (UX)                      |
+| Thông tin            | jti, token hash, revokedAt          | device, IP, location, lastActive          |
+| Lifecycle            | Bị revoke + tạo mới mỗi lần refresh | Tồn tại xuyên suốt, chỉ update lastActive |
+| Hiển thị cho user    | KHÔNG                               | CÓ                                        |
+| Số lượng per session | Nhiều (mỗi lần refresh tạo mới)     | 1 (cập nhật liên tục)                     |
 
 **Vấn đề nếu dùng RefreshToken:**
+
 - Mỗi lần refresh token, record cũ bị revoke, record mới được tạo → user thấy session "biến mất rồi xuất hiện lại"
 - Không có thông tin device/IP/location
 - Không có khái niệm "session liên tục"
@@ -340,17 +354,20 @@ Session {
 ### Có nên thêm model mới không? Phân tích:
 
 **Ưu điểm:**
+
 - User có thể quản lý sessions (tính năng bảo mật quan trọng)
 - Tách biệt concerns: RefreshToken lo rotation, Session lo UX
 - Không ảnh hưởng logic refresh token rotation hiện tại
 - Dễ mở rộng (thêm "trusted device", "remember this device" sau này)
 
 **Nhược điểm:**
+
 - Thêm 1 model + 1 collection trong MongoDB
 - Cần sync giữa Session và RefreshToken (khi revoke session phải xóa RefreshToken)
 - Thêm write operation mỗi lần login/refresh
 
 **Kết luận:** Đáng thêm. Lý do:
+
 1. Đây là portfolio project — demonstrating session management là điểm cộng lớn
 2. Overhead nhỏ (1 document per login, update on refresh)
 3. Tính năng bảo mật chuẩn industry (Google, GitHub đều có)
@@ -428,6 +445,7 @@ Response: { revokedCount: 2 }
 ### Tại sao cần xóa RefreshToken khi revoke session?
 
 Nếu chỉ set `session.isRevoked = true` mà KHÔNG xóa RefreshToken:
+
 - Thiết bị bị revoke vẫn có refresh token hợp lệ trong DB
 - Nó có thể gọi refresh endpoint → nhận access token mới → vẫn truy cập được!
 
@@ -440,6 +458,7 @@ Phải xóa RefreshToken để đảm bảo: session bị revoke = không thể 
 ### Audit log là gì?
 
 Audit log ghi lại MỌI hành động quan trọng trong hệ thống: ai làm gì, lúc nào, từ đâu, thay đổi gì. Dùng để:
+
 - Điều tra sự cố bảo mật
 - Theo dõi hành vi admin
 - Compliance (tuân thủ quy định)
@@ -485,6 +504,7 @@ export const updateProduct = withAuditLog(updateProductHandler, {
 ```
 
 **HOF tự động:**
+
 1. Đọc snapshot "before" từ DB (trước khi handler chạy)
 2. Chạy handler gốc
 3. Đọc snapshot "after" từ DB (sau khi handler chạy)
@@ -502,27 +522,27 @@ await auditLogService.writeLog({
   actor: { userId: user._id, roles: user.roles },
   ip: req.ip,
   userAgent: req.headers['user-agent'],
-  status: 'success'
+  status: 'success',
 })
 ```
 
 ### Các events được audit log:
 
-| Event | Trigger |
-|-------|---------|
-| `user.register` | Đăng ký thành công |
-| `user.login` | Đăng nhập thành công |
-| `user.logout` | Đăng xuất |
-| `user.login_failed` | Đăng nhập thất bại |
-| `user.password_change` | Đổi mật khẩu |
-| `user.2fa_enable` | Bật 2FA |
-| `user.2fa_disable` | Tắt 2FA |
-| `session.revoke` | Thu hồi 1 session |
-| `session.revoke_all` | Thu hồi tất cả sessions |
-| `product.create/update/delete` | Admin CRUD sản phẩm |
-| `order.status_change` | Admin đổi trạng thái đơn hàng |
-| `user.role_change` | Admin đổi role user |
-| `voucher.create/update/delete` | Admin CRUD voucher |
+| Event                          | Trigger                       |
+| ------------------------------ | ----------------------------- |
+| `user.register`                | Đăng ký thành công            |
+| `user.login`                   | Đăng nhập thành công          |
+| `user.logout`                  | Đăng xuất                     |
+| `user.login_failed`            | Đăng nhập thất bại            |
+| `user.password_change`         | Đổi mật khẩu                  |
+| `user.2fa_enable`              | Bật 2FA                       |
+| `user.2fa_disable`             | Tắt 2FA                       |
+| `session.revoke`               | Thu hồi 1 session             |
+| `session.revoke_all`           | Thu hồi tất cả sessions       |
+| `product.create/update/delete` | Admin CRUD sản phẩm           |
+| `order.status_change`          | Admin đổi trạng thái đơn hàng |
+| `user.role_change`             | Admin đổi role user           |
+| `voucher.create/update/delete` | Admin CRUD voucher            |
 
 ### TTL — Tự động xóa sau 90 ngày
 

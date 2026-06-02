@@ -252,7 +252,15 @@ export function DataTable<TData, TValue>({
                       ref={(node) => rowVirtualizer.measureElement(node)}
                       initial={prefersReducedMotion ? false : { opacity: 0, y: 4 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.15, delay: Math.min(i * 0.03, 0.3), ease: 'easeOut' as const }}
+                      transition={
+                        prefersReducedMotion
+                          ? { duration: 0 }
+                          : {
+                              duration: 0.15,
+                              delay: Math.min(i * 0.03, 0.3),
+                              ease: 'easeOut' as const,
+                            }
+                      }
                       className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
                     >
                       {row.getVisibleCells().map((cell) => (

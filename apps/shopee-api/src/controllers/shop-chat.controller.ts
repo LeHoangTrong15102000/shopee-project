@@ -28,14 +28,7 @@ export const sendMessage = async (req: Request, res: Response): Promise<void> =>
     res.status(STATUS.BAD_REQUEST).json({ message: 'content là bắt buộc' })
     return
   }
-  const message = await shopChatService.sendMessage(
-    id,
-    userId,
-    'user',
-    content,
-    type,
-    imageUrl,
-  )
+  const message = await shopChatService.sendMessage(id, userId, 'user', content, type, imageUrl)
   res.status(201).json({ message: 'Gửi tin nhắn thành công', data: message })
 }
 

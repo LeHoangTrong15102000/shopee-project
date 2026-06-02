@@ -62,7 +62,12 @@ export default function ShopDetailPage() {
   const [statusDialog, setStatusDialog] = useState<ShopStatus | null>(null)
   const [statusReason, setStatusReason] = useState('')
 
-  const { data: shop, isLoading, isError, refetch } = useQuery({
+  const {
+    data: shop,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['admin-shop-detail', id],
     queryFn: () => shopsApi.getAdminShopDetail(id!).then((r) => r.data.data),
     enabled: !!id,
@@ -250,7 +255,10 @@ export default function ShopDetailPage() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle className="text-base">{t('detail.revenue.title')}</CardTitle>
-                  <Select value={revenuePeriod} onValueChange={(val) => val !== null && setRevenuePeriod(val)}>
+                  <Select
+                    value={revenuePeriod}
+                    onValueChange={(val) => val !== null && setRevenuePeriod(val)}
+                  >
                     <SelectTrigger className="w-32">
                       <SelectValue />
                     </SelectTrigger>

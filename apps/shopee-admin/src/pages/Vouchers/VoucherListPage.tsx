@@ -130,11 +130,7 @@ export default function VoucherListPage() {
               <Pencil className="mr-2 size-4" />
               {t('actions.edit')}
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() =>
-                toggleMut.mutate(row.original._id)
-              }
-            >
+            <DropdownMenuItem onClick={() => toggleMut.mutate(row.original._id)}>
               <ToggleLeft className="mr-2 size-4" />
               {row.original.is_active ? t('actions.deactivate') : t('actions.activate')}
             </DropdownMenuItem>

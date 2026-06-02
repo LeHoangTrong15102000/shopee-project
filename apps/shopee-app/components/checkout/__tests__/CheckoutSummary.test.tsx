@@ -26,7 +26,10 @@ function makeItem(id: string, name: string, price: number, count: number): CartI
 
 describe('CheckoutSummary', () => {
   it('renders both item names when given two items', () => {
-    const items = [makeItem('1', 'Product Alpha', 100000, 1), makeItem('2', 'Product Beta', 200000, 2)]
+    const items = [
+      makeItem('1', 'Product Alpha', 100000, 1),
+      makeItem('2', 'Product Beta', 200000, 2),
+    ]
     const { getByText } = render(<CheckoutSummary items={items} />)
     expect(getByText('Product Alpha')).toBeTruthy()
     expect(getByText('Product Beta')).toBeTruthy()

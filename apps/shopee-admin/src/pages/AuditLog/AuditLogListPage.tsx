@@ -107,7 +107,11 @@ export default function AuditLogListPage() {
     exportToCSV(
       allItems,
       [
-        { key: '_id', header: t('columns.timestamp'), accessor: (r) => format(new Date(r.timestamp), 'yyyy-MM-dd HH:mm:ss') },
+        {
+          key: '_id',
+          header: t('columns.timestamp'),
+          accessor: (r) => format(new Date(r.timestamp), 'yyyy-MM-dd HH:mm:ss'),
+        },
         { key: 'action', header: t('columns.action') },
         { key: 'resource', header: t('columns.resource') },
         {
@@ -144,7 +148,8 @@ export default function AuditLogListPage() {
           order: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
           voucher: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
         }
-        const cls = colorMap[category] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
+        const cls =
+          colorMap[category] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
         return (
           <Badge className={`font-mono text-xs ${cls}`} variant="outline">
             {row.original.action}
@@ -160,16 +165,12 @@ export default function AuditLogListPage() {
     {
       accessorKey: 'actor',
       header: t('columns.actor'),
-      cell: ({ row }) => (
-        <span className="font-mono text-xs">{row.original.actor.userId}</span>
-      ),
+      cell: ({ row }) => <span className="font-mono text-xs">{row.original.actor.userId}</span>,
     },
     {
       accessorKey: 'ip',
       header: t('columns.ip'),
-      cell: ({ row }) => (
-        <span className="font-mono text-xs">{row.original.ip}</span>
-      ),
+      cell: ({ row }) => <span className="font-mono text-xs">{row.original.ip}</span>,
     },
     {
       accessorKey: 'status',
@@ -181,15 +182,11 @@ export default function AuditLogListPage() {
       header: '',
       cell: ({ row }) => (
         <DropdownMenu>
-          <DropdownMenuTrigger
-            render={<Button variant="ghost" size="sm" aria-label="actions" />}
-          >
+          <DropdownMenuTrigger render={<Button variant="ghost" size="sm" aria-label="actions" />}>
             <MoreHorizontal className="size-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => navigate(`${ROUTES.AUDIT_LOG}/${row.original._id}`)}
-            >
+            <DropdownMenuItem onClick={() => navigate(`${ROUTES.AUDIT_LOG}/${row.original._id}`)}>
               <Eye className="mr-2 size-4" />
               {t('actions.viewDetail')}
             </DropdownMenuItem>

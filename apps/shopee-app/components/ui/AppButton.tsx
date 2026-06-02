@@ -1,4 +1,11 @@
-import { AccessibilityInfo, ActivityIndicator, Pressable, PressableProps, Text, GestureResponderEvent } from 'react-native'
+import {
+  AccessibilityInfo,
+  ActivityIndicator,
+  Pressable,
+  PressableProps,
+  Text,
+  GestureResponderEvent,
+} from 'react-native'
 import { cn } from '@/utils'
 import { cva } from 'class-variance-authority'
 import React, { JSX, ReactNode, useEffect, useState } from 'react'

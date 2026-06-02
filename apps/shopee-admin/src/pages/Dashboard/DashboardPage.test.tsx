@@ -234,7 +234,9 @@ describe('DashboardPage', () => {
       expect(dateInputs.length).toBeGreaterThan(0)
     })
     // Fill in start date
-    const dateInputs = screen.getAllByDisplayValue('').filter((el) => el.getAttribute('type') === 'date')
+    const dateInputs = screen
+      .getAllByDisplayValue('')
+      .filter((el) => el.getAttribute('type') === 'date')
     if (dateInputs.length >= 2) {
       await user.type(dateInputs[0], '2024-01-01')
       await user.type(dateInputs[1], '2024-01-31')

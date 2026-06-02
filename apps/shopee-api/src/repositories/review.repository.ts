@@ -203,11 +203,7 @@ export class ReviewRepository implements IReviewRepository {
     reviewId: string,
     status: 'pending' | 'approved' | 'flagged',
   ): Promise<IReviewItem | null> {
-    return ReviewModel.findByIdAndUpdate(
-      reviewId,
-      { moderation_status: status },
-      { new: true },
-    )
+    return ReviewModel.findByIdAndUpdate(reviewId, { moderation_status: status }, { new: true })
       .populate('user', 'name email avatar')
       .populate('product', 'name image')
       .lean<IReviewItem | null>()
@@ -275,9 +271,7 @@ export class ReviewRepository implements IReviewRepository {
         ReviewModel.countDocuments({
           createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
         }),
-        ReviewModel.aggregate([
-          { $group: { _id: '$moderation_status', count: { $sum: 1 } } },
-        ]),
+        ReviewModel.aggregate([{ $group: { _id: '$moderation_status', count: { $sum: 1 } } }]),
       ])
 
     const breakdown: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }

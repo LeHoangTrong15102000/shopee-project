@@ -60,7 +60,7 @@ function createMiddleware(
       return
     }
 
-    const key = keyResolver ? keyResolver(req) : (req.jwtDecoded?.id || clientIP)
+    const key = keyResolver ? keyResolver(req) : req.jwtDecoded?.id || clientIP
 
     limiter
       .consume(key)

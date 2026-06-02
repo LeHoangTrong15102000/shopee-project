@@ -24,7 +24,11 @@ export default function AuditLogDetailPage() {
   if (isLoading) return <LoadingState />
   if (error || !entry) return <ErrorState message={t('notFound')} />
 
-  const hasDiff = !!(entry.before !== null || entry.after !== null || (entry.diff && entry.diff.length > 0))
+  const hasDiff = !!(
+    entry.before !== null ||
+    entry.after !== null ||
+    (entry.diff && entry.diff.length > 0)
+  )
 
   return (
     <div className="space-y-6">
@@ -52,9 +56,7 @@ export default function AuditLogDetailPage() {
           <MetaRow label={t('detail.actorId')} value={entry.actor.userId} mono />
           <MetaRow label={t('detail.actorRoles')} value={entry.actor.roles.join(', ')} />
           <MetaRow label={t('detail.ip')} value={entry.ip} mono />
-          {entry.userAgent && (
-            <MetaRow label={t('detail.userAgent')} value={entry.userAgent} />
-          )}
+          {entry.userAgent && <MetaRow label={t('detail.userAgent')} value={entry.userAgent} />}
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t('detail.status')}</span>
             <StatusBadge status={entry.status} />
@@ -105,15 +107,7 @@ export default function AuditLogDetailPage() {
   )
 }
 
-function MetaRow({
-  label,
-  value,
-  mono = false,
-}: {
-  label: string
-  value: string
-  mono?: boolean
-}) {
+function MetaRow({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) {
   return (
     <div className="flex justify-between gap-2">
       <span className="text-muted-foreground shrink-0">{label}</span>

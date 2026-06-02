@@ -147,9 +147,8 @@ describe('Flash Sale Emit Utils', () => {
       const futureTime = new Date(Date.now() + 10000)
       const products: any[] = []
 
-      const { startFlashSaleTimer, clearFlashSaleTimer } = await import(
-        '../../socket/utils/flash-sale-emit'
-      )
+      const { startFlashSaleTimer, clearFlashSaleTimer } =
+        await import('../../socket/utils/flash-sale-emit')
       startFlashSaleTimer('sale-clear', futureTime, products)
 
       clearFlashSaleTimer('sale-clear')

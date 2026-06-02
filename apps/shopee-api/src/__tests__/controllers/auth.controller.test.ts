@@ -430,9 +430,9 @@ describe('Auth Controller', () => {
       })
       const res = createMockResponse()
 
-      await expect(
-        authController.loginController(req as Request, res as Response),
-      ).rejects.toThrow('DB connection error')
+      await expect(authController.loginController(req as Request, res as Response)).rejects.toThrow(
+        'DB connection error',
+      )
     })
   })
 

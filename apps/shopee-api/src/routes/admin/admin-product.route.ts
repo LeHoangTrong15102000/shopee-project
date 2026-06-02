@@ -53,11 +53,13 @@ adminProductRouter.post(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   validate(addProductSchema),
-  asyncHandler(withAuditLog(ProductController.addProduct, {
-    action: 'product.create',
-    resource: 'product',
-    getResourceId: (_req, result: any) => result?.data?._id?.toString() ?? null,
-  })),
+  asyncHandler(
+    withAuditLog(ProductController.addProduct, {
+      action: 'product.create',
+      resource: 'product',
+      getResourceId: (_req, result: any) => result?.data?._id?.toString() ?? null,
+    }),
+  ),
 )
 adminProductRouter.put(
   '/:product_id',
@@ -65,13 +67,23 @@ adminProductRouter.put(
   authMiddleware.verifyAdmin,
   validate(productIdParamSchema),
   validate(updateProductSchema),
-  asyncHandler(withAuditLog(ProductController.updateProduct, {
-    action: 'product.update',
-    resource: 'product',
-    getResourceId: (req) => req.params.product_id,
-    getBeforeSnapshot: async (req) => ProductModel.findById(req.params.product_id).lean() as Promise<Record<string, unknown> | null>,
-    getAfterSnapshot: async (req) => ProductModel.findById(req.params.product_id).lean() as Promise<Record<string, unknown> | null>,
-  })),
+  asyncHandler(
+    withAuditLog(ProductController.updateProduct, {
+      action: 'product.update',
+      resource: 'product',
+      getResourceId: (req) => req.params.product_id,
+      getBeforeSnapshot: async (req) =>
+        ProductModel.findById(req.params.product_id).lean() as Promise<Record<
+          string,
+          unknown
+        > | null>,
+      getAfterSnapshot: async (req) =>
+        ProductModel.findById(req.params.product_id).lean() as Promise<Record<
+          string,
+          unknown
+        > | null>,
+    }),
+  ),
 )
 
 adminProductRouter.delete(
@@ -79,12 +91,18 @@ adminProductRouter.delete(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
   validate(productIdParamSchema),
-  asyncHandler(withAuditLog(ProductController.deleteProduct, {
-    action: 'product.delete',
-    resource: 'product',
-    getResourceId: (req) => req.params.product_id,
-    getBeforeSnapshot: async (req) => ProductModel.findById(req.params.product_id).lean() as Promise<Record<string, unknown> | null>,
-  })),
+  asyncHandler(
+    withAuditLog(ProductController.deleteProduct, {
+      action: 'product.delete',
+      resource: 'product',
+      getResourceId: (req) => req.params.product_id,
+      getBeforeSnapshot: async (req) =>
+        ProductModel.findById(req.params.product_id).lean() as Promise<Record<
+          string,
+          unknown
+        > | null>,
+    }),
+  ),
 )
 
 adminProductRouter.delete(

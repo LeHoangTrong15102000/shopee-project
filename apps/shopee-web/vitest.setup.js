@@ -180,14 +180,39 @@ const additionalMocks = [
 vi.mock('framer-motion', () => {
   // Props that framer-motion uses but should NOT be passed to DOM elements
   const motionProps = new Set([
-    'initial', 'animate', 'exit', 'transition', 'variants',
-    'whileHover', 'whileTap', 'whileInView', 'whileFocus', 'whileDrag',
-    'drag', 'dragConstraints', 'dragElastic', 'dragMomentum', 'dragTransition',
-    'dragSnapToOrigin', 'dragPropagation', 'onDragStart', 'onDrag', 'onDragEnd',
-    'layout', 'layoutId', 'layoutDependency', 'layoutScroll',
-    'viewport', 'onViewportEnter', 'onViewportLeave',
-    'onAnimationStart', 'onAnimationComplete',
-    'custom', 'inherit', 'mode', 'animated',
+    'initial',
+    'animate',
+    'exit',
+    'transition',
+    'variants',
+    'whileHover',
+    'whileTap',
+    'whileInView',
+    'whileFocus',
+    'whileDrag',
+    'drag',
+    'dragConstraints',
+    'dragElastic',
+    'dragMomentum',
+    'dragTransition',
+    'dragSnapToOrigin',
+    'dragPropagation',
+    'onDragStart',
+    'onDrag',
+    'onDragEnd',
+    'layout',
+    'layoutId',
+    'layoutDependency',
+    'layoutScroll',
+    'viewport',
+    'onViewportEnter',
+    'onViewportLeave',
+    'onAnimationStart',
+    'onAnimationComplete',
+    'custom',
+    'inherit',
+    'mode',
+    'animated',
   ])
 
   const componentCache = new Map()
@@ -196,7 +221,7 @@ vi.mock('framer-motion', () => {
     if (componentCache.has(tag)) return componentCache.get(tag)
     const Component = ({ children, ...props }) => {
       const domProps = Object.fromEntries(
-        Object.entries(props).filter(([key]) => !motionProps.has(key))
+        Object.entries(props).filter(([key]) => !motionProps.has(key)),
       )
       const Tag = tag
       return React.createElement(Tag, domProps, children)
@@ -206,9 +231,12 @@ vi.mock('framer-motion', () => {
     return Component
   }
 
-  const motion = new Proxy({}, {
-    get: (_, tag) => createMotionComponent(tag),
-  })
+  const motion = new Proxy(
+    {},
+    {
+      get: (_, tag) => createMotionComponent(tag),
+    },
+  )
 
   return {
     motion,
@@ -219,7 +247,10 @@ vi.mock('framer-motion', () => {
     useTransform: () => ({ get: () => 0, set: vi.fn() }),
     useSpring: () => ({ get: () => 0, set: vi.fn() }),
     useInView: () => true,
-    useScroll: () => ({ scrollY: { get: () => 0, onChange: vi.fn() }, scrollYProgress: { get: () => 0, onChange: vi.fn() } }),
+    useScroll: () => ({
+      scrollY: { get: () => 0, onChange: vi.fn() },
+      scrollYProgress: { get: () => 0, onChange: vi.fn() },
+    }),
     LayoutGroup: ({ children }) => children,
     LazyMotion: ({ children }) => children,
     domAnimation: {},
@@ -368,7 +399,18 @@ vi.mock('src/components/PWAInstallPrompt', () => ({
 // Tests that need real nuqs behavior use NuqsTestingAdapter from testUtils.tsx
 vi.mock('src/hooks/nuqs', () => ({
   useProductQueryStates: () => [
-    { page: 1, limit: 20, sort_by: 'createdAt', order: 'desc', exclude: '', name: '', price_min: '', price_max: '', rating_filter: '', category: '' },
+    {
+      page: 1,
+      limit: 20,
+      sort_by: 'createdAt',
+      order: 'desc',
+      exclude: '',
+      name: '',
+      price_min: '',
+      price_max: '',
+      rating_filter: '',
+      category: '',
+    },
     vi.fn(),
   ],
   usePurchaseStatus: () => [0, vi.fn()],

@@ -9,8 +9,12 @@ const mockDeleteAlert = vi.fn()
 
 vi.mock('src/apis/priceAlert.api', () => ({
   default: {
-    get getAlerts() { return mockGetAlerts },
-    get deleteAlert() { return mockDeleteAlert },
+    get getAlerts() {
+      return mockGetAlerts
+    },
+    get deleteAlert() {
+      return mockDeleteAlert
+    },
   },
 }))
 

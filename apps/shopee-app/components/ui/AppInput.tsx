@@ -1,5 +1,12 @@
 import React, { forwardRef, useId, useState } from 'react'
-import { Text, TextInput, TextInputProps, View, NativeSyntheticEvent, TextInputFocusEventData } from 'react-native'
+import {
+  Text,
+  TextInput,
+  TextInputProps,
+  View,
+  NativeSyntheticEvent,
+  TextInputFocusEventData,
+} from 'react-native'
 import { cn } from '@/utils'
 import { cva } from 'class-variance-authority'
 import { useColors } from '@/hooks/useColors.ts'

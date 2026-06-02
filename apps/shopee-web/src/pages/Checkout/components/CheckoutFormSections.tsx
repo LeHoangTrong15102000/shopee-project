@@ -1,6 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { Address, ShippingMethod, PaymentMethodType, EWalletProvider } from 'src/types/checkout.type'
+import {
+  Address,
+  ShippingMethod,
+  PaymentMethodType,
+  EWalletProvider,
+} from 'src/types/checkout.type'
 import AddressSelector from 'src/components/AddressSelector'
 import ShippingMethodSelector from 'src/components/ShippingMethodSelector'
 import PaymentMethodSelector from 'src/components/PaymentMethodSelector'

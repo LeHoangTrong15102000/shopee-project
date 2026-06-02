@@ -15,8 +15,7 @@ export default function MessageBubble({ message, isMine, onRetry }: MessageBubbl
   const colors = useColors()
 
   return (
-    <View
-      className={`mb-2 max-w-[75%] ${isMine ? 'self-end' : 'self-start'}`}>
+    <View className={`mb-2 max-w-[75%] ${isMine ? 'self-end' : 'self-start'}`}>
       <View
         className="rounded-2xl px-3 py-2"
         style={{

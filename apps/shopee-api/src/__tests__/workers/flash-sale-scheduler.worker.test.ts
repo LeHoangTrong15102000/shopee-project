@@ -19,11 +19,13 @@ jest.mock('bullmq', () => {
     on: jest.fn(),
   }
   return {
-    Worker: jest.fn().mockImplementation((_queue: string, processor: Function) => {
-      // Expose the processor so tests can invoke it directly
-      mockWorkerInstance._processor = processor
-      return mockWorkerInstance
-    }),
+    Worker: jest
+      .fn()
+      .mockImplementation((_queue: string, processor: (...args: unknown[]) => unknown) => {
+        // Expose the processor so tests can invoke it directly
+        mockWorkerInstance._processor = processor
+        return mockWorkerInstance
+      }),
   }
 })
 
@@ -65,7 +67,15 @@ jest.mock('@database/models/flash-sale.model', () => ({
 import { FlashSaleSchedulerWorker } from '../../workers/flash-sale-scheduler.worker'
 import { EventBus } from '../../events/event-bus'
 
-const makeSale = (overrides: Partial<{ _id: Types.ObjectId; name: string; startTime: Date; endTime: Date; products: any[] }> = {}) => ({
+const makeSale = (
+  overrides: Partial<{
+    _id: Types.ObjectId
+    name: string
+    startTime: Date
+    endTime: Date
+    products: any[]
+  }> = {},
+) => ({
   _id: new Types.ObjectId(),
   name: 'Test Sale',
   startTime: new Date(Date.now() - 1000),
@@ -90,8 +100,7 @@ describe('FlashSaleSchedulerWorker', () => {
     it('activates SCHEDULED sales whose startTime has passed', async () => {
       const sale = makeSale()
       // First call (SCHEDULED query) returns the sale
-      mockFind
-        .mockReturnValueOnce({ lean: jest.fn().mockResolvedValue([sale]) })
+      mockFind.mockReturnValueOnce({ lean: jest.fn().mockResolvedValue([sale]) })
 
       await worker._activateScheduled(new Date())
 
@@ -104,10 +113,13 @@ describe('FlashSaleSchedulerWorker', () => {
 
       await worker._activateScheduled(new Date())
 
-      expect(mockIoEmit).toHaveBeenCalledWith('flash_sale_activated', expect.objectContaining({
-        sale_id: sale._id.toString(),
-        name: sale.name,
-      }))
+      expect(mockIoEmit).toHaveBeenCalledWith(
+        'flash_sale_activated',
+        expect.objectContaining({
+          sale_id: sale._id.toString(),
+          name: sale.name,
+        }),
+      )
     })
 
     it('emits flash_sale.started domain event via EventBus', async () => {
@@ -168,8 +180,7 @@ describe('FlashSaleSchedulerWorker', () => {
   describe('_endExpired', () => {
     it('ends ACTIVE sales whose endTime has passed', async () => {
       const sale = makeSale({ endTime: new Date(Date.now() - 1000) })
-      mockFind
-        .mockReturnValueOnce({ lean: jest.fn().mockResolvedValue([sale]) }) // ACTIVE query
+      mockFind.mockReturnValueOnce({ lean: jest.fn().mockResolvedValue([sale]) }) // ACTIVE query
 
       await worker._endExpired(new Date())
 
@@ -182,10 +193,13 @@ describe('FlashSaleSchedulerWorker', () => {
 
       await worker._endExpired(new Date())
 
-      expect(mockIoEmit).toHaveBeenCalledWith('flash_sale_ended', expect.objectContaining({
-        sale_id: sale._id.toString(),
-        name: sale.name,
-      }))
+      expect(mockIoEmit).toHaveBeenCalledWith(
+        'flash_sale_ended',
+        expect.objectContaining({
+          sale_id: sale._id.toString(),
+          name: sale.name,
+        }),
+      )
     })
 
     it('emits flash_sale.ended domain event via EventBus', async () => {
@@ -235,9 +249,7 @@ describe('FlashSaleSchedulerWorker', () => {
       mockFind.mockReturnValueOnce({ lean: jest.fn().mockResolvedValue([sale1, sale2]) })
 
       // First update throws, second succeeds
-      mockFindByIdAndUpdate
-        .mockRejectedValueOnce(new Error('DB error'))
-        .mockResolvedValueOnce({})
+      mockFindByIdAndUpdate.mockRejectedValueOnce(new Error('DB error')).mockResolvedValueOnce({})
 
       // Should not throw
       await expect(worker._activateScheduled(new Date())).resolves.not.toThrow()

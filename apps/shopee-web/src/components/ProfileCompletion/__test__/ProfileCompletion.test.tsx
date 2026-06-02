@@ -1,4 +1,4 @@
-import { describe, it, expect} from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router'
 import BenefitsPanel from '../components/BenefitsPanel'
@@ -31,39 +31,65 @@ const fullUser: User = {
 
 describe('ProfileCompletion (Main Component)', () => {
   it('renders profile completion title', () => {
-    render(<BrowserRouter><ProfileCompletion user={emptyUser} /></BrowserRouter>)
+    render(
+      <BrowserRouter>
+        <ProfileCompletion user={emptyUser} />
+      </BrowserRouter>,
+    )
     expect(screen.getByText('profileCompletion.title')).toBeInTheDocument()
   })
 
   it('renders remaining text for incomplete profile', () => {
-    render(<BrowserRouter><ProfileCompletion user={emptyUser} /></BrowserRouter>)
+    render(
+      <BrowserRouter>
+        <ProfileCompletion user={emptyUser} />
+      </BrowserRouter>,
+    )
     expect(screen.getByText('profileCompletion.remaining')).toBeInTheDocument()
   })
 
   it('renders complete message for 100% profile', () => {
-    render(<BrowserRouter><ProfileCompletion user={fullUser} /></BrowserRouter>)
+    render(
+      <BrowserRouter>
+        <ProfileCompletion user={fullUser} />
+      </BrowserRouter>,
+    )
     expect(screen.getByText('profileCompletion.complete')).toBeInTheDocument()
   })
 
   it('renders progress progressbar', () => {
-    const { container } = render(<BrowserRouter><ProfileCompletion user={emptyUser} /></BrowserRouter>)
+    const { container } = render(
+      <BrowserRouter>
+        <ProfileCompletion user={emptyUser} />
+      </BrowserRouter>,
+    )
     expect(container.querySelector('[role="progressbar"]')).toBeInTheDocument()
   })
 
   it('renders compact version when compact=true', () => {
     const { container } = render(
-      <BrowserRouter><ProfileCompletion user={emptyUser} compact={true} /></BrowserRouter>
+      <BrowserRouter>
+        <ProfileCompletion user={emptyUser} compact={true} />
+      </BrowserRouter>,
     )
     expect(container.querySelector('[role="progressbar"]')).toBeInTheDocument()
   })
 
   it('compact shows completed text at 100%', () => {
-    render(<BrowserRouter><ProfileCompletion user={fullUser} compact={true} /></BrowserRouter>)
+    render(
+      <BrowserRouter>
+        <ProfileCompletion user={fullUser} compact={true} />
+      </BrowserRouter>,
+    )
     expect(screen.getByText('profileCompletion.completed')).toBeInTheDocument()
   })
 
   it('renders with null user', () => {
-    render(<BrowserRouter><ProfileCompletion user={null} /></BrowserRouter>)
+    render(
+      <BrowserRouter>
+        <ProfileCompletion user={null} />
+      </BrowserRouter>,
+    )
     expect(screen.getByText('profileCompletion.title')).toBeInTheDocument()
   })
 })

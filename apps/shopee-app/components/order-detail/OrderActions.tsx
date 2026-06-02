@@ -24,21 +24,16 @@ export default function OrderActions({
 }: OrderActionsProps) {
   const { t } = useTranslation()
 
-  const canCancel =
-    status === ORDER_STATUS.PENDING || status === ORDER_STATUS.CONFIRMED
+  const canCancel = status === ORDER_STATUS.PENDING || status === ORDER_STATUS.CONFIRMED
   const canConfirmReceived = status === ORDER_STATUS.SHIPPING
   const canReturn = status === ORDER_STATUS.DELIVERED
 
   if (!canCancel && !canConfirmReceived && !canReturn) return null
 
   return (
-    <View className="px-4 py-4 gap-2">
+    <View className="gap-2 px-4 py-4">
       {canCancel && (
-        <AppButton
-          variant="outline"
-          onPress={onCancel}
-          loading={isCancelling}
-          className="w-full">
+        <AppButton variant="outline" onPress={onCancel} loading={isCancelling} className="w-full">
           {t('orderDetail.button.cancel')}
         </AppButton>
       )}
@@ -52,10 +47,7 @@ export default function OrderActions({
         </AppButton>
       )}
       {canReturn && (
-        <AppButton
-          variant="outline"
-          onPress={onReturn}
-          className="w-full">
+        <AppButton variant="outline" onPress={onReturn} className="w-full">
           {t('orderDetail.actions.return')}
         </AppButton>
       )}

@@ -59,7 +59,10 @@ const reviewsHandlers = [
     const body = (await request.json()) as Record<string, unknown>
     const review = mockReviews.find((r) => r._id === params.id)
     if (!review) return HttpResponse.json({ message: 'Không tìm thấy đánh giá' }, { status: 404 })
-    return HttpResponse.json({ message: 'Cập nhật thành công', data: { ...review, moderation_status: body.status } })
+    return HttpResponse.json({
+      message: 'Cập nhật thành công',
+      data: { ...review, moderation_status: body.status },
+    })
   }),
 ]
 

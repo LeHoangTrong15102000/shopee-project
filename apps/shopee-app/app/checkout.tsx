@@ -91,10 +91,10 @@ export default function CheckoutScreen() {
   const selectedShipping = shippingMethods.find((s: ShippingMethod) => s._id === selectedShippingId)
 
   const subtotal = summary?.subtotal ?? 0
-  const shippingFee = summary?.shipping_fee ?? (selectedShipping?.fee ?? 0)
+  const shippingFee = summary?.shipping_fee ?? selectedShipping?.fee ?? 0
   const voucherDiscount = summary?.voucher_discount ?? 0
   const coinDiscount = summary?.coins_discount ?? 0
-  const total = summary?.total ?? (subtotal + shippingFee - voucherDiscount - coinDiscount)
+  const total = summary?.total ?? subtotal + shippingFee - voucherDiscount - coinDiscount
 
   // Combined loading state across all payment methods
   const isCreating = isCreatingCod || isProcessingCard || isProcessingEWallet
@@ -159,51 +159,59 @@ export default function CheckoutScreen() {
         }}
       />
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingBottom: 100 }}>
-          <CheckoutAddressCard
-            address={selectedAddress}
-            onChangeAddress={() =>
-              router.push({ pathname: '/addresses', params: { mode: 'select' } })
-            }
-          />
-          {shippingMethods.length > 0 && (
-            <ShippingMethodSelector
-              methods={shippingMethods}
-              selectedId={selectedShippingId}
-              onSelect={setSelectedShippingId}
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ paddingBottom: 100 }}>
+            <CheckoutAddressCard
+              address={selectedAddress}
+              onChangeAddress={() =>
+                router.push({ pathname: '/addresses', params: { mode: 'select' } })
+              }
             />
-          )}
-          <PaymentMethodSelector
-            methods={paymentMethods.length > 0 ? paymentMethods : undefined}
-            selectedId={selectedPaymentId}
-            onSelect={setSelectedPaymentId}
-          />
-          <VoucherInput
-            onApply={(code) => {
-              setVoucherError('')
-              applyVoucher(
-                { code, orderValue: subtotal },
-                {
-                  onSuccess: () => setVoucherCode(code),
-                  onError: () => setVoucherError(t('vouchers.code.notFound')),
-                }
-              )
-            }}
-            onRemove={() => { setVoucherCode(''); setVoucherError('') }}
-            isValidating={isApplyingVoucher}
-            appliedDiscount={voucherDiscount}
-            errorMessage={voucherError}
-          />
-          <CoinsToggle coinBalance={coinBalance} enabled={useCoins} onToggle={setUseCoins} />
-          <PriceBreakdown
-            subtotal={subtotal}
-            shippingFee={shippingFee}
-            voucherDiscount={voucherDiscount}
-            coinDiscount={coinDiscount}
-            total={total}
-          />
-        </ScrollView>
+            {shippingMethods.length > 0 && (
+              <ShippingMethodSelector
+                methods={shippingMethods}
+                selectedId={selectedShippingId}
+                onSelect={setSelectedShippingId}
+              />
+            )}
+            <PaymentMethodSelector
+              methods={paymentMethods.length > 0 ? paymentMethods : undefined}
+              selectedId={selectedPaymentId}
+              onSelect={setSelectedPaymentId}
+            />
+            <VoucherInput
+              onApply={(code) => {
+                setVoucherError('')
+                applyVoucher(
+                  { code, orderValue: subtotal },
+                  {
+                    onSuccess: () => setVoucherCode(code),
+                    onError: () => setVoucherError(t('vouchers.code.notFound')),
+                  }
+                )
+              }}
+              onRemove={() => {
+                setVoucherCode('')
+                setVoucherError('')
+              }}
+              isValidating={isApplyingVoucher}
+              appliedDiscount={voucherDiscount}
+              errorMessage={voucherError}
+            />
+            <CoinsToggle coinBalance={coinBalance} enabled={useCoins} onToggle={setUseCoins} />
+            <PriceBreakdown
+              subtotal={subtotal}
+              shippingFee={shippingFee}
+              voucherDiscount={voucherDiscount}
+              coinDiscount={coinDiscount}
+              total={total}
+            />
+          </ScrollView>
         </KeyboardAvoidingView>
 
         <CheckoutFooter

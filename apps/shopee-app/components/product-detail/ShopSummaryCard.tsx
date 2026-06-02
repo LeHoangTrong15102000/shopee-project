@@ -30,9 +30,7 @@ export default function ShopSummaryCard({ shopSummary }: ShopSummaryCardProps) {
   }
 
   return (
-    <View
-      className="mx-4 my-3 rounded-xl p-3"
-      style={{ backgroundColor: colors.neutrals800 }}>
+    <View className="mx-4 my-3 rounded-xl p-3" style={{ backgroundColor: colors.neutrals800 }}>
       <TouchableOpacity
         className="flex-row items-center gap-3"
         onPress={() => router.push(`/shop/${shopSummary._id}`)}
@@ -60,7 +58,7 @@ export default function ShopSummaryCard({ shopSummary }: ShopSummaryCardProps) {
           <AppText raw variant="body" weight="semibold" numberOfLines={1}>
             {shopSummary.name}
           </AppText>
-          <View className="flex-row items-center gap-1 mt-0.5">
+          <View className="mt-0.5 flex-row items-center gap-1">
             <Star size={12} color={colors.warning} fill={colors.warning} accessible={false} />
             <AppText raw variant="labelSmall" color="muted">
               {shopSummary.rating.toFixed(1)}
@@ -71,7 +69,7 @@ export default function ShopSummaryCard({ shopSummary }: ShopSummaryCardProps) {
         <ChevronRight size={18} color={colors.neutrals400} />
       </TouchableOpacity>
 
-      <View className="flex-row gap-2 mt-3">
+      <View className="mt-3 flex-row gap-2">
         <AppButton
           variant="outline"
           size="sm"

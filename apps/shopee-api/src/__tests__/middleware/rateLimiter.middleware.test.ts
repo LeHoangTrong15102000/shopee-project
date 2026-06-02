@@ -65,7 +65,11 @@ function middleware(
   onBlock: () => void,
 ) {
   const origJson = res.json.bind(res)
-  res.json = jest.fn((...args: any[]) => { origJson(...args); onBlock(); return res })
+  res.json = jest.fn((...args: any[]) => {
+    origJson(...args)
+    onBlock()
+    return res
+  })
   mw(req, res, onNext)
 }
 
@@ -87,7 +91,10 @@ describe('rateLimiter.middleware', () => {
       const next = jest.fn()
 
       await new Promise<void>((resolve) => {
-        const wrappedNext = jest.fn(() => { next(); resolve() })
+        const wrappedNext = jest.fn(() => {
+          next()
+          resolve()
+        })
         middleware(req, res, wrappedNext)
       })
 
@@ -104,7 +111,11 @@ describe('rateLimiter.middleware', () => {
       const callMiddleware = () =>
         new Promise<void>((resolve) => {
           const origJson = res.json.bind(res)
-          res.json = jest.fn((...args: any[]) => { origJson(...args); resolve(); return res })
+          res.json = jest.fn((...args: any[]) => {
+            origJson(...args)
+            resolve()
+            return res
+          })
           middleware(req, res, () => resolve())
         })
 
@@ -128,8 +139,15 @@ describe('rateLimiter.middleware', () => {
       const callMiddleware = () =>
         new Promise<void>((resolve) => {
           const origJson = res.json.bind(res)
-          res.json = jest.fn((...args: any[]) => { origJson(...args); resolve(); return res })
-          middleware(req, res, () => { next(); resolve() })
+          res.json = jest.fn((...args: any[]) => {
+            origJson(...args)
+            resolve()
+            return res
+          })
+          middleware(req, res, () => {
+            next()
+            resolve()
+          })
         })
 
       await callMiddleware()
@@ -151,8 +169,15 @@ describe('rateLimiter.middleware', () => {
       const callMiddleware = (r: any) =>
         new Promise<void>((resolve) => {
           const origJson = res.json.bind(res)
-          res.json = jest.fn((...args: any[]) => { origJson(...args); resolve(); return res })
-          middleware(r, res, () => { next(); resolve() })
+          res.json = jest.fn((...args: any[]) => {
+            origJson(...args)
+            resolve()
+            return res
+          })
+          middleware(r, res, () => {
+            next()
+            resolve()
+          })
         })
 
       await callMiddleware(req1)
@@ -171,8 +196,15 @@ describe('rateLimiter.middleware', () => {
       const callMiddleware = () =>
         new Promise<void>((resolve) => {
           const origJson = res.json.bind(res)
-          res.json = jest.fn((...args: any[]) => { origJson(...args); resolve(); return res })
-          middleware(req, res, () => { next(); resolve() })
+          res.json = jest.fn((...args: any[]) => {
+            origJson(...args)
+            resolve()
+            return res
+          })
+          middleware(req, res, () => {
+            next()
+            resolve()
+          })
         })
 
       await callMiddleware()
@@ -196,8 +228,15 @@ describe('rateLimiter.middleware', () => {
       const callMiddleware = () =>
         new Promise<void>((resolve) => {
           const origJson = res.json.bind(res)
-          res.json = jest.fn((...args: any[]) => { origJson(...args); resolve(); return res })
-          middleware(req, res, () => { next(); resolve() })
+          res.json = jest.fn((...args: any[]) => {
+            origJson(...args)
+            resolve()
+            return res
+          })
+          middleware(req, res, () => {
+            next()
+            resolve()
+          })
         })
 
       await callMiddleware()
@@ -218,8 +257,15 @@ describe('rateLimiter.middleware', () => {
       const callMiddleware = (r: any) =>
         new Promise<void>((resolve) => {
           const origJson = res.json.bind(res)
-          res.json = jest.fn((...args: any[]) => { origJson(...args); resolve(); return res })
-          middleware(r, res, () => { next(); resolve() })
+          res.json = jest.fn((...args: any[]) => {
+            origJson(...args)
+            resolve()
+            return res
+          })
+          middleware(r, res, () => {
+            next()
+            resolve()
+          })
         })
 
       await callMiddleware(req1)
@@ -242,7 +288,11 @@ describe('rateLimiter.middleware', () => {
       const callMiddleware = () =>
         new Promise<void>((resolve) => {
           const origJson = res.json.bind(res)
-          res.json = jest.fn((...args: any[]) => { origJson(...args); resolve(); return res })
+          res.json = jest.fn((...args: any[]) => {
+            origJson(...args)
+            resolve()
+            return res
+          })
           middleware(req, res, () => resolve())
         })
 
@@ -354,7 +404,16 @@ describe('rateLimiter.middleware', () => {
       const next = jest.fn()
 
       await new Promise<void>((resolve) => {
-        middleware(publicRateLimit, req, res, () => { next(); resolve() }, resolve)
+        middleware(
+          publicRateLimit,
+          req,
+          res,
+          () => {
+            next()
+            resolve()
+          },
+          resolve,
+        )
       })
 
       expect(next).toHaveBeenCalledTimes(1)
@@ -372,8 +431,15 @@ describe('rateLimiter.middleware', () => {
       const callMiddleware = (r: any) =>
         new Promise<void>((resolve) => {
           const origJson = res.json.bind(res)
-          res.json = jest.fn((...args: any[]) => { origJson(...args); resolve(); return res })
-          authRateLimit(r, res, () => { next(); resolve() })
+          res.json = jest.fn((...args: any[]) => {
+            origJson(...args)
+            resolve()
+            return res
+          })
+          authRateLimit(r, res, () => {
+            next()
+            resolve()
+          })
         })
 
       await callMiddleware(req1)
@@ -393,8 +459,15 @@ describe('rateLimiter.middleware', () => {
       const callMiddleware = (r: any) =>
         new Promise<void>((resolve) => {
           const origJson = res.json.bind(res)
-          res.json = jest.fn((...args: any[]) => { origJson(...args); resolve(); return res })
-          adminRateLimit(r, res, () => { next(); resolve() })
+          res.json = jest.fn((...args: any[]) => {
+            origJson(...args)
+            resolve()
+            return res
+          })
+          adminRateLimit(r, res, () => {
+            next()
+            resolve()
+          })
         })
 
       await callMiddleware(req1)
@@ -420,8 +493,15 @@ describe('rateLimiter.middleware', () => {
       const callMiddleware = () =>
         new Promise<void>((resolve) => {
           const origJson = res.json.bind(res)
-          res.json = jest.fn((...args: any[]) => { origJson(...args); resolve(); return res })
-          mod!.publicRateLimit(req, res, () => { next(); resolve() })
+          res.json = jest.fn((...args: any[]) => {
+            origJson(...args)
+            resolve()
+            return res
+          })
+          mod!.publicRateLimit(req, res, () => {
+            next()
+            resolve()
+          })
         })
 
       await callMiddleware() // 1st — allowed
@@ -448,8 +528,15 @@ describe('rateLimiter.middleware', () => {
       const callMiddleware = () =>
         new Promise<void>((resolve) => {
           const origJson = res.json.bind(res)
-          res.json = jest.fn((...args: any[]) => { origJson(...args); resolve(); return res })
-          mod!.expensiveRateLimit(req, res, () => { next(); resolve() })
+          res.json = jest.fn((...args: any[]) => {
+            origJson(...args)
+            resolve()
+            return res
+          })
+          mod!.expensiveRateLimit(req, res, () => {
+            next()
+            resolve()
+          })
         })
 
       await callMiddleware() // 1st — allowed
@@ -479,7 +566,11 @@ describe('rateLimiter.middleware', () => {
       const callMiddleware = () =>
         new Promise<void>((resolve) => {
           const origJson = res.json.bind(res)
-          res.json = jest.fn((...args: any[]) => { origJson(...args); resolve(); return res })
+          res.json = jest.fn((...args: any[]) => {
+            origJson(...args)
+            resolve()
+            return res
+          })
           middleware(req, res, () => resolve())
         })
 
@@ -512,8 +603,15 @@ describe('rateLimiter.middleware', () => {
       const callMiddleware = () =>
         new Promise<void>((resolve) => {
           const origJson = res.json.bind(res)
-          res.json = jest.fn((...args: any[]) => { origJson(...args); resolve(); return res })
-          publicRateLimit(req, res, () => { next(); resolve() })
+          res.json = jest.fn((...args: any[]) => {
+            origJson(...args)
+            resolve()
+            return res
+          })
+          publicRateLimit(req, res, () => {
+            next()
+            resolve()
+          })
         })
 
       // Call many times — should never be rate limited
@@ -535,8 +633,15 @@ describe('rateLimiter.middleware', () => {
       const callMiddleware = () =>
         new Promise<void>((resolve) => {
           const origJson = res.json.bind(res)
-          res.json = jest.fn((...args: any[]) => { origJson(...args); resolve(); return res })
-          middleware(req, res, () => { next(); resolve() })
+          res.json = jest.fn((...args: any[]) => {
+            origJson(...args)
+            resolve()
+            return res
+          })
+          middleware(req, res, () => {
+            next()
+            resolve()
+          })
         })
 
       await callMiddleware()

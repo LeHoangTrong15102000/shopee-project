@@ -17,12 +17,11 @@ export function StatCard({ label, value, trend, formatter, icon, className }: St
   const isNumeric = typeof value === 'number'
 
   const displayValue = isNumeric ? (
-    <AnimatedNumber
-      value={value}
-      formatter={formatter ? (n) => formatter(n) : undefined}
-    />
+    <AnimatedNumber value={value} formatter={formatter ? (n) => formatter(n) : undefined} />
+  ) : formatter ? (
+    formatter(value)
   ) : (
-    formatter ? formatter(value) : value
+    value
   )
 
   return (
@@ -51,4 +50,3 @@ export function StatCard({ label, value, trend, formatter, icon, className }: St
     </MotionCard>
   )
 }
-

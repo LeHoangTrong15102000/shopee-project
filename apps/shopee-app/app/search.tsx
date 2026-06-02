@@ -126,8 +126,10 @@ export default function SearchScreen() {
         max: formatPrice(maxPrice, { compact: true }),
       })
     }
-    if (minPrice != null) return t('search.activeFilter.priceMin', { min: formatPrice(minPrice, { compact: true }) })
-    if (maxPrice != null) return t('search.activeFilter.priceMax', { max: formatPrice(maxPrice, { compact: true }) })
+    if (minPrice != null)
+      return t('search.activeFilter.priceMin', { min: formatPrice(minPrice, { compact: true }) })
+    if (maxPrice != null)
+      return t('search.activeFilter.priceMax', { max: formatPrice(maxPrice, { compact: true }) })
     return null
   }
 
@@ -256,7 +258,11 @@ export default function SearchScreen() {
               onEndReachedThreshold={0.5}
               ListFooterComponent={
                 searchResults.isFetchingNextPage ? (
-                  <ActivityIndicator size="small" color={colors.primary} style={{ marginTop: 16 }} />
+                  <ActivityIndicator
+                    size="small"
+                    color={colors.primary}
+                    style={{ marginTop: 16 }}
+                  />
                 ) : null
               }
               renderItem={({ item }) => <ProductCard product={item} />}

@@ -1,6 +1,15 @@
 import { lazy, Suspense, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DollarSign, ShoppingCart, Users, Package, Clock, AlertCircle, Zap, MessageSquare } from 'lucide-react'
+import {
+  DollarSign,
+  ShoppingCart,
+  Users,
+  Package,
+  Clock,
+  AlertCircle,
+  Zap,
+  MessageSquare,
+} from 'lucide-react'
 import { StatCard } from 'src/components/shared/StatCard'
 import { PeriodSelect } from 'src/components/shared/PeriodSelect'
 import { PageHeader } from 'src/components/shared/PageHeader'
@@ -79,51 +88,51 @@ export default function DashboardPage() {
           ))}
         </div>
       ) : (
-        <StaggerList
-          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
-          staggerDelay={0.075}
-        >
-            <StaggerItem>
-              <StatCard
-                label={t('stats.totalRevenue')}
-                value={overview?.total_revenue ?? 0}
-                trend={overview?.revenue_change}
-                formatter={formatPrice}
-                icon={<DollarSign className="size-4" />}
-              />
-            </StaggerItem>
-            <StaggerItem>
-              <StatCard
-                label={t('stats.totalOrders')}
-                value={overview?.total_orders ?? 0}
-                trend={overview?.orders_change}
-                icon={<ShoppingCart className="size-4" />}
-              />
-            </StaggerItem>
-            <StaggerItem>
-              <StatCard
-                label={t('stats.totalUsers')}
-                value={overview?.total_users ?? 0}
-                trend={overview?.users_change}
-                icon={<Users className="size-4" />}
-              />
-            </StaggerItem>
-            <StaggerItem>
-              <StatCard
-                label={t('stats.totalProducts')}
-                value={overview?.total_products ?? 0}
-                trend={overview?.products_change}
-                icon={<Package className="size-4" />}
-              />
-            </StaggerItem>
-          </StaggerList>
+        <StaggerList className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" staggerDelay={0.075}>
+          <StaggerItem>
+            <StatCard
+              label={t('stats.totalRevenue')}
+              value={overview?.total_revenue ?? 0}
+              trend={overview?.revenue_change}
+              formatter={formatPrice}
+              icon={<DollarSign className="size-4" />}
+            />
+          </StaggerItem>
+          <StaggerItem>
+            <StatCard
+              label={t('stats.totalOrders')}
+              value={overview?.total_orders ?? 0}
+              trend={overview?.orders_change}
+              icon={<ShoppingCart className="size-4" />}
+            />
+          </StaggerItem>
+          <StaggerItem>
+            <StatCard
+              label={t('stats.totalUsers')}
+              value={overview?.total_users ?? 0}
+              trend={overview?.users_change}
+              icon={<Users className="size-4" />}
+            />
+          </StaggerItem>
+          <StaggerItem>
+            <StatCard
+              label={t('stats.totalProducts')}
+              value={overview?.total_products ?? 0}
+              trend={overview?.products_change}
+              icon={<Package className="size-4" />}
+            />
+          </StaggerItem>
+        </StaggerList>
       )}
 
       {realtimeMetrics && (
         <div>
           <div className="mb-3 flex items-center gap-2">
             <span className="text-sm font-medium text-muted-foreground">{t('realtime.title')}</span>
-            <Badge variant="outline" className="gap-1 border-green-500 text-green-600 text-xs px-1.5 py-0">
+            <Badge
+              variant="outline"
+              className="gap-1 border-green-500 text-green-600 text-xs px-1.5 py-0"
+            >
               <span className="size-1.5 rounded-full bg-green-500 animate-pulse inline-block" />
               {t('realtime.live')}
             </Badge>

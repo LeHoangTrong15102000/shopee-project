@@ -60,10 +60,7 @@ export function PendingPaymentPrompt({
     setIsConfirming(false)
 
     if (error) {
-      if (
-        error.code === 'payment_intent_unexpected_state' ||
-        error.code === 'resource_missing'
-      ) {
+      if (error.code === 'payment_intent_unexpected_state' || error.code === 'resource_missing') {
         toast.error(t('recovery.expiredError'))
         setShowExpiredHint(true)
       } else {
@@ -83,11 +80,11 @@ export function PendingPaymentPrompt({
     <div className="rounded-xl border border-yellow-300 bg-yellow-50 p-6 shadow-sm">
       {/* Header */}
       <div className="mb-4 flex items-start gap-3">
-        <span className="mt-0.5 text-2xl" aria-hidden="true">&#9888;&#65039;</span>
+        <span className="mt-0.5 text-2xl" aria-hidden="true">
+          &#9888;&#65039;
+        </span>
         <div>
-          <h2 className="text-base font-semibold text-yellow-900">
-            {t('recovery.title')}
-          </h2>
+          <h2 className="text-base font-semibold text-yellow-900">{t('recovery.title')}</h2>
           <p className="mt-1 text-sm text-yellow-700">
             {t('recovery.subtitle', {
               amount: formatCurrency(pendingOrder.total),
@@ -101,9 +98,7 @@ export function PendingPaymentPrompt({
 
       {/* Expired hint */}
       {showExpiredHint && (
-        <p className="mt-3 text-sm font-medium text-red-600">
-          {t('recovery.expiredHint')}
-        </p>
+        <p className="mt-3 text-sm font-medium text-red-600">{t('recovery.expiredHint')}</p>
       )}
 
       {/* Actions */}

@@ -58,7 +58,12 @@ export default function ConversationListItem({
             {conversation.title || t('aiChat.header.title')}
           </AppText>
           {conversation.lastMessage ? (
-            <AppText raw variant="bodySmall" color="muted" numberOfLines={1} style={{ marginTop: 2 }}>
+            <AppText
+              raw
+              variant="bodySmall"
+              color="muted"
+              numberOfLines={1}
+              style={{ marginTop: 2 }}>
               {conversation.lastMessage}
             </AppText>
           ) : null}

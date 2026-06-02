@@ -22,12 +22,7 @@ export default function ShopProductGrid({
   const colors = useColors()
 
   if (products.length === 0) {
-    return (
-      <EmptyState
-        icon={ShoppingBag}
-        message="Cửa hàng chưa có sản phẩm nào"
-      />
-    )
+    return <EmptyState icon={ShoppingBag} message="Cửa hàng chưa có sản phẩm nào" />
   }
 
   return (

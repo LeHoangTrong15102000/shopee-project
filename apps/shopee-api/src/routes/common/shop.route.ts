@@ -12,7 +12,15 @@ shopRouter.get('/:id', asyncHandler(shopController.getShop))
 shopRouter.get('/:id/products', asyncHandler(shopController.getShopProducts))
 
 // POST /shops/:id/follow — authenticated
-shopRouter.post('/:id/follow', authMiddleware.verifyAccessToken, asyncHandler(shopController.followShop))
+shopRouter.post(
+  '/:id/follow',
+  authMiddleware.verifyAccessToken,
+  asyncHandler(shopController.followShop),
+)
 
 // DELETE /shops/:id/follow — authenticated
-shopRouter.delete('/:id/follow', authMiddleware.verifyAccessToken, asyncHandler(shopController.unfollowShop))
+shopRouter.delete(
+  '/:id/follow',
+  authMiddleware.verifyAccessToken,
+  asyncHandler(shopController.unfollowShop),
+)

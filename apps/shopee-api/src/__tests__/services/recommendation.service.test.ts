@@ -115,12 +115,7 @@ describe('RecommendationService', () => {
       const result = await service.getSimilarProducts(productId)
 
       expect(result).toEqual([])
-      expect(mockRedisSet).toHaveBeenCalledWith(
-        `similar:${productId}`,
-        '[]',
-        'EX',
-        3600,
-      )
+      expect(mockRedisSet).toHaveBeenCalledWith(`similar:${productId}`, '[]', 'EX', 3600)
     })
 
     it('returns cached result without hitting the database', async () => {
@@ -225,8 +220,8 @@ describe('RecommendationService', () => {
       await service.getSimilarProducts(productId)
 
       const findCall = mockProductFind.mock.calls[0][0]
-      expect(findCall.price.$gte).toBe(70000)   // 100000 * 0.7
-      expect(findCall.price.$lte).toBe(130000)  // 100000 * 1.3
+      expect(findCall.price.$gte).toBe(70000) // 100000 * 0.7
+      expect(findCall.price.$lte).toBe(130000) // 100000 * 1.3
     })
   })
 
@@ -241,12 +236,7 @@ describe('RecommendationService', () => {
       const result = await service.getBoughtTogether(productId)
 
       expect(result).toEqual([])
-      expect(mockRedisSet).toHaveBeenCalledWith(
-        `bought-together:${productId}`,
-        '[]',
-        'EX',
-        86400,
-      )
+      expect(mockRedisSet).toHaveBeenCalledWith(`bought-together:${productId}`, '[]', 'EX', 86400)
     })
 
     it('returns cached result without running aggregation', async () => {
@@ -357,10 +347,7 @@ describe('RecommendationService', () => {
 
       await service.invalidateBoughtTogetherCache([id1, id2])
 
-      expect(mockRedisDel).toHaveBeenCalledWith(
-        `bought-together:${id1}`,
-        `bought-together:${id2}`,
-      )
+      expect(mockRedisDel).toHaveBeenCalledWith(`bought-together:${id1}`, `bought-together:${id2}`)
     })
 
     it('does nothing when given an empty array', async () => {

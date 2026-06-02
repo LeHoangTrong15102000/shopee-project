@@ -10,10 +10,7 @@ interface OrderTimelineProps {
   shouldReduceMotion: boolean | null
 }
 
-export default function OrderTimeline({
-  tracking,
-  shouldReduceMotion,
-}: OrderTimelineProps) {
+export default function OrderTimeline({ tracking, shouldReduceMotion }: OrderTimelineProps) {
   const sectionItemVariants = shouldReduceMotion ? reducedMotionVariants : sectionVariants
 
   if (!tracking) return null

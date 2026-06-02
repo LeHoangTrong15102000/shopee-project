@@ -30,11 +30,13 @@
 ### 1.2. Tại sao cần SSR?
 
 **Problems với CSR (Client-Side Rendering):**
+
 - **SEO**: Search engines khó crawl JavaScript-heavy sites
 - **Performance**: Slow initial page load (phải download, parse, execute JS)
 - **User Experience**: Blank screen cho đến khi JS load xong
 
 **Benefits của SSR:**
+
 - **Better SEO**: HTML content available ngay lập tức
 - **Faster First Contentful Paint (FCP)**: Users thấy content nhanh hơn
 - **Better Performance on slow devices**: Server render nhanh hơn client
@@ -43,11 +45,13 @@
 ### 1.3. Trade-offs
 
 **Pros:**
+
 - ✅ Better SEO
 - ✅ Faster initial load
 - ✅ Better UX on slow connections
 
 **Cons:**
+
 - ❌ Increased server load
 - ❌ More complex setup
 - ❌ Slower Time to Interactive (TTI)
@@ -66,11 +70,13 @@ User Request → Server → HTML Shell + JS Bundle → Browser
 ```
 
 **Characteristics:**
+
 - Server chỉ gửi HTML shell + JS bundle
 - Browser execute JS để render content
 - Slow initial load, fast subsequent navigations
 
 **Use cases:**
+
 - Admin dashboards
 - Internal tools
 - Apps không cần SEO
@@ -84,11 +90,13 @@ User Request → Server → Fetch Data → Render HTML → Browser
 ```
 
 **Characteristics:**
+
 - Server render HTML với data
 - Browser nhận HTML đã render
 - Fast initial load, hydration required
 
 **Use cases:**
+
 - E-commerce sites (Shopee)
 - News sites
 - Content-heavy sites cần SEO
@@ -101,11 +109,13 @@ User Request → CDN → Pre-rendered HTML → Browser
 ```
 
 **Characteristics:**
+
 - HTML generated tại build time
 - Serve static files từ CDN
 - Fastest load time, không có server rendering
 
 **Use cases:**
+
 - Blogs
 - Documentation sites
 - Marketing pages
@@ -119,25 +129,27 @@ User Request → CDN → Stale HTML (if exists)
 ```
 
 **Characteristics:**
+
 - Combine benefits của SSG và SSR
 - Serve stale content while revalidating
 - Best of both worlds
 
 **Use cases:**
+
 - E-commerce product pages
 - News articles
 - Content thay đổi không thường xuyên
 
 ### 2.5. So sánh
 
-| Feature | CSR | SSR | SSG | ISR |
-|---------|-----|-----|-----|-----|
-| **SEO** | ❌ Poor | ✅ Good | ✅ Excellent | ✅ Excellent |
-| **Initial Load** | ❌ Slow | ✅ Fast | ✅ Fastest | ✅ Fastest |
-| **TTI** | ✅ Fast | ❌ Slow | ✅ Fast | ✅ Fast |
-| **Server Load** | ✅ Low | ❌ High | ✅ None | ⚠️ Medium |
-| **Dynamic Content** | ✅ Yes | ✅ Yes | ❌ No | ⚠️ Delayed |
-| **Hosting Cost** | ✅ Low | ❌ High | ✅ Low | ⚠️ Medium |
+| Feature             | CSR     | SSR     | SSG          | ISR          |
+| ------------------- | ------- | ------- | ------------ | ------------ |
+| **SEO**             | ❌ Poor | ✅ Good | ✅ Excellent | ✅ Excellent |
+| **Initial Load**    | ❌ Slow | ✅ Fast | ✅ Fastest   | ✅ Fastest   |
+| **TTI**             | ✅ Fast | ❌ Slow | ✅ Fast      | ✅ Fast      |
+| **Server Load**     | ✅ Low  | ❌ High | ✅ None      | ⚠️ Medium    |
+| **Dynamic Content** | ✅ Yes  | ✅ Yes  | ❌ No        | ⚠️ Delayed   |
+| **Hosting Cost**    | ✅ Low  | ❌ High | ✅ Low       | ⚠️ Medium    |
 
 ---
 
@@ -150,6 +162,7 @@ User Request → CDN → Stale HTML (if exists)
 ### 3.2. Server Components vs Client Components
 
 **Server Components:**
+
 ```typescript
 // app/ProductList.server.tsx
 import { getProducts } from './api'
@@ -170,6 +183,7 @@ export default async function ProductList() {
 ```
 
 **Client Components:**
+
 ```typescript
 // app/AddToCartButton.client.tsx
 'use client' // Mark as Client Component
@@ -196,12 +210,14 @@ export default function AddToCartButton({ productId }: { productId: string }) {
 ### 3.3. Khi nào dùng Server Components?
 
 **✅ Server Components:**
+
 - Fetch data
 - Access backend resources (database, file system)
 - Keep sensitive information on server (API keys, tokens)
 - Large dependencies (không ship to client)
 
 **✅ Client Components:**
+
 - Interactivity (onClick, onChange)
 - State management (useState, useReducer)
 - Effects (useEffect)
@@ -236,6 +252,7 @@ export default async function ProductDetail({ id }: { id: string }) {
 ### 4.1. Setup SSR với Vite
 
 **File structure:**
+
 ```
 shopee-ssr/
 ├── src/
@@ -264,14 +281,14 @@ export default defineConfig({
       // Separate entry for server
       input: {
         client: './src/entry-client.tsx',
-        server: './src/entry-server.tsx'
-      }
-    }
+        server: './src/entry-server.tsx',
+      },
+    },
   },
   ssr: {
     // Externalize dependencies for SSR
-    noExternal: ['react', 'react-dom']
-  }
+    noExternal: ['react', 'react-dom'],
+  },
 })
 ```
 
@@ -325,7 +342,7 @@ const app = express()
 if (process.env.NODE_ENV !== 'production') {
   const vite = await createViteServer({
     server: { middlewareMode: true },
-    appType: 'custom'
+    appType: 'custom',
   })
 
   app.use(vite.middlewares)
@@ -335,10 +352,7 @@ if (process.env.NODE_ENV !== 'production') {
 
     try {
       // Load HTML template
-      let template = fs.readFileSync(
-        path.resolve('./index.html'),
-        'utf-8'
-      )
+      let template = fs.readFileSync(path.resolve('./index.html'), 'utf-8')
 
       // Apply Vite HTML transforms
       template = await vite.transformIndexHtml(url, template)
@@ -368,10 +382,7 @@ else {
     const url = req.originalUrl
 
     try {
-      const template = fs.readFileSync(
-        path.resolve('dist/client/index.html'),
-        'utf-8'
-      )
+      const template = fs.readFileSync(path.resolve('dist/client/index.html'), 'utf-8')
 
       const { render } = await import('./dist/server/entry-server.js')
       const { html: appHtml } = render(url)
@@ -428,6 +439,7 @@ Server → HTML (static) → Browser
 ### 5.2. Hydration Mismatch
 
 **Problem:**
+
 ```typescript
 // ❌ BAD: Server và client render khác nhau
 const Component = () => {
@@ -439,6 +451,7 @@ const Component = () => {
 ```
 
 **Solution:**
+
 ```typescript
 // ✅ GOOD: Consistent rendering
 const Component = () => {
@@ -806,17 +819,20 @@ app.use('*', async (req, res) => {
 ### 10.1. Do's
 
 ✅ **Use SSR for:**
+
 - E-commerce product pages
 - Content-heavy pages
 - Pages cần SEO
 
 ✅ **Optimize:**
+
 - Use streaming SSR
 - Implement caching
 - Code splitting
 - Resource hints
 
 ✅ **SEO:**
+
 - Meta tags
 - Structured data
 - Canonical URLs
@@ -825,6 +841,7 @@ app.use('*', async (req, res) => {
 ### 10.2. Don'ts
 
 ❌ **Avoid:**
+
 - SSR cho admin dashboards
 - SSR cho highly interactive apps
 - Fetching data on client after SSR (double fetch)
@@ -853,24 +870,28 @@ app.use('*', async (req, res) => {
 SSR là powerful technique cho SEO và performance, nhưng cần cân nhắc trade-offs:
 
 **Khi nào dùng SSR:**
+
 - E-commerce sites
 - Content-heavy sites
 - SEO là priority
 - Slow client devices
 
 **Khi nào dùng CSR:**
+
 - Admin dashboards
 - Internal tools
 - Highly interactive apps
 - SEO không quan trọng
 
 **Khi nào dùng SSG:**
+
 - Blogs
 - Documentation
 - Marketing pages
 - Content ít thay đổi
 
 **Tài liệu tham khảo:**
+
 - [React Server Components](https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023#react-server-components)
 - [Vite SSR](https://vitejs.dev/guide/ssr.html)
 - [Next.js Documentation](https://nextjs.org/docs)

@@ -21,7 +21,9 @@ const checkoutApi = {
       console.warn('Shipping methods API not available, using mock data')
       return {
         data: { message: 'Mock shipping methods', data: mockShippingMethods },
-      } as SuccessResponseApi<ShippingMethod[]> & { data: { message: string; data: ShippingMethod[] } }
+      } as SuccessResponseApi<ShippingMethod[]> & {
+        data: { message: string; data: ShippingMethod[] }
+      }
     }
   },
 
@@ -32,7 +34,9 @@ const checkoutApi = {
       console.warn('Payment methods API not available, using mock data')
       return {
         data: { message: 'Mock payment methods', data: mockPaymentMethods },
-      } as SuccessResponseApi<PaymentMethod[]> & { data: { message: string; data: PaymentMethod[] } }
+      } as SuccessResponseApi<PaymentMethod[]> & {
+        data: { message: string; data: PaymentMethod[] }
+      }
     }
   },
 

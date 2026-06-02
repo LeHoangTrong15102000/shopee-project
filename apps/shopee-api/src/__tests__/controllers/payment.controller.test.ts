@@ -110,9 +110,7 @@ describe('payment.controller — stripeWebhook', () => {
     await stripeWebhook(req as Request, res as Response)
 
     expect(res.status).toHaveBeenCalledWith(400)
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ error: expect.any(String) }),
-    )
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ error: expect.any(String) }))
     expect(mockStripeService.constructWebhookEvent).not.toHaveBeenCalled()
   })
 
@@ -179,7 +177,6 @@ describe('payment.controller — stripeWebhook', () => {
     })
     const mockSelect = jest.fn().mockReturnValue({ lean: mockLean })
     ;(mockOrderModel.findById as jest.Mock).mockReturnValue({ select: mockSelect })
-
     ;(mockPaymentLogModel.create as jest.Mock).mockResolvedValue({})
 
     await stripeWebhook(req as Request, res as Response)
@@ -235,7 +232,6 @@ describe('payment.controller — stripeWebhook', () => {
     })
     const mockSelect = jest.fn().mockReturnValue({ lean: mockLean })
     ;(mockOrderModel.findById as jest.Mock).mockReturnValue({ select: mockSelect })
-
     ;(mockPaymentLogModel.create as jest.Mock).mockResolvedValue({})
 
     await stripeWebhook(req as Request, res as Response)
@@ -270,7 +266,6 @@ describe('payment.controller — stripeWebhook', () => {
     })
     const mockSelect = jest.fn().mockReturnValue({ lean: mockLean })
     ;(mockOrderModel.findById as jest.Mock).mockReturnValue({ select: mockSelect })
-
     ;(mockPaymentLogModel.create as jest.Mock).mockResolvedValue({})
 
     await stripeWebhook(req as Request, res as Response)
@@ -411,8 +406,20 @@ describe('payment.controller — stripeWebhook refund events', () => {
 
     // Both refunds are found in DB — findOne().lean() chain mirrors real Mongoose usage
     ;(mockRefundModel.findOne as jest.Mock)
-      .mockReturnValueOnce({ lean: jest.fn().mockResolvedValue({ _id: 'refund_001', status: 'PROCESSING', gateway_refund_id: 're_test_001' }) })
-      .mockReturnValueOnce({ lean: jest.fn().mockResolvedValue({ _id: 'refund_002', status: 'PENDING', gateway_refund_id: 're_test_002' }) })
+      .mockReturnValueOnce({
+        lean: jest.fn().mockResolvedValue({
+          _id: 'refund_001',
+          status: 'PROCESSING',
+          gateway_refund_id: 're_test_001',
+        }),
+      })
+      .mockReturnValueOnce({
+        lean: jest.fn().mockResolvedValue({
+          _id: 'refund_002',
+          status: 'PENDING',
+          gateway_refund_id: 're_test_002',
+        }),
+      })
     ;(mockRefundService.completeRefund as jest.Mock).mockResolvedValue(undefined)
     ;(mockRefundModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({})
 
@@ -452,7 +459,9 @@ describe('payment.controller — stripeWebhook refund events', () => {
     }
     mockStripeService.constructWebhookEvent.mockReturnValue(event as any)
     ;(mockPaymentLogModel.exists as jest.Mock).mockResolvedValue(null)
-    ;(mockRefundModel.findOne as jest.Mock).mockReturnValue({ lean: jest.fn().mockResolvedValue(null) }) // not found
+    ;(mockRefundModel.findOne as jest.Mock).mockReturnValue({
+      lean: jest.fn().mockResolvedValue(null),
+    }) // not found
 
     await stripeWebhook(req as Request, res as Response)
 
@@ -554,7 +563,9 @@ describe('payment.controller — stripeWebhook refund events', () => {
     }
     mockStripeService.constructWebhookEvent.mockReturnValue(event as any)
     ;(mockPaymentLogModel.exists as jest.Mock).mockResolvedValue(null)
-    ;(mockRefundModel.findOne as jest.Mock).mockReturnValue({ lean: jest.fn().mockResolvedValue(null) })
+    ;(mockRefundModel.findOne as jest.Mock).mockReturnValue({
+      lean: jest.fn().mockResolvedValue(null),
+    })
 
     await stripeWebhook(req as Request, res as Response)
 

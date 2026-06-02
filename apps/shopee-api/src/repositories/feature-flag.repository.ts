@@ -1,5 +1,9 @@
 import { Types } from 'mongoose'
-import { FeatureFlagModel, IFeatureFlag, IFeatureFlagConditions } from '@database/models/feature-flag.model'
+import {
+  FeatureFlagModel,
+  IFeatureFlag,
+  IFeatureFlagConditions,
+} from '@database/models/feature-flag.model'
 
 export interface CreateFeatureFlagDTO {
   key: string
@@ -47,8 +51,15 @@ export class FeatureFlagRepository implements IFeatureFlagRepository {
     return FeatureFlagModel.find().sort({ key: 1 }).lean<IFeatureFlag[]>()
   }
 
-  async update(id: string | Types.ObjectId, data: UpdateFeatureFlagDTO): Promise<IFeatureFlag | null> {
-    return FeatureFlagModel.findByIdAndUpdate(id, { $set: data }, { new: true }).lean<IFeatureFlag | null>()
+  async update(
+    id: string | Types.ObjectId,
+    data: UpdateFeatureFlagDTO,
+  ): Promise<IFeatureFlag | null> {
+    return FeatureFlagModel.findByIdAndUpdate(
+      id,
+      { $set: data },
+      { new: true },
+    ).lean<IFeatureFlag | null>()
   }
 
   async delete(id: string | Types.ObjectId): Promise<IFeatureFlag | null> {

@@ -187,4 +187,3 @@ describe('Activity Emit Utils', () => {
     })
   })
 })
-

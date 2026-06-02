@@ -24,14 +24,7 @@ import { Skeleton } from 'src/components/ui/skeleton'
 import { PageHeader } from 'src/components/shared/PageHeader'
 import healthApi from 'src/apis/health.api'
 import type { HealthHistoryPoint } from 'src/types/health.types'
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts'
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 
 const AUTO_REFRESH_INTERVAL = 30_000
 
@@ -52,11 +45,7 @@ function StatusIndicator({ status }: { status: 'healthy' | 'unhealthy' | 'degrad
   return (
     <span
       className={`inline-block size-2.5 rounded-full ${
-        isGood
-          ? 'bg-green-500'
-          : isDegraded
-            ? 'bg-yellow-500'
-            : 'bg-red-500'
+        isGood ? 'bg-green-500' : isDegraded ? 'bg-yellow-500' : 'bg-red-500'
       }`}
       aria-hidden="true"
     />
@@ -138,10 +127,9 @@ export default function SystemHealthPage() {
   }, [autoRefresh, handleRefresh])
 
   const isLoading = loadingHealth || loadingMetrics || loadingReady
-  const heapPercent =
-    metrics?.memory
-      ? Math.round((metrics.memory.heapUsedMB / metrics.memory.heapTotalMB) * 100)
-      : 0
+  const heapPercent = metrics?.memory
+    ? Math.round((metrics.memory.heapUsedMB / metrics.memory.heapTotalMB) * 100)
+    : 0
 
   return (
     <div className="space-y-6">
@@ -151,11 +139,7 @@ export default function SystemHealthPage() {
         actions={
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <Switch
-                id="auto-refresh"
-                checked={autoRefresh}
-                onCheckedChange={setAutoRefresh}
-              />
+              <Switch id="auto-refresh" checked={autoRefresh} onCheckedChange={setAutoRefresh} />
               <Label htmlFor="auto-refresh" className="text-sm">
                 {t('autoRefresh')}
               </Label>
@@ -282,7 +266,8 @@ export default function SystemHealthPage() {
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">{t('memory.usage')}</span>
                     <span className="font-medium">
-                      {metrics.memory.heapUsedMB} / {metrics.memory.heapTotalMB} {t('memory.mb')} ({heapPercent}%)
+                      {metrics.memory.heapUsedMB} / {metrics.memory.heapTotalMB} {t('memory.mb')} (
+                      {heapPercent}%)
                     </span>
                   </div>
                   <Progress value={heapPercent} className="h-2" />
@@ -290,11 +275,15 @@ export default function SystemHealthPage() {
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div>
                     <p className="text-muted-foreground">{t('memory.heapUsed')}</p>
-                    <p className="font-medium">{metrics.memory.heapUsedMB} {t('memory.mb')}</p>
+                    <p className="font-medium">
+                      {metrics.memory.heapUsedMB} {t('memory.mb')}
+                    </p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">{t('memory.heapTotal')}</p>
-                    <p className="font-medium">{metrics.memory.heapTotalMB} {t('memory.mb')}</p>
+                    <p className="font-medium">
+                      {metrics.memory.heapTotalMB} {t('memory.mb')}
+                    </p>
                   </div>
                 </div>
               </>
@@ -378,7 +367,9 @@ export default function SystemHealthPage() {
                   </div>
                   <div>
                     <p className="text-muted-foreground">{t('metrics.availableConnections')}</p>
-                    <p className="font-medium">{metrics.database.pool.availableConnections ?? '—'}</p>
+                    <p className="font-medium">
+                      {metrics.database.pool.availableConnections ?? '—'}
+                    </p>
                   </div>
                 </>
               )}
@@ -446,7 +437,9 @@ export default function SystemHealthPage() {
                     <AlertTriangle className="size-3" />
                     {t('requestStats.errorRate')}
                   </p>
-                  <p className={`font-bold text-lg tabular-nums ${metrics.requests.errorRate > 5 ? 'text-red-500' : ''}`}>
+                  <p
+                    className={`font-bold text-lg tabular-nums ${metrics.requests.errorRate > 5 ? 'text-red-500' : ''}`}
+                  >
                     {metrics.requests.errorRate.toFixed(1)}%
                   </p>
                 </div>

@@ -29,9 +29,9 @@ describe('Purchases API', () => {
 
     it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      await expect(
-        purchaseApi.addToCart({ product_id: '1', buy_count: 1 }),
-      ).rejects.toThrow('Network error')
+      await expect(purchaseApi.addToCart({ product_id: '1', buy_count: 1 })).rejects.toThrow(
+        'Network error',
+      )
     })
   })
 
@@ -61,9 +61,9 @@ describe('Purchases API', () => {
 
     it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      await expect(
-        purchaseApi.buyPurchases([{ product_id: '1', buy_count: 1 }]),
-      ).rejects.toThrow('Network error')
+      await expect(purchaseApi.buyPurchases([{ product_id: '1', buy_count: 1 }])).rejects.toThrow(
+        'Network error',
+      )
     })
   })
 
@@ -78,9 +78,9 @@ describe('Purchases API', () => {
 
     it('should throw on error', async () => {
       vi.mocked(http.put).mockRejectedValue(new Error('Network error'))
-      await expect(
-        purchaseApi.updatePurchase({ product_id: '1', buy_count: 2 }),
-      ).rejects.toThrow('Network error')
+      await expect(purchaseApi.updatePurchase({ product_id: '1', buy_count: 2 })).rejects.toThrow(
+        'Network error',
+      )
     })
   })
 

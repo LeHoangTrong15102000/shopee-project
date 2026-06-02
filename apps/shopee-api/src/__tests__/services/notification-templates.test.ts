@@ -8,17 +8,26 @@ import { NotificationTemplates } from '@services/notification-templates'
 describe('NotificationTemplates.render', () => {
   describe('order type', () => {
     it('returns the expected title', () => {
-      const { title } = NotificationTemplates.render('order', { orderId: '123', status: 'confirmed' })
+      const { title } = NotificationTemplates.render('order', {
+        orderId: '123',
+        status: 'confirmed',
+      })
       expect(title).toBe('Cập nhật đơn hàng')
     })
 
     it('includes the orderId in the content', () => {
-      const { content } = NotificationTemplates.render('order', { orderId: '123', status: 'confirmed' })
+      const { content } = NotificationTemplates.render('order', {
+        orderId: '123',
+        status: 'confirmed',
+      })
       expect(content).toContain('#123')
     })
 
     it('includes the status in the content', () => {
-      const { content } = NotificationTemplates.render('order', { orderId: '123', status: 'SHIPPED' })
+      const { content } = NotificationTemplates.render('order', {
+        orderId: '123',
+        status: 'SHIPPED',
+      })
       expect(content).toContain('SHIPPED')
     })
 
@@ -35,7 +44,9 @@ describe('NotificationTemplates.render', () => {
     })
 
     it('includes the promotion name in the content', () => {
-      const { content } = NotificationTemplates.render('promotion', { promotionName: 'Summer Sale' })
+      const { content } = NotificationTemplates.render('promotion', {
+        promotionName: 'Summer Sale',
+      })
       expect(content).toContain('Summer Sale')
     })
 

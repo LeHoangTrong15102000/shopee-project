@@ -21,7 +21,8 @@ const BUILT_IN_FLAGS = [
   {
     key: 'new-search',
     name: 'New Search (Meilisearch)',
-    description: 'Enables the Meilisearch-powered search experience instead of MongoDB text search.',
+    description:
+      'Enables the Meilisearch-powered search experience instead of MongoDB text search.',
     enabled: false,
     rolloutPercentage: 100,
   },

@@ -512,31 +512,36 @@ const ProductDetail = () => {
         </div>
       </motion.div>
       {/* Price History Chart */}
-      <div className='mt-4'>
-        <div className='container'>
-          <div className='rounded-sm bg-white p-4 shadow-sm dark:bg-slate-800 dark:shadow-slate-900/50'>
+      <div className="mt-4">
+        <div className="container">
+          <div className="rounded-sm bg-white p-4 shadow-sm dark:bg-slate-800 dark:shadow-slate-900/50">
             <button
-              type='button'
+              type="button"
               onClick={() => setIsPriceHistoryExpanded((prev) => !prev)}
-              className='flex w-full items-center justify-between text-sm font-medium text-gray-700 hover:text-orange dark:text-gray-200 dark:hover:text-orange-400'
+              className="flex w-full items-center justify-between text-sm font-medium text-gray-700 hover:text-orange dark:text-gray-200 dark:hover:text-orange-400"
               aria-expanded={isPriceHistoryExpanded}
             >
               <span>View price history</span>
               <svg
-                aria-hidden='true'
+                aria-hidden="true"
                 className={`h-4 w-4 transition-transform duration-200 motion-reduce:transition-none ${isPriceHistoryExpanded ? 'rotate-180' : ''}`}
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
             {isPriceHistoryExpanded && (
-              <div className='mt-4'>
+              <div className="mt-4">
                 {isPriceHistoryLoading ? (
-                  <div className='flex items-center justify-center py-8'>
-                    <div className='h-6 w-6 animate-spin rounded-full border-2 border-orange border-t-transparent' />
+                  <div className="flex items-center justify-center py-8">
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-orange border-t-transparent" />
                   </div>
                 ) : (
                   <PriceHistoryChart data={priceHistoryData?.data?.data ?? []} />

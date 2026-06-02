@@ -29,9 +29,12 @@ export default function PrivacySettingsScreen() {
 
   const visibilityLabel = useMemo(() => {
     switch (profileVisibility) {
-      case 'public': return t('settings.privacy.profileVisibility.public')
-      case 'friends': return t('settings.privacy.profileVisibility.friendsOnly')
-      case 'private': return t('settings.privacy.profileVisibility.private')
+      case 'public':
+        return t('settings.privacy.profileVisibility.public')
+      case 'friends':
+        return t('settings.privacy.profileVisibility.friendsOnly')
+      case 'private':
+        return t('settings.privacy.profileVisibility.private')
     }
   }, [profileVisibility, t])
 
@@ -58,7 +61,10 @@ export default function PrivacySettingsScreen() {
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
         <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16 }}>
           {/* Profile Section */}
-          <AppText variant="caption" weight="semibold" style={{ color: colors.neutrals100, marginBottom: 8 }}>
+          <AppText
+            variant="caption"
+            weight="semibold"
+            style={{ color: colors.neutrals100, marginBottom: 8 }}>
             {t('settings.privacy.profile')}
           </AppText>
           <Pressable
@@ -73,7 +79,9 @@ export default function PrivacySettingsScreen() {
             }}
             accessibilityRole="button">
             <View>
-              <AppText variant="body" raw>{t('settings.privacy.profileVisibility')}</AppText>
+              <AppText variant="body" raw>
+                {t('settings.privacy.profileVisibility')}
+              </AppText>
               <AppText variant="caption" style={{ color: colors.neutrals100, marginTop: 2 }}>
                 {visibilityLabel}
               </AppText>
@@ -82,29 +90,68 @@ export default function PrivacySettingsScreen() {
           </Pressable>
 
           {/* Activity Section */}
-          <AppText variant="caption" weight="semibold" style={{ color: colors.neutrals100, marginTop: 24, marginBottom: 8 }}>
+          <AppText
+            variant="caption"
+            weight="semibold"
+            style={{ color: colors.neutrals100, marginTop: 24, marginBottom: 8 }}>
             {t('settings.privacy.activity')}
           </AppText>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colors.neutrals800 }}>
-            <AppText variant="body" raw>{t('settings.privacy.showOnlineStatus')}</AppText>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingVertical: 12,
+              borderBottomWidth: 1,
+              borderBottomColor: colors.neutrals800,
+            }}>
+            <AppText variant="body" raw>
+              {t('settings.privacy.showOnlineStatus')}
+            </AppText>
             <Switch value={showOnlineStatus} onValueChange={setShowOnlineStatus} />
           </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colors.neutrals800 }}>
-            <AppText variant="body" raw style={{ flex: 1, marginRight: 12 }}>{t('settings.privacy.showPurchaseHistory')}</AppText>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingVertical: 12,
+              borderBottomWidth: 1,
+              borderBottomColor: colors.neutrals800,
+            }}>
+            <AppText variant="body" raw style={{ flex: 1, marginRight: 12 }}>
+              {t('settings.privacy.showPurchaseHistory')}
+            </AppText>
             <Switch value={showPurchaseHistory} onValueChange={setShowPurchaseHistory} />
           </View>
 
           {/* Messaging Section */}
-          <AppText variant="caption" weight="semibold" style={{ color: colors.neutrals100, marginTop: 24, marginBottom: 8 }}>
+          <AppText
+            variant="caption"
+            weight="semibold"
+            style={{ color: colors.neutrals100, marginTop: 24, marginBottom: 8 }}>
             {t('settings.privacy.messaging')}
           </AppText>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colors.neutrals800 }}>
-            <AppText variant="body" raw>{t('settings.privacy.allowShopChat')}</AppText>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingVertical: 12,
+              borderBottomWidth: 1,
+              borderBottomColor: colors.neutrals800,
+            }}>
+            <AppText variant="body" raw>
+              {t('settings.privacy.allowShopChat')}
+            </AppText>
             <Switch value={allowShopChat} onValueChange={setAllowShopChat} />
           </View>
 
           {/* Data Section */}
-          <AppText variant="caption" weight="semibold" style={{ color: colors.neutrals100, marginTop: 24, marginBottom: 8 }}>
+          <AppText
+            variant="caption"
+            weight="semibold"
+            style={{ color: colors.neutrals100, marginTop: 24, marginBottom: 8 }}>
             {t('settings.privacy.data')}
           </AppText>
           <Pressable
@@ -118,7 +165,9 @@ export default function PrivacySettingsScreen() {
               borderBottomColor: colors.neutrals800,
             }}
             accessibilityRole="button">
-            <AppText variant="body" raw>{t('settings.privacy.dataPersonalization')}</AppText>
+            <AppText variant="body" raw>
+              {t('settings.privacy.dataPersonalization')}
+            </AppText>
             <ChevronRight size={20} color={colors.neutrals100} />
           </Pressable>
         </ScrollView>
@@ -132,7 +181,10 @@ export default function PrivacySettingsScreen() {
           backdropComponent={renderBackdrop}
           backgroundStyle={{ backgroundColor: colors.neutrals800 }}>
           <BottomSheetView style={{ padding: 16, gap: 4 }}>
-            <AppText variant="heading3" weight="semibold" style={{ marginBottom: 12, color: colors.foreground }}>
+            <AppText
+              variant="heading3"
+              weight="semibold"
+              style={{ marginBottom: 12, color: colors.foreground }}>
               {t('settings.privacy.profileVisibility')}
             </AppText>
             {(['public', 'friends', 'private'] as const).map((option) => (
@@ -143,14 +195,17 @@ export default function PrivacySettingsScreen() {
                   paddingVertical: 14,
                   paddingHorizontal: 12,
                   borderRadius: 8,
-                  backgroundColor: profileVisibility === option ? colors.primary + '15' : 'transparent',
+                  backgroundColor:
+                    profileVisibility === option ? colors.primary + '15' : 'transparent',
                 }}
                 accessibilityRole="radio"
                 accessibilityState={{ selected: profileVisibility === option }}>
                 <AppText
                   variant="body"
                   weight={profileVisibility === option ? 'semibold' : 'regular'}
-                  style={{ color: profileVisibility === option ? colors.primary : colors.foreground }}>
+                  style={{
+                    color: profileVisibility === option ? colors.primary : colors.foreground,
+                  }}>
                   {option === 'public' && t('settings.privacy.profileVisibility.public')}
                   {option === 'friends' && t('settings.privacy.profileVisibility.friendsOnly')}
                   {option === 'private' && t('settings.privacy.profileVisibility.private')}

@@ -44,9 +44,7 @@ async function importCategories() {
   console.log('📦 Starting categories import...')
 
   const categoriesPath = path.join(__dirname, '..', 'main.categories.json')
-  const categoriesData: CategoryData[] = JSON.parse(
-    fs.readFileSync(categoriesPath, 'utf8')
-  )
+  const categoriesData: CategoryData[] = JSON.parse(fs.readFileSync(categoriesPath, 'utf8'))
 
   console.log(`Found ${categoriesData.length} categories to import`)
 
@@ -72,9 +70,7 @@ async function importProducts() {
   console.log('📦 Starting products import...')
 
   const productsPath = path.join(__dirname, '..', 'main.products.json')
-  const productsData: ProductData[] = JSON.parse(
-    fs.readFileSync(productsPath, 'utf8')
-  )
+  const productsData: ProductData[] = JSON.parse(fs.readFileSync(productsPath, 'utf8'))
 
   console.log(`Found ${productsData.length} products to import`)
 
@@ -84,12 +80,10 @@ async function importProducts() {
   for (const [index, productData] of productsData.entries()) {
     try {
       // Verify category exists
-      const categoryExists = await CategoryModel.findById(
-        productData.category.$oid
-      )
+      const categoryExists = await CategoryModel.findById(productData.category.$oid)
       if (!categoryExists) {
         console.warn(
-          `⚠️ Category ${productData.category.$oid} not found for product ${productData.name}`
+          `⚠️ Category ${productData.category.$oid} not found for product ${productData.name}`,
         )
         errorCount++
         continue
@@ -117,9 +111,7 @@ async function importProducts() {
       successCount++
 
       if ((index + 1) % 50 === 0) {
-        console.log(
-          `📊 Progress: ${index + 1}/${productsData.length} products processed`
-        )
+        console.log(`📊 Progress: ${index + 1}/${productsData.length} products processed`)
       }
     } catch (error) {
       console.error(`❌ Error importing product ${productData.name}:`, error)
@@ -150,7 +142,7 @@ async function verifyImport() {
     console.log(
       `  • ${product.name} - Location: ${product.location} - Category: ${
         (product.category as any)?.name
-      }`
+      }`,
     )
   })
 }

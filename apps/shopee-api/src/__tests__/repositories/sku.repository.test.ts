@@ -58,7 +58,11 @@ describe('SKURepository - Stock Sync', () => {
         { $inc: { stock: -2 } },
         { new: true },
       )
-      expect(mockProductRepo.decrementQuantity).toHaveBeenCalledWith(mockSKUData.product, 2, undefined)
+      expect(mockProductRepo.decrementQuantity).toHaveBeenCalledWith(
+        mockSKUData.product,
+        2,
+        undefined,
+      )
     })
 
     it('returns null when insufficient stock (no Product update)', async () => {
@@ -80,9 +84,13 @@ describe('SKURepository - Stock Sync', () => {
       await expect(repository.atomicDecrementStock(mockSKUData._id, 2)).rejects.toThrow(
         BusinessError,
       )
-      expect(SKUModel.findByIdAndUpdate).toHaveBeenCalledWith(mockSKUData._id, {
-        $inc: { stock: 2 },
-      }, undefined)
+      expect(SKUModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        mockSKUData._id,
+        {
+          $inc: { stock: 2 },
+        },
+        undefined,
+      )
     })
   })
 
@@ -100,7 +108,11 @@ describe('SKURepository - Stock Sync', () => {
         { $inc: { stock: 2 } },
         { new: true },
       )
-      expect(mockProductRepo.incrementQuantity).toHaveBeenCalledWith(mockSKUData.product, 2, undefined)
+      expect(mockProductRepo.incrementQuantity).toHaveBeenCalledWith(
+        mockSKUData.product,
+        2,
+        undefined,
+      )
     })
 
     it('rolls back SKU stock and throws when Product sync fails', async () => {
@@ -128,7 +140,11 @@ describe('SKURepository - Stock Sync', () => {
 
       expect(results).toHaveLength(1)
       expect(results[0].success).toBe(true)
-      expect(mockProductRepo.decrementQuantity).toHaveBeenCalledWith(mockSKUData.product, 3, undefined)
+      expect(mockProductRepo.decrementQuantity).toHaveBeenCalledWith(
+        mockSKUData.product,
+        3,
+        undefined,
+      )
     })
 
     it('decrements multiple SKUs and syncs Product.quantity for each', async () => {

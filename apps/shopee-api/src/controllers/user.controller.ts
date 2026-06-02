@@ -169,9 +169,10 @@ const updateMe = async (req: CustomRequest, res: Response) => {
     if (isPasswordChange) {
       const userId = req.jwtDecoded.id
       const forwarded = req.headers['x-forwarded-for']
-      const ip = typeof forwarded === 'string'
-        ? forwarded.split(',')[0].trim()
-        : req.ip || req.socket?.remoteAddress || 'unknown'
+      const ip =
+        typeof forwarded === 'string'
+          ? forwarded.split(',')[0].trim()
+          : req.ip || req.socket?.remoteAddress || 'unknown'
       const { auditLogService } = await import('../container')
       auditLogService.writeLog({
         action: 'user.password_change',

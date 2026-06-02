@@ -176,7 +176,8 @@ const purchaseApi = {
   addToCart: (body: { product_id: string; buy_count: number }) =>
     http.post<SuccessResponse<Purchase>>('/purchases/add-to-cart', body),
 
-  getPurchases: (params: { status: PurchaseStatus }) => http.get<SuccessResponse<Purchase[]>>('/purchases', { params }),
+  getPurchases: (params: { status: PurchaseStatus }) =>
+    http.get<SuccessResponse<Purchase[]>>('/purchases', { params }),
 
   buyProducts: (body: { product_id: string; buy_count: number }[]) =>
     http.post<SuccessResponse<Purchase[]>>('/purchases/buy-products', body),
@@ -186,8 +187,8 @@ const purchaseApi = {
 
   deletePurchases: (purchaseIds: string[]) =>
     http.delete<SuccessResponse<{ deleted_count: number }>>('/purchases', {
-      data: purchaseIds
-    })
+      data: purchaseIds,
+    }),
 }
 
 // Purchase status constants
@@ -197,7 +198,7 @@ export const purchaseStatus = {
   waitForGetting: 2,
   inProgress: 3,
   delivered: 4,
-  cancelled: 5
+  cancelled: 5,
 } as const
 ```
 
@@ -210,10 +211,10 @@ const logoutMutation = useMutation({
   onSuccess: () => {
     queryClient.removeQueries({
       queryKey: ['purchases', { status: purchaseStatus.inCart }],
-      exact: true
+      exact: true,
     })
     // Clear other user-specific queries...
-  }
+  },
 })
 ```
 
@@ -326,7 +327,7 @@ useEffect(() => {
       purchasesInCart?.map((purchase) => ({
         ...purchase,
         disabled: false,
-        checked: Boolean(extendedPurchasesObject[purchase._id]?.checked)
+        checked: Boolean(extendedPurchasesObject[purchase._id]?.checked),
       })) || []
     )
   })
@@ -337,7 +338,7 @@ const handleCheck = (purchaseIndex: number) => (event: React.ChangeEvent<HTMLInp
   setExtendedPurchases(
     produce((draft) => {
       draft[purchaseIndex].checked = event.target.checked
-    })
+    }),
   )
 }
 
@@ -346,15 +347,21 @@ const handleCheckAll = () => {
   setExtendedPurchases((prev) =>
     prev.map((purchase) => ({
       ...purchase,
-      checked: !isAllChecked
-    }))
+      checked: !isAllChecked,
+    })),
   )
 }
 
 // Computed values
-const isAllChecked = useMemo(() => extendedPurchases.every((purchase) => purchase.checked), [extendedPurchases])
+const isAllChecked = useMemo(
+  () => extendedPurchases.every((purchase) => purchase.checked),
+  [extendedPurchases],
+)
 
-const checkedPurchases = useMemo(() => extendedPurchases.filter((purchase) => purchase.checked), [extendedPurchases])
+const checkedPurchases = useMemo(
+  () => extendedPurchases.filter((purchase) => purchase.checked),
+  [extendedPurchases],
+)
 ```
 
 ### 🎬 Video 201: Update Cart Logic
@@ -367,9 +374,9 @@ const updatePurchaseMutation = useMutation({
   mutationFn: purchaseApi.updatePurchase,
   onSuccess: () => {
     queryClient.invalidateQueries({
-      queryKey: ['purchases', { status: purchaseStatus.inCart }]
+      queryKey: ['purchases', { status: purchaseStatus.inCart }],
     })
-  }
+  },
 })
 
 // Handle quantity change với enabled condition
@@ -381,13 +388,13 @@ const handleQuantity = (purchaseIndex: number, value: number, enabled: boolean) 
     setExtendedPurchases(
       produce((draft) => {
         draft[purchaseIndex].disabled = true
-      })
+      }),
     )
 
     // Update quantity
     updatePurchaseMutation.mutate({
       product_id: purchase.product._id,
-      buy_count: value
+      buy_count: value,
     })
   }
 }
@@ -397,12 +404,16 @@ const handleTypeQuantity = (purchaseIndex: number) => (value: number) => {
   setExtendedPurchases(
     produce((draft) => {
       draft[purchaseIndex].buy_count = value
-    })
+    }),
   )
 }
 
 const handleQuantityFocusOut = (purchaseIndex: number, value: number) => {
-  handleQuantity(purchaseIndex, value, value !== (purchasesInCart as Purchase[])[purchaseIndex]?.buy_count)
+  handleQuantity(
+    purchaseIndex,
+    value,
+    value !== (purchasesInCart as Purchase[])[purchaseIndex]?.buy_count,
+  )
 }
 ```
 
@@ -431,9 +442,9 @@ const deletePurchasesMutation = useMutation({
   mutationFn: purchaseApi.deletePurchases,
   onSuccess: () => {
     queryClient.invalidateQueries({
-      queryKey: ['purchases', { status: purchaseStatus.inCart }]
+      queryKey: ['purchases', { status: purchaseStatus.inCart }],
     })
-  }
+  },
 })
 
 // Delete handlers với currying
@@ -459,15 +470,17 @@ const totalCheckedPurchasePrice = useMemo(
     checkedPurchases.reduce((result, current) => {
       return result + current.product.price * current.buy_count
     }, 0),
-  [checkedPurchases]
+  [checkedPurchases],
 )
 
 const totalCheckedPurchaseSavingPrice = useMemo(
   () =>
     checkedPurchases.reduce((result, current) => {
-      return result + (current.product.price_before_discount - current.product.price) * current.buy_count
+      return (
+        result + (current.product.price_before_discount - current.product.price) * current.buy_count
+      )
     }, 0),
-  [checkedPurchases]
+  [checkedPurchases],
 )
 ```
 
@@ -479,10 +492,10 @@ const buyPurchasesMutation = useMutation({
   mutationFn: purchaseApi.buyProducts,
   onSuccess: (data) => {
     queryClient.invalidateQueries({
-      queryKey: ['purchases', { status: purchaseStatus.inCart }]
+      queryKey: ['purchases', { status: purchaseStatus.inCart }],
     })
     toast.success(`Mua ${data.data.data.length} sản phẩm thành công`)
-  }
+  },
 })
 
 // Handle buy
@@ -490,7 +503,7 @@ const handleBuyPurchases = () => {
   if (checkedPurchases.length > 0) {
     const body = checkedPurchases.map((purchase) => ({
       product_id: purchase.product._id,
-      buy_count: purchase.buy_count
+      buy_count: purchase.buy_count,
     }))
     buyPurchasesMutation.mutate(body)
   }
@@ -547,8 +560,8 @@ const useSearchProducts = () => {
 
   const { register, handleSubmit } = useForm<{ name: string }>({
     defaultValues: {
-      name: ''
-    }
+      name: '',
+    },
   })
 
   const onSubmitSearch = handleSubmit((data) => {
@@ -558,14 +571,14 @@ const useSearchProducts = () => {
       pathname: path.home,
       search: createSearchParams({
         ...config,
-        name: data.name
-      }).toString()
+        name: data.name,
+      }).toString(),
     })
   })
 
   return {
     register,
-    onSubmitSearch
+    onSubmitSearch,
   }
 }
 ```
@@ -579,14 +592,14 @@ const useSearchProducts = () => {
 const handleBuyNow = async () => {
   const res = await addToCartMutation.mutateAsync({
     buy_count: buyCount,
-    product_id: product?._id as string
+    product_id: product?._id as string,
   })
 
   const purchase = res.data.data
   navigate('/cart', {
     state: {
-      purchaseId: purchase._id
-    }
+      purchaseId: purchase._id,
+    },
   })
 }
 
@@ -603,7 +616,9 @@ useEffect(() => {
         return {
           ...purchase,
           disabled: false,
-          checked: isChoosenPurchaseFromLocation || Boolean(extendedPurchasesObject[purchase._id]?.checked)
+          checked:
+            isChoosenPurchaseFromLocation ||
+            Boolean(extendedPurchasesObject[purchase._id]?.checked),
         }
       }) || []
     )
@@ -670,7 +685,7 @@ axiosInstance.interceptors.response.use(
     }
 
     return Promise.reject(error)
-  }
+  },
 )
 ```
 

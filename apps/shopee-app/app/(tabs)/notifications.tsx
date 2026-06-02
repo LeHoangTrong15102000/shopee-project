@@ -1,11 +1,5 @@
 import React, { useCallback } from 'react'
-import {
-  View,
-  FlatList,
-  RefreshControl,
-  ActivityIndicator,
-  TouchableOpacity,
-} from 'react-native'
+import { View, FlatList, RefreshControl, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Bell } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'

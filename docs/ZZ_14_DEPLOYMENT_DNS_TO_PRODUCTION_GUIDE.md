@@ -92,11 +92,11 @@ Trước khi bắt tay vào từng bước, hãy nhìn toàn cảnh hệ thống
 
 ### 1.2 Ba ứng dụng web và vai trò của chúng
 
-| Ứng dụng | Subdomain | Loại | Cách chạy trên server |
-|----------|-----------|------|-----------------------|
-| shopee-web | shopee.lehoangtrong.com | Vite SPA (storefront) | Static files — web server phục vụ |
-| shopee-admin | shopee-admin.lehoangtrong.com | Vite SPA (admin panel) | Static files — web server phục vụ |
-| shopee-api | api-ecom.lehoangtrong.com | Node/Express 5 + Socket.IO | Live process — PM2 giữ sống |
+| Ứng dụng     | Subdomain                     | Loại                       | Cách chạy trên server             |
+| ------------ | ----------------------------- | -------------------------- | --------------------------------- |
+| shopee-web   | shopee.lehoangtrong.com       | Vite SPA (storefront)      | Static files — web server phục vụ |
+| shopee-admin | shopee-admin.lehoangtrong.com | Vite SPA (admin panel)     | Static files — web server phục vụ |
+| shopee-api   | api-ecom.lehoangtrong.com     | Node/Express 5 + Socket.IO | Live process — PM2 giữ sống       |
 
 **Điểm quan trọng cho người mới:** Sau khi `build`, shopee-web và shopee-admin chỉ là các file HTML/CSS/JS tĩnh. Web server (Caddy hoặc Nginx) đọc và trả về các file đó — không có process Node nào chạy cho chúng. Ngược lại, shopee-api là một process Node thực sự, phải được giữ sống liên tục bằng PM2.
 
@@ -114,13 +114,13 @@ DNS (Domain Name System) là "danh bạ điện thoại" của internet — nó 
 
 ### 2.2 Giải thích các loại record DNS
 
-| Ký hiệu | Tên đầy đủ | Ý nghĩa |
-|---------|-----------|---------|
-| `@` | Apex / naked domain | Chính là `lehoangtrong.com` (không có subdomain). **Phải là A record** — không thể là CNAME theo chuẩn DNS. |
-| `www` | Subdomain www | `www.lehoangtrong.com` — thường là CNAME trỏ về `@` để theo apex. |
-| `api-ecom` | Subdomain tùy chỉnh | `api-ecom.lehoangtrong.com` — trỏ thẳng về IP bằng A record. |
-| `shopee` | Subdomain mới | `shopee.lehoangtrong.com` — cần thêm mới. |
-| `shopee-admin` | Subdomain mới | `shopee-admin.lehoangtrong.com` — cần thêm mới. |
+| Ký hiệu        | Tên đầy đủ          | Ý nghĩa                                                                                                     |
+| -------------- | ------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `@`            | Apex / naked domain | Chính là `lehoangtrong.com` (không có subdomain). **Phải là A record** — không thể là CNAME theo chuẩn DNS. |
+| `www`          | Subdomain www       | `www.lehoangtrong.com` — thường là CNAME trỏ về `@` để theo apex.                                           |
+| `api-ecom`     | Subdomain tùy chỉnh | `api-ecom.lehoangtrong.com` — trỏ thẳng về IP bằng A record.                                                |
+| `shopee`       | Subdomain mới       | `shopee.lehoangtrong.com` — cần thêm mới.                                                                   |
+| `shopee-admin` | Subdomain mới       | `shopee-admin.lehoangtrong.com` — cần thêm mới.                                                             |
 
 **Tại sao `@` phải là A record?** Theo chuẩn DNS (RFC 1034), CNAME không được phép ở apex domain vì apex còn chứa SOA và NS records. Nếu dùng CNAME ở `@`, nhiều DNS resolver sẽ từ chối hoặc hoạt động không ổn định.
 
@@ -128,21 +128,21 @@ DNS (Domain Name System) là "danh bạ điện thoại" của internet — nó 
 
 Đây là trạng thái DNS hiện tại của domain `lehoangtrong.com`:
 
-| Tên (Name) | Loại (Type) | Giá trị (Value) | Ghi chú |
-|------------|-------------|-----------------|---------|
-| `@` | A | `103.106.104.37` | Apex domain — lehoangtrong.com |
-| `www` | CNAME | `lehoangtrong.com` | Alias của apex |
-| `api-ecom` | A | `103.106.104.37` | Backend API |
-| `www.api-ecom` | A | `103.106.104.37` | Alias www cho API |
+| Tên (Name)     | Loại (Type) | Giá trị (Value)    | Ghi chú                        |
+| -------------- | ----------- | ------------------ | ------------------------------ |
+| `@`            | A           | `103.106.104.37`   | Apex domain — lehoangtrong.com |
+| `www`          | CNAME       | `lehoangtrong.com` | Alias của apex                 |
+| `api-ecom`     | A           | `103.106.104.37`   | Backend API                    |
+| `www.api-ecom` | A           | `103.106.104.37`   | Alias www cho API              |
 
 ### 2.4 Các DNS record cần THÊM MỚI
 
 Thêm 2 record sau vào DNS provider của bạn:
 
-| Tên (Name) | Loại (Type) | Giá trị (Value) | TTL |
-|------------|-------------|-----------------|-----|
-| `shopee` | A | `103.106.104.37` | 3600 (hoặc Auto) |
-| `shopee-admin` | A | `103.106.104.37` | 3600 (hoặc Auto) |
+| Tên (Name)     | Loại (Type) | Giá trị (Value)  | TTL              |
+| -------------- | ----------- | ---------------- | ---------------- |
+| `shopee`       | A           | `103.106.104.37` | 3600 (hoặc Auto) |
+| `shopee-admin` | A           | `103.106.104.37` | 3600 (hoặc Auto) |
 
 Sau khi thêm, DNS sẽ có trạng thái cuối:
 
@@ -249,6 +249,7 @@ sudo ufw status
 ```
 
 **Tại sao không mở port 4000, 27017, 7700?**
+
 - Port 4000 (shopee-api): Caddy sẽ proxy từ 443 → localhost:4000. Không cần expose ra ngoài.
 - Port 27017 (MongoDB): Database không bao giờ được expose ra internet — nguy cơ bị tấn công trực tiếp.
 - Port 7700 (Meilisearch): Tương tự MongoDB — chỉ shopee-api cần gọi nội bộ.
@@ -324,6 +325,7 @@ Meilisearch khởi động tự động cùng Docker Compose. Không cần cấu
 ### 4.4 Redis (Redis Cloud — external)
 
 Redis **không** chạy trên server này. Dự án dùng Redis Cloud (hosted service). Bạn cần:
+
 1. Tạo tài khoản tại https://redis.io/cloud (có free tier)
 2. Tạo database, lấy connection URL
 3. Điền vào `REDIS_URL` trong `.env` của shopee-api
@@ -398,26 +400,26 @@ CACHE_DRIVER=redis
 
 ### 5.2 Bảng tổng hợp các biến môi trường
 
-| Biến | Giá trị production | Ghi chú |
-|------|--------------------|---------|
-| `NODE_ENV` | `production` | Bắt buộc |
-| `PORT` | `4000` | Port Node.js lắng nghe |
-| `MONGO_URI` | `mongodb://localhost:27017/shopee?replicaSet=rs0` | Phải có `?replicaSet=rs0` |
-| `CLIENT_URL` | `https://shopee.lehoangtrong.com` | CORS origin cho storefront |
-| `FRONTEND_URL` | `https://shopee.lehoangtrong.com` | Dùng trong email/redirect |
-| `APP_BASE_URL` | `https://api-ecom.lehoangtrong.com` | Base URL của API |
-| `SECRET_KEY_JWT` | `<your-secret>` | Tối thiểu 32 ký tự |
-| `STRIPE_SECRET_KEY` | `sk_live_...` | Stripe live key |
-| `STRIPE_WEBHOOK_SECRET` | `whsec_...` | Stripe webhook signing secret |
-| `MOMO_PARTNER_CODE` | `<your-code>` | Từ MoMo Business |
-| `MOMO_ACCESS_KEY` | `<your-key>` | Từ MoMo Business |
-| `MOMO_SECRET_KEY` | `<your-secret>` | Từ MoMo Business |
-| `VNPAY_TMN_CODE` | `<your-code>` | Từ VNPay Merchant |
-| `VNPAY_HASH_SECRET` | `<your-secret>` | Từ VNPay Merchant |
-| `MEILISEARCH_HOST` | `http://localhost:7700` | Nội bộ server |
-| `MEILISEARCH_MASTER_KEY` | `<your-key>` | Tự đặt khi cài Meilisearch |
-| `REDIS_URL` | `redis://...` | Redis Cloud URL |
-| `CACHE_DRIVER` | `redis` | Fallback về in-memory nếu Redis lỗi |
+| Biến                     | Giá trị production                                | Ghi chú                             |
+| ------------------------ | ------------------------------------------------- | ----------------------------------- |
+| `NODE_ENV`               | `production`                                      | Bắt buộc                            |
+| `PORT`                   | `4000`                                            | Port Node.js lắng nghe              |
+| `MONGO_URI`              | `mongodb://localhost:27017/shopee?replicaSet=rs0` | Phải có `?replicaSet=rs0`           |
+| `CLIENT_URL`             | `https://shopee.lehoangtrong.com`                 | CORS origin cho storefront          |
+| `FRONTEND_URL`           | `https://shopee.lehoangtrong.com`                 | Dùng trong email/redirect           |
+| `APP_BASE_URL`           | `https://api-ecom.lehoangtrong.com`               | Base URL của API                    |
+| `SECRET_KEY_JWT`         | `<your-secret>`                                   | Tối thiểu 32 ký tự                  |
+| `STRIPE_SECRET_KEY`      | `sk_live_...`                                     | Stripe live key                     |
+| `STRIPE_WEBHOOK_SECRET`  | `whsec_...`                                       | Stripe webhook signing secret       |
+| `MOMO_PARTNER_CODE`      | `<your-code>`                                     | Từ MoMo Business                    |
+| `MOMO_ACCESS_KEY`        | `<your-key>`                                      | Từ MoMo Business                    |
+| `MOMO_SECRET_KEY`        | `<your-secret>`                                   | Từ MoMo Business                    |
+| `VNPAY_TMN_CODE`         | `<your-code>`                                     | Từ VNPay Merchant                   |
+| `VNPAY_HASH_SECRET`      | `<your-secret>`                                   | Từ VNPay Merchant                   |
+| `MEILISEARCH_HOST`       | `http://localhost:7700`                           | Nội bộ server                       |
+| `MEILISEARCH_MASTER_KEY` | `<your-key>`                                      | Tự đặt khi cài Meilisearch          |
+| `REDIS_URL`              | `redis://...`                                     | Redis Cloud URL                     |
+| `CACHE_DRIVER`           | `redis`                                           | Fallback về in-memory nếu Redis lỗi |
 
 ### 5.3 Build shopee-api
 
@@ -475,14 +477,14 @@ Trong codebase hiện tại có **6 chỗ** hard-code domain `shop.lehoangtrong.
 
 ### 6.1 Bảng 6 chỗ cần sửa
 
-| # | File | Dòng | Giá trị hiện tại | Đổi thành |
-|---|------|------|------------------|-----------|
-| 1 | `apps/shopee-web/src/constant/config.ts` | 6 | `siteUrl` default: `https://shop.lehoangtrong.com` | `https://shopee.lehoangtrong.com` |
-| 2 | `apps/shopee-web/src/utils/http.ts` | 28 | `LOGIN_REDIRECT_URL` default: `https://shop.lehoangtrong.com` | `https://shopee.lehoangtrong.com` |
-| 3 | `apps/shopee-web/public/sitemap.xml` | nhiều dòng | `<loc>https://shop.lehoangtrong.com/...</loc>` | `<loc>https://shopee.lehoangtrong.com/...</loc>` |
-| 4 | `apps/shopee-web/public/robots.txt` | 7 | `Sitemap: https://shop.lehoangtrong.com/sitemap.xml` | `Sitemap: https://shopee.lehoangtrong.com/sitemap.xml` |
-| 5 | `apps/shopee-web/index.html` | 20 | `og:url` content: `https://shop.lehoangtrong.com` | `https://shopee.lehoangtrong.com` |
-| 6 | (nhóm 3, 4, 5) | — | Các static asset files | Xem chi tiết trên |
+| #   | File                                     | Dòng       | Giá trị hiện tại                                              | Đổi thành                                              |
+| --- | ---------------------------------------- | ---------- | ------------------------------------------------------------- | ------------------------------------------------------ |
+| 1   | `apps/shopee-web/src/constant/config.ts` | 6          | `siteUrl` default: `https://shop.lehoangtrong.com`            | `https://shopee.lehoangtrong.com`                      |
+| 2   | `apps/shopee-web/src/utils/http.ts`      | 28         | `LOGIN_REDIRECT_URL` default: `https://shop.lehoangtrong.com` | `https://shopee.lehoangtrong.com`                      |
+| 3   | `apps/shopee-web/public/sitemap.xml`     | nhiều dòng | `<loc>https://shop.lehoangtrong.com/...</loc>`                | `<loc>https://shopee.lehoangtrong.com/...</loc>`       |
+| 4   | `apps/shopee-web/public/robots.txt`      | 7          | `Sitemap: https://shop.lehoangtrong.com/sitemap.xml`          | `Sitemap: https://shopee.lehoangtrong.com/sitemap.xml` |
+| 5   | `apps/shopee-web/index.html`             | 20         | `og:url` content: `https://shop.lehoangtrong.com`             | `https://shopee.lehoangtrong.com`                      |
+| 6   | (nhóm 3, 4, 5)                           | —          | Các static asset files                                        | Xem chi tiết trên                                      |
 
 **Lưu ý:** Các chỗ 3, 4, 5 đều là static asset files (sitemap.xml, robots.txt, index.html) — chúng được copy nguyên vào `dist/` khi build. Phải sửa trước khi chạy `pnpm build`.
 
@@ -524,7 +526,7 @@ File `scripts/seed-users.ts` dòng 49 có email `admin@lehoangtrong.com`. Đây 
 
 ## 7. Bước 6 — Build shopee-web
 
-### 7.1 Tại sao VITE_ vars phải set TRƯỚC khi build?
+### 7.1 Tại sao VITE\_ vars phải set TRƯỚC khi build?
 
 Đây là điểm quan trọng nhất khi làm việc với Vite. Các biến `VITE_*` được **baked in** (nhúng trực tiếp) vào JavaScript bundle tại thời điểm build — không phải runtime. Điều này có nghĩa là:
 
@@ -568,12 +570,12 @@ VITE_STRIPE_PUBLISHABLE_KEY=<your-stripe-publishable-key>
 
 ### 7.3 Bảng biến môi trường build-time của shopee-web
 
-| Biến | Giá trị | Ghi chú |
-|------|---------|---------|
-| `VITE_API_BASE_URL` | `https://api-ecom.lehoangtrong.com/` | Trailing slash quan trọng |
-| `VITE_SOCKET_URL` | `https://api-ecom.lehoangtrong.com` | Không có trailing slash |
-| `VITE_SITE_URL` | `https://shopee.lehoangtrong.com` | URL của storefront |
-| `VITE_STRIPE_PUBLISHABLE_KEY` | `pk_live_...` | Stripe publishable key (public, an toàn) |
+| Biến                          | Giá trị                              | Ghi chú                                  |
+| ----------------------------- | ------------------------------------ | ---------------------------------------- |
+| `VITE_API_BASE_URL`           | `https://api-ecom.lehoangtrong.com/` | Trailing slash quan trọng                |
+| `VITE_SOCKET_URL`             | `https://api-ecom.lehoangtrong.com`  | Không có trailing slash                  |
+| `VITE_SITE_URL`               | `https://shopee.lehoangtrong.com`    | URL của storefront                       |
+| `VITE_STRIPE_PUBLISHABLE_KEY` | `pk_live_...`                        | Stripe publishable key (public, an toàn) |
 
 ### 7.4 Build shopee-web
 
@@ -609,8 +611,8 @@ VITE_API_BASE_URL=https://api-ecom.lehoangtrong.com/
 
 ### 8.2 Bảng biến môi trường build-time của shopee-admin
 
-| Biến | Giá trị | Ghi chú |
-|------|---------|---------|
+| Biến                | Giá trị                              | Ghi chú                   |
+| ------------------- | ------------------------------------ | ------------------------- |
 | `VITE_API_BASE_URL` | `https://api-ecom.lehoangtrong.com/` | Trailing slash quan trọng |
 
 ### 8.3 Build shopee-admin
@@ -758,6 +760,7 @@ sudo journalctl -u caddy -f
 ```
 
 **Điều kiện để Caddy xin cert thành công:**
+
 - Domain đã trỏ về IP `103.106.104.37` (DNS đã propagate)
 - Port 80 và 443 đã mở trong firewall
 - Server có thể kết nối ra internet (để liên lạc với Let's Encrypt)
@@ -970,6 +973,7 @@ curl -I https://api-ecom.lehoangtrong.com
 ### 11.4 Kiểm tra SPA fallback (F5 trên deep route)
 
 Mở trình duyệt và truy cập một route sâu, ví dụ:
+
 - `https://shopee.lehoangtrong.com/products/some-product-id`
 - Nhấn F5 (refresh)
 - Kết quả mong đợi: trang vẫn load bình thường, **không** bị 404
@@ -979,6 +983,7 @@ Nếu bị 404 khi F5, kiểm tra lại cấu hình `try_files` trong Caddy/Ngin
 ### 11.5 Kiểm tra CORS
 
 Mở DevTools (F12) trong trình duyệt khi đang ở `https://shopee.lehoangtrong.com`, vào tab Network, thực hiện một API call. Kiểm tra:
+
 - Không có lỗi `CORS policy` trong Console
 - Response header có `Access-Control-Allow-Origin: https://shopee.lehoangtrong.com`
 
@@ -987,11 +992,13 @@ Nếu có lỗi CORS, kiểm tra lại `CLIENT_URL` và `FRONTEND_URL` trong `.e
 ### 11.6 Kiểm tra Socket.IO
 
 Mở trang shopee-web, đăng nhập, và kiểm tra tab Network trong DevTools:
+
 - Filter theo `WS` (WebSocket)
 - Phải thấy kết nối WebSocket đến `wss://api-ecom.lehoangtrong.com`
 - Status: `101 Switching Protocols`
 
 Nếu Socket.IO không kết nối được, kiểm tra:
+
 - Caddy: `reverse_proxy` đã cấu hình đúng chưa
 - Nginx: có `proxy_set_header Upgrade $http_upgrade` và `Connection "upgrade"` chưa
 
@@ -1029,19 +1036,19 @@ curl -X POST https://api-ecom.lehoangtrong.com/api/v1/payment/stripe/webhook \
 
 ### 12.1 Bảng tổng hợp domains và ports
 
-| Domain | Trỏ về | Loại | Port nội bộ | Ghi chú |
-|--------|--------|------|-------------|---------|
-| `shopee.lehoangtrong.com` | `103.106.104.37` | Static SPA | — | shopee-web/dist |
-| `shopee-admin.lehoangtrong.com` | `103.106.104.37` | Static SPA | — | shopee-admin/dist |
-| `api-ecom.lehoangtrong.com` | `103.106.104.37` | Node process | 4000 | PM2 managed |
+| Domain                          | Trỏ về           | Loại         | Port nội bộ | Ghi chú           |
+| ------------------------------- | ---------------- | ------------ | ----------- | ----------------- |
+| `shopee.lehoangtrong.com`       | `103.106.104.37` | Static SPA   | —           | shopee-web/dist   |
+| `shopee-admin.lehoangtrong.com` | `103.106.104.37` | Static SPA   | —           | shopee-admin/dist |
+| `api-ecom.lehoangtrong.com`     | `103.106.104.37` | Node process | 4000        | PM2 managed       |
 
-| Service | Port | Expose ra ngoài? | Ghi chú |
-|---------|------|-----------------|---------|
-| Caddy/Nginx | 80, 443 | Có (public) | Reverse proxy |
-| shopee-api | 4000 | Không (localhost only) | PM2 |
-| MongoDB | 27017 | Không (localhost only) | Docker |
-| Meilisearch | 7700 | Không (localhost only) | Docker |
-| Redis | — | Không (external cloud) | Redis Cloud |
+| Service     | Port    | Expose ra ngoài?       | Ghi chú       |
+| ----------- | ------- | ---------------------- | ------------- |
+| Caddy/Nginx | 80, 443 | Có (public)            | Reverse proxy |
+| shopee-api  | 4000    | Không (localhost only) | PM2           |
+| MongoDB     | 27017   | Không (localhost only) | Docker        |
+| Meilisearch | 7700    | Không (localhost only) | Docker        |
+| Redis       | —       | Không (external cloud) | Redis Cloud   |
 
 ### 12.2 Troubleshooting các lỗi thường gặp
 
@@ -1243,14 +1250,14 @@ SAU KHI TRIEN KHAI
 
 ### 13.3 Bảng phân bổ port (port allocation)
 
-| Service | Loại | Port | Quản lý bởi | Ghi chú |
-|---------|------|------|-------------|---------|
-| twitter-api | Node process | 4000 | PM2 | Đã chạy sẵn, giữ nguyên |
-| shopee-api | Node process | 4002 | PM2 | MỚI — đặt PORT=4002 để tránh đụng 4000 |
-| shopee-web | Static (dist/) | — | nginx | Không chiếm port |
-| shopee-admin | Static (dist/) | — | nginx | Không chiếm port |
-| MongoDB | Docker | 27017 | Docker | Chỉ nội bộ |
-| Meilisearch | Docker | 7700 | Docker | Chỉ nội bộ |
+| Service      | Loại           | Port  | Quản lý bởi | Ghi chú                                |
+| ------------ | -------------- | ----- | ----------- | -------------------------------------- |
+| twitter-api  | Node process   | 4000  | PM2         | Đã chạy sẵn, giữ nguyên                |
+| shopee-api   | Node process   | 4002  | PM2         | MỚI — đặt PORT=4002 để tránh đụng 4000 |
+| shopee-web   | Static (dist/) | —     | nginx       | Không chiếm port                       |
+| shopee-admin | Static (dist/) | —     | nginx       | Không chiếm port                       |
+| MongoDB      | Docker         | 27017 | Docker      | Chỉ nội bộ                             |
+| Meilisearch  | Docker         | 7700  | Docker      | Chỉ nội bộ                             |
 
 ### 13.4 Gỡ bỏ process cũ ShopeeCloneTypescript
 
@@ -1286,9 +1293,9 @@ Dưới đây là `ecosystem.config.js` được khuyến nghị (thay thế fil
 module.exports = {
   apps: [
     {
-      name: 'shopee-api',            // doi tu 'index' -> ten ro rang
+      name: 'shopee-api', // doi tu 'index' -> ten ro rang
       script: 'build/src/index.js',
-      cwd: '/var/www/shopee-project/apps/shopee-api',  // dat dung thu muc lam viec
+      cwd: '/var/www/shopee-project/apps/shopee-api', // dat dung thu muc lam viec
       env: {
         NODE_ENV: 'development',
         PORT: 4002,
@@ -1338,7 +1345,7 @@ Cần thêm hai domain mới (AFTER):
 const ALLOWED_ORIGINS_PROD = [
   'https://shopee-clone.com',
   'https://www.shopee-clone.com',
-  'https://shopee.lehoangtrong.com',       // THEM MOI
+  'https://shopee.lehoangtrong.com', // THEM MOI
   'https://shopee-admin.lehoangtrong.com', // THEM MOI
   // ... cac entry khac (localhost, etc.)
 ]
@@ -1531,6 +1538,7 @@ curl -I -H "Origin: https://shopee.lehoangtrong.com" https://api-ecom.lehoangtro
 ```
 
 Kết quả mong đợi:
+
 - **Bước 1:** `pm2 ls` hiển thị `twitter-api` (online, port 4000) và `shopee-api` (online, port 4002). Không còn dòng `ShopeeCloneTypescript`.
 - **Bước 2:** `curl localhost:4002/health` trả về HTTP 200 (hoặc JSON status ok từ shopee-api).
 - **Bước 3:** `curl localhost:4000` trả về response từ twitter-api — xác nhận twitter vẫn sống.
@@ -1554,14 +1562,14 @@ Cách phân biệt nhanh: **sau khi build xong, có còn một tiến trình Nod
 - Có process sống lắng nghe port → **trỏ port** (`proxy_pass`).
 - Chỉ còn file tĩnh "chết" → **trỏ thẳng vào `dist/`** (`root` + `try_files`).
 
-| | shopee-web / shopee-admin | NextJS (mặc định) | shopee-api / twitter-api |
-|---|---|---|---|
-| Công cụ | Vite | Next.js | Express / Node |
-| Kiểu render | CSR (render ở **browser**) | SSR (render ở **server**) | Không render UI, trả JSON |
-| Lệnh "lên sóng" | `vite build` → tắt | `next build` + **`next start`** (sống) | `node index.js` (sống) |
-| Sau khi xong còn process? | ❌ Không | ✅ Có, nghe :3000 | ✅ Có, nghe :4000 |
-| Nginx trỏ kiểu gì | `root dist` + `try_files` | **`proxy_pass :3000`** | `proxy_pass :4000` |
-| Cần PM2 nuôi? | ❌ | ✅ | ✅ |
+|                           | shopee-web / shopee-admin  | NextJS (mặc định)                      | shopee-api / twitter-api  |
+| ------------------------- | -------------------------- | -------------------------------------- | ------------------------- |
+| Công cụ                   | Vite                       | Next.js                                | Express / Node            |
+| Kiểu render               | CSR (render ở **browser**) | SSR (render ở **server**)              | Không render UI, trả JSON |
+| Lệnh "lên sóng"           | `vite build` → tắt         | `next build` + **`next start`** (sống) | `node index.js` (sống)    |
+| Sau khi xong còn process? | ❌ Không                   | ✅ Có, nghe :3000                      | ✅ Có, nghe :4000         |
+| Nginx trỏ kiểu gì         | `root dist` + `try_files`  | **`proxy_pass :3000`**                 | `proxy_pass :4000`        |
+| Cần PM2 nuôi?             | ❌                         | ✅                                     | ✅                        |
 
 → Để ý: **NextJS nằm CÙNG CỘT với API**, không cùng cột với shopee-web. Đó là lý do nó cần port.
 
@@ -1603,13 +1611,13 @@ server {
 
 **Giải thích từng directive (Block A):**
 
-| # | Directive | Làm gì | Vì sao cần |
-|---|-----------|--------|------------|
-| (1) | `root .../dist` | Khai báo thư mục gốc chứa file tĩnh. Mọi request `/x/y` → nginx tìm file tại `dist/x/y` trên ổ đĩa. | Đây chính là điểm "trỏ thẳng vào dist". Không có `proxy_pass` nào cả vì **không có process nào để trỏ tới** — chỉ có file chết. |
-| (2) | `index index.html` | Khi URL kết thúc bằng `/`, trả `index.html`. | SPA chỉ có 1 file HTML duy nhất làm entry. |
-| (3) | `gzip on` | Nén response trước khi gửi. | Bundle JS của React khá nặng, nén giảm 60-70% dung lượng. (Nếu đã có file `.br`/`.gz` từ plugin build thì có thể dùng `gzip_static`/`brotli_static` thay vì nén lại on-the-fly.) |
-| (4) | `location /assets/` + `expires 1y` | Cache vĩnh viễn các file trong `assets/`. | Vite đặt hash vào tên file (`index-abc123.js`). Nội dung đổi → tên đổi → cache cũ tự bị bỏ. Nên cache 1 năm là an toàn tuyệt đối. |
-| (5) | `try_files $uri $uri/ /index.html` | Thử 3 bước: tìm file đúng tên → tìm thư mục → **nếu không có thì trả `index.html`**. | **Đây là directive sống còn của SPA.** Khi user F5 ở `/products/123`, trên đĩa không có file đó. Không có dòng này → nginx trả 404. Có dòng này → nginx trả `index.html`, React Router đọc URL ở client và vẽ đúng trang. |
+| #   | Directive                          | Làm gì                                                                                              | Vì sao cần                                                                                                                                                                                                                |
+| --- | ---------------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| (1) | `root .../dist`                    | Khai báo thư mục gốc chứa file tĩnh. Mọi request `/x/y` → nginx tìm file tại `dist/x/y` trên ổ đĩa. | Đây chính là điểm "trỏ thẳng vào dist". Không có `proxy_pass` nào cả vì **không có process nào để trỏ tới** — chỉ có file chết.                                                                                           |
+| (2) | `index index.html`                 | Khi URL kết thúc bằng `/`, trả `index.html`.                                                        | SPA chỉ có 1 file HTML duy nhất làm entry.                                                                                                                                                                                |
+| (3) | `gzip on`                          | Nén response trước khi gửi.                                                                         | Bundle JS của React khá nặng, nén giảm 60-70% dung lượng. (Nếu đã có file `.br`/`.gz` từ plugin build thì có thể dùng `gzip_static`/`brotli_static` thay vì nén lại on-the-fly.)                                          |
+| (4) | `location /assets/` + `expires 1y` | Cache vĩnh viễn các file trong `assets/`.                                                           | Vite đặt hash vào tên file (`index-abc123.js`). Nội dung đổi → tên đổi → cache cũ tự bị bỏ. Nên cache 1 năm là an toàn tuyệt đối.                                                                                         |
+| (5) | `try_files $uri $uri/ /index.html` | Thử 3 bước: tìm file đúng tên → tìm thư mục → **nếu không có thì trả `index.html`**.                | **Đây là directive sống còn của SPA.** Khi user F5 ở `/products/123`, trên đĩa không có file đó. Không có dòng này → nginx trả 404. Có dòng này → nginx trả `index.html`, React Router đọc URL ở client và vẽ đúng trang. |
 
 **Cốt lõi Block A:** Nginx đóng vai một **người phục vụ file** thuần túy. Nó đọc byte từ đĩa, gửi về browser, xong. Toàn bộ việc dựng giao diện do React làm **trong trình duyệt của khách**.
 
@@ -1662,14 +1670,14 @@ server {
 
 **Giải thích từng directive (Block B):**
 
-| # | Directive | Làm gì | Vì sao cần |
-|---|-----------|--------|------------|
-| (1) | `proxy_pass http://localhost:3000` | Chuyển tiếp request tới process Node đang nghe `:3000` (chính là `next start`). | **Đây là khác biệt cốt lõi.** Vì có một server đang sống render HTML động, nginx không thể "đọc file" — nó phải hỏi process. Giống hệt cách trỏ API `:4000`. |
-| (2) | `proxy_http_version 1.1` | Ép dùng HTTP/1.1 giữa nginx ↔ process. | Mặc định nginx nói HTTP/1.0 với upstream, vốn không hỗ trợ `Upgrade`/keep-alive. Bắt buộc bật 1.1 để WebSocket và streaming chạy. |
-| (3) | `Upgrade` + `Connection 'upgrade'` | Cho phép bắt tay nâng cấp HTTP → WebSocket. | NextJS dùng cho streaming SSR / HMR (dev) / hoặc nếu app có realtime. Để sẵn cho an toàn. |
-| (4) | 4 header `Host`/`X-Real-IP`/`X-Forwarded-*` | Báo cho process biết tên miền gốc, IP thật của khách, và scheme (http/https). | SSR cần `Host` đúng để render link tuyệt đối, redirect, và sinh canonical URL. Thiếu `X-Forwarded-Proto` → app tưởng đang chạy http → sinh link sai/redirect loop. |
-| (5) | `proxy_cache_bypass $http_upgrade` | Không cache khi đang nâng cấp WebSocket. | Tránh nginx cache nhầm một kết nối realtime. |
-| (6) | `location /_next/static/` | Cache riêng asset tĩnh của NextJS. | NextJS cũng tạo file hash trong `/_next/static/`. Cache giúp giảm tải process. (Tùy chọn — bỏ qua vẫn chạy.) |
+| #   | Directive                                   | Làm gì                                                                          | Vì sao cần                                                                                                                                                         |
+| --- | ------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| (1) | `proxy_pass http://localhost:3000`          | Chuyển tiếp request tới process Node đang nghe `:3000` (chính là `next start`). | **Đây là khác biệt cốt lõi.** Vì có một server đang sống render HTML động, nginx không thể "đọc file" — nó phải hỏi process. Giống hệt cách trỏ API `:4000`.       |
+| (2) | `proxy_http_version 1.1`                    | Ép dùng HTTP/1.1 giữa nginx ↔ process.                                          | Mặc định nginx nói HTTP/1.0 với upstream, vốn không hỗ trợ `Upgrade`/keep-alive. Bắt buộc bật 1.1 để WebSocket và streaming chạy.                                  |
+| (3) | `Upgrade` + `Connection 'upgrade'`          | Cho phép bắt tay nâng cấp HTTP → WebSocket.                                     | NextJS dùng cho streaming SSR / HMR (dev) / hoặc nếu app có realtime. Để sẵn cho an toàn.                                                                          |
+| (4) | 4 header `Host`/`X-Real-IP`/`X-Forwarded-*` | Báo cho process biết tên miền gốc, IP thật của khách, và scheme (http/https).   | SSR cần `Host` đúng để render link tuyệt đối, redirect, và sinh canonical URL. Thiếu `X-Forwarded-Proto` → app tưởng đang chạy http → sinh link sai/redirect loop. |
+| (5) | `proxy_cache_bypass $http_upgrade`          | Không cache khi đang nâng cấp WebSocket.                                        | Tránh nginx cache nhầm một kết nối realtime.                                                                                                                       |
+| (6) | `location /_next/static/`                   | Cache riêng asset tĩnh của NextJS.                                              | NextJS cũng tạo file hash trong `/_next/static/`. Cache giúp giảm tải process. (Tùy chọn — bỏ qua vẫn chạy.)                                                       |
 
 **Cốt lõi Block B:** Nginx đóng vai **người chuyển tiếp (middleman)**. Mỗi request nó gõ cửa process `:3000`, process render HTML rồi đưa lại, nginx chuyển về khách. Process **phải sống liên tục** — đó là lý do cần PM2 và cần port.
 
@@ -1689,16 +1697,16 @@ URL ->  nginx                            nginx
         browser tu chay React            HTML san -> browser
 ```
 
-| Tiêu chí | Block A — Static | Block B — NextJS SSR |
-|----------|------------------|----------------------|
-| Directive định tuyến | `root` + `try_files` | `proxy_pass :3000` |
-| Có `root`? | ✅ Có (trỏ dist/) | ❌ Không |
-| Có `try_files ... /index.html`? | ✅ Bắt buộc (SPA fallback) | ❌ Không (NextJS tự lo routing) |
-| Có process sống? | ❌ Không | ✅ Có, nghe :3000 |
-| Cần PM2? | ❌ | ✅ |
-| Nginx làm gì | Đọc & trả file | Chuyển tiếp cho process |
-| F5 deep route hỏng nếu thiếu | thiếu `try_files` → 404 | NextJS tự xử lý, không cần fallback nginx |
-| Cùng nhóm với | (không có process) | shopee-api / twitter-api `proxy_pass :4000` |
+| Tiêu chí                        | Block A — Static           | Block B — NextJS SSR                        |
+| ------------------------------- | -------------------------- | ------------------------------------------- |
+| Directive định tuyến            | `root` + `try_files`       | `proxy_pass :3000`                          |
+| Có `root`?                      | ✅ Có (trỏ dist/)          | ❌ Không                                    |
+| Có `try_files ... /index.html`? | ✅ Bắt buộc (SPA fallback) | ❌ Không (NextJS tự lo routing)             |
+| Có process sống?                | ❌ Không                   | ✅ Có, nghe :3000                           |
+| Cần PM2?                        | ❌                         | ✅                                          |
+| Nginx làm gì                    | Đọc & trả file             | Chuyển tiếp cho process                     |
+| F5 deep route hỏng nếu thiếu    | thiếu `try_files` → 404    | NextJS tự xử lý, không cần fallback nginx   |
+| Cùng nhóm với                   | (không có process)         | shopee-api / twitter-api `proxy_pass :4000` |
 
 ### 14.5 Ba ghi chú đáng nhớ (gotchas)
 
@@ -1712,7 +1720,4 @@ URL ->  nginx                            nginx
 
 ---
 
-*Tài liệu này được tạo ngày 30/05/2026. Phiên bản 1.1 — cập nhật ngày 01/06/2026 (bổ sung Section 14: So sánh Static SPA vs NextJS SSR).*
-
-
-
+_Tài liệu này được tạo ngày 30/05/2026. Phiên bản 1.1 — cập nhật ngày 01/06/2026 (bổ sung Section 14: So sánh Static SPA vs NextJS SSR)._

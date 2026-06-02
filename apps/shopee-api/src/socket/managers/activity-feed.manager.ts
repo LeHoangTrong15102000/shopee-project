@@ -96,6 +96,8 @@ export const clearActivities = (productId: string): void => {
   activityBufferMap.delete(productId)
   throttleMapFallback.delete(productId)
   if (redisClient) {
-    redisClient.del(`throttle:activity:${productId}`).catch(() => { /* ignore cleanup errors */ })
+    redisClient.del(`throttle:activity:${productId}`).catch(() => {
+      /* ignore cleanup errors */
+    })
   }
 }

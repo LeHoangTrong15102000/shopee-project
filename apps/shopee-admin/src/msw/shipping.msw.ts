@@ -69,7 +69,10 @@ const shippingHandlers = [
   http.patch(`${API_URL}/admin/shipping-methods/:id/toggle`, ({ params }) => {
     const method = mockShippingMethods.find((m) => m._id === params.id)
     if (!method) return HttpResponse.json({ message: 'Không tìm thấy' }, { status: 404 })
-    return HttpResponse.json({ message: 'Cập nhật thành công', data: { ...method, is_active: !method.is_active } })
+    return HttpResponse.json({
+      message: 'Cập nhật thành công',
+      data: { ...method, is_active: !method.is_active },
+    })
   }),
 
   http.delete(`${API_URL}/admin/shipping-methods/:id`, () => {

@@ -33,8 +33,12 @@ export class EventBus {
         // Handle async listeners — catch promise rejections.
         // Cast through unknown to avoid TS1345 (void cannot be tested for truthiness).
         const maybePromise = result as unknown
-        if (maybePromise !== null && maybePromise !== undefined && typeof (maybePromise as Promise<void>).catch === 'function') {
-          (maybePromise as Promise<void>).catch((err) => {
+        if (
+          maybePromise !== null &&
+          maybePromise !== undefined &&
+          typeof (maybePromise as Promise<void>).catch === 'function'
+        ) {
+          ;(maybePromise as Promise<void>).catch((err) => {
             Logger.apiError('[EventBus] Async listener error', {
               eventType: event.type,
               error: err?.message,
@@ -53,20 +57,14 @@ export class EventBus {
   /**
    * Register a listener for a specific event type.
    */
-  on<T extends DomainEvent>(
-    eventName: T['type'],
-    handler: EventHandler<T>,
-  ): void {
+  on<T extends DomainEvent>(eventName: T['type'], handler: EventHandler<T>): void {
     this.emitter.on(eventName, handler as EventHandler)
   }
 
   /**
    * Remove a listener for a specific event type.
    */
-  off<T extends DomainEvent>(
-    eventName: T['type'],
-    handler: EventHandler<T>,
-  ): void {
+  off<T extends DomainEvent>(eventName: T['type'], handler: EventHandler<T>): void {
     this.emitter.off(eventName, handler as EventHandler)
   }
 

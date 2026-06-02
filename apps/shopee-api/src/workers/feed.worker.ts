@@ -67,9 +67,12 @@ export class FeedWorker {
           // BulkWriteError with code 11000 means some duplicates were skipped — not fatal
           const bulkErr = err as { code?: number; insertedDocs?: unknown[] }
           if (bulkErr?.code === 11000) {
-            Logger.apiInfo('[FeedWorker] Some feed items already existed (duplicate key) — skipped', {
-              jobId: job.id,
-            })
+            Logger.apiInfo(
+              '[FeedWorker] Some feed items already existed (duplicate key) — skipped',
+              {
+                jobId: job.id,
+              },
+            )
           } else {
             throw err
           }

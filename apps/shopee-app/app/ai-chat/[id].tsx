@@ -86,7 +86,12 @@ export default function AiChatScreen() {
                 onPress={handleTitlePress}
                 accessibilityRole="button"
                 accessibilityLabel={t('aiChat.chat.editTitle')}>
-                <AppText raw variant="body" weight="semibold" numberOfLines={1} style={{ maxWidth: 220 }}>
+                <AppText
+                  raw
+                  variant="body"
+                  weight="semibold"
+                  numberOfLines={1}
+                  style={{ maxWidth: 220 }}>
                   {conversation?.title || t('aiChat.header.title')}
                 </AppText>
               </TouchableOpacity>
@@ -106,7 +111,8 @@ export default function AiChatScreen() {
             renderItem={({ item }) => <MessageBubble message={item} />}
             contentContainerStyle={{ paddingVertical: 12, flexGrow: 1 }}
             ListEmptyComponent={
-              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 60 }}>
+              <View
+                style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 60 }}>
                 <AppText raw variant="bodySmall" color="muted">
                   {t('aiChat.chat.emptyTitle')}
                 </AppText>

@@ -44,11 +44,9 @@ const priceAlertsApi = {
       params: { page: 1, limit: 20, ...params },
     }),
 
-  getAlertStats: () =>
-    http.get<SuccessResponse<PriceAlertStats>>('admin/price-alerts/stats'),
+  getAlertStats: () => http.get<SuccessResponse<PriceAlertStats>>('admin/price-alerts/stats'),
 
-  deleteAlert: (id: string) =>
-    http.delete<SuccessResponse<null>>(`admin/price-alerts/${id}`),
+  deleteAlert: (id: string) => http.delete<SuccessResponse<null>>(`admin/price-alerts/${id}`),
 }
 
 export default priceAlertsApi

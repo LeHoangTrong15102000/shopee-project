@@ -15,7 +15,10 @@ interface OrderCardProps {
   onReturn?: (id: string) => void
 }
 
-function useStatusBadge(status: OrderStatusType): { label: string; variant: 'default' | 'warning' | 'primary' | 'success' | 'error' } {
+function useStatusBadge(status: OrderStatusType): {
+  label: string
+  variant: 'default' | 'warning' | 'primary' | 'success' | 'error'
+} {
   const { t } = useTranslation()
 
   switch (status) {
@@ -107,26 +110,17 @@ export default function OrderCard({
       {hasActions && (
         <View className="mt-3 flex-row justify-end gap-2">
           {canCancel && onCancel && (
-            <AppButton
-              variant="outline"
-              size="sm"
-              onPress={() => onCancel(order._id)}>
+            <AppButton variant="outline" size="sm" onPress={() => onCancel(order._id)}>
               {t('orderCard.button.cancel')}
             </AppButton>
           )}
           {canConfirmReceived && onConfirmReceived && (
-            <AppButton
-              variant="primary"
-              size="sm"
-              onPress={() => onConfirmReceived(order._id)}>
+            <AppButton variant="primary" size="sm" onPress={() => onConfirmReceived(order._id)}>
               {t('orderCard.button.confirmReceived')}
             </AppButton>
           )}
           {canReturn && onReturn && (
-            <AppButton
-              variant="outline"
-              size="sm"
-              onPress={() => onReturn(order._id)}>
+            <AppButton variant="outline" size="sm" onPress={() => onReturn(order._id)}>
               {t('orderCard.button.return')}
             </AppButton>
           )}

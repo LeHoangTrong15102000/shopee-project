@@ -72,7 +72,8 @@ export default function PriceHistoryChart({ productId }: PriceHistoryChartProps)
     backgroundGradientFrom: colors.background,
     backgroundGradientTo: colors.background,
     decimalPlaces: 0,
-    color: (opacity = 1) => `rgba(${colors.primary === '#ee4d2d' ? '238,77,45' : '238,77,45'}, ${opacity})`,
+    color: (opacity = 1) =>
+      `rgba(${colors.primary === '#ee4d2d' ? '238,77,45' : '238,77,45'}, ${opacity})`,
     labelColor: () => colors.foreground,
     style: { borderRadius: 8 },
     propsForDots: { r: '3', strokeWidth: '1', stroke: colors.primary },
@@ -81,7 +82,11 @@ export default function PriceHistoryChart({ productId }: PriceHistoryChartProps)
 
   return (
     <View style={{ paddingVertical: 16 }}>
-      <AppText raw variant="body" weight="semibold" style={{ paddingHorizontal: 16, marginBottom: 12 }}>
+      <AppText
+        raw
+        variant="body"
+        weight="semibold"
+        style={{ paddingHorizontal: 16, marginBottom: 12 }}>
         {t('priceHistory.title')}
       </AppText>
 
@@ -111,19 +116,25 @@ export default function PriceHistoryChart({ productId }: PriceHistoryChartProps)
           marginTop: 8,
         }}>
         <View style={{ alignItems: 'center' }}>
-          <AppText raw variant="labelSmall" color="muted">{t('priceHistory.high')}</AppText>
+          <AppText raw variant="labelSmall" color="muted">
+            {t('priceHistory.high')}
+          </AppText>
           <AppText raw variant="bodySmall" weight="semibold" style={{ color: colors.error }}>
             {formatPrice(chartData.highest)}
           </AppText>
         </View>
         <View style={{ alignItems: 'center' }}>
-          <AppText raw variant="labelSmall" color="muted">{t('priceHistory.avg')}</AppText>
+          <AppText raw variant="labelSmall" color="muted">
+            {t('priceHistory.avg')}
+          </AppText>
           <AppText raw variant="bodySmall" weight="semibold">
             {formatPrice(Math.round(chartData.average))}
           </AppText>
         </View>
         <View style={{ alignItems: 'center' }}>
-          <AppText raw variant="labelSmall" color="muted">{t('priceHistory.low')}</AppText>
+          <AppText raw variant="labelSmall" color="muted">
+            {t('priceHistory.low')}
+          </AppText>
           <AppText raw variant="bodySmall" weight="semibold" style={{ color: colors.success }}>
             {formatPrice(chartData.lowest)}
           </AppText>

@@ -252,11 +252,11 @@ describe('AuthService', () => {
 
       // New token should be persisted with old jti as rotatedFromJti
       expect(mockAuthRepository.createRefreshTokenWithJti).toHaveBeenCalledWith(
-        expect.anything(),       // userId
-        expect.any(String),      // new refresh token JWT
-        expect.any(String),      // new jti (different from oldJti)
-        expect.any(Date),        // expiresAt
-        oldJti,                  // rotatedFromJti for audit
+        expect.anything(), // userId
+        expect.any(String), // new refresh token JWT
+        expect.any(String), // new jti (different from oldJti)
+        expect.any(Date), // expiresAt
+        oldJti, // rotatedFromJti for audit
       )
     })
 

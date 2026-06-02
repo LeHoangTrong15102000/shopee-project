@@ -147,10 +147,7 @@ describe('withTransaction', () => {
         errorLabels: ['TransientTransactionError'],
       })
 
-      const fn = jest
-        .fn()
-        .mockRejectedValueOnce(transientError)
-        .mockResolvedValueOnce('committed')
+      const fn = jest.fn().mockRejectedValueOnce(transientError).mockResolvedValueOnce('committed')
 
       const result = await withTransaction(fn, { maxRetries: 3 })
 
@@ -190,7 +187,9 @@ describe('withTransaction', () => {
       const writeConflict = Object.assign(new Error('WriteConflict'), { code: 112 })
       jest.fn().mockRejectedValue(writeConflict)
 
-      await expect(withTransaction(() => Promise.reject(writeConflict), { maxRetries: 2 })).rejects.toThrow()
+      await expect(
+        withTransaction(() => Promise.reject(writeConflict), { maxRetries: 2 }),
+      ).rejects.toThrow()
 
       expect(session.endSession).toHaveBeenCalledTimes(1)
     })

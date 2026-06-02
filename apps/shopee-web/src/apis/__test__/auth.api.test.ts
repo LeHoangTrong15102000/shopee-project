@@ -78,9 +78,9 @@ describe('Auth API', () => {
 
     it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      await expect(
-        authApi.refreshAccessToken({ refresh_token: 'refresh' }),
-      ).rejects.toThrow('Network error')
+      await expect(authApi.refreshAccessToken({ refresh_token: 'refresh' })).rejects.toThrow(
+        'Network error',
+      )
     })
   })
 })

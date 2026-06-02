@@ -27,7 +27,7 @@ export default function ChatInput({ onSend, onTyping, disabled }: ChatInputProps
         }
       }
     },
-    [onTyping],
+    [onTyping]
   )
 
   const handleSend = () => {

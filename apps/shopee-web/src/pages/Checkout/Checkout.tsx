@@ -47,7 +47,11 @@ const Checkout = () => {
   } = useCheckout()
 
   if (isPendingPaymentLoading) {
-    return <div className="flex justify-center py-16"><Loader /></div>
+    return (
+      <div className="flex justify-center py-16">
+        <Loader />
+      </div>
+    )
   }
 
   if (pendingPaymentOrder) {
@@ -126,7 +130,11 @@ const Checkout = () => {
             note={note}
             onPlaceOrder={handlePlaceOrder}
             onBack={handleBackToStep3}
-            isPlacingOrder={createOrderMutation.isPending || initiatePaymentMutation.isPending || isConfirmingPayment}
+            isPlacingOrder={
+              createOrderMutation.isPending ||
+              initiatePaymentMutation.isPending ||
+              isConfirmingPayment
+            }
           />
         ) : (
           <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-3">

@@ -30,12 +30,14 @@
 ### 1.2. Tại sao cần Micro-frontends?
 
 **Problems với Monolith:**
+
 - Codebase lớn, khó maintain
 - Deploy toàn bộ app mỗi lần có thay đổi nhỏ
 - Team dependencies, khó scale team
 - Technology lock-in
 
 **Benefits của Micro-frontends:**
+
 - **Independent deployment**: Deploy từng phần riêng biệt
 - **Team autonomy**: Mỗi team own một MFE
 - **Technology diversity**: Mỗi MFE có thể dùng tech stack khác nhau
@@ -45,12 +47,14 @@
 ### 1.3. Khi nào nên dùng Micro-frontends?
 
 **✅ Nên dùng khi:**
+
 - Large-scale applications với nhiều teams
 - Cần independent deployment
 - Cần technology diversity
 - Cần scale team independently
 
 **❌ Không nên dùng khi:**
+
 - Small applications
 - Single team
 - Tight coupling giữa các features
@@ -87,6 +91,7 @@
 ### 2.3. Setup Module Federation
 
 **File structure:**
+
 ```
 shopee-microfrontends/
 ├── shell/                    # Host application
@@ -110,11 +115,13 @@ shopee-microfrontends/
 ### 2.4. Vite Module Federation Configuration
 
 **Install plugin:**
+
 ```bash
 npm install @originjs/vite-plugin-federation --save-dev
 ```
 
 **Remote Application (products-mfe):**
+
 ```typescript
 // products-mfe/vite.config.ts
 import { defineConfig } from 'vite'
@@ -130,33 +137,34 @@ export default defineConfig({
       // Expose components
       exposes: {
         './ProductList': './src/pages/ProductList',
-        './ProductDetail': './src/pages/ProductDetail'
+        './ProductDetail': './src/pages/ProductDetail',
       },
       // Shared dependencies
       shared: {
         react: {
           singleton: true,
-          requiredVersion: '^19.0.0'
+          requiredVersion: '^19.0.0',
         },
         'react-dom': {
           singleton: true,
-          requiredVersion: '^19.0.0'
+          requiredVersion: '^19.0.0',
         },
         'react-router': {
-          singleton: true
-        }
-      }
-    })
+          singleton: true,
+        },
+      },
+    }),
   ],
   build: {
     target: 'esnext',
     minify: false,
-    cssCodeSplit: false
-  }
+    cssCodeSplit: false,
+  },
 })
 ```
 
 **Host Application (shell):**
+
 ```typescript
 // shell/vite.config.ts
 import { defineConfig } from 'vite'
@@ -172,29 +180,29 @@ export default defineConfig({
       remotes: {
         products_mfe: 'http://localhost:5001/assets/remoteEntry.js',
         cart_mfe: 'http://localhost:5002/assets/remoteEntry.js',
-        user_mfe: 'http://localhost:5003/assets/remoteEntry.js'
+        user_mfe: 'http://localhost:5003/assets/remoteEntry.js',
       },
       // Shared dependencies
       shared: {
         react: {
           singleton: true,
-          requiredVersion: '^19.0.0'
+          requiredVersion: '^19.0.0',
         },
         'react-dom': {
           singleton: true,
-          requiredVersion: '^19.0.0'
+          requiredVersion: '^19.0.0',
         },
         'react-router': {
-          singleton: true
-        }
-      }
-    })
+          singleton: true,
+        },
+      },
+    }),
   ],
   build: {
     target: 'esnext',
     minify: false,
-    cssCodeSplit: false
-  }
+    cssCodeSplit: false,
+  },
 })
 ```
 
@@ -294,19 +302,20 @@ export default defineConfig({
       name: 'products_mfe',
       filename: `remoteEntry.${version}.js`, // Versioned filename
       exposes: {
-        './ProductList': './src/pages/ProductList'
-      }
-    })
-  ]
+        './ProductList': './src/pages/ProductList',
+      },
+    }),
+  ],
 })
 ```
 
 **Shell loads specific version:**
+
 ```typescript
 // shell/src/config/remotes.ts
 export const remotes = {
   products_mfe: `https://cdn.shopee.com/products-mfe/remoteEntry.${PRODUCTS_VERSION}.js`,
-  cart_mfe: `https://cdn.shopee.com/cart-mfe/remoteEntry.${CART_VERSION}.js`
+  cart_mfe: `https://cdn.shopee.com/cart-mfe/remoteEntry.${CART_VERSION}.js`,
 }
 ```
 
@@ -317,7 +326,7 @@ export const remotes = {
 const loadRemoteWithFallback = async (
   remoteName: string,
   module: string,
-  fallbackVersion: string
+  fallbackVersion: string,
 ) => {
   try {
     // Try loading latest version
@@ -367,8 +376,8 @@ export { AppContext } from './contexts/app.context'
 federation({
   name: 'shell',
   exposes: {
-    './shared': './src/shared/index.ts'
-  }
+    './shared': './src/shared/index.ts',
+  },
 })
 
 // Remote MFE imports shared utilities
@@ -453,12 +462,13 @@ export const eventBus = new EventBus()
 // shell/vite.config.ts
 federation({
   exposes: {
-    './eventBus': './src/utils/eventBus.ts'
-  }
+    './eventBus': './src/utils/eventBus.ts',
+  },
 })
 ```
 
 **Usage:**
+
 ```typescript
 // products-mfe: Emit event khi add to cart
 import { eventBus } from 'shell/eventBus'
@@ -561,7 +571,7 @@ const ProductList = () => {
 // products-mfe: Dispatch custom event
 const handleAddToCart = (product: Product) => {
   const event = new CustomEvent('cart:add', {
-    detail: product
+    detail: product,
   })
   window.dispatchEvent(event)
 }
@@ -660,7 +670,7 @@ interface ProductsStore {
 
 export const useProductsStore = create<ProductsStore>((set) => ({
   products: [],
-  setProducts: (products) => set({ products })
+  setProducts: (products) => set({ products }),
 }))
 ```
 
@@ -761,20 +771,20 @@ const ProductList = () => {
 export const theme = {
   colors: {
     primary: '#ee4d2d',
-    secondary: '#f5f5f5'
+    secondary: '#f5f5f5',
   },
   spacing: {
     sm: '8px',
     md: '16px',
-    lg: '24px'
-  }
+    lg: '24px',
+  },
 }
 
 // Expose theme
 federation({
   exposes: {
-    './theme': './src/styles/theme.ts'
-  }
+    './theme': './src/styles/theme.ts',
+  },
 })
 
 // Remote MFE uses shared theme
@@ -844,24 +854,29 @@ test('should load products MFE', async ({ page }) => {
 ### 10.1. Design Principles
 
 **1. Independent & Autonomous**
+
 - Mỗi MFE có thể develop, test, deploy independently
 - Minimize dependencies giữa các MFEs
 
 **2. Technology Agnostic**
+
 - Mỗi MFE có thể dùng tech stack khác nhau
 - Shell không nên assume tech stack của MFEs
 
 **3. Resilient**
+
 - MFE failure không crash toàn bộ app
 - Implement error boundaries và fallbacks
 
 **4. Consistent UX**
+
 - Shared design system
 - Consistent navigation và interactions
 
 ### 10.2. Common Pitfalls
 
 **❌ Avoid:**
+
 - Tight coupling giữa MFEs
 - Sharing too much state
 - Inconsistent styling
@@ -869,6 +884,7 @@ test('should load products MFE', async ({ page }) => {
 - Circular dependencies
 
 **✅ Do:**
+
 - Clear boundaries giữa MFEs
 - Minimal shared state
 - Shared design system
@@ -903,24 +919,28 @@ const preloadRemote = (remoteName: string) => {
 Micro-frontends là powerful pattern cho large-scale applications, nhưng cũng có trade-offs:
 
 **Pros:**
+
 - Independent deployment
 - Team autonomy
 - Technology diversity
 - Incremental upgrades
 
 **Cons:**
+
 - Increased complexity
 - Performance overhead
 - Duplication of dependencies
 - Testing challenges
 
 **Khi nào nên dùng:**
+
 - Large teams (> 5 teams)
 - Complex domains
 - Need for independent deployment
 - Long-term maintenance
 
 **Tài liệu tham khảo:**
+
 - [Micro Frontends](https://micro-frontends.org/)
 - [Module Federation](https://webpack.js.org/concepts/module-federation/)
 - [Vite Plugin Federation](https://github.com/originjs/vite-plugin-federation)

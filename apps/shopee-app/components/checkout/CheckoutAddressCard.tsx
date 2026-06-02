@@ -11,14 +11,17 @@ interface CheckoutAddressCardProps {
   onChangeAddress: () => void
 }
 
-export default function CheckoutAddressCard({ address, onChangeAddress }: CheckoutAddressCardProps) {
+export default function CheckoutAddressCard({
+  address,
+  onChangeAddress,
+}: CheckoutAddressCardProps) {
   const { t } = useTranslation()
   const colors = useColors()
 
   if (!address) {
     return (
       <View className="border-b border-neutrals900 px-4 py-4">
-        <View className="flex-row items-center gap-2 mb-2">
+        <View className="mb-2 flex-row items-center gap-2">
           <MapPin size={16} color={colors.primary} />
           <AppText raw variant="body" weight="semibold">
             {t('checkoutAddress.title')}
@@ -37,7 +40,7 @@ export default function CheckoutAddressCard({ address, onChangeAddress }: Checko
 
   return (
     <View className="border-b border-neutrals900 px-4 py-4">
-      <View className="flex-row items-center justify-between mb-2">
+      <View className="mb-2 flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <MapPin size={16} color={colors.primary} />
           <AppText raw variant="body" weight="semibold">

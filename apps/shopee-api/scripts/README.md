@@ -128,7 +128,6 @@ npx ts-node scripts/check-database.ts
    ```
 
 2. **File dữ liệu**: Cần có sẵn:
-
    - `main.categories.json` (3 categories cơ bản)
    - `main.products.json` (95+ products)
 

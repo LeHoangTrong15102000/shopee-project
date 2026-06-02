@@ -46,7 +46,7 @@ export default function NotificationSettingsScreen() {
         }}
       />
       <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
-        <View className="px-4 py-4 gap-4">
+        <View className="gap-4 px-4 py-4">
           {rows.map((row) => (
             <View
               key={row.label}

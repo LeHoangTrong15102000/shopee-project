@@ -87,4 +87,3 @@ describe('Protected Route Integration', () => {
     expect(screen.getByText('Login Page')).toBeInTheDocument()
   })
 })
-

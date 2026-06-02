@@ -1,10 +1,5 @@
 import React, { useCallback } from 'react'
-import {
-  View,
-  FlatList,
-  TouchableOpacity,
-  RefreshControl,
-} from 'react-native'
+import { View, FlatList, TouchableOpacity, RefreshControl } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useRouter } from 'expo-router'
 import { BellDot, Trash2 } from 'lucide-react-native'
@@ -47,7 +42,9 @@ function StatusBadge({ status }: { status: 'active' | 'triggered' }) {
         borderRadius: 12,
         backgroundColor: isActive ? `${colors.success}20` : `${colors.warning}20`,
       }}
-      accessibilityLabel={isActive ? t('priceAlerts.status.active') : t('priceAlerts.status.triggered')}>
+      accessibilityLabel={
+        isActive ? t('priceAlerts.status.active') : t('priceAlerts.status.triggered')
+      }>
       <AppText
         raw
         variant="labelSmall"
@@ -96,9 +93,7 @@ export default function PriceAlertsScreen() {
 
   const renderItem = useCallback(
     ({ item }: { item: PriceAlert }) => (
-      <Swipeable
-        renderRightActions={() => renderRightActions(item._id)}
-        overshootRight={false}>
+      <Swipeable renderRightActions={() => renderRightActions(item._id)} overshootRight={false}>
         <TouchableOpacity
           onPress={() => router.push(`/product/${item.productId}`)}
           accessibilityRole="button"
@@ -157,7 +152,9 @@ export default function PriceAlertsScreen() {
             keyExtractor={(item) => item._id}
             renderItem={renderItem}
             ItemSeparatorComponent={() => (
-              <View style={{ height: 1, marginHorizontal: 16, backgroundColor: colors.neutrals800 }} />
+              <View
+                style={{ height: 1, marginHorizontal: 16, backgroundColor: colors.neutrals800 }}
+              />
             )}
             refreshControl={
               <RefreshControl
@@ -167,7 +164,8 @@ export default function PriceAlertsScreen() {
               />
             }
             ListEmptyComponent={
-              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 60 }}>
+              <View
+                style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 60 }}>
                 <EmptyState
                   icon={BellDot}
                   message={t('priceAlerts.list.emptyTitle')}

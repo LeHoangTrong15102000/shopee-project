@@ -91,7 +91,10 @@ export const blockSchema = z
         case 'spacer':
           return spacerDataSchema.safeParse(block.data)
         default:
-          return { success: false, error: { issues: [{ message: `Unknown block type: ${block.type}` }] } }
+          return {
+            success: false,
+            error: { issues: [{ message: `Unknown block type: ${block.type}` }] },
+          }
       }
     })()
 
@@ -121,7 +124,11 @@ const pageMetaSchema = z.object({
  */
 export const createPageSchema = z.object({
   body: z.object({
-    slug: z.string().min(1).max(200).regex(/^[a-z0-9-]+$/, 'slug must be lowercase alphanumeric with hyphens'),
+    slug: z
+      .string()
+      .min(1)
+      .max(200)
+      .regex(/^[a-z0-9-]+$/, 'slug must be lowercase alphanumeric with hyphens'),
     title: z.string().min(1).max(200),
     blocks: z.array(blockSchema).optional().default([]),
     meta: pageMetaSchema.optional().default({}),
@@ -134,7 +141,12 @@ export const createPageSchema = z.object({
 export const updatePageSchema = z.object({
   params: z.object({ id: mongoIdSchema }),
   body: z.object({
-    slug: z.string().min(1).max(200).regex(/^[a-z0-9-]+$/, 'slug must be lowercase alphanumeric with hyphens').optional(),
+    slug: z
+      .string()
+      .min(1)
+      .max(200)
+      .regex(/^[a-z0-9-]+$/, 'slug must be lowercase alphanumeric with hyphens')
+      .optional(),
     title: z.string().min(1).max(200).optional(),
     blocks: z.array(blockSchema).optional(),
     meta: pageMetaSchema.optional(),

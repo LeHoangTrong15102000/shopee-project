@@ -1,10 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react'
-import {
-  View,
-  FlatList,
-  ActivityIndicator,
-  RefreshControl,
-} from 'react-native'
+import { View, FlatList, ActivityIndicator, RefreshControl } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ShoppingCart } from 'lucide-react-native'
 import { useRouter } from 'expo-router'

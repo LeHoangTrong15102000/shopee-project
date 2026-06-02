@@ -9,5 +9,12 @@
  *
  * The actual implementation lives in @utils/cache/index.ts.
  */
-export { cacheService, CacheKeys, CacheTTL, ICacheService, MemoryCacheService, RedisCacheService } from './cache/index'
+export {
+  cacheService,
+  CacheKeys,
+  CacheTTL,
+  ICacheService,
+  MemoryCacheService,
+  RedisCacheService,
+} from './cache/index'
 export { default } from './cache/index'

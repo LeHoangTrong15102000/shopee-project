@@ -15,7 +15,20 @@
   "prevMonth": "Tháng trước",
   "nextMonth": "Tháng sau",
   "toast.success": "🎉 Điểm danh thành công! +{{value}} xu",
-  "months": ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"],
+  "months": [
+    "Tháng 1",
+    "Tháng 2",
+    "Tháng 3",
+    "Tháng 4",
+    "Tháng 5",
+    "Tháng 6",
+    "Tháng 7",
+    "Tháng 8",
+    "Tháng 9",
+    "Tháng 10",
+    "Tháng 11",
+    "Tháng 12"
+  ],
   "days": ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
   "loyalty.title": "Shopee Xu",
   "loyalty.history": "Lịch sử",
@@ -39,4 +52,3 @@
   "tips.reset": "Chuỗi điểm danh sẽ bị reset nếu bạn bỏ lỡ 1 ngày",
   "tips.voucher": "Xu có thể dùng để đổi voucher giảm giá"
 }
-

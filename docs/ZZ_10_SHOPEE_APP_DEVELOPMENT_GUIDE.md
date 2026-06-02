@@ -81,6 +81,7 @@ Bạn sẽ thấy output như thế này:
 - **iOS**: Mở Camera app → Quét QR → Tap notification "Open in Expo Go"
 
 **Lưu ý quan trọng:**
+
 - Điện thoại và máy tính phải cùng mạng WiFi
 - Nếu không thấy QR code, nhấn `Shift + D` để hiển thị lại
 - Nếu lỗi kết nối, thử tắt firewall tạm thời
@@ -95,11 +96,13 @@ pnpm web
 App sẽ tự động mở trên browser tại `http://localhost:8081`
 
 **Ưu điểm:**
+
 - Không cần điện thoại
 - Hot reload cực nhanh
 - Dùng Chrome DevTools để debug
 
 **Nhược điểm:**
+
 - Một số native features không hoạt động
 - UI có thể khác so với mobile
 
@@ -191,6 +194,7 @@ Click "Finish"
 Có 2 cách:
 
 **Cách 1: Từ Android Studio**
+
 ```
 1. Mở AVD Manager
 2. Click nút ▶️ (Play) bên cạnh Pixel_6_API_33
@@ -198,6 +202,7 @@ Có 2 cách:
 ```
 
 **Cách 2: Từ Command Line**
+
 ```bash
 # List tất cả AVDs
 emulator -list-avds
@@ -213,6 +218,7 @@ adb devices
 ```
 
 Output phải có dòng:
+
 ```
 List of devices attached
 emulator-5554   device
@@ -226,6 +232,7 @@ pnpm android
 ```
 
 Lần đầu tiên sẽ:
+
 1. Build Android app (mất 5-10 phút)
 2. Cài app lên emulator
 3. Khởi động app tự động
@@ -301,6 +308,7 @@ adb devices
 ```
 
 Output:
+
 ```
 List of devices attached
 ABC123XYZ       device
@@ -316,6 +324,7 @@ pnpm android
 ```
 
 App sẽ tự động:
+
 1. Build
 2. Cài lên điện thoại
 3. Khởi động
@@ -349,6 +358,7 @@ adb connect 192.168.1.150:5555
 ```
 
 Output:
+
 ```
 connected to 192.168.1.150:5555
 ```
@@ -425,6 +435,7 @@ F12 → Console tab
 ```
 
 Giờ bạn có thể:
+
 - Xem console.log()
 - Set breakpoints
 - Inspect network requests
@@ -433,6 +444,7 @@ Giờ bạn có thể:
 ### 3.2. Debug Trên iOS Device
 
 **Yêu cầu:**
+
 - macOS
 - Xcode
 - Apple Developer account (free cũng được)
@@ -479,6 +491,7 @@ pnpm ios --device "iPhone của Bạn"
 ```
 
 Lần đầu tiên:
+
 1. Xcode sẽ mở
 2. Chọn Team (Apple ID của bạn)
 3. Xcode sẽ sign app
@@ -522,6 +535,7 @@ cd apps/shopee-app/android
 ```
 
 File APK tại:
+
 ```
 apps/shopee-app/android/app/build/outputs/apk/debug/app-debug.apk
 ```
@@ -548,6 +562,7 @@ keytool -genkeypair -v -storetype PKCS12 \
 ```
 
 Nhập thông tin:
+
 ```
 Enter keystore password: [password của bạn]
 Re-enter password: [password của bạn]
@@ -600,6 +615,7 @@ cd apps/shopee-app/android
 ```
 
 File APK tại:
+
 ```
 apps/shopee-app/android/app/build/outputs/apk/release/app-release.apk
 ```
@@ -618,11 +634,13 @@ cd apps/shopee-app/android
 ```
 
 File AAB tại:
+
 ```
 apps/shopee-app/android/app/build/outputs/bundle/release/app-release.aab
 ```
 
 **Upload lên Google Play Console:**
+
 ```
 1. https://play.google.com/console
 2. Tạo app mới
@@ -630,4 +648,3 @@ apps/shopee-app/android/app/build/outputs/bundle/release/app-release.aab
 4. Điền thông tin app
 5. Submit for review
 ```
-

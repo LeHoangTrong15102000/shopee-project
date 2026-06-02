@@ -15,8 +15,8 @@ import { Logger } from '@utils/logger'
 import { IProduct } from '../@types/models.type'
 import { NotFoundError } from './base.service'
 
-const SIMILAR_TTL = 3600       // 1 hour
-const BOUGHT_TOGETHER_TTL = 86400  // 24 hours
+const SIMILAR_TTL = 3600 // 1 hour
+const BOUGHT_TOGETHER_TTL = 86400 // 24 hours
 
 export class RecommendationService {
   // ─── Similar Products ─────────────────────────────────────────────────────
@@ -37,11 +37,12 @@ export class RecommendationService {
     const product = await ProductModel.findById(productId).lean<IProduct>()
     if (!product) throw new NotFoundError('Product not found')
 
-    const categoryId = product.category instanceof Types.ObjectId
-      ? product.category
-      : product.category
-        ? new Types.ObjectId(product.category.toString())
-        : null
+    const categoryId =
+      product.category instanceof Types.ObjectId
+        ? product.category
+        : product.category
+          ? new Types.ObjectId(product.category.toString())
+          : null
 
     if (!categoryId) {
       await this.setCache(cacheKey, [], SIMILAR_TTL)
@@ -126,10 +127,7 @@ export class RecommendationService {
 
     // Preserve the co-occurrence order
     const idOrder = ids.map((id: Types.ObjectId) => id.toString())
-    products.sort(
-      (a, b) =>
-        idOrder.indexOf(a._id!.toString()) - idOrder.indexOf(b._id!.toString()),
-    )
+    products.sort((a, b) => idOrder.indexOf(a._id!.toString()) - idOrder.indexOf(b._id!.toString()))
 
     await this.setCache(cacheKey, products, BOUGHT_TOGETHER_TTL)
     return products

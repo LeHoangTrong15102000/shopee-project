@@ -7,7 +7,11 @@
 import mongoose from 'mongoose'
 import { connectTestDB, clearTestDB, disconnectTestDB } from '../helpers/db-setup'
 import { PaymentRepository } from '@repositories/payment.repository'
-import { PaymentModel, GATEWAY_PAYMENT_STATUS, PAYMENT_PROVIDER } from '@database/models/payment.model'
+import {
+  PaymentModel,
+  GATEWAY_PAYMENT_STATUS,
+  PAYMENT_PROVIDER,
+} from '@database/models/payment.model'
 
 // ─── D.6 Setup ────────────────────────────────────────────────────────────────
 

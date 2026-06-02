@@ -54,7 +54,13 @@ export default function OrderListPage() {
   const [endDate, setEndDate] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('')
 
-  const { data, isLoading, isError, refetch } = useOrders(page, status, startDate || undefined, endDate || undefined, paymentMethod || undefined)
+  const { data, isLoading, isError, refetch } = useOrders(
+    page,
+    status,
+    startDate || undefined,
+    endDate || undefined,
+    paymentMethod || undefined,
+  )
   const { data: countData } = useOrderCountByStatus()
 
   const countMap = new Map(countData?.map((c) => [c._id, c.count]) ?? [])
@@ -190,7 +196,10 @@ export default function OrderListPage() {
               id="filter-start-date"
               type="date"
               value={startDate}
-              onChange={(e) => { setStartDate(e.target.value); setPage(0) }}
+              onChange={(e) => {
+                setStartDate(e.target.value)
+                setPage(0)
+              }}
             />
           </div>
           <div>
@@ -199,12 +208,23 @@ export default function OrderListPage() {
               id="filter-end-date"
               type="date"
               value={endDate}
-              onChange={(e) => { setEndDate(e.target.value); setPage(0) }}
+              onChange={(e) => {
+                setEndDate(e.target.value)
+                setPage(0)
+              }}
             />
           </div>
           <div>
             <Label htmlFor="filter-payment">{t('filters.paymentMethod')}</Label>
-            <Select value={paymentMethod} onValueChange={(v) => { if (v) { setPaymentMethod(v); setPage(0) } }}>
+            <Select
+              value={paymentMethod}
+              onValueChange={(v) => {
+                if (v) {
+                  setPaymentMethod(v)
+                  setPage(0)
+                }
+              }}
+            >
               <SelectTrigger id="filter-payment">
                 <SelectValue placeholder={t('filters.all')} />
               </SelectTrigger>

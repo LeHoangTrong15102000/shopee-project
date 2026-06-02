@@ -146,13 +146,17 @@ describe('NotificationService', () => {
 
   describe('getNotifications - validation', () => {
     it('should throw ValidationError for invalid userId', async () => {
-      await expect(service.getNotifications('invalid-id', {}, { page: 1, limit: 10 })).rejects.toThrow(ValidationError)
+      await expect(
+        service.getNotifications('invalid-id', {}, { page: 1, limit: 10 }),
+      ).rejects.toThrow(ValidationError)
     })
   })
 
   describe('markAsRead - validation', () => {
     it('should throw ValidationError for invalid userId', async () => {
-      await expect(service.markAsRead('invalid-id', notificationId)).rejects.toThrow(ValidationError)
+      await expect(service.markAsRead('invalid-id', notificationId)).rejects.toThrow(
+        ValidationError,
+      )
     })
 
     it('should throw ValidationError for invalid notificationId', async () => {
@@ -174,14 +178,26 @@ describe('NotificationService', () => {
 
   describe('createNotification - validation', () => {
     it('should throw ValidationError for invalid userId', async () => {
-      await expect(service.createNotification('invalid-id', 'T', 'C')).rejects.toThrow(ValidationError)
+      await expect(service.createNotification('invalid-id', 'T', 'C')).rejects.toThrow(
+        ValidationError,
+      )
     })
   })
 
   describe('deleteNotification', () => {
     it('should delete notification when user owns it', async () => {
-      const mockNotif = { _id: new Types.ObjectId(notificationId), user: userId, title: 'T', content: 'C', type: 'other', is_read: false } as any
-      mockNotificationRepository.findById.mockResolvedValue({ ...mockNotif, user: { toString: () => userId } })
+      const mockNotif = {
+        _id: new Types.ObjectId(notificationId),
+        user: userId,
+        title: 'T',
+        content: 'C',
+        type: 'other',
+        is_read: false,
+      } as any
+      mockNotificationRepository.findById.mockResolvedValue({
+        ...mockNotif,
+        user: { toString: () => userId },
+      })
       mockNotificationRepository.deleteById.mockResolvedValue(mockNotif)
 
       const result = await service.deleteNotification(userId, notificationId)
@@ -190,7 +206,9 @@ describe('NotificationService', () => {
 
     it('should throw NotFoundError when notification not found', async () => {
       mockNotificationRepository.findById.mockResolvedValue(null)
-      await expect(service.deleteNotification(userId, notificationId)).rejects.toThrow(NotFoundError)
+      await expect(service.deleteNotification(userId, notificationId)).rejects.toThrow(
+        NotFoundError,
+      )
     })
 
     it('should throw NotFoundError when user does not own notification', async () => {
@@ -199,15 +217,21 @@ describe('NotificationService', () => {
         _id: new Types.ObjectId(notificationId),
         user: { toString: () => otherId },
       } as any)
-      await expect(service.deleteNotification(userId, notificationId)).rejects.toThrow(NotFoundError)
+      await expect(service.deleteNotification(userId, notificationId)).rejects.toThrow(
+        NotFoundError,
+      )
     })
 
     it('should throw ValidationError for invalid userId', async () => {
-      await expect(service.deleteNotification('invalid-id', notificationId)).rejects.toThrow(ValidationError)
+      await expect(service.deleteNotification('invalid-id', notificationId)).rejects.toThrow(
+        ValidationError,
+      )
     })
 
     it('should throw ValidationError for invalid notificationId', async () => {
-      await expect(service.deleteNotification(userId, 'invalid-id')).rejects.toThrow(ValidationError)
+      await expect(service.deleteNotification(userId, 'invalid-id')).rejects.toThrow(
+        ValidationError,
+      )
     })
   })
 
@@ -247,7 +271,10 @@ describe('NotificationService', () => {
       mockNotificationRepository.findPaginated.mockResolvedValue(mockResult as any)
 
       await service.getAdminNotifications({}, { page: 1, limit: 10 })
-      expect(mockNotificationRepository.findPaginated).toHaveBeenCalledWith({}, { page: 1, limit: 10 })
+      expect(mockNotificationRepository.findPaginated).toHaveBeenCalledWith(
+        {},
+        { page: 1, limit: 10 },
+      )
     })
   })
 

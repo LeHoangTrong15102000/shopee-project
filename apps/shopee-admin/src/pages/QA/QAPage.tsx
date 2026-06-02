@@ -12,7 +12,13 @@ import { StatCard } from 'src/components/shared/StatCard'
 import { LoadingState } from 'src/components/shared/LoadingState'
 import { ErrorState } from 'src/components/shared/ErrorState'
 import { ConfirmDialog } from 'src/components/shared/ConfirmDialog'
-import { useQuestions, useQAStats, useDeleteQuestion, useDeleteAnswer, useAnswerQuestion } from 'src/hooks/useQA'
+import {
+  useQuestions,
+  useQAStats,
+  useDeleteQuestion,
+  useDeleteAnswer,
+  useAnswerQuestion,
+} from 'src/hooks/useQA'
 
 export default function QAPage() {
   const [deleteQ, setDeleteQ] = useState<string | null>(null)
@@ -94,11 +100,7 @@ export default function QAPage() {
                 </CollapsibleTrigger>
                 <div className="flex items-center gap-1">
                   {q.answers_count === 0 && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleOpenAnswer(q._id)}
-                    >
+                    <Button variant="outline" size="sm" onClick={() => handleOpenAnswer(q._id)}>
                       <Send className="mr-1 size-3" />
                       {t('actions.answer')}
                     </Button>
@@ -126,15 +128,8 @@ export default function QAPage() {
                           <div className="flex-1">
                             <p className="text-sm">{a.content || a.answer}</p>
                             <p className="mt-1 text-xs text-muted-foreground">
-                              by{' '}
-                              {a.user?.name ||
-                                a.user?.email ||
-                                t('common:states.unknown')}{' '}
-                              ·{' '}
-                              {format(
-                                new Date(a.createdAt || Date.now()),
-                                'MMM d, yyyy',
-                              )}
+                              by {a.user?.name || a.user?.email || t('common:states.unknown')} ·{' '}
+                              {format(new Date(a.createdAt || Date.now()), 'MMM d, yyyy')}
                             </p>
                           </div>
                           <Button
@@ -181,7 +176,11 @@ export default function QAPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => { setAnswerOpen(null); setAnswerText(''); setAnswerError('') }}
+                          onClick={() => {
+                            setAnswerOpen(null)
+                            setAnswerText('')
+                            setAnswerError('')
+                          }}
                         >
                           Cancel
                         </Button>

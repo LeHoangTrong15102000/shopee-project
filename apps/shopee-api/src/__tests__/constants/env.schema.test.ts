@@ -11,9 +11,11 @@
 // But we must NOT import config.ts (which calls validateEnv at module load).
 
 // Spy on process.exit to prevent actual exits during tests.
-const mockExit = jest.spyOn(process, 'exit').mockImplementation((_code?: number | string | null) => {
-  throw new Error(`process.exit called with code ${_code}`)
-})
+const mockExit = jest
+  .spyOn(process, 'exit')
+  .mockImplementation((_code?: number | string | null) => {
+    throw new Error(`process.exit called with code ${_code}`)
+  })
 // Silence stderr during tests
 const mockStderr = jest.spyOn(process.stderr, 'write').mockImplementation(() => true)
 

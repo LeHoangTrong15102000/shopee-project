@@ -38,7 +38,7 @@ function MainLayout({
   user,
   isAuthenticated,
   onLogin,
-  children
+  children,
 }: {
   user: User | null
   isAuthenticated: boolean
@@ -60,7 +60,7 @@ function MainLayout({
 function Header({
   user,
   isAuthenticated,
-  onLogin
+  onLogin,
 }: {
   user: User | null
   isAuthenticated: boolean
@@ -82,7 +82,12 @@ function ProductList({ user, isAuthenticated }: { user: User | null; isAuthentic
   return (
     <div>
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} user={user} isAuthenticated={isAuthenticated} />
+        <ProductCard
+          key={product.id}
+          product={product}
+          user={user}
+          isAuthenticated={isAuthenticated}
+        />
       ))}
     </div>
   )
@@ -92,7 +97,7 @@ function ProductList({ user, isAuthenticated }: { user: User | null; isAuthentic
 function ProductCard({
   product,
   user,
-  isAuthenticated
+  isAuthenticated,
 }: {
   product: Product
   user: User | null
@@ -107,10 +112,12 @@ function ProductCard({
   }
 
   return (
-    <div className='product-card'>
+    <div className="product-card">
       <h3>{product.name}</h3>
       <p>{product.price}</p>
-      <button onClick={handleAddToCart}>{isAuthenticated ? 'Thêm vào giỏ' : 'Đăng nhập để mua'}</button>
+      <button onClick={handleAddToCart}>
+        {isAuthenticated ? 'Thêm vào giỏ' : 'Đăng nhập để mua'}
+      </button>
     </div>
   )
 }
@@ -169,13 +176,13 @@ interface UserLayoutProps {
 
 function UserLayout({ children }: UserLayoutProps) {
   return (
-    <div className='bg-neutral-100 py-16 text-sm text-gray-600'>
-      <div className='container'>
-        <div className='grid grid-cols-1 gap-6 md:grid-cols-12'>
-          <div className='md:col-span-3 lg:col-span-2'>
+    <div className="bg-neutral-100 py-16 text-sm text-gray-600">
+      <div className="container">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
+          <div className="md:col-span-3 lg:col-span-2">
             <UserSideNav /> {/* Cần user info */}
           </div>
-          <div className='md:col-span-9 lg:col-span-10'>
+          <div className="md:col-span-9 lg:col-span-10">
             {children} {/* Profile, ChangePassword cũng cần user info */}
           </div>
         </div>
@@ -192,20 +199,20 @@ function UserLayout({ children }: UserLayoutProps) {
 function UserLayout({
   children,
   user, // ← Phải nhận từ parent
-  onUpdateUser // ← Phải nhận từ parent
+  onUpdateUser, // ← Phải nhận từ parent
 }: {
   children: React.ReactNode
   user: User
   onUpdateUser: (user: User) => void
 }) {
   return (
-    <div className='bg-neutral-100 py-16'>
-      <div className='container'>
-        <div className='grid grid-cols-1 gap-6 md:grid-cols-12'>
-          <div className='md:col-span-3 lg:col-span-2'>
+    <div className="bg-neutral-100 py-16">
+      <div className="container">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
+          <div className="md:col-span-3 lg:col-span-2">
             <UserSideNav user={user} /> {/* ← Truyền xuống */}
           </div>
-          <div className='md:col-span-9 lg:col-span-10'>
+          <div className="md:col-span-9 lg:col-span-10">
             {/* Phải clone children với props */}
             {React.cloneElement(children, { user, onUpdateUser })}
           </div>
@@ -312,7 +319,7 @@ export default function useRouteElements() {
         <MainLayout>
           <ProductList /> {/* ← Chỉ render AFTER auth check */}
         </MainLayout>
-      )
+      ),
     },
     {
       path: path.user,
@@ -324,8 +331,8 @@ export default function useRouteElements() {
             <Profile /> {/* ← Cascade continues */}
           </UserLayout>
         </ProtectedRoute>
-      )
-    }
+      ),
+    },
   ])
 
   return routeElements
@@ -342,7 +349,7 @@ function ProductDetail() {
   // Step 1: Fetch product info (500ms)
   const { data: productDetail } = useQuery({
     queryKey: ['product', nameId],
-    queryFn: () => productApi.getProductDetail(nameId)
+    queryFn: () => productApi.getProductDetail(nameId),
   })
 
   if (!productDetail) {
@@ -363,10 +370,16 @@ function ProductReviews({ productId }: { productId: string }) {
   const { data: reviews } = useQuery({
     queryKey: ['reviews', productId],
     queryFn: () => reviewApi.getReviews(productId),
-    enabled: !!productId // ← Waterfall dependency
+    enabled: !!productId, // ← Waterfall dependency
   })
 
-  return <div>{reviews?.map((review) => <ReviewItem key={review.id} review={review} />)}</div>
+  return (
+    <div>
+      {reviews?.map((review) => (
+        <ReviewItem key={review.id} review={review} />
+      ))}
+    </div>
+  )
 }
 
 function RelatedProducts({ categoryId }: { categoryId: string }) {
@@ -374,10 +387,16 @@ function RelatedProducts({ categoryId }: { categoryId: string }) {
   const { data: relatedProducts } = useQuery({
     queryKey: ['related-products', categoryId],
     queryFn: () => productApi.getProductsByCategory(categoryId),
-    enabled: !!categoryId // ← Another waterfall dependency
+    enabled: !!categoryId, // ← Another waterfall dependency
   })
 
-  return <div>{relatedProducts?.map((product) => <ProductCard key={product.id} product={product} />)}</div>
+  return (
+    <div>
+      {relatedProducts?.map((product) => (
+        <ProductCard key={product.id} product={product} />
+      ))}
+    </div>
+  )
 }
 
 /*
@@ -506,7 +525,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         setProfile,
         extendedPurchases,
         setExtendedPurchases,
-        reset
+        reset,
       }}
     >
       {children}
@@ -566,10 +585,12 @@ function ProductCard({ product }: { product: Product }) {
   }
 
   return (
-    <div className='product-card'>
+    <div className="product-card">
       <h3>{product.name}</h3>
       <p>{product.price}</p>
-      <button onClick={handleAddToCart}>{isAuthenticated ? 'Thêm vào giỏ' : 'Đăng nhập để mua'}</button>
+      <button onClick={handleAddToCart}>
+        {isAuthenticated ? 'Thêm vào giỏ' : 'Đăng nhập để mua'}
+      </button>
     </div>
   )
 }
@@ -594,7 +615,7 @@ export const useAuth = () => {
     },
     logout: () => {
       context.reset()
-    }
+    },
   }
 }
 
@@ -611,9 +632,11 @@ function ProductCard({ product }: { product: Product }) {
   }
 
   return (
-    <div className='product-card'>
+    <div className="product-card">
       <h3>{product.name}</h3>
-      <button onClick={handleAddToCart}>{isAuthenticated ? 'Thêm vào giỏ' : 'Đăng nhập để mua'}</button>
+      <button onClick={handleAddToCart}>
+        {isAuthenticated ? 'Thêm vào giỏ' : 'Đăng nhập để mua'}
+      </button>
     </div>
   )
 }
@@ -652,7 +675,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   isAuthenticated: false,
   user: null,
   login: (user) => set({ isAuthenticated: true, user }),
-  logout: () => set({ isAuthenticated: false, user: null })
+  logout: () => set({ isAuthenticated: false, user: null }),
 }))
 
 // Usage - No Provider needed!
@@ -679,19 +702,19 @@ function ProductDetail() {
   // Fetch ALL data in parallel
   const productQuery = useQuery({
     queryKey: ['product', nameId],
-    queryFn: () => productApi.getProductDetail(nameId)
+    queryFn: () => productApi.getProductDetail(nameId),
   })
 
   const reviewsQuery = useQuery({
     queryKey: ['reviews', productId],
     queryFn: () => reviewApi.getReviews(productId),
-    enabled: !!productId // Still dependent but can start earlier
+    enabled: !!productId, // Still dependent but can start earlier
   })
 
   const relatedQuery = useQuery({
     queryKey: ['related-products', categoryId],
     queryFn: () => productApi.getProductsByCategory(categoryId),
-    enabled: !!categoryId
+    enabled: !!categoryId,
   })
 
   // Render with partial data
@@ -701,7 +724,11 @@ function ProductDetail() {
 
       {reviewsQuery.data ? <ProductReviews reviews={reviewsQuery.data} /> : <ReviewsSkeleton />}
 
-      {relatedQuery.data ? <RelatedProducts products={relatedQuery.data} /> : <RelatedProductsSkeleton />}
+      {relatedQuery.data ? (
+        <RelatedProducts products={relatedQuery.data} />
+      ) : (
+        <RelatedProductsSkeleton />
+      )}
     </div>
   )
 }
@@ -728,19 +755,19 @@ export const useProductDetailData = (nameId: string) => {
     queries: [
       {
         queryKey: ['product', nameId],
-        queryFn: () => productApi.getProductDetail(nameId)
+        queryFn: () => productApi.getProductDetail(nameId),
       },
       {
         queryKey: ['reviews', productId],
         queryFn: () => reviewApi.getReviews(productId),
-        enabled: !!productId
+        enabled: !!productId,
       },
       {
         queryKey: ['related-products', categoryId],
         queryFn: () => productApi.getProductsByCategory(categoryId),
-        enabled: !!categoryId
-      }
-    ]
+        enabled: !!categoryId,
+      },
+    ],
   })
 }
 
@@ -773,12 +800,12 @@ function ShoppingCart() {
     enabled: !!user?.id,
     // Show cached data while refetching
     staleTime: 30000,
-    placeholderData: [] // Optimistic empty state
+    placeholderData: [], // Optimistic empty state
   })
 
   const shippingQuery = useQuery({
     queryKey: ['shipping-options'],
-    queryFn: getShippingOptions
+    queryFn: getShippingOptions,
     // Start fetching immediately regardless of cart
     // Most shipping options are the same anyway
   })
@@ -828,7 +855,7 @@ function ProductInfo() {
   // This will suspend until data is ready
   const product = useSuspenseQuery({
     queryKey: ['product', nameId],
-    queryFn: () => productApi.getProductDetail(nameId)
+    queryFn: () => productApi.getProductDetail(nameId),
   })
 
   return <div>{/* Product info JSX */}</div>
@@ -846,13 +873,13 @@ function ProductCard({ product }: { product: Product }) {
     // Preload detail page data on hover
     queryClient.prefetchQuery({
       queryKey: ['product', product.nameId],
-      queryFn: () => productApi.getProductDetail(product.nameId)
+      queryFn: () => productApi.getProductDetail(product.nameId),
     })
   }
 
   return (
     <Link to={`/products/${product.nameId}`} onMouseEnter={handleMouseEnter}>
-      <div className='product-card'>{/* Product card content */}</div>
+      <div className="product-card">{/* Product card content */}</div>
     </Link>
   )
 }
@@ -865,12 +892,12 @@ const productDetailLoader = async ({ params }: { params: any }) => {
   return Promise.all([
     queryClient.ensureQueryData({
       queryKey: ['product', nameId],
-      queryFn: () => productApi.getProductDetail(nameId)
+      queryFn: () => productApi.getProductDetail(nameId),
     }),
     queryClient.prefetchQuery({
       queryKey: ['reviews', nameId],
-      queryFn: () => reviewApi.getReviews(nameId)
-    })
+      queryFn: () => reviewApi.getReviews(nameId),
+    }),
   ])
 }
 ```
@@ -930,7 +957,7 @@ const ParallelExample = () => {
     Promise.all([
       fetch('/api/step1').then(setStep1), // 0-500ms
       fetch('/api/step2').then(setStep2), // 0-300ms
-      fetch('/api/step3').then(setStep3) // 0-400ms
+      fetch('/api/step3').then(setStep3), // 0-400ms
     ])
   }, [])
 
@@ -976,7 +1003,7 @@ console.log('Improvement:', 1000 - 500, 'ms (50% faster)')
 const AppContext = createContext({
   user: null,
   theme: 'light',
-  language: 'vi'
+  language: 'vi',
 })
 
 // ❌ Bad - Local state passed down many levels
@@ -1001,7 +1028,7 @@ function Button({ variant = 'primary', size = 'medium', onClick, children }: But
 // ❌ Bad - Context for everything
 const ButtonContext = createContext({
   variant: 'primary',
-  size: 'medium'
+  size: 'medium',
 })
 ```
 
@@ -1039,12 +1066,12 @@ const useProductPageData = (productId: string) => {
 
   const reviews = useQuery(
     ['reviews', productId],
-    () => fetchReviews(productId) // Independent of product details
+    () => fetchReviews(productId), // Independent of product details
   )
 
   const related = useQuery(
     ['related', productId],
-    () => fetchRelatedProducts(productId) // Independent
+    () => fetchRelatedProducts(productId), // Independent
   )
 
   return { product, reviews, related }
@@ -1055,7 +1082,7 @@ const product = useQuery(['product', productId], fetchProduct)
 const reviews = useQuery(
   ['reviews', productId],
   () => fetchReviews(productId),
-  { enabled: !!product.data } // Unnecessary wait!
+  { enabled: !!product.data }, // Unnecessary wait!
 )
 ```
 
@@ -1104,7 +1131,7 @@ function ProductCard({ product }: { product: Product }) {
     queryClient.prefetchQuery(
       ['product', product.id],
       () => fetchProductDetails(product.id),
-      { staleTime: 10 * 60 * 1000 } // Cache for 10 minutes
+      { staleTime: 10 * 60 * 1000 }, // Cache for 10 minutes
     )
   }, [product.id, queryClient])
 
@@ -1114,7 +1141,7 @@ function ProductCard({ product }: { product: Product }) {
       onMouseEnter={prefetchProductDetails} // Load on hover
       onFocus={prefetchProductDetails} // Load on focus (keyboard)
     >
-      <div className='product-card'>{/* Product card content */}</div>
+      <div className="product-card">{/* Product card content */}</div>
     </Link>
   )
 }

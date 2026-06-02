@@ -41,7 +41,9 @@ const auditLogHandlers = [
     const paginated = filtered.slice(start, start + limit)
 
     // Return only list-shape fields (no before/after/diff)
-    const items = paginated.map(({ before: _b, after: _a, diff: _d, userAgent: _ua, errorMessage: _em, ...item }) => item)
+    const items = paginated.map(
+      ({ before: _b, after: _a, diff: _d, userAgent: _ua, errorMessage: _em, ...item }) => item,
+    )
 
     return HttpResponse.json({
       message: 'Lấy danh sách nhật ký thành công',

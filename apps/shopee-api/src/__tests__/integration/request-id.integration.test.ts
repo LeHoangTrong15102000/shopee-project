@@ -102,10 +102,7 @@ describe('requestIdMiddleware — integration', () => {
       })
 
       // Fire two requests concurrently
-      const [res1, res2] = await Promise.all([
-        request(app).get('/test'),
-        request(app).get('/test'),
-      ])
+      const [res1, res2] = await Promise.all([request(app).get('/test'), request(app).get('/test')])
 
       expect(res1.body.requestId).toMatch(UUID_PATTERN)
       expect(res2.body.requestId).toMatch(UUID_PATTERN)

@@ -39,7 +39,9 @@ const ShopListPage = lazy(() => import('src/pages/Shops/ShopListPage'))
 const ShopDetailPage = lazy(() => import('src/pages/Shops/ShopDetailPage'))
 const SystemHealthPage = lazy(() => import('src/pages/SystemHealth/SystemHealthPage'))
 const SearchAnalyticsPage = lazy(() => import('src/pages/SearchAnalytics/SearchAnalyticsPage'))
-const WishlistAnalyticsPage = lazy(() => import('src/pages/WishlistAnalytics/WishlistAnalyticsPage'))
+const WishlistAnalyticsPage = lazy(
+  () => import('src/pages/WishlistAnalytics/WishlistAnalyticsPage'),
+)
 const ShopChatListPage = lazy(() => import('src/pages/ShopChat/ShopChatListPage'))
 const ShopChatDetailPage = lazy(() => import('src/pages/ShopChat/ShopChatDetailPage'))
 const AuditLogListPage = lazy(() => import('src/pages/AuditLog/AuditLogListPage'))

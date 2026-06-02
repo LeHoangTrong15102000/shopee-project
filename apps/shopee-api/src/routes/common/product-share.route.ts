@@ -17,8 +17,10 @@ shareRouter.post(
   asyncHandler(async (req: Request, res: Response) => {
     const productId = req.params.id as string
     const userId = req.jwtDecoded.id
-    const userName: string = (req.jwtDecoded as Record<string, unknown>).name as string || userId
-    const userAvatar: string | undefined = (req.jwtDecoded as Record<string, unknown>).avatar as string | undefined
+    const userName: string = ((req.jwtDecoded as Record<string, unknown>).name as string) || userId
+    const userAvatar: string | undefined = (req.jwtDecoded as Record<string, unknown>).avatar as
+      | string
+      | undefined
 
     const result = await container.services.share.shareProduct(
       productId,

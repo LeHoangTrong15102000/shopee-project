@@ -123,7 +123,10 @@ const server = setupServer(
   http.get(`${API_BASE}/products`, () =>
     HttpResponse.json({
       message: 'OK',
-      data: { products: [mockProduct], pagination: { page: 1, limit: 10, total: 1, total_pages: 1 } },
+      data: {
+        products: [mockProduct],
+        pagination: { page: 1, limit: 10, total: 1, total_pages: 1 },
+      },
     })
   )
 )

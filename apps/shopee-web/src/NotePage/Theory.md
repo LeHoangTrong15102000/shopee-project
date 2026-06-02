@@ -94,7 +94,7 @@ const onSubmit = handleSubmit(
   (data) => {
     // onInvalid - Chạy khi form có lỗi
     console.log('Form errors:', data)
-  }
+  },
 )
 ```
 
@@ -109,17 +109,17 @@ export const rules = {
     required: 'Email là bắt buộc',
     pattern: {
       value: /^\S+@\S+$/i,
-      message: 'Email không hợp lệ'
-    }
+      message: 'Email không hợp lệ',
+    },
   } as RegisterOptions,
 
   password: {
     required: 'Password là bắt buộc',
     minLength: {
       value: 6,
-      message: 'Password ít nhất 6 ký tự'
-    }
-  } as RegisterOptions
+      message: 'Password ít nhất 6 ký tự',
+    },
+  } as RegisterOptions,
 }
 ```
 
@@ -143,7 +143,7 @@ const onSubmit = handleSubmit(
   (data) => {
     // onInvalid - Chạy khi form có lỗi
     console.log('Form errors:', data)
-  }
+  },
 )
 ```
 
@@ -177,10 +177,10 @@ module.exports = {
         sm: '2rem',
         lg: '4rem',
         xl: '5rem',
-        '2xl': '6rem'
-      }
-    }
-  }
+        '2xl': '6rem',
+      },
+    },
+  },
 }
 ```
 
@@ -223,7 +223,7 @@ const schema = yup.object({
   confirm_password: yup
     .string()
     .oneOf([yup.ref('password')], 'Nhập lại password không khớp')
-    .required('Xác nhận mật khẩu là bắt buộc')
+    .required('Xác nhận mật khẩu là bắt buộc'),
 })
 
 type FormData = yup.InferType<typeof schema>
@@ -249,7 +249,7 @@ import axios, { AxiosError } from 'axios'
 
 const http = axios.create({
   baseURL: 'https://api-ecommerce.duthanhduoc.com/',
-  timeout: 10000
+  timeout: 10000,
 })
 
 // Request interceptor
@@ -261,7 +261,7 @@ http.interceptors.request.use(
     }
     return config
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 )
 
 export default http
@@ -277,9 +277,9 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
-      retry: 0
-    }
-  }
+      retry: 0,
+    },
+  },
 })
 ```
 
@@ -330,9 +330,10 @@ const authApi = {
   registerAccount: (body: { email: string; password: string }) =>
     http.post<SuccessResponse<AuthResponse>>('/register', body),
 
-  loginAccount: (body: { email: string; password: string }) => http.post<SuccessResponse<AuthResponse>>('/login', body),
+  loginAccount: (body: { email: string; password: string }) =>
+    http.post<SuccessResponse<AuthResponse>>('/login', body),
 
-  logoutAccount: () => http.post('/logout')
+  logoutAccount: () => http.post('/logout'),
 }
 
 export default authApi
@@ -352,7 +353,9 @@ export function isAxiosError<T>(error: unknown): error is AxiosError<T> {
 }
 
 // Kiểm tra lỗi 422 (Validation Error)
-export function isAxiosUnprocessableEntityError<FormError>(error: unknown): error is AxiosError<FormError> {
+export function isAxiosUnprocessableEntityError<FormError>(
+  error: unknown,
+): error is AxiosError<FormError> {
   return isAxiosError(error) && error.response?.status === 422
 }
 ```
@@ -370,12 +373,12 @@ const registerMutation = useMutation({
         Object.keys(formError).forEach((key) => {
           setError(key as keyof FormData, {
             message: formError[key],
-            type: 'Server'
+            type: 'Server',
           })
         })
       }
     }
-  }
+  },
 })
 ```
 
@@ -397,7 +400,7 @@ http.interceptors.response.use(
       toast.error(message)
     }
     return Promise.reject(error)
-  }
+  },
 )
 ```
 
@@ -434,7 +437,7 @@ const loginMutation = useMutation({
 
     // Redirect về trang chủ
     navigate('/')
-  }
+  },
 })
 ```
 
@@ -780,7 +783,7 @@ const useQueryConfig = () => {
     price_max: queryParams.price_max,
     price_min: queryParams.price_min,
     rating_filter: queryParams.rating_filter,
-    category: queryParams.category
+    category: queryParams.category,
   })
 
   return queryConfig
@@ -801,7 +804,7 @@ export const formatCurrency = (value: number) => {
 export const formatNumberToSocialStyle = (value: number) => {
   return new Intl.NumberFormat('en', {
     notation: 'compact',
-    maximumFractionDigits: 1
+    maximumFractionDigits: 1,
   })
     .format(value)
     .replace('.', ',')
@@ -1039,7 +1042,10 @@ export const getIdFromNameId = (nameId: string) => {
 
 export const removeSpecialCharacter = (str: string) => {
   // eslint-disable-next-line no-useless-escape
-  return str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, '')
+  return str.replace(
+    /!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g,
+    '',
+  )
 }
 ```
 
@@ -1054,16 +1060,16 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 3000
+    port: 3000,
   },
   css: {
-    devSourcemap: true
+    devSourcemap: true,
   },
   resolve: {
     alias: {
-      src: path.resolve(__dirname, './src')
-    }
-  }
+      src: path.resolve(__dirname, './src'),
+    },
+  },
 })
 ```
 
@@ -1078,8 +1084,8 @@ const useSearchProducts = () => {
 
   const { register, handleSubmit } = useForm<{ name: string }>({
     defaultValues: {
-      name: ''
-    }
+      name: '',
+    },
   })
 
   const onSubmitSearch = handleSubmit((data) => {
@@ -1089,14 +1095,14 @@ const useSearchProducts = () => {
       pathname: path.home,
       search: createSearchParams({
         ...config,
-        name: data.name
-      }).toString()
+        name: data.name,
+      }).toString(),
     })
   })
 
   return {
     register,
-    onSubmitSearch
+    onSubmitSearch,
   }
 }
 ```

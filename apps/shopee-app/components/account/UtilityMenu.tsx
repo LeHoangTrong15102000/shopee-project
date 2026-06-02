@@ -1,6 +1,18 @@
 import React, { useMemo } from 'react'
 import { View } from 'react-native'
-import { Heart, MapPin, Bell, Calendar, Tag, Coins, Store, HelpCircle, MessageCircle, Bot, BellDot } from 'lucide-react-native'
+import {
+  Heart,
+  MapPin,
+  Bell,
+  Calendar,
+  Tag,
+  Coins,
+  Store,
+  HelpCircle,
+  MessageCircle,
+  Bot,
+  BellDot,
+} from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
 import { MenuList, AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
@@ -57,65 +69,88 @@ export default function UtilityMenu({
       </View>
     ) : undefined
 
-  const items = useMemo(() => [
-    {
-      title: t('account.menu.chat'),
-      icon: () => <MessageCircle size={20} color={colors.primary} />,
-      onPress: onChat,
-    },
-    {
-      title: t('account.menu.wishlist'),
-      icon: () => <Heart size={20} color={colors.primary} />,
-      onPress: onWishlist,
-      value: wishlistBadge,
-    },
-    {
-      title: t('account.menu.addresses'),
-      icon: () => <MapPin size={20} color={colors.secondary} />,
-      onPress: onAddresses,
-    },
-    {
-      title: t('account.menu.notifications'),
-      icon: () => <Bell size={20} color={colors.warning} />,
-      onPress: onNotifications,
-    },
-    {
-      title: t('account.menu.checkin'),
-      icon: () => <Calendar size={20} color={colors.success} />,
-      onPress: onCheckin,
-    },
-    {
-      title: t('account.menu.xu_history'),
-      icon: () => <Coins size={20} color={colors.coin} />,
-      onPress: onXuHistory,
-    },
-    {
-      title: t('account.menu.vouchers'),
-      icon: () => <Tag size={20} color={colors.error} />,
-      onPress: onVouchers,
-    },
-    {
-      title: t('account.menu.followedShops'),
-      icon: () => <Store size={20} color={colors.foreground} />,
-      onPress: onFollowedShops,
-    },
-    {
-      title: t('account.menu.help'),
-      icon: () => <HelpCircle size={20} color={colors.foreground} />,
-      onPress: onHelp,
-    },
-    {
-      title: t('account.menu.aiAssistant'),
-      icon: () => <Bot size={20} color={colors.primary} />,
-      onPress: onAiAssistant,
-    },
-    {
-      title: t('account.menu.priceAlerts'),
-      icon: () => <BellDot size={20} color={colors.warning} />,
-      onPress: onPriceAlerts,
-    },
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  ], [t, colors.primary, colors.secondary, colors.warning, colors.success, colors.coin, colors.error, colors.foreground, onChat, onWishlist, onAddresses, onNotifications, onCheckin, onXuHistory, onVouchers, onFollowedShops, onHelp, onAiAssistant, onPriceAlerts, wishlistBadge])
+  const items = useMemo(
+    () => [
+      {
+        title: t('account.menu.chat'),
+        icon: () => <MessageCircle size={20} color={colors.primary} />,
+        onPress: onChat,
+      },
+      {
+        title: t('account.menu.wishlist'),
+        icon: () => <Heart size={20} color={colors.primary} />,
+        onPress: onWishlist,
+        value: wishlistBadge,
+      },
+      {
+        title: t('account.menu.addresses'),
+        icon: () => <MapPin size={20} color={colors.secondary} />,
+        onPress: onAddresses,
+      },
+      {
+        title: t('account.menu.notifications'),
+        icon: () => <Bell size={20} color={colors.warning} />,
+        onPress: onNotifications,
+      },
+      {
+        title: t('account.menu.checkin'),
+        icon: () => <Calendar size={20} color={colors.success} />,
+        onPress: onCheckin,
+      },
+      {
+        title: t('account.menu.xu_history'),
+        icon: () => <Coins size={20} color={colors.coin} />,
+        onPress: onXuHistory,
+      },
+      {
+        title: t('account.menu.vouchers'),
+        icon: () => <Tag size={20} color={colors.error} />,
+        onPress: onVouchers,
+      },
+      {
+        title: t('account.menu.followedShops'),
+        icon: () => <Store size={20} color={colors.foreground} />,
+        onPress: onFollowedShops,
+      },
+      {
+        title: t('account.menu.help'),
+        icon: () => <HelpCircle size={20} color={colors.foreground} />,
+        onPress: onHelp,
+      },
+      {
+        title: t('account.menu.aiAssistant'),
+        icon: () => <Bot size={20} color={colors.primary} />,
+        onPress: onAiAssistant,
+      },
+      {
+        title: t('account.menu.priceAlerts'),
+        icon: () => <BellDot size={20} color={colors.warning} />,
+        onPress: onPriceAlerts,
+      },
+    ],
+    [
+      t,
+      colors.primary,
+      colors.secondary,
+      colors.warning,
+      colors.success,
+      colors.coin,
+      colors.error,
+      colors.foreground,
+      onChat,
+      onWishlist,
+      onAddresses,
+      onNotifications,
+      onCheckin,
+      onXuHistory,
+      onVouchers,
+      onFollowedShops,
+      onHelp,
+      onAiAssistant,
+      onPriceAlerts,
+      wishlistBadge,
+    ]
+  )
 
   return (
     <View className="px-4 py-4">

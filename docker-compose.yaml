@@ -4,18 +4,18 @@ services:
     container_name: shopee-mongodb
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - '27017:27017'
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: shopee_root_password
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    command: ['mongod', '--replSet', 'rs0', '--bind_ip_all']
     volumes:
       - ./docker/docker_data/mongodb_data:/data/db
       - ./docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     networks:
       - shopee-nw
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,7 +26,7 @@ services:
     container_name: shopee-meilisearch
     restart: unless-stopped
     ports:
-      - "7700:7700"
+      - '7700:7700'
     environment:
       MEILI_MASTER_KEY: ${MEILISEARCH_MASTER_KEY:-shopee_meili_master_key}
       MEILI_ENV: development
@@ -35,7 +35,7 @@ services:
     networks:
       - shopee-nw
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--spider", "http://localhost:7700/health"]
+      test: ['CMD', 'wget', '--no-verbose', '--spider', 'http://localhost:7700/health']
       interval: 10s
       timeout: 5s
       retries: 5

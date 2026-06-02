@@ -32,4 +32,7 @@ const ShippingMethodSchema = new Schema<IShippingMethod>(
 
 ShippingMethodSchema.index({ is_active: 1, sort_order: 1 })
 
-export const ShippingMethodModel = mongoose.model<IShippingMethod>('shipping_methods', ShippingMethodSchema)
+export const ShippingMethodModel = mongoose.model<IShippingMethod>(
+  'shipping_methods',
+  ShippingMethodSchema,
+)

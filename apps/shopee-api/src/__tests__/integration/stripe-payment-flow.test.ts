@@ -209,7 +209,9 @@ describe('Stripe Payment Flow — Integration', () => {
       expect(updatedOrder!.stripe_client_secret).toBeNull()
 
       // Verify PaymentLog created
-      const paymentLog = await PaymentLogModel.findOne({ stripe_event_id: 'evt_4_3_succeeded' }).lean()
+      const paymentLog = await PaymentLogModel.findOne({
+        stripe_event_id: 'evt_4_3_succeeded',
+      }).lean()
       expect(paymentLog).not.toBeNull()
       expect(paymentLog!.stripe_event_id).toBe('evt_4_3_succeeded')
       expect(paymentLog!.stripe_event_type).toBe('payment_intent.succeeded')
@@ -274,7 +276,9 @@ describe('Stripe Payment Flow — Integration', () => {
       expect(res2.json).toHaveBeenCalledWith({ received: true })
 
       // Only one PaymentLog document should exist for this event
-      const logCount = await PaymentLogModel.countDocuments({ stripe_event_id: 'evt_4_4_idempotent' })
+      const logCount = await PaymentLogModel.countDocuments({
+        stripe_event_id: 'evt_4_4_idempotent',
+      })
       expect(logCount).toBe(1)
     })
   })

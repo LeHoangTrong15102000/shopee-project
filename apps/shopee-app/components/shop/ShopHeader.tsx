@@ -12,7 +12,12 @@ interface ShopHeaderProps {
   followLoading?: boolean
 }
 
-export default function ShopHeader({ shop, isFollowing, onFollow, followLoading }: ShopHeaderProps) {
+export default function ShopHeader({
+  shop,
+  isFollowing,
+  onFollow,
+  followLoading,
+}: ShopHeaderProps) {
   const colors = useColors()
 
   return (

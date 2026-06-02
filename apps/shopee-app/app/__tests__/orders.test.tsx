@@ -74,7 +74,9 @@ jest.mock('@/components/orders/OrderSkeleton', () => {
 function makeEmptyResult() {
   return {
     data: {
-      pages: [{ data: { orders: [], pagination: { page: 1, limit: 10, total: 0, total_pages: 0 } } }],
+      pages: [
+        { data: { orders: [], pagination: { page: 1, limit: 10, total: 0, total_pages: 0 } } },
+      ],
     },
     isLoading: false,
     isRefetching: false,

@@ -122,14 +122,14 @@ describe('OrderDetailScreen', () => {
 
   // ─── Cancel button: visible for PENDING and CONFIRMED only ────────────
 
-  it.each([
-    ORDER_STATUS.PENDING,
-    ORDER_STATUS.CONFIRMED,
-  ] as OrderStatusType[])('shows cancel button for %s', (status) => {
-    setOrder(status)
-    const { getByText } = render(<OrderDetailScreen />)
-    expect(getByText('Hủy đơn hàng')).toBeTruthy()
-  })
+  it.each([ORDER_STATUS.PENDING, ORDER_STATUS.CONFIRMED] as OrderStatusType[])(
+    'shows cancel button for %s',
+    (status) => {
+      setOrder(status)
+      const { getByText } = render(<OrderDetailScreen />)
+      expect(getByText('Hủy đơn hàng')).toBeTruthy()
+    }
+  )
 
   it.each([
     ORDER_STATUS.PROCESSING,

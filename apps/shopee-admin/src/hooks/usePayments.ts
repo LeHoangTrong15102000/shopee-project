@@ -3,7 +3,11 @@ import { toast } from 'sonner'
 import i18n from 'src/i18n/i18n'
 import paymentsApi from 'src/apis/payments.api'
 import { useAdminMutationContext } from './useAdminMutationContext'
-import type { CreatePaymentMethodBody, UpdatePaymentMethodBody, ReorderPaymentItem } from 'src/types/payment.types'
+import type {
+  CreatePaymentMethodBody,
+  UpdatePaymentMethodBody,
+  ReorderPaymentItem,
+} from 'src/types/payment.types'
 
 export const PAYMENT_KEYS = {
   all: ['admin-payment-methods'] as const,

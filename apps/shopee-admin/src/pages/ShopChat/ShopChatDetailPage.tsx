@@ -23,10 +23,7 @@ export default function ShopChatDetailPage() {
   const convFromState = (location.state as { conversation?: ShopConversation } | null)?.conversation
 
   // Fallback: fetch conversation metadata when navigated directly via URL
-  const {
-    data: convFromFetch,
-    isLoading: isConvLoading,
-  } = useQuery({
+  const { data: convFromFetch, isLoading: isConvLoading } = useQuery({
     queryKey: ['admin-shop-conversation', id],
     queryFn: () => shopChatApi.getConversationById(id!).then((r) => r.data.data),
     enabled: !!id && !convFromState,
@@ -41,7 +38,8 @@ export default function ShopChatDetailPage() {
     refetch,
   } = useQuery({
     queryKey: ['admin-shop-messages', id],
-    queryFn: () => shopChatApi.getConversationMessages(id!, undefined, 100).then((r) => r.data.data),
+    queryFn: () =>
+      shopChatApi.getConversationMessages(id!, undefined, 100).then((r) => r.data.data),
     enabled: !!id,
   })
 
@@ -129,10 +127,7 @@ export default function ShopChatDetailPage() {
               {messages.map((msg) => {
                 const isShop = msg.senderType === 'shop'
                 return (
-                  <div
-                    key={msg._id}
-                    className={`flex ${isShop ? 'justify-end' : 'justify-start'}`}
-                  >
+                  <div key={msg._id} className={`flex ${isShop ? 'justify-end' : 'justify-start'}`}>
                     <div
                       className={`max-w-[70%] rounded-2xl px-4 py-2.5 text-sm ${
                         isShop

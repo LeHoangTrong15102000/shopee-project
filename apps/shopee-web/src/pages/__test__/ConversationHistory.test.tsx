@@ -24,7 +24,7 @@ vi.mock('src/components/SEO', () => ({
 }))
 
 vi.mock('src/components/Chat/ChatWindow', () => ({
-  default: () => <div data-testid='chat-window' />,
+  default: () => <div data-testid="chat-window" />,
 }))
 
 const createWrapper = () => {

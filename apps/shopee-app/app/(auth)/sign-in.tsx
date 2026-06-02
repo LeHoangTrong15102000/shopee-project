@@ -53,20 +53,23 @@ export default function SignInScreen() {
     AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion)
   }, [])
 
-  const handleGoogleLogin = useCallback(async (idToken: string) => {
-    setGoogleLoading(true)
-    try {
-      const res = await authApi.googleLogin({ id_token: idToken })
-      const { access_token, refresh_token, user } = res.data.data
-      login({ accessToken: access_token, refreshToken: refresh_token, user })
-      router.replace('/(tabs)/home')
-    } catch (error: unknown) {
-      const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message
-      showError(t('AUTH_GOOGLE_ERROR'), message)
-    } finally {
-      setGoogleLoading(false)
-    }
-  }, [login, router, showError, t])
+  const handleGoogleLogin = useCallback(
+    async (idToken: string) => {
+      setGoogleLoading(true)
+      try {
+        const res = await authApi.googleLogin({ id_token: idToken })
+        const { access_token, refresh_token, user } = res.data.data
+        login({ accessToken: access_token, refreshToken: refresh_token, user })
+        router.replace('/(tabs)/home')
+      } catch (error: unknown) {
+        const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message
+        showError(t('AUTH_GOOGLE_ERROR'), message)
+      } finally {
+        setGoogleLoading(false)
+      }
+    },
+    [login, router, showError, t]
+  )
 
   useEffect(() => {
     if (!googleResponse) return

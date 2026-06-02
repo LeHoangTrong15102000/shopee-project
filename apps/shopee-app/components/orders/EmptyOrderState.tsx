@@ -13,10 +13,7 @@ export default function EmptyOrderState({ message }: EmptyOrderStateProps) {
 
   return (
     <View className="flex-1 items-center justify-center">
-      <EmptyState
-        icon={ShoppingBag}
-        message={message ?? t('orders.empty.message')}
-      />
+      <EmptyState icon={ShoppingBag} message={message ?? t('orders.empty.message')} />
     </View>
   )
 }

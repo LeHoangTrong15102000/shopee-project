@@ -14,7 +14,10 @@ import { Input } from 'src/components/ui/input'
 import { Label } from 'src/components/ui/label'
 import { Switch } from 'src/components/ui/switch'
 import { useCreateShippingMethod, useUpdateShippingMethod } from 'src/hooks/useShipping'
-import { shippingMethodSchema, type ShippingMethodFormValues } from 'src/lib/schemas/shipping.schema'
+import {
+  shippingMethodSchema,
+  type ShippingMethodFormValues,
+} from 'src/lib/schemas/shipping.schema'
 import type { ShippingMethod } from 'src/types/shipping.types'
 
 interface Props {
@@ -94,9 +97,7 @@ export default function ShippingMethodDialog({ open, method, onOpenChange }: Pro
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>
-            {isEdit ? t('actions.edit') : t('actions.create')}
-          </DialogTitle>
+          <DialogTitle>{isEdit ? t('actions.edit') : t('actions.create')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">

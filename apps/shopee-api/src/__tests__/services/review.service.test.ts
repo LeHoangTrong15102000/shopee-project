@@ -3,7 +3,12 @@ import { ReviewService } from '@services/review.service'
 import { IReviewRepository } from '@repositories/interfaces/review.repository.interface'
 import { IPurchaseRepository } from '@repositories/interfaces/purchase.repository.interface'
 import { IProductRepository } from '@repositories/interfaces/product.repository.interface'
-import { NotFoundError, BusinessError, ValidationError, ForbiddenError } from '@services/base.service'
+import {
+  NotFoundError,
+  BusinessError,
+  ValidationError,
+  ForbiddenError,
+} from '@services/base.service'
 import { STATUS_PURCHASE } from '@constants/purchase'
 import { Types } from 'mongoose'
 
@@ -259,21 +264,36 @@ describe('ReviewService', () => {
         pagination: { page: 1, limit: 10, total: 0, page_size: 0 },
       } as any)
 
-      const result = await service.getReviewComments(validObjectId.toString(), { page: 1, limit: 10 })
+      const result = await service.getReviewComments(validObjectId.toString(), {
+        page: 1,
+        limit: 10,
+      })
       expect(result).toHaveProperty('data')
     })
 
     it('should throw ValidationError for invalid reviewId', async () => {
-      await expect(service.getReviewComments('invalid-id', { page: 1, limit: 10 })).rejects.toThrow(ValidationError)
+      await expect(service.getReviewComments('invalid-id', { page: 1, limit: 10 })).rejects.toThrow(
+        ValidationError,
+      )
     })
   })
 
   describe('updateReview', () => {
     it('should update review successfully', async () => {
-      const mockReview = { _id: validObjectId, user: validObjectId, product: validObjectId, rating: 4 }
+      const mockReview = {
+        _id: validObjectId,
+        user: validObjectId,
+        product: validObjectId,
+        rating: 4,
+      }
       mockReviewRepository.findById.mockResolvedValue(mockReview as any)
-      ;(mockReviewRepository as any).updateById = jest.fn().mockResolvedValue({ ...mockReview, rating: 5 })
-      mockReviewRepository.getProductStats.mockResolvedValue({ average_rating: 4.5, total_reviews: 1 } as any)
+      ;(mockReviewRepository as any).updateById = jest
+        .fn()
+        .mockResolvedValue({ ...mockReview, rating: 5 })
+      mockReviewRepository.getProductStats.mockResolvedValue({
+        average_rating: 4.5,
+        total_reviews: 1,
+      } as any)
       mockProductRepository.updateRating.mockResolvedValue(undefined)
 
       const result = await service.updateReview(
@@ -313,7 +333,10 @@ describe('ReviewService', () => {
       const mockReview = { _id: validObjectId, user: validObjectId, product: validObjectId }
       mockReviewRepository.findById.mockResolvedValue(mockReview as any)
       ;(mockReviewRepository as any).deleteById = jest.fn().mockResolvedValue(undefined)
-      mockReviewRepository.getProductStats.mockResolvedValue({ average_rating: 4.0, total_reviews: 0 } as any)
+      mockReviewRepository.getProductStats.mockResolvedValue({
+        average_rating: 4.0,
+        total_reviews: 0,
+      } as any)
       mockProductRepository.updateRating.mockResolvedValue(undefined)
 
       const result = await service.deleteReview(validObjectId.toString(), validObjectId.toString())
@@ -351,13 +374,17 @@ describe('ReviewService', () => {
 
     it('should throw NotFoundError when not found', async () => {
       mockReviewRepository.findById.mockResolvedValue(null)
-      await expect(service.adminGetReviewById(validObjectId.toString())).rejects.toThrow(NotFoundError)
+      await expect(service.adminGetReviewById(validObjectId.toString())).rejects.toThrow(
+        NotFoundError,
+      )
     })
   })
 
   describe('adminGetReviews', () => {
     it('should call findAllWithFilters', async () => {
-      ;(mockReviewRepository as any).findAllWithFilters = jest.fn().mockResolvedValue({ data: [], pagination: {} })
+      ;(mockReviewRepository as any).findAllWithFilters = jest
+        .fn()
+        .mockResolvedValue({ data: [], pagination: {} })
       const result = await service.adminGetReviews({}, { page: 1, limit: 10 })
       expect((mockReviewRepository as any).findAllWithFilters).toHaveBeenCalled()
     })
@@ -368,7 +395,10 @@ describe('ReviewService', () => {
       const mockReview = { _id: validObjectId, product: validObjectId }
       mockReviewRepository.findById.mockResolvedValue(mockReview as any)
       ;(mockReviewRepository as any).deleteById = jest.fn().mockResolvedValue(undefined)
-      mockReviewRepository.getProductStats.mockResolvedValue({ average_rating: 4.0, total_reviews: 0 } as any)
+      mockReviewRepository.getProductStats.mockResolvedValue({
+        average_rating: 4.0,
+        total_reviews: 0,
+      } as any)
       mockProductRepository.updateRating.mockResolvedValue(undefined)
 
       const result = await service.adminDeleteReview(validObjectId.toString())
@@ -377,7 +407,9 @@ describe('ReviewService', () => {
 
     it('should throw NotFoundError when review not found', async () => {
       mockReviewRepository.findById.mockResolvedValue(null)
-      await expect(service.adminDeleteReview(validObjectId.toString())).rejects.toThrow(NotFoundError)
+      await expect(service.adminDeleteReview(validObjectId.toString())).rejects.toThrow(
+        NotFoundError,
+      )
     })
   })
 
@@ -392,7 +424,9 @@ describe('ReviewService', () => {
 
     it('should throw NotFoundError when comment not found', async () => {
       mockReviewRepository.findCommentById.mockResolvedValue(null)
-      await expect(service.adminDeleteComment(validObjectId.toString())).rejects.toThrow(NotFoundError)
+      await expect(service.adminDeleteComment(validObjectId.toString())).rejects.toThrow(
+        NotFoundError,
+      )
     })
   })
 

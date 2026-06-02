@@ -1,8 +1,5 @@
 import mongoose from 'mongoose'
-import {
-  ShopConversationModel,
-  IShopConversation,
-} from '@database/models/shop-conversation.model'
+import { ShopConversationModel, IShopConversation } from '@database/models/shop-conversation.model'
 import {
   ShopMessageModel,
   IShopMessage,

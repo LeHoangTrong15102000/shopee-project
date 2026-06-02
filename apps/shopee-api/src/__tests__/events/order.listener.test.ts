@@ -66,7 +66,12 @@ describe('OrderEventListener', () => {
   describe('onOrderStatusChanged (order.status_changed)', () => {
     const event: Extract<DomainEvent, { type: 'order.status_changed' }> = {
       type: 'order.status_changed',
-      payload: { orderId: 'order-123', userId: 'user-456', newStatus: 'SHIPPED', previousStatus: 'PENDING' },
+      payload: {
+        orderId: 'order-123',
+        userId: 'user-456',
+        newStatus: 'SHIPPED',
+        previousStatus: 'PENDING',
+      },
     }
 
     it('enqueues a notification job with the new status', async () => {

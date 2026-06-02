@@ -106,10 +106,7 @@ export function useOrderDetail() {
       order_id: order._id,
       user_id: order.userId || 'user-1',
       tracking_number:
-        'VN' +
-        new Date(order.createdAt).getFullYear() +
-        'SHOP' +
-        order._id.slice(-4).toUpperCase(),
+        'VN' + new Date(order.createdAt).getFullYear() + 'SHOP' + order._id.slice(-4).toUpperCase(),
       carrier: 'ghn',
       status: effectiveStatus as OrderTracking['status'],
       estimated_delivery: new Date(baseTime + 5 * 24 * 60 * 60 * 1000).toISOString(),

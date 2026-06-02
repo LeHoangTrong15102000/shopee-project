@@ -25,7 +25,11 @@ export default function PaymentSection({
   const colors = useColors()
 
   const defaultMethods: PaymentMethod[] = [
-    { _id: 'cod', name: t('paymentMethod.cod.name'), description: t('paymentMethod.cod.description') },
+    {
+      _id: 'cod',
+      name: t('paymentMethod.cod.name'),
+      description: t('paymentMethod.cod.description'),
+    },
     { _id: 'bank_transfer', name: t('paymentMethod.bankTransfer.name') },
   ]
 

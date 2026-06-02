@@ -19,7 +19,11 @@ import LiveQASection from 'src/components/LiveQASection/LiveQASection'
 import ActivityFeedWidget from 'src/components/ActivityFeedWidget/ActivityFeedWidget'
 import SellerDashboardPanel from 'src/components/SellerDashboardPanel/SellerDashboardPanel'
 import { AppContext } from 'src/contexts/app.context'
-import { MessageReceivedPayload, UserTypingPayload, InventoryAlertPayload } from 'src/types/socket.types'
+import {
+  MessageReceivedPayload,
+  UserTypingPayload,
+  InventoryAlertPayload,
+} from 'src/types/socket.types'
 
 // Mock scrollIntoView for jsdom
 Element.prototype.scrollIntoView = vi.fn()
@@ -28,27 +32,60 @@ const mockConnect = vi.fn()
 let mockConnectionStatus = 'connected'
 
 vi.mock('src/hooks/useChat', () => ({
-  default: () => ({ messages: [], currentChatId: null, isLoading: false, isConnected: true, joinChat: vi.fn(), leaveChat: vi.fn(), sendMessage: vi.fn() })
+  default: () => ({
+    messages: [],
+    currentChatId: null,
+    isLoading: false,
+    isConnected: true,
+    joinChat: vi.fn(),
+    leaveChat: vi.fn(),
+    sendMessage: vi.fn(),
+  }),
 }))
 vi.mock('src/hooks/useSocket', () => ({
-  default: () => ({ connectionStatus: mockConnectionStatus, connect: mockConnect, isConnected: mockConnectionStatus === 'connected', disconnect: vi.fn(), emit: vi.fn(), on: vi.fn(), off: vi.fn(), socket: null })
+  default: () => ({
+    connectionStatus: mockConnectionStatus,
+    connect: mockConnect,
+    isConnected: mockConnectionStatus === 'connected',
+    disconnect: vi.fn(),
+    emit: vi.fn(),
+    on: vi.fn(),
+    off: vi.fn(),
+    socket: null,
+  }),
 }))
 vi.mock('src/hooks/useTypingIndicator', () => ({
-  default: () => ({ typingUsers: [], startTyping: vi.fn(), stopTyping: vi.fn() })
+  default: () => ({ typingUsers: [], startTyping: vi.fn(), stopTyping: vi.fn() }),
 }))
 
-let mockSellerDashboard = { metrics: { today_orders: 0, today_revenue: 0, pending_orders: 0, pending_qa: 0 }, orderNotifications: [] as any[], qaNotifications: [] as any[], isActive: false }
+let mockSellerDashboard = {
+  metrics: { today_orders: 0, today_revenue: 0, pending_orders: 0, pending_qa: 0 },
+  orderNotifications: [] as any[],
+  qaNotifications: [] as any[],
+  isActive: false,
+}
 vi.mock('src/hooks/useSellerDashboard', () => ({
-  default: () => mockSellerDashboard
+  default: () => mockSellerDashboard,
 }))
 
-const createMessage = (overrides: Partial<MessageReceivedPayload> = {}): MessageReceivedPayload => ({
-  _id: '1', chat_id: 'chat1', sender: { _id: 'user1', name: 'Seller', avatar: '' },
-  content: 'Hello', message_type: 'text', status: 'sent', created_at: '2026-02-07T10:00:00Z', ...overrides
+const createMessage = (
+  overrides: Partial<MessageReceivedPayload> = {},
+): MessageReceivedPayload => ({
+  _id: '1',
+  chat_id: 'chat1',
+  sender: { _id: 'user1', name: 'Seller', avatar: '' },
+  content: 'Hello',
+  message_type: 'text',
+  status: 'sent',
+  created_at: '2026-02-07T10:00:00Z',
+  ...overrides,
 })
 
 describe('WebSocket UI Components', () => {
-  beforeEach(() => { vi.clearAllMocks(); mockConnectionStatus = 'connected' })
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockConnectionStatus = 'connected'
+  })
 
   describe('MessageList', () => {
     test('shows loading spinner when isLoading', () => {
@@ -63,7 +100,7 @@ describe('WebSocket UI Components', () => {
 
     test('renders messages correctly', () => {
       const messages = [createMessage({ content: 'Test message' })]
-      render(<MessageList messages={messages} isLoading={false} currentUserId='user2' />)
+      render(<MessageList messages={messages} isLoading={false} currentUserId="user2" />)
       expect(screen.getByText('Test message')).toBeInTheDocument()
     })
   })
@@ -78,7 +115,12 @@ describe('WebSocket UI Components', () => {
     })
 
     test('shows sender name for received messages', () => {
-      render(<MessageItem message={createMessage({ sender: { _id: 'other', name: 'John', avatar: '' } })} isSent={false} />)
+      render(
+        <MessageItem
+          message={createMessage({ sender: { _id: 'other', name: 'John', avatar: '' } })}
+          isSent={false}
+        />,
+      )
       expect(screen.getByText('John')).toBeInTheDocument()
     })
 
@@ -95,14 +137,18 @@ describe('WebSocket UI Components', () => {
 
   describe('MessageInput', () => {
     test('has input field and disabled send button when empty', () => {
-      render(<MessageInput onSendMessage={vi.fn()} onTypingStart={vi.fn()} onTypingStop={vi.fn()} />)
+      render(
+        <MessageInput onSendMessage={vi.fn()} onTypingStart={vi.fn()} onTypingStop={vi.fn()} />,
+      )
       expect(screen.getByPlaceholderText('Nhập tin nhắn...')).toBeInTheDocument()
       expect(screen.getByRole('button')).toBeDisabled()
     })
 
     test('enables send button when input has text', async () => {
       const user = userEvent.setup()
-      render(<MessageInput onSendMessage={vi.fn()} onTypingStart={vi.fn()} onTypingStop={vi.fn()} />)
+      render(
+        <MessageInput onSendMessage={vi.fn()} onTypingStart={vi.fn()} onTypingStop={vi.fn()} />,
+      )
       await user.type(screen.getByPlaceholderText('Nhập tin nhắn...'), 'Hello')
       expect(screen.getByRole('button')).not.toBeDisabled()
     })
@@ -110,7 +156,13 @@ describe('WebSocket UI Components', () => {
     test('calls onSendMessage on Enter key', async () => {
       const onSendMessage = vi.fn()
       const user = userEvent.setup()
-      render(<MessageInput onSendMessage={onSendMessage} onTypingStart={vi.fn()} onTypingStop={vi.fn()} />)
+      render(
+        <MessageInput
+          onSendMessage={onSendMessage}
+          onTypingStart={vi.fn()}
+          onTypingStop={vi.fn()}
+        />,
+      )
       const input = screen.getByPlaceholderText('Nhập tin nhắn...')
       await user.type(input, 'Hello{Enter}')
       expect(onSendMessage).toHaveBeenCalledWith('Hello')
@@ -119,13 +171,26 @@ describe('WebSocket UI Components', () => {
     test('calls onTypingStart when typing begins', async () => {
       const onTypingStart = vi.fn()
       const user = userEvent.setup()
-      render(<MessageInput onSendMessage={vi.fn()} onTypingStart={onTypingStart} onTypingStop={vi.fn()} />)
+      render(
+        <MessageInput
+          onSendMessage={vi.fn()}
+          onTypingStart={onTypingStart}
+          onTypingStop={vi.fn()}
+        />,
+      )
       await user.type(screen.getByPlaceholderText('Nhập tin nhắn...'), 'H')
       expect(onTypingStart).toHaveBeenCalled()
     })
 
     test('disables input when disabled prop is true', () => {
-      render(<MessageInput onSendMessage={vi.fn()} onTypingStart={vi.fn()} onTypingStop={vi.fn()} disabled={true} />)
+      render(
+        <MessageInput
+          onSendMessage={vi.fn()}
+          onTypingStart={vi.fn()}
+          onTypingStop={vi.fn()}
+          disabled={true}
+        />,
+      )
       expect(screen.getByPlaceholderText('Nhập tin nhắn...')).toBeDisabled()
     })
   })
@@ -137,7 +202,9 @@ describe('WebSocket UI Components', () => {
     })
 
     test('shows single user typing', () => {
-      const typingUsers: UserTypingPayload[] = [{ chat_id: 'chat1', user_id: 'u1', user_name: 'Alice' }]
+      const typingUsers: UserTypingPayload[] = [
+        { chat_id: 'chat1', user_id: 'u1', user_name: 'Alice' },
+      ]
       render(<TypingIndicator typingUsers={typingUsers} />)
       expect(screen.getByText('Alice đang nhập')).toBeInTheDocument()
     })
@@ -145,7 +212,7 @@ describe('WebSocket UI Components', () => {
     test('shows multiple users typing', () => {
       const typingUsers: UserTypingPayload[] = [
         { chat_id: 'chat1', user_id: 'u1', user_name: 'Alice' },
-        { chat_id: 'chat1', user_id: 'u2', user_name: 'Bob' }
+        { chat_id: 'chat1', user_id: 'u2', user_name: 'Bob' },
       ]
       render(<TypingIndicator typingUsers={typingUsers} />)
       expect(screen.getByText('Alice, Bob đang nhập')).toBeInTheDocument()
@@ -161,12 +228,12 @@ describe('WebSocket UI Components', () => {
         setProfile: vi.fn(),
         extendedPurchases: [],
         setExtendedPurchases: vi.fn(),
-        reset: vi.fn()
+        reset: vi.fn(),
       }
       return render(
         <AppContext.Provider value={appContextValue}>
           <ConnectionStatus />
-        </AppContext.Provider>
+        </AppContext.Provider>,
       )
     }
 
@@ -213,7 +280,7 @@ describe('WebSocket UI Components', () => {
 
   describe('OrderStatusTracker', () => {
     test('renders all 5 order steps', () => {
-      render(<OrderStatusTracker currentStatus='pending' isSubscribed={false} />)
+      render(<OrderStatusTracker currentStatus="pending" isSubscribed={false} />)
       expect(screen.getByText('Đơn Hàng Đã Đặt')).toBeInTheDocument()
       expect(screen.getByText('Đã Xác Nhận Thông Tin Thanh Toán')).toBeInTheDocument()
       expect(screen.getByText('Vận Chuyển')).toBeInTheDocument()
@@ -222,27 +289,27 @@ describe('WebSocket UI Components', () => {
     })
 
     test('shows live tracking indicator when subscribed', () => {
-      render(<OrderStatusTracker currentStatus='pending' isSubscribed={true} />)
+      render(<OrderStatusTracker currentStatus="pending" isSubscribed={true} />)
       expect(screen.getByText('Đang theo dõi trực tiếp')).toBeInTheDocument()
     })
 
     test('does not show live tracking when not subscribed', () => {
-      render(<OrderStatusTracker currentStatus='pending' isSubscribed={false} />)
+      render(<OrderStatusTracker currentStatus="pending" isSubscribed={false} />)
       expect(screen.queryByText('Đang theo dõi trực tiếp')).not.toBeInTheDocument()
     })
 
     test('shows cancelled status message', () => {
-      render(<OrderStatusTracker currentStatus='cancelled' isSubscribed={false} />)
+      render(<OrderStatusTracker currentStatus="cancelled" isSubscribed={false} />)
       expect(screen.getByText(/Đơn hàng đã bị hủy/)).toBeInTheDocument()
     })
 
     test('shows returned status message', () => {
-      render(<OrderStatusTracker currentStatus='returned' isSubscribed={false} />)
+      render(<OrderStatusTracker currentStatus="returned" isSubscribed={false} />)
       expect(screen.getByText(/Đơn hàng đã được trả lại/)).toBeInTheDocument()
     })
 
     test('hides step progress for cancelled status', () => {
-      render(<OrderStatusTracker currentStatus='cancelled' isSubscribed={false} />)
+      render(<OrderStatusTracker currentStatus="cancelled" isSubscribed={false} />)
       // Steps should not be visible for special statuses
       expect(screen.queryByText('Đơn Hàng Đã Đặt')).not.toBeInTheDocument()
     })
@@ -250,7 +317,13 @@ describe('WebSocket UI Components', () => {
     test('shows step timestamp for completed steps', () => {
       const now = new Date()
       const timestamps = { pending: now.toISOString() }
-      render(<OrderStatusTracker currentStatus='confirmed' isSubscribed={false} stepTimestamps={timestamps} />)
+      render(
+        <OrderStatusTracker
+          currentStatus="confirmed"
+          isSubscribed={false}
+          stepTimestamps={timestamps}
+        />,
+      )
       // formatLastUpdate returns "HH:mm DD-MM-YYYY"
       const hours = String(now.getHours()).padStart(2, '0')
       const minutes = String(now.getMinutes()).padStart(2, '0')
@@ -295,7 +368,9 @@ describe('WebSocket UI Components', () => {
     })
 
     test('applies custom className', () => {
-      const { container } = render(<ViewerCountBadge viewerCount={5} isPopular={false} className='mt-2' />)
+      const { container } = render(
+        <ViewerCountBadge viewerCount={5} isPopular={false} className="mt-2" />,
+      )
       expect(container.firstChild).toHaveClass('mt-2')
     })
   })
@@ -314,7 +389,7 @@ describe('WebSocket UI Components', () => {
     test('shows synced message after sync completes', () => {
       const { rerender } = render(<CartSyncIndicator isSyncing={true} lastSyncTimestamp={null} />)
       // Sync completes
-      rerender(<CartSyncIndicator isSyncing={false} lastSyncTimestamp='2026-02-07T10:00:00Z' />)
+      rerender(<CartSyncIndicator isSyncing={false} lastSyncTimestamp="2026-02-07T10:00:00Z" />)
       expect(screen.getByText('Đã đồng bộ')).toBeInTheDocument()
     })
 
@@ -325,7 +400,7 @@ describe('WebSocket UI Components', () => {
 
     test('shows check icon after sync', () => {
       const { rerender } = render(<CartSyncIndicator isSyncing={true} lastSyncTimestamp={null} />)
-      rerender(<CartSyncIndicator isSyncing={false} lastSyncTimestamp='2026-02-07T10:00:00Z' />)
+      rerender(<CartSyncIndicator isSyncing={false} lastSyncTimestamp="2026-02-07T10:00:00Z" />)
       expect(screen.getByText('✓')).toBeInTheDocument()
     })
   })
@@ -355,46 +430,91 @@ describe('Phase1 11.4a - OnlineIndicator Component', () => {
   })
 
   test('renders with different sizes', () => {
-    const { container: smContainer } = render(<OnlineIndicator isOnline={true} size='sm' />)
+    const { container: smContainer } = render(<OnlineIndicator isOnline={true} size="sm" />)
     expect(smContainer.querySelector('.h-2')).toBeInTheDocument()
   })
 })
 
 describe('Phase1 11.4b - LivePriceTag Component', () => {
   test('displays current price when no live price', () => {
-    render(<LivePriceTag currentPrice={100000} livePrice={null} previousPrice={null} hasChanged={false} />)
+    render(
+      <LivePriceTag
+        currentPrice={100000}
+        livePrice={null}
+        previousPrice={null}
+        hasChanged={false}
+      />,
+    )
     expect(screen.getByText(/100\.000/)).toBeInTheDocument()
   })
 
   test('displays live price when available', () => {
-    render(<LivePriceTag currentPrice={100000} livePrice={80000} previousPrice={null} hasChanged={false} />)
+    render(
+      <LivePriceTag
+        currentPrice={100000}
+        livePrice={80000}
+        previousPrice={null}
+        hasChanged={false}
+      />,
+    )
     expect(screen.getByText(/80\.000/)).toBeInTheDocument()
   })
 
   test('shows previous price with strikethrough when price changed', () => {
-    render(<LivePriceTag currentPrice={100000} livePrice={80000} previousPrice={100000} hasChanged={true} />)
+    render(
+      <LivePriceTag
+        currentPrice={100000}
+        livePrice={80000}
+        previousPrice={100000}
+        hasChanged={true}
+      />,
+    )
     // Previous price should be shown with line-through
     const strikethroughElements = document.querySelectorAll('.line-through')
     expect(strikethroughElements.length).toBeGreaterThan(0)
   })
 
   test('shows price decrease badge', () => {
-    render(<LivePriceTag currentPrice={100000} livePrice={80000} previousPrice={100000} hasChanged={true} />)
+    render(
+      <LivePriceTag
+        currentPrice={100000}
+        livePrice={80000}
+        previousPrice={100000}
+        hasChanged={true}
+      />,
+    )
     expect(screen.getByText(/Giảm giá/)).toBeInTheDocument()
   })
 
   test('shows price increase badge', () => {
-    render(<LivePriceTag currentPrice={100000} livePrice={120000} previousPrice={100000} hasChanged={true} />)
+    render(
+      <LivePriceTag
+        currentPrice={100000}
+        livePrice={120000}
+        previousPrice={100000}
+        hasChanged={true}
+      />,
+    )
     expect(screen.getByText(/Tăng giá/)).toBeInTheDocument()
   })
-
-
 })
 
 describe('Phase1 11.4c - InventoryAlertBadge Component', () => {
   const mockAlerts: InventoryAlertPayload[] = [
-    { product_id: 'p1', product_name: 'Product A', current_quantity: 3, threshold: 10, severity: 'warning' },
-    { product_id: 'p2', product_name: 'Product B', current_quantity: 0, threshold: 10, severity: 'critical' },
+    {
+      product_id: 'p1',
+      product_name: 'Product A',
+      current_quantity: 3,
+      threshold: 10,
+      severity: 'warning',
+    },
+    {
+      product_id: 'p2',
+      product_name: 'Product B',
+      current_quantity: 0,
+      threshold: 10,
+      severity: 'critical',
+    },
   ]
 
   test('returns null when unreadCount is 0', () => {
@@ -444,8 +564,6 @@ describe('Phase1 11.4c - InventoryAlertBadge Component', () => {
   })
 })
 
-
-
 describe('Phase3 - LiveReviewFeed Component', () => {
   test('renders nothing when newReviewCount is 0', () => {
     const { container } = render(<LiveReviewFeed newReviewCount={0} />)
@@ -472,7 +590,7 @@ describe('Phase3 - LiveReviewFeed Component', () => {
   })
 
   test('applies custom className', () => {
-    const { container } = render(<LiveReviewFeed newReviewCount={1} className='mt-4' />)
+    const { container } = render(<LiveReviewFeed newReviewCount={1} className="mt-4" />)
     expect(container.firstChild).toHaveClass('mt-4')
   })
 
@@ -515,7 +633,10 @@ describe('Phase3 - LiveQASection Component', () => {
 
   test('shows answers with seller highlight', () => {
     const answers = [
-      { question_id: 'q1', answer: { user_name: 'Shop ABC', answer: 'Yes we have it', is_seller: true } }
+      {
+        question_id: 'q1',
+        answer: { user_name: 'Shop ABC', answer: 'Yes we have it', is_seller: true },
+      },
     ]
     render(<LiveQASection newQuestionCount={0} newAnswers={answers} />)
     expect(screen.getByText(/Shop ABC/)).toBeInTheDocument()
@@ -525,7 +646,10 @@ describe('Phase3 - LiveQASection Component', () => {
 
   test('shows non-seller answers without highlight', () => {
     const answers = [
-      { question_id: 'q1', answer: { user_name: 'Regular User', answer: 'I think so', is_seller: false } }
+      {
+        question_id: 'q1',
+        answer: { user_name: 'Regular User', answer: 'I think so', is_seller: false },
+      },
     ]
     render(<LiveQASection newQuestionCount={0} newAnswers={answers} />)
     expect(screen.getByText(/Regular User/)).toBeInTheDocument()
@@ -554,28 +678,48 @@ describe('Phase3 - ActivityFeedWidget Component', () => {
   })
 
   test('shows purchase activity with cart emoji', () => {
-    const activity = { type: 'purchase' as const, message: 'Ai đó vừa mua sản phẩm', timestamp: new Date().toISOString() }
+    const activity = {
+      type: 'purchase' as const,
+      message: 'Ai đó vừa mua sản phẩm',
+      timestamp: new Date().toISOString(),
+    }
     render(<ActivityFeedWidget latestActivity={activity} />)
     expect(screen.getByText('🛒')).toBeInTheDocument()
     expect(screen.getByText('Ai đó vừa mua sản phẩm')).toBeInTheDocument()
   })
 
   test('shows review activity with star emoji', () => {
-    const activity = { type: 'review' as const, message: 'Ai đó vừa đánh giá', timestamp: new Date().toISOString() }
+    const activity = {
+      type: 'review' as const,
+      message: 'Ai đó vừa đánh giá',
+      timestamp: new Date().toISOString(),
+    }
     render(<ActivityFeedWidget latestActivity={activity} />)
     expect(screen.getByText('⭐')).toBeInTheDocument()
     expect(screen.getByText('Ai đó vừa đánh giá')).toBeInTheDocument()
   })
 
   test('shows "vừa xong" for recent timestamps', () => {
-    const activity = { type: 'purchase' as const, message: 'Test', timestamp: new Date().toISOString() }
+    const activity = {
+      type: 'purchase' as const,
+      message: 'Test',
+      timestamp: new Date().toISOString(),
+    }
     render(<ActivityFeedWidget latestActivity={activity} />)
     expect(screen.getByText('vừa xong')).toBeInTheDocument()
   })
 
   test('queues multiple activities and shows first one', () => {
-    const activity1 = { type: 'purchase' as const, message: 'Activity 1', timestamp: new Date().toISOString() }
-    const activity2 = { type: 'review' as const, message: 'Activity 2', timestamp: new Date().toISOString() }
+    const activity1 = {
+      type: 'purchase' as const,
+      message: 'Activity 1',
+      timestamp: new Date().toISOString(),
+    }
+    const activity2 = {
+      type: 'review' as const,
+      message: 'Activity 2',
+      timestamp: new Date().toISOString(),
+    }
     const { rerender } = render(<ActivityFeedWidget latestActivity={activity1} />)
     expect(screen.getByText('Activity 1')).toBeInTheDocument()
     // Add second activity while first is showing
@@ -586,10 +730,20 @@ describe('Phase3 - ActivityFeedWidget Component', () => {
 })
 
 describe('Phase3 - SellerDashboardPanel Component', () => {
-  const defaultMetrics = { today_orders: 10, today_revenue: 5000000, pending_orders: 3, pending_qa: 2 }
+  const defaultMetrics = {
+    today_orders: 10,
+    today_revenue: 5000000,
+    pending_orders: 3,
+    pending_qa: 2,
+  }
 
   beforeEach(() => {
-    mockSellerDashboard = { metrics: defaultMetrics, orderNotifications: [], qaNotifications: [], isActive: false }
+    mockSellerDashboard = {
+      metrics: defaultMetrics,
+      orderNotifications: [],
+      qaNotifications: [],
+      isActive: false,
+    }
   })
 
   test('renders nothing when not active', () => {
@@ -597,7 +751,7 @@ describe('Phase3 - SellerDashboardPanel Component', () => {
     const { container } = render(
       <MemoryRouter>
         <SellerDashboardPanel />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     expect(container.firstChild).toBeNull()
   })
@@ -607,7 +761,7 @@ describe('Phase3 - SellerDashboardPanel Component', () => {
     render(
       <MemoryRouter>
         <SellerDashboardPanel />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     expect(screen.getByText(/Bảng điều khiển người bán/)).toBeInTheDocument()
   })
@@ -617,7 +771,7 @@ describe('Phase3 - SellerDashboardPanel Component', () => {
     render(
       <MemoryRouter>
         <SellerDashboardPanel />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     expect(screen.getByText('10')).toBeInTheDocument()
     expect(screen.getByText('Đơn hàng hôm nay')).toBeInTheDocument()
@@ -630,12 +784,18 @@ describe('Phase3 - SellerDashboardPanel Component', () => {
   test('shows order notifications', () => {
     mockSellerDashboard.isActive = true
     mockSellerDashboard.orderNotifications = [
-      { order_id: 'o1', status: 'pending', product_names: ['iPhone 15'], total: 25000000, timestamp: '2026-02-08T10:00:00Z' }
+      {
+        order_id: 'o1',
+        status: 'pending',
+        product_names: ['iPhone 15'],
+        total: 25000000,
+        timestamp: '2026-02-08T10:00:00Z',
+      },
     ]
     render(
       <MemoryRouter>
         <SellerDashboardPanel />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     expect(screen.getByText('iPhone 15')).toBeInTheDocument()
     expect(screen.getByText('📦')).toBeInTheDocument()
@@ -644,12 +804,17 @@ describe('Phase3 - SellerDashboardPanel Component', () => {
   test('shows QA notifications with product links', () => {
     mockSellerDashboard.isActive = true
     mockSellerDashboard.qaNotifications = [
-      { product_id: 'prod-123', product_name: 'Samsung Galaxy', question_preview: 'Có bảo hành không?', user_name: 'Nguyen Van A' }
+      {
+        product_id: 'prod-123',
+        product_name: 'Samsung Galaxy',
+        question_preview: 'Có bảo hành không?',
+        user_name: 'Nguyen Van A',
+      },
     ]
     render(
       <MemoryRouter>
         <SellerDashboardPanel />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     expect(screen.getByText(/Nguyen Van A/)).toBeInTheDocument()
     expect(screen.getByText(/Có bảo hành không/)).toBeInTheDocument()
@@ -664,8 +829,8 @@ describe('Phase3 - SellerDashboardPanel Component', () => {
     mockSellerDashboard.isActive = true
     const { container } = render(
       <MemoryRouter>
-        <SellerDashboardPanel className='w-80' />
-      </MemoryRouter>
+        <SellerDashboardPanel className="w-80" />
+      </MemoryRouter>,
     )
     expect(container.firstChild).toHaveClass('w-80')
   })

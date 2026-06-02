@@ -12,7 +12,12 @@ interface RewardCardProps {
   isRedeeming?: boolean
 }
 
-export default function RewardCard({ reward, userBalance, onRedeem, isRedeeming }: RewardCardProps) {
+export default function RewardCard({
+  reward,
+  userBalance,
+  onRedeem,
+  isRedeeming,
+}: RewardCardProps) {
   const { t } = useTranslation()
   const colors = useColors()
 

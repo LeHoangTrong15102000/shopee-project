@@ -32,9 +32,7 @@ export default function RecentlyViewedSection() {
         <AppText raw variant="heading4" weight="bold">
           {t('recentlyViewed.header.title')}
         </AppText>
-        <TouchableOpacity
-          onPress={() => router.push('/recently-viewed')}
-          accessibilityRole="link">
+        <TouchableOpacity onPress={() => router.push('/recently-viewed')} accessibilityRole="link">
           <AppText raw variant="bodySmall" style={{ color: colors.primary }}>
             {t('recentlyViewed.viewAll')}
           </AppText>

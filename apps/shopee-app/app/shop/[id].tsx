@@ -31,7 +31,12 @@ export default function ShopScreen() {
   const [activeTab, setActiveTab] = useState<TabKey>('products')
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
 
-  const { data: shop, isLoading: shopLoading, isError: shopError, refetch: refetchShop } = useShop(id)
+  const {
+    data: shop,
+    isLoading: shopLoading,
+    isError: shopError,
+    refetch: refetchShop,
+  } = useShop(id)
   const {
     data,
     fetchNextPage,
@@ -66,14 +71,40 @@ export default function ShopScreen() {
             />
           </View>
           <View
-            style={{ height: 20, width: '50%', borderRadius: 4, backgroundColor: colors.neutrals700, marginTop: 12 }}
+            style={{
+              height: 20,
+              width: '50%',
+              borderRadius: 4,
+              backgroundColor: colors.neutrals700,
+              marginTop: 12,
+            }}
           />
           <View
-            style={{ height: 14, width: '80%', borderRadius: 4, backgroundColor: colors.neutrals700, marginTop: 8 }}
+            style={{
+              height: 14,
+              width: '80%',
+              borderRadius: 4,
+              backgroundColor: colors.neutrals700,
+              marginTop: 8,
+            }}
           />
-          <View className="flex-row gap-4 mt-3">
-            <View style={{ height: 14, width: 60, borderRadius: 4, backgroundColor: colors.neutrals700 }} />
-            <View style={{ height: 14, width: 80, borderRadius: 4, backgroundColor: colors.neutrals700 }} />
+          <View className="mt-3 flex-row gap-4">
+            <View
+              style={{
+                height: 14,
+                width: 60,
+                borderRadius: 4,
+                backgroundColor: colors.neutrals700,
+              }}
+            />
+            <View
+              style={{
+                height: 14,
+                width: 80,
+                borderRadius: 4,
+                backgroundColor: colors.neutrals700,
+              }}
+            />
           </View>
         </View>
       </View>
@@ -82,7 +113,7 @@ export default function ShopScreen() {
 
   if (shopError) {
     return (
-      <View className="flex-1 items-center justify-center px-4 gap-3">
+      <View className="flex-1 items-center justify-center gap-3 px-4">
         <AppText raw variant="body" color="muted" align="center">
           {t('shop.error.loadFailed')}
         </AppText>

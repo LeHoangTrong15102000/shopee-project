@@ -40,7 +40,11 @@ export async function getAvailableVouchers() {
   return res.data
 }
 
-export async function getMyVouchers(status: 'available' | 'used' | 'expired', page = 1, limit = 20) {
+export async function getMyVouchers(
+  status: 'available' | 'used' | 'expired',
+  page = 1,
+  limit = 20
+) {
   const res = await http.get<ApiResponse<VouchersPage>>('vouchers/my-vouchers', {
     params: { status, page, limit },
   })
@@ -84,4 +88,3 @@ export async function validateVoucher(code: string, orderValue: number) {
   })
   return res.data
 }
-

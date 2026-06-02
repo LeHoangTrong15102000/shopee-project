@@ -15,7 +15,20 @@
   "prevMonth": "Previous month",
   "nextMonth": "Next month",
   "toast.success": "🎉 Check-in successful! +{{value}} coins",
-  "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+  "months": [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ],
   "days": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
   "loyalty.title": "Shopee Coins",
   "loyalty.history": "History",
@@ -39,4 +52,3 @@
   "tips.reset": "Your streak will reset if you miss a day",
   "tips.voucher": "Coins can be used to redeem discount vouchers"
 }
-

@@ -39,9 +39,7 @@ function PaymentSuccess() {
         </div>
 
         {/* Heading */}
-        <h1 className="mb-3 text-2xl font-bold text-gray-800 dark:text-gray-100">
-          {t('heading')}
-        </h1>
+        <h1 className="mb-3 text-2xl font-bold text-gray-800 dark:text-gray-100">{t('heading')}</h1>
 
         {/* Sub-text */}
         <p className="mb-5 text-gray-500 dark:text-gray-400">{t('subtext')}</p>

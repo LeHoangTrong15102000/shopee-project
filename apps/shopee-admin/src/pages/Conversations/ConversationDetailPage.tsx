@@ -39,19 +39,11 @@ export default function ConversationDetailPage() {
         title={t('detail.title', { id: conversation._id.slice(-8) })}
         actions={
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate(ROUTES.CONVERSATIONS)}
-            >
+            <Button variant="outline" size="sm" onClick={() => navigate(ROUTES.CONVERSATIONS)}>
               <ArrowLeft className="mr-2 size-4" />
               {t('detail.backToList')}
             </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => setDeleteOpen(true)}
-            >
+            <Button variant="destructive" size="sm" onClick={() => setDeleteOpen(true)}>
               <Trash2 className="mr-2 size-4" />
               {t('actions.delete')}
             </Button>
@@ -70,7 +62,9 @@ export default function ConversationDetailPage() {
         </div>
         <div className="rounded-lg border p-3 space-y-1">
           <p className="text-muted-foreground">{t('detail.metadata.createdAt')}</p>
-          <p className="font-medium">{format(new Date(conversation.createdAt), 'MMM d, yyyy HH:mm')}</p>
+          <p className="font-medium">
+            {format(new Date(conversation.createdAt), 'MMM d, yyyy HH:mm')}
+          </p>
         </div>
         <div className="rounded-lg border p-3 space-y-1">
           <p className="text-muted-foreground">{t('detail.metadata.lastActivity')}</p>
@@ -95,9 +89,7 @@ export default function ConversationDetailPage() {
                 <div
                   key={msg._id ?? i}
                   className={`flex flex-col gap-1 rounded-lg p-3 text-sm ${
-                    msg.sender_type === 'user'
-                      ? 'bg-muted'
-                      : 'bg-primary/10'
+                    msg.sender_type === 'user' ? 'bg-muted' : 'bg-primary/10'
                   }`}
                 >
                   <div className="flex items-center justify-between">

@@ -1,6 +1,7 @@
 # HƯỚNG DẪN TESTING CHO SHOPEE-WEB
 
 ## Mục Lục
+
 1. [Giới Thiệu](#giới-thiệu)
 2. [Cài Đặt và Cấu Hình](#cài-đặt-và-cấu-hình)
 3. [Cấu Trúc Testing](#cấu-trúc-testing)
@@ -19,7 +20,9 @@
 ## Giới Thiệu
 
 ### Tổng Quan
+
 Shopee-web là một ứng dụng React được xây dựng với Vite, sử dụng các công nghệ hiện đại như:
+
 - **Vite**: Build tool và dev server
 - **Vitest**: Testing framework (tương thích với Jest API)
 - **React Testing Library**: Testing library cho React components
@@ -27,6 +30,7 @@ Shopee-web là một ứng dụng React được xây dựng với Vite, sử d�
 - **jsdom**: DOM environment cho tests
 
 ### Mục Tiêu Testing
+
 - Đảm bảo components hoạt động đúng với các props và states khác nhau
 - Kiểm tra user interactions và event handling
 - Verify API integration với mocked responses
@@ -34,6 +38,7 @@ Shopee-web là một ứng dụng React được xây dựng với Vite, sử d�
 - Prevent regressions khi refactor code
 
 ### Các Loại Tests
+
 1. **Unit Tests**: Test các functions, hooks, utilities độc lập
 2. **Component Tests**: Test React components với RTL
 3. **Integration Tests**: Test tương tác giữa nhiều components/modules
@@ -93,8 +98,8 @@ export default defineConfig(({ mode }) => {
         '@shopee/shared-types': path.resolve(__dirname, '../../libs/shared-types/src'),
         '@shopee/shared-utils': path.resolve(__dirname, '../../libs/shared-utils/src'),
         '@shopee/shared-constants': path.resolve(__dirname, '../../libs/shared-constants/src'),
-      }
-    }
+      },
+    },
   }
 
   if (isTest) {
@@ -110,33 +115,25 @@ export default defineConfig(({ mode }) => {
         pool: 'forks',
         maxWorkers: process.env.CI ? 1 : 2,
         execArgv: ['--max-old-space-size=8192'],
-        include: [
-          'src/**/*.test.{ts,tsx}',
-          'test/**/*.test.{ts,tsx}'
-        ],
+        include: ['src/**/*.test.{ts,tsx}', 'test/**/*.test.{ts,tsx}'],
         reporters: ['default', 'junit'],
         outputFile: {
-          junit: './test-results/junit-report.xml'
+          junit: './test-results/junit-report.xml',
         },
         coverage: {
           provider: 'v8',
           reporter: ['json', 'json-summary', 'text-summary'],
           reportsDirectory: './coverage',
           include: ['src/**/*.{ts,tsx}'],
-          exclude: [
-            'src/**/*.test.{ts,tsx}',
-            'src/msw/**',
-            'src/types/**',
-            'src/locales/**'
-          ],
+          exclude: ['src/**/*.test.{ts,tsx}', 'src/msw/**', 'src/types/**', 'src/locales/**'],
           thresholds: {
             lines: 80,
             functions: 80,
             branches: 80,
-            statements: 80
-          }
-        }
-      }
+            statements: 80,
+          },
+        },
+      },
     }
   }
 
@@ -170,12 +167,7 @@ import userRequests from './src/msw/user.msw'
 import cartRequests from './src/msw/cart.msw'
 
 // Setup MSW server
-const server = setupServer(
-  ...authRequests,
-  ...productRequests,
-  ...userRequests,
-  ...cartRequests
-)
+const server = setupServer(...authRequests, ...productRequests, ...userRequests, ...cartRequests)
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -190,13 +182,13 @@ const localStorageMock = (() => {
     },
     clear: () => {
       store = {}
-    }
+    },
   }
 })()
 
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
-  writable: true
+  writable: true,
 })
 
 // Mock window.matchMedia
@@ -210,17 +202,25 @@ Object.defineProperty(window, 'matchMedia', {
     removeListener: vi.fn(),
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn()
-  }))
+    dispatchEvent: vi.fn(),
+  })),
 })
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
   constructor() {}
-  observe() { return null }
-  unobserve() { return null }
-  disconnect() { return null }
-  takeRecords() { return [] }
+  observe() {
+    return null
+  }
+  unobserve() {
+    return null
+  }
+  disconnect() {
+    return null
+  }
+  takeRecords() {
+    return []
+  }
 }
 
 // Mock react-i18next
@@ -229,10 +229,10 @@ vi.mock('react-i18next', () => ({
     t: (key) => key,
     i18n: {
       changeLanguage: vi.fn(),
-      language: 'vi'
-    }
+      language: 'vi',
+    },
   }),
-  Trans: ({ children }) => children
+  Trans: ({ children }) => children,
 }))
 
 // Start server before all tests
@@ -551,10 +551,9 @@ describe('useDebounce Hook', () => {
   })
 
   it('debounces value changes', async () => {
-    const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
-      { initialProps: { value: 'initial', delay: 500 } }
-    )
+    const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
+      initialProps: { value: 'initial', delay: 500 },
+    })
 
     expect(result.current).toBe('initial')
 
@@ -571,10 +570,9 @@ describe('useDebounce Hook', () => {
   })
 
   it('cancels previous timeout on rapid changes', async () => {
-    const { result, rerender } = renderHook(
-      ({ value }) => useDebounce(value, 500),
-      { initialProps: { value: 'first' } }
-    )
+    const { result, rerender } = renderHook(({ value }) => useDebounce(value, 500), {
+      initialProps: { value: 'first' },
+    })
 
     rerender({ value: 'second' })
     vi.advanceTimersByTime(300)
@@ -725,15 +723,15 @@ describe('HTTP Client', () => {
       '/api/user/profile',
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: 'Bearer test-token'
-        })
-      })
+          Authorization: 'Bearer test-token',
+        }),
+      }),
     )
   })
 
   it('refreshes token on 401 error', async () => {
     const mockRefreshToken = vi.fn().mockResolvedValue({
-      data: { access_token: 'new-token' }
+      data: { access_token: 'new-token' },
     })
 
     axios.post.mockImplementation(mockRefreshToken)
@@ -814,9 +812,12 @@ describe('Search and Filter Integration', () => {
     await user.type(searchInput, 'áo thun')
 
     // Wait for debounce
-    await waitFor(() => {
-      expect(screen.getByText('Áo thun nam')).toBeInTheDocument()
-    }, { timeout: 1000 })
+    await waitFor(
+      () => {
+        expect(screen.getByText('Áo thun nam')).toBeInTheDocument()
+      },
+      { timeout: 1000 },
+    )
   })
 
   it('filters products by category', async () => {
@@ -854,7 +855,7 @@ describe('Search and Filter Integration', () => {
 
     await waitFor(() => {
       const prices = screen.getAllByTestId('product-price')
-      prices.forEach(price => {
+      prices.forEach((price) => {
         const value = parseInt(price.textContent.replace(/\D/g, ''))
         expect(value).toBeGreaterThanOrEqual(100000)
         expect(value).toBeLessThanOrEqual(500000)
@@ -922,7 +923,6 @@ describe('Authentication Integration', () => {
 
 ---
 
-
 ## Mock Service Worker (MSW)
 
 ### Giới Thiệu MSW
@@ -930,6 +930,7 @@ describe('Authentication Integration', () => {
 MSW (Mock Service Worker) là một công cụ mạnh mẽ để mock API requests ở network level. Thay vì mock axios hoặc fetch directly, MSW intercept requests ở service worker layer, giúp tests gần với production hơn.
 
 **Ưu điểm:**
+
 - Mock ở network level, không cần mock axios/fetch
 - Reusable handlers cho cả tests và development
 - Type-safe với TypeScript
@@ -978,15 +979,15 @@ const productRequests = [
             sold: 1500,
             rating: 4.5,
             image: 'https://picsum.photos/seed/product1/200',
-            category: { _id: 'cat-1', name: 'Thời trang nam' }
-          }
+            category: { _id: 'cat-1', name: 'Thời trang nam' },
+          },
         ],
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
-          page_size: 10
-        }
-      }
+          page_size: 10,
+        },
+      },
     })
   }),
 
@@ -995,10 +996,7 @@ const productRequests = [
     const { id } = params
 
     if (id === 'invalid-id') {
-      return HttpResponse.json(
-        { message: 'Không tìm thấy sản phẩm' },
-        { status: 404 }
-      )
+      return HttpResponse.json({ message: 'Không tìm thấy sản phẩm' }, { status: 404 })
     }
 
     return HttpResponse.json({
@@ -1008,10 +1006,10 @@ const productRequests = [
         name: 'Áo thun nam cotton cao cấp',
         price: 250000,
         price_before_discount: 350000,
-        description: 'Áo thun nam chất liệu cotton 100%'
-      }
+        description: 'Áo thun nam chất liệu cotton 100%',
+      },
     })
-  })
+  }),
 ]
 
 export default productRequests
@@ -1043,6 +1041,7 @@ Coverage được cấu hình trong `vite.config.ts` với thresholds 80% cho t�
 ### 1. Test Organization
 
 **✅ DO:**
+
 ```typescript
 describe('ProductCard', () => {
   describe('rendering', () => {
@@ -1058,6 +1057,7 @@ describe('ProductCard', () => {
 ### 2. Arrange-Act-Assert Pattern
 
 **✅ DO:**
+
 ```typescript
 it('adds product to cart', async () => {
   // Arrange
@@ -1075,6 +1075,7 @@ it('adds product to cart', async () => {
 ### 3. Use Testing Library Queries Correctly
 
 **Priority order:**
+
 1. `getByRole` - Most accessible
 2. `getByLabelText` - For form fields
 3. `getByPlaceholderText` - For inputs
@@ -1088,6 +1089,7 @@ it('adds product to cart', async () => {
 ### 1. Tại sao tests chạy chậm?
 
 **Giải pháp:**
+
 - Sử dụng `pool: 'forks'` thay vì `threads`
 - Tăng `maxWorkers` nếu máy có nhiều cores
 - Tăng `execArgv: ['--max-old-space-size=8192']`
@@ -1105,6 +1107,7 @@ pnpm test:ui
 ### 3. MSW handlers không work?
 
 **Giải pháp:**
+
 - Check URL matching
 - Verify `server.listen({ onUnhandledRequest: 'error' })`
 - Use `server.use()` để override handlers
@@ -1116,6 +1119,7 @@ pnpm test:ui
 Testing là một phần quan trọng trong development process. Với Vitest, React Testing Library, và MSW, chúng ta có thể viết tests nhanh, reliable, và maintainable.
 
 **Key Takeaways:**
+
 - Sử dụng Vitest cho fast test execution
 - Sử dụng React Testing Library để test user behavior
 - Sử dụng MSW để mock API requests ở network level
@@ -1123,6 +1127,7 @@ Testing là một phần quan trọng trong development process. Với Vitest, R
 - Maintain high coverage (80%+)
 
 **Resources:**
+
 - [Vitest Documentation](https://vitest.dev/)
 - [React Testing Library](https://testing-library.com/react)
 - [MSW Documentation](https://mswjs.io/)

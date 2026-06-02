@@ -22,6 +22,7 @@ They are bundled into the build output — no runtime network requests.
 ## Adding New Animations
 
 When sourcing from LottieFiles or similar:
+
 1. Verify the license is permissive (CC0, MIT, or similar)
 2. Test with lottie-react before committing
 3. Document the source URL and license here

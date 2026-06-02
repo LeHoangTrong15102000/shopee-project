@@ -91,9 +91,7 @@ const importProducts = async () => {
       console.log(`📦 Đã import ${imported}/${products.length} products...`)
     }
 
-    console.log(
-      `✅ Đã import tổng cộng ${products.length} products thành công!`
-    )
+    console.log(`✅ Đã import tổng cộng ${products.length} products thành công!`)
 
     // Kiểm tra việc serve static files
     console.log('\n🔍 Kiểm tra cấu hình static files...')

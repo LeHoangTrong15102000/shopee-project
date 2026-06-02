@@ -7,7 +7,10 @@
  */
 import { Logger } from '@utils/logger'
 import { paymentReconciliationQueue } from '../queues'
-import { PaymentReconciliationWorker, ReconciliationSummary } from '../workers/payment-reconciliation.worker'
+import {
+  PaymentReconciliationWorker,
+  ReconciliationSummary,
+} from '../workers/payment-reconciliation.worker'
 
 const DEFAULT_INTERVAL_HOURS = 24
 
@@ -16,8 +19,7 @@ export class PaymentReconciliationJob {
   private readonly worker?: PaymentReconciliationWorker
 
   constructor(worker?: PaymentReconciliationWorker) {
-    this.intervalHours =
-      Number(process.env.RECONCILIATION_INTERVAL_HOURS) || DEFAULT_INTERVAL_HOURS
+    this.intervalHours = Number(process.env.RECONCILIATION_INTERVAL_HOURS) || DEFAULT_INTERVAL_HOURS
     this.worker = worker
   }
 

@@ -55,4 +55,3 @@ export default function OrderStatusTabs({ activeTab, onTabChange }: OrderStatusT
     </ScrollView>
   )
 }
-

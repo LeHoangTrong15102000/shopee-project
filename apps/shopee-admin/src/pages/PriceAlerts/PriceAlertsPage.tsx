@@ -146,18 +146,27 @@ export default function PriceAlertsPage() {
             <Input
               placeholder={t('filter.productSearch')}
               value={productSearch}
-              onChange={(e) => { setProductSearch(e.target.value); setPage(1) }}
+              onChange={(e) => {
+                setProductSearch(e.target.value)
+                setPage(1)
+              }}
               className="w-60"
             />
             <Input
               placeholder={t('filter.userSearch')}
               value={userSearch}
-              onChange={(e) => { setUserSearch(e.target.value); setPage(1) }}
+              onChange={(e) => {
+                setUserSearch(e.target.value)
+                setPage(1)
+              }}
               className="w-60"
             />
             <Select
               value={status || 'all'}
-              onValueChange={(v) => { setStatus(v === 'all' || !v ? '' : v); setPage(1) }}
+              onValueChange={(v) => {
+                setStatus(v === 'all' || !v ? '' : v)
+                setPage(1)
+              }}
             >
               <SelectTrigger className="w-40">
                 <SelectValue placeholder={t('filter.status')} />
@@ -191,10 +200,7 @@ export default function PriceAlertsPage() {
               <h2 className="text-base font-semibold">{t('mostWatched.title')}</h2>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {stats.most_watched_products.map((p) => (
-                  <div
-                    key={p.product_id}
-                    className="flex items-center gap-3 rounded-lg border p-3"
-                  >
+                  <div key={p.product_id} className="flex items-center gap-3 rounded-lg border p-3">
                     {p.product_image && (
                       <img
                         src={p.product_image}

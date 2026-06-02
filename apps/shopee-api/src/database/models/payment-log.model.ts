@@ -3,11 +3,11 @@ import mongoose, { Schema } from 'mongoose'
 export interface IPaymentLog {
   _id: mongoose.Types.ObjectId
   order_id: mongoose.Types.ObjectId
-  stripe_event_id: string        // idempotency key — unique per event
-  stripe_event_type: string      // e.g. 'payment_intent.succeeded'
+  stripe_event_id: string // idempotency key — unique per event
+  stripe_event_type: string // e.g. 'payment_intent.succeeded'
   stripe_payment_intent_id: string
-  status: string                 // mirrors event outcome: 'succeeded' | 'failed' | 'canceled'
-  raw_data: Record<string, unknown>  // full Stripe event object for audit
+  status: string // mirrors event outcome: 'succeeded' | 'failed' | 'canceled'
+  raw_data: Record<string, unknown> // full Stripe event object for audit
   created_at: Date
 }
 

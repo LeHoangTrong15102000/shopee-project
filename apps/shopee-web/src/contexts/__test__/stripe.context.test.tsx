@@ -22,7 +22,11 @@ vi.mock('@stripe/react-stripe-js', () => ({
 }))
 
 vi.mock('@stripe/stripe-js', () => ({
-  loadStripe: vi.fn(() => Promise.resolve({ /* mock stripe instance */ })),
+  loadStripe: vi.fn(() =>
+    Promise.resolve({
+      /* mock stripe instance */
+    }),
+  ),
 }))
 
 describe('StripeProvider', () => {

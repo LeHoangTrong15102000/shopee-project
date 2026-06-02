@@ -9,9 +9,12 @@ describe('End-to-End User Journey Tests', () => {
     await waitForPageLoad()
 
     // Verify homepage renders
-    await waitFor(() => {
-      expect(window.location.pathname).toBe('/')
-    }, { timeout: 2000 })
+    await waitFor(
+      () => {
+        expect(window.location.pathname).toBe('/')
+      },
+      { timeout: 2000 },
+    )
   })
 
   test('Authentication user journey: Register → Login navigation', async () => {
@@ -56,7 +59,7 @@ describe('End-to-End User Journey Tests', () => {
     Object.defineProperty(window, 'innerWidth', {
       writable: true,
       configurable: true,
-      value: 375
+      value: 375,
     })
 
     renderWithRouter()

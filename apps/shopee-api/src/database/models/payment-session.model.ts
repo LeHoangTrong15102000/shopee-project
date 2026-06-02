@@ -7,7 +7,8 @@ export const PAYMENT_SESSION_STATUS = {
   EXPIRED: 'EXPIRED',
 } as const
 
-export type PaymentSessionStatusType = (typeof PAYMENT_SESSION_STATUS)[keyof typeof PAYMENT_SESSION_STATUS]
+export type PaymentSessionStatusType =
+  (typeof PAYMENT_SESSION_STATUS)[keyof typeof PAYMENT_SESSION_STATUS]
 
 export interface IPaymentSessionCartItem {
   productId: mongoose.Types.ObjectId

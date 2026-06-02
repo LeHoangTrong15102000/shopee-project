@@ -126,7 +126,9 @@ describe('@OnEvent decorator and registerEventHandlers', () => {
 
   it('does nothing when the class has no decorated methods', () => {
     class EmptyListener {
-      someMethod() {}
+      someMethod() {
+        /* intentionally empty for test */
+      }
     }
 
     const listener = new EmptyListener()

@@ -10,8 +10,7 @@ import { ConnectionOptions } from 'bullmq'
 export function getWorkerConnection(): ConnectionOptions {
   const redisUrl = process.env.REDIS_URL
   const tlsEnabled =
-    process.env.REDIS_TLS_ENABLED === 'true' ||
-    (redisUrl?.startsWith('rediss://') ?? false)
+    process.env.REDIS_TLS_ENABLED === 'true' || (redisUrl?.startsWith('rediss://') ?? false)
 
   if (redisUrl) {
     return {

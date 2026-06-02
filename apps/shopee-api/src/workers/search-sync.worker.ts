@@ -31,9 +31,10 @@ async function buildProductDocument(productId: string): Promise<ProductDocument 
   let category_name = ''
   let category_id = ''
   if (product.category) {
-    const catId = product.category instanceof Types.ObjectId
-      ? product.category
-      : new Types.ObjectId(String(product.category))
+    const catId =
+      product.category instanceof Types.ObjectId
+        ? product.category
+        : new Types.ObjectId(String(product.category))
     category_id = catId.toString()
     const category = await CategoryModel.findById(catId).lean()
     if (category) {
@@ -137,9 +138,7 @@ export class SearchSyncWorker {
       const products = await ProductModel.find({}).skip(skip).limit(BATCH_SIZE).lean()
       if (products.length === 0) break
 
-      const docs = await Promise.all(
-        products.map((p) => buildProductDocument(p._id.toString())),
-      )
+      const docs = await Promise.all(products.map((p) => buildProductDocument(p._id.toString())))
       const validDocs = docs.filter((d): d is NonNullable<typeof d> => d !== null)
 
       if (validDocs.length > 0) {

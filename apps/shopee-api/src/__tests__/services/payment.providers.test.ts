@@ -613,7 +613,10 @@ describe('MomoProvider', () => {
     // The module reads SECRET_KEY from process.env at import time; in tests
     // that value is '' (empty string) unless overridden before import.
     // We derive the expected signature at runtime so the test is always consistent.
-    function buildSignedPayload(secretKey: string, overrides: Record<string, unknown> = {}): Record<string, unknown> {
+    function buildSignedPayload(
+      secretKey: string,
+      overrides: Record<string, unknown> = {},
+    ): Record<string, unknown> {
       const base: Record<string, unknown> = {
         accessKey: process.env.MOMO_ACCESS_KEY || '',
         amount: 150000,

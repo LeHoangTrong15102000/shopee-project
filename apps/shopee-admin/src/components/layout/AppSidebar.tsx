@@ -267,7 +267,11 @@ export function AppSidebar() {
                               whileHover={{ scale: 1.02 }}
                               transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                             >
-                              <AnimatedIcon icon={item.icon} isActive={isActive} className="size-4" />
+                              <AnimatedIcon
+                                icon={item.icon}
+                                isActive={isActive}
+                                className="size-4"
+                              />
                               <span>{title}</span>
                               {hint && (
                                 <kbd className="ml-auto text-[10px] text-muted-foreground opacity-60 group-data-[collapsible=icon]:hidden">
@@ -277,7 +281,11 @@ export function AppSidebar() {
                             </motion.span>
                           ) : (
                             <>
-                              <AnimatedIcon icon={item.icon} isActive={isActive} className="size-4" />
+                              <AnimatedIcon
+                                icon={item.icon}
+                                isActive={isActive}
+                                className="size-4"
+                              />
                               <span>{title}</span>
                               {hint && (
                                 <kbd className="ml-auto text-[10px] text-muted-foreground opacity-60 group-data-[collapsible=icon]:hidden">

@@ -4,23 +4,31 @@ set -euo pipefail
 # ---------------------------------------------------------------------------
 # rollback.sh — Restore all app services to the previous deployed SHA.
 #
-# Reads the previous SHA from /opt/shopee/backups/.previous-sha, pulls the
-# corresponding images from GHCR, restarts all three app containers, and
+# Reads the previous SHA from backups/.previous-sha (relative to project root), pulls the
+# corresponding images from Docker Hub, restarts all three app containers, and
 # runs a health check to verify the rollback succeeded.
 #
 # Usage: rollback.sh
 #   No arguments. Reads state from .previous-sha file.
 #
 # Environment variables:
-#   REGISTRY — GHCR base URL (default: ghcr.io/<GITHUB_REPOSITORY_OWNER>)
-#              Set GITHUB_REPOSITORY_OWNER or override REGISTRY directly.
+#   REGISTRY           — Docker Hub username (default: ${DOCKERHUB_USERNAME:-OWNER})
+#                        Set DOCKERHUB_USERNAME or override REGISTRY directly.
+#   DOCKERHUB_USERNAME — (optional) Docker Hub username used for login.
+#   DOCKERHUB_TOKEN    — (optional) Docker Hub access token used for login.
+#                        Required for standalone manual runs when images are private.
+#                        When invoked from deploy.sh the login may be skipped because
+#                        credentials are already cached in the shell session.
 # ---------------------------------------------------------------------------
 
-PREVIOUS_SHA_FILE="/opt/shopee/backups/.previous-sha"
-COMPOSE_FILE="/opt/shopee/docker-compose.prod.yaml"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+PREVIOUS_SHA_FILE="$PROJECT_ROOT/backups/.previous-sha"
+COMPOSE_FILE="$PROJECT_ROOT/docker-compose.prod.yaml"
 
 # Determine registry base
-REGISTRY="${REGISTRY:-ghcr.io/${GITHUB_REPOSITORY_OWNER:-OWNER}}"
+REGISTRY="${REGISTRY:-${DOCKERHUB_USERNAME:-OWNER}}"
 
 # ---------------------------------------------------------------------------
 # Step 1: Read previous SHA
@@ -50,24 +58,38 @@ fi
 echo "==> Rolling back to tag: $PREV_TAG (registry: $REGISTRY)"
 
 # ---------------------------------------------------------------------------
-# Step 2: Pull previous images for all three app services
+# Step 2: Login to Docker Hub (for standalone runs)
+# ---------------------------------------------------------------------------
+if [ -n "${DOCKERHUB_USERNAME:-}" ] && [ -n "${DOCKERHUB_TOKEN:-}" ]; then
+  echo "==> Logging in to Docker Hub..."
+  echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+else
+  echo "==> DOCKERHUB_USERNAME/DOCKERHUB_TOKEN not set; skipping login (assuming cached credentials or public images)."
+fi
+
+# ---------------------------------------------------------------------------
+# Step 3: Pull previous images for all three app services
 # ---------------------------------------------------------------------------
 for SERVICE in shopee-api shopee-web shopee-admin; do
   echo "==> Pulling $REGISTRY/$SERVICE:$PREV_TAG"
   docker pull "$REGISTRY/$SERVICE:$PREV_TAG"
 done
 
+# Export for docker compose image: interpolation (${REGISTRY}/${SERVICE}:${IMAGE_TAG}).
+export REGISTRY
+export IMAGE_TAG="$PREV_TAG"
+
 # ---------------------------------------------------------------------------
-# Step 3: Restart all app containers with previous images
+# Step 4: Restart all app containers with previous images
 # ---------------------------------------------------------------------------
 echo "==> Restarting all app containers with previous images..."
 docker compose -f "$COMPOSE_FILE" up -d --no-deps shopee-api shopee-web shopee-admin
 
 # ---------------------------------------------------------------------------
-# Step 4: Verify rollback with health check
+# Step 5: Verify rollback with health check
 # ---------------------------------------------------------------------------
 echo "==> Verifying rollback health..."
-if ! /opt/shopee/scripts/health-check.sh shopee-api shopee-web shopee-admin; then
+if ! "$SCRIPT_DIR/health-check.sh" shopee-api shopee-web shopee-admin; then
   echo "ERROR: Health check failed after rollback. Manual intervention required." >&2
   exit 1
 fi

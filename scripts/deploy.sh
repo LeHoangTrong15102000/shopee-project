@@ -2,10 +2,10 @@
 set -euo pipefail
 
 # ---------------------------------------------------------------------------
-# deploy.sh — Pull new Docker images from GHCR and perform a rolling update.
+# deploy.sh — Pull new Docker images from Docker Hub and perform a rolling update.
 #
 # Usage: deploy.sh <REGISTRY> <IMAGE_TAG> <SERVICES...>
-#   REGISTRY   — GHCR base URL, e.g. ghcr.io/myorg
+#   REGISTRY   — Docker Hub username, e.g. myuser
 #   IMAGE_TAG  — Immutable SHA tag, e.g. sha-a1b2c3d
 #   SERVICES   — Space-separated list of service names to update,
 #                e.g. "shopee-api shopee-web shopee-admin"
@@ -21,15 +21,22 @@ SERVICES="${*:-}"
 if [ -z "$REGISTRY" ] || [ -z "$IMAGE_TAG" ] || [ -z "$SERVICES" ]; then
   echo "ERROR: Missing required arguments." >&2
   echo "Usage: $0 <REGISTRY> <IMAGE_TAG> <SERVICES...>" >&2
-  echo "  REGISTRY  — GHCR base URL, e.g. ghcr.io/myorg" >&2
+  echo "  REGISTRY  — Docker Hub username, e.g. myuser" >&2
   echo "  IMAGE_TAG — Image tag, e.g. sha-a1b2c3d" >&2
   echo "  SERVICES  — Space-separated service names, e.g. shopee-api shopee-web" >&2
   exit 1
 fi
 
-COMPOSE_FILE="/opt/shopee/docker-compose.prod.yaml"
-BACKUPS_DIR="/opt/shopee/backups"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+COMPOSE_FILE="$PROJECT_ROOT/docker-compose.prod.yaml"
+BACKUPS_DIR="$PROJECT_ROOT/backups"
 PREVIOUS_SHA_FILE="$BACKUPS_DIR/.previous-sha"
+
+# Export so docker compose can interpolate ${REGISTRY} and ${IMAGE_TAG} in image: fields.
+export REGISTRY
+export IMAGE_TAG
 
 echo "==> Deploy started: registry=$REGISTRY tag=$IMAGE_TAG services=$SERVICES"
 
@@ -44,7 +51,7 @@ for svc in shopee-api shopee-web shopee-admin; do
   CONTAINER_ID=$(docker compose -f "$COMPOSE_FILE" ps -q "$svc" 2>/dev/null | head -1 || true)
   if [ -n "$CONTAINER_ID" ]; then
     RUNNING_IMAGE=$(docker inspect --format '{{.Config.Image}}' "$CONTAINER_ID" 2>/dev/null || true)
-    # Extract sha-XXXXXXX from image tag like ghcr.io/owner/shopee-api:sha-a1b2c3d
+    # Extract sha-XXXXXXX from image tag like myuser/shopee-api:sha-a1b2c3d
     EXTRACTED=$(echo "$RUNNING_IMAGE" | grep -oE 'sha-[a-f0-9]{7}' | head -1 || true)
     if [ -n "$EXTRACTED" ]; then
       CURRENT_SHA="$EXTRACTED"
@@ -63,10 +70,10 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Step 2: Login to GHCR
+# Step 2: Login to Docker Hub
 # ---------------------------------------------------------------------------
-echo "==> Logging in to GHCR..."
-echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GHCR_USER}" --password-stdin
+echo "==> Logging in to Docker Hub..."
+echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
 
 # ---------------------------------------------------------------------------
 # Step 3: Pull new images
@@ -88,9 +95,9 @@ done
 # Step 5: Health check — rollback on failure
 # ---------------------------------------------------------------------------
 echo "==> Running health checks for: $SERVICES"
-if ! /opt/shopee/scripts/health-check.sh $SERVICES; then
+if ! "$SCRIPT_DIR/health-check.sh" $SERVICES; then
   echo "ERROR: Health check failed after deploy. Triggering rollback..." >&2
-  /opt/shopee/scripts/rollback.sh
+  "$SCRIPT_DIR/rollback.sh"
   exit 1
 fi
 

@@ -1,0 +1,117 @@
+# =============================================================================
+# ci-cd-pipeline.yml — Single consolidated CI/CD pipeline
+#
+# Push goes straight to master (personal project). This ONE file runs three
+# jobs SEQUENTIALLY, chained via `needs:` so ordering is guaranteed:
+#
+#   1. quality          — lint + format check (the gate)
+#   2. build-and-push   — build & push 3 Docker images to Docker Hub
+#   3. deploy           — SSH to VPS, rolling update via deploy.sh
+#
+# deploy.sh on the VPS runs health-check.sh and auto-rolls-back on failure,
+# so there is no separate post-deploy health job here.
+# =============================================================================
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # ==================== QUALITY GATE (lint + format) ====================
+  quality:
+    name: Quality (lint + format)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node + pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Lint all projects
+        run: pnpm nx run-many -t lint --exclude=@shopee/source
+
+      - name: Format check
+        run: pnpm nx format:check --all
+
+  # ==================== BUILD & PUSH (Docker Hub) ====================
+  build-and-push:
+    name: Build & Push (${{ matrix.app }})
+    runs-on: ubuntu-latest
+    needs: quality
+    strategy:
+      matrix:
+        include:
+          - app: shopee-api
+            dockerfile: apps/shopee-api/Dockerfile
+            build-args: ''
+          - app: shopee-web
+            dockerfile: apps/shopee-web/Dockerfile
+            build-args: |
+              VITE_API_BASE_URL=${{ vars.VITE_API_BASE_URL_PROD }}
+              VITE_SOCKET_URL=${{ vars.VITE_SOCKET_URL_PROD }}
+              VITE_SITE_URL=${{ vars.VITE_SITE_URL_PROD }}
+              VITE_STRIPE_PUBLISHABLE_KEY=${{ vars.VITE_STRIPE_PUBLISHABLE_KEY_PROD }}
+          - app: shopee-admin
+            dockerfile: apps/shopee-admin/Dockerfile
+            build-args: |
+              VITE_API_BASE_URL=${{ vars.VITE_API_BASE_URL_PROD }}
+              VITE_SOCKET_URL=${{ vars.VITE_SOCKET_URL_PROD }}
+              VITE_APP_VERSION=${{ vars.VITE_APP_VERSION_PROD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Compute short SHA
+        id: sha
+        shell: bash
+        run: echo "short=$(echo '${{ github.sha }}' | cut -c1-7)" >> $GITHUB_OUTPUT
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.app }}:sha-${{ steps.sha.outputs.short }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.app }}:latest
+          build-args: ${{ matrix.build-args }}
+          cache-from: type=gha,scope=${{ matrix.app }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.app }}
+
+  # ==================== DEPLOY TO VPS ====================
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    environment: production
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_SSH_PORT }}
+          envs: DOCKERHUB_TOKEN,DOCKERHUB_USERNAME
+          script: |
+            REGISTRY="${DOCKERHUB_USERNAME}"
+            IMAGE_TAG="sha-$(echo '${{ github.sha }}' | cut -c1-7)"
+            cd ~/shopee-project
+            ./scripts/deploy.sh "$REGISTRY" "$IMAGE_TAG" "shopee-api shopee-web shopee-admin"

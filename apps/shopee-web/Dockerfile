@@ -55,10 +55,10 @@ RUN pnpm --filter @shopee/web run build
 # -----------------------------------------------------------------------------
 # Stage 3: runtime — serve static assets with brotli-capable Nginx
 # Nginx config is embedded inline below (no separate file needed).
-# fholger/nginx-brotli runs as root on port 80 by default; we explicitly
+# georgjung/nginx-brotli runs as root on port 80 by default; we explicitly
 # configure listen 8080 and run as the nginx user (non-root).
 # -----------------------------------------------------------------------------
-FROM fholger/nginx-brotli:mainline-alpine AS runtime
+FROM georgjung/nginx-brotli:mainline-alpine AS runtime
 
 # Copy compiled static assets to nginx web root
 COPY --from=build /app/apps/shopee-web/dist /usr/share/nginx/html
@@ -94,6 +94,13 @@ RUN printf 'server {\n\
         try_files $uri =404;\n\
     }\n\
 }\n' > /etc/nginx/conf.d/default.conf
+
+# georgjung/nginx-brotli ships brotli as dynamic modules — they must be loaded
+# at the top of the main nginx.conf (main context), or nginx fails at startup
+# with: unknown directive "brotli_static". Insert the two load_module lines using
+# two separate, portable sed inserts (avoids relying on busybox \n-in-insert-text).
+RUN sed -i '1i load_module modules/ngx_http_brotli_filter_module.so;' /etc/nginx/nginx.conf && \
+    sed -i '2i load_module modules/ngx_http_brotli_static_module.so;' /etc/nginx/nginx.conf
 
 # Configure nginx to run as non-root:
 # 1. Remove the "user" directive from the main nginx.conf so the master process

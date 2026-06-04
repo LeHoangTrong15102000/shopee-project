@@ -116,6 +116,6 @@ jobs:
           script: |
             REGISTRY="${DOCKERHUB_USERNAME}"
             IMAGE_TAG="sha-$(echo '${{ github.sha }}' | cut -c1-7)"
-            cd /home/prod/shopee-project || exit 1
+            cd "$HOME/shopee-project" || exit 1
             chmod +x scripts/*.sh
             ./scripts/deploy.sh "$REGISTRY" "$IMAGE_TAG" "shopee-api shopee-web shopee-admin"

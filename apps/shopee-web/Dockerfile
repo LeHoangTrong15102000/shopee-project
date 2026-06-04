@@ -40,6 +40,11 @@ ENV VITE_SOCKET_URL=$VITE_SOCKET_URL
 ENV VITE_SITE_URL=$VITE_SITE_URL
 ENV VITE_STRIPE_PUBLISHABLE_KEY=$VITE_STRIPE_PUBLISHABLE_KEY
 
+# Copy the root base tsconfig — apps/shopee-web/tsconfig.json (and the shared
+# libs it imports) extend ../../tsconfig.base.json, which resolves to
+# /app/tsconfig.base.json inside the container. Without this, tsc fails with TS5083.
+COPY tsconfig.base.json ./
+
 # Copy shared libs (required for Vite alias resolution of @shopee/shared-*)
 COPY libs/ ./libs/
 

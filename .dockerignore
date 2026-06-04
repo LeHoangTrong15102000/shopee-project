@@ -11,6 +11,8 @@
 openspec
 **/*.test.*
 **/*.spec.*
+# Keep tsconfig.spec.json — shared-lib tsconfig.json project-references it, esbuild needs it during vite build
+!**/tsconfig.spec.json
 **/*.stories.*
 .vscode
 .idea

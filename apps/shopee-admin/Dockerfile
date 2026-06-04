@@ -38,6 +38,11 @@ ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 ENV VITE_SOCKET_URL=$VITE_SOCKET_URL
 ENV VITE_APP_VERSION=$VITE_APP_VERSION
 
+# Copy the root base tsconfig — apps/shopee-admin/tsconfig.json extends
+# ../../tsconfig.base.json, which resolves to /app/tsconfig.base.json inside
+# the container. Without this, tsc fails with TS5083 (cannot read file).
+COPY tsconfig.base.json ./
+
 # Copy shared libs (required for Vite alias resolution of @shopee/shared-*)
 COPY libs/ ./libs/
 

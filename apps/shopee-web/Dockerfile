@@ -111,11 +111,11 @@ RUN sed -i '1i load_module modules/ngx_http_brotli_filter_module.so;' /etc/nginx
 # 1. Remove the "user" directive from the main nginx.conf so the master process
 #    does not attempt to setuid (which requires root). When USER nginx is set,
 #    the process already runs as nginx and the "user" directive is disallowed.
-# 2. Change the pid file path to a location writable by the nginx user.
+# 2. Rewrite any pid directive (regardless of path — /run or /var/run) to
+#    /tmp/nginx.pid, which is writable by the nginx user.
 # 3. Ensure cache and run directories are writable by the nginx user.
 RUN sed -i '/^user /d' /etc/nginx/nginx.conf && \
-    sed -i 's|pid\s*/var/run/nginx.pid;|pid /tmp/nginx.pid;|' /etc/nginx/nginx.conf && \
-    sed -i 's|/var/run/nginx.pid|/tmp/nginx.pid|g' /etc/nginx/nginx.conf && \
+    sed -i -E 's#^[[:space:]]*pid[[:space:]]+.*;#pid /tmp/nginx.pid;#' /etc/nginx/nginx.conf && \
     chown -R nginx:nginx /var/cache/nginx /usr/share/nginx/html && \
     chmod -R 755 /usr/share/nginx/html
 

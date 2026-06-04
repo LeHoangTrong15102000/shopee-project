@@ -14,7 +14,7 @@ WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@10.12.1 --activate
 
 # Copy workspace manifests first so this layer is cached when only source changes
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY apps/shopee-api/package.json ./apps/shopee-api/
 
 # Install only the API package and its workspace dependencies

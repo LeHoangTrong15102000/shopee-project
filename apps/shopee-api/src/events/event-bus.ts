@@ -5,7 +5,7 @@
  * Each listener call is wrapped in try/catch so one failing listener
  * does not block others.
  */
-import { EventEmitter } from 'events'
+import { EventEmitter } from 'node:events'
 import { DomainEvent, DomainEventType } from './domain-events'
 import { Logger } from '@utils/logger'
 

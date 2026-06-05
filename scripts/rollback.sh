@@ -19,6 +19,8 @@ set -euo pipefail
 #                        Required for standalone manual runs when images are private.
 #                        When invoked from deploy.sh the login may be skipped because
 #                        credentials are already cached in the shell session.
+#   FAILED_TAG         — (optional) The just-failed SHA tag, set by deploy.sh.
+#                        When provided, rollback refuses to restore the same broken image.
 # ---------------------------------------------------------------------------
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -31,11 +33,12 @@ COMPOSE_FILE="$PROJECT_ROOT/docker-compose.prod.yaml"
 REGISTRY="${REGISTRY:-${DOCKERHUB_USERNAME:-OWNER}}"
 
 # ---------------------------------------------------------------------------
-# Step 1: Read previous SHA
+# Step 1: Read previous SHA — abort with a clear error if missing or empty
 # ---------------------------------------------------------------------------
 if [ ! -f "$PREVIOUS_SHA_FILE" ]; then
   echo "ERROR: No previous SHA file found at $PREVIOUS_SHA_FILE." >&2
   echo "       Cannot roll back — no previous deployment recorded." >&2
+  echo "       Manual intervention required: push a fixed image to master." >&2
   exit 1
 fi
 
@@ -44,6 +47,7 @@ PREV_SHA=$(cat "$PREVIOUS_SHA_FILE" | tr -d '[:space:]')
 if [ -z "$PREV_SHA" ]; then
   echo "ERROR: Previous SHA file exists but is empty: $PREVIOUS_SHA_FILE" >&2
   echo "       Cannot roll back — no previous deployment recorded." >&2
+  echo "       Manual intervention required: push a fixed image to master." >&2
   exit 1
 fi
 
@@ -53,6 +57,20 @@ if echo "$PREV_SHA" | grep -qE '^sha-[a-f0-9]{7}$'; then
   PREV_TAG="$PREV_SHA"
 else
   PREV_TAG="sha-$(echo "$PREV_SHA" | cut -c1-7)"
+fi
+
+# ---------------------------------------------------------------------------
+# Guard: refuse to roll back to the SHA that just failed (equality check).
+# deploy.sh sets FAILED_TAG before invoking rollback.sh; standalone callers
+# may also set it explicitly.  This prevents the death-loop where rollback
+# recreates all services into the same broken image and re-runs health checks.
+# ---------------------------------------------------------------------------
+FAILED_TAG="${FAILED_TAG:-}"
+if [ -n "$FAILED_TAG" ] && [ "$PREV_TAG" = "$FAILED_TAG" ]; then
+  echo "ERROR: Rollback target ($PREV_TAG) equals the just-failed tag ($FAILED_TAG)." >&2
+  echo "       Aborting rollback — restoring this image would reproduce the same failure." >&2
+  echo "       Manual intervention required: push a fixed image to master." >&2
+  exit 1
 fi
 
 echo "==> Rolling back to tag: $PREV_TAG (registry: $REGISTRY)"
@@ -80,10 +98,31 @@ export REGISTRY
 export IMAGE_TAG="$PREV_TAG"
 
 # ---------------------------------------------------------------------------
-# Step 4: Restart all app containers with previous images
+# Step 4: Restart app containers — skip services already on the rollback target
+# to avoid needless recreation and downtime.
 # ---------------------------------------------------------------------------
-echo "==> Restarting all app containers with previous images..."
-docker compose -f "$COMPOSE_FILE" up -d --no-deps shopee-api shopee-web shopee-admin
+echo "==> Restarting app containers with previous images (skipping already-current services)..."
+SERVICES_TO_RESTART=""
+for SERVICE in shopee-api shopee-web shopee-admin; do
+  CONTAINER_ID=$(docker compose -f "$COMPOSE_FILE" ps -q "$SERVICE" 2>/dev/null | head -1 || true)
+  CURRENT_TAG=""
+  if [ -n "$CONTAINER_ID" ]; then
+    RUNNING_IMAGE=$(docker inspect --format '{{.Config.Image}}' "$CONTAINER_ID" 2>/dev/null || true)
+    CURRENT_TAG=$(echo "$RUNNING_IMAGE" | grep -oE 'sha-[a-f0-9]{7}' | head -1 || true)
+  fi
+  if [ "$CURRENT_TAG" = "$PREV_TAG" ]; then
+    echo "==> $SERVICE is already on $PREV_TAG — skipping recreation."
+  else
+    SERVICES_TO_RESTART="$SERVICES_TO_RESTART $SERVICE"
+  fi
+done
+
+if [ -n "$SERVICES_TO_RESTART" ]; then
+  # shellcheck disable=SC2086
+  docker compose -f "$COMPOSE_FILE" up -d --no-deps $SERVICES_TO_RESTART
+else
+  echo "==> All services are already on $PREV_TAG — no containers recreated."
+fi
 
 # ---------------------------------------------------------------------------
 # Step 5: Verify rollback with health check

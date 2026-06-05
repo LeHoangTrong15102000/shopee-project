@@ -41,12 +41,15 @@ export IMAGE_TAG
 echo "==> Deploy started: registry=$REGISTRY tag=$IMAGE_TAG services=$SERVICES"
 
 # ---------------------------------------------------------------------------
-# Step 1: Save current running image SHA before any changes
+# Step 1: Capture current running image SHA into a variable — do NOT write to
+# disk yet.  We only persist this to .previous-sha AFTER the new deploy passes
+# its health check, ensuring .previous-sha always points at a confirmed-healthy
+# SHA rather than whatever happened to be running (which may itself be broken).
 # ---------------------------------------------------------------------------
 mkdir -p "$BACKUPS_DIR"
 
-CURRENT_SHA=""
-# Try to read the running image tag from the first app service container
+PRIOR_SHA=""
+# Try to read the running image tag from the first app service container.
 for svc in shopee-api shopee-web shopee-admin; do
   CONTAINER_ID=$(docker compose -f "$COMPOSE_FILE" ps -q "$svc" 2>/dev/null | head -1 || true)
   if [ -n "$CONTAINER_ID" ]; then
@@ -54,19 +57,16 @@ for svc in shopee-api shopee-web shopee-admin; do
     # Extract sha-XXXXXXX from image tag like myuser/shopee-api:sha-a1b2c3d
     EXTRACTED=$(echo "$RUNNING_IMAGE" | grep -oE 'sha-[a-f0-9]{7}' | head -1 || true)
     if [ -n "$EXTRACTED" ]; then
-      CURRENT_SHA="$EXTRACTED"
+      PRIOR_SHA="$EXTRACTED"
       break
     fi
   fi
 done
 
-if [ -n "$CURRENT_SHA" ]; then
-  echo "$CURRENT_SHA" > "$PREVIOUS_SHA_FILE"
-  echo "==> Saved previous SHA: $CURRENT_SHA"
+if [ -n "$PRIOR_SHA" ]; then
+  echo "==> Captured prior running SHA: $PRIOR_SHA (will persist only after health check passes)"
 else
-  # Fall back to writing the incoming tag as a best-effort record
-  echo "$IMAGE_TAG" > "$PREVIOUS_SHA_FILE"
-  echo "==> Could not determine running SHA; recorded current tag as fallback: $IMAGE_TAG"
+  echo "==> Could not determine prior running SHA; no rollback target will be recorded."
 fi
 
 # ---------------------------------------------------------------------------
@@ -96,9 +96,63 @@ done
 # ---------------------------------------------------------------------------
 echo "==> Running health checks for: $SERVICES"
 if ! "$SCRIPT_DIR/health-check.sh" $SERVICES; then
-  echo "ERROR: Health check failed after deploy. Triggering rollback..." >&2
+  echo "ERROR: Health check failed after deploy." >&2
+
+  # Guard: determine the rollback target before attempting rollback.
+  ROLLBACK_TARGET=""
+  if [ -f "$PREVIOUS_SHA_FILE" ]; then
+    ROLLBACK_TARGET=$(cat "$PREVIOUS_SHA_FILE" | tr -d '[:space:]')
+  fi
+
+  # Guard A: if the stored previous-sha equals the SHA that just failed, rolling
+  # back into it would only reproduce the same crash-loop. Abort cleanly instead.
+  if [ -n "$ROLLBACK_TARGET" ] && [ "$ROLLBACK_TARGET" = "$IMAGE_TAG" ]; then
+    echo "ERROR: Rollback target ($ROLLBACK_TARGET) is the same as the just-failed tag ($IMAGE_TAG)." >&2
+    echo "       Aborting rollback — rolling back to this SHA would reproduce the same failure." >&2
+    echo "       Manual intervention required: inspect logs and push a fixed image." >&2
+    exit 1
+  fi
+
+  # Guard B (poisoned-state guard): if the stored previous-sha points at a SHA
+  # whose containers are currently crash-looping (Restarting status), refuse to
+  # roll back to it. A crash-looping rollback target is not a safe recovery point.
+  if [ -n "$ROLLBACK_TARGET" ]; then
+    LOOPING=$(docker ps --filter "status=restarting" --format "{{.Image}}" 2>/dev/null \
+              | grep -oE 'sha-[a-f0-9]{7}' | sort -u || true)
+    if echo "$LOOPING" | grep -qF "$ROLLBACK_TARGET"; then
+      echo "ERROR: Rollback target ($ROLLBACK_TARGET) is currently crash-looping on the VPS." >&2
+      echo "       Refusing rollback to a poisoned image — this would reproduce the crash-loop." >&2
+      echo "       Manual intervention required:" >&2
+      echo "         1. Remove backups/.previous-sha manually." >&2
+      echo "         2. Stop crash-looping containers: docker compose down --remove-orphans" >&2
+      echo "         3. Push a fixed image to master." >&2
+      exit 1
+    fi
+  fi
+
+  if [ -z "$ROLLBACK_TARGET" ]; then
+    echo "ERROR: No previous SHA recorded. Cannot roll back — no known-good target." >&2
+    echo "       Manual intervention required: push a fixed image to master." >&2
+    exit 1
+  fi
+
+  echo "==> Triggering rollback to $ROLLBACK_TARGET..."
+  # Export FAILED_TAG so rollback.sh can independently refuse to restore the
+  # same broken image even if called in a separate shell context.
+  export FAILED_TAG="$IMAGE_TAG"
   "$SCRIPT_DIR/rollback.sh"
   exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# Health check passed — now it is safe to persist the prior SHA.
+# This ensures .previous-sha always points at a SHA that was healthy when recorded.
+# ---------------------------------------------------------------------------
+if [ -n "$PRIOR_SHA" ]; then
+  echo "$PRIOR_SHA" > "$PREVIOUS_SHA_FILE"
+  echo "==> Persisted confirmed-healthy prior SHA: $PRIOR_SHA"
+else
+  echo "==> No prior SHA to record (first deploy or could not detect running image)."
 fi
 
 echo "==> Deploy complete."

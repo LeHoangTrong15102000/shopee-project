@@ -33,7 +33,19 @@ COPY apps/shopee-api/ ./apps/shopee-api/
 RUN pnpm --filter @shopee/api run build
 
 # -----------------------------------------------------------------------------
-# Stage 3: runtime — minimal production image
+# Stage 3: deploy-prod — produce a complete, self-contained flat node_modules
+#   `pnpm deploy --prod` resolves the @shopee/api production dependency closure
+#   and writes a proper, flattened node_modules to /app/out — independent of
+#   whether the workspace linker is isolated or hoisted.  Built FROM build so
+#   pnpm has access to the full workspace + lockfile + installed deps.
+# Note: pnpm 10.x may require --legacy in filtered workspaces; included here.
+# -----------------------------------------------------------------------------
+FROM build AS deploy-prod
+
+RUN pnpm --filter @shopee/api deploy --prod --legacy /app/out
+
+# -----------------------------------------------------------------------------
+# Stage 4: runtime — minimal production image
 # Required runtime env vars (supply via env_file or -e):
 #   MONGO_URI, REDIS_URL, SECRET_KEY_JWT, JWT_ACCESS_TTL, JWT_REFRESH_TTL,
 #   PORT (default 4000), CLIENT_URL, UPLOAD_DIR, NODE_ENV
@@ -55,8 +67,9 @@ RUN addgroup -g 1001 -S appuser && \
 # We copy them to /app/build/ so CMD "node build/index.js" resolves correctly.
 COPY --from=build /app/apps/shopee-api/build ./build
 
-# Copy production node_modules from deps stage
-COPY --from=deps /app/node_modules ./node_modules
+# Copy the self-contained flat node_modules produced by pnpm deploy --prod.
+# This closure is independent of the workspace linker and always complete.
+COPY --from=deploy-prod /app/out/node_modules ./node_modules
 
 ENV NODE_ENV=production
 

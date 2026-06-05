@@ -113,6 +113,10 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_SSH_PORT }}
           envs: DOCKERHUB_TOKEN,DOCKERHUB_USERNAME
+          # Sized above real worst-case single-pass deploy: health-check.sh runs
+          # 30×5s per service × 3 services = ~450s (~8m). With rollback death-loop
+          # removed, 15m gives comfortable margin without hanging on the default.
+          command_timeout: 15m
           script: |
             REGISTRY="${DOCKERHUB_USERNAME}"
             IMAGE_TAG="sha-$(echo '${{ github.sha }}' | cut -c1-7)"

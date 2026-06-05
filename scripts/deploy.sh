@@ -155,4 +155,46 @@ else
   echo "==> No prior SHA to record (first deploy or could not detect running image)."
 fi
 
+# ---------------------------------------------------------------------------
+# Prune stale SHA-tagged images (keep current + rollback target).
+# Runs only here — after health check passed and .previous-sha is persisted —
+# so no image needed by the rollback path can be deleted mid-deploy.
+# Every docker command is guarded with || true for idempotency under
+# set -euo pipefail (Decision 4).  Never uses -a/--all, --volumes,
+# docker system prune, or docker volume prune (spec requirement).
+# ---------------------------------------------------------------------------
+echo "==> Pruning stale SHA-tagged images (keeping current + rollback target)..."
+
+# Re-read the rollback target from the file that was just written above.
+# If missing or empty, keep-set degrades to just $IMAGE_TAG (Decision 5).
+KEEP_PREV=""
+if [ -f "$PREVIOUS_SHA_FILE" ]; then
+  KEEP_PREV="$(tr -d '[:space:]' < "$PREVIOUS_SHA_FILE")"
+fi
+
+for repo in shopee-api shopee-web shopee-admin; do
+  # List all local images for this repo, keeping only sha-XXXXXXX-tagged ones.
+  candidates=$(docker images "$REGISTRY/$repo" --format '{{.Repository}}:{{.Tag}}' 2>/dev/null \
+    | grep -E 'sha-[a-f0-9]{7}$' || true)
+
+  for img in $candidates; do
+    # Extract the tag — everything after the last colon.
+    tag="${img##*:}"
+
+    # Skip if this is the current deploy tag or the rollback target.
+    if [ "$tag" = "$IMAGE_TAG" ]; then
+      continue
+    fi
+    if [ -n "$KEEP_PREV" ] && [ "$tag" = "$KEEP_PREV" ]; then
+      continue
+    fi
+
+    echo "==> Removing stale image: $img"
+    docker rmi "$img" || true
+  done
+done
+
+# Sweep dangling layers only — never -a/--all, never --volumes.
+docker image prune -f || true
+
 echo "==> Deploy complete."

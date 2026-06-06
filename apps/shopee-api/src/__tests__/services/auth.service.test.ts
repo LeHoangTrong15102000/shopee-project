@@ -340,7 +340,10 @@ describe('AuthService', () => {
 
     it('6.2 — should NOT emit user.registered for an existing user', async () => {
       googleAuthMock.getPayload.mockReturnValue(basePayload)
-      mockUserRepository.findByEmail.mockResolvedValue({ ...mockUser, email: 'user@example.com' } as any)
+      mockUserRepository.findByEmail.mockResolvedValue({
+        ...mockUser,
+        email: 'user@example.com',
+      } as any)
       mockAuthRepository.createRefreshTokenWithJti.mockResolvedValue({} as any)
 
       const mockEventBus = { emit: jest.fn() }

@@ -340,7 +340,10 @@ export class AuthService extends BaseService {
     return { access_token: 'Bearer ' + accessToken }
   }
 
-  async googleLogin(idToken: string, tokenConfig: TokenConfig): Promise<AuthResult | TwoFactorRequiredResult> {
+  async googleLogin(
+    idToken: string,
+    tokenConfig: TokenConfig,
+  ): Promise<AuthResult | TwoFactorRequiredResult> {
     let payload
     try {
       const ticket = await googleOAuthClient.verifyIdToken({

@@ -27,7 +27,20 @@ jest.mock('@constants/config', () => ({
     EXPIRE_ACCESS_TOKEN: 900, // 15 minutes — stateless JWT
     EXPIRE_REFRESH_TOKEN: 2592000, // 30 days
     AUTH_STRICT_MODE: false,
+    GOOGLE_CLIENT_ID: 'test-client-id.apps.googleusercontent.com',
   },
+}))
+
+// Mock google-auth-library for googleLogin tests
+// Use a shared mutable object so the mock factory closure captures it correctly
+const googleAuthMock = {
+  verifyIdToken: jest.fn(),
+  getPayload: jest.fn(),
+}
+jest.mock('google-auth-library', () => ({
+  OAuth2Client: jest.fn().mockImplementation(() => ({
+    verifyIdToken: (...args: unknown[]) => googleAuthMock.verifyIdToken(...args),
+  })),
 }))
 
 import { hashValue, compareValue } from '@utils/crypt'
@@ -134,8 +147,12 @@ describe('AuthService', () => {
       )
 
       expect(mockAuthRepository.createRefreshTokenWithJti).toHaveBeenCalled()
-      expect(result.access_token).toContain('Bearer')
-      expect(result.user.email).toBe('test@example.com')
+      // Narrow to AuthResult — this user has no 2FA enabled
+      expect('requires2FA' in result).toBe(false)
+      if (!('requires2FA' in result)) {
+        expect(result.access_token).toContain('Bearer')
+        expect(result.user.email).toBe('test@example.com')
+      }
     })
 
     it('should throw ValidationError with wrong password', async () => {
@@ -214,6 +231,125 @@ describe('AuthService', () => {
       const result = await authService.validateRefreshToken('invalid_refresh_token')
 
       expect(result).toBe(false)
+    })
+  })
+
+  // =================== Task 6.2: googleLogin security tests ===================
+
+  describe('googleLogin', () => {
+    const tokenConfig: TokenConfig = {
+      expireAccessToken: 900,
+      expireRefreshToken: 2592000,
+    }
+
+    const basePayload = {
+      email: 'user@example.com',
+      email_verified: true,
+      name: 'Test User',
+      picture: 'https://example.com/avatar.jpg',
+    }
+
+    beforeEach(() => {
+      googleAuthMock.verifyIdToken.mockResolvedValue({ getPayload: googleAuthMock.getPayload })
+    })
+
+    it('6.2 — should return full tokens for a valid existing user without 2FA', async () => {
+      googleAuthMock.getPayload.mockReturnValue(basePayload)
+      mockUserRepository.findByEmail.mockResolvedValue(mockUser as any)
+      mockAuthRepository.createRefreshTokenWithJti.mockResolvedValue({} as any)
+
+      const result = await authService.googleLogin('valid_id_token', tokenConfig)
+
+      expect('requires2FA' in result).toBe(false)
+      if (!('requires2FA' in result)) {
+        expect(result.access_token).toContain('Bearer')
+        expect(result.user.email).toBe('test@example.com')
+      }
+    })
+
+    it('6.2 — should return requires2FA + partial_token when user has twoFactorEnabled=true', async () => {
+      googleAuthMock.getPayload.mockReturnValue(basePayload)
+      const userWith2FA = { ...mockUser, email: 'user@example.com', twoFactorEnabled: true }
+      mockUserRepository.findByEmail.mockResolvedValue(userWith2FA as any)
+
+      const result = await authService.googleLogin('valid_id_token', tokenConfig)
+
+      expect('requires2FA' in result).toBe(true)
+      if ('requires2FA' in result) {
+        expect(result.requires2FA).toBe(true)
+        expect(result.partial_token).toBe('mock_token')
+      }
+      // Must NOT have called createRefreshTokenWithJti (no full tokens issued)
+      expect(mockAuthRepository.createRefreshTokenWithJti).not.toHaveBeenCalled()
+    })
+
+    it('6.2 — should throw UnauthorizedError when email_verified is false', async () => {
+      googleAuthMock.getPayload.mockReturnValue({ ...basePayload, email_verified: false })
+
+      await expect(authService.googleLogin('unverified_id_token', tokenConfig)).rejects.toThrow(
+        UnauthorizedError,
+      )
+      // Must NOT create any account or token
+      expect(mockUserRepository.create).not.toHaveBeenCalled()
+      expect(mockAuthRepository.createRefreshTokenWithJti).not.toHaveBeenCalled()
+    })
+
+    it('6.2 — should throw UnauthorizedError when email_verified is undefined (not set)', async () => {
+      const payloadWithoutVerified: Record<string, unknown> = { ...basePayload }
+      delete payloadWithoutVerified['email_verified']
+      googleAuthMock.getPayload.mockReturnValue(payloadWithoutVerified)
+
+      await expect(authService.googleLogin('unverified_id_token', tokenConfig)).rejects.toThrow(
+        UnauthorizedError,
+      )
+    })
+
+    it('6.2 — should throw UnauthorizedError when Google token verification fails', async () => {
+      googleAuthMock.verifyIdToken.mockRejectedValue(new Error('Token invalid'))
+
+      await expect(authService.googleLogin('bad_token', tokenConfig)).rejects.toThrow(
+        UnauthorizedError,
+      )
+    })
+
+    it('6.2 — should create new user and emit user.registered for a new Google account', async () => {
+      googleAuthMock.getPayload.mockReturnValue(basePayload)
+      mockUserRepository.findByEmail.mockResolvedValue(null) // new user
+      mockUserRepository.create.mockResolvedValue({
+        ...mockUser,
+        email: 'user@example.com',
+        name: 'Test User',
+      } as any)
+      mockAuthRepository.createRefreshTokenWithJti.mockResolvedValue({} as any)
+
+      const mockEventBus = { emit: jest.fn() }
+      authService.eventBus = mockEventBus as any
+
+      await authService.googleLogin('valid_id_token', tokenConfig)
+
+      expect(mockUserRepository.create).toHaveBeenCalledWith(
+        expect.objectContaining({ email: 'user@example.com' }),
+      )
+      expect(mockEventBus.emit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'user.registered',
+          payload: expect.objectContaining({ email: 'user@example.com' }),
+        }),
+      )
+    })
+
+    it('6.2 — should NOT emit user.registered for an existing user', async () => {
+      googleAuthMock.getPayload.mockReturnValue(basePayload)
+      mockUserRepository.findByEmail.mockResolvedValue({ ...mockUser, email: 'user@example.com' } as any)
+      mockAuthRepository.createRefreshTokenWithJti.mockResolvedValue({} as any)
+
+      const mockEventBus = { emit: jest.fn() }
+      authService.eventBus = mockEventBus as any
+
+      await authService.googleLogin('valid_id_token', tokenConfig)
+
+      expect(mockUserRepository.create).not.toHaveBeenCalled()
+      expect(mockEventBus.emit).not.toHaveBeenCalled()
     })
   })
 

@@ -340,12 +340,12 @@ export class AuthService extends BaseService {
     return { access_token: 'Bearer ' + accessToken }
   }
 
-  async googleLogin(idToken: string, tokenConfig: TokenConfig): Promise<AuthResult> {
+  async googleLogin(idToken: string, tokenConfig: TokenConfig): Promise<AuthResult | TwoFactorRequiredResult> {
     let payload
     try {
       const ticket = await googleOAuthClient.verifyIdToken({
         idToken,
-        audience: process.env.GOOGLE_CLIENT_ID,
+        audience: config.GOOGLE_CLIENT_ID,
       })
       payload = ticket.getPayload()
     } catch {
@@ -354,6 +354,11 @@ export class AuthService extends BaseService {
 
     if (!payload || !payload.email) {
       throw new UnauthorizedError('Google token verification failed')
+    }
+
+    // WARNING-1: reject tokens with unverified email — must be strictly true
+    if (payload.email_verified !== true) {
+      throw new UnauthorizedError('Google account email is not verified')
     }
 
     const email = payload.email
@@ -371,6 +376,34 @@ export class AuthService extends BaseService {
         avatar,
         roles: [ROLE.USER],
       })
+
+      // WARNING-3: emit user.registered domain event for new Google accounts
+      this.eventBus?.emit({
+        type: 'user.registered',
+        payload: {
+          userId: user._id!.toString(),
+          email: user.email,
+          registeredAt: new Date(),
+        },
+      })
+    }
+
+    // CRITICAL-2: close 2FA bypass — check twoFactorEnabled before issuing full tokens
+    if (user.twoFactorEnabled) {
+      const partialPayload: IPayloadToken = {
+        id: user._id!.toString(),
+        email: user.email,
+        roles: user.roles || [ROLE.USER],
+        created_at: new Date().toISOString(),
+        jti: this.generateJti(),
+        scope: '2fa_pending',
+      }
+      // 5-minute expiry for partial token
+      const partialToken = (await signToken(partialPayload, config.SECRET_KEY, 300)) as string
+
+      Logger.apiInfo('auth.google.login.2fa_required', { userId: user._id!.toString() })
+
+      return { requires2FA: true, partial_token: partialToken }
     }
 
     const tokenPayload: IPayloadToken = {

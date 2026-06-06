@@ -115,6 +115,17 @@ const envSchema = z.object({
     .string()
     .min(1, 'MEILISEARCH_MASTER_KEY is required')
     .default('shopee_meili_master_key'),
+
+  // Google OAuth 2.0 — client ID used to verify Google Sign-In ID tokens.
+  // Must end with .apps.googleusercontent.com (the stable suffix for all Google OAuth client IDs).
+  // Create credentials at https://console.cloud.google.com/apis/credentials
+  GOOGLE_CLIENT_ID: z
+    .string()
+    .min(1, 'GOOGLE_CLIENT_ID is required for Google Sign-In token verification')
+    .endsWith(
+      '.apps.googleusercontent.com',
+      'GOOGLE_CLIENT_ID must end with .apps.googleusercontent.com — check your Google Cloud credentials',
+    ),
 })
 
 export type Env = z.infer<typeof envSchema>
@@ -167,6 +178,7 @@ export function validateEnv(rawEnv: NodeJS.ProcessEnv = process.env): Env {
       BULL_BOARD_ENABLED: true,
       MEILISEARCH_HOST: 'http://localhost:7700',
       MEILISEARCH_MASTER_KEY: 'shopee_meili_master_key',
+      GOOGLE_CLIENT_ID: 'test-client-id.apps.googleusercontent.com',
     }
   }
 

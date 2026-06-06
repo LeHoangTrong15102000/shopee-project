@@ -61,6 +61,7 @@ describe('ENV validation schema', () => {
         STRIPE_PUBLISHABLE_KEY: 'pk_test_placeholder',
         STRIPE_WEBHOOK_SECRET: 'whsec_placeholder',
         TWO_FACTOR_ENCRYPTION_KEY: '0'.repeat(64),
+        GOOGLE_CLIENT_ID: 'my-app.apps.googleusercontent.com',
       }
       const result = validateEnv(env)
       expect(result.SECRET_KEY_JWT).toBe('a_valid_secret_that_is_exactly_32_chars_long')
@@ -77,6 +78,7 @@ describe('ENV validation schema', () => {
         STRIPE_PUBLISHABLE_KEY: 'pk_test_placeholder',
         STRIPE_WEBHOOK_SECRET: 'whsec_placeholder',
         TWO_FACTOR_ENCRYPTION_KEY: '0'.repeat(64),
+        GOOGLE_CLIENT_ID: 'my-app.apps.googleusercontent.com',
         JWT_ACCESS_TTL: '1800',
         JWT_REFRESH_TTL: '86400',
       }
@@ -106,6 +108,7 @@ describe('ENV validation schema', () => {
         STRIPE_PUBLISHABLE_KEY: 'pk_test_placeholder',
         STRIPE_WEBHOOK_SECRET: 'whsec_placeholder',
         TWO_FACTOR_ENCRYPTION_KEY: '0'.repeat(64),
+        GOOGLE_CLIENT_ID: 'my-app.apps.googleusercontent.com',
       }
       const envTrue: any = {
         ...requiredFields,
@@ -118,6 +121,55 @@ describe('ENV validation schema', () => {
         AUTH_STRICT_MODE: 'false',
       }
       expect(validateEnv(envFalse).AUTH_STRICT_MODE).toBe(false)
+    })
+  })
+
+  describe('GOOGLE_CLIENT_ID validation', () => {
+    const requiredBase = {
+      SECRET_KEY_JWT: 'a_valid_secret_that_is_exactly_32_chars_long',
+      MONGO_URI: 'mongodb://localhost:27017/test',
+      STRIPE_SECRET_KEY: 'sk_test_placeholder',
+      STRIPE_PUBLISHABLE_KEY: 'pk_test_placeholder',
+      STRIPE_WEBHOOK_SECRET: 'whsec_placeholder',
+      TWO_FACTOR_ENCRYPTION_KEY: '0'.repeat(64),
+    }
+
+    it('6.2 — should throw (exit) when GOOGLE_CLIENT_ID is missing', () => {
+      const env: any = { ...requiredBase }
+      // GOOGLE_CLIENT_ID omitted
+      expect(() => validateEnv(env)).toThrow('process.exit called with code 1')
+    })
+
+    it('6.2 — should throw (exit) when GOOGLE_CLIENT_ID does not end with .apps.googleusercontent.com', () => {
+      const env: any = {
+        ...requiredBase,
+        GOOGLE_CLIENT_ID: 'not-a-valid-client-id',
+      }
+      expect(() => validateEnv(env)).toThrow('process.exit called with code 1')
+    })
+
+    it('6.2 — should include GOOGLE_CLIENT_ID format error in stderr output', () => {
+      const env: any = {
+        ...requiredBase,
+        GOOGLE_CLIENT_ID: 'wrong-format',
+      }
+      mockStderr.mockClear()
+      try {
+        validateEnv(env)
+      } catch {
+        // expected
+      }
+      const stderrOutput = (mockStderr.mock.calls[0]?.[0] as string) || ''
+      expect(stderrOutput).toContain('GOOGLE_CLIENT_ID')
+    })
+
+    it('6.2 — should accept a well-formed GOOGLE_CLIENT_ID', () => {
+      const env: any = {
+        ...requiredBase,
+        GOOGLE_CLIENT_ID: '123456789-abc.apps.googleusercontent.com',
+      }
+      const result = validateEnv(env)
+      expect(result.GOOGLE_CLIENT_ID).toBe('123456789-abc.apps.googleusercontent.com')
     })
   })
 })

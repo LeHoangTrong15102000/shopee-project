@@ -86,7 +86,7 @@ const loginController = async (req: Request, res: Response) => {
     )
 
     // 2FA required — return partial token, do NOT issue full tokens yet
-    if ('requires2FA' in result && result.requires2FA) {
+    if ('requires2FA' in result) {
       return responseSuccess(res, {
         message: '2FA verification required',
         data: {
@@ -96,8 +96,8 @@ const loginController = async (req: Request, res: Response) => {
       })
     }
 
-    // TypeScript narrowing: after early return above, result is always AuthResult
-    const authResult = result as AuthResult
+    // TypeScript narrowing: after early return above, result is narrowed to AuthResult
+    const authResult = result
 
     // Đăng nhập thành công - reset login attempts
     resetLoginAttempts(clientIP, email)
@@ -228,6 +228,7 @@ const logoutController = async (req: Request, res: Response) => {
 
 const googleLoginController = async (req: Request, res: Response) => {
   const { id_token } = req.body
+  const clientIP = getClientIP(req)
 
   const { expireAccessTokenConfig, expireRefreshTokenConfig } = getExpire()
 
@@ -236,11 +237,51 @@ const googleLoginController = async (req: Request, res: Response) => {
     expireRefreshToken: expireRefreshTokenConfig,
   })
 
-  Logger.apiInfo('Google login thành công', { email: result.user.email })
+  // 2FA required — return partial token, do NOT issue full tokens yet
+  if ('requires2FA' in result) {
+    return responseSuccess(res, {
+      message: '2FA verification required',
+      data: {
+        requires2FA: true,
+        partial_token: result.partial_token,
+      },
+    })
+  }
+
+  // TypeScript narrowing: after early return above, result is narrowed to AuthResult
+  const authResult = result
+
+  const userId = authResult.user._id!.toString()
+
+  // Fire-and-forget side effects — matching loginController
+  const { sessionService, auditLogService, loginHistoryService } = await import('../container')
+
+  // Create session record (fire-and-forget)
+  sessionService
+    .createSession(userId, authResult.accessJti, authResult.refreshJti, req)
+    .catch((err) => {
+      Logger.apiWarn('session.create.failed_on_google_login', { error: err?.message })
+    })
+
+  // Record successful login (fire-and-forget)
+  loginHistoryService.recordAttempt(userId, req, 'success', 'google')
+
+  // Audit log: user.login (fire-and-forget)
+  auditLogService.writeLog({
+    action: 'user.login',
+    resource: 'user',
+    resourceId: userId,
+    actor: { userId, roles: authResult.user.roles ?? [] },
+    ip: clientIP,
+    userAgent: req.headers['user-agent'] || '',
+    status: 'success',
+  })
+
+  Logger.apiInfo('Google login thành công', { email: authResult.user.email })
 
   return responseSuccess(res, {
     message: AUTH_MESSAGES.GOOGLE_LOGIN_SUCCESS,
-    data: result,
+    data: authResult,
   })
 }
 

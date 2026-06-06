@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose'
 
 export type LoginStatus = 'success' | 'failed' | 'blocked'
-export type LoginMethod = 'password' | '2fa' | 'backup-code'
+export type LoginMethod = 'password' | '2fa' | 'backup-code' | 'google'
 
 export interface ILoginHistory {
   _id?: mongoose.Types.ObjectId
@@ -30,7 +30,7 @@ const LoginHistorySchema = new Schema(
     },
     method: {
       type: String,
-      enum: ['password', '2fa', 'backup-code'],
+      enum: ['password', '2fa', 'backup-code', 'google'],
       required: true,
     },
     timestamp: { type: Date, default: Date.now },

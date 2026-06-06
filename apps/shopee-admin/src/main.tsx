@@ -29,7 +29,9 @@ async function enableMocking() {
   return worker.start({ onUnhandledRequest: 'bypass' })
 }
 
-enableMocking().then(() => {
+const shouldEnableMocks = import.meta.env.DEV || import.meta.env.VITE_ENABLE_MOCKS === 'true'
+
+const startApp = () => {
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
@@ -39,4 +41,10 @@ enableMocking().then(() => {
       </QueryClientProvider>
     </React.StrictMode>,
   )
-})
+}
+
+if (shouldEnableMocks) {
+  enableMocking().then(startApp)
+} else {
+  startApp()
+}

@@ -21,6 +21,7 @@ jest.mock('../../container', () => ({
     login: jest.fn(),
     logout: jest.fn(),
     refreshTokenWithRotation: jest.fn(),
+    googleLogin: jest.fn(),
   },
   sessionService: {
     createSession: jest.fn().mockResolvedValue(undefined),
@@ -457,6 +458,76 @@ describe('Auth Controller', () => {
 
       // Verify login was called (it internally resolved the IP)
       expect(mockAuthService.login).toHaveBeenCalled()
+    })
+  })
+
+  describe('googleLoginController', () => {
+    const mockGoogleAuthResult = {
+      access_token: 'Bearer mock_google_access_token',
+      refresh_token: 'mock_google_refresh_token',
+      expires: 900,
+      expires_refresh_token: 2592000,
+      accessJti: 'access-jti-uuid',
+      refreshJti: 'refresh-jti-uuid',
+      user: {
+        _id: 'google_user_id_123',
+        email: 'google@example.com',
+        roles: ['User'],
+      },
+    }
+
+    it('6.2 — should return full tokens for a successful Google login (non-2FA user)', async () => {
+      mockAuthService.googleLogin.mockResolvedValue(mockGoogleAuthResult as any)
+
+      const req = createMockRequest({
+        body: { id_token: 'valid_google_id_token' },
+        headers: {},
+      })
+      const res = createMockResponse()
+
+      await authController.googleLoginController(req as Request, res as Response)
+
+      expect(mockAuthService.googleLogin).toHaveBeenCalledWith(
+        'valid_google_id_token',
+        expect.any(Object),
+      )
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+    })
+
+    it('6.2 — should return requires2FA response when user has 2FA enabled', async () => {
+      const twoFAResult = { requires2FA: true as const, partial_token: 'partial_token_value' }
+      mockAuthService.googleLogin.mockResolvedValue(twoFAResult as any)
+
+      const req = createMockRequest({
+        body: { id_token: 'valid_google_id_token_2fa_user' },
+        headers: {},
+      })
+      const res = createMockResponse()
+
+      await authController.googleLoginController(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+      // responseSuccess calls res.status().send(), not res.json()
+      const sendCall = (res.send as jest.Mock).mock.calls[0]?.[0]
+      expect(sendCall?.data?.requires2FA).toBe(true)
+      expect(sendCall?.data?.partial_token).toBe('partial_token_value')
+    })
+
+    it('6.2 — should NOT include access_token in response when 2FA is required', async () => {
+      const twoFAResult = { requires2FA: true as const, partial_token: 'partial_token_value' }
+      mockAuthService.googleLogin.mockResolvedValue(twoFAResult as any)
+
+      const req = createMockRequest({
+        body: { id_token: 'valid_google_id_token_2fa_user' },
+        headers: {},
+      })
+      const res = createMockResponse()
+
+      await authController.googleLoginController(req as Request, res as Response)
+
+      const sendCall = (res.send as jest.Mock).mock.calls[0]?.[0]
+      expect(sendCall?.data?.access_token).toBeUndefined()
+      expect(sendCall?.data?.refresh_token).toBeUndefined()
     })
   })
 })

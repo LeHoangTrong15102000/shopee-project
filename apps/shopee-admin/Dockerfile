@@ -32,11 +32,13 @@ FROM deps AS build
 ARG VITE_API_BASE_URL
 ARG VITE_SOCKET_URL
 ARG VITE_APP_VERSION
+ARG VITE_ENABLE_MOCKS
 
 # Forward build args to ENV so Vite picks them up during vite build
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 ENV VITE_SOCKET_URL=$VITE_SOCKET_URL
 ENV VITE_APP_VERSION=$VITE_APP_VERSION
+ENV VITE_ENABLE_MOCKS=$VITE_ENABLE_MOCKS
 
 # Copy the root base tsconfig — apps/shopee-admin/tsconfig.json extends
 # ../../tsconfig.base.json, which resolves to /app/tsconfig.base.json inside

@@ -50,25 +50,25 @@ Bạn push code  ──►  [1] Kiểm tra chất lượng  ──►  [2] Build
 
 ## 2. Các Thành Phần Tham Gia
 
-| Thành phần | Vai trò | Nằm ở đâu |
-|------------|---------|-----------|
-| `ci-cd-pipeline.yml` | Định nghĩa toàn bộ pipeline (3 job) | `.github/workflows/` |
-| `setup-node-pnpm/action.yml` | Composite action: cài Node 22 + pnpm + cache | `.github/actions/setup-node-pnpm/` |
-| `Dockerfile` (×3) | Công thức build image cho api / web / admin | `apps/shopee-*/` |
-| `deploy.sh` | Kịch bản deploy chính, chạy **trên VPS** | `scripts/` |
-| `health-check.sh` | Kiểm tra service có sống không (HTTP 200) | `scripts/` |
-| `rollback.sh` | Khôi phục về SHA tốt trước đó khi deploy fail | `scripts/` |
-| `docker-compose.prod.yaml` | Định nghĩa stack production (3 service + network + volume) | gốc dự án |
-| Docker Hub | Nơi lưu trữ image đã build | Cloud |
-| VPS | Máy chủ chạy ứng dụng thật | Cloud (của bạn) |
+| Thành phần                   | Vai trò                                                    | Nằm ở đâu                          |
+| ---------------------------- | ---------------------------------------------------------- | ---------------------------------- |
+| `ci-cd-pipeline.yml`         | Định nghĩa toàn bộ pipeline (3 job)                        | `.github/workflows/`               |
+| `setup-node-pnpm/action.yml` | Composite action: cài Node 22 + pnpm + cache               | `.github/actions/setup-node-pnpm/` |
+| `Dockerfile` (×3)            | Công thức build image cho api / web / admin                | `apps/shopee-*/`                   |
+| `deploy.sh`                  | Kịch bản deploy chính, chạy **trên VPS**                   | `scripts/`                         |
+| `health-check.sh`            | Kiểm tra service có sống không (HTTP 200)                  | `scripts/`                         |
+| `rollback.sh`                | Khôi phục về SHA tốt trước đó khi deploy fail              | `scripts/`                         |
+| `docker-compose.prod.yaml`   | Định nghĩa stack production (3 service + network + volume) | gốc dự án                          |
+| Docker Hub                   | Nơi lưu trữ image đã build                                 | Cloud                              |
+| VPS                          | Máy chủ chạy ứng dụng thật                                 | Cloud (của bạn)                    |
 
 **3 service chính:**
 
-| Service | Là gì | Cổng nội bộ container | Cổng map trên VPS (chỉ localhost) |
-|---------|-------|------------------------|-------------------------------------|
-| `shopee-api` | Backend NestJS/Express | 4000 | `127.0.0.1:8083` |
-| `shopee-web` | Frontend khách hàng (React + Vite, serve bằng Nginx) | 8080 | `127.0.0.1:8081` |
-| `shopee-admin` | Trang quản trị (React + Vite, serve bằng Nginx) | 8080 | `127.0.0.1:8082` |
+| Service        | Là gì                                                | Cổng nội bộ container | Cổng map trên VPS (chỉ localhost) |
+| -------------- | ---------------------------------------------------- | --------------------- | --------------------------------- |
+| `shopee-api`   | Backend NestJS/Express                               | 4000                  | `127.0.0.1:8083`                  |
+| `shopee-web`   | Frontend khách hàng (React + Vite, serve bằng Nginx) | 8080                  | `127.0.0.1:8081`                  |
+| `shopee-admin` | Trang quản trị (React + Vite, serve bằng Nginx)      | 8080                  | `127.0.0.1:8082`                  |
 
 > **Lưu ý quan trọng về bảo mật:** cả 3 cổng đều bind vào `127.0.0.1` (chỉ nghe trên chính VPS), **không** mở ra Internet trực tiếp. Thường sẽ có một **reverse proxy** (Nginx host hoặc tương tự) đứng trước, nhận request từ ngoài rồi chuyển vào các cổng này. Đây là lý do health check trong log gọi `http://127.0.0.1:8083/health`.
 
@@ -169,27 +169,27 @@ quality:
 
 Đây là **cổng gác (gate)**. Mọi thứ phải qua được đây thì pipeline mới đi tiếp.
 
-| Bước | Lệnh | Ý nghĩa |
-|------|------|---------|
-| Checkout | `actions/checkout@v4` | Tải mã nguồn của commit hiện tại về máy runner |
-| Setup | `./.github/actions/setup-node-pnpm` | Gọi composite action (xem bên dưới) để chuẩn bị môi trường |
-| Lint | `pnpm nx run-many -t lint --exclude=@shopee/source` | Chạy ESLint cho **tất cả** project trong monorepo, trừ project tên `@shopee/source` |
-| Format | `pnpm nx format:check --all` | Kiểm tra code có đúng định dạng Prettier không (chỉ **check**, không tự sửa) |
+| Bước     | Lệnh                                                | Ý nghĩa                                                                             |
+| -------- | --------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Checkout | `actions/checkout@v4`                               | Tải mã nguồn của commit hiện tại về máy runner                                      |
+| Setup    | `./.github/actions/setup-node-pnpm`                 | Gọi composite action (xem bên dưới) để chuẩn bị môi trường                          |
+| Lint     | `pnpm nx run-many -t lint --exclude=@shopee/source` | Chạy ESLint cho **tất cả** project trong monorepo, trừ project tên `@shopee/source` |
+| Format   | `pnpm nx format:check --all`                        | Kiểm tra code có đúng định dạng Prettier không (chỉ **check**, không tự sửa)        |
 
 **Composite action `setup-node-pnpm/action.yml` làm gì:**
 
 ```yaml
 steps:
-  - run: corepack enable                    # bật corepack để quản lý pnpm
-  - uses: actions/setup-node@v4             # cài Node.js phiên bản 22
+  - run: corepack enable # bật corepack để quản lý pnpm
+  - uses: actions/setup-node@v4 # cài Node.js phiên bản 22
     with: { node-version: 22 }
-  - run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV  # lấy đường dẫn pnpm store
-  - uses: actions/cache@v4                  # cache pnpm store để lần sau cài nhanh hơn
+  - run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV # lấy đường dẫn pnpm store
+  - uses: actions/cache@v4 # cache pnpm store để lần sau cài nhanh hơn
     with:
       path: ${{ env.STORE_PATH }}
       key: pnpm-store-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
   - if: ${{ inputs.install == 'true' }}
-    run: pnpm install --frozen-lockfile      # cài dependencies, khóa đúng theo lockfile
+    run: pnpm install --frozen-lockfile # cài dependencies, khóa đúng theo lockfile
 ```
 
 - **`corepack enable`** — Corepack là công cụ đi kèm Node.js, cho phép dùng đúng phiên bản pnpm đã pin trong dự án mà không cần `npm install -g pnpm`.
@@ -206,7 +206,7 @@ steps:
 build-and-push:
   name: Build & Push (${{ matrix.app }})
   runs-on: ubuntu-latest
-  needs: quality                # ← chỉ chạy nếu Job 1 PASS
+  needs: quality # ← chỉ chạy nếu Job 1 PASS
   strategy:
     fail-fast: false
     matrix:
@@ -219,6 +219,7 @@ build-and-push:
 **`needs: quality`** là sợi dây xích — job này chỉ bắt đầu khi `quality` xanh.
 
 **Matrix strategy** = một "khuôn" job được nhân bản thành **3 job song song**, mỗi job build một app. Trong log của bạn, đây chính là 3 dòng:
+
 - `Build & Push (shopee-api)`
 - `Build & Push (shopee-web)`
 - `Build & Push (shopee-admin)`
@@ -230,14 +231,14 @@ build-and-push:
 ```yaml
 steps:
   - uses: actions/checkout@v4
-  - uses: docker/setup-buildx-action@v3        # bật Buildx (build engine nâng cao của Docker)
-  - uses: docker/login-action@v3               # đăng nhập Docker Hub
+  - uses: docker/setup-buildx-action@v3 # bật Buildx (build engine nâng cao của Docker)
+  - uses: docker/login-action@v3 # đăng nhập Docker Hub
     with:
       username: ${{ secrets.DOCKERHUB_USERNAME }}
       password: ${{ secrets.DOCKERHUB_TOKEN }}
-  - id: sha                                     # tính SHA ngắn (7 ký tự đầu)
+  - id: sha # tính SHA ngắn (7 ký tự đầu)
     run: echo "short=$(echo '${{ github.sha }}' | cut -c1-7)" >> $GITHUB_OUTPUT
-  - uses: docker/build-push-action@v6           # build + push image
+  - uses: docker/build-push-action@v6 # build + push image
     with:
       context: .
       file: ${{ matrix.dockerfile }}
@@ -273,9 +274,9 @@ VITE_SOCKET_URL=${{ vars.VITE_SOCKET_URL_PROD }}
 VITE_APP_VERSION=${{ vars.VITE_APP_VERSION_PROD }}
 ```
 
-  Với app React + Vite, biến `VITE_*` được **nhúng cứng (inline) vào bundle JS lúc build**. Nghĩa là URL API, URL socket, key Stripe... bị "đóng băng" vào file JS ngay tại bước build này, **không phải** lúc chạy. Đó là lý do chúng phải có mặt ở đây chứ không phải trong `deploy.sh`.
+Với app React + Vite, biến `VITE_*` được **nhúng cứng (inline) vào bundle JS lúc build**. Nghĩa là URL API, URL socket, key Stripe... bị "đóng băng" vào file JS ngay tại bước build này, **không phải** lúc chạy. Đó là lý do chúng phải có mặt ở đây chứ không phải trong `deploy.sh`.
 
-  > ⚠️ Đây cũng là nguồn gốc của các dòng cảnh báo `level=warning msg="The VITE_API_BASE_URL variable is not set..."` mà bạn thấy trong log VPS. Xem [mục 9](#9-đối-chiếu-với-log-thực-tế-của-bạn) để hiểu vì sao **warning này vô hại**.
+> ⚠️ Đây cũng là nguồn gốc của các dòng cảnh báo `level=warning msg="The VITE_API_BASE_URL variable is not set..."` mà bạn thấy trong log VPS. Xem [mục 9](#9-đối-chiếu-với-log-thực-tế-của-bạn) để hiểu vì sao **warning này vô hại**.
 
 - **`cache-from` / `cache-to` với `type=gha`** — dùng GitHub Actions Cache để lưu các layer Docker đã build. `scope=${{ matrix.app }}` tách cache riêng cho từng app (api/web/admin không đụng cache của nhau). `mode=max` lưu cache cho **mọi** layer trung gian, không chỉ layer cuối → lần build sau nhanh hơn nhiều.
 
@@ -289,7 +290,7 @@ VITE_APP_VERSION=${{ vars.VITE_APP_VERSION_PROD }}
 deploy:
   name: Deploy to VPS
   runs-on: ubuntu-latest
-  needs: build-and-push           # ← chỉ chạy khi cả 3 image build xong
+  needs: build-and-push # ← chỉ chạy khi cả 3 image build xong
   environment: production
   steps:
     - name: Deploy via SSH
@@ -325,13 +326,13 @@ deploy:
 
 **Đoạn `script:` chạy gì trên VPS:**
 
-| Dòng | Lệnh | Ý nghĩa |
-|------|------|---------|
-| 1 | `REGISTRY="${DOCKERHUB_USERNAME}"` | Lấy username Docker Hub làm registry (vd: `lehoangtrong`) |
-| 2 | `IMAGE_TAG="sha-$(echo '${{ github.sha }}' \| cut -c1-7)"` | Tạo lại tag SHA y hệt Job 2 (vd: `sha-418a594`) để pull đúng image vừa build |
-| 3 | `cd "$HOME/shopee-project" \|\| exit 1` | Vào thư mục dự án trên VPS. Nếu không vào được → thoát ngay với lỗi |
-| 4 | `chmod +x scripts/*.sh` | Cấp quyền thực thi cho mọi script `.sh` (phòng khi quyền bị mất sau `git pull`) |
-| 5 | `./scripts/deploy.sh "$REGISTRY" "$IMAGE_TAG" "shopee-api shopee-web shopee-admin"` | **Gọi deploy.sh** với 3 tham số: registry, tag, danh sách service |
+| Dòng | Lệnh                                                                                | Ý nghĩa                                                                         |
+| ---- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| 1    | `REGISTRY="${DOCKERHUB_USERNAME}"`                                                  | Lấy username Docker Hub làm registry (vd: `lehoangtrong`)                       |
+| 2    | `IMAGE_TAG="sha-$(echo '${{ github.sha }}' \| cut -c1-7)"`                          | Tạo lại tag SHA y hệt Job 2 (vd: `sha-418a594`) để pull đúng image vừa build    |
+| 3    | `cd "$HOME/shopee-project" \|\| exit 1`                                             | Vào thư mục dự án trên VPS. Nếu không vào được → thoát ngay với lỗi             |
+| 4    | `chmod +x scripts/*.sh`                                                             | Cấp quyền thực thi cho mọi script `.sh` (phòng khi quyền bị mất sau `git pull`) |
+| 5    | `./scripts/deploy.sh "$REGISTRY" "$IMAGE_TAG" "shopee-api shopee-web shopee-admin"` | **Gọi deploy.sh** với 3 tham số: registry, tag, danh sách service               |
 
 > Lưu ý: GitHub Actions chỉ chịu trách nhiệm đến bước "gọi `deploy.sh`". Từ đây trở đi, **mọi thứ chạy trên VPS** — phần B bên dưới.
 
@@ -346,14 +347,14 @@ File: `scripts/deploy.sh` (201 dòng). Đây là **trái tim** của toàn bộ 
 set -euo pipefail
 ```
 
-- **`#!/usr/bin/env bash`** (gọi là *shebang*) — dòng này báo cho hệ điều hành: "hãy chạy file này bằng **bash**". Dùng `/usr/bin/env bash` thay vì `/bin/bash` cứng để tìm bash ở bất kỳ đâu trong `PATH` (linh hoạt hơn giữa các bản Linux khác nhau).
+- **`#!/usr/bin/env bash`** (gọi là _shebang_) — dòng này báo cho hệ điều hành: "hãy chạy file này bằng **bash**". Dùng `/usr/bin/env bash` thay vì `/bin/bash` cứng để tìm bash ở bất kỳ đâu trong `PATH` (linh hoạt hơn giữa các bản Linux khác nhau).
 - **`set -euo pipefail`** — đây là **lá chắn an toàn** quan trọng nhất. Nó gồm 4 cờ gộp lại:
 
-| Cờ | Tên đầy đủ | Ý nghĩa — "nếu có sự cố thì..." |
-|----|------------|--------------------------------|
-| `-e` | errexit | ...**dừng ngay** khi bất kỳ lệnh nào trả về lỗi (exit code ≠ 0). Không "nhắm mắt chạy tiếp" gây hỏng hóc dây chuyền. |
-| `-u` | nounset | ...**báo lỗi** nếu dùng một biến chưa được khai báo (vd gõ sai tên biến `$REGISTYR`). Bắt lỗi gõ nhầm ngay. |
-| `-o pipefail` | pipefail | ...trong chuỗi `A \| B \| C`, nếu **bất kỳ** lệnh nào trong ống dẫn (pipe) fail thì cả chuỗi tính là fail. Mặc định bash chỉ quan tâm lệnh cuối — rất dễ giấu lỗi. |
+| Cờ            | Tên đầy đủ | Ý nghĩa — "nếu có sự cố thì..."                                                                                                                                    |
+| ------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `-e`          | errexit    | ...**dừng ngay** khi bất kỳ lệnh nào trả về lỗi (exit code ≠ 0). Không "nhắm mắt chạy tiếp" gây hỏng hóc dây chuyền.                                               |
+| `-u`          | nounset    | ...**báo lỗi** nếu dùng một biến chưa được khai báo (vd gõ sai tên biến `$REGISTYR`). Bắt lỗi gõ nhầm ngay.                                                        |
+| `-o pipefail` | pipefail   | ...trong chuỗi `A \| B \| C`, nếu **bất kỳ** lệnh nào trong ống dẫn (pipe) fail thì cả chuỗi tính là fail. Mặc định bash chỉ quan tâm lệnh cuối — rất dễ giấu lỗi. |
 
 > 💡 **Vì sao quan trọng với deploy?** Khi deploy, một lệnh fail mà vẫn chạy tiếp có thể đẩy VPS vào trạng thái nửa vời (service A mới, service B cũ, không ai biết). `set -euo pipefail` đảm bảo "fail nhanh, fail rõ ràng" thay vì "fail âm thầm".
 
@@ -371,12 +372,12 @@ SERVICES="${*:-}"
 
 Nhớ lại Job 3 gọi: `./scripts/deploy.sh "$REGISTRY" "$IMAGE_TAG" "shopee-api shopee-web shopee-admin"`. Vậy script nhận **3 nhóm tham số**:
 
-| Dòng | Lệnh | Giải thích cặn kẽ |
-|------|------|-------------------|
-| 14 | `REGISTRY="${1:-}"` | Lấy **tham số thứ 1** (`$1`, vd `lehoangtrong`) gán vào biến `REGISTRY`. Cú pháp `${1:-}` nghĩa là: "nếu `$1` rỗng/không có thì dùng giá trị mặc định là **rỗng**". Đây là mẹo để tránh lỗi `-u` (nounset) khi tham số thiếu. |
-| 15 | `IMAGE_TAG="${2:-}"` | Tương tự, lấy **tham số thứ 2** (`$2`, vd `sha-418a594`) — tag SHA của image cần deploy. |
-| 17 | `shift 2 2>/dev/null \|\| true` | **`shift 2`** = "vứt bỏ 2 tham số đầu", để những gì còn lại (`$3`, `$4`, ...) trở thành các service. `2>/dev/null` nuốt thông báo lỗi nếu có ít hơn 2 tham số. `\|\| true` đảm bảo dù `shift` fail thì dòng này vẫn coi như thành công (không bị `-e` giết). |
-| 18 | `SERVICES="${*:-}"` | **`$*`** = "tất cả tham số còn lại sau `shift`", gộp thành một chuỗi. Ở đây là `shopee-api shopee-web shopee-admin`. |
+| Dòng | Lệnh                            | Giải thích cặn kẽ                                                                                                                                                                                                                                            |
+| ---- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 14   | `REGISTRY="${1:-}"`             | Lấy **tham số thứ 1** (`$1`, vd `lehoangtrong`) gán vào biến `REGISTRY`. Cú pháp `${1:-}` nghĩa là: "nếu `$1` rỗng/không có thì dùng giá trị mặc định là **rỗng**". Đây là mẹo để tránh lỗi `-u` (nounset) khi tham số thiếu.                                |
+| 15   | `IMAGE_TAG="${2:-}"`            | Tương tự, lấy **tham số thứ 2** (`$2`, vd `sha-418a594`) — tag SHA của image cần deploy.                                                                                                                                                                     |
+| 17   | `shift 2 2>/dev/null \|\| true` | **`shift 2`** = "vứt bỏ 2 tham số đầu", để những gì còn lại (`$3`, `$4`, ...) trở thành các service. `2>/dev/null` nuốt thông báo lỗi nếu có ít hơn 2 tham số. `\|\| true` đảm bảo dù `shift` fail thì dòng này vẫn coi như thành công (không bị `-e` giết). |
+| 18   | `SERVICES="${*:-}"`             | **`$*`** = "tất cả tham số còn lại sau `shift`", gộp thành một chuỗi. Ở đây là `shopee-api shopee-web shopee-admin`.                                                                                                                                         |
 
 > 🧠 **Hiểu sâu `shift`:** Hãy tưởng tượng tham số xếp hàng `[REGISTRY] [TAG] [api] [web] [admin]`. Sau `shift 2`, hai ô đầu bị bỏ đi, hàng còn `[api] [web] [admin]` — và `$*` gom đúng 3 service này.
 
@@ -411,13 +412,13 @@ export REGISTRY
 export IMAGE_TAG
 ```
 
-| Dòng | Lệnh | Giải thích |
-|------|------|-----------|
-| 30 | `SCRIPT_DIR=...` | Tìm **thư mục chứa chính file deploy.sh**, dù bạn gọi nó từ đâu. `${BASH_SOURCE[0]}` là đường dẫn tới chính script này; `dirname` lấy phần thư mục; `cd ... && pwd` chuyển vào đó rồi in đường dẫn tuyệt đối. Kết quả: vd `/home/user/shopee-project/scripts`. |
-| 31 | `PROJECT_ROOT=...` | Lùi lên một cấp (`/..`) từ `scripts/` → ra **gốc dự án** `/home/user/shopee-project`. |
-| 33 | `COMPOSE_FILE=...` | Đường dẫn đầy đủ tới file compose production. |
-| 34 | `BACKUPS_DIR=...` | Thư mục `backups/` — nơi lưu "trí nhớ" về phiên bản tốt trước đó. |
-| 35 | `PREVIOUS_SHA_FILE=...` | File `.previous-sha` bên trong `backups/` — chứa **đúng 1 dòng** là SHA của phiên bản healthy gần nhất. Đây là "mỏ neo" để rollback. |
+| Dòng  | Lệnh                                   | Giải thích                                                                                                                                                                                                                                                                     |
+| ----- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 30    | `SCRIPT_DIR=...`                       | Tìm **thư mục chứa chính file deploy.sh**, dù bạn gọi nó từ đâu. `${BASH_SOURCE[0]}` là đường dẫn tới chính script này; `dirname` lấy phần thư mục; `cd ... && pwd` chuyển vào đó rồi in đường dẫn tuyệt đối. Kết quả: vd `/home/user/shopee-project/scripts`.                 |
+| 31    | `PROJECT_ROOT=...`                     | Lùi lên một cấp (`/..`) từ `scripts/` → ra **gốc dự án** `/home/user/shopee-project`.                                                                                                                                                                                          |
+| 33    | `COMPOSE_FILE=...`                     | Đường dẫn đầy đủ tới file compose production.                                                                                                                                                                                                                                  |
+| 34    | `BACKUPS_DIR=...`                      | Thư mục `backups/` — nơi lưu "trí nhớ" về phiên bản tốt trước đó.                                                                                                                                                                                                              |
+| 35    | `PREVIOUS_SHA_FILE=...`                | File `.previous-sha` bên trong `backups/` — chứa **đúng 1 dòng** là SHA của phiên bản healthy gần nhất. Đây là "mỏ neo" để rollback.                                                                                                                                           |
 | 38–39 | `export REGISTRY` / `export IMAGE_TAG` | **Cực kỳ quan trọng:** `export` biến hai biến này thành **biến môi trường**, để khi script gọi `docker compose` thì compose có thể thay `${REGISTRY}` và `${IMAGE_TAG}` trong dòng `image:` của file YAML. Không có `export` → compose sẽ không thấy biến → dùng mặc định sai. |
 
 > 🔑 **Tại sao tính đường dẫn kiểu này thay vì hardcode?** Để script chạy đúng **dù được gọi từ bất kỳ thư mục nào**. Bạn có thể `cd /tmp && /home/user/shopee-project/scripts/deploy.sh ...` mà nó vẫn tìm đúng compose file và backups. Robust hơn nhiều so với việc giả định "luôn chạy từ gốc dự án".
@@ -464,15 +465,15 @@ done
 
 Đoạn này trả lời câu hỏi: **"Ngay trước khi deploy, VPS đang chạy phiên bản (SHA) nào?"** Ta đi qua từng dòng:
 
-| Dòng | Lệnh | Giải thích chi tiết |
-|------|------|---------------------|
-| 51 | `PRIOR_SHA=""` | Khởi tạo biến rỗng. Nếu hết vòng lặp mà vẫn rỗng → nghĩa là không tìm thấy (vd lần deploy đầu tiên, chưa có gì chạy). |
-| 53 | `for svc in shopee-api shopee-web shopee-admin; do` | Lặp qua 3 service. Chỉ cần tìm thấy SHA ở **một** service là đủ (vì cả 3 luôn cùng SHA), nên có `break` ở trong. |
-| 54 | `CONTAINER_ID=$(docker compose ... ps -q "$svc" ...)` | **`ps -q`** = liệt kê **chỉ ID** (quiet) của container thuộc service đó. **`head -1`** = lấy dòng đầu (phòng khi có nhiều). `2>/dev/null` giấu lỗi, `\|\| true` để không bị `-e` giết nếu service chưa tồn tại. |
-| 55 | `if [ -n "$CONTAINER_ID" ]; then` | **`[ -n "$X" ]`** = "X **không** rỗng". Tức là: chỉ xử lý tiếp nếu thực sự tìm thấy container đang chạy. |
-| 56 | `RUNNING_IMAGE=$(docker inspect --format '{{.Config.Image}}' ...)` | **`docker inspect`** moi thông tin chi tiết của container. **`--format '{{.Config.Image}}'`** dùng template Go để rút ra **đúng tên image** mà container đang chạy, vd `lehoangtrong/shopee-api:sha-d4c7a70`. |
-| 58 | `EXTRACTED=$(echo "$RUNNING_IMAGE" \| grep -oE 'sha-[a-f0-9]{7}' \| head -1 ...)` | Dùng **regex** để bóc đúng phần SHA. `grep -oE` = chỉ in (`-o`) phần khớp, dùng regex mở rộng (`-E`). Mẫu `sha-[a-f0-9]{7}` nghĩa là: chữ `sha-` theo sau bởi **đúng 7 ký tự** hex (0–9, a–f). Vậy từ `...:sha-d4c7a70` ta lấy ra `sha-d4c7a70`. |
-| 59–62 | `if [ -n "$EXTRACTED" ]; then PRIOR_SHA="$EXTRACTED"; break; fi` | Nếu bóc được SHA hợp lệ → lưu vào `PRIOR_SHA` và **`break`** (thoát vòng lặp ngay, không cần kiểm tra 2 service còn lại). |
+| Dòng  | Lệnh                                                                              | Giải thích chi tiết                                                                                                                                                                                                                              |
+| ----- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 51    | `PRIOR_SHA=""`                                                                    | Khởi tạo biến rỗng. Nếu hết vòng lặp mà vẫn rỗng → nghĩa là không tìm thấy (vd lần deploy đầu tiên, chưa có gì chạy).                                                                                                                            |
+| 53    | `for svc in shopee-api shopee-web shopee-admin; do`                               | Lặp qua 3 service. Chỉ cần tìm thấy SHA ở **một** service là đủ (vì cả 3 luôn cùng SHA), nên có `break` ở trong.                                                                                                                                 |
+| 54    | `CONTAINER_ID=$(docker compose ... ps -q "$svc" ...)`                             | **`ps -q`** = liệt kê **chỉ ID** (quiet) của container thuộc service đó. **`head -1`** = lấy dòng đầu (phòng khi có nhiều). `2>/dev/null` giấu lỗi, `\|\| true` để không bị `-e` giết nếu service chưa tồn tại.                                  |
+| 55    | `if [ -n "$CONTAINER_ID" ]; then`                                                 | **`[ -n "$X" ]`** = "X **không** rỗng". Tức là: chỉ xử lý tiếp nếu thực sự tìm thấy container đang chạy.                                                                                                                                         |
+| 56    | `RUNNING_IMAGE=$(docker inspect --format '{{.Config.Image}}' ...)`                | **`docker inspect`** moi thông tin chi tiết của container. **`--format '{{.Config.Image}}'`** dùng template Go để rút ra **đúng tên image** mà container đang chạy, vd `lehoangtrong/shopee-api:sha-d4c7a70`.                                    |
+| 58    | `EXTRACTED=$(echo "$RUNNING_IMAGE" \| grep -oE 'sha-[a-f0-9]{7}' \| head -1 ...)` | Dùng **regex** để bóc đúng phần SHA. `grep -oE` = chỉ in (`-o`) phần khớp, dùng regex mở rộng (`-E`). Mẫu `sha-[a-f0-9]{7}` nghĩa là: chữ `sha-` theo sau bởi **đúng 7 ký tự** hex (0–9, a–f). Vậy từ `...:sha-d4c7a70` ta lấy ra `sha-d4c7a70`. |
+| 59–62 | `if [ -n "$EXTRACTED" ]; then PRIOR_SHA="$EXTRACTED"; break; fi`                  | Nếu bóc được SHA hợp lệ → lưu vào `PRIOR_SHA` và **`break`** (thoát vòng lặp ngay, không cần kiểm tra 2 service còn lại).                                                                                                                        |
 
 ```bash
 if [ -n "$PRIOR_SHA" ]; then
@@ -531,13 +532,13 @@ done
 
 Đây là bước **thay container cũ bằng container mới**. Phân tích kỹ lệnh `docker compose up`:
 
-| Phần | Ý nghĩa |
-|------|---------|
-| `docker compose -f "$COMPOSE_FILE"` | Dùng đúng file `docker-compose.prod.yaml` làm bản thiết kế. |
-| `up -d` | Khởi động service ở chế độ **nền (detached)**. Vì biến `REGISTRY` và `IMAGE_TAG` đã `export` ở mục 5.2, compose sẽ tạo container từ image **mới** `lehoangtrong/shopee-api:sha-418a594`. |
-| `--no-deps` | **"Không động tới các service phụ thuộc."** Vd khi update `shopee-api`, **không** tự khởi động lại `mongodb`/`redis` mà nó depends_on. Tránh restart dây chuyền không cần thiết. |
-| `--remove-orphans` | Dọn các container "mồ côi" — tức container của service đã bị xóa khỏi file compose nhưng vẫn còn sót lại. Giữ môi trường sạch sẽ. |
-| `"$SERVICE"` | Chỉ tác động đúng **một** service được nêu tên. |
+| Phần                                | Ý nghĩa                                                                                                                                                                                  |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `docker compose -f "$COMPOSE_FILE"` | Dùng đúng file `docker-compose.prod.yaml` làm bản thiết kế.                                                                                                                              |
+| `up -d`                             | Khởi động service ở chế độ **nền (detached)**. Vì biến `REGISTRY` và `IMAGE_TAG` đã `export` ở mục 5.2, compose sẽ tạo container từ image **mới** `lehoangtrong/shopee-api:sha-418a594`. |
+| `--no-deps`                         | **"Không động tới các service phụ thuộc."** Vd khi update `shopee-api`, **không** tự khởi động lại `mongodb`/`redis` mà nó depends_on. Tránh restart dây chuyền không cần thiết.         |
+| `--remove-orphans`                  | Dọn các container "mồ côi" — tức container của service đã bị xóa khỏi file compose nhưng vẫn còn sót lại. Giữ môi trường sạch sẽ.                                                        |
+| `"$SERVICE"`                        | Chỉ tác động đúng **một** service được nêu tên.                                                                                                                                          |
 
 > 🔄 **Vì sao gọi là "rolling update" (cập nhật cuốn chiếu)?** Vì ta update **lần lượt từng service**, không phải tắt hết rồi bật lại cùng lúc. Khi `shopee-api` đang được thay, thì `shopee-web` và `shopee-admin` cũ vẫn còn chạy. Cách này giảm thiểu downtime so với việc `docker compose down` (tắt sạch) rồi `up` lại.
 >
@@ -629,6 +630,7 @@ fi
 - **`exit 1`** — sau khi rollback xong, script deploy vẫn thoát với mã **1 (thất bại)**. Vì sao? Vì lần **deploy bản mới đã FAIL** — dù đã cứu vãn bằng rollback, ta vẫn phải báo cho GitHub Actions biết "lần deploy này không thành công" để bạn nhận cảnh báo và đi sửa code.
 
 > 🧭 **Sơ đồ quyết định khi health check FAIL:**
+>
 > ```
 > Health check FAIL
 >   │
@@ -700,16 +702,16 @@ done
 
 Phân tích từng dòng:
 
-| Dòng lệnh | Ý nghĩa |
-|-----------|---------|
-| `for repo in shopee-api shopee-web shopee-admin` | Lặp qua cả 3 repo image. |
-| `docker images "$REGISTRY/$repo" --format '{{.Repository}}:{{.Tag}}'` | Liệt kê **mọi image cục bộ** thuộc repo này, in ra dạng `user/shopee-api:sha-abc1234`. |
-| `\| grep -E 'sha-[a-f0-9]{7}$'` | Chỉ giữ những image có tag dạng `sha-XXXXXXX` (7 ký tự hex). Loại bỏ `:latest` và các tag khác → **không bao giờ đụng tới tag `latest`**. |
-| `\|\| true` | Nếu `grep` không tìm thấy gì (exit code 1), `\|\| true` ép thành công để `set -e` không kill script. |
-| `tag="${img##*:}"` | Bóc tag: `${img##*:}` = "xóa phần dài nhất từ đầu tới dấu `:` cuối cùng" → còn lại đúng `sha-abc1234`. |
-| `if [ "$tag" = "$IMAGE_TAG" ]; then continue` | **Giữ lại bản đang chạy** — bỏ qua, không xóa. |
-| `if [ -n "$KEEP_PREV" ] && [ "$tag" = "$KEEP_PREV" ]; then continue` | **Giữ lại bản rollback** (nếu có mỏ neo). |
-| `docker rmi "$img" \|\| true` | Xóa image. `\|\| true` để lỡ image đang được container khác dùng (không xóa được) thì cũng không làm chết script. |
+| Dòng lệnh                                                             | Ý nghĩa                                                                                                                                   |
+| --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `for repo in shopee-api shopee-web shopee-admin`                      | Lặp qua cả 3 repo image.                                                                                                                  |
+| `docker images "$REGISTRY/$repo" --format '{{.Repository}}:{{.Tag}}'` | Liệt kê **mọi image cục bộ** thuộc repo này, in ra dạng `user/shopee-api:sha-abc1234`.                                                    |
+| `\| grep -E 'sha-[a-f0-9]{7}$'`                                       | Chỉ giữ những image có tag dạng `sha-XXXXXXX` (7 ký tự hex). Loại bỏ `:latest` và các tag khác → **không bao giờ đụng tới tag `latest`**. |
+| `\|\| true`                                                           | Nếu `grep` không tìm thấy gì (exit code 1), `\|\| true` ép thành công để `set -e` không kill script.                                      |
+| `tag="${img##*:}"`                                                    | Bóc tag: `${img##*:}` = "xóa phần dài nhất từ đầu tới dấu `:` cuối cùng" → còn lại đúng `sha-abc1234`.                                    |
+| `if [ "$tag" = "$IMAGE_TAG" ]; then continue`                         | **Giữ lại bản đang chạy** — bỏ qua, không xóa.                                                                                            |
+| `if [ -n "$KEEP_PREV" ] && [ "$tag" = "$KEEP_PREV" ]; then continue`  | **Giữ lại bản rollback** (nếu có mỏ neo).                                                                                                 |
+| `docker rmi "$img" \|\| true`                                         | Xóa image. `\|\| true` để lỡ image đang được container khác dùng (không xóa được) thì cũng không làm chết script.                         |
 
 #### Quét layer "mồ côi" (dòng 197–200)
 
@@ -723,6 +725,7 @@ echo "==> Deploy complete."
 - **`echo "==> Deploy complete."`** — dòng cuối cùng. Khi bạn thấy dòng này trong log SSH nghĩa là **toàn bộ deploy đã hoàn tất thành công**.
 
 > ⚠️ **Cực kỳ quan trọng — những gì prune KHÔNG BAO GIỜ làm:**
+>
 > - **KHÔNG** dùng `docker system prune` (sẽ xóa cả network, build cache...).
 > - **KHÔNG** dùng cờ `-a`/`--all` (sẽ xóa cả image đang dùng bởi container dừng).
 > - **KHÔNG** dùng `--volumes` và **KHÔNG** dùng `docker volume prune`.
@@ -797,17 +800,17 @@ for SERVICE in $SERVICES; do
 done
 ```
 
-| Dòng lệnh | Ý nghĩa |
-|-----------|---------|
-| `FAILED_SERVICES=()` | Mảng rỗng để gom các service **fail**. |
-| `for SERVICE in $SERVICES` | Lặp qua từng service cần kiểm tra. |
-| `for attempt in $(seq 1 "$MAX_ATTEMPTS")` | Vòng retry: thử lại tối đa 30 lần. |
-| `curl -s -o /dev/null -w "%{http_code}"` | Gọi URL, **chỉ lấy mã HTTP** (`-w "%{http_code}"`), vứt body đi (`-o /dev/null`), im lặng (`-s`). |
-| `--max-time 5` | Mỗi lần gọi chờ tối đa 5 giây rồi bỏ (tránh treo vô hạn). |
-| `\|\| echo "000"` | Nếu `curl` lỗi (chưa kết nối được) thì trả `"000"` thay vì để trống. |
-| `if [ "$HTTP_STATUS" = "200" ]` | Chỉ **200** mới coi là khỏe → set `HEALTHY=true`, `break` thoát vòng retry. |
-| `sleep "$SLEEP_SECONDS"` | Chưa khỏe → ngủ 5 giây rồi thử lại. |
-| `FAILED_SERVICES+=("$SERVICE")` | Hết 30 lần vẫn chưa 200 → ghi service này vào danh sách fail. |
+| Dòng lệnh                                 | Ý nghĩa                                                                                           |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `FAILED_SERVICES=()`                      | Mảng rỗng để gom các service **fail**.                                                            |
+| `for SERVICE in $SERVICES`                | Lặp qua từng service cần kiểm tra.                                                                |
+| `for attempt in $(seq 1 "$MAX_ATTEMPTS")` | Vòng retry: thử lại tối đa 30 lần.                                                                |
+| `curl -s -o /dev/null -w "%{http_code}"`  | Gọi URL, **chỉ lấy mã HTTP** (`-w "%{http_code}"`), vứt body đi (`-o /dev/null`), im lặng (`-s`). |
+| `--max-time 5`                            | Mỗi lần gọi chờ tối đa 5 giây rồi bỏ (tránh treo vô hạn).                                         |
+| `\|\| echo "000"`                         | Nếu `curl` lỗi (chưa kết nối được) thì trả `"000"` thay vì để trống.                              |
+| `if [ "$HTTP_STATUS" = "200" ]`           | Chỉ **200** mới coi là khỏe → set `HEALTHY=true`, `break` thoát vòng retry.                       |
+| `sleep "$SLEEP_SECONDS"`                  | Chưa khỏe → ngủ 5 giây rồi thử lại.                                                               |
+| `FAILED_SERVICES+=("$SERVICE")`           | Hết 30 lần vẫn chưa 200 → ghi service này vào danh sách fail.                                     |
 
 > 💡 **Vì sao phải retry 30 lần?** Container vừa khởi động cần thời gian để app "ấm máy" (kết nối DB, load config, mở port...). Nếu kiểm tra ngay lập tức sẽ thấy lỗi giả. Cơ chế retry cho app tới **2.5 phút** để sẵn sàng — đủ rộng rãi cho hầu hết app NestJS/Nginx.
 
@@ -828,6 +831,7 @@ exit 0
 - Tất cả khỏe → **`exit 0`** (thành công), `deploy.sh` đi tiếp tới bước ghi mỏ neo + prune.
 
 > 🧭 **health-check.sh quyết định toàn bộ số phận của lần deploy:**
+>
 > ```
 > exit 0  ─►  deploy.sh: ghi mỏ neo + prune + "Deploy complete"  ✓
 > exit 1  ─►  deploy.sh: chạy qua 3 guard → rollback.sh  ✗
@@ -988,10 +992,10 @@ redis:
 - MongoDB và Redis được gắn **`profiles: [self-hosted]`**. Nghĩa là chúng **chỉ chạy** khi bạn thêm cờ `--profile self-hosted`.
 - → Có **2 chế độ vận hành:**
 
-| Chế độ | Lệnh | DB/Redis dùng từ đâu |
-|--------|------|-----------------------|
+| Chế độ               | Lệnh                                               | DB/Redis dùng từ đâu                                                                                       |
+| -------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | **Cloud** (mặc định) | `docker compose -f docker-compose.prod.yaml up -d` | DB & Redis trên cloud (MongoDB Atlas, Redis Cloud...) — khai trong `.env.prod` qua `MONGO_URI`/`REDIS_URL` |
-| **Self-hosted** | `... --profile self-hosted up -d` | MongoDB + Redis chạy ngay trong Docker trên VPS |
+| **Self-hosted**      | `... --profile self-hosted up -d`                  | MongoDB + Redis chạy ngay trong Docker trên VPS                                                            |
 
 - `deploy.sh` không thêm `--profile self-hosted` → mặc định chạy **chế độ cloud** (DB/Redis ở ngoài).
 
@@ -1005,19 +1009,19 @@ shopee-api:
   ports: ['127.0.0.1:8083:4000']
   depends_on:
     mongodb: { condition: service_healthy, required: false }
-    redis:   { condition: service_healthy, required: false }
+    redis: { condition: service_healthy, required: false }
   healthcheck:
     test: ['CMD', 'wget', '-qO-', 'http://localhost:4000/health']
 ```
 
-| Trường | Ý nghĩa |
-|--------|---------|
-| `image: ${REGISTRY:-myuser}/shopee-api:${IMAGE_TAG:-latest}` | Chính 2 biến mà `deploy.sh` `export` (REGISTRY + IMAGE_TAG) được thay vào đây. Nếu không set → mặc định `myuser/...:latest`. |
-| `env_file: [.env.prod]` | Nạp biến môi trường thật (MONGO_URI, REDIS_URL, JWT secret...) từ file `.env.prod` trên VPS. |
-| `volumes: [shopee_api_uploads:/app/upload]` | Gắn volume lưu **file upload của user**. Volume tồn tại độc lập với container → deploy/rollback **không mất** file đã upload. |
-| `ports: ['127.0.0.1:8083:4000']` | Map cổng 4000 (trong container) ra `127.0.0.1:8083` (trên VPS). Bind `127.0.0.1` → chỉ truy cập nội bộ, không lộ ra Internet. |
-| `depends_on ... required: false` | "Nếu mongodb/redis CÓ chạy (chế độ self-hosted) thì đợi chúng healthy rồi mới khởi động api; nếu KHÔNG có (chế độ cloud) thì cứ chạy". `required: false` chính là chìa khóa cho cả 2 chế độ dùng chung một file. |
-| `healthcheck: wget .../health` | Docker tự kiểm tra sức khỏe container bằng cách gọi `/health`. |
+| Trường                                                       | Ý nghĩa                                                                                                                                                                                                          |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `image: ${REGISTRY:-myuser}/shopee-api:${IMAGE_TAG:-latest}` | Chính 2 biến mà `deploy.sh` `export` (REGISTRY + IMAGE_TAG) được thay vào đây. Nếu không set → mặc định `myuser/...:latest`.                                                                                     |
+| `env_file: [.env.prod]`                                      | Nạp biến môi trường thật (MONGO_URI, REDIS_URL, JWT secret...) từ file `.env.prod` trên VPS.                                                                                                                     |
+| `volumes: [shopee_api_uploads:/app/upload]`                  | Gắn volume lưu **file upload của user**. Volume tồn tại độc lập với container → deploy/rollback **không mất** file đã upload.                                                                                    |
+| `ports: ['127.0.0.1:8083:4000']`                             | Map cổng 4000 (trong container) ra `127.0.0.1:8083` (trên VPS). Bind `127.0.0.1` → chỉ truy cập nội bộ, không lộ ra Internet.                                                                                    |
+| `depends_on ... required: false`                             | "Nếu mongodb/redis CÓ chạy (chế độ self-hosted) thì đợi chúng healthy rồi mới khởi động api; nếu KHÔNG có (chế độ cloud) thì cứ chạy". `required: false` chính là chìa khóa cho cả 2 chế độ dùng chung một file. |
+| `healthcheck: wget .../health`                               | Docker tự kiểm tra sức khỏe container bằng cách gọi `/health`.                                                                                                                                                   |
 
 ### 8.3 — Service shopee-web & shopee-admin
 
@@ -1035,7 +1039,7 @@ shopee-admin:
 
 - Cả hai là **app React build bằng Vite**, được **Nginx** serve tĩnh trong container (cổng nội bộ 8080).
 - `web` map ra `127.0.0.1:8081`, `admin` ra `127.0.0.1:8082` — khớp với URL trong `health-check.sh`.
-- **Điểm mấu chốt về biến VITE_*:** các biến như `VITE_API_BASE_URL` được truyền vào **lúc BUILD image** (build-args trong pipeline), **không phải lúc chạy**. Vite "nướng cứng" (inline) các giá trị này thẳng vào file JS. Đây là lý do quan trọng giải thích cảnh báo trong log ở [mục 9](#9-đối-chiếu-với-log-thực-tế-của-bạn).
+- **Điểm mấu chốt về biến VITE\_\*:** các biến như `VITE_API_BASE_URL` được truyền vào **lúc BUILD image** (build-args trong pipeline), **không phải lúc chạy**. Vite "nướng cứng" (inline) các giá trị này thẳng vào file JS. Đây là lý do quan trọng giải thích cảnh báo trong log ở [mục 9](#9-đối-chiếu-với-log-thực-tế-của-bạn).
 
 ### 8.4 — Network & Volumes
 
@@ -1077,7 +1081,7 @@ WARN[0000] The "VITE_SOCKET_URL" variable is not set. Defaulting to a blank stri
 - Khi `docker compose` trên VPS đọc file compose, nó thấy phần `build.args` có tham chiếu `${VITE_...}` nhưng trên VPS **không có** các biến này (vì chúng chỉ cần lúc build, không cần lúc chạy) → Docker Compose in cảnh báo "variable not set, defaulting to blank".
 - **Vì sao vô hại?** Vì trên VPS ta **không build lại** — ta chỉ `pull` image đã build sẵn rồi `up`. Phần `build.args` hoàn toàn bị bỏ qua khi đã có sẵn image. Giá trị thật đã nằm trong JS từ lúc build trên Actions rồi.
 
-> 💡 **Tóm gọn:** cảnh báo VITE_* xuất hiện vì compose file có khai `build.args` nhưng VPS chạy ở chế độ "chỉ pull, không build". Giá trị đúng đã được inline vào bundle từ trước. **Bỏ qua an toàn.**
+> 💡 **Tóm gọn:** cảnh báo VITE\_\* xuất hiện vì compose file có khai `build.args` nhưng VPS chạy ở chế độ "chỉ pull, không build". Giá trị đúng đã được inline vào bundle từ trước. **Bỏ qua an toàn.**
 
 ### 9.2 — Các mốc log nên thấy khi deploy THÀNH CÔNG
 
@@ -1103,17 +1107,17 @@ WARN[0000] The "VITE_SOCKET_URL" variable is not set. Defaulting to a blank stri
 
 ### 9.3 — Đối chiếu nhanh: log nói gì ↔ code dòng nào
 
-| Dòng log | Sinh ra từ | Mục giải thích |
-|----------|-----------|----------------|
-| `Deploy started: ...` | `deploy.sh` dòng 41 | [5.2](#52--tính-đường-dẫn--export-biến-dòng-3039) |
-| `Captured prior running SHA` | `deploy.sh` dòng 67 | [5.3](#53--step-1--chụp-lại-sha-đang-chạy-trước-đó-dòng-4370) |
-| `Logging in to Docker Hub` | `deploy.sh` dòng 75 | [5.4](#54--step-2--đăng-nhập-docker-hub-dòng-7276) |
-| `Pulling .../sha-xxx` | `deploy.sh` dòng 82 | [5.5](#55--step-3--kéo-image-mới-về-vps-dòng-7884) |
-| `Updating <service>...` | `deploy.sh` dòng 90 | [5.6](#56--step-4--rolling-update-cập-nhật-từng-service-dòng-8692) |
-| `[n/30] ... HTTP 200 ✓` | `health-check.sh` | [6.3](#63--vòng-lặp-kiểm-tra-với-retry) |
+| Dòng log                                | Sinh ra từ           | Mục giải thích                                                        |
+| --------------------------------------- | -------------------- | --------------------------------------------------------------------- |
+| `Deploy started: ...`                   | `deploy.sh` dòng 41  | [5.2](#52--tính-đường-dẫn--export-biến-dòng-3039)                     |
+| `Captured prior running SHA`            | `deploy.sh` dòng 67  | [5.3](#53--step-1--chụp-lại-sha-đang-chạy-trước-đó-dòng-4370)         |
+| `Logging in to Docker Hub`              | `deploy.sh` dòng 75  | [5.4](#54--step-2--đăng-nhập-docker-hub-dòng-7276)                    |
+| `Pulling .../sha-xxx`                   | `deploy.sh` dòng 82  | [5.5](#55--step-3--kéo-image-mới-về-vps-dòng-7884)                    |
+| `Updating <service>...`                 | `deploy.sh` dòng 90  | [5.6](#56--step-4--rolling-update-cập-nhật-từng-service-dòng-8692)    |
+| `[n/30] ... HTTP 200 ✓`                 | `health-check.sh`    | [6.3](#63--vòng-lặp-kiểm-tra-với-retry)                               |
 | `Persisted confirmed-healthy prior SHA` | `deploy.sh` dòng 153 | [5.8](#58--health-check-qua--ghi-mỏ-neo-đã-xác-nhận-khỏe-dòng-147156) |
-| `Removing stale image` | `deploy.sh` dòng 192 | [5.9](#59--dọn-dẹp-image-cũ-prune--dòng-158200) |
-| `Deploy complete.` | `deploy.sh` dòng 200 | [5.9](#59--dọn-dẹp-image-cũ-prune--dòng-158200) |
+| `Removing stale image`                  | `deploy.sh` dòng 192 | [5.9](#59--dọn-dẹp-image-cũ-prune--dòng-158200)                       |
+| `Deploy complete.`                      | `deploy.sh` dòng 200 | [5.9](#59--dọn-dẹp-image-cũ-prune--dòng-158200)                       |
 
 ---
 
@@ -1121,35 +1125,35 @@ WARN[0000] The "VITE_SOCKET_URL" variable is not set. Defaulting to a blank stri
 
 ### 10.1 — Cú pháp bash hay gặp trong các script
 
-| Cú pháp | Nghĩa |
-|---------|-------|
-| `set -euo pipefail` | Dừng ngay khi có lỗi (`-e`), báo lỗi biến chưa khai (`-u`), bắt lỗi giữa pipe (`-o pipefail`). |
-| `${1:-}` | Tham số thứ 1, mặc định chuỗi rỗng nếu không truyền. |
-| `${VAR:-mặc-định}` | Giá trị `VAR`, nếu rỗng thì dùng "mặc-định". |
-| `${*}` / `$*` | Tất cả tham số còn lại, gộp thành chuỗi. |
-| `${img##*:}` | Xóa phần dài nhất từ đầu tới `:` cuối → lấy phần sau dấu `:` cuối. |
-| `[ -z "$x" ]` / `[ -n "$x" ]` | Chuỗi rỗng / chuỗi KHÔNG rỗng. |
-| `[ -f "$x" ]` | File tồn tại. |
-| `cmd \|\| true` | Chạy `cmd`, nếu fail vẫn coi như OK (chống `set -e` kill script). |
-| `cmd >&2` | In ra **stderr** (luồng lỗi) thay vì stdout. |
-| `tr -d '[:space:]'` | Xóa mọi khoảng trắng/xuống dòng. |
-| `grep -oE 'sha-[a-f0-9]{7}'` | Trích đúng chuỗi `sha-` + 7 ký tự hex. |
-| `grep -qF "x"` | So khớp chuỗi cố định, im lặng (chỉ trả có/không). |
+| Cú pháp                       | Nghĩa                                                                                          |
+| ----------------------------- | ---------------------------------------------------------------------------------------------- |
+| `set -euo pipefail`           | Dừng ngay khi có lỗi (`-e`), báo lỗi biến chưa khai (`-u`), bắt lỗi giữa pipe (`-o pipefail`). |
+| `${1:-}`                      | Tham số thứ 1, mặc định chuỗi rỗng nếu không truyền.                                           |
+| `${VAR:-mặc-định}`            | Giá trị `VAR`, nếu rỗng thì dùng "mặc-định".                                                   |
+| `${*}` / `$*`                 | Tất cả tham số còn lại, gộp thành chuỗi.                                                       |
+| `${img##*:}`                  | Xóa phần dài nhất từ đầu tới `:` cuối → lấy phần sau dấu `:` cuối.                             |
+| `[ -z "$x" ]` / `[ -n "$x" ]` | Chuỗi rỗng / chuỗi KHÔNG rỗng.                                                                 |
+| `[ -f "$x" ]`                 | File tồn tại.                                                                                  |
+| `cmd \|\| true`               | Chạy `cmd`, nếu fail vẫn coi như OK (chống `set -e` kill script).                              |
+| `cmd >&2`                     | In ra **stderr** (luồng lỗi) thay vì stdout.                                                   |
+| `tr -d '[:space:]'`           | Xóa mọi khoảng trắng/xuống dòng.                                                               |
+| `grep -oE 'sha-[a-f0-9]{7}'`  | Trích đúng chuỗi `sha-` + 7 ký tự hex.                                                         |
+| `grep -qF "x"`                | So khớp chuỗi cố định, im lặng (chỉ trả có/không).                                             |
 
 ### 10.2 — Lệnh Docker hay gặp
 
-| Lệnh | Nghĩa |
-|------|-------|
-| `docker login -u USER --password-stdin` | Đăng nhập, đọc mật khẩu từ stdin (an toàn, không lộ trong log/history). |
-| `docker pull REPO:TAG` | Kéo image từ registry về máy. |
-| `docker compose up -d --no-deps SERVICE` | Tạo/khởi động service ở chế độ nền, **không** đụng service phụ thuộc. |
-| `--remove-orphans` | Xóa container "mồ côi" không còn trong compose file. |
-| `docker compose ps -q SERVICE` | Lấy ID container của 1 service. |
-| `docker inspect --format '{{.Config.Image}}' ID` | Lấy tên image của container. |
-| `docker images REPO --format '{{.Repository}}:{{.Tag}}'` | Liệt kê image cục bộ theo định dạng tùy chọn. |
-| `docker rmi IMG` | Xóa 1 image. |
-| `docker image prune -f` | Xóa các layer dangling (mồ côi), không hỏi. |
-| `docker ps --filter "status=restarting"` | Liệt kê container đang crash-loop. |
+| Lệnh                                                     | Nghĩa                                                                   |
+| -------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `docker login -u USER --password-stdin`                  | Đăng nhập, đọc mật khẩu từ stdin (an toàn, không lộ trong log/history). |
+| `docker pull REPO:TAG`                                   | Kéo image từ registry về máy.                                           |
+| `docker compose up -d --no-deps SERVICE`                 | Tạo/khởi động service ở chế độ nền, **không** đụng service phụ thuộc.   |
+| `--remove-orphans`                                       | Xóa container "mồ côi" không còn trong compose file.                    |
+| `docker compose ps -q SERVICE`                           | Lấy ID container của 1 service.                                         |
+| `docker inspect --format '{{.Config.Image}}' ID`         | Lấy tên image của container.                                            |
+| `docker images REPO --format '{{.Repository}}:{{.Tag}}'` | Liệt kê image cục bộ theo định dạng tùy chọn.                           |
+| `docker rmi IMG`                                         | Xóa 1 image.                                                            |
+| `docker image prune -f`                                  | Xóa các layer dangling (mồ côi), không hỏi.                             |
+| `docker ps --filter "status=restarting"`                 | Liệt kê container đang crash-loop.                                      |
 
 ### 10.3 — Lệnh xử lý sự cố trên VPS (chạy tay)
 
@@ -1194,7 +1198,7 @@ DOCKERHUB_USERNAME=... DOCKERHUB_TOKEN=... ./scripts/rollback.sh
 Đáp: Lần deploy kế tiếp nếu fail sẽ không có mỏ neo để lùi → Guard C kích hoạt, báo lỗi yêu cầu can thiệp tay. Lần deploy thành công kế tiếp sẽ tự ghi lại mỏ neo mới. Không gây mất dữ liệu, chỉ mất khả năng auto-rollback cho đúng lần đó.
 
 **Hỏi: Cảnh báo `VITE_... variable is not set` có nguy hiểm không?**
-Đáp: **Không.** Giá trị VITE_* đã được nướng cứng vào bundle JS từ lúc build trên Actions. Trên VPS chỉ pull-và-chạy nên không cần các biến đó. Xem chi tiết [mục 9.1](#91--cảnh-báo-the-vite-variable-is-not-set).
+Đáp: **Không.** Giá trị VITE\_\* đã được nướng cứng vào bundle JS từ lúc build trên Actions. Trên VPS chỉ pull-và-chạy nên không cần các biến đó. Xem chi tiết [mục 9.1](#91--cảnh-báo-the-vite-variable-is-not-set).
 
 **Hỏi: Vì sao bước prune đặt ở cuối, sau khi ghi mỏ neo?**
 Đáp: Để bảo đảm không xóa nhầm image mà đường rollback cần. Trình tự an toàn: deploy → health PASS → ghi mỏ neo → prune (và prune luôn chừa lại bản đang chạy + bản rollback).
@@ -1207,4 +1211,4 @@ DOCKERHUB_USERNAME=... DOCKERHUB_TOKEN=... ./scripts/rollback.sh
 
 ---
 
-> **Kết:** Toàn bộ flow đúng với triết lý ở đầu dự án — *一度正しく、永遠に動く (làm đúng một lần, chạy mãi mãi)*: build một lần trên CI, tag bất biến theo SHA, deploy có health check, fail thì tự rollback an toàn nhờ 3 lớp guard, và dọn dẹp ổ đĩa mà tuyệt đối không đụng tới dữ liệu. Nắm chắc tài liệu này là bạn hiểu trọn vẹn con đường code đi từ `git push` tới lúc chạy trên VPS.
+> **Kết:** Toàn bộ flow đúng với triết lý ở đầu dự án — _一度正しく、永遠に動く (làm đúng một lần, chạy mãi mãi)_: build một lần trên CI, tag bất biến theo SHA, deploy có health check, fail thì tự rollback an toàn nhờ 3 lớp guard, và dọn dẹp ổ đĩa mà tuyệt đối không đụng tới dữ liệu. Nắm chắc tài liệu này là bạn hiểu trọn vẹn con đường code đi từ `git push` tới lúc chạy trên VPS.

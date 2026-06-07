@@ -33,6 +33,33 @@ COMPOSE_FILE="$PROJECT_ROOT/docker-compose.prod.yaml"
 REGISTRY="${REGISTRY:-${DOCKERHUB_USERNAME:-OWNER}}"
 
 # ---------------------------------------------------------------------------
+# retry_with_backoff — Run a command, retrying on failure with exponential
+# backoff. Designed for transient Docker Hub registry timeouts
+# ("context deadline exceeded"). Returns the command's exit code; on final
+# failure it returns non-zero so `set -euo pipefail` still aborts the deploy.
+#
+# Usage: retry_with_backoff <max_attempts> <initial_delay_seconds> <cmd...>
+# ---------------------------------------------------------------------------
+retry_with_backoff() {
+  local max_attempts="$1"
+  local delay="$2"
+  shift 2
+  local attempt=1
+  until "$@"; do
+    local exit_code=$?
+    if [ "$attempt" -ge "$max_attempts" ]; then
+      echo "ERROR: command failed after $attempt attempt(s): $*" >&2
+      return "$exit_code"
+    fi
+    echo "==> Attempt $attempt/$max_attempts failed (exit $exit_code). Retrying in ${delay}s: $*" >&2
+    sleep "$delay"
+    attempt=$((attempt + 1))
+    delay=$((delay * 2))
+  done
+  return 0
+}
+
+# ---------------------------------------------------------------------------
 # Step 1: Read previous SHA — abort with a clear error if missing or empty
 # ---------------------------------------------------------------------------
 if [ ! -f "$PREVIOUS_SHA_FILE" ]; then
@@ -80,7 +107,10 @@ echo "==> Rolling back to tag: $PREV_TAG (registry: $REGISTRY)"
 # ---------------------------------------------------------------------------
 if [ -n "${DOCKERHUB_USERNAME:-}" ] && [ -n "${DOCKERHUB_TOKEN:-}" ]; then
   echo "==> Logging in to Docker Hub..."
-  echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+  _docker_login() {
+    echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+  }
+  retry_with_backoff 5 5 _docker_login
 else
   echo "==> DOCKERHUB_USERNAME/DOCKERHUB_TOKEN not set; skipping login (assuming cached credentials or public images)."
 fi
@@ -90,7 +120,7 @@ fi
 # ---------------------------------------------------------------------------
 for SERVICE in shopee-api shopee-web shopee-admin; do
   echo "==> Pulling $REGISTRY/$SERVICE:$PREV_TAG"
-  docker pull "$REGISTRY/$SERVICE:$PREV_TAG"
+  retry_with_backoff 5 5 docker pull "$REGISTRY/$SERVICE:$PREV_TAG"
 done
 
 # Export for docker compose image: interpolation (${REGISTRY}/${SERVICE}:${IMAGE_TAG}).

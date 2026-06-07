@@ -38,6 +38,33 @@ PREVIOUS_SHA_FILE="$BACKUPS_DIR/.previous-sha"
 export REGISTRY
 export IMAGE_TAG
 
+# ---------------------------------------------------------------------------
+# retry_with_backoff — Run a command, retrying on failure with exponential
+# backoff. Designed for transient Docker Hub registry timeouts
+# ("context deadline exceeded"). Returns the command's exit code; on final
+# failure it returns non-zero so `set -euo pipefail` still aborts the deploy.
+#
+# Usage: retry_with_backoff <max_attempts> <initial_delay_seconds> <cmd...>
+# ---------------------------------------------------------------------------
+retry_with_backoff() {
+  local max_attempts="$1"
+  local delay="$2"
+  shift 2
+  local attempt=1
+  until "$@"; do
+    local exit_code=$?
+    if [ "$attempt" -ge "$max_attempts" ]; then
+      echo "ERROR: command failed after $attempt attempt(s): $*" >&2
+      return "$exit_code"
+    fi
+    echo "==> Attempt $attempt/$max_attempts failed (exit $exit_code). Retrying in ${delay}s: $*" >&2
+    sleep "$delay"
+    attempt=$((attempt + 1))
+    delay=$((delay * 2))
+  done
+  return 0
+}
+
 echo "==> Deploy started: registry=$REGISTRY tag=$IMAGE_TAG services=$SERVICES"
 
 # ---------------------------------------------------------------------------
@@ -73,14 +100,17 @@ fi
 # Step 2: Login to Docker Hub
 # ---------------------------------------------------------------------------
 echo "==> Logging in to Docker Hub..."
-echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+_docker_login() {
+  echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+}
+retry_with_backoff 5 5 _docker_login
 
 # ---------------------------------------------------------------------------
 # Step 3: Pull new images
 # ---------------------------------------------------------------------------
 for SERVICE in $SERVICES; do
   echo "==> Pulling $REGISTRY/$SERVICE:$IMAGE_TAG"
-  docker pull "$REGISTRY/$SERVICE:$IMAGE_TAG"
+  retry_with_backoff 5 5 docker pull "$REGISTRY/$SERVICE:$IMAGE_TAG"
 done
 
 # ---------------------------------------------------------------------------

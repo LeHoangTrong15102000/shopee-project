@@ -103,6 +103,24 @@ jobs:
     needs: build-and-push
     environment: production
     steps:
+      # Sync scripts/ from the built commit to the VPS before deploying so the
+      # VPS always runs the exact scripts that shipped with this commit. Without
+      # this step, script changes never reach the VPS until a manual git pull.
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sync deploy scripts to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_SSH_PORT }}
+          source: "scripts/*.sh"
+          target: "shopee-project/scripts"
+          overwrite: true
+          strip_components: 1
+
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.0
         env:

@@ -57,7 +57,8 @@ export class LoyaltyService extends BaseService {
   }
 
   private getTierInfo(tier: LoyaltyTier, lifetimePoints: number): TierInfo {
-    const safeTier: keyof typeof TIER_THRESHOLDS = tier in TIER_THRESHOLDS ? tier : LOYALTY_TIER.BRONZE
+    const safeTier: keyof typeof TIER_THRESHOLDS =
+      tier in TIER_THRESHOLDS ? tier : LOYALTY_TIER.BRONZE
     const info = TIER_THRESHOLDS[safeTier]
     return {
       min: info.min,

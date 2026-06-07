@@ -50,18 +50,36 @@ interface RawExtendedDate {
   $date: string
 }
 
-type RawValue = string | number | boolean | null | RawExtendedOid | RawExtendedDate | RawValue[] | RawObject
+type RawValue =
+  | string
+  | number
+  | boolean
+  | null
+  | RawExtendedOid
+  | RawExtendedDate
+  | RawValue[]
+  | RawObject
 
 interface RawObject {
   [key: string]: RawValue
 }
 
 function isOid(val: unknown): val is RawExtendedOid {
-  return typeof val === 'object' && val !== null && '$oid' in val && typeof (val as RawExtendedOid).$oid === 'string'
+  return (
+    typeof val === 'object' &&
+    val !== null &&
+    '$oid' in val &&
+    typeof (val as RawExtendedOid).$oid === 'string'
+  )
 }
 
 function isDate(val: unknown): val is RawExtendedDate {
-  return typeof val === 'object' && val !== null && '$date' in val && typeof (val as RawExtendedDate).$date === 'string'
+  return (
+    typeof val === 'object' &&
+    val !== null &&
+    '$date' in val &&
+    typeof (val as RawExtendedDate).$date === 'string'
+  )
 }
 
 function parseExtendedJson(val: unknown): unknown {

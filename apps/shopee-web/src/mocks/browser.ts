@@ -1,0 +1,20 @@
+import { setupWorker } from 'msw/browser'
+import orderRequests from 'src/msw/order.msw'
+import authRequests from 'src/msw/auth.msw'
+import cartRequests from 'src/msw/cart.msw'
+import userRequests from 'src/msw/user.msw'
+import addressRequests from 'src/msw/address.msw'
+import notificationRequests from 'src/msw/notification.msw'
+import wishlistRequests from 'src/msw/wishlist.msw'
+import checkoutRequests from 'src/msw/checkout.msw'
+
+export const worker = setupWorker(
+  ...orderRequests,
+  ...authRequests,
+  ...cartRequests,
+  ...userRequests,
+  ...addressRequests,
+  ...notificationRequests,
+  ...wishlistRequests,
+  ...checkoutRequests,
+)

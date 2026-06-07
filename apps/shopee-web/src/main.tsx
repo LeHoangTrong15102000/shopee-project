@@ -55,34 +55,44 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
   })
 }
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <NuqsAdapter>
-        <ThemeProvider>
-          <QueryClientProvider client={queryClient}>
-            <AppProvider>
-              <SocketProvider>
-                <HelmetProvider>
-                  <HeroUIProvider>
-                    <LazyMotion features={domAnimation}>
-                      <ErrorBoundary>
-                        <App />
-                        {/* CHỈ render ReactQueryDevtools trong development */}
-                        {import.meta.env.DEV && (
-                          <Suspense fallback={null}>
-                            <ReactQueryDevtools initialIsOpen={false} />
-                          </Suspense>
-                        )}
-                      </ErrorBoundary>
-                    </LazyMotion>
-                  </HeroUIProvider>
-                </HelmetProvider>
-              </SocketProvider>
-            </AppProvider>
-          </QueryClientProvider>
-        </ThemeProvider>
-      </NuqsAdapter>
-    </BrowserRouter>
-  </React.StrictMode>,
-)
+async function enableMocking(): Promise<void> {
+  if (!import.meta.env.DEV && import.meta.env.VITE_ENABLE_MOCKS !== 'true') {
+    return
+  }
+  const { worker } = await import('./mocks/browser')
+  await worker.start({ onUnhandledRequest: 'bypass' })
+}
+
+enableMocking().then(() => {
+  ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+    <React.StrictMode>
+      <BrowserRouter>
+        <NuqsAdapter>
+          <ThemeProvider>
+            <QueryClientProvider client={queryClient}>
+              <AppProvider>
+                <SocketProvider>
+                  <HelmetProvider>
+                    <HeroUIProvider>
+                      <LazyMotion features={domAnimation}>
+                        <ErrorBoundary>
+                          <App />
+                          {/* CHỈ render ReactQueryDevtools trong development */}
+                          {import.meta.env.DEV && (
+                            <Suspense fallback={null}>
+                              <ReactQueryDevtools initialIsOpen={false} />
+                            </Suspense>
+                          )}
+                        </ErrorBoundary>
+                      </LazyMotion>
+                    </HeroUIProvider>
+                  </HelmetProvider>
+                </SocketProvider>
+              </AppProvider>
+            </QueryClientProvider>
+          </ThemeProvider>
+        </NuqsAdapter>
+      </BrowserRouter>
+    </React.StrictMode>,
+  )
+})

@@ -6,6 +6,7 @@ interface ImportMetaEnv {
   readonly VITE_SITE_URL?: string
   readonly VITE_LOGIN_REDIRECT_URL?: string
   readonly VITE_STRIPE_PUBLISHABLE_KEY: string
+  readonly VITE_ENABLE_MOCKS?: string
 }
 
 interface ImportMeta {

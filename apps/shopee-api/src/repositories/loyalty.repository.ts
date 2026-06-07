@@ -35,8 +35,23 @@ export class LoyaltyRepository implements ILoyaltyRepository {
       tier: LOYALTY_TIER.BRONZE,
       lifetime_points: 0,
     })
-    const saved = await points.save()
-    return saved.toObject() as ILoyaltyPointsItem
+    try {
+      const saved = await points.save()
+      return saved.toObject() as ILoyaltyPointsItem
+    } catch (err: unknown) {
+      // E11000 duplicate-key: concurrent creation race — re-fetch the existing document
+      if (typeof err === 'object' && err !== null && (err as { code?: unknown }).code === 11000) {
+        const existing = await LoyaltyPointsModel.findOne({
+          user: new Types.ObjectId(userId.toString()),
+        })
+          .select({ __v: 0 })
+          .lean<ILoyaltyPointsItem | null>()
+        if (existing) {
+          return existing
+        }
+      }
+      throw err
+    }
   }
 
   async updatePoints(

@@ -1,6 +1,7 @@
 import { Response, Request, NextFunction } from 'express'
 import { STATUS } from '@constants/status'
 import { COMMON_MESSAGES, ERROR_CODES, ErrorCode } from '@constants/messages'
+import { Logger } from '@utils/logger'
 
 type ErrorThrow = Record<string, unknown>
 type SuccessResponse = Record<string, unknown>
@@ -227,6 +228,15 @@ export class TooManyRequestsError extends ErrorHandler {
   }
 }
 
+type ServiceErrorShape = { statusCode: number; message?: string; stack?: string }
+
+function isServiceError(err: Error): err is Error & ServiceErrorShape {
+  return (
+    'statusCode' in err &&
+    typeof (err as unknown as { statusCode: unknown }).statusCode === 'number'
+  )
+}
+
 /**
  * Xử lý và trả về response lỗi
  * Không leak stack trace trong production
@@ -272,20 +282,24 @@ export const responseError = (res: Response, error: ErrorHandler | Error) => {
   }
 
   // ServiceError: có statusCode riêng, treat as operational
-  if ('statusCode' in error && typeof (error as any).statusCode === 'number') {
-    const serviceError = error as any
+  if (isServiceError(error)) {
     const response: ErrorResponse = {
-      message: isProduction() ? serviceError.message : serviceError.message,
+      message: error.message ?? COMMON_MESSAGES.ERROR,
     }
 
-    if (!isProduction() && serviceError.stack) {
-      response.stack = serviceError.stack
+    if (!isProduction() && error.stack) {
+      response.stack = error.stack
     }
 
-    return res.status(serviceError.statusCode).send(response)
+    return res.status(error.statusCode).send(response)
   }
 
   // Lỗi không mong đợi - không leak thông tin trong production
+  Logger.apiError('Unexpected error masked as 500', {
+    message: error.message,
+    stack: error.stack,
+  })
+
   const response: ErrorResponse = {
     message: isProduction() ? COMMON_MESSAGES.INTERNAL_SERVER_ERROR : error.message,
     code: ERROR_CODES.INTERNAL_SERVER_ERROR,

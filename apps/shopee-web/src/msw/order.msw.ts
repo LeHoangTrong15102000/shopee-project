@@ -32,7 +32,7 @@ const sampleOrders = [
   },
 ]
 
-const getOrdersRequest = http.get(`${config.baseUrl}orders`, () => {
+const getOrdersRequest = http.get(`${config.baseUrl}purchases`, () => {
   return HttpResponse.json(
     { message: 'Lấy danh sách đơn hàng thành công', data: sampleOrders },
     { status: HTTP_STATUS_CODE.Ok },

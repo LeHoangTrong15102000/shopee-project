@@ -10,6 +10,17 @@ vi.mock('src/utils/http', () => ({
   },
 }))
 
+// Mock auth storage helpers so tests don't depend on localStorage
+vi.mock('src/utils/auth', () => ({
+  getRefreshTokenFromLS: vi.fn(() => 'mock-refresh-token'),
+  getAccessTokenFromLS: vi.fn(() => ''),
+  setAccessTokenToLS: vi.fn(),
+  setRefreshTokenToLS: vi.fn(),
+  setProfileToLS: vi.fn(),
+  clearLS: vi.fn(),
+  LocalStorageEventTarget: new EventTarget(),
+}))
+
 import http from 'src/utils/http'
 import authApi from '../auth.api'
 

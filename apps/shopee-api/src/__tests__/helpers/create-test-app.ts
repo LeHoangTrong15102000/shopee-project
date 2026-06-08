@@ -41,6 +41,14 @@ export const createTestApp = (): express.Application => {
   app.use(express.json({ limit: MAX_REQUEST_SIZE }))
   app.use(express.urlencoded({ extended: true, limit: MAX_REQUEST_SIZE }))
 
+  // Normalize req.body: body-parser 2.x leaves req.body === undefined when it skips
+  // parsing (e.g. Content-Length: 0 with no matching Content-Type). Mirror the same
+  // guard used in src/index.ts so the test app has identical middleware behaviour.
+  app.use((req: Request, _res: Response, next: NextFunction) => {
+    if (req.body === undefined) req.body = {}
+    next()
+  })
+
   // Compression
   app.use(compression())
 

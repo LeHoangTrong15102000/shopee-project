@@ -9,6 +9,8 @@ vi.mock('src/utils/http', () => ({
     delete: vi.fn(),
     patch: vi.fn(),
   },
+  // Mock the named export used by authApi.logout()
+  getRefreshTokenFromLS: vi.fn(() => 'mock-refresh-token'),
 }))
 
 import http from 'src/utils/http'
@@ -32,8 +34,8 @@ describe('auth.api', () => {
     expect(mockHttp.post).toHaveBeenCalledWith('login', body)
   })
 
-  it('logout calls POST /logout', () => {
+  it('logout calls POST /logout with refresh_token body', () => {
     authApi.logout()
-    expect(mockHttp.post).toHaveBeenCalledWith('logout')
+    expect(mockHttp.post).toHaveBeenCalledWith('logout', { refresh_token: 'mock-refresh-token' })
   })
 })

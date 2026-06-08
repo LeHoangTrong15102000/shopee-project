@@ -132,6 +132,16 @@ app.use('/payment/stripe/webhook', express.raw({ type: 'application/json' }))
 app.use(express.json({ limit: MAX_REQUEST_SIZE }))
 app.use(express.urlencoded({ extended: true, limit: MAX_REQUEST_SIZE }))
 
+// Normalize req.body: body-parser 2.x leaves req.body === undefined when it skips
+// parsing (e.g. Content-Length: 0 with no matching Content-Type). Set it to {} so
+// every downstream controller can safely destructure without a TypeError crash.
+// Strict === undefined check preserves parsed objects/arrays/{} and leaves the
+// Stripe webhook Buffer body (/payment/stripe/webhook via express.raw) untouched.
+app.use((req: Request, _res: Response, next: NextFunction) => {
+  if (req.body === undefined) req.body = {}
+  next()
+})
+
 // Compression middleware - nén response để giảm bandwidth
 app.use(compression())
 

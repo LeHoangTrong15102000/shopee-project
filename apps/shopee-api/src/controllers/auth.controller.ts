@@ -11,7 +11,29 @@ import {
   ValidationError as ServiceValidationError,
   UnauthorizedError as ServiceUnauthorizedError,
 } from '@services/base.service'
-import { AuthResult } from '@services/auth.service'
+import { AuthResult, TwoFactorRequiredResult } from '@services/auth.service'
+import { redisClient } from '@utils/redis.client'
+import type Redis from 'ioredis'
+import crypto from 'crypto'
+
+/**
+ * Atomically GET then DELETE a Redis key, returning the string value or null.
+ *
+ * Uses the native `getdel` command when available (ioredis >= 5 / Redis >= 6.2).
+ * Falls back to a MULTI/EXEC pipeline on older clients.  In the pipeline path
+ * the per-command error slot (results[0][0]) is checked so a Redis-level error
+ * on the GET does not silently return null instead of propagating.
+ */
+async function atomicGetDel(client: Redis, key: string): Promise<string | null> {
+  if (typeof (client as unknown as Record<string, unknown>).getdel === 'function') {
+    return (client as unknown as { getdel(key: string): Promise<string | null> }).getdel(key)
+  }
+  const pipeline = client.multi()
+  pipeline.get(key)
+  pipeline.del(key)
+  const results = await pipeline.exec()
+  return results && results[0] && results[0][0] === null ? (results[0][1] as string | null) : null
+}
 
 /**
  * Lấy IP thực của client
@@ -285,12 +307,224 @@ const googleLoginController = async (req: Request, res: Response) => {
   })
 }
 
+// ── Google OAuth server-side Authorization Code flow ─────────────────────────
+
+/**
+ * GET /auth/google/url
+ *
+ * Generate a CSRF state, store it in Redis (~300s TTL), build the Google
+ * consent URL, and 302-redirect the browser to Google.
+ *
+ * Redis null-guard: if Redis is unavailable the server cannot safely store
+ * state, so we respond with a 503 instead of redirecting without CSRF protection.
+ */
+const googleUrlController = async (req: Request, res: Response) => {
+  if (redisClient === null) {
+    Logger.apiWarn('auth.google.url.redis_unavailable')
+    res.status(503).json({
+      message: 'Google Sign-In is temporarily unavailable (Redis required)',
+    })
+    return
+  }
+
+  const { OAuth2Client } = await import('google-auth-library')
+  const oAuth2Client = new OAuth2Client(
+    config.GOOGLE_CLIENT_ID,
+    config.GOOGLE_CLIENT_SECRET,
+    config.GOOGLE_REDIRECT_URI,
+  )
+
+  const state = crypto.randomBytes(32).toString('hex')
+
+  // Store state with ~300s TTL (5 minutes) — single use
+  await redisClient.set(`google:state:${state}`, '1', 'EX', 300)
+
+  const authorizeUrl = oAuth2Client.generateAuthUrl({
+    scope: ['openid', 'email', 'profile'],
+    state,
+    access_type: 'offline',
+  })
+
+  res.redirect(302, authorizeUrl)
+}
+
+/**
+ * GET /auth/google/callback
+ *
+ * Google redirects here with ?code=&state=.
+ * 1. Verify + delete state (CSRF protection, one-time use).
+ * 2. Exchange code → id_token server-side via googleAuthCodeExchange.
+ * 3. Store AuthResult under a one-time opaque `tmp` key (~60s TTL).
+ * 4. Redirect to GOOGLE_CLIENT_REDIRECT_URI?tmp=... (or ?error=... on failure).
+ *
+ * Side effects (session/loginHistory/auditLog) are NOT fired here — they fire
+ * at /exchange-code when the real SPA client completes the login.
+ */
+const googleCallbackController = async (req: Request, res: Response) => {
+  const clientRedirectUri = config.GOOGLE_CLIENT_REDIRECT_URI
+  const errorRedirect = (reason: string) =>
+    res.redirect(302, `${clientRedirectUri}?error=${encodeURIComponent(reason)}`)
+
+  if (redisClient === null) {
+    Logger.apiWarn('auth.google.callback.redis_unavailable')
+    return errorRedirect('service_unavailable')
+  }
+
+  const { code, state } = req.query as { code?: string; state?: string }
+
+  if (!code || !state) {
+    return errorRedirect('missing_params')
+  }
+
+  // Verify + delete state atomically (one-time CSRF token)
+  const stateKey = `google:state:${state}`
+  let stateValue: string | null
+  try {
+    stateValue = await atomicGetDel(redisClient, stateKey)
+  } catch (err) {
+    Logger.apiError('auth.google.callback.state_check_failed', {
+      message: err instanceof Error ? err.message : String(err),
+    })
+    return errorRedirect('state_error')
+  }
+
+  if (!stateValue) {
+    // State not found, expired, or already consumed — CSRF / replay
+    Logger.apiWarn('auth.google.callback.invalid_state', { state })
+    return errorRedirect('invalid_state')
+  }
+
+  // Exchange code → AuthResult | TwoFactorRequiredResult
+  let exchangeResult
+  const { expireAccessTokenConfig, expireRefreshTokenConfig } = getExpire()
+  try {
+    exchangeResult = await authService.googleAuthCodeExchange(code, {
+      expireAccessToken: expireAccessTokenConfig,
+      expireRefreshToken: expireRefreshTokenConfig,
+    })
+  } catch (err) {
+    Logger.apiWarn('auth.google.callback.exchange_failed', {
+      message: err instanceof Error ? err.message : String(err),
+    })
+    return errorRedirect('exchange_failed')
+  }
+
+  // Generate opaque one-time handle and store result (~60s TTL)
+  const tmp = crypto.randomBytes(32).toString('hex')
+  try {
+    await redisClient.set(`google:tmp:${tmp}`, JSON.stringify(exchangeResult), 'EX', 60)
+  } catch (err) {
+    Logger.apiError('auth.google.callback.tmp_store_failed', {
+      message: err instanceof Error ? err.message : String(err),
+    })
+    return errorRedirect('store_failed')
+  }
+
+  res.redirect(302, `${clientRedirectUri}?tmp=${encodeURIComponent(tmp)}`)
+}
+
+/**
+ * POST /auth/google/exchange-code
+ *
+ * The SPA sends { tmp } (the opaque handle from the redirect URL).
+ * 1. Atomically GETDEL google:tmp:<tmp> (single-use).
+ * 2. 401 when missing/expired/already redeemed.
+ * 3. Handle requires2FA result (return partial_token, no side effects).
+ * 4. On AuthResult: fire-and-forget side effects + return AT/RT/user.
+ */
+const googleExchangeCodeController = async (req: Request, res: Response) => {
+  if (redisClient === null) {
+    Logger.apiWarn('auth.google.exchange_code.redis_unavailable')
+    res.status(503).json({
+      message: 'Google Sign-In is temporarily unavailable (Redis required)',
+    })
+    return
+  }
+
+  const { tmp } = req.body as { tmp: string }
+  const tmpKey = `google:tmp:${tmp}`
+
+  // Atomically read + delete so the handle can be used exactly once
+  let rawResult: string | null
+  try {
+    rawResult = await atomicGetDel(redisClient, tmpKey)
+  } catch (err) {
+    Logger.apiError('auth.google.exchange_code.redis_error', {
+      message: err instanceof Error ? err.message : String(err),
+    })
+    res.status(STATUS.INTERNAL_SERVER_ERROR).json({ message: 'Internal error' })
+    return
+  }
+
+  if (!rawResult) {
+    // Missing, expired past 60s, or already redeemed — single-use enforced
+    res.status(STATUS.UNAUTHORIZED).json({ message: 'Invalid or expired token handle' })
+    return
+  }
+
+  let result: AuthResult | TwoFactorRequiredResult
+  try {
+    result = JSON.parse(rawResult) as AuthResult | TwoFactorRequiredResult
+  } catch {
+    res.status(STATUS.INTERNAL_SERVER_ERROR).json({ message: 'Internal error' })
+    return
+  }
+
+  // 2FA case — return partial_token; do NOT fire session/loginHistory/auditLog
+  if ('requires2FA' in result) {
+    return responseSuccess(res, {
+      message: '2FA verification required',
+      data: {
+        requires2FA: true,
+        partial_token: result.partial_token,
+      },
+    })
+  }
+
+  // Full AuthResult — fire-and-forget side effects (matching googleLoginController)
+  const authResult = result
+  const userId = authResult.user._id!.toString()
+  const clientIP = getClientIP(req)
+
+  const { sessionService, auditLogService, loginHistoryService } = await import('../container')
+
+  sessionService
+    .createSession(userId, authResult.accessJti, authResult.refreshJti, req)
+    .catch((err: unknown) => {
+      Logger.apiWarn('session.create.failed_on_google_web_login', {
+        error: err instanceof Error ? err.message : String(err),
+      })
+    })
+
+  loginHistoryService.recordAttempt(userId, req, 'success', 'google')
+
+  auditLogService.writeLog({
+    action: 'user.login',
+    resource: 'user',
+    resourceId: userId,
+    actor: { userId, roles: authResult.user.roles ?? [] },
+    ip: clientIP,
+    userAgent: req.headers['user-agent'] || '',
+    status: 'success',
+  })
+
+  Logger.apiInfo('Google web login thành công', { email: authResult.user.email })
+
+  return responseSuccess(res, {
+    message: AUTH_MESSAGES.GOOGLE_LOGIN_SUCCESS,
+    data: authResult,
+  })
+}
+
 const authController = {
   registerController,
   loginController,
   logoutController,
   refreshTokenController,
   googleLoginController,
+  googleUrlController,
+  googleCallbackController,
+  googleExchangeCodeController,
 }
 
 export default authController

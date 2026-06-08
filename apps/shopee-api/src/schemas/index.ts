@@ -15,6 +15,7 @@ export {
   loginSchema,
   registerSchema,
   googleLoginSchema,
+  googleExchangeCodeSchema,
   type LoginInput,
   type RegisterInput,
 } from './auth.schema'

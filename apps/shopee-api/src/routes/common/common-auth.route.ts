@@ -14,6 +14,7 @@ import {
   forgotPasswordSchema,
   resetPasswordSchema,
   googleLoginSchema,
+  googleExchangeCodeSchema,
 } from '@schemas/index'
 import {
   twoFactorVerifySetupSchema,
@@ -73,6 +74,23 @@ commonAuthRouter.post(
   authRateLimit,
   validate(googleLoginSchema),
   asyncHandler(authController.googleLoginController),
+)
+
+// ── Google OAuth server-side Authorization Code flow (web) ──────────────────
+// Mobile POST /google is kept above, unchanged.
+
+// Step 1: generate state, redirect to Google consent
+commonAuthRouter.get('/google/url', authRateLimit, asyncHandler(authController.googleUrlController))
+
+// Step 2: Google redirects here with ?code&state — no body validation needed
+commonAuthRouter.get('/google/callback', asyncHandler(authController.googleCallbackController))
+
+// Step 3: SPA exchanges one-time `tmp` handle for AT/RT/user
+commonAuthRouter.post(
+  '/google/exchange-code',
+  authRateLimit,
+  validate(googleExchangeCodeSchema),
+  asyncHandler(authController.googleExchangeCodeController),
 )
 
 // ── 2FA routes ──────────────────────────────────────────────────────────────

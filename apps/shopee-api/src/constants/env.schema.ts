@@ -126,6 +126,24 @@ const envSchema = z.object({
       '.apps.googleusercontent.com',
       'GOOGLE_CLIENT_ID must end with .apps.googleusercontent.com — check your Google Cloud credentials',
     ),
+
+  // Google OAuth 2.0 — server-side Authorization Code flow (web).
+  // GOOGLE_CLIENT_SECRET  — client secret for the server-side token exchange.
+  // GOOGLE_REDIRECT_URI   — backend callback URL; must be registered on the Google OAuth client.
+  // GOOGLE_CLIENT_REDIRECT_URI — web landing page URL (receives ?tmp= or ?error=).
+  GOOGLE_CLIENT_SECRET: z.string().min(1, 'GOOGLE_CLIENT_SECRET is required for web OAuth flow'),
+
+  GOOGLE_REDIRECT_URI: z
+    .string()
+    .url(
+      'GOOGLE_REDIRECT_URI must be a valid URL (the BE callback registered on the OAuth client)',
+    ),
+
+  GOOGLE_CLIENT_REDIRECT_URI: z
+    .string()
+    .url(
+      'GOOGLE_CLIENT_REDIRECT_URI must be a valid URL (the web landing page, e.g. /auth/callback)',
+    ),
 })
 
 export type Env = z.infer<typeof envSchema>
@@ -179,6 +197,9 @@ export function validateEnv(rawEnv: NodeJS.ProcessEnv = process.env): Env {
       MEILISEARCH_HOST: 'http://localhost:7700',
       MEILISEARCH_MASTER_KEY: 'shopee_meili_master_key',
       GOOGLE_CLIENT_ID: 'test-client-id.apps.googleusercontent.com',
+      GOOGLE_CLIENT_SECRET: 'test-client-secret',
+      GOOGLE_REDIRECT_URI: 'http://localhost:4000/auth/google/callback',
+      GOOGLE_CLIENT_REDIRECT_URI: 'http://localhost:3000/auth/callback',
     }
   }
 

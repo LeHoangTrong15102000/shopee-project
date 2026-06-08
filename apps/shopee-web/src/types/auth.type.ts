@@ -11,3 +11,22 @@ export type AuthResponse = SuccessResponseApi<{
 }>
 
 export type RefreshTokenResponse = SuccessResponseApi<{ access_token: string }>
+
+/**
+ * Response from POST auth/google/exchange-code
+ * May be a full AuthResult (access+refresh tokens) or a 2FA partial result.
+ */
+export type GoogleExchangeCodeResponse = SuccessResponseApi<
+  | {
+      access_token: string
+      refresh_token: string
+      expires_refresh_token: number
+      expires: number
+      user: User
+      requires2FA?: never
+    }
+  | {
+      requires2FA: true
+      partial_token: string
+    }
+>

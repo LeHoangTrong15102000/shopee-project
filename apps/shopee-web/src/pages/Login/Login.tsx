@@ -13,6 +13,7 @@ import authApi from 'src/apis/auth.api'
 import Button from 'src/components/Button'
 import Input from 'src/components/Input'
 import path from 'src/constant/path'
+import config from 'src/constant/config'
 import { AppContext } from 'src/contexts/app.context'
 import { useReducedMotion } from 'src/hooks/useReducedMotion'
 import { STAGGER_DELAY, staggerContainer, staggerItem } from 'src/styles/animations'
@@ -208,12 +209,14 @@ const Login = () => {
                 </div>
               </motion.div>
 
-              {/* Google Login Button (UI only) */}
+              {/* Google Login Button */}
               <motion.div variants={reducedMotion ? undefined : staggerItem}>
                 <Button
                   variant="secondary"
                   animated={false}
-                  disabled
+                  onClick={() => {
+                    window.location.href = `${config.baseUrl}auth/google/url`
+                  }}
                   className="mt-4 flex w-full items-center justify-center gap-2 rounded-md px-4 py-3 text-sm shadow-xs"
                 >
                   <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">

@@ -67,3 +67,13 @@ export const googleLoginSchema = z.object({
     id_token: z.string().min(1, 'Google ID token is required'),
   }),
 })
+
+/**
+ * Google exchange-code schema (web OAuth server flow)
+ * Validates that tmp (one-time opaque handle) is a non-empty string
+ */
+export const googleExchangeCodeSchema = z.object({
+  body: z.object({
+    tmp: z.string().min(1, 'tmp is required'),
+  }),
+})

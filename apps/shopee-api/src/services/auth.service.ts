@@ -84,6 +84,106 @@ export class AuthService extends BaseService {
     }
   }
 
+  /**
+   * Shared private helper — verify / find-or-create / 2FA / issue-token logic.
+   *
+   * Called by both the mobile flow (googleLogin) and the web flow
+   * (googleAuthCodeExchange) after they each obtain a verified Google payload.
+   * Keeping the security-critical checks (email_verified, audience, 2FA, JTI)
+   * in a single place prevents the two flows from drifting.
+   */
+  private async issueTokensForGooglePayload(
+    payload: {
+      email: string
+      email_verified: boolean | undefined
+      name?: string
+      picture?: string
+    },
+    tokenConfig: TokenConfig,
+  ): Promise<AuthResult | TwoFactorRequiredResult> {
+    // WARNING-1: reject tokens with unverified email — must be strictly true
+    if (payload.email_verified !== true) {
+      throw new UnauthorizedError('Google account email is not verified')
+    }
+
+    const email = payload.email
+    const name = payload.name || email.split('@')[0]
+    const avatar = payload.picture
+
+    let user = await this.userRepository.findByEmail(email)
+    if (!user) {
+      // Create new user with Google profile info (random password since they use OAuth)
+      const randomPassword = crypto.randomBytes(32).toString('hex')
+      user = await this.userRepository.create({
+        email,
+        password: hashValue(randomPassword),
+        name,
+        avatar,
+        roles: [ROLE.USER],
+      })
+
+      // WARNING-3: emit user.registered domain event for new Google accounts
+      this.eventBus?.emit({
+        type: 'user.registered',
+        payload: {
+          userId: user._id!.toString(),
+          email: user.email,
+          registeredAt: new Date(),
+        },
+      })
+    }
+
+    // CRITICAL-2: close 2FA bypass — check twoFactorEnabled before issuing full tokens
+    if (user.twoFactorEnabled) {
+      const partialPayload: IPayloadToken = {
+        id: user._id!.toString(),
+        email: user.email,
+        roles: user.roles || [ROLE.USER],
+        created_at: new Date().toISOString(),
+        jti: this.generateJti(),
+        scope: '2fa_pending',
+      }
+      // 5-minute expiry for partial token
+      const partialToken = (await signToken(partialPayload, config.SECRET_KEY, 300)) as string
+
+      Logger.apiInfo('auth.google.login.2fa_required', { userId: user._id!.toString() })
+
+      return { requires2FA: true, partial_token: partialToken }
+    }
+
+    const tokenPayload: IPayloadToken = {
+      id: user._id!.toString(),
+      email: user.email,
+      roles: user.roles || [ROLE.USER],
+      created_at: new Date().toISOString(),
+    }
+
+    const { accessToken, refreshToken, accessJti, refreshJti } = await this.generateTokens(
+      tokenPayload,
+      tokenConfig,
+    )
+
+    const expiresAt = new Date(Date.now() + tokenConfig.expireRefreshToken * 1000)
+    await this.authRepository.createRefreshTokenWithJti(
+      user._id!,
+      refreshToken,
+      refreshJti,
+      expiresAt,
+    )
+
+    Logger.apiInfo('auth.google.login', { userId: user._id!.toString(), email })
+
+    return {
+      access_token: 'Bearer ' + accessToken,
+      expires: tokenConfig.expireAccessToken,
+      refresh_token: refreshToken,
+      expires_refresh_token: tokenConfig.expireRefreshToken,
+      user: omit(user, ['password']) as Omit<IUser, 'password'>,
+      accessJti,
+      refreshJti,
+    }
+  }
+
   async register(data: RegisterDTO, tokenConfig: TokenConfig): Promise<AuthResult> {
     const emailExists = await this.userRepository.emailExists(data.email)
     if (emailExists) {
@@ -340,106 +440,107 @@ export class AuthService extends BaseService {
     return { access_token: 'Bearer ' + accessToken }
   }
 
+  /**
+   * Mobile Google Sign-In (id_token flow).
+   *
+   * The mobile app obtains an id_token client-side (expo-auth-session) and sends it
+   * to this endpoint. We verify the token audience here, then delegate to the shared
+   * issueTokensForGooglePayload helper.
+   *
+   * Public signature is preserved for backward compatibility with shopee-app.
+   */
   async googleLogin(
     idToken: string,
     tokenConfig: TokenConfig,
   ): Promise<AuthResult | TwoFactorRequiredResult> {
-    let payload
+    let ticketPayload
     try {
       const ticket = await googleOAuthClient.verifyIdToken({
         idToken,
         audience: config.GOOGLE_CLIENT_ID,
       })
-      payload = ticket.getPayload()
+      ticketPayload = ticket.getPayload()
     } catch {
       throw new UnauthorizedError('Google token verification failed')
     }
 
-    if (!payload || !payload.email) {
+    if (!ticketPayload || !ticketPayload.email) {
       throw new UnauthorizedError('Google token verification failed')
     }
 
-    // WARNING-1: reject tokens with unverified email — must be strictly true
-    if (payload.email_verified !== true) {
-      throw new UnauthorizedError('Google account email is not verified')
-    }
-
-    const email = payload.email
-    const name = payload.name || email.split('@')[0]
-    const avatar = payload.picture
-
-    let user = await this.userRepository.findByEmail(email)
-    if (!user) {
-      // Create new user with Google profile info (random password since they use OAuth)
-      const randomPassword = crypto.randomBytes(32).toString('hex')
-      user = await this.userRepository.create({
-        email,
-        password: hashValue(randomPassword),
-        name,
-        avatar,
-        roles: [ROLE.USER],
-      })
-
-      // WARNING-3: emit user.registered domain event for new Google accounts
-      this.eventBus?.emit({
-        type: 'user.registered',
-        payload: {
-          userId: user._id!.toString(),
-          email: user.email,
-          registeredAt: new Date(),
-        },
-      })
-    }
-
-    // CRITICAL-2: close 2FA bypass — check twoFactorEnabled before issuing full tokens
-    if (user.twoFactorEnabled) {
-      const partialPayload: IPayloadToken = {
-        id: user._id!.toString(),
-        email: user.email,
-        roles: user.roles || [ROLE.USER],
-        created_at: new Date().toISOString(),
-        jti: this.generateJti(),
-        scope: '2fa_pending',
-      }
-      // 5-minute expiry for partial token
-      const partialToken = (await signToken(partialPayload, config.SECRET_KEY, 300)) as string
-
-      Logger.apiInfo('auth.google.login.2fa_required', { userId: user._id!.toString() })
-
-      return { requires2FA: true, partial_token: partialToken }
-    }
-
-    const tokenPayload: IPayloadToken = {
-      id: user._id!.toString(),
-      email: user.email,
-      roles: user.roles || [ROLE.USER],
-      created_at: new Date().toISOString(),
-    }
-
-    const { accessToken, refreshToken, accessJti, refreshJti } = await this.generateTokens(
-      tokenPayload,
+    return this.issueTokensForGooglePayload(
+      {
+        email: ticketPayload.email,
+        email_verified: ticketPayload.email_verified,
+        name: ticketPayload.name,
+        picture: ticketPayload.picture,
+      },
       tokenConfig,
     )
+  }
 
-    const expiresAt = new Date(Date.now() + tokenConfig.expireRefreshToken * 1000)
-    await this.authRepository.createRefreshTokenWithJti(
-      user._id!,
-      refreshToken,
-      refreshJti,
-      expiresAt,
+  /**
+   * Web Google Sign-In (server-side Authorization Code flow).
+   *
+   * Called by googleCallbackController after receiving the ?code from Google.
+   * Uses GOOGLE_CLIENT_SECRET + GOOGLE_REDIRECT_URI to exchange the code for an
+   * id_token server-side, verifies it, then delegates to the shared helper —
+   * guaranteeing identical audience/email_verified/2FA/JTI logic with the mobile
+   * flow.
+   *
+   * Returns AuthResult | TwoFactorRequiredResult (same union as googleLogin).
+   */
+  async googleAuthCodeExchange(
+    code: string,
+    tokenConfig: TokenConfig,
+  ): Promise<AuthResult | TwoFactorRequiredResult> {
+    // Build a client with the secret + redirect URI for the server-side exchange.
+    const webOAuthClient = new OAuth2Client(
+      config.GOOGLE_CLIENT_ID,
+      config.GOOGLE_CLIENT_SECRET,
+      config.GOOGLE_REDIRECT_URI,
     )
 
-    Logger.apiInfo('auth.google.login', { userId: user._id!.toString(), email })
-
-    return {
-      access_token: 'Bearer ' + accessToken,
-      expires: tokenConfig.expireAccessToken,
-      refresh_token: refreshToken,
-      expires_refresh_token: tokenConfig.expireRefreshToken,
-      user: omit(user, ['password']) as Omit<IUser, 'password'>,
-      accessJti,
-      refreshJti,
+    let idToken: string
+    try {
+      const { tokens } = await webOAuthClient.getToken(code)
+      if (!tokens.id_token) {
+        throw new Error('No id_token in response')
+      }
+      idToken = tokens.id_token
+    } catch (err) {
+      Logger.apiWarn('auth.google.web.code_exchange_failed', {
+        message: err instanceof Error ? err.message : String(err),
+      })
+      throw new UnauthorizedError('Google authorization code exchange failed')
     }
+
+    // Verify the id_token audience against our client ID.
+    let ticketPayload
+    try {
+      const ticket = await webOAuthClient.verifyIdToken({
+        idToken,
+        audience: config.GOOGLE_CLIENT_ID,
+      })
+      ticketPayload = ticket.getPayload()
+    } catch {
+      throw new UnauthorizedError('Google token verification failed')
+    }
+
+    if (!ticketPayload || !ticketPayload.email) {
+      throw new UnauthorizedError('Google token verification failed')
+    }
+
+    // Delegate to the shared helper — same checks as googleLogin.
+    return this.issueTokensForGooglePayload(
+      {
+        email: ticketPayload.email,
+        email_verified: ticketPayload.email_verified,
+        name: ticketPayload.name,
+        picture: ticketPayload.picture,
+      },
+      tokenConfig,
+    )
   }
 
   async logout(refreshToken: string): Promise<void> {

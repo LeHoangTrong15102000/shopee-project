@@ -32,6 +32,7 @@ const path = {
   orderTracking: '/tracking/:number', // Trang theo dõi đơn hàng công khai
   paymentSuccess: '/payment/success', // Trang xác nhận thanh toán thành công
   paymentReturn: '/payment/return', // Trang xử lý kết quả thanh toán (polling)
+  authCallback: '/auth/callback', // Google OAuth server-side flow landing page
 } as const
 
 export default path

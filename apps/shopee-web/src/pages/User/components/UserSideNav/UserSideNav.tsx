@@ -556,6 +556,53 @@ const UserSideNav = () => {
               </>
             )}
           </NavLink>
+          {/* Bảo mật */}
+          <NavLink
+            to={path.security}
+            className={({ isActive }) =>
+              classNames(
+                'relative mt-4 mb-3.75 flex items-center justify-start capitalize transition-colors',
+                {
+                  'text-[#ee4d2d]': isActive,
+                  'text-gray-600 dark:text-gray-300': !isActive,
+                },
+              )
+            }
+          >
+            {({ isActive }) => (
+              <>
+                {isActive && !reducedMotion && (
+                  <motion.div
+                    layoutId="activeNavIndicator"
+                    className="absolute inset-0 rounded-lg bg-[#ee4d2d]/5"
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  />
+                )}
+                {isActive && reducedMotion && (
+                  <div className="absolute inset-0 rounded-lg bg-[#ee4d2d]/5" />
+                )}
+                <div className="relative z-10 flex items-center">
+                  <div className="mr-2 flex shrink-0 items-center justify-center rounded-sm">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="h-6 w-6 text-green-600"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
+                      />
+                    </svg>
+                  </div>
+                  <span className="font-medium capitalize">{t('sideNav.security')}</span>
+                </div>
+              </>
+            )}
+          </NavLink>
         </div>
       </div>
     </div>

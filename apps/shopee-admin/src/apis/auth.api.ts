@@ -6,11 +6,21 @@ interface LoginBody {
   password: string
 }
 
-interface LoginResponse {
-  access_token: string
-  refresh_token: string
-  user: User
-}
+/**
+ * Login returns either a full token set or a 2FA partial result when
+ * the account has 2FA enabled.
+ */
+export type LoginResponse =
+  | {
+      access_token: string
+      refresh_token: string
+      user: User
+      requires2FA?: never
+    }
+  | {
+      requires2FA: true
+      partial_token: string
+    }
 
 const authApi = {
   login: (body: LoginBody) => http.post<SuccessResponse<LoginResponse>>('login', body),

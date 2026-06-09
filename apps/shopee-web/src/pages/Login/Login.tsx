@@ -9,7 +9,6 @@ import classNames from 'classnames'
 import { motion } from 'framer-motion'
 import SEO from 'src/components/SEO'
 import { toast } from 'react-toastify'
-import authApi from 'src/apis/auth.api'
 import Button from 'src/components/Button'
 import Input from 'src/components/Input'
 import path from 'src/constant/path'
@@ -20,6 +19,8 @@ import { STAGGER_DELAY, staggerContainer, staggerItem } from 'src/styles/animati
 import { ErrorResponseApi } from 'src/types/utils.type'
 import { LoginSchema, loginSchema } from 'src/utils/rules'
 import { generateNameId, isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import http from 'src/utils/http'
+import { LoginResponse } from 'src/types/auth.type'
 
 type FormData = LoginSchema
 
@@ -51,25 +52,28 @@ const Login = () => {
   const watchPassword = watch('password', '')
 
   const loginAccountMutation = useMutation({
-    mutationFn: (body: FormData) => authApi.loginAccount(body),
-    onSuccess: () => {
-      toast.success(t('login.success'), { autoClose: 3000 })
-    },
-    onError: () => {
-      toast.error(t('login.error'), { autoClose: 3000 })
-    },
+    mutationFn: (body: FormData) => http.post<LoginResponse>('login', body),
   })
 
   // data chính là giá trị trả ra khi mà onSubmit thành công
   const onSubmit = handleSubmit((data) => {
     // handleSubmit return về một callback
-    // console.log(data)
     loginAccountMutation.mutate(data, {
       // data onSuccess là object do sv trả về
-      onSuccess: (data) => {
-        // console.log(data) // data đầu tiên là axiosRes trả về, data thứ 2 là Successapi sv trả về
+      onSuccess: (res) => {
+        const responseData = res.data.data
+        // Branch on requires2FA: navigate to verify screen with partial_token in state.
+        // partial_token is kept in memory (router state) only — never localStorage.
+        if (responseData.requires2FA) {
+          navigate(path.twoFactorVerify, {
+            state: { partial_token: responseData.partial_token },
+          })
+          return
+        }
+        // Normal full-token login
         setIsAuthenticated(true)
-        setProfile(data.data.data.user)
+        setProfile(responseData.user)
+        toast.success(t('login.success'), { autoClose: 3000 })
         navigate(
           purchaseIdFromLocation
             ? `${path.home}${generateNameId({
@@ -80,7 +84,6 @@ const Login = () => {
         )
       },
       onError: (error) => {
-        //  isAxiosUn...<truyền vào kiểu type của data khi api lỗi>
         if (isAxiosUnprocessableEntityError<ErrorResponseApi<FormData>>(error)) {
           const formError = error.response?.data.data
           if (formError) {
@@ -91,8 +94,9 @@ const Login = () => {
               })
             })
           }
+        } else {
+          toast.error(t('login.error'), { autoClose: 3000 })
         }
-        // console.log(error)
       },
     })
   })

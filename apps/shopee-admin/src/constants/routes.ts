@@ -54,6 +54,9 @@ export const ROUTES = {
 
   AUDIT_LOG: '/audit-log',
   AUDIT_LOG_DETAIL: '/audit-log/:id',
+
+  TWO_FACTOR_VERIFY: '/2fa-verify',
+  SETTINGS_SECURITY: '/settings#security',
 } as const
 
 export type RouteKey = keyof typeof ROUTES

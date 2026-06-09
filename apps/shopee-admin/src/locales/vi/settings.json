@@ -5,7 +5,8 @@
     "profile": "Hồ sơ",
     "changePassword": "Đổi mật khẩu",
     "notifications": "Thông báo",
-    "systemInfo": "Thông tin hệ thống"
+    "systemInfo": "Thông tin hệ thống",
+    "security": "Bảo mật"
   },
   "profile": {
     "title": "Thông tin hồ sơ",
@@ -47,5 +48,60 @@
     "passwordChanged": "Đã đổi mật khẩu",
     "passwordError": "Không thể đổi mật khẩu"
   },
-  "error": "Không thể tải hồ sơ"
+  "error": "Không thể tải hồ sơ",
+  "security": {
+    "title": "Xác thực hai yếu tố",
+    "description": "Thêm lớp bảo mật cho tài khoản quản trị của bạn.",
+    "statusEnabled": "Đã bật xác thực hai yếu tố",
+    "statusDisabled": "Chưa bật xác thực hai yếu tố",
+    "enableButton": "Bật 2FA",
+    "disableButton": "Tắt 2FA",
+    "regenerateButton": "Tạo lại mã dự phòng",
+    "setup": {
+      "step1Title": "Thiết lập xác thực hai yếu tố",
+      "step1Description": "Quét mã QR bên dưới bằng ứng dụng xác thực (vd: Google Authenticator, Authy).",
+      "secretLabel": "Khóa nhập thủ công",
+      "backupCodesTitle": "Mã dự phòng",
+      "backupCodesWarning": "Lưu các mã này ngay bây giờ. Chúng sẽ không được hiển thị lại.",
+      "copyAll": "Sao chép tất cả",
+      "copyAllDone": "Đã sao chép",
+      "download": "Tải file .txt",
+      "continueToVerify": "Tiếp tục xác minh",
+      "step2Title": "Xác nhận thiết lập",
+      "step2Description": "Nhập mã 6 chữ số từ ứng dụng xác thực để hoàn tất thiết lập.",
+      "verifyButton": "Bật 2FA",
+      "verifying": "Đang xác minh...",
+      "successMessage": "Đã bật xác thực hai yếu tố."
+    },
+    "disable": {
+      "title": "Tắt xác thực hai yếu tố",
+      "description": "Nhập mã xác thực hoặc mã dự phòng để tắt 2FA.",
+      "submitButton": "Tắt 2FA",
+      "submitting": "Đang tắt...",
+      "successMessage": "Đã tắt xác thực hai yếu tố.",
+      "cancel": "Hủy"
+    },
+    "regenerate": {
+      "title": "Tạo lại mã dự phòng",
+      "description": "Nhập mã xác thực hoặc mã dự phòng để tạo mã dự phòng mới.",
+      "submitButton": "Tạo lại",
+      "submitting": "Đang tạo...",
+      "newCodesTitle": "Mã dự phòng mới",
+      "newCodesWarning": "Các mã dự phòng cũ đã không còn hợp lệ. Lưu các mã mới này.",
+      "successMessage": "Đã tạo lại mã dự phòng.",
+      "done": "Xong"
+    },
+    "form": {
+      "codePlaceholderTotp": "Mã 6 chữ số",
+      "codePlaceholderBackup": "Mã dự phòng",
+      "useBackupCode": "Dùng mã dự phòng thay thế",
+      "useTotp": "Dùng ứng dụng xác thực thay thế"
+    },
+    "errors": {
+      "invalidCode": "Mã không hợp lệ hoặc đã hết hạn. Vui lòng thử lại.",
+      "setupFailed": "Không thể bắt đầu thiết lập 2FA. Vui lòng thử lại.",
+      "disableFailed": "Không thể tắt 2FA. Vui lòng thử lại.",
+      "regenFailed": "Không thể tạo lại mã dự phòng. Vui lòng thử lại."
+    }
+  }
 }

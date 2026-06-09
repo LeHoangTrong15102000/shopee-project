@@ -38,5 +38,24 @@
     "successMessage": "Password reset successfully. Please log in.",
     "errorMessage": "Failed to reset password. The link may have expired.",
     "missingToken": "Invalid or missing reset token. Please request a new reset link."
+  },
+  "twoFactor": {
+    "title": "Two-Factor Verification",
+    "hintTotp": "Enter the 6-digit code from your authenticator app.",
+    "hintBackup": "Enter one of your backup codes.",
+    "expiresIn": "Session expires in {{time}}",
+    "expired": "Session expired",
+    "expiredMessage": "Your verification session has expired. Please log in again.",
+    "placeholderTotp": "6-digit code",
+    "placeholderBackup": "Backup code",
+    "submit": "Verify",
+    "useBackupCode": "Use a backup code instead",
+    "useTotp": "Use authenticator app instead",
+    "backToLogin": "Back to login",
+    "success": "Signed in successfully",
+    "errors": {
+      "invalidCode": "Invalid or expired code. Please try again.",
+      "profileFetchFailed": "Signed in but failed to load profile. Please refresh."
+    }
   }
 }

@@ -16,6 +16,7 @@ import { clearLS } from 'src/utils/http'
 import { AxiosError } from 'axios'
 import type { User } from 'src/types'
 import { ROUTES } from 'src/constants/routes'
+import type { LoginResponse } from 'src/apis/auth.api'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email format'),
@@ -63,7 +64,18 @@ export default function LoginPage() {
     setIsLoading(true)
     try {
       const res = await authApi.login(data)
-      const { access_token, refresh_token, user } = res.data.data
+      const responseData: LoginResponse = res.data.data
+
+      // 2FA path — navigate BEFORE any token/profile work
+      if (responseData.requires2FA) {
+        navigate(ROUTES.TWO_FACTOR_VERIFY, {
+          state: { partial_token: responseData.partial_token, from },
+        })
+        return
+      }
+
+      // Full-token path
+      const { access_token, refresh_token, user } = responseData
 
       if (!user.roles?.includes('Admin')) {
         clearLS()

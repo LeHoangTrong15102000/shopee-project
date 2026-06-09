@@ -38,5 +38,24 @@
     "successMessage": "Đặt lại mật khẩu thành công. Vui lòng đăng nhập.",
     "errorMessage": "Không thể đặt lại mật khẩu. Liên kết có thể đã hết hạn.",
     "missingToken": "Token đặt lại không hợp lệ hoặc bị thiếu. Vui lòng yêu cầu liên kết mới."
+  },
+  "twoFactor": {
+    "title": "Xác minh hai bước",
+    "hintTotp": "Nhập mã 6 chữ số từ ứng dụng xác thực của bạn.",
+    "hintBackup": "Nhập một trong các mã dự phòng của bạn.",
+    "expiresIn": "Phiên hết hạn sau {{time}}",
+    "expired": "Phiên đã hết hạn",
+    "expiredMessage": "Phiên xác minh của bạn đã hết hạn. Vui lòng đăng nhập lại.",
+    "placeholderTotp": "Mã 6 chữ số",
+    "placeholderBackup": "Mã dự phòng",
+    "submit": "Xác minh",
+    "useBackupCode": "Dùng mã dự phòng thay thế",
+    "useTotp": "Dùng ứng dụng xác thực thay thế",
+    "backToLogin": "Quay lại đăng nhập",
+    "success": "Đăng nhập thành công",
+    "errors": {
+      "invalidCode": "Mã không hợp lệ hoặc đã hết hạn. Vui lòng thử lại.",
+      "profileFetchFailed": "Đã đăng nhập nhưng không tải được hồ sơ. Vui lòng làm mới trang."
+    }
   }
 }

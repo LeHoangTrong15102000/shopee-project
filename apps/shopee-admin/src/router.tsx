@@ -8,6 +8,7 @@ const AdminLayout = lazy(() => import('src/components/layout/AdminLayout'))
 const LoginPage = lazy(() => import('src/pages/Login/LoginPage'))
 const ForgotPasswordPage = lazy(() => import('src/pages/Login/ForgotPasswordPage'))
 const ResetPasswordPage = lazy(() => import('src/pages/Login/ResetPasswordPage'))
+const TwoFactorVerifyPage = lazy(() => import('src/pages/Login/TwoFactorVerifyPage'))
 const DashboardPage = lazy(() => import('src/pages/Dashboard/DashboardPage'))
 const UserListPage = lazy(() => import('src/pages/Users/UserListPage'))
 const ProductListPage = lazy(() => import('src/pages/Products/ProductListPage'))
@@ -373,6 +374,14 @@ export const router = createBrowserRouter([
     element: (
       <SuspenseWrapper>
         <ResetPasswordPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: ROUTES.TWO_FACTOR_VERIFY,
+    element: (
+      <SuspenseWrapper>
+        <TwoFactorVerifyPage />
       </SuspenseWrapper>
     ),
   },

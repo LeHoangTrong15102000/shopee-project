@@ -33,6 +33,8 @@ const path = {
   paymentSuccess: '/payment/success', // Trang xác nhận thanh toán thành công
   paymentReturn: '/payment/return', // Trang xử lý kết quả thanh toán (polling)
   authCallback: '/auth/callback', // Google OAuth server-side flow landing page
+  twoFactorVerify: '/login/2fa', // 2FA login-completion screen (partial_token in location.state)
+  security: '/user/security', // Security / 2FA settings page
 } as const
 
 export default path

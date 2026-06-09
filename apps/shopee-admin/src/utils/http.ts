@@ -50,6 +50,13 @@ export class Http {
   private refreshToken: string
   private refreshTokenRequest: Promise<string> | null
 
+  /** Sync the in-memory token fields without touching localStorage.
+   *  Used by the 2FA completion flow after writing tokens to LS. */
+  setInMemoryTokens(accessToken: string, refreshToken: string) {
+    this.accessToken = accessToken
+    this.refreshToken = refreshToken
+  }
+
   constructor() {
     this.accessToken = getAccessTokenFromLS()
     this.refreshToken = getRefreshTokenFromLS()
@@ -75,13 +82,18 @@ export class Http {
         const { url } = response.config
         if (url === URL_LOGIN) {
           const data = response.data as {
-            data: { access_token: string; refresh_token: string; user: unknown }
+            data: { access_token?: string; refresh_token?: string; user?: unknown }
           }
-          this.accessToken = data.data.access_token
-          this.refreshToken = data.data.refresh_token
-          setAccessTokenToLS(this.accessToken)
-          setRefreshTokenToLS(this.refreshToken)
-          setProfileToLS(data.data.user)
+          // Only persist tokens when access_token is present.
+          // A requires2FA login response lacks access_token — returning the
+          // response untouched lets LoginPage.onSubmit branch on requires2FA.
+          if (data.data.access_token) {
+            this.accessToken = data.data.access_token
+            this.refreshToken = data.data.refresh_token ?? ''
+            setAccessTokenToLS(this.accessToken)
+            setRefreshTokenToLS(this.refreshToken)
+            setProfileToLS(data.data.user)
+          }
         } else if (url === URL_LOGOUT) {
           this.accessToken = ''
           this.refreshToken = ''
@@ -140,8 +152,16 @@ export class Http {
   }
 }
 
-const http = new Http().instance
+const httpInstance = new Http()
+const http = httpInstance.instance
 export default http
+
+/** Update the Http singleton's in-memory tokens after the 2FA completion flow
+ *  writes tokens to localStorage.  Call this immediately after setAccessTokenToLS
+ *  / setRefreshTokenToLS so the Axios request interceptor sees the new token. */
+export function setInMemoryTokens(accessToken: string, refreshToken: string) {
+  httpInstance.setInMemoryTokens(accessToken, refreshToken)
+}
 
 export {
   getAccessTokenFromLS,

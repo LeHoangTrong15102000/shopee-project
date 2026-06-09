@@ -5,7 +5,8 @@
     "profile": "Profile",
     "changePassword": "Change Password",
     "notifications": "Notifications",
-    "systemInfo": "System Info"
+    "systemInfo": "System Info",
+    "security": "Security"
   },
   "profile": {
     "title": "Profile Information",
@@ -47,5 +48,60 @@
     "passwordChanged": "Password changed",
     "passwordError": "Failed to change password"
   },
-  "error": "Failed to load profile"
+  "error": "Failed to load profile",
+  "security": {
+    "title": "Two-Factor Authentication",
+    "description": "Add an extra layer of security to your admin account.",
+    "statusEnabled": "2FA is enabled",
+    "statusDisabled": "2FA is not enabled",
+    "enableButton": "Enable 2FA",
+    "disableButton": "Disable 2FA",
+    "regenerateButton": "Regenerate Backup Codes",
+    "setup": {
+      "step1Title": "Set Up Two-Factor Authentication",
+      "step1Description": "Scan the QR code below with your authenticator app (e.g. Google Authenticator, Authy).",
+      "secretLabel": "Manual entry key",
+      "backupCodesTitle": "Backup Codes",
+      "backupCodesWarning": "Save these codes now. They will not be shown again.",
+      "copyAll": "Copy All",
+      "copyAllDone": "Copied",
+      "download": "Download .txt",
+      "continueToVerify": "Continue to Verify",
+      "step2Title": "Confirm Setup",
+      "step2Description": "Enter the 6-digit code from your authenticator app to complete setup.",
+      "verifyButton": "Enable 2FA",
+      "verifying": "Verifying...",
+      "successMessage": "Two-factor authentication has been enabled."
+    },
+    "disable": {
+      "title": "Disable Two-Factor Authentication",
+      "description": "Enter your authenticator code or a backup code to disable 2FA.",
+      "submitButton": "Disable 2FA",
+      "submitting": "Disabling...",
+      "successMessage": "Two-factor authentication has been disabled.",
+      "cancel": "Cancel"
+    },
+    "regenerate": {
+      "title": "Regenerate Backup Codes",
+      "description": "Enter your authenticator code or a backup code to generate new backup codes.",
+      "submitButton": "Regenerate",
+      "submitting": "Regenerating...",
+      "newCodesTitle": "New Backup Codes",
+      "newCodesWarning": "Your old backup codes are now invalid. Save these new codes.",
+      "successMessage": "Backup codes regenerated.",
+      "done": "Done"
+    },
+    "form": {
+      "codePlaceholderTotp": "6-digit code",
+      "codePlaceholderBackup": "Backup code",
+      "useBackupCode": "Use a backup code instead",
+      "useTotp": "Use authenticator app instead"
+    },
+    "errors": {
+      "invalidCode": "Invalid or expired code. Please try again.",
+      "setupFailed": "Failed to start 2FA setup. Please try again.",
+      "disableFailed": "Failed to disable 2FA. Please try again.",
+      "regenFailed": "Failed to regenerate backup codes. Please try again."
+    }
+  }
 }

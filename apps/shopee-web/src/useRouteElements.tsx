@@ -47,6 +47,8 @@ const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'))
 const PaymentReturn = lazy(() => import('./pages/PaymentReturn/PaymentReturn'))
 // Google OAuth server-side flow landing page — must be outside RejectedRoute
 const AuthCallback = lazy(() => import('./pages/AuthCallback'))
+const TwoFactorVerify = lazy(() => import('./pages/Login/TwoFactorVerify'))
+const SecurityPage = lazy(() => import('./pages/User/pages/Security/Security'))
 
 // Khai báo một Route Protected(Vì nó return về Outlet nên hàm này được coi là component)
 function ProtectedRoute() {
@@ -332,6 +334,14 @@ const useRouteElements = () => {
                     </Suspense>
                   ),
                 },
+                {
+                  path: path.security,
+                  element: (
+                    <Suspense>
+                      <SecurityPage />
+                    </Suspense>
+                  ),
+                },
               ],
             },
           ],
@@ -382,6 +392,14 @@ const useRouteElements = () => {
               element: (
                 <Suspense>
                   <ResetPassword />
+                </Suspense>
+              ),
+            },
+            {
+              path: path.twoFactorVerify,
+              element: (
+                <Suspense>
+                  <TwoFactorVerify />
                 </Suspense>
               ),
             },

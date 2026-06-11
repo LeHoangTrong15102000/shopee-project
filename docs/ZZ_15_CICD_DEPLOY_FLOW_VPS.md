@@ -1005,7 +1005,7 @@ redis:
 shopee-api:
   image: ${REGISTRY:-myuser}/shopee-api:${IMAGE_TAG:-latest}
   env_file: [.env.prod]
-  volumes: [shopee_api_uploads:/app/upload]
+  volumes: ['./upload:/app/upload']
   ports: ['127.0.0.1:8083:4000']
   depends_on:
     mongodb: { condition: service_healthy, required: false }
@@ -1018,7 +1018,7 @@ shopee-api:
 | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `image: ${REGISTRY:-myuser}/shopee-api:${IMAGE_TAG:-latest}` | Chính 2 biến mà `deploy.sh` `export` (REGISTRY + IMAGE_TAG) được thay vào đây. Nếu không set → mặc định `myuser/...:latest`.                                                                                     |
 | `env_file: [.env.prod]`                                      | Nạp biến môi trường thật (MONGO_URI, REDIS_URL, JWT secret...) từ file `.env.prod` trên VPS.                                                                                                                     |
-| `volumes: [shopee_api_uploads:/app/upload]`                  | Gắn volume lưu **file upload của user**. Volume tồn tại độc lập với container → deploy/rollback **không mất** file đã upload.                                                                                    |
+| `volumes: ['./upload:/app/upload']`                          | Bind mount thư mục `./upload` trên VPS vào `/app/upload` trong container. Ảnh upload được scp/rsync trực tiếp lên VPS và lập tức visible cho container. **Yêu cầu một lần duy nhất trên VPS:** `chown -R 1001:1001 ./upload` (container chạy với uid 1001 appuser).                                          |
 | `ports: ['127.0.0.1:8083:4000']`                             | Map cổng 4000 (trong container) ra `127.0.0.1:8083` (trên VPS). Bind `127.0.0.1` → chỉ truy cập nội bộ, không lộ ra Internet.                                                                                    |
 | `depends_on ... required: false`                             | "Nếu mongodb/redis CÓ chạy (chế độ self-hosted) thì đợi chúng healthy rồi mới khởi động api; nếu KHÔNG có (chế độ cloud) thì cứ chạy". `required: false` chính là chìa khóa cho cả 2 chế độ dùng chung một file. |
 | `healthcheck: wget .../health`                               | Docker tự kiểm tra sức khỏe container bằng cách gọi `/health`.                                                                                                                                                   |
@@ -1049,15 +1049,14 @@ networks:
 volumes:
   shopee_mongodb_data:
   shopee_redis_data:
-  shopee_api_uploads:
 ```
 
 - **`shopee-network`** (bridge) — mạng nội bộ để 3 service gọi nhau bằng tên (vd api gọi `mongodb:27017`).
-- **3 volume** — nơi lưu dữ liệu bền vững:
+- **2 volume** — nơi lưu dữ liệu bền vững (chỉ dùng ở chế độ self-hosted):
   - `shopee_mongodb_data` — dữ liệu MongoDB (chỉ dùng ở chế độ self-hosted).
   - `shopee_redis_data` — dữ liệu Redis (chỉ self-hosted).
-  - `shopee_api_uploads` — file user upload.
-- **Vì sao prune ở `deploy.sh` tránh xa volume:** chính 3 volume này chứa **dữ liệu không thể tái tạo**. Đó là lý do bước dọn dẹp tuyệt đối không bao giờ đụng `--volumes`.
+- **File upload ảnh sản phẩm** sử dụng bind mount `./upload:/app/upload` thay vì named volume. Ảnh được vận chuyển lên VPS bằng scp/rsync, không qua git. **Yêu cầu một lần:** `chown -R 1001:1001 ./upload` trên VPS (container chạy với uid 1001 appuser).
+- **Vì sao prune ở `deploy.sh` tránh xa volume:** chính 2 volume này chứa **dữ liệu không thể tái tạo**. Đó là lý do bước dọn dẹp tuyệt đối không bao giờ đụng `--volumes`.
 
 ---
 

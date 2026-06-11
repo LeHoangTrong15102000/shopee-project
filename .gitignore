@@ -51,5 +51,9 @@ apps/shopee-app/ios/
 AGENTS.md
 CLAUDE.md
 
+# API uploaded images (transported to VPS manually, not via git)
+apps/shopee-api/upload/
+apps/shopee-api/src/upload/
+
 # Ad-hoc scripts
 apps/shopee-api/analyze-coverage.js

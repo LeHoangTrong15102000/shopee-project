@@ -184,9 +184,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next()
 })
 
-const dirNameWithEnv = isProduction
-  ? path.dirname(path.dirname(__dirname))
-  : path.dirname(__dirname)
+// Both dev and prod resolve correctly with a single path.dirname(__dirname):
+// - Dev: __dirname = apps/shopee-api/src → dirname = apps/shopee-api ✓
+// - Prod: __dirname = /app/build (tsc flattens output to build/index.js, 1 level)
+//         → dirname = /app ✓ (where the ./upload volume is mounted)
+// The old double-dirname assumed a build/src/index.js 2-level layout that tsc does not produce.
+const dirNameWithEnv = path.dirname(__dirname)
 
 // Static file caching options for optimal performance
 const staticCacheOptions = {

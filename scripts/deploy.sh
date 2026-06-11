@@ -68,6 +68,22 @@ retry_with_backoff() {
 echo "==> Deploy started: registry=$REGISTRY tag=$IMAGE_TAG services=$SERVICES"
 
 # ---------------------------------------------------------------------------
+# Step 0: Sync docker-compose.prod.yaml from origin/master.
+# CI only scps scripts/*.sh to the VPS; it never scps the compose file.
+# Without this step, a commit that changes docker-compose.prod.yaml would
+# never reach the VPS disk, and docker compose would keep running the old
+# file.  We fetch and checkout just that one file so we never clobber
+# VPS-local state (.env.prod, upload/, backups/, etc.).
+# ---------------------------------------------------------------------------
+if git -C "$PROJECT_ROOT" rev-parse --git-dir >/dev/null 2>&1; then
+  retry_with_backoff 3 5 git -C "$PROJECT_ROOT" fetch origin
+  git -C "$PROJECT_ROOT" checkout origin/master -- docker-compose.prod.yaml
+  echo "==> Synced docker-compose.prod.yaml from origin/master"
+else
+  echo "WARNING: $PROJECT_ROOT is not a git repository — skipping compose file sync. Using existing $COMPOSE_FILE as-is." >&2
+fi
+
+# ---------------------------------------------------------------------------
 # Step 1: Capture current running image SHA into a variable — do NOT write to
 # disk yet.  We only persist this to .previous-sha AFTER the new deploy passes
 # its health check, ensuring .previous-sha always points at a confirmed-healthy

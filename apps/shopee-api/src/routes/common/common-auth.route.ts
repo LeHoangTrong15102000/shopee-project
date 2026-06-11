@@ -80,14 +80,18 @@ commonAuthRouter.post(
 // Mobile POST /google is kept above, unchanged.
 
 // Step 1: generate state, redirect to Google consent
-commonAuthRouter.get('/google/url', authRateLimit, asyncHandler(authController.googleUrlController))
+commonAuthRouter.get(
+  '/auth/google/url',
+  authRateLimit,
+  asyncHandler(authController.googleUrlController),
+)
 
 // Step 2: Google redirects here with ?code&state — no body validation needed
-commonAuthRouter.get('/google/callback', asyncHandler(authController.googleCallbackController))
+commonAuthRouter.get('/auth/google/callback', asyncHandler(authController.googleCallbackController))
 
 // Step 3: SPA exchanges one-time `tmp` handle for AT/RT/user
 commonAuthRouter.post(
-  '/google/exchange-code',
+  '/auth/google/exchange-code',
   authRateLimit,
   validate(googleExchangeCodeSchema),
   asyncHandler(authController.googleExchangeCodeController),

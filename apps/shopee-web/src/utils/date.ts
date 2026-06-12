@@ -32,12 +32,13 @@ export function formatVietnameseDate(date: Date): string {
  * Parse estimatedDays string → { minDays, maxDays, minDate, maxDate }
  * Shared by all delivery date formatters.
  */
-function parseDeliveryDays(estimatedDays: string): {
+function parseDeliveryDays(estimatedDays: string | undefined): {
   minDays: number
   maxDays: number
   minDate: Date
   maxDate: Date
 } | null {
+  if (typeof estimatedDays !== 'string' || estimatedDays.length === 0) return null
   const match = estimatedDays.match(/(\d+)(?:\s*-\s*(\d+))?/)
   if (!match) return null
 
@@ -55,9 +56,9 @@ function parseDeliveryDays(estimatedDays: string): {
  * @param estimatedDays - e.g., "2-3 ngày" or "3-5 ngày" or "1 ngày"
  * @returns formatted date range string, e.g., "Thứ 3, 11/02 - Thứ 4, 12/02"
  */
-export function getEstimatedDeliveryDate(estimatedDays: string): string {
+export function getEstimatedDeliveryDate(estimatedDays: string | undefined): string {
   const parsed = parseDeliveryDays(estimatedDays)
-  if (!parsed) return estimatedDays
+  if (!parsed) return estimatedDays ?? ''
 
   const { minDays, maxDays, minDate, maxDate } = parsed
   if (minDays === maxDays) {
@@ -71,7 +72,7 @@ export function getEstimatedDeliveryDate(estimatedDays: string): string {
  * @param estimatedDays - e.g., "2-3 ngày" or "3-5 ngày" or "1 ngày"
  * @returns object with minDate, maxDate, and formatted string
  */
-export function getEstimatedDeliveryDateDetails(estimatedDays: string): {
+export function getEstimatedDeliveryDateDetails(estimatedDays: string | undefined): {
   minDate: Date | null
   maxDate: Date | null
   formatted: string
@@ -83,7 +84,7 @@ export function getEstimatedDeliveryDateDetails(estimatedDays: string): {
     return {
       minDate: null,
       maxDate: null,
-      formatted: estimatedDays,
+      formatted: estimatedDays ?? '',
       minDays: 0,
       maxDays: 0,
     }
@@ -110,9 +111,9 @@ function formatShopeeDate(date: Date): string {
 /**
  * Parse estimatedDays string → Shopee-style date range: "13 Th03 - 16 Th03"
  */
-export function getShopeeDeliveryRange(estimatedDays: string): string {
+export function getShopeeDeliveryRange(estimatedDays: string | undefined): string {
   const parsed = parseDeliveryDays(estimatedDays)
-  if (!parsed) return estimatedDays
+  if (!parsed) return estimatedDays ?? ''
 
   const { minDays, maxDays, minDate, maxDate } = parsed
   if (minDays === maxDays) return formatShopeeDate(minDate)

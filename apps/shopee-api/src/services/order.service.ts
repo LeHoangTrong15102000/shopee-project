@@ -46,9 +46,30 @@ import { stripeService } from '../container'
 import type { EventBus } from '../events/event-bus'
 
 const SHIPPING_METHODS = [
-  { id: 'standard', name: 'Giao hàng tiêu chuẩn', price: 30000, estimated_days: '3-5 ngày' },
-  { id: 'express', name: 'Giao hàng nhanh', price: 50000, estimated_days: '1-2 ngày' },
-  { id: 'same_day', name: 'Giao hàng trong ngày', price: 80000, estimated_days: 'Trong ngày' },
+  {
+    id: 'standard',
+    name: 'Giao hàng tiêu chuẩn',
+    description: '',
+    price: 30000,
+    estimated_days: '3-5',
+    icon: '',
+  },
+  {
+    id: 'express',
+    name: 'Giao hàng nhanh',
+    description: '',
+    price: 50000,
+    estimated_days: '1-2',
+    icon: '',
+  },
+  {
+    id: 'same_day',
+    name: 'Giao hàng trong ngày',
+    description: '',
+    price: 80000,
+    estimated_days: '0',
+    icon: '',
+  },
 ]
 
 const PAYMENT_METHODS = [
@@ -146,11 +167,25 @@ export class OrderService extends BaseService {
   }
 
   getShippingMethods() {
-    return SHIPPING_METHODS
+    return SHIPPING_METHODS.map((m) => ({
+      _id: m.id,
+      name: m.name,
+      description: m.description,
+      price: m.price,
+      estimatedDays: m.estimated_days,
+      icon: m.icon,
+    }))
   }
 
   getPaymentMethods() {
-    return PAYMENT_METHODS
+    return PAYMENT_METHODS.map((m) => ({
+      _id: m.id,
+      type: m.type,
+      name: m.name,
+      description: m.description,
+      icon: m.icon,
+      isAvailable: m.is_available,
+    }))
   }
 
   // ─── Public createOrder — orchestration only ──────────────────────────────

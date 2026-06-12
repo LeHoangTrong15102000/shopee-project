@@ -5,18 +5,32 @@ import { STATUS } from '@constants/status'
 import { orderService, paymentService } from '../container'
 import { ValidationError, NotFoundError, BusinessError } from '@services/base.service'
 import { OrderStatusType } from '@database/models/order.model'
-import { ShippingMethodModel } from '@database/models/shipping-method.model'
-import { PaymentMethodModel } from '@database/models/payment-method.model'
+import { ShippingMethodModel, IShippingMethod } from '@database/models/shipping-method.model'
+import { PaymentMethodModel, IPaymentMethod } from '@database/models/payment-method.model'
 
 export const getShippingMethods = async (_req: Request, res: Response) => {
   // Try DB first; fall back to static list if collection is empty (e.g. before seeding)
   const dbMethods = await ShippingMethodModel.find({ is_active: true })
     .sort({ sort_order: 1 })
-    .lean()
+    .lean<IShippingMethod[]>()
   if (dbMethods.length > 0) {
+    const normalizedMethods = dbMethods.map((m) => {
+      const estimatedDays =
+        m.estimated_days_min === m.estimated_days_max
+          ? String(m.estimated_days_min)
+          : `${m.estimated_days_min}-${m.estimated_days_max}`
+      return {
+        _id: m._id,
+        name: m.name,
+        description: m.description ?? '',
+        price: m.price,
+        estimatedDays,
+        icon: m.icon ?? '',
+      }
+    })
     return responseSuccess(res, {
       message: 'Lấy phương thức vận chuyển thành công',
-      data: dbMethods,
+      data: normalizedMethods,
     })
   }
   return responseSuccess(res, {
@@ -29,11 +43,19 @@ export const getPaymentMethods = async (_req: Request, res: Response) => {
   // Try DB first; fall back to static list if collection is empty (e.g. before seeding)
   const dbMethods = await PaymentMethodModel.find({ is_active: true })
     .sort({ sort_order: 1 })
-    .lean()
+    .lean<IPaymentMethod[]>()
   if (dbMethods.length > 0) {
+    const normalizedMethods = dbMethods.map((m) => ({
+      _id: m._id,
+      type: m.type,
+      name: m.name,
+      description: m.description ?? '',
+      icon: m.icon ?? '',
+      isAvailable: m.is_active,
+    }))
     return responseSuccess(res, {
       message: 'Lấy phương thức thanh toán thành công',
-      data: dbMethods,
+      data: normalizedMethods,
     })
   }
   return responseSuccess(res, {

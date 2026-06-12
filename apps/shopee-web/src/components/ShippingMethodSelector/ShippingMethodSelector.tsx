@@ -14,7 +14,8 @@ interface ShippingMethodSelectorProps {
   viewOnly?: boolean
 }
 
-const isExpressShipping = (estimatedDays: string): boolean => {
+const isExpressShipping = (estimatedDays: string | undefined): boolean => {
+  if (typeof estimatedDays !== 'string' || estimatedDays.length === 0) return false
   const match = estimatedDays.match(/(\d+)/)
   return match ? parseInt(match[1], 10) <= 1 : false
 }

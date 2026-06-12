@@ -294,6 +294,20 @@ export const responseError = (res: Response, error: ErrorHandler | Error) => {
     return res.status(error.statusCode).send(response)
   }
 
+  // Mongoose CastError (malformed ObjectId) → 400 Bad Request
+  // Detected by name string check — no Mongoose import or `as any` needed
+  if (error.name === 'CastError') {
+    const response: ErrorResponse = {
+      message: isProduction() ? COMMON_MESSAGES.BAD_REQUEST : error.message,
+    }
+
+    if (!isProduction() && error.stack) {
+      response.stack = error.stack
+    }
+
+    return res.status(STATUS.BAD_REQUEST).send(response)
+  }
+
   // Lỗi không mong đợi - không leak thông tin trong production
   Logger.apiError('Unexpected error masked as 500', {
     message: error.message,

@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import authApi from 'src/apis/auth.api'
 import { AppContext } from 'src/contexts/app.context'
 import { setAccessTokenToLS, setRefreshTokenToLS, setProfileToLS } from 'src/utils/auth'
+import { setInMemoryTokens } from 'src/utils/http'
 import path from 'src/constant/path'
 
 /**
@@ -60,6 +61,9 @@ function AuthCallback() {
       setAccessTokenToLS(result.access_token)
       setRefreshTokenToLS(result.refresh_token)
       setProfileToLS(result.user)
+      // Sync the Http singleton's in-memory fields so the Axios request interceptor
+      // sends the Authorization header on the immediately-following request after navigate('/').
+      setInMemoryTokens(result.access_token, result.refresh_token)
       setIsAuthenticated(true)
       setProfile(result.user)
       navigate('/', { replace: true })

@@ -15,7 +15,7 @@ jest.mock('fs', () => ({
 
 // Mock shelljs
 jest.mock('shelljs', () => ({
-  mkdir: jest.fn(),
+  mkdir: jest.fn().mockReturnValue({ code: 0, stderr: '' }),
 }))
 
 // Mock formidable
@@ -29,18 +29,27 @@ jest.mock('formidable', () => ({
   },
 }))
 
-// Mock response util
+// Mock response util — plain constructor function avoids TS class-property syntax
+// that breaks jest.mock() hoisting (Babel cannot parse TS class fields in factory scope).
+function MockErrorHandler(
+  this: { status: number; error: string | Record<string, unknown>; message: string },
+  status: number,
+  error: string | Record<string, unknown>,
+) {
+  this.status = status
+  this.error = error
+  this.message = typeof error === 'string' ? error : JSON.stringify(error)
+}
+MockErrorHandler.prototype = Object.create(Error.prototype)
+MockErrorHandler.prototype.constructor = MockErrorHandler
+
 jest.mock('@utils/response', () => ({
-  ErrorHandler: class ErrorHandler extends Error {
-    status: number
-    error: any
-    constructor(status: number, error: any) {
-      super(typeof error === 'string' ? error : JSON.stringify(error))
-      this.status = status
-      this.error = error
-    }
-  },
+  ErrorHandler: MockErrorHandler,
 }))
+
+import fs from 'fs'
+import shelljs from 'shelljs'
+import { Request } from 'express'
 
 import { uploadFile, uploadManyFile } from '@utils/upload'
 
@@ -64,7 +73,7 @@ describe('upload utility', () => {
         callback(null, {}, { image: mockFile })
       })
 
-      const result = await uploadFile({} as any)
+      const result = await uploadFile({} as unknown as Request)
 
       expect(result).toBe('test-uuid-1234.jpg')
     })
@@ -75,7 +84,7 @@ describe('upload utility', () => {
         callback(null, {}, { image: [mockFile] })
       })
 
-      const result = await uploadFile({} as any)
+      const result = await uploadFile({} as unknown as Request)
 
       expect(result).toBe('test-uuid-1234.jpg')
     })
@@ -85,7 +94,7 @@ describe('upload utility', () => {
         callback(null, {}, {})
       })
 
-      await expect(uploadFile({} as any)).rejects.toMatchObject({
+      await expect(uploadFile({} as unknown as Request)).rejects.toMatchObject({
         status: 422,
         error: { image: 'Không tìm thấy image' },
       })
@@ -97,7 +106,7 @@ describe('upload utility', () => {
         callback(null, {}, { image: mockFile })
       })
 
-      await expect(uploadFile({} as any)).rejects.toMatchObject({
+      await expect(uploadFile({} as unknown as Request)).rejects.toMatchObject({
         status: 422,
         error: { image: 'image không đúng định dạng' },
       })
@@ -109,19 +118,30 @@ describe('upload utility', () => {
         callback(null, {}, { image: mockFile })
       })
 
-      await expect(uploadFile({} as any)).rejects.toMatchObject({
+      await expect(uploadFile({} as unknown as Request)).rejects.toMatchObject({
         status: 422,
         error: { image: 'Kích thước image phải <= 1MB' },
       })
     })
 
-    it('should reject when formidable parse fails', async () => {
+    it('should reject with typed ErrorHandler when formidable parse fails', async () => {
       const parseError = new Error('Parse failed')
       mockParse.mockImplementation((req, callback) => {
         callback(parseError, null, null)
       })
 
-      await expect(uploadFile({} as any)).rejects.toBe(parseError)
+      await expect(uploadFile({} as unknown as Request)).rejects.toMatchObject({
+        status: 400,
+      })
+      // Must NOT reject with the raw Error — must be a typed ErrorHandler
+      await expect(
+        new Promise((res, rej) => {
+          mockParse.mockImplementation((req, callback) => callback(parseError, null, null))
+          uploadFile({} as unknown as Request)
+            .then(res)
+            .catch(rej)
+        }),
+      ).rejects.not.toBe(parseError)
     })
 
     it('should use custom folder when provided', async () => {
@@ -130,7 +150,7 @@ describe('upload utility', () => {
         callback(null, {}, { image: mockFile })
       })
 
-      const result = await uploadFile({} as any, 'avatars')
+      const result = await uploadFile({} as unknown as Request, 'avatars')
 
       expect(result).toBe('test-uuid-1234.jpg')
     })
@@ -146,7 +166,7 @@ describe('upload utility', () => {
         callback(null, {}, { images: mockFiles })
       })
 
-      const result = await uploadManyFile({} as any)
+      const result = await uploadManyFile({} as unknown as Request)
 
       expect(result).toHaveLength(2)
       expect(result[0]).toBe('test-uuid-1234.jpg')
@@ -159,7 +179,7 @@ describe('upload utility', () => {
         callback(null, {}, { images: mockFile })
       })
 
-      const result = await uploadManyFile({} as any)
+      const result = await uploadManyFile({} as unknown as Request)
 
       expect(result).toHaveLength(1)
       expect(result[0]).toBe('test-uuid-1234.jpg')
@@ -170,7 +190,7 @@ describe('upload utility', () => {
         callback(null, {}, {})
       })
 
-      await expect(uploadManyFile({} as any)).rejects.toMatchObject({
+      await expect(uploadManyFile({} as unknown as Request)).rejects.toMatchObject({
         status: 422,
         error: { images: 'Không tìm thấy images' },
       })
@@ -189,19 +209,21 @@ describe('upload utility', () => {
         callback(null, {}, { images: mockFiles })
       })
 
-      await expect(uploadManyFile({} as any)).rejects.toMatchObject({
+      await expect(uploadManyFile({} as unknown as Request)).rejects.toMatchObject({
         status: 422,
         error: { image: 'image không đúng định dạng' },
       })
     })
 
-    it('should reject when formidable parse fails', async () => {
+    it('should reject with typed ErrorHandler when formidable parse fails', async () => {
       const parseError = new Error('Parse failed')
       mockParse.mockImplementation((req, callback) => {
         callback(parseError, null, null)
       })
 
-      await expect(uploadManyFile({} as any)).rejects.toBe(parseError)
+      await expect(uploadManyFile({} as unknown as Request)).rejects.toMatchObject({
+        status: 400,
+      })
     })
 
     it('should use custom folder when provided', async () => {
@@ -210,10 +232,42 @@ describe('upload utility', () => {
         callback(null, {}, { images: [mockFile] })
       })
 
-      const result = await uploadManyFile({} as any, 'products')
+      const result = await uploadManyFile({} as unknown as Request, 'products')
 
       expect(result).toHaveLength(1)
       expect(result[0]).toBe('test-uuid-1234.jpg')
+    })
+  })
+
+  describe('upload — directory creation failure', () => {
+    it('should reject with typed ErrorHandler when mkdir fails silently', async () => {
+      // Simulate: directory does not exist, mkdir returns non-zero code
+      ;(fs.existsSync as jest.Mock).mockReturnValueOnce(false)
+      ;(shelljs.mkdir as jest.Mock).mockReturnValueOnce({ code: 1, stderr: 'Permission denied' })
+
+      const mockFile = createMockFile()
+      mockParse.mockImplementation((req, callback) => {
+        callback(null, {}, { image: mockFile })
+      })
+
+      await expect(uploadFile({} as unknown as Request)).rejects.toMatchObject({
+        status: 500,
+      })
+    })
+
+    it('should proceed when directory already exists (mkdir not called)', async () => {
+      // existsSync returns true → mkdir should not be called
+      ;(fs.existsSync as jest.Mock).mockReturnValueOnce(true)
+
+      const mockFile = createMockFile()
+      mockParse.mockImplementation((req, callback) => {
+        callback(null, {}, { image: mockFile })
+      })
+
+      const result = await uploadFile({} as unknown as Request)
+
+      expect(shelljs.mkdir).not.toHaveBeenCalled()
+      expect(result).toBe('test-uuid-1234.jpg')
     })
   })
 })

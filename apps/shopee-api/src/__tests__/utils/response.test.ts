@@ -1,5 +1,5 @@
 /// <reference types="jest" />
-import { Response } from 'express'
+import { Response, Request } from 'express'
 import {
   ErrorHandler,
   ValidationError,
@@ -16,6 +16,17 @@ import {
 import { STATUS } from '@constants/status'
 import { COMMON_MESSAGES, ERROR_CODES } from '@constants/messages'
 import { createMockResponse } from '../setup'
+
+// Mock Logger to verify logging calls
+jest.mock('@utils/logger', () => ({
+  Logger: {
+    apiError: jest.fn(),
+    apiWarn: jest.fn(),
+    apiInfo: jest.fn(),
+  },
+}))
+
+import { Logger } from '@utils/logger'
 
 describe('ErrorHandler', () => {
   it('constructor sets properties correctly with string error', () => {
@@ -152,6 +163,128 @@ describe('responseError', () => {
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
         code: ERROR_CODES.INTERNAL_SERVER_ERROR,
+      }),
+    )
+  })
+})
+
+describe('responseError — Fix #3: observable masking layer', () => {
+  const originalNodeEnv = process.env.NODE_ENV
+
+  afterEach(() => {
+    process.env.NODE_ENV = originalNodeEnv
+    jest.clearAllMocks()
+  })
+
+  const createMockReq = (
+    overrides?: Partial<{ path: string; method: string; requestId: string }>,
+  ) =>
+    ({
+      path: '/test/path',
+      method: 'GET',
+      requestId: 'req-id-123',
+      ...overrides,
+    }) as Pick<Request, 'path' | 'method' | 'requestId'>
+
+  it('untyped error logs message, stack, path, method, and requestId', () => {
+    const res = createMockResponse() as Response
+    const req = createMockReq()
+    const error = new Error('Something broke')
+    error.stack = 'Error: Something broke\n  at test.ts:1:1'
+
+    responseError(res, error, req)
+
+    expect(Logger.apiError).toHaveBeenCalledWith(
+      expect.stringContaining('500'),
+      expect.objectContaining({
+        message: 'Something broke',
+        stack: error.stack,
+        path: '/test/path',
+        method: 'GET',
+        requestId: 'req-id-123',
+      }),
+    )
+  })
+
+  it('untyped error logs even when requestId is absent', () => {
+    const res = createMockResponse() as Response
+    const req = createMockReq({ requestId: undefined as unknown as string })
+    const error = new Error('No request id')
+
+    responseError(res, error, req)
+
+    expect(Logger.apiError).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        message: 'No request id',
+        path: '/test/path',
+        method: 'GET',
+      }),
+    )
+  })
+
+  it('in production, untyped error response contains only generic message and code — no stack, no raw message', () => {
+    process.env.NODE_ENV = 'production'
+    const res = createMockResponse() as Response
+    const error = new Error('Internal secret details')
+
+    responseError(res, error)
+
+    expect(res.status).toHaveBeenCalledWith(STATUS.INTERNAL_SERVER_ERROR)
+    const sentBody = (res.send as jest.Mock).mock.calls[0][0] as Record<string, unknown>
+    expect(sentBody.message).toBe(COMMON_MESSAGES.INTERNAL_SERVER_ERROR)
+    expect(sentBody.code).toBe(ERROR_CODES.INTERNAL_SERVER_ERROR)
+    expect(sentBody.stack).toBeUndefined()
+    // The raw underlying error message must NOT appear in the response body
+    expect(JSON.stringify(sentBody)).not.toContain('Internal secret details')
+  })
+
+  it('in non-production, untyped error response may include message and stack', () => {
+    process.env.NODE_ENV = 'development'
+    const res = createMockResponse() as Response
+    const error = new Error('Dev debug info')
+    error.stack = 'Error: Dev debug info\n  at test.ts:5:5'
+
+    responseError(res, error)
+
+    const sentBody = (res.send as jest.Mock).mock.calls[0][0] as Record<string, unknown>
+    expect(sentBody.message).toBe('Dev debug info')
+    expect(sentBody.stack).toBe(error.stack)
+  })
+
+  it('ErrorHandler branch does NOT invoke the untyped-error logging', () => {
+    const res = createMockResponse() as Response
+    const error = new ErrorHandler(400, 'Bad request error', true, ERROR_CODES.BAD_REQUEST)
+
+    responseError(res, error)
+
+    expect(Logger.apiError).not.toHaveBeenCalled()
+    expect(res.status).toHaveBeenCalledWith(400)
+  })
+
+  it('CastError branch does NOT invoke the untyped-error logging', () => {
+    const res = createMockResponse() as Response
+    const castError = new Error('Cast to ObjectId failed')
+    castError.name = 'CastError'
+
+    responseError(res, castError)
+
+    expect(Logger.apiError).not.toHaveBeenCalled()
+    expect(res.status).toHaveBeenCalledWith(STATUS.BAD_REQUEST)
+  })
+
+  it('ErrorHandler response status, message, and body are byte-for-byte unchanged', () => {
+    process.env.NODE_ENV = 'production'
+    const res = createMockResponse() as Response
+    const error = new ErrorHandler(422, 'Validation failed', true, ERROR_CODES.VALIDATION_ERROR)
+
+    responseError(res, error)
+
+    expect(res.status).toHaveBeenCalledWith(422)
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Validation failed',
+        code: ERROR_CODES.VALIDATION_ERROR,
       }),
     )
   })

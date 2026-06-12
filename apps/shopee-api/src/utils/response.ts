@@ -1,4 +1,4 @@
-import { Response, Request, NextFunction } from 'express'
+import { Response, Request } from 'express'
 import { STATUS } from '@constants/status'
 import { COMMON_MESSAGES, ERROR_CODES, ErrorCode } from '@constants/messages'
 import { Logger } from '@utils/logger'
@@ -241,8 +241,16 @@ function isServiceError(err: Error): err is Error & ServiceErrorShape {
  * Xử lý và trả về response lỗi
  * Không leak stack trace trong production
  * Include error code nếu có
+ *
+ * @param res - Express Response object
+ * @param error - The error to handle
+ * @param req - Optional request context (path, method, requestId) used only for untyped-error logging
  */
-export const responseError = (res: Response, error: ErrorHandler | Error) => {
+export const responseError = (
+  res: Response,
+  error: ErrorHandler | Error,
+  req?: Pick<Request, 'path' | 'method' | 'requestId'>,
+) => {
   if (error instanceof ErrorHandler) {
     const status = error.status
 
@@ -312,6 +320,9 @@ export const responseError = (res: Response, error: ErrorHandler | Error) => {
   Logger.apiError('Unexpected error masked as 500', {
     message: error.message,
     stack: error.stack,
+    path: req?.path,
+    method: req?.method,
+    requestId: req?.requestId,
   })
 
   const response: ErrorResponse = {

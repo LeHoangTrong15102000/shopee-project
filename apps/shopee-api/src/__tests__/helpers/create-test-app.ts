@@ -74,7 +74,7 @@ export const createTestApp = (): express.Application => {
 
   // Global error handler
   app.use((err: any, req: Request, res: Response, _next: NextFunction): void => {
-    responseError(res, err)
+    responseError(res, err, req)
   })
 
   return app

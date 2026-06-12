@@ -44,7 +44,7 @@ const verifyAccessToken = async (
       // Pure JWT verification — no database lookup needed
       return next()
     } catch (error) {
-      responseError(res, error as ErrorHandler | Error)
+      responseError(res, error as ErrorHandler | Error, req)
       return
     }
   }
@@ -90,7 +90,7 @@ const verifyRefreshToken = async (
       responseError(res, new ErrorHandler(STATUS.UNAUTHORIZED, 'Không tồn tại token'))
       return
     } catch (error) {
-      responseError(res, error as ErrorHandler | Error)
+      responseError(res, error as ErrorHandler | Error, req)
       return
     }
   }

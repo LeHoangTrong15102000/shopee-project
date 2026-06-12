@@ -24,7 +24,15 @@ const upload = (image: formidable.File, folder: string) => {
   return new Promise<string>((resolve, reject) => {
     const dir = `${FOLDER_UPLOAD}${folder ? '/' + folder : ''}`
     if (!fs.existsSync(dir)) {
-      shelljs.mkdir('-p', dir)
+      const mkdirResult = shelljs.mkdir('-p', dir)
+      if (mkdirResult.code !== 0) {
+        return reject(
+          new ErrorHandler(
+            STATUS.INTERNAL_SERVER_ERROR,
+            `Lỗi tạo thư mục upload: ${mkdirResult.stderr || 'unknown error'}`,
+          ),
+        )
+      }
     }
     const tmpPath = image.filepath
     const newName = uuidv4() + '.' + getExtension(image.originalFilename ?? '')
@@ -41,7 +49,12 @@ export const uploadFile = (req: Request, folder = '') => {
     const form = new formidable.IncomingForm()
     form.parse(req, function (error, fields, files) {
       if (error) {
-        return reject(error)
+        return reject(
+          new ErrorHandler(
+            STATUS.BAD_REQUEST,
+            'Lỗi phân tích dữ liệu upload: dữ liệu form không hợp lệ',
+          ),
+        )
       }
       try {
         const imageFiles = files.image
@@ -81,7 +94,12 @@ export const uploadManyFile = (req: Request, folder = '') => {
     const form = new formidable.IncomingForm({ multiples: true })
     form.parse(req, function (error, fields, files) {
       if (error) {
-        return reject(error)
+        return reject(
+          new ErrorHandler(
+            STATUS.BAD_REQUEST,
+            'Lỗi phân tích dữ liệu upload: dữ liệu form không hợp lệ',
+          ),
+        )
       }
       try {
         const imagesFiles = files.images

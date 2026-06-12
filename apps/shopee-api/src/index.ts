@@ -52,7 +52,6 @@ import {
 import dockerHealthRouter from '@routes/health.route'
 
 const app: express.Application = express()
-connectMongoDB()
 const routes = [{ ...commonRoutes }, { ...userRoutes }, { ...adminRoutes }]
 
 // Health check endpoint — registered BEFORE the HTTPS redirect middleware so
@@ -275,7 +274,7 @@ app.use((err: any, req: Request, res: Response, _next: NextFunction): void => {
     })
   }
 
-  responseError(res, err)
+  responseError(res, err, req)
 })
 
 // ==================== SERVER STARTUP ====================
@@ -288,42 +287,68 @@ const httpServer = http.createServer(app)
 // Initialize Socket.io with the HTTP server
 const io = initializeSocket(httpServer)
 
-httpServer.listen(PORT, () => {
-  console.log(chalk.greenBright(`API listening on port ${PORT}!`))
-  console.log(chalk.cyanBright(`WebSocket server ready on port ${PORT}`))
-  Logger.apiInfo(`Server started on port ${PORT}`, {
-    environment: process.env.NODE_ENV || 'development',
-    nodeVersion: process.version,
-    websocket: true,
-  })
+/**
+ * Async boot sequence: connect to MongoDB first, then start listening.
+ * On MongoDB connection failure: log with a clear boot-failure marker and exit(1).
+ * This ensures the process never starts serving requests with a disconnected DB.
+ */
+void (async () => {
+  try {
+    await connectMongoDB()
+  } catch (err) {
+    const error = err instanceof Error ? err : new Error(String(err))
+    Logger.apiError('boot dependency failure: MongoDB — initial connection rejected', {
+      message: error.message,
+      stack: error.stack,
+    })
+    console.error(
+      chalk.red('[BOOT FAILURE] boot dependency failure: MongoDB — initial connection rejected'),
+      error,
+    )
+    process.exit(1)
+  }
 
-  // Register BullMQ repeatable jobs after server is ready
-  paymentReconciliationJob.start().catch((err) => {
-    Logger.apiError('[index] Failed to register payment reconciliation job', {
-      error: err?.message,
+  httpServer.listen(PORT, () => {
+    console.log(chalk.greenBright(`API listening on port ${PORT}!`))
+    console.log(chalk.cyanBright(`WebSocket server ready on port ${PORT}`))
+    Logger.apiInfo(`Server started on port ${PORT}`, {
+      environment: process.env.NODE_ENV || 'development',
+      nodeVersion: process.version,
+      websocket: true,
+    })
+
+    // Register BullMQ repeatable jobs after server is ready
+    paymentReconciliationJob.start().catch((err) => {
+      Logger.apiError('[index] Failed to register payment reconciliation job', {
+        error: err?.message,
+      })
+    })
+    flashSaleScheduler.start().catch((err) => {
+      Logger.apiError('[index] Failed to register flash sale scheduler job', {
+        error: err?.message,
+      })
+    })
+    refundStatusPollJob.start().catch((err) => {
+      Logger.apiError('[index] Failed to register refund status poll job', { error: err?.message })
+    })
+    analyticsAggregationJob.start().catch((err) => {
+      Logger.apiError('[index] Failed to register analytics aggregation job', {
+        error: err?.message,
+      })
+    })
+    cleanupJob.start().catch((err) => {
+      Logger.apiError('[index] Failed to register cleanup jobs', { error: err?.message })
+    })
+    searchReindexJob.start().catch((err) => {
+      Logger.apiError('[index] Failed to register search reindex job', { error: err?.message })
+    })
+
+    // Configure Meilisearch index (idempotent — safe to call on every startup)
+    meilisearchService.configureIndex().catch((err) => {
+      Logger.apiError('[index] Failed to configure Meilisearch index', { error: err?.message })
     })
   })
-  flashSaleScheduler.start().catch((err) => {
-    Logger.apiError('[index] Failed to register flash sale scheduler job', { error: err?.message })
-  })
-  refundStatusPollJob.start().catch((err) => {
-    Logger.apiError('[index] Failed to register refund status poll job', { error: err?.message })
-  })
-  analyticsAggregationJob.start().catch((err) => {
-    Logger.apiError('[index] Failed to register analytics aggregation job', { error: err?.message })
-  })
-  cleanupJob.start().catch((err) => {
-    Logger.apiError('[index] Failed to register cleanup jobs', { error: err?.message })
-  })
-  searchReindexJob.start().catch((err) => {
-    Logger.apiError('[index] Failed to register search reindex job', { error: err?.message })
-  })
-
-  // Configure Meilisearch index (idempotent — safe to call on every startup)
-  meilisearchService.configureIndex().catch((err) => {
-    Logger.apiError('[index] Failed to configure Meilisearch index', { error: err?.message })
-  })
-})
+})()
 
 // ==================== GRACEFUL SHUTDOWN ====================
 

@@ -10,7 +10,12 @@ export type AuthResponse = SuccessResponseApi<{
   user: User
 }>
 
-export type RefreshTokenResponse = SuccessResponseApi<{ access_token: string }>
+export type RefreshTokenResponse = SuccessResponseApi<{
+  access_token: string
+  refresh_token: string
+  expires: number
+  expires_refresh_token: number
+}>
 
 /**
  * Login returns either a full token set or a 2FA partial result when

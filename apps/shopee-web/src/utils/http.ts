@@ -188,9 +188,11 @@ export class Http {
         refresh_token: this.refreshToken,
       })
       .then((res) => {
-        const { access_token } = res.data.data
+        const { access_token, refresh_token } = res.data.data
         setAccessTokenToLS(access_token)
+        setRefreshTokenToLS(refresh_token)
         this.accessToken = access_token
+        this.refreshToken = refresh_token
 
         // return về access_token để khi gọi hàm handleRefreshToken thì sẽ lấy được access_token
         return access_token

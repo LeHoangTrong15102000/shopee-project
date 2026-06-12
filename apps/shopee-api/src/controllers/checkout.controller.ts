@@ -45,7 +45,7 @@ export const getCheckoutSummary = async (req: Request, res: Response) => {
 
     // Get shipping methods from orderService
     const shippingMethods = orderService.getShippingMethods()
-    const shippingMethod = shippingMethods.find((m) => m.id === shipping_method_id)
+    const shippingMethod = shippingMethods.find((m) => m._id === shipping_method_id)
     const shippingFee = shippingMethod?.price || 30000
 
     // Calculate voucher discount using voucherService
@@ -300,7 +300,7 @@ export const initiatePayment = async (req: Request, res: Response) => {
 
     // Get shipping method
     const shippingMethods = orderService.getShippingMethods()
-    const shippingMethod = shippingMethods.find((m) => m.id === shipping_method_id)
+    const shippingMethod = shippingMethods.find((m) => m._id === shipping_method_id)
     const shippingFee = shippingMethod?.price || 30000
 
     // Calculate voucher discount

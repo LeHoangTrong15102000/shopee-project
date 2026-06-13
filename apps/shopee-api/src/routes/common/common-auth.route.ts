@@ -100,34 +100,34 @@ commonAuthRouter.post(
 // ── 2FA routes ──────────────────────────────────────────────────────────────
 
 commonAuthRouter.post(
-  'auth/2fa/setup',
+  '/auth/2fa/setup',
   authMiddleware.verifyAccessToken,
   asyncHandler(totpController.setupTwoFactor),
 )
 
 commonAuthRouter.post(
-  'auth/2fa/verify-setup',
+  '/auth/2fa/verify-setup',
   authMiddleware.verifyAccessToken,
   validate(twoFactorVerifySetupSchema),
   asyncHandler(totpController.verifySetup),
 )
 
 commonAuthRouter.post(
-  'auth/2fa/disable',
+  '/auth/2fa/disable',
   authMiddleware.verifyAccessToken,
   validate(twoFactorDisableSchema),
   asyncHandler(totpController.disableTwoFactor),
 )
 
 commonAuthRouter.post(
-  'auth/2fa/backup-codes',
+  '/auth/2fa/backup-codes',
   authMiddleware.verifyAccessToken,
   validate(twoFactorBackupCodesSchema),
   asyncHandler(totpController.regenerateBackupCodes),
 )
 
 commonAuthRouter.post(
-  'auth/2fa/complete',
+  '/auth/2fa/complete',
   authRateLimit, // Protect against brute-force on partial tokens
   validate(twoFactorCompleteSchema),
   asyncHandler(totpController.completeTwoFactorLogin),

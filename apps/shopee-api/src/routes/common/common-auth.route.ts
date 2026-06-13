@@ -1,27 +1,27 @@
-import { Router } from 'express'
 import authController from '@controllers/auth.controller'
 import * as passwordResetController from '@controllers/password-reset.controller'
-import totpController from '@controllers/totp.controller'
 import sessionController from '@controllers/session.controller'
+import totpController from '@controllers/totp.controller'
 import authMiddleware from '@middleware/auth.middleware'
-import { asyncHandler } from '@utils/async-handler'
-import { bruteForceProtectionMiddleware } from '@middleware/security.middleware'
 import { authRateLimit } from '@middleware/rateLimiter.middleware'
+import { bruteForceProtectionMiddleware } from '@middleware/security.middleware'
 import {
-  validate,
+  forgotPasswordSchema,
+  googleExchangeCodeSchema,
+  googleLoginSchema,
   loginSchema,
   registerSchema,
-  forgotPasswordSchema,
   resetPasswordSchema,
-  googleLoginSchema,
-  googleExchangeCodeSchema,
+  validate,
 } from '@schemas/index'
 import {
-  twoFactorVerifySetupSchema,
-  twoFactorDisableSchema,
   twoFactorBackupCodesSchema,
   twoFactorCompleteSchema,
+  twoFactorDisableSchema,
+  twoFactorVerifySetupSchema,
 } from '@schemas/totp.schema'
+import { asyncHandler } from '@utils/async-handler'
+import { Router } from 'express'
 
 const commonAuthRouter = Router()
 
@@ -100,34 +100,34 @@ commonAuthRouter.post(
 // ── 2FA routes ──────────────────────────────────────────────────────────────
 
 commonAuthRouter.post(
-  '/2fa/setup',
+  'auth/2fa/setup',
   authMiddleware.verifyAccessToken,
   asyncHandler(totpController.setupTwoFactor),
 )
 
 commonAuthRouter.post(
-  '/2fa/verify-setup',
+  'auth/2fa/verify-setup',
   authMiddleware.verifyAccessToken,
   validate(twoFactorVerifySetupSchema),
   asyncHandler(totpController.verifySetup),
 )
 
 commonAuthRouter.post(
-  '/2fa/disable',
+  'auth/2fa/disable',
   authMiddleware.verifyAccessToken,
   validate(twoFactorDisableSchema),
   asyncHandler(totpController.disableTwoFactor),
 )
 
 commonAuthRouter.post(
-  '/2fa/backup-codes',
+  'auth/2fa/backup-codes',
   authMiddleware.verifyAccessToken,
   validate(twoFactorBackupCodesSchema),
   asyncHandler(totpController.regenerateBackupCodes),
 )
 
 commonAuthRouter.post(
-  '/2fa/complete',
+  'auth/2fa/complete',
   authRateLimit, // Protect against brute-force on partial tokens
   validate(twoFactorCompleteSchema),
   asyncHandler(totpController.completeTwoFactorLogin),

@@ -4,14 +4,14 @@ import { useContext, useRef, useState, type FormEventHandler } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import { z } from 'zod'
+import totpApi, { TotpSetupResponse } from 'src/apis/totp.api'
 import Button from 'src/components/Button'
 import Input from 'src/components/Input'
 import SEO from 'src/components/SEO'
 import { AppContext } from 'src/contexts/app.context'
-import totpApi, { TotpSetupResponse } from 'src/apis/totp.api'
-import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { ErrorResponseApi } from 'src/types/utils.type'
+import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import { z } from 'zod'
 
 // ---------------------------------------------------------------------------
 // Zod schemas
@@ -494,7 +494,7 @@ export default function Security() {
           register={registerVerify}
           placeholder={t('security.setup.step2.placeholder')}
           errorMessage={errorsVerify.code?.message}
-          inputMode="numeric"
+          // inputMode="numeric"
           maxLength={6}
           autoComplete="one-time-code"
           disableFloatingLabel

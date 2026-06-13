@@ -19,14 +19,14 @@ const ProfileFieldCard = ({ completedFields, reducedMotion }: ProfileFieldCardPr
 
   return (
     <div className="w-full grow">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
         {PROFILE_FIELDS.map((field, index) => {
           const isComplete = completedFields.some((f) => f.key === field.key)
           const IconComponent = ProfileIcons[field.key]
           return (
             <motion.div
               key={field.key}
-              className={`relative flex cursor-default items-center gap-3 rounded-2xl px-4 py-3.5 transition-all duration-300 ${
+              className={`relative flex cursor-default overflow-hidden items-center gap-3 rounded-2xl px-4 py-3.5 transition-all duration-300 ${
                 isComplete
                   ? 'border border-emerald-200/60 bg-linear-to-br from-emerald-50 via-emerald-50 to-teal-50 shadow-xs hover:shadow-md hover:shadow-emerald-100/50 dark:border-emerald-700/50 dark:from-emerald-900/40 dark:via-emerald-900/30 dark:to-teal-900/40 dark:hover:shadow-emerald-900/30'
                   : 'border border-orange-200/60 bg-linear-to-br from-orange-50 via-amber-50 to-yellow-50 shadow-xs hover:shadow-md hover:shadow-orange-100/50 dark:border-orange-700/50 dark:from-orange-900/40 dark:via-amber-900/30 dark:to-yellow-900/40 dark:hover:shadow-orange-900/30'

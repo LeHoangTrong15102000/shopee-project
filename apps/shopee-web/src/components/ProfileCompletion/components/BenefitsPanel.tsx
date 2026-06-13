@@ -76,7 +76,7 @@ const BenefitsPanel = ({ reducedMotion }: BenefitsPanelProps) => {
 
   return (
     <motion.div
-      className="hidden w-44 shrink-0 flex-col gap-3 md:flex md:w-40 lg:w-48"
+      className="hidden shrink-0 flex-col gap-3 @md:flex @md:w-40 @lg:w-48"
       initial={reducedMotion ? { opacity: 1 } : { opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, delay: 0.4 }}

@@ -10,7 +10,7 @@ const CongratulatoryPanel = ({ reducedMotion }: CongratulatoryPanelProps) => {
 
   return (
     <motion.div
-      className="hidden w-44 shrink-0 flex-col items-center justify-center gap-3 rounded-2xl border border-amber-200/50 bg-linear-to-br from-amber-50 via-yellow-50 to-orange-50 p-4 md:flex md:w-40 lg:w-48 lg:p-5 dark:border-amber-700/40 dark:from-amber-900/30 dark:via-yellow-900/30 dark:to-orange-900/30"
+      className="hidden shrink-0 flex-col items-center justify-center gap-3 rounded-2xl border border-amber-200/50 bg-linear-to-br from-amber-50 via-yellow-50 to-orange-50 p-4 @md:flex @md:w-40 @lg:w-48 @lg:p-5 dark:border-amber-700/40 dark:from-amber-900/30 dark:via-yellow-900/30 dark:to-orange-900/30"
       initial={reducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, delay: 0.4, type: 'spring', stiffness: 200 }}

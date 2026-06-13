@@ -4,9 +4,9 @@ import { User } from 'src/types/user.type'
 // Shimmer effect component for incomplete fields
 export const ShimmerEffect = () => (
   <motion.div
-    className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/20 to-transparent"
-    animate={{ translateX: ['100%', '-100%'] }}
-    transition={{ duration: 2, repeat: Infinity, repeatDelay: 3, ease: 'linear' }}
+    className="absolute inset-y-0 left-0 w-1/3 -skew-x-12 bg-linear-to-r from-transparent via-white/10 to-transparent"
+    animate={{ translateX: ['-150%', '400%'] }}
+    transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 4, ease: 'linear' }}
     aria-hidden="true"
   />
 )

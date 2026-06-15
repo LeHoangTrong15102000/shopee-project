@@ -15,6 +15,7 @@ import {
   escapeHtml,
   truncateText,
   normalizeSearchQuery,
+  isValidObjectId,
 } from '../utils'
 import { AxiosError, AxiosResponse } from 'axios'
 import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum'
@@ -248,5 +249,51 @@ describe('isWithinDays', () => {
 
   it('returns false for invalid date', () => {
     expect(isWithinDays('invalid', 7)).toBe(false)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// isValidObjectId (cart-sku-validation spec)
+// ---------------------------------------------------------------------------
+
+describe('isValidObjectId', () => {
+  it('returns true for a valid 24-hex lowercase ObjectId', () => {
+    expect(isValidObjectId('aabbccddeeff001122334455')).toBe(true)
+  })
+
+  it('returns true for a valid 24-hex uppercase ObjectId', () => {
+    expect(isValidObjectId('AABBCCDDEEFF001122334455')).toBe(true)
+  })
+
+  it('returns true for a valid mixed-case 24-hex ObjectId', () => {
+    expect(isValidObjectId('5f43a0d60d05d328c8951a97')).toBe(true)
+  })
+
+  it('returns false for mock-sku-0', () => {
+    expect(isValidObjectId('mock-sku-0')).toBe(false)
+  })
+
+  it('returns false for an id shorter than 24 chars', () => {
+    expect(isValidObjectId('aabbccddeeff00112233445')).toBe(false)
+  })
+
+  it('returns false for an id longer than 24 chars', () => {
+    expect(isValidObjectId('aabbccddeeff0011223344556')).toBe(false)
+  })
+
+  it('returns false for an id containing non-hex characters', () => {
+    expect(isValidObjectId('aabbccddeeff00112233445g')).toBe(false)
+  })
+
+  it('returns false for undefined', () => {
+    expect(isValidObjectId(undefined)).toBe(false)
+  })
+
+  it('returns false for null', () => {
+    expect(isValidObjectId(null)).toBe(false)
+  })
+
+  it('returns false for empty string', () => {
+    expect(isValidObjectId('')).toBe(false)
   })
 })

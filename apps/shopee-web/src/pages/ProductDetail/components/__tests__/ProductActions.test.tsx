@@ -5,6 +5,7 @@ import ProductActions from '../ProductActions'
 import { renderWithProviders } from 'src/utils/testUtils'
 import { useCartStore } from 'src/stores/cart.store'
 import { ExtendedPurchase } from 'src/types/purchases.type'
+import { Product as ProductType, ProductSKU } from 'src/types/product.type'
 
 // Mock optimistic add to cart
 const mockMutate = vi.fn()
@@ -54,7 +55,7 @@ const createMockCartItem = (productId: string, buyCount: number): ExtendedPurcha
   isChecked: false,
 })
 
-const mockProduct = {
+const mockProduct: ProductType = {
   _id: 'product-1',
   name: 'Test Product',
   price: 100000,
@@ -236,8 +237,9 @@ describe('ProductActions - Cart Validation (Task 1.9)', () => {
 })
 
 // Mock SKU data for variant tests
+// Use a valid 24-hex ObjectId so isValidObjectId returns true and sku_id is included
 const mockSKU = {
-  _id: 'sku-red-m',
+  _id: 'aabbccddeeff001122334455',
   value: 'RED-M',
   price: 95000,
   stock: 15,
@@ -245,7 +247,7 @@ const mockSKU = {
 }
 
 const mockOutOfStockSKU = {
-  _id: 'sku-blue-l',
+  _id: 'aabbccddeeff001122334456',
   value: 'BLUE-L',
   price: 100000,
   stock: 0,
@@ -296,7 +298,7 @@ describe('ProductActions - Variant Selection (Task 15.9)', () => {
     expect(mockMutate).toHaveBeenCalledWith({
       product_id: 'product-1',
       buy_count: 1,
-      sku_id: 'sku-red-m',
+      sku_id: 'aabbccddeeff001122334455',
     })
   })
 
@@ -312,7 +314,9 @@ describe('ProductActions - Variant Selection (Task 15.9)', () => {
     )
     const addBtn = screen.getByText('Thêm vào giỏ hàng')
     await user.click(addBtn)
-    expect(mockMutate).toHaveBeenCalledWith(expect.objectContaining({ sku_id: 'sku-red-m' }))
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ sku_id: 'aabbccddeeff001122334455' }),
+    )
   })
 
   it('disables add to cart when selected SKU is out of stock', () => {
@@ -392,7 +396,7 @@ describe('ProductActions - Variant Selection (Task 15.9)', () => {
     expect(mockMutateAsync).toHaveBeenCalledWith({
       product_id: 'product-1',
       buy_count: 1,
-      sku_id: 'sku-red-m',
+      sku_id: 'aabbccddeeff001122334455',
     })
   })
 
@@ -429,5 +433,113 @@ describe('ProductActions - Variant Selection (Task 15.9)', () => {
     await user.click(addBtn)
     expect(mockMutate).not.toHaveBeenCalled()
     expect(toast.error).toHaveBeenCalled()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// sku_id ObjectId guard (Task 3.1–3.3 / cart-sku-validation spec)
+// ---------------------------------------------------------------------------
+
+const VALID_OBJECT_ID = 'aabbccddeeff001122334455'
+const MOCK_SKU_ID = 'mock-sku-0'
+
+const makeSKU = (id: string, stock = 5): ProductSKU => ({
+  _id: id,
+  value: 'X',
+  price: 100000,
+  stock,
+  variant_values: {},
+})
+
+describe('ProductActions - sku_id ObjectId guard (cart-sku-validation)', () => {
+  const user = userEvent.setup()
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    useCartStore.getState().setItems([])
+    mockMutateAsync.mockResolvedValue({ data: { data: { _id: 'purchase-1' } } })
+  })
+
+  it('addToCart omits sku_id when selectedSKU._id is a mock/non-ObjectId', async () => {
+    renderWithProviders(
+      <ProductActions
+        product={mockProduct}
+        isAuthenticated={true}
+        reducedMotion={true}
+        hasVariants={true}
+        selectedSKU={makeSKU(MOCK_SKU_ID)}
+      />,
+    )
+    const addBtn = screen.getByText('Thêm vào giỏ hàng')
+    await user.click(addBtn)
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.not.objectContaining({ sku_id: expect.anything() }),
+    )
+  })
+
+  it('addToCart includes sku_id when selectedSKU._id is a valid 24-hex ObjectId', async () => {
+    renderWithProviders(
+      <ProductActions
+        product={mockProduct}
+        isAuthenticated={true}
+        reducedMotion={true}
+        hasVariants={true}
+        selectedSKU={makeSKU(VALID_OBJECT_ID)}
+      />,
+    )
+    const addBtn = screen.getByText('Thêm vào giỏ hàng')
+    await user.click(addBtn)
+    expect(mockMutate).toHaveBeenCalledWith(expect.objectContaining({ sku_id: VALID_OBJECT_ID }))
+  })
+
+  it('addToCart omits sku_id when selectedSKU is undefined', async () => {
+    renderWithProviders(
+      <ProductActions
+        product={mockProduct}
+        isAuthenticated={true}
+        reducedMotion={true}
+        hasVariants={false}
+        selectedSKU={undefined}
+      />,
+    )
+    const addBtn = screen.getByText('Thêm vào giỏ hàng')
+    await user.click(addBtn)
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.not.objectContaining({ sku_id: expect.anything() }),
+    )
+  })
+
+  it('handleBuyNow omits sku_id when selectedSKU._id is a mock/non-ObjectId', async () => {
+    renderWithProviders(
+      <ProductActions
+        product={mockProduct}
+        isAuthenticated={true}
+        reducedMotion={true}
+        hasVariants={true}
+        selectedSKU={makeSKU(MOCK_SKU_ID)}
+      />,
+    )
+    const buyNowBtn = screen.getByText('Mua ngay')
+    await user.click(buyNowBtn)
+    expect(mockMutateAsync).toHaveBeenCalledWith(
+      expect.not.objectContaining({ sku_id: expect.anything() }),
+    )
+  })
+
+  it('handleBuyNow includes sku_id when selectedSKU._id is a valid 24-hex ObjectId', async () => {
+    renderWithProviders(
+      <ProductActions
+        product={mockProduct}
+        isAuthenticated={true}
+        reducedMotion={true}
+        hasVariants={true}
+        selectedSKU={makeSKU(VALID_OBJECT_ID)}
+      />,
+    )
+    const buyNowBtn = screen.getByText('Mua ngay')
+    await user.click(buyNowBtn)
+    expect(mockMutateAsync).toHaveBeenCalledWith(
+      expect.objectContaining({ sku_id: VALID_OBJECT_ID }),
+    )
   })
 })

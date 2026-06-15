@@ -51,6 +51,7 @@ export const ERROR_CODES = {
   INTERNAL_SERVER_ERROR: 'E9002',
   BAD_REQUEST: 'E9003',
   NOT_FOUND: 'E9004',
+  UPLOAD_MOVE_FAILED: 'E9005',
 } as const
 
 export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES]

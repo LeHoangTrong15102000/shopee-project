@@ -11,6 +11,7 @@ import path from 'src/constant/path'
 import { staggerItem } from 'src/styles/animations'
 import { useCartItems } from 'src/stores/cart.store'
 import { getProductQuantityInCart } from 'src/utils/cart.utils'
+import { isValidObjectId } from 'src/utils/utils'
 
 interface ProductActionsProps {
   product: ProductType
@@ -131,10 +132,12 @@ const ProductActions = ({
     if (hasVariants && !validateVariantSelection()) return
     if (!validateCartQuantity(buyCount)) return
 
+    const skuId = selectedSKU?._id
+    const skuPayload = isValidObjectId(skuId) && skuId ? { sku_id: skuId } : {}
     addToCartMutation.mutate({
       product_id: product._id,
       buy_count: buyCount,
-      ...(selectedSKU?._id ? { sku_id: selectedSKU._id } : {}),
+      ...skuPayload,
     })
   }
 
@@ -143,11 +146,13 @@ const ProductActions = ({
     if (hasVariants && !validateVariantSelection()) return
     if (!validateCartQuantity(buyCount)) return
 
+    const skuId = selectedSKU?._id
+    const skuPayload = isValidObjectId(skuId) && skuId ? { sku_id: skuId } : {}
     try {
       const res = await addToCartMutation.mutateAsync({
         product_id: product._id,
         buy_count: buyCount,
-        ...(selectedSKU?._id ? { sku_id: selectedSKU._id } : {}),
+        ...skuPayload,
       })
 
       const purchase = res.data.data

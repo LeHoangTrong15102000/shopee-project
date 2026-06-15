@@ -133,3 +133,16 @@ export const scrollToTop = (prefersReducedMotion: boolean = false) => {
     behavior: prefersReducedMotion ? 'auto' : 'smooth',
   })
 }
+
+/**
+ * Check whether a value is a valid 24-character hex MongoDB ObjectId.
+ * Uses the same regex as the backend `addToCartSchema` so client-side
+ * validation is consistent with the server.
+ *
+ * @param value - The candidate id string (or undefined/null)
+ * @returns true only when value matches /^[0-9a-fA-F]{24}$/
+ */
+export const isValidObjectId = (value: string | null | undefined): boolean => {
+  if (!value) return false
+  return /^[0-9a-fA-F]{24}$/.test(value)
+}

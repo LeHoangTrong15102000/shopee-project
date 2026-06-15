@@ -185,6 +185,10 @@ export class UserService extends BaseService {
     invalidateProfileCache(userId)
   }
 
+  invalidateProfileCache(userId: string): void {
+    invalidateProfileCache(userId)
+  }
+
   async findByEmail(email: string): Promise<IUser | null> {
     return this.userRepository.findByEmail(email)
   }

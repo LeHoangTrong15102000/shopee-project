@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useContext, useRef, useState, type FormEventHandler } from 'react'
+import { useContext, useEffect, useRef, useState, type FormEventHandler } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
@@ -192,6 +192,26 @@ export default function Security() {
   const { t } = useTranslation('user')
   const { profile, setProfile } = useContext(AppContext)
   const qc = useQueryClient()
+
+  // Fetch fresh profile on mount so the 2FA status always reflects true backend state,
+  // even if the in-memory / localStorage cache is stale from a previous session.
+  useEffect(() => {
+    let cancelled = false
+    userApi
+      .getProfile()
+      .then((res) => {
+        if (cancelled) return
+        const user = res.data.data
+        setProfile(user)
+        setProfileToLS(user)
+      })
+      .catch(() => {
+        // Silently ignore — fall back to whatever is already in context
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const twoFactorEnabled = profile?.twoFactorEnabled ?? false
 

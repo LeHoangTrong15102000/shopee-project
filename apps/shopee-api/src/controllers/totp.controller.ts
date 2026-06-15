@@ -44,6 +44,10 @@ export const verifySetup = async (req: Request, res: Response) => {
   try {
     await totpService.verifySetup(userId, code)
 
+    // Invalidate profile cache so GET /me reflects updated twoFactorEnabled
+    const { userService } = await import('../container')
+    userService.invalidateProfileCache(userId)
+
     // Audit log: user.2fa_enable (fire-and-forget)
     const { auditLogService } = await import('../container')
     auditLogService.writeLog({
@@ -77,6 +81,10 @@ export const disableTwoFactor = async (req: Request, res: Response) => {
   try {
     await totpService.disableTwoFactor(userId, code)
 
+    // Invalidate profile cache so GET /me reflects updated twoFactorEnabled
+    const { userService } = await import('../container')
+    userService.invalidateProfileCache(userId)
+
     // Audit log: user.2fa_disable (fire-and-forget)
     const { auditLogService } = await import('../container')
     auditLogService.writeLog({
@@ -109,6 +117,11 @@ export const regenerateBackupCodes = async (req: Request, res: Response) => {
 
   try {
     const backupCodes = await totpService.regenerateBackupCodes(userId, code)
+
+    // Invalidate profile cache so GET /me reflects current state
+    const { userService } = await import('../container')
+    userService.invalidateProfileCache(userId)
+
     return responseSuccess(res, {
       message: 'Backup codes regenerated. Save these codes — they will not be shown again.',
       data: { backup_codes: backupCodes },
@@ -148,6 +161,10 @@ export const completeTwoFactorLogin = async (req: Request, res: Response) => {
     // Record login history (fire-and-forget)
     const method = result.usedBackupCode ? ('backup-code' as const) : ('2fa' as const)
     loginHistoryService.recordAttempt(result.userId, req, 'success', method)
+
+    // Invalidate profile cache so GET /me reflects current twoFactorEnabled state
+    const { userService } = await import('../container')
+    userService.invalidateProfileCache(result.userId)
 
     return responseSuccess(res, {
       message: '2FA verification successful',

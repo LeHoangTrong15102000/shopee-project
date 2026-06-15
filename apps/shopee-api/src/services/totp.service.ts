@@ -15,6 +15,10 @@ import { config } from '@constants/config'
 import { IPayloadToken } from '../@types/models.type'
 import { Logger } from '@utils/logger'
 
+// Allow ±30s clock skew between client device and server (RFC 6238 best practice).
+// window=1 means the server accepts codes from the previous, current, and next 30s step.
+authenticator.options = { window: 1 }
+
 /** Partial token payload — returned when 2FA is required */
 export interface PartialTokenPayload {
   id: string
@@ -80,7 +84,8 @@ export class TotpService extends BaseService {
     }
 
     const secret = decryptSecret(user.twoFactorSecret)
-    const isValid = authenticator.verify({ token: code, secret })
+    const trimmedCode = code.trim()
+    const isValid = authenticator.verify({ token: trimmedCode, secret })
 
     if (!isValid) {
       throw new ValidationError('Invalid TOTP code')
@@ -105,11 +110,12 @@ export class TotpService extends BaseService {
     }
 
     const secret = decryptSecret(user.twoFactorSecret)
-    const isTotpValid = authenticator.verify({ token: code, secret })
+    const trimmedCode = code.trim()
+    const isTotpValid = authenticator.verify({ token: trimmedCode, secret })
 
     if (!isTotpValid) {
       // Try backup code
-      const backupResult = verifyBackupCode(code, user.backupCodes || [])
+      const backupResult = verifyBackupCode(trimmedCode, user.backupCodes || [])
       if (!backupResult.matched) {
         throw new ValidationError('Invalid TOTP code or backup code')
       }
@@ -140,7 +146,8 @@ export class TotpService extends BaseService {
     }
 
     const secret = decryptSecret(user.twoFactorSecret)
-    const isValid = authenticator.verify({ token: code, secret })
+    const trimmedCode = code.trim()
+    const isValid = authenticator.verify({ token: trimmedCode, secret })
 
     if (!isValid) {
       throw new ValidationError('Invalid TOTP code')
@@ -200,13 +207,14 @@ export class TotpService extends BaseService {
     }
 
     const secret = decryptSecret(user.twoFactorSecret)
-    const isTotpValid = authenticator.verify({ token: code, secret })
+    const trimmedCode = code.trim()
+    const isTotpValid = authenticator.verify({ token: trimmedCode, secret })
 
     let usedBackupCode = false
 
     if (!isTotpValid) {
       // Try backup code
-      const backupResult = verifyBackupCode(code, user.backupCodes || [])
+      const backupResult = verifyBackupCode(trimmedCode, user.backupCodes || [])
       if (!backupResult.matched) {
         throw new ValidationError('Invalid TOTP code or backup code')
       }

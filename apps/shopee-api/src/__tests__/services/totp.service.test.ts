@@ -178,6 +178,15 @@ describe('TotpService', () => {
 
       await expect(service.verifySetup(mockUserId, '123456')).rejects.toThrow(NotFoundError)
     })
+
+    it('configures otplib with window=1 for clock skew tolerance', () => {
+      // The service module sets authenticator.options = { window: 1 } at module load time.
+      // Because otplib is mocked with a plain object, the assignment lands directly on the
+      // mock instance — the same object imported here as `authenticator`.
+      expect((authenticator as unknown as { options: { window: number } }).options).toEqual(
+        expect.objectContaining({ window: 1 }),
+      )
+    })
   })
 
   // ─── disableTwoFactor ─────────────────────────────────────────────────────

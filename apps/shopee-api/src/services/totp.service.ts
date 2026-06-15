@@ -44,6 +44,10 @@ export class TotpService extends BaseService {
     const user = await UserModel.findById(userId).lean()
     if (!user) throw new NotFoundError('User', userId)
 
+    if (user.twoFactorEnabled) {
+      throw new ValidationError('2FA is already enabled. Disable it first.')
+    }
+
     const secret = authenticator.generateSecret()
     const encryptedSecret = encryptSecret(secret)
 

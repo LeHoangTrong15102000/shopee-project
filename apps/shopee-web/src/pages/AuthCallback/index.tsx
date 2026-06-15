@@ -17,7 +17,7 @@ import path from 'src/constant/path'
  *  - ?error  → show error state with link back to Login
  *  - ?tmp    → call POST /auth/google/exchange-code, show loading spinner
  *    - success (AuthResult)          → persist tokens + update context → navigate('/')
- *    - 2FA required (partial_token)  → navigate to Login with 2FA state
+ *    - 2FA required (partial_token)  → navigate to /login/2fa (TwoFactorVerify) with partial_token in state
  *    - API error                     → show error state with link back to Login
  *  - neither → invalid URL, show error state
  *
@@ -47,11 +47,13 @@ function AuthCallback() {
 
     const result = data.data.data
 
-    // 2FA case — route to Login with partial token; Login page handles the 2FA step
+    // 2FA case — route to the TOTP verify screen with the partial token.
+    // The Login page no longer reads partial_token; TwoFactorVerify at
+    // path.twoFactorVerify (/login/2fa) owns the TOTP entry UI.
     if ('requires2FA' in result && result.requires2FA) {
-      navigate(path.login, {
+      navigate(path.twoFactorVerify, {
         replace: true,
-        state: { requires2FA: true, partial_token: result.partial_token },
+        state: { partial_token: result.partial_token },
       })
       return
     }

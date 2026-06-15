@@ -121,6 +121,19 @@ describe('TotpService', () => {
       )
     })
 
+    it('throws ValidationError when 2FA already enabled', async () => {
+      ;(UserModel.findById as jest.Mock).mockReturnValue({
+        lean: jest.fn().mockResolvedValue(makeMockUser({ twoFactorEnabled: true })),
+      })
+
+      await expect(service.setupTwoFactor(mockUserId)).rejects.toThrow(ValidationError)
+      await expect(service.setupTwoFactor(mockUserId)).rejects.toThrow(
+        '2FA is already enabled. Disable it first.',
+      )
+      expect(authenticator.generateSecret).not.toHaveBeenCalled()
+      expect(UserModel.findByIdAndUpdate).not.toHaveBeenCalled()
+    })
+
     it('throws NotFoundError when user does not exist', async () => {
       ;(UserModel.findById as jest.Mock).mockReturnValue({
         lean: jest.fn().mockResolvedValue(null),
@@ -129,8 +142,6 @@ describe('TotpService', () => {
       await expect(service.setupTwoFactor(mockUserId)).rejects.toThrow(NotFoundError)
     })
   })
-
-  // ─── verifySetup ─────────────────────────────────────────────────────────
 
   describe('verifySetup', () => {
     it('enables 2FA when TOTP code is valid', async () => {

@@ -5,11 +5,13 @@ import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import totpApi, { TotpSetupResponse } from 'src/apis/totp.api'
+import userApi from 'src/apis/user.api'
 import Button from 'src/components/Button'
 import Input from 'src/components/Input'
 import SEO from 'src/components/SEO'
 import { AppContext } from 'src/contexts/app.context'
 import { ErrorResponseApi } from 'src/types/utils.type'
+import { setProfileToLS } from 'src/utils/auth'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { z } from 'zod'
 
@@ -188,7 +190,7 @@ type View = 'status' | 'setup-step1' | 'setup-step2' | 'disable' | 'regenerate' 
 
 export default function Security() {
   const { t } = useTranslation('user')
-  const { profile } = useContext(AppContext)
+  const { profile, setProfile } = useContext(AppContext)
   const qc = useQueryClient()
 
   const twoFactorEnabled = profile?.twoFactorEnabled ?? false
@@ -276,7 +278,12 @@ export default function Security() {
   const onVerifySetupSubmit = handleSubmitVerify((data) => {
     verifySetupMutation.mutate(data, {
       onSuccess: () => {
-        qc.invalidateQueries({ queryKey: ['profile'] })
+        userApi.getProfile().then((res) => {
+          const user = res.data.data
+          setProfile(user)
+          setProfileToLS(user)
+          qc.invalidateQueries({ queryKey: ['profile'] })
+        })
         toast.success(t('security.setup.success'), { autoClose: 3000 })
         setView('status')
         setSetupData(null)
@@ -303,7 +310,12 @@ export default function Security() {
   const onDisableSubmit = handleSubmitDisable((data) => {
     disableMutation.mutate(data, {
       onSuccess: () => {
-        qc.invalidateQueries({ queryKey: ['profile'] })
+        userApi.getProfile().then((res) => {
+          const user = res.data.data
+          setProfile(user)
+          setProfileToLS(user)
+          qc.invalidateQueries({ queryKey: ['profile'] })
+        })
         toast.success(t('security.disable.success'), { autoClose: 3000 })
         setView('status')
         setDisableUseBackup(false)
@@ -330,7 +342,12 @@ export default function Security() {
   const onRegenSubmit = handleSubmitRegen((data) => {
     regenMutation.mutate(data, {
       onSuccess: (res) => {
-        qc.invalidateQueries({ queryKey: ['profile'] })
+        userApi.getProfile().then((profileRes) => {
+          const user = profileRes.data.data
+          setProfile(user)
+          setProfileToLS(user)
+          qc.invalidateQueries({ queryKey: ['profile'] })
+        })
         setNewBackupCodes(res.data.data.backup_codes)
         toast.success(t('security.regenerate.success'), { autoClose: 3000 })
         setView('regen-done')

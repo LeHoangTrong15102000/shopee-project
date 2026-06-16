@@ -560,8 +560,8 @@ const ChangePassword = () => {
   const { profile } = useContext(AppContext)
   const reducedMotion = useReducedMotion()
 
-  // D4: hasPassword === false → create-password form; otherwise → change-password form
-  const isCreateMode = profile?.hasPassword === false
+  // D4: hasPassword !== true → create-password form (covers false + undefined legacy records)
+  const isCreateMode = profile?.hasPassword !== true
 
   return (
     <motion.div

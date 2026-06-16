@@ -197,6 +197,25 @@ export class UserService extends BaseService {
     return this.userRepository.findByEmailWithPassword(email)
   }
 
+  /**
+   * Set a new password for a user who has no user-chosen password (e.g. Google-OAuth accounts).
+   * Does NOT compare against any current password — the active session is proof of identity.
+   * Hashes the new password, persists it, flips hasPassword to true, and invalidates the profile cache.
+   * Per design D2/D5: no email notification, no other-session revocation.
+   */
+  async setPassword(userId: string, newPassword: string): Promise<void> {
+    if (!this.isValidObjectId(userId)) {
+      throw new ValidationError('Invalid user ID format')
+    }
+
+    const hashedPassword = hashValue(newPassword)
+    const updated = await this.userRepository.updatePassword(userId, hashedPassword, true)
+    if (!updated) {
+      throw new NotFoundError('User', userId)
+    }
+    invalidateProfileCache(userId)
+  }
+
   async searchUsers(query: string, pagination: PaginationOptions): Promise<PaginatedResult<IUser>> {
     return this.userRepository.search(query, this.normalizePagination(pagination))
   }

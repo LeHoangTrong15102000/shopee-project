@@ -195,8 +195,10 @@ export { validate, validateBadRequest } from '@middleware/zod.middleware'
 export {
   forgotPasswordSchema,
   resetPasswordSchema,
+  setPasswordSchema,
   type ForgotPasswordInput,
   type ResetPasswordInput,
+  type SetPasswordInput,
 } from './password-reset.schema'
 
 // Admin common schemas

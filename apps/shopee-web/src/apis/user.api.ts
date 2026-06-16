@@ -13,6 +13,11 @@ export interface BodyUpdateProfile extends Omit<
   // Không có đưa lên confirm_password -> chỉ handle ở dưới client thôi
 }
 
+export interface BodySetPassword {
+  new_password: string
+  confirm_password: string
+}
+
 export const userApi = {
   getProfile: () => {
     return http.get<SuccessResponseApi<User>>('/me')
@@ -27,6 +32,9 @@ export const userApi = {
         'Content-Type': 'multipart/form-data',
       },
     })
+  },
+  setPassword: (body: BodySetPassword) => {
+    return http.post<SuccessResponseApi<void>>('/set-password', body)
   },
 }
 

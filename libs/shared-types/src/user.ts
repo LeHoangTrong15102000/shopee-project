@@ -8,6 +8,8 @@ export interface User {
   address?: string
   phone?: string
   twoFactorEnabled?: boolean
+  /** Whether this account has a user-chosen password (false for Google-OAuth accounts) */
+  hasPassword?: boolean
   createdAt: string
   updatedAt: string
 }

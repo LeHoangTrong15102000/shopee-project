@@ -215,6 +215,51 @@ const deleteUser = async (req: CustomRequest, res: Response) => {
   }
 }
 
+const setPassword = async (req: CustomRequest, res: Response) => {
+  try {
+    // Defensive check for missing jwtDecoded or id
+    if (!req.jwtDecoded || !req.jwtDecoded.id) {
+      throw new ErrorHandler(
+        STATUS.UNAUTHORIZED,
+        'Token không hợp lệ hoặc thiếu thông tin người dùng',
+      )
+    }
+
+    const { new_password } = req.body as { new_password: string; confirm_password: string }
+    await userService.setPassword(req.jwtDecoded.id, new_password)
+
+    // Audit log: user.password_set (fire-and-forget, mirrors updateMe audit pattern)
+    const userId = req.jwtDecoded.id
+    const forwarded = req.headers['x-forwarded-for']
+    const ip =
+      typeof forwarded === 'string'
+        ? forwarded.split(',')[0].trim()
+        : req.ip || req.socket?.remoteAddress || 'unknown'
+    const { auditLogService } = await import('../container')
+    auditLogService.writeLog({
+      action: 'user.password_set',
+      resource: 'user',
+      resourceId: userId,
+      actor: { userId, roles: req.jwtDecoded.roles ?? [] },
+      ip,
+      userAgent: req.headers['user-agent'] || '',
+      status: 'success',
+    })
+
+    return responseSuccess(res, { message: 'Đặt mật khẩu thành công' })
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      throw new ErrorHandler(STATUS.UNPROCESSABLE_ENTITY, {
+        [error.field || 'new_password']: error.message,
+      })
+    }
+    if (error instanceof NotFoundError) {
+      throw new ErrorHandler(STATUS.BAD_REQUEST, 'Không tìm thấy người dùng')
+    }
+    throw error
+  }
+}
+
 const userController = {
   addUser,
   getUsers,
@@ -224,6 +269,7 @@ const userController = {
   deleteUser,
   updateMe,
   uploadAvatar,
+  setPassword,
 }
 
 export default userController

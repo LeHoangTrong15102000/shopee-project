@@ -45,3 +45,21 @@ export const resetPasswordSchema = z.object({
 })
 
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>
+
+/**
+ * Set password request body validation (for accounts without a user-chosen password, e.g. Google OAuth)
+ * No current_password field — the active session is proof of identity.
+ */
+export const setPasswordSchema = z.object({
+  body: z
+    .object({
+      new_password: strongPasswordSchema,
+      confirm_password: z.string().min(1, 'Xác nhận mật khẩu là bắt buộc'),
+    })
+    .refine((data) => data.new_password === data.confirm_password, {
+      message: 'Mật khẩu xác nhận không khớp',
+      path: ['confirm_password'],
+    }),
+})
+
+export type SetPasswordInput = z.infer<typeof setPasswordSchema>

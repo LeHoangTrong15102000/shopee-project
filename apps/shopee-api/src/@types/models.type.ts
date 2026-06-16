@@ -16,6 +16,8 @@ export interface IUser {
   twoFactorEnabled?: boolean
   /** PBKDF2-hashed single-use backup codes */
   backupCodes?: string[]
+  /** Whether this account has a user-chosen password (false for Google-OAuth accounts) */
+  hasPassword?: boolean
   createdAt?: Date
   updatedAt?: Date
 }

@@ -2,6 +2,7 @@ import authController from '@controllers/auth.controller'
 import * as passwordResetController from '@controllers/password-reset.controller'
 import sessionController from '@controllers/session.controller'
 import totpController from '@controllers/totp.controller'
+import userController from '@controllers/user.controller'
 import authMiddleware from '@middleware/auth.middleware'
 import { authRateLimit } from '@middleware/rateLimiter.middleware'
 import { bruteForceProtectionMiddleware } from '@middleware/security.middleware'
@@ -12,6 +13,7 @@ import {
   loginSchema,
   registerSchema,
   resetPasswordSchema,
+  setPasswordSchema,
   validate,
 } from '@schemas/index'
 import {
@@ -159,6 +161,15 @@ commonAuthRouter.get(
   '/login-history',
   authMiddleware.verifyAccessToken,
   asyncHandler(sessionController.getLoginHistory),
+)
+
+// ── Set-password route (for Google-OAuth accounts without a user-chosen password) ──
+
+commonAuthRouter.post(
+  '/set-password',
+  authMiddleware.verifyAccessToken,
+  validate(setPasswordSchema),
+  asyncHandler(userController.setPassword),
 )
 
 export default commonAuthRouter

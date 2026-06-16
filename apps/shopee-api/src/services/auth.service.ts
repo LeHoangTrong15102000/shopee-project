@@ -120,6 +120,7 @@ export class AuthService extends BaseService {
         name,
         avatar,
         roles: [ROLE.USER],
+        hasPassword: false,
       })
 
       // WARNING-3: emit user.registered domain event for new Google accounts

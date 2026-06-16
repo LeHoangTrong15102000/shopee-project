@@ -175,7 +175,7 @@ const orderService = new OrderService(
 )
 const voucherService = new VoucherService(voucherRepository)
 const checkinService = new CheckInService()
-const passwordResetService = new PasswordResetService(userRepository, authRepository)
+const passwordResetService = new PasswordResetService(userRepository, authRepository, emailQueue)
 const priceService = new PriceService()
 const stripeService = new StripeService()
 const momoProvider = new MomoProvider()

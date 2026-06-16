@@ -14,6 +14,8 @@ export interface CreateUserDTO {
   address?: string
   phone?: string
   avatar?: string
+  /** Whether this account has a user-chosen password (false for Google-OAuth accounts) */
+  hasPassword?: boolean
 }
 
 /**
@@ -64,9 +66,14 @@ export interface IUserRepository extends IBaseRepository<IUser, CreateUserDTO, U
   findByRole(role: string, pagination: PaginationOptions): Promise<PaginatedResult<IUser>>
 
   /**
-   * Update user password
+   * Update user password. When setHasPassword is true (default), also sets hasPassword: true
+   * so both the set-password and reset-password paths correctly flip the flag.
    */
-  updatePassword(userId: string | Types.ObjectId, hashedPassword: string): Promise<boolean>
+  updatePassword(
+    userId: string | Types.ObjectId,
+    hashedPassword: string,
+    setHasPassword?: boolean,
+  ): Promise<boolean>
 
   /**
    * Update user avatar

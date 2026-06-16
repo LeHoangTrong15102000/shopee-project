@@ -1,9 +1,11 @@
+import { Queue } from 'bullmq'
 import { PasswordResetModel } from '@database/models/password-reset.model'
 import { BaseService, BusinessError } from './base.service'
 import { hashValue } from '@utils/crypt'
 import { generateSecureToken } from '@utils/crypt'
 import { IUserRepository } from '@repositories/interfaces/user.repository.interface'
 import { IAuthRepository } from '@repositories/interfaces/auth.repository.interface'
+import { EmailJobPayload } from '../queues/job-payloads'
 
 const TOKEN_EXPIRY_MS = 60 * 60 * 1000 // 1 hour
 
@@ -11,6 +13,7 @@ export class PasswordResetService extends BaseService {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly authRepository: IAuthRepository,
+    private readonly emailQueue: Queue<EmailJobPayload>,
   ) {
     super()
   }
@@ -33,10 +36,15 @@ export class PasswordResetService extends BaseService {
         expires_at: expiresAt,
       })
 
-      // Log to console (placeholder for email service)
-      console.log(`\n🔑 [Password Reset] Token for ${email}: ${token}`)
-      console.log(`   Reset URL: /reset-password?token=${token}`)
-      console.log(`   Expires at: ${expiresAt.toISOString()}\n`)
+      const resetUrl = `${process.env.CLIENT_URL ?? 'http://localhost:3000'}/reset-password?token=${token}`
+
+      await this.emailQueue.add('password-reset-email', {
+        to: email,
+        subject: 'Đặt lại mật khẩu Shopee',
+        body: resetUrl,
+        template: 'password-reset',
+        data: { resetUrl },
+      })
     }
 
     return { message: 'Vui lòng kiểm tra email để đặt lại mật khẩu' }

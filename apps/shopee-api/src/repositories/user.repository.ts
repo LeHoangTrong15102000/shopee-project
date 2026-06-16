@@ -103,10 +103,18 @@ export class UserRepository implements IUserRepository {
     return this.findPaginated({ roles: role }, pagination)
   }
 
-  async updatePassword(userId: string | Types.ObjectId, hashedPassword: string): Promise<boolean> {
+  async updatePassword(
+    userId: string | Types.ObjectId,
+    hashedPassword: string,
+    setHasPassword = true,
+  ): Promise<boolean> {
+    const updateFields: Record<string, unknown> = { password: hashedPassword }
+    if (setHasPassword) {
+      updateFields.hasPassword = true
+    }
     const result = await UserModel.updateOne(
       { _id: new Types.ObjectId(userId.toString()) },
-      { password: hashedPassword },
+      updateFields,
     )
     return result.modifiedCount > 0
   }

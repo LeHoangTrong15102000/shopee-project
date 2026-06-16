@@ -1,14 +1,16 @@
 /**
  * EmailWorker — processes jobs from the `email` queue.
  *
- * The actual email send is stubbed with a Logger call.
- * TODO: integrate an email provider (SendGrid, SES, Resend, etc.) in a future phase.
+ * Sends email via the Resend mailer module.  BullMQ retry / error / failed
+ * handlers are preserved so any future email types work automatically just by
+ * enqueueing a job with the correct template + data.
  */
 import { Worker, Job } from 'bullmq'
 import { Logger } from '@utils/logger'
 import { EMAIL_QUEUE } from '../queues/queue.config'
 import { EmailJobPayload } from '../queues/job-payloads'
 import { getWorkerConnection } from './worker.connection'
+import { sendEmail } from '../services/email/resend.client'
 
 export class EmailWorker {
   readonly worker: Worker
@@ -22,11 +24,7 @@ export class EmailWorker {
           to: job.data.to,
           subject: job.data.subject,
         })
-        // TODO: integrate email provider (SendGrid / SES / Resend)
-        Logger.apiInfo('[EmailWorker] Email stub — would send email', {
-          to: job.data.to,
-          subject: job.data.subject,
-        })
+        await sendEmail(job.data)
       },
       { connection: getWorkerConnection() },
     )

@@ -15,6 +15,8 @@ const UserSchema = new Schema(
     twoFactorSecret: { type: String },
     twoFactorEnabled: { type: Boolean, default: false },
     backupCodes: { type: [String], default: [] },
+    // Whether this account has a user-chosen password (false for Google-OAuth accounts)
+    hasPassword: { type: Boolean, default: true },
   },
   {
     timestamps: true,

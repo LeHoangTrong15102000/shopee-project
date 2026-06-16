@@ -144,6 +144,15 @@ const envSchema = z.object({
     .url(
       'GOOGLE_CLIENT_REDIRECT_URI must be a valid URL (the web landing page, e.g. /auth/callback)',
     ),
+
+  // Resend — transactional email delivery
+  // RESEND_API_KEY — API key from https://resend.com/api-keys
+  // RESEND_FROM_EMAIL — verified sender address, e.g. "Shopee <no-reply@yourdomain.com>"
+  RESEND_API_KEY: z.string().min(1, 'RESEND_API_KEY is required for email delivery'),
+  RESEND_FROM_EMAIL: z
+    .string()
+    .email('RESEND_FROM_EMAIL must be a valid email address')
+    .min(1, 'RESEND_FROM_EMAIL is required for email delivery'),
 })
 
 export type Env = z.infer<typeof envSchema>
@@ -200,6 +209,8 @@ export function validateEnv(rawEnv: NodeJS.ProcessEnv = process.env): Env {
       GOOGLE_CLIENT_SECRET: 'test-client-secret',
       GOOGLE_REDIRECT_URI: 'http://localhost:4000/auth/google/callback',
       GOOGLE_CLIENT_REDIRECT_URI: 'http://localhost:3000/auth/callback',
+      RESEND_API_KEY: 're_test_placeholder',
+      RESEND_FROM_EMAIL: 'noreply@test.example.com',
     }
   }
 

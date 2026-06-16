@@ -145,14 +145,16 @@ const envSchema = z.object({
       'GOOGLE_CLIENT_REDIRECT_URI must be a valid URL (the web landing page, e.g. /auth/callback)',
     ),
 
-  // Resend — transactional email delivery
+  // Resend — transactional email delivery (OPTIONAL).
+  // The mailer (resend.client.ts) degrades gracefully when these are absent:
+  // sends are skipped and logged, so the API must NOT fail-fast on missing keys.
+  // Keeping these required would crash the whole API in any environment that has
+  // not configured email — which took down production on deploy.
   // RESEND_API_KEY — API key from https://resend.com/api-keys
-  // RESEND_FROM_EMAIL — verified sender address, e.g. "Shopee <no-reply@yourdomain.com>"
-  RESEND_API_KEY: z.string().min(1, 'RESEND_API_KEY is required for email delivery'),
-  RESEND_FROM_EMAIL: z
-    .string()
-    .email('RESEND_FROM_EMAIL must be a valid email address')
-    .min(1, 'RESEND_FROM_EMAIL is required for email delivery'),
+  // RESEND_FROM_EMAIL — verified sender address, e.g. "no-reply@yourdomain.com"
+  RESEND_API_KEY: z.string().min(1).optional(),
+  // Validate the address format only when a value is actually provided.
+  RESEND_FROM_EMAIL: z.string().email('RESEND_FROM_EMAIL must be a valid email address').optional(),
 })
 
 export type Env = z.infer<typeof envSchema>

@@ -160,11 +160,13 @@ export class Http {
           clearLS()
           this.accessToken = ''
           this.refreshToken = ''
+          const fallbackMessage =
+            error.response?.data?.data?.message ??
+            error.response?.data.message ??
+            i18n.t('common:session_expired')
           const errorMessage = isAxiosPasswordChangedError(error)
             ? i18n.t('common:password_changed')
-            : (error.response?.data?.data?.message ??
-              error.response?.data.message ??
-              i18n.t('common:session_expired'))
+            : fallbackMessage
           toast.error(errorMessage, { autoClose: 1000 })
           if (this.redirectOnTokenExpiry) {
             if (this.redirectTimer) clearTimeout(this.redirectTimer)

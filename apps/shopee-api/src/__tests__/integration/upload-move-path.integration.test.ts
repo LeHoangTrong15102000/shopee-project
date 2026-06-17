@@ -6,25 +6,11 @@
  * Task 4.2: Move/rename failure produces a typed ErrorHandler with UPLOAD_MOVE_FAILED
  *           (not the opaque generic 500), respecting production vs non-production detail.
  *
- * Formidable interop note: `import formidable from 'formidable'` with ts-jest/esModuleInterop
- * compiles to `formidable_1.default.IncomingForm` but formidable v3's default export is the
- * Formidable class itself — it has no `.IncomingForm` static property — causing a
- * "not a constructor" TypeError.  The mock below shims `default.IncomingForm` to
- * `requireActual('formidable').IncomingForm` so the real parser runs while the
- * broken interop path is bypassed.  This is a test-environment shim only; production
- * uses the compiled JS which resolves the import differently.
+ * Formidable interop note: upload.ts uses `import * as formidable from 'formidable'`
+ * (namespace import), so `formidable.IncomingForm` resolves directly to the named export
+ * — the real IncomingForm class — in both ts-jest and compiled production code.
+ * No shim is needed or used here.
  */
-jest.mock('formidable', () => {
-  // Delegate to the real formidable so actual multipart parsing still happens.
-  // Only the `default.IncomingForm` accessor is shimmed for ts-jest esModuleInterop.
-  const real = jest.requireActual('formidable') as typeof import('formidable')
-  return {
-    __esModule: true,
-    default: {
-      IncomingForm: real.IncomingForm,
-    },
-  }
-})
 import fs from 'fs'
 import supertest from 'supertest'
 import { createTestApp } from '../helpers/create-test-app'
@@ -177,10 +163,8 @@ describe('upload-move-path integration tests (fix-avatar-upload-and-addtocart-sk
        * unclassified 500 mask ("Lỗi hệ thống"). The response may be 400, 422, or a
        * classified 500 — all are acceptable as long as the body is typed/classified.
        *
-       * Note: in the Jest/ts-jest environment formidable's IncomingForm constructor
-       * resolves differently than in production (esModuleInterop + __esModule interop),
-       * so a 500 with a classified error code is the expected outcome here. In production
-       * the formidable path works and returns 422.
+       * With the namespace import fix, formidable.IncomingForm is the real class in both
+       * ts-jest and production. A request with no image field returns 422 (UNPROCESSABLE_ENTITY).
        */
       const response = await supertest(app)
         .post('/me/upload-avatar')
@@ -191,6 +175,20 @@ describe('upload-move-path integration tests (fix-avatar-upload-and-addtocart-sk
       expect(JSON.stringify(response.body)).not.toContain('Lỗi hệ thống')
       // Any response must carry a message or code — not a silent empty 500
       expect(response.body).toHaveProperty('message')
+    })
+  })
+
+  // ---- Regression guard: formidable namespace import interop ----
+
+  describe('formidable namespace import regression guard', () => {
+    it('formidable.IncomingForm is a real constructor (named export, not undefined)', () => {
+      // Verifies that `import * as formidable from 'formidable'` resolves IncomingForm
+      // to the real class. If this regresses (e.g. someone switches back to a default
+      // import), new formidable.IncomingForm() will throw "not a constructor" and this
+      // test will catch it before production is affected.
+      const formidable = require('formidable') as typeof import('formidable')
+      expect(typeof formidable.IncomingForm).toBe('function')
+      expect(() => new formidable.IncomingForm({})).not.toThrow()
     })
   })
 })

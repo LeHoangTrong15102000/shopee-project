@@ -1,5 +1,5 @@
 import { Request } from 'express'
-import formidable from 'formidable'
+import * as formidable from 'formidable'
 import shelljs from 'shelljs'
 import mv from 'mv'
 import { ErrorHandler } from './response'

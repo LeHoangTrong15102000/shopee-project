@@ -18,6 +18,13 @@ interface StoredCheckInData {
   totalCoins: number
 }
 
+// Module-level function — closes over only module-level constants so its
+// reference is stable across renders and cannot cause useEffect re-runs.
+const saveToStorage = (data: StoredCheckInData): void => {
+  localStorage.setItem(CHECKIN_STORAGE_KEY, JSON.stringify(data))
+  localStorage.setItem(COINS_STORAGE_KEY, data.totalCoins.toString())
+}
+
 // Helper to get today's date in YYYY-MM-DD format
 const getTodayDate = (): string => {
   return new Date().toISOString().split('T')[0]
@@ -44,12 +51,6 @@ export const useDailyCheckIn = () => {
     totalCoins: 0,
     canCheckInToday: true,
   })
-
-  // Save to localStorage
-  const saveToStorage = (data: StoredCheckInData) => {
-    localStorage.setItem(CHECKIN_STORAGE_KEY, JSON.stringify(data))
-    localStorage.setItem(COINS_STORAGE_KEY, data.totalCoins.toString())
-  }
 
   // Load from API on mount, fall back to localStorage
   useEffect(() => {
@@ -113,7 +114,7 @@ export const useDailyCheckIn = () => {
     }
 
     loadFromApi()
-  }, [saveToStorage])
+  }, [])
 
   // Perform check-in via API with localStorage fallback
   const checkIn = async (): Promise<CheckInReward | null> => {
@@ -211,15 +212,51 @@ export const useDailyCheckIn = () => {
     const milestones = Object.keys(DEFAULT_CHECKIN_CONFIG.streakBonuses)
       .map(Number)
       .sort((a, b) => a - b)
-    const nextMilestone =
-      milestones.find((m) => m > state.streak.current) || milestones[milestones.length - 1]
-    const prevMilestone = milestones.filter((m) => m < state.streak.current).pop() || 0
+    const N = milestones.length
+    const streak = state.streak.current
+
+    const nextMilestone = milestones.find((m) => m > streak) || milestones[milestones.length - 1]
+    const prevMilestone = milestones.filter((m) => m < streak).pop() || 0
+
+    // Map the streak to the evenly-spaced label-center coordinate system.
+    // With N milestones rendered as equal-width cells, the center of the
+    // milestone at zero-based index i is at (i + 0.5) / N * 100 %.
+    // Below the first milestone interpolate linearly from 0% (streak 0)
+    // to the first center. Between milestones interpolate between adjacent
+    // centers. At or beyond the last milestone cap at that center.
+    let progress: number
+
+    if (streak <= 0) {
+      progress = 0
+    } else if (streak >= milestones[N - 1]) {
+      // Capped at the last milestone's label center
+      progress = ((N - 1 + 0.5) / N) * 100
+    } else {
+      // Find which segment the streak belongs to
+      const nextIdx = milestones.findIndex((m) => m > streak)
+      // nextIdx === 0 means streak is below the first milestone
+      if (nextIdx === 0) {
+        // Segment: [0, milestones[0]]
+        // Maps: 0 → 0%, milestones[0] → center[0]
+        const firstCenter = (0.5 / N) * 100
+        progress = (streak / milestones[0]) * firstCenter
+      } else {
+        // Segment: [milestones[nextIdx-1], milestones[nextIdx]]
+        // Maps: prevCenter → nextCenter
+        const prevCenter = ((nextIdx - 1 + 0.5) / N) * 100
+        const nextCenter = ((nextIdx + 0.5) / N) * 100
+        const segStart = milestones[nextIdx - 1]
+        const segEnd = milestones[nextIdx]
+        progress =
+          prevCenter + ((streak - segStart) / (segEnd - segStart)) * (nextCenter - prevCenter)
+      }
+    }
 
     return {
-      current: state.streak.current,
+      current: streak,
       nextMilestone,
       prevMilestone,
-      progress: ((state.streak.current - prevMilestone) / (nextMilestone - prevMilestone)) * 100,
+      progress,
     }
   })()
 

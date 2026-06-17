@@ -117,7 +117,11 @@ export class Http {
         const status = error.response?.status
         if (
           status !== undefined &&
-          ![HTTP_STATUS_CODE.UnprocessableEntity, HTTP_STATUS_CODE.Unauthorized].includes(status)
+          ![
+            HTTP_STATUS_CODE.UnprocessableEntity,
+            HTTP_STATUS_CODE.Unauthorized,
+            HTTP_STATUS_CODE.TooManyRequests,
+          ].includes(status)
         ) {
           const data = error.response?.data as { message?: string } | undefined
           const message = data?.message || error.message

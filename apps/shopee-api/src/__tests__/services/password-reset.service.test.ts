@@ -14,14 +14,26 @@ jest.mock('@database/models/password-reset.model', () => ({
 jest.mock('@utils/crypt', () => ({
   hashValue: jest.fn().mockReturnValue('hashed_password'),
   generateSecureToken: jest.fn().mockReturnValue('mock_token_123'),
+  hashToken: jest.fn((t: string) => 'hashed_' + t),
+}))
+
+// Mock user.service cache helpers used by resetPassword for cache invalidation
+jest.mock('@services/user.service', () => ({
+  invalidateUserProfileCache: jest.fn(),
+  userProfileCache: new Map(),
+  setCachedProfile: jest.fn(),
+  CACHE_TTL: 300000,
 }))
 
 import { PasswordResetModel } from '@database/models/password-reset.model'
+import { invalidateUserProfileCache } from '@services/user.service'
 
 describe('PasswordResetService', () => {
   let service: PasswordResetService
   let mockUserRepo: any
   let mockAuthRepo: any
+  let mockEmailQueue: any
+  let mockSessionService: any
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -36,7 +48,20 @@ describe('PasswordResetService', () => {
       deleteAllUserTokens: jest.fn(),
     }
 
-    service = new PasswordResetService(mockUserRepo, mockAuthRepo)
+    mockEmailQueue = {
+      add: jest.fn().mockResolvedValue({}),
+    }
+
+    mockSessionService = {
+      revokeAllSessionsIncludingCurrent: jest.fn().mockResolvedValue(2),
+    }
+
+    service = new PasswordResetService(
+      mockUserRepo,
+      mockAuthRepo,
+      mockEmailQueue,
+      mockSessionService,
+    )
   })
 
   afterEach(() => {
@@ -54,7 +79,7 @@ describe('PasswordResetService', () => {
       expect(PasswordResetModel.deleteMany).toHaveBeenCalledWith({ email })
       expect(PasswordResetModel.create).toHaveBeenCalledWith({
         email,
-        token: 'mock_token_123',
+        token: 'hashed_mock_token_123',
         expires_at: expect.any(Date),
       })
       expect(result).toEqual({ message: 'Vui lòng kiểm tra email để đặt lại mật khẩu' })
@@ -74,7 +99,7 @@ describe('PasswordResetService', () => {
   })
 
   describe('resetPassword', () => {
-    it('should update password and delete tokens when valid token', async () => {
+    it('should update password, revoke all sessions, and invalidate cache when valid token', async () => {
       const token = 'valid_token'
       const newPassword = 'newPassword123'
       const resetRecord = {
@@ -92,11 +117,19 @@ describe('PasswordResetService', () => {
 
       const result = await service.resetPassword(token, newPassword)
 
-      expect(PasswordResetModel.findOne).toHaveBeenCalledWith({ token })
+      // Token lookup uses hashed token
+      expect(PasswordResetModel.findOne).toHaveBeenCalledWith({ token: 'hashed_valid_token' })
       expect(mockUserRepo.findByEmail).toHaveBeenCalledWith(resetRecord.email)
+      // Password updated (stampPasswordChangedAt happens inside updatePassword)
       expect(mockUserRepo.updatePassword).toHaveBeenCalledWith('user123', 'hashed_password')
+      // Reset tokens cleaned up
       expect(PasswordResetModel.deleteMany).toHaveBeenCalledWith({ email: resetRecord.email })
-      expect(mockAuthRepo.deleteAllUserTokens).toHaveBeenCalledWith('user123')
+      // 6.2 — ALL sessions revoked including current
+      expect(mockSessionService.revokeAllSessionsIncludingCurrent).toHaveBeenCalledWith('user123')
+      // 6.2 — deleteAllUserTokens is NOT called (replaced by revokeAllSessionsIncludingCurrent)
+      expect(mockAuthRepo.deleteAllUserTokens).not.toHaveBeenCalled()
+      // 6.2 — profile cache invalidated
+      expect(invalidateUserProfileCache).toHaveBeenCalledWith('user123')
       expect(result).toEqual({ message: 'Đặt lại mật khẩu thành công' })
     })
 

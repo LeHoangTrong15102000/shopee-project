@@ -30,6 +30,8 @@ export interface UpdateUserDTO {
   phone?: string
   avatar?: string
   roles?: string[]
+  /** Timestamp of the last password change — used to invalidate pre-change access tokens */
+  passwordChangedAt?: Date
 }
 
 /**

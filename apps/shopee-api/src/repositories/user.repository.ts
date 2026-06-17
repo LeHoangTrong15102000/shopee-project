@@ -108,7 +108,10 @@ export class UserRepository implements IUserRepository {
     hashedPassword: string,
     setHasPassword = true,
   ): Promise<boolean> {
-    const updateFields: Record<string, unknown> = { password: hashedPassword }
+    const updateFields: Record<string, unknown> = {
+      password: hashedPassword,
+      passwordChangedAt: new Date(),
+    }
     if (setHasPassword) {
       updateFields.hasPassword = true
     }

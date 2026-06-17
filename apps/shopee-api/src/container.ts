@@ -175,7 +175,6 @@ const orderService = new OrderService(
 )
 const voucherService = new VoucherService(voucherRepository)
 const checkinService = new CheckInService()
-const passwordResetService = new PasswordResetService(userRepository, authRepository, emailQueue)
 const priceService = new PriceService()
 const stripeService = new StripeService()
 const momoProvider = new MomoProvider()
@@ -187,6 +186,12 @@ const paymentProviders = new Map<PaymentProvider, IPaymentProvider>([
 const paymentService = new PaymentService(paymentRepository, paymentProviders, () => orderService)
 const totpService = new TotpService()
 const sessionService = new SessionService(sessionRepository)
+const passwordResetService = new PasswordResetService(
+  userRepository,
+  authRepository,
+  emailQueue,
+  sessionService,
+)
 const loginHistoryService = new LoginHistoryService(loginHistoryRepository)
 const auditLogService = new AuditLogService(auditLogRepository)
 const flashSaleService = new FlashSaleService(flashSaleRepository)
@@ -238,6 +243,8 @@ authService.eventBus = eventBus
 orderService.eventBus = eventBus
 productService.eventBus = eventBus
 shareService.eventBus = eventBus
+// Wire session service into userService (post-construction — avoids circular instantiation order)
+userService.sessionService = sessionService
 
 // ─── Workers (auto-start on instantiation) ───────────────────────────────────
 

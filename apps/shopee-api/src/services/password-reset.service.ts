@@ -1,11 +1,12 @@
 import { Queue } from 'bullmq'
 import { PasswordResetModel } from '@database/models/password-reset.model'
 import { BaseService, BusinessError } from './base.service'
-import { hashValue } from '@utils/crypt'
-import { generateSecureToken } from '@utils/crypt'
+import { hashValue, hashToken, generateSecureToken } from '@utils/crypt'
 import { IUserRepository } from '@repositories/interfaces/user.repository.interface'
 import { IAuthRepository } from '@repositories/interfaces/auth.repository.interface'
 import { EmailJobPayload } from '../queues/job-payloads'
+import { SessionService } from './session.service'
+import { invalidateUserProfileCache } from './user.service'
 
 const TOKEN_EXPIRY_MS = 60 * 60 * 1000 // 1 hour
 
@@ -14,6 +15,7 @@ export class PasswordResetService extends BaseService {
     private readonly userRepository: IUserRepository,
     private readonly authRepository: IAuthRepository,
     private readonly emailQueue: Queue<EmailJobPayload>,
+    private readonly sessionService: SessionService,
   ) {
     super()
   }
@@ -28,11 +30,12 @@ export class PasswordResetService extends BaseService {
 
       // Generate new token
       const token = generateSecureToken(32)
+      const hashedToken = hashToken(token)
       const expiresAt = new Date(Date.now() + TOKEN_EXPIRY_MS)
 
       await PasswordResetModel.create({
         email,
-        token,
+        token: hashedToken,
         expires_at: expiresAt,
       })
 
@@ -51,8 +54,9 @@ export class PasswordResetService extends BaseService {
   }
 
   async resetPassword(token: string, newPassword: string) {
-    // Find valid token
-    const resetRecord = await PasswordResetModel.findOne({ token }).lean()
+    // Hash incoming token before lookup — tokens are stored hashed in DB
+    const hashedToken = hashToken(token)
+    const resetRecord = await PasswordResetModel.findOne({ token: hashedToken }).lean()
 
     if (!resetRecord) {
       throw new BusinessError('Token không hợp lệ')
@@ -70,15 +74,18 @@ export class PasswordResetService extends BaseService {
       throw new BusinessError('Token không hợp lệ')
     }
 
-    // Update password
+    // Update password (also stamps passwordChangedAt in repository)
     const hashedPassword = hashValue(newPassword)
     await this.userRepository.updatePassword(user._id!.toString(), hashedPassword)
 
     // Delete all reset tokens for this email
     await PasswordResetModel.deleteMany({ email: resetRecord.email })
 
-    // Invalidate all tokens for this user (logout from all devices)
-    await this.authRepository.deleteAllUserTokens(user._id!.toString())
+    // Revoke ALL sessions (including current) and delete ALL refresh tokens for this user
+    await this.sessionService.revokeAllSessionsIncludingCurrent(user._id!.toString())
+
+    // Invalidate profile cache so next request reads fresh passwordChangedAt
+    invalidateUserProfileCache(user._id!.toString())
 
     return { message: 'Đặt lại mật khẩu thành công' }
   }

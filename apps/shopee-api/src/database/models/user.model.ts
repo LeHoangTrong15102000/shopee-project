@@ -17,6 +17,8 @@ const UserSchema = new Schema(
     backupCodes: { type: [String], default: [] },
     // Whether this account has a user-chosen password (false for Google-OAuth accounts)
     hasPassword: { type: Boolean, default: true },
+    // Timestamp of the last password change/reset — used to invalidate pre-change access tokens
+    passwordChangedAt: { type: Date },
   },
   {
     timestamps: true,

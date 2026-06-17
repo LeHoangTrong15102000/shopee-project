@@ -7,6 +7,7 @@ import { STATUS } from '@constants/status'
 import { RefreshTokenModel } from '@database/models/refresh-token.model'
 import { UserModel } from '@database/models/user.model'
 import { Logger } from '@utils/logger'
+import { userProfileCache, setCachedProfile, CACHE_TTL } from '@services/user.service'
 
 // Local type definitions
 interface PayloadToken {
@@ -18,6 +19,38 @@ interface PayloadToken {
   jti?: string
   /** Token scope — "2fa_pending" for partial tokens issued mid-login when 2FA is required */
   scope?: string
+  /** JWT issued-at (seconds since epoch) */
+  iat?: number
+}
+
+/**
+ * Resolve a user's passwordChangedAt — cache-first.
+ * Returns null if the user has no passwordChangedAt set (legacy users: no constraint).
+ * On a cache miss, reads from DB and caches the full profile for future requests.
+ */
+async function resolvePasswordChangedAt(userId: string): Promise<Date | null> {
+  // Cache hit: read from existing profile cache entry
+  const cached = userProfileCache.get(userId)
+  if (cached && cached.expiry > Date.now()) {
+    return cached.data.passwordChangedAt ?? null
+  }
+
+  // Cache miss: read from DB and populate cache
+  const user = await UserModel.findById(userId)
+    .select({ password: 0, __v: 0 })
+    .lean<{ passwordChangedAt?: Date } & Record<string, unknown>>()
+
+  if (!user) {
+    return null
+  }
+
+  // Cache the full profile for future requests (reuse same cache shape as UserService)
+  userProfileCache.set(userId, {
+    data: user as Parameters<typeof setCachedProfile>[1],
+    expiry: Date.now() + CACHE_TTL,
+  })
+
+  return (user.passwordChangedAt as Date | undefined) ?? null
 }
 
 const verifyAccessToken = async (
@@ -40,8 +73,17 @@ const verifyAccessToken = async (
         )
         return
       }
+
+      // Reject tokens issued before the user's last password change (cache-first)
+      const passwordChangedAt = await resolvePasswordChangedAt(decoded.id)
+      if (passwordChangedAt !== null && decoded.iat !== undefined) {
+        if (decoded.iat * 1000 < passwordChangedAt.getTime()) {
+          responseError(res, new ErrorHandler(STATUS.UNAUTHORIZED, 'Token không hợp lệ'))
+          return
+        }
+      }
+
       req.jwtDecoded = decoded
-      // Pure JWT verification — no database lookup needed
       return next()
     } catch (error) {
       responseError(res, error as ErrorHandler | Error, req)

@@ -12,6 +12,7 @@ import {
 import { BaseService, NotFoundError, ValidationError, ConflictError } from './base.service'
 import { hashValue, compareValue } from '@utils/crypt'
 import { omitBy } from 'lodash'
+import { SessionService } from './session.service'
 
 export interface UpdateProfileDTO {
   email?: string
@@ -45,7 +46,24 @@ function invalidateProfileCache(userId: string): void {
   userProfileCache.delete(userId)
 }
 
+/**
+ * Exported so auth middleware and other services can invalidate the profile cache
+ * without importing the full UserService class. Used by:
+ * - PasswordResetService.resetPassword
+ * - auth.middleware verifyAccessToken (cache miss re-population)
+ */
+export {
+  userProfileCache,
+  getCachedProfile,
+  setCachedProfile,
+  invalidateProfileCache as invalidateUserProfileCache,
+  CACHE_TTL,
+}
+
 export class UserService extends BaseService {
+  /** Wired post-construction (see container.ts) to avoid circular instantiation order */
+  sessionService: SessionService | undefined
+
   constructor(private readonly userRepository: IUserRepository) {
     super()
   }
@@ -152,11 +170,23 @@ export class UserService extends BaseService {
     const updateData: UpdateUserDTO = { ...cleanData }
     delete (updateData as UpdateProfileDTO).new_password
 
+    // Stamp passwordChangedAt when the password is being changed
+    const isPasswordChange = updateData.password !== undefined
+    if (isPasswordChange) {
+      updateData.passwordChangedAt = new Date()
+    }
+
     const updatedUser = await this.userRepository.updateById(userId, updateData)
     if (!updatedUser) {
       throw new NotFoundError('User', userId)
     }
     invalidateProfileCache(userId)
+
+    // Revoke all sessions (including current) after password change
+    if (isPasswordChange && this.sessionService) {
+      await this.sessionService.revokeAllSessionsIncludingCurrent(userId)
+    }
+
     return updatedUser
   }
 
@@ -200,8 +230,8 @@ export class UserService extends BaseService {
   /**
    * Set a new password for a user who has no user-chosen password (e.g. Google-OAuth accounts).
    * Does NOT compare against any current password — the active session is proof of identity.
-   * Hashes the new password, persists it, flips hasPassword to true, and invalidates the profile cache.
-   * Per design D2/D5: no email notification, no other-session revocation.
+   * Hashes the new password, persists it (also stamps passwordChangedAt and flips hasPassword to true),
+   * revokes all sessions, and invalidates the profile cache.
    */
   async setPassword(userId: string, newPassword: string): Promise<void> {
     if (!this.isValidObjectId(userId)) {
@@ -214,6 +244,11 @@ export class UserService extends BaseService {
       throw new NotFoundError('User', userId)
     }
     invalidateProfileCache(userId)
+
+    // Revoke all sessions (including current) and delete all refresh tokens
+    if (this.sessionService) {
+      await this.sessionService.revokeAllSessionsIncludingCurrent(userId)
+    }
   }
 
   async searchUsers(query: string, pagination: PaginationOptions): Promise<PaginatedResult<IUser>> {

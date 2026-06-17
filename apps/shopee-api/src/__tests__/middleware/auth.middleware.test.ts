@@ -14,14 +14,26 @@ jest.mock('@utils/jwt', () => ({
   verifyToken: jest.fn(),
 }))
 
-// Mock UserModel for verifyAdmin tests
+// Mock UserModel for verifyAdmin tests and cache-miss passwordChangedAt lookup
 jest.mock('@database/models/user.model', () => ({
   UserModel: {
-    findById: jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(null) }),
+    findById: jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnThis(),
+      lean: jest.fn().mockResolvedValue(null),
+    }),
   },
 }))
 
+// Mock user.service exports so we can control userProfileCache in tests
+jest.mock('@services/user.service', () => ({
+  userProfileCache: new Map(),
+  setCachedProfile: jest.fn(),
+  CACHE_TTL: 300000,
+  invalidateUserProfileCache: jest.fn(),
+}))
+
 import { UserModel } from '@database/models/user.model'
+import { userProfileCache } from '@services/user.service'
 
 // Interface cho mock request options
 interface MockRequestOptions {
@@ -59,6 +71,8 @@ const createMockNext = (): NextFunction => jest.fn()
 describe('Auth Middleware', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    // Clear the shared profile cache between tests
+    ;(userProfileCache as Map<string, unknown>).clear()
   })
 
   describe('verifyAccessToken', () => {
@@ -323,6 +337,142 @@ describe('Auth Middleware', () => {
 
       expect(UserModel.findById).toHaveBeenCalledWith('admin_user_id')
       expect(next).toHaveBeenCalled()
+    })
+  })
+
+  // =================== Task 6.1: verifyAccessToken — passwordChangedAt guard ===================
+
+  describe('verifyAccessToken — passwordChangedAt guard', () => {
+    const userId = 'user_pwd_test_id'
+
+    it('6.1 — rejects with 401 when token iat is older than passwordChangedAt (cache hit)', async () => {
+      const passwordChangedAt = new Date(Date.now() - 1000) // 1 second ago
+      const iatBeforeChange = Math.floor((passwordChangedAt.getTime() - 5000) / 1000) // 5s before change
+
+      // Populate cache with passwordChangedAt set
+      ;(userProfileCache as Map<string, unknown>).set(userId, {
+        data: { passwordChangedAt },
+        expiry: Date.now() + 300000,
+      })
+      ;(verifyToken as jest.Mock).mockResolvedValue({
+        id: userId,
+        email: 'test@example.com',
+        roles: ['User'],
+        created_at: new Date().toISOString(),
+        iat: iatBeforeChange,
+      })
+
+      const req = createMockRequest({ headers: { authorization: 'Bearer some_token' } })
+      const res = createMockResponse()
+      const next = createMockNext()
+
+      await authMiddleware.verifyAccessToken(req as Request, res as Response, next)
+
+      expect(next).not.toHaveBeenCalled()
+      expect(res.status).toHaveBeenCalledWith(STATUS.UNAUTHORIZED)
+    })
+
+    it('6.1 — passes when token iat is after passwordChangedAt (cache hit)', async () => {
+      const passwordChangedAt = new Date(Date.now() - 10000) // 10 seconds ago
+      const iatAfterChange = Math.floor((passwordChangedAt.getTime() + 5000) / 1000) // 5s after change
+
+      ;(userProfileCache as Map<string, unknown>).set(userId, {
+        data: { passwordChangedAt },
+        expiry: Date.now() + 300000,
+      })
+      ;(verifyToken as jest.Mock).mockResolvedValue({
+        id: userId,
+        email: 'test@example.com',
+        roles: ['User'],
+        created_at: new Date().toISOString(),
+        iat: iatAfterChange,
+      })
+
+      const req = createMockRequest({ headers: { authorization: 'Bearer some_token' } })
+      const res = createMockResponse()
+      const next = createMockNext()
+
+      await authMiddleware.verifyAccessToken(req as Request, res as Response, next)
+
+      expect(next).toHaveBeenCalled()
+      // DB should NOT be called — cache hit
+      expect(UserModel.findById).not.toHaveBeenCalled()
+    })
+
+    it('6.1 — passes when user has no passwordChangedAt (legacy user, cache hit)', async () => {
+      // Cache entry without passwordChangedAt (legacy user)
+      ;(userProfileCache as Map<string, unknown>).set(userId, {
+        data: { email: 'legacy@example.com' }, // no passwordChangedAt field
+        expiry: Date.now() + 300000,
+      })
+      ;(verifyToken as jest.Mock).mockResolvedValue({
+        id: userId,
+        email: 'legacy@example.com',
+        roles: ['User'],
+        created_at: new Date().toISOString(),
+        iat: Math.floor(Date.now() / 1000) - 60,
+      })
+
+      const req = createMockRequest({ headers: { authorization: 'Bearer some_token' } })
+      const res = createMockResponse()
+      const next = createMockNext()
+
+      await authMiddleware.verifyAccessToken(req as Request, res as Response, next)
+
+      expect(next).toHaveBeenCalled()
+    })
+
+    it('6.1 — passes when cache misses and DB returns user without passwordChangedAt', async () => {
+      // Cache is empty — triggers DB read
+      ;(UserModel.findById as jest.Mock).mockReturnValue({
+        select: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockResolvedValue({ _id: userId, email: 'test@example.com' }),
+      })
+      ;(verifyToken as jest.Mock).mockResolvedValue({
+        id: userId,
+        email: 'test@example.com',
+        roles: ['User'],
+        created_at: new Date().toISOString(),
+        iat: Math.floor(Date.now() / 1000) - 30,
+      })
+
+      const req = createMockRequest({ headers: { authorization: 'Bearer some_token' } })
+      const res = createMockResponse()
+      const next = createMockNext()
+
+      await authMiddleware.verifyAccessToken(req as Request, res as Response, next)
+
+      expect(next).toHaveBeenCalled()
+      expect(UserModel.findById).toHaveBeenCalledWith(userId)
+    })
+
+    it('6.1 — rejects with 401 on cache miss when DB has passwordChangedAt after token iat', async () => {
+      const passwordChangedAt = new Date(Date.now() - 2000) // 2 seconds ago
+      const iatBeforeChange = Math.floor((passwordChangedAt.getTime() - 3000) / 1000)
+
+      // Cache is empty — DB returns user with passwordChangedAt
+      ;(UserModel.findById as jest.Mock).mockReturnValue({
+        select: jest.fn().mockReturnThis(),
+        lean: jest
+          .fn()
+          .mockResolvedValue({ _id: userId, email: 'test@example.com', passwordChangedAt }),
+      })
+      ;(verifyToken as jest.Mock).mockResolvedValue({
+        id: userId,
+        email: 'test@example.com',
+        roles: ['User'],
+        created_at: new Date().toISOString(),
+        iat: iatBeforeChange,
+      })
+
+      const req = createMockRequest({ headers: { authorization: 'Bearer some_token' } })
+      const res = createMockResponse()
+      const next = createMockNext()
+
+      await authMiddleware.verifyAccessToken(req as Request, res as Response, next)
+
+      expect(next).not.toHaveBeenCalled()
+      expect(res.status).toHaveBeenCalledWith(STATUS.UNAUTHORIZED)
     })
   })
 })

@@ -319,6 +319,106 @@ describe('UserService', () => {
     })
   })
 
+  // =================== Task 6.3: passwordChangedAt stamping + session revocation ===================
+
+  describe('updateProfile — password change stamps passwordChangedAt and revokes sessions', () => {
+    it('6.3 — stamps passwordChangedAt in updateById payload when password changes', async () => {
+      mockUserRepository.findById.mockResolvedValue(mockUser as any)
+      mockUserRepository.findByEmailWithPassword.mockResolvedValue(mockUser as any)
+      mockUserRepository.updateById.mockResolvedValue({ ...mockUser } as any)
+      ;(compareValue as jest.Mock).mockReturnValue(true)
+
+      const before = Date.now()
+      await userService.updateProfile(validObjectId, {
+        password: 'oldpassword',
+        new_password: 'newpassword',
+      })
+      const after = Date.now()
+
+      const updateCall = mockUserRepository.updateById.mock.calls[0][1]
+      expect(updateCall.passwordChangedAt).toBeInstanceOf(Date)
+      expect(updateCall.passwordChangedAt.getTime()).toBeGreaterThanOrEqual(before)
+      expect(updateCall.passwordChangedAt.getTime()).toBeLessThanOrEqual(after)
+    })
+
+    it('6.3 — calls revokeAllSessionsIncludingCurrent after password change when sessionService wired', async () => {
+      const mockSessionService = {
+        revokeAllSessionsIncludingCurrent: jest.fn().mockResolvedValue(1),
+      }
+      userService.sessionService = mockSessionService as any
+
+      mockUserRepository.findById.mockResolvedValue(mockUser as any)
+      mockUserRepository.findByEmailWithPassword.mockResolvedValue(mockUser as any)
+      mockUserRepository.updateById.mockResolvedValue({ ...mockUser } as any)
+      ;(compareValue as jest.Mock).mockReturnValue(true)
+
+      await userService.updateProfile(validObjectId, {
+        password: 'oldpassword',
+        new_password: 'newpassword',
+      })
+
+      expect(mockSessionService.revokeAllSessionsIncludingCurrent).toHaveBeenCalledWith(
+        validObjectId,
+      )
+    })
+
+    it('6.3 — does NOT call revokeAllSessionsIncludingCurrent when no password change', async () => {
+      const mockSessionService = {
+        revokeAllSessionsIncludingCurrent: jest.fn().mockResolvedValue(0),
+      }
+      userService.sessionService = mockSessionService as any
+
+      mockUserRepository.updateById.mockResolvedValue({ ...mockUser, name: 'Updated' } as any)
+
+      await userService.updateProfile(validObjectId, { name: 'Updated' })
+
+      expect(mockSessionService.revokeAllSessionsIncludingCurrent).not.toHaveBeenCalled()
+    })
+
+    it('6.3 — does NOT stamp passwordChangedAt when no password change', async () => {
+      mockUserRepository.updateById.mockResolvedValue({ ...mockUser, name: 'Updated' } as any)
+
+      await userService.updateProfile(validObjectId, { name: 'Updated' })
+
+      const updateCall = mockUserRepository.updateById.mock.calls[0][1]
+      expect(updateCall.passwordChangedAt).toBeUndefined()
+    })
+  })
+
+  describe('setPassword — stamps passwordChangedAt and revokes sessions', () => {
+    it('6.3 — calls updatePassword (which stamps passwordChangedAt) and revokeAllSessionsIncludingCurrent', async () => {
+      const mockSessionService = {
+        revokeAllSessionsIncludingCurrent: jest.fn().mockResolvedValue(1),
+      }
+      userService.sessionService = mockSessionService as any
+      mockUserRepository.updatePassword = jest.fn().mockResolvedValue(true)
+
+      await userService.setPassword(validObjectId, 'newpassword123')
+
+      expect(hashValue).toHaveBeenCalledWith('newpassword123')
+      expect(mockUserRepository.updatePassword).toHaveBeenCalledWith(
+        validObjectId,
+        'hashed_newpassword123',
+        true,
+      )
+      expect(mockSessionService.revokeAllSessionsIncludingCurrent).toHaveBeenCalledWith(
+        validObjectId,
+      )
+    })
+
+    it('6.3 — throws NotFoundError when user not found during setPassword', async () => {
+      mockUserRepository.updatePassword = jest.fn().mockResolvedValue(false)
+
+      await expect(userService.setPassword(validObjectId, 'newpassword123')).rejects.toThrow('User')
+    })
+
+    it('6.3 — throws ValidationError for invalid ObjectId in setPassword', async () => {
+      await expect(userService.setPassword('invalid-id', 'newpassword123')).rejects.toThrow(
+        ValidationError,
+      )
+    })
+  })
+
   describe('updateUser edge cases', () => {
     it('should throw ValidationError for invalid ObjectId', async () => {
       await expect(userService.updateUser('invalid-id', { name: 'Updated' })).rejects.toThrow(

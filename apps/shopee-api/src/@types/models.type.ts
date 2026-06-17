@@ -18,6 +18,8 @@ export interface IUser {
   backupCodes?: string[]
   /** Whether this account has a user-chosen password (false for Google-OAuth accounts) */
   hasPassword?: boolean
+  /** Timestamp of the last password change/reset — used to invalidate pre-change access tokens */
+  passwordChangedAt?: Date
   createdAt?: Date
   updatedAt?: Date
 }

@@ -185,4 +185,41 @@ export class SessionService extends BaseService {
     Logger.apiInfo('session.revoke_all', { userId, revokedCount: sessionsToRevoke.length })
     return sessionsToRevoke.length
   }
+
+  /**
+   * Revoke ALL sessions for a user INCLUDING the current/initiating session.
+   * Deletes ALL of the user's refresh-token records.
+   *
+   * Use this on password-change events where the initiating session must also be terminated.
+   * Contrast with revokeAllSessions which deliberately spares the current session.
+   */
+  async revokeAllSessionsIncludingCurrent(userId: string): Promise<number> {
+    const allSessions = await this.sessionRepository.findByUserId(
+      new Types.ObjectId(userId),
+      false, // isRevoked = false
+    )
+
+    if (allSessions.length === 0) {
+      // Still delete any orphaned refresh tokens
+      await RefreshTokenModel.deleteMany({
+        $or: [{ user: new Types.ObjectId(userId) }, { userId: new Types.ObjectId(userId) }],
+      })
+      return 0
+    }
+
+    const sessionIds = allSessions.map((s) => s._id!)
+    const refreshJtis = allSessions.map((s) => s.refreshJti)
+
+    // Revoke all sessions (including current)
+    await this.sessionRepository.revokeManyByIds(sessionIds)
+
+    // Delete all corresponding refresh tokens by jti
+    await RefreshTokenModel.deleteMany({ jti: { $in: refreshJtis } })
+
+    Logger.apiInfo('session.revoke_all_including_current', {
+      userId,
+      revokedCount: allSessions.length,
+    })
+    return allSessions.length
+  }
 }

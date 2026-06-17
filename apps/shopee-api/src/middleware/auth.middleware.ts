@@ -74,11 +74,20 @@ const verifyAccessToken = async (
         return
       }
 
-      // Reject tokens issued before the user's last password change (cache-first)
+      // Reject tokens issued before the user's last password change (cache-first).
+      // Tag with name: 'PASSWORD_CHANGED' so the frontend can show a localized,
+      // user-friendly message (see isAxiosPasswordChangedError) instead of a
+      // generic "invalid token" error. Mirrors the EXPIRED_TOKEN pattern in jwt.ts.
       const passwordChangedAt = await resolvePasswordChangedAt(decoded.id)
       if (passwordChangedAt !== null && decoded.iat !== undefined) {
         if (decoded.iat * 1000 < passwordChangedAt.getTime()) {
-          responseError(res, new ErrorHandler(STATUS.UNAUTHORIZED, 'Token không hợp lệ'))
+          responseError(
+            res,
+            new ErrorHandler(STATUS.UNAUTHORIZED, {
+              message: 'Mật khẩu đã thay đổi, vui lòng đăng nhập lại.',
+              name: 'PASSWORD_CHANGED',
+            }),
+          )
           return
         }
       }

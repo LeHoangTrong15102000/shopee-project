@@ -10,6 +10,7 @@ export {
   isAxiosError,
   isAxiosUnauthorizedError,
   isAxiosExpiredTokenError,
+  isAxiosPasswordChangedError,
   isAxiosUnprocessableEntityError,
 } from './http-helpers'
 export { createAuthStorage } from './localStorage'

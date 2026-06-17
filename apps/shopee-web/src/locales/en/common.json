@@ -80,6 +80,7 @@
   "keyboard.close": "Close",
   "keyboard.then": "then",
   "session_expired": "Your session has expired. Please log in again!",
+  "password_changed": "Password changed. Please sign in again.",
   "time.justNow": "just now",
   "time.minutesAgo": "{{count}} minutes ago",
   "time.hoursAgo": "{{count}} hours ago",

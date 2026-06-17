@@ -80,6 +80,7 @@
   "keyboard.close": "Đóng",
   "keyboard.then": "rồi",
   "session_expired": "Phiên đăng nhập đã hết hạn. Quý khách vui lòng đăng nhập lại!",
+  "password_changed": "Mật khẩu đã thay đổi, vui lòng đăng nhập lại.",
   "time.justNow": "vừa xong",
   "time.minutesAgo": "{{count}} phút trước",
   "time.hoursAgo": "{{count}} giờ trước",

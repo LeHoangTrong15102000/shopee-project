@@ -26,12 +26,7 @@ export const userApi = {
     return http.put<SuccessResponseApi<User>>('/me', body)
   },
   uploadAvatar: (body: FormData) => {
-    return http.post<SuccessResponseApi<string>>('/me/upload-avatar', body, {
-      // Và phải truyền lên cái headers định dạng như này để có thể uploadAvatar
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
+    return http.post<SuccessResponseApi<string>>('/me/upload-avatar', body)
   },
   setPassword: (body: BodySetPassword) => {
     return http.post<SuccessResponseApi<void>>('/set-password', body)

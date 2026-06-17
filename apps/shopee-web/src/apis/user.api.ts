@@ -26,7 +26,9 @@ export const userApi = {
     return http.put<SuccessResponseApi<User>>('/me', body)
   },
   uploadAvatar: (body: FormData) => {
-    return http.post<SuccessResponseApi<string>>('/me/upload-avatar', body)
+    return http.post<SuccessResponseApi<string>>('/me/upload-avatar', body, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
   },
   setPassword: (body: BodySetPassword) => {
     return http.post<SuccessResponseApi<void>>('/set-password', body)

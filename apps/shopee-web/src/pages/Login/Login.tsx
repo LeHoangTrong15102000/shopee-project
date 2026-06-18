@@ -241,7 +241,6 @@ const Login = () => {
                       fill="#EA4335"
                     />
                   </svg>
-                  {t('login.withGoogle')}
                 </Button>
               </motion.div>
 

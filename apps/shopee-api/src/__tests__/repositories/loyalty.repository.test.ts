@@ -435,4 +435,59 @@ describe('LoyaltyRepository', () => {
       expect(result.total_active_users).toBe(0)
     })
   })
+
+  // ─── Pending / Expiry helpers ───────────────────────────────────
+
+  describe('getPendingPoints', () => {
+    it('should return 0 when aggregation returns no results (no pending lifecycle)', async () => {
+      ;(PointsTransactionModel.aggregate as jest.Mock).mockResolvedValue([])
+      const result = await repository.getPendingPoints(mockUserId)
+      expect(result).toBe(0)
+    })
+
+    it('should return 0 when aggregate result has no total', async () => {
+      ;(PointsTransactionModel.aggregate as jest.Mock).mockResolvedValue([{ _id: null }])
+      const result = await repository.getPendingPoints(mockUserId)
+      expect(result).toBe(0)
+    })
+
+    it('should return the aggregated total when pending transactions exist', async () => {
+      ;(PointsTransactionModel.aggregate as jest.Mock).mockResolvedValue([
+        { _id: null, total: 150 },
+      ])
+      const result = await repository.getPendingPoints(mockUserId)
+      expect(result).toBe(150)
+    })
+
+    it('should accept a Types.ObjectId as userId', async () => {
+      ;(PointsTransactionModel.aggregate as jest.Mock).mockResolvedValue([])
+      const result = await repository.getPendingPoints(new Types.ObjectId())
+      expect(result).toBe(0)
+    })
+  })
+
+  describe('getExpiringSoon', () => {
+    it('should return null when aggregation returns no results (no expiry policy)', async () => {
+      ;(PointsTransactionModel.aggregate as jest.Mock).mockResolvedValue([])
+      const result = await repository.getExpiringSoon(mockUserId)
+      expect(result).toBeNull()
+    })
+
+    it('should return an IExpiringSoon object when an expiring transaction exists', async () => {
+      const futureDate = new Date(Date.now() + 5 * 86400000)
+      ;(PointsTransactionModel.aggregate as jest.Mock).mockResolvedValue([
+        { points: 50, expire_date: futureDate },
+      ])
+      const result = await repository.getExpiringSoon(mockUserId)
+      expect(result).not.toBeNull()
+      expect(result?.points).toBe(50)
+      expect(result?.expire_date).toBe(futureDate.toISOString())
+    })
+
+    it('should accept a Types.ObjectId as userId', async () => {
+      ;(PointsTransactionModel.aggregate as jest.Mock).mockResolvedValue([])
+      const result = await repository.getExpiringSoon(new Types.ObjectId())
+      expect(result).toBeNull()
+    })
+  })
 })

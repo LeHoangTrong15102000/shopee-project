@@ -79,6 +79,14 @@ export interface RewardFilterOptions {
 }
 
 /**
+ * Shape returned by getExpiringSoon — mirrors the FE contract.
+ */
+export interface IExpiringSoon {
+  points: number
+  expire_date: string
+}
+
+/**
  * Loyalty repository interface
  */
 export interface ILoyaltyRepository {
@@ -89,6 +97,10 @@ export interface ILoyaltyRepository {
     userId: string | Types.ObjectId,
     data: Partial<ILoyaltyPointsItem>,
   ): Promise<ILoyaltyPointsItem | null>
+
+  // Pending / Expiry helpers
+  getPendingPoints(userId: string | Types.ObjectId): Promise<number>
+  getExpiringSoon(userId: string | Types.ObjectId): Promise<IExpiringSoon | null>
 
   // Transactions
   findTransactionsByUser(

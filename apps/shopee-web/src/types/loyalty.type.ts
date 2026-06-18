@@ -1,11 +1,11 @@
 export interface LoyaltyPoints {
   total_points: number
   available_points: number
-  pending_points: number
-  expiring_soon: {
+  pending_points?: number
+  expiring_soon?: {
     points: number
     expire_date: string
-  }
+  } | null
 }
 
 export interface PointsTransaction {

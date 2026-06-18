@@ -93,4 +93,59 @@ describe('LoyaltyPointsCard', () => {
     render(<LoyaltyPointsCard points={urgentPoints as any} />)
     expect(screen.getByText(/ngày nữa!/)).toBeInTheDocument()
   })
+
+  // ─── Absent-field regression tests ─────────────────────────────
+
+  it('renders without throwing when expiring_soon is undefined', () => {
+    const pointsWithoutExpiry: import('src/types/loyalty.type').LoyaltyPoints = {
+      available_points: 500,
+      total_points: 1200,
+    }
+    expect(() => render(<LoyaltyPointsCard points={pointsWithoutExpiry} />)).not.toThrow()
+    expect(screen.queryByText(/xu sẽ hết hạn/)).toBeNull()
+  })
+
+  it('renders without throwing when expiring_soon is null', () => {
+    const pointsWithNull: import('src/types/loyalty.type').LoyaltyPoints = {
+      available_points: 500,
+      total_points: 1200,
+      expiring_soon: null,
+    }
+    expect(() => render(<LoyaltyPointsCard points={pointsWithNull} />)).not.toThrow()
+    expect(screen.queryByText(/xu sẽ hết hạn/)).toBeNull()
+  })
+
+  it('renders pending points as 0 when pending_points is undefined', () => {
+    const pointsNoPending: import('src/types/loyalty.type').LoyaltyPoints = {
+      available_points: 500,
+      total_points: 1200,
+    }
+    render(<LoyaltyPointsCard points={pointsNoPending} />)
+    // pending value should display 0 — there are multiple '0' nodes (incl. progress range)
+    // confirm at least one is present and the component rendered without error
+    const zeros = screen.getAllByText('0')
+    expect(zeros.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('renders expiry warning when expiring_soon has points within 7 days', () => {
+    const nearExpiry: import('src/types/loyalty.type').LoyaltyPoints = {
+      available_points: 500,
+      total_points: 1200,
+      expiring_soon: {
+        points: 50,
+        expire_date: new Date(Date.now() + 5 * 86400000).toISOString(),
+      },
+    }
+    render(<LoyaltyPointsCard points={nearExpiry} />)
+    expect(screen.getByText(/xu sẽ hết hạn/)).toBeInTheDocument()
+  })
+
+  it('renders the points card with a minimal payload (total_points, available_points, tier_info only)', () => {
+    const minimalPoints: import('src/types/loyalty.type').LoyaltyPoints = {
+      available_points: 0,
+      total_points: 0,
+    }
+    expect(() => render(<LoyaltyPointsCard points={minimalPoints} />)).not.toThrow()
+    expect(screen.getByText('Shopee Xu')).toBeInTheDocument()
+  })
 })

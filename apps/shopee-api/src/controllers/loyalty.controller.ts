@@ -18,6 +18,8 @@ export const getPoints = async (req: Request, res: Response) => {
     data: {
       ...result.points,
       tier_info: result.tier_info,
+      pending_points: result.pending_points,
+      expiring_soon: result.expiring_soon,
     },
   })
 }

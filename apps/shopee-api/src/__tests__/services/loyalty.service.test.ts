@@ -11,6 +11,8 @@ const mockLoyaltyRepository = {
   findPointsByUser: jest.fn(),
   createPoints: jest.fn(),
   updatePoints: jest.fn(),
+  getPendingPoints: jest.fn(),
+  getExpiringSoon: jest.fn(),
   findTransactionsByUser: jest.fn(),
   createTransaction: jest.fn(),
   findRewardById: jest.fn(),
@@ -48,6 +50,8 @@ describe('LoyaltyService', () => {
   describe('getPoints', () => {
     it('should return points with tier_info for existing user', async () => {
       mockLoyaltyRepository.findPointsByUser.mockResolvedValue(mockPoints as any)
+      mockLoyaltyRepository.getPendingPoints.mockResolvedValue(0)
+      mockLoyaltyRepository.getExpiringSoon.mockResolvedValue(null)
       const result = await loyaltyService.getPoints(mockPoints.user.toString())
       expect(result).toHaveProperty('tier_info')
       expect(mockLoyaltyRepository.findPointsByUser).toHaveBeenCalledWith(
@@ -58,9 +62,33 @@ describe('LoyaltyService', () => {
     it('should create points for new user', async () => {
       mockLoyaltyRepository.findPointsByUser.mockResolvedValue(null)
       mockLoyaltyRepository.createPoints.mockResolvedValue(mockPoints as any)
+      mockLoyaltyRepository.getPendingPoints.mockResolvedValue(0)
+      mockLoyaltyRepository.getExpiringSoon.mockResolvedValue(null)
       const userId = new Types.ObjectId().toString()
       await loyaltyService.getPoints(userId)
       expect(mockLoyaltyRepository.createPoints).toHaveBeenCalled()
+    })
+
+    it('should return pending_points: 0 and expiring_soon: null when no data', async () => {
+      mockLoyaltyRepository.findPointsByUser.mockResolvedValue(mockPoints as any)
+      mockLoyaltyRepository.getPendingPoints.mockResolvedValue(0)
+      mockLoyaltyRepository.getExpiringSoon.mockResolvedValue(null)
+      const result = await loyaltyService.getPoints(mockPoints.user.toString())
+      expect(result.pending_points).toBe(0)
+      expect(result.expiring_soon).toBeNull()
+    })
+
+    it('should return expiring_soon object when repository returns one', async () => {
+      const expiryData = {
+        points: 50,
+        expire_date: new Date(Date.now() + 5 * 86400000).toISOString(),
+      }
+      mockLoyaltyRepository.findPointsByUser.mockResolvedValue(mockPoints as any)
+      mockLoyaltyRepository.getPendingPoints.mockResolvedValue(100)
+      mockLoyaltyRepository.getExpiringSoon.mockResolvedValue(expiryData)
+      const result = await loyaltyService.getPoints(mockPoints.user.toString())
+      expect(result.pending_points).toBe(100)
+      expect(result.expiring_soon).toEqual(expiryData)
     })
   })
 

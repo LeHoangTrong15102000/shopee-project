@@ -64,6 +64,8 @@ describe('Loyalty Controller', () => {
           lifetime_points: 1000,
         },
         tier_info: { min: 0, max: 999, next_tier: 'silver', points_to_next: 0 },
+        pending_points: 0,
+        expiring_soon: null,
       }
       mockLoyaltyService.getPoints.mockResolvedValue(mockResult as any)
       const req = createMockRequest()
@@ -75,8 +77,75 @@ describe('Loyalty Controller', () => {
       expect(res.status).toHaveBeenCalledWith(200)
       expect(res.json).toHaveBeenCalledWith({
         message: 'Lấy thông tin điểm thành công',
-        data: { ...mockResult.points, tier_info: mockResult.tier_info },
+        data: {
+          ...mockResult.points,
+          tier_info: mockResult.tier_info,
+          pending_points: 0,
+          expiring_soon: null,
+        },
       })
+    })
+
+    it('should include pending_points and expiring_soon in the response', async () => {
+      const expiryData = {
+        points: 50,
+        expire_date: new Date(Date.now() + 5 * 86400000).toISOString(),
+      }
+      const mockResult = {
+        points: {
+          _id: 'points-123',
+          user: 'user123',
+          total_points: 800,
+          available_points: 700,
+          tier: 'silver',
+          lifetime_points: 1500,
+        },
+        tier_info: { min: 1000, max: 4999, next_tier: 'gold', points_to_next: 3500 },
+        pending_points: 100,
+        expiring_soon: expiryData,
+      }
+      mockLoyaltyService.getPoints.mockResolvedValue(mockResult as any)
+      const req = createMockRequest()
+      const res = createMockResponse()
+
+      await getPoints(req as Request, res as Response)
+
+      const jsonCall = (res.json as jest.Mock).mock.calls[0][0]
+      expect(jsonCall.data.pending_points).toBe(100)
+      expect(jsonCall.data.expiring_soon).toEqual(expiryData)
+    })
+
+    it('should return pending_points: 0 and expiring_soon: null for a brand-new user', async () => {
+      const newUserResult = {
+        points: {
+          _id: 'points-new',
+          user: 'user-brand-new',
+          total_points: 0,
+          available_points: 0,
+          tier: 'bronze',
+          lifetime_points: 0,
+        },
+        tier_info: { min: 0, max: 999, next_tier: 'silver', points_to_next: 1000 },
+        pending_points: 0,
+        expiring_soon: null,
+      }
+      mockLoyaltyService.getPoints.mockResolvedValue(newUserResult as any)
+      const req = createMockRequest({
+        jwtDecoded: {
+          id: 'user-brand-new',
+          email: 'new@test.com',
+          roles: ['User'],
+          created_at: '2024-01-01',
+        },
+      })
+      const res = createMockResponse()
+
+      await getPoints(req as Request, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(200)
+      const jsonCall = (res.json as jest.Mock).mock.calls[0][0]
+      expect(jsonCall.data.pending_points).toBe(0)
+      expect(jsonCall.data.expiring_soon).toBeNull()
     })
 
     it('should propagate service errors', async () => {

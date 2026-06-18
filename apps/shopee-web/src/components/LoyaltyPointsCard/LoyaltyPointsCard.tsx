@@ -53,8 +53,11 @@ export default function LoyaltyPointsCard({
 
   const progressPercentage = Math.min((points.available_points / nextRewardThreshold) * 100, 100)
   const pointsToNextReward = Math.max(nextRewardThreshold - points.available_points, 0)
-  const daysUntilExpiry = getDaysUntilExpiry(points.expiring_soon.expire_date)
-  const showExpiryWarning = points.expiring_soon.points > 0 && daysUntilExpiry <= 7
+  const pendingPoints = points.pending_points ?? 0
+  const expiringSoon = points.expiring_soon
+  const showExpiryWarning = Boolean(
+    expiringSoon && expiringSoon.points > 0 && getDaysUntilExpiry(expiringSoon.expire_date) <= 7,
+  )
 
   useEffect(() => {
     if (displayPoints !== points.available_points) {
@@ -133,7 +136,7 @@ export default function LoyaltyPointsCard({
           </div>
           <div className="h-8 w-px bg-white/30" />
           <div className="flex flex-col">
-            <span className="font-medium">{formatCurrency(points.pending_points)}</span>
+            <span className="font-medium">{formatCurrency(pendingPoints)}</span>
             <span className="text-white/70">{t('loyalty.pendingPoints')}</span>
           </div>
         </div>
@@ -165,7 +168,7 @@ export default function LoyaltyPointsCard({
 
       {/* Expiring soon warning */}
       <AnimatePresence>
-        {showExpiryWarning && (
+        {showExpiryWarning && expiringSoon && (
           <motion.div
             className="relative mt-3 flex items-center gap-2 rounded-lg bg-red-500/20 px-3 py-2 backdrop-blur-xs"
             initial={{ opacity: 0, height: 0 }}
@@ -185,12 +188,14 @@ export default function LoyaltyPointsCard({
             </svg>
             <div className="flex-1 text-xs text-white">
               {t('loyalty.expiryWarning', {
-                count: points.expiring_soon.points,
-                date: formatDate(points.expiring_soon.expire_date),
+                count: expiringSoon.points,
+                date: formatDate(expiringSoon.expire_date),
               })}
-              {daysUntilExpiry <= 3 && (
+              {getDaysUntilExpiry(expiringSoon.expire_date) <= 3 && (
                 <span className="ml-1 text-yellow-200">
-                  ({t('loyalty.expiryDays', { count: daysUntilExpiry })})
+                  (
+                  {t('loyalty.expiryDays', { count: getDaysUntilExpiry(expiringSoon.expire_date) })}
+                  )
                 </span>
               )}
             </div>

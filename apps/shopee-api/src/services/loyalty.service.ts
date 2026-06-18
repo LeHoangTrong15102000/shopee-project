@@ -4,6 +4,7 @@ import {
   ILoyaltyPointsItem,
   IPointsTransactionItem,
   IPointsRewardItem,
+  IExpiringSoon,
   TransactionFilterOptions,
   RewardFilterOptions,
   LoyaltyTier,
@@ -68,7 +69,12 @@ export class LoyaltyService extends BaseService {
     }
   }
 
-  async getPoints(userId: string): Promise<{ points: ILoyaltyPointsItem; tier_info: TierInfo }> {
+  async getPoints(userId: string): Promise<{
+    points: ILoyaltyPointsItem
+    tier_info: TierInfo
+    pending_points: number
+    expiring_soon: IExpiringSoon | null
+  }> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')
     }
@@ -78,9 +84,16 @@ export class LoyaltyService extends BaseService {
       points = await this.loyaltyRepository.createPoints(userId)
     }
 
+    const [pending_points, expiring_soon] = await Promise.all([
+      this.loyaltyRepository.getPendingPoints(userId),
+      this.loyaltyRepository.getExpiringSoon(userId),
+    ])
+
     return {
       points,
       tier_info: this.getTierInfo(points.tier, points.lifetime_points),
+      pending_points,
+      expiring_soon,
     }
   }
 

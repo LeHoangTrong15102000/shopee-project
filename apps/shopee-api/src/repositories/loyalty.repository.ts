@@ -13,6 +13,7 @@ import {
   ILoyaltyPointsItem,
   IPointsTransactionItem,
   IPointsRewardItem,
+  IExpiringSoon,
   CreateTransactionDTO,
   TransactionFilterOptions,
   RewardFilterOptions,
@@ -63,6 +64,62 @@ export class LoyaltyRepository implements ILoyaltyRepository {
       data,
       { new: true },
     ).lean<ILoyaltyPointsItem | null>()
+  }
+
+  // Pending / Expiry helpers
+
+  /**
+   * Sum of positive-value `earn` and `bonus` transactions that are not yet
+   * credited as available_points.  Until a pending lifecycle exists in the
+   * schema this will always aggregate over committed (already credited)
+   * transactions, so the result is 0.  The method satisfies the contract and
+   * can be enhanced once a real pending state is introduced.
+   */
+  async getPendingPoints(userId: string | Types.ObjectId): Promise<number> {
+    const result = await PointsTransactionModel.aggregate([
+      {
+        $match: {
+          user: new Types.ObjectId(userId.toString()),
+          type: { $in: ['earn', 'bonus'] },
+          points: { $gt: 0 },
+          // pending flag does not yet exist — this resolves to 0 by design
+          pending: true,
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$points' } } },
+    ])
+    return (result[0]?.total as number | undefined) ?? 0
+  }
+
+  /**
+   * Returns the nearest expiry projected from transactions flagged as
+   * expiring.  Until a real expiry policy exists in the data model this
+   * returns null, which satisfies the contract (FE renders no warning).
+   */
+  async getExpiringSoon(userId: string | Types.ObjectId): Promise<IExpiringSoon | null> {
+    const result = await PointsTransactionModel.aggregate([
+      {
+        $match: {
+          user: new Types.ObjectId(userId.toString()),
+          type: 'expire',
+          points: { $gt: 0 },
+          // expire_date does not yet exist on transaction documents
+          expire_date: { $exists: true, $gt: new Date() },
+        },
+      },
+      { $sort: { expire_date: 1 } },
+      { $limit: 1 },
+    ])
+
+    if (!result.length) {
+      return null
+    }
+
+    const row = result[0] as { points: number; expire_date: Date }
+    return {
+      points: row.points,
+      expire_date: row.expire_date.toISOString(),
+    }
   }
 
   // Transactions

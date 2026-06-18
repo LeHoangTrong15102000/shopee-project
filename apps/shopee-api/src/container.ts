@@ -245,6 +245,8 @@ productService.eventBus = eventBus
 shareService.eventBus = eventBus
 // Wire session service into userService (post-construction — avoids circular instantiation order)
 userService.sessionService = sessionService
+// Wire auth service into userService for token re-issue on password change
+userService.authService = authService
 
 // ─── Workers (auto-start on instantiation) ───────────────────────────────────
 

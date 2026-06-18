@@ -225,8 +225,8 @@ const Profile = () => {
       )
       if (res) {
         // console.log(res.data.data)
-        setProfile(res.data.data)
-        setProfileToLS(res.data.data)
+        setProfile(res.data.data.user)
+        setProfileToLS(res.data.data.user)
         // Reset file state để hiển thị avatar từ server thay vì previewImage
         setFile(undefined)
         toast.success(res.data?.message, { autoClose: 3000, position: 'top-center' })

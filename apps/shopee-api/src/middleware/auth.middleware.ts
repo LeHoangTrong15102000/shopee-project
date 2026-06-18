@@ -80,7 +80,7 @@ const verifyAccessToken = async (
       // generic "invalid token" error. Mirrors the EXPIRED_TOKEN pattern in jwt.ts.
       const passwordChangedAt = await resolvePasswordChangedAt(decoded.id)
       if (passwordChangedAt !== null && decoded.iat !== undefined) {
-        if (decoded.iat * 1000 < passwordChangedAt.getTime()) {
+        if (decoded.iat < Math.floor(passwordChangedAt.getTime() / 1000)) {
           responseError(
             res,
             new ErrorHandler(STATUS.UNAUTHORIZED, {

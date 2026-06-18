@@ -18,12 +18,28 @@ export interface BodySetPassword {
   confirm_password: string
 }
 
+/** Fresh token pair returned after a password change / set-password — may be absent
+ *  on non-password updates, so all fields are optional in the API shape. */
+export interface TokenPair {
+  access_token?: string
+  refresh_token?: string
+  expires?: number
+  expires_refresh_token?: number
+  accessJti?: string
+  refreshJti?: string
+}
+
+/** Shape returned by PUT /me — profile data plus optional fresh token pair */
+export interface UpdateProfileResponse extends TokenPair {
+  user: User
+}
+
 export const userApi = {
   getProfile: () => {
     return http.get<SuccessResponseApi<User>>('/me')
   },
   updateProfile: (body: BodyUpdateProfile) => {
-    return http.put<SuccessResponseApi<User>>('/me', body)
+    return http.put<SuccessResponseApi<UpdateProfileResponse>>('/me', body)
   },
   uploadAvatar: (body: FormData) => {
     return http.post<SuccessResponseApi<string>>('/me/upload-avatar', body, {
@@ -31,7 +47,7 @@ export const userApi = {
     })
   },
   setPassword: (body: BodySetPassword) => {
-    return http.post<SuccessResponseApi<void>>('/set-password', body)
+    return http.post<SuccessResponseApi<TokenPair>>('/set-password', body)
   },
 }
 

@@ -568,6 +568,14 @@ export class AuthService extends BaseService {
     )
   }
 
+  /**
+   * Soft-revoke a refresh token by JTI — used when re-issuing tokens on password change
+   * so the old token for the current session cannot be replayed.
+   */
+  async revokeSessionRefreshToken(jti: string): Promise<void> {
+    await this.authRepository.revokeRefreshTokenByJti(jti)
+  }
+
   async logoutAll(userId: string): Promise<void> {
     await this.authRepository.deleteAllUserTokens(userId)
   }

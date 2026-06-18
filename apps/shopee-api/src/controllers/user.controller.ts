@@ -1,11 +1,11 @@
-import { Request, Response } from 'express'
-type Req = Request<Record<string, string>>
-import { responseSuccess, ErrorHandler } from '@utils/response'
-import { STATUS } from '@constants/status'
-import { uploadFile } from '@utils/upload'
 import { FOLDERS } from '@constants/config'
+import { STATUS } from '@constants/status'
+import { ConflictError, NotFoundError, ValidationError } from '@services/base.service'
+import { ErrorHandler, responseSuccess } from '@utils/response'
+import { uploadFile } from '@utils/upload'
+import { Request, Response } from 'express'
 import { userService } from '../container'
-import { NotFoundError, ValidationError, ConflictError } from '@services/base.service'
+type Req = Request<Record<string, string>>
 
 // Local type definitions for this file only
 interface User {
@@ -26,6 +26,7 @@ interface CustomRequest extends Req {
     email: string
     roles: string[]
     created_at: string
+    jti?: string
   }
 }
 
@@ -154,16 +155,20 @@ const updateMe = async (req: CustomRequest, res: Response) => {
     const { email, password, new_password, address, date_of_birth, name, phone, avatar } = form
     const isPasswordChange = !!(password && new_password)
 
-    const user = await userService.updateProfile(req.jwtDecoded.id, {
-      email,
-      password,
-      new_password,
-      address,
-      date_of_birth: date_of_birth ? new Date(date_of_birth) : undefined,
-      name,
-      phone,
-      avatar,
-    })
+    const { user, tokens } = await userService.updateProfile(
+      req.jwtDecoded.id,
+      {
+        email,
+        password,
+        new_password,
+        address,
+        date_of_birth: date_of_birth ? new Date(date_of_birth) : undefined,
+        name,
+        phone,
+        avatar,
+      },
+      req.jwtDecoded.jti,
+    )
 
     // Audit log: user.password_change when password fields are present (fire-and-forget)
     if (isPasswordChange) {
@@ -187,7 +192,10 @@ const updateMe = async (req: CustomRequest, res: Response) => {
 
     const response = {
       message: 'Cập nhật thông tin thành công',
-      data: user,
+      data: {
+        user,
+        ...(isPasswordChange && tokens ? tokens : {}),
+      },
     }
     return responseSuccess(res, response)
   } catch (error) {
@@ -226,7 +234,11 @@ const setPassword = async (req: CustomRequest, res: Response) => {
     }
 
     const { new_password } = req.body as { new_password: string; confirm_password: string }
-    await userService.setPassword(req.jwtDecoded.id, new_password)
+    const tokens = await userService.setPassword(
+      req.jwtDecoded.id,
+      new_password,
+      req.jwtDecoded.jti,
+    )
 
     // Audit log: user.password_set (fire-and-forget, mirrors updateMe audit pattern)
     const userId = req.jwtDecoded.id
@@ -246,7 +258,10 @@ const setPassword = async (req: CustomRequest, res: Response) => {
       status: 'success',
     })
 
-    return responseSuccess(res, { message: 'Đặt mật khẩu thành công' })
+    return responseSuccess(res, {
+      message: 'Đặt mật khẩu thành công',
+      data: tokens ?? {},
+    })
   } catch (error) {
     if (error instanceof ValidationError) {
       throw new ErrorHandler(STATUS.UNPROCESSABLE_ENTITY, {

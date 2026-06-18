@@ -18,6 +18,10 @@ jest.mock('../../container', () => ({
     updateUser: jest.fn(),
     updateProfile: jest.fn(),
     deleteUser: jest.fn(),
+    setPassword: jest.fn(),
+  },
+  auditLogService: {
+    writeLog: jest.fn(),
   },
 }))
 
@@ -26,12 +30,13 @@ import { userService } from '../../container'
 const mockUserService = userService as jest.Mocked<typeof userService>
 
 const createMockRequest = (
-  options: { body?: any; params?: any; query?: any; jwtDecoded?: any } = {},
+  options: { body?: any; params?: any; query?: any; jwtDecoded?: any; headers?: any } = {},
 ): Partial<Request> => ({
   body: options.body || {},
   params: options.params || {},
   query: options.query || {},
   jwtDecoded: options.jwtDecoded,
+  headers: options.headers || {},
 })
 
 const createMockResponse = (): Partial<Response> => {
@@ -54,6 +59,7 @@ const jwtDecoded = {
   email: 'test@example.com',
   roles: ['User'],
   created_at: new Date().toISOString(),
+  jti: 'test-jti-fixture',
 }
 
 describe('User Controller', () => {
@@ -191,9 +197,9 @@ describe('User Controller', () => {
   })
 
   describe('updateMe', () => {
-    it('should update own profile successfully', async () => {
+    it('should update own profile successfully (non-password change, tokens null)', async () => {
       const updated = { ...mockUser, name: 'New Name' }
-      mockUserService.updateProfile.mockResolvedValue(updated as any)
+      mockUserService.updateProfile.mockResolvedValue({ user: updated, tokens: null } as any)
       const req = createMockRequest({
         body: { name: 'New Name' },
         jwtDecoded,
@@ -202,8 +208,48 @@ describe('User Controller', () => {
 
       await userController.updateMe(req as any, res as Response)
 
-      expect(mockUserService.updateProfile).toHaveBeenCalledWith('user_1', expect.any(Object))
+      expect(mockUserService.updateProfile).toHaveBeenCalledWith(
+        'user_1',
+        expect.any(Object),
+        'test-jti-fixture',
+      )
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+      // Non-password update: response data should have user but not token fields
+      const sentData = (res.send as jest.Mock).mock.calls[0]?.[0]
+      if (sentData) {
+        expect(sentData.data.user).toEqual(updated)
+        expect(sentData.data.access_token).toBeUndefined()
+        expect(sentData.data.refresh_token).toBeUndefined()
+      }
+    })
+
+    it('should include fresh token pair in response when password changes (tokens non-null)', async () => {
+      const updated = { ...mockUser, name: 'Same Name' }
+      const freshTokens = {
+        access_token: 'Bearer new-access-token',
+        expires: 86400,
+        refresh_token: 'new-refresh-token',
+        expires_refresh_token: 604800,
+        accessJti: 'new-access-jti',
+        refreshJti: 'new-refresh-jti',
+      }
+      mockUserService.updateProfile.mockResolvedValue({ user: updated, tokens: freshTokens } as any)
+      const req = createMockRequest({
+        // Both password + new_password present → isPasswordChange = true
+        body: { password: 'old-pass', new_password: 'new-pass' },
+        jwtDecoded,
+      })
+      const res = createMockResponse()
+
+      await userController.updateMe(req as any, res as Response)
+
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+      // The response data should spread the token fields alongside user
+      const sendCall = (res.send as jest.Mock).mock.calls[0]?.[0]
+      if (sendCall) {
+        expect(sendCall.data.access_token).toBe(freshTokens.access_token)
+        expect(sendCall.data.refresh_token).toBe(freshTokens.refresh_token)
+      }
     })
 
     it('should throw error when jwtDecoded is missing', async () => {
@@ -250,6 +296,65 @@ describe('User Controller', () => {
 
       await expect(userController.deleteUser(req as any, res as Response)).rejects.toMatchObject({
         status: STATUS.BAD_REQUEST,
+      })
+    })
+  })
+
+  describe('setPassword', () => {
+    it('should return fresh token pair on success', async () => {
+      const freshTokens = {
+        access_token: 'Bearer new-access-token',
+        expires: 86400,
+        refresh_token: 'new-refresh-token',
+        expires_refresh_token: 604800,
+        accessJti: 'new-access-jti',
+        refreshJti: 'new-refresh-jti',
+      }
+      mockUserService.setPassword.mockResolvedValue(freshTokens as any)
+      const req = createMockRequest({
+        body: { new_password: 'MyNewPass1!', confirm_password: 'MyNewPass1!' },
+        jwtDecoded,
+      })
+      const res = createMockResponse()
+
+      await userController.setPassword(req as any, res as Response)
+
+      expect(mockUserService.setPassword).toHaveBeenCalledWith(
+        'user_1',
+        'MyNewPass1!',
+        'test-jti-fixture',
+      )
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+      const sendCall = (res.send as jest.Mock).mock.calls[0]?.[0]
+      if (sendCall) {
+        expect(sendCall.data.access_token).toBe(freshTokens.access_token)
+        expect(sendCall.data.refresh_token).toBe(freshTokens.refresh_token)
+      }
+    })
+
+    it('should map ValidationError to 422', async () => {
+      mockUserService.setPassword.mockRejectedValue(
+        new ValidationError('Password không hợp lệ', 'new_password'),
+      )
+      const req = createMockRequest({
+        body: { new_password: 'weak', confirm_password: 'weak' },
+        jwtDecoded,
+      })
+      const res = createMockResponse()
+
+      await expect(userController.setPassword(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.UNPROCESSABLE_ENTITY,
+      })
+    })
+
+    it('should throw UNAUTHORIZED when jwtDecoded is missing', async () => {
+      const req = createMockRequest({
+        body: { new_password: 'MyNewPass1!', confirm_password: 'MyNewPass1!' },
+      })
+      const res = createMockResponse()
+
+      await expect(userController.setPassword(req as any, res as Response)).rejects.toMatchObject({
+        status: STATUS.UNAUTHORIZED,
       })
     })
   })

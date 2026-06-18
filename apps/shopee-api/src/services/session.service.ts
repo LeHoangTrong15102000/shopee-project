@@ -151,6 +151,22 @@ export class SessionService extends BaseService {
   }
 
   /**
+   * Find a single active session for a user identified by its access token JTI.
+   * Used by UserService to locate the current session before re-issuing tokens
+   * after a password change/set.
+   */
+  async findActiveSessionByAccessJti(
+    userId: string,
+    accessJti: string,
+  ): Promise<import('@database/models/session.model').ISession | null> {
+    const allSessions = await this.sessionRepository.findByUserId(
+      new Types.ObjectId(userId),
+      false, // isRevoked = false
+    )
+    return allSessions.find((s) => s.accessJti === accessJti) ?? null
+  }
+
+  /**
    * Revoke all sessions for a user EXCEPT the current one.
    * Deletes the corresponding RefreshToken documents for all revoked sessions.
    *

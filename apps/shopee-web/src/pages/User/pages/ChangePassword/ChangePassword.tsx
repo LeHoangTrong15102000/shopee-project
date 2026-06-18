@@ -16,7 +16,8 @@ import { useReducedMotion } from 'src/hooks/useReducedMotion'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import { UserSchema, baseUserSchema } from 'src/utils/rules'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
-import { setProfileToLS } from 'src/utils/auth'
+import { setProfileToLS, setAccessTokenToLS, setRefreshTokenToLS } from 'src/utils/auth'
+import { setInMemoryTokens } from 'src/utils/http'
 import { z } from 'zod'
 import i18n from 'src/i18n/i18n'
 
@@ -207,7 +208,14 @@ const SetPasswordForm = () => {
       const res = await setPasswordMutation.mutateAsync(data)
       toast.success(res.data.message || t('setPassword.success'))
       reset()
-      // Task 6.3: refresh in-context profile so the form switches to change mode
+      // Persist fresh tokens so the current session stays alive
+      const tokenData = res.data.data
+      if (tokenData?.access_token && tokenData?.refresh_token) {
+        setAccessTokenToLS(tokenData.access_token)
+        setRefreshTokenToLS(tokenData.refresh_token)
+        setInMemoryTokens(tokenData.access_token, tokenData.refresh_token)
+      }
+      // refresh in-context profile so the form switches to change mode
       if (profile) {
         const updatedProfile = { ...profile, hasPassword: true }
         setProfile(updatedProfile)
@@ -378,6 +386,13 @@ const ChangePasswordForm = () => {
       const res = await updateProfileMutation.mutateAsync(omit(data, ['confirm_password']))
       toast.success(res.data.message)
       reset()
+      // Persist fresh tokens so the current session stays alive after password change
+      const responseData = res.data.data
+      if (responseData?.access_token && responseData?.refresh_token) {
+        setAccessTokenToLS(responseData.access_token)
+        setRefreshTokenToLS(responseData.refresh_token)
+        setInMemoryTokens(responseData.access_token, responseData.refresh_token)
+      }
     } catch (error) {
       if (isAxiosUnprocessableEntityError<ErrorResponseApi<ChangeFormData>>(error)) {
         const formError = error.response?.data.data

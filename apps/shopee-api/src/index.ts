@@ -205,6 +205,10 @@ app.use(
 )
 app.use(
   `/${ROUTE_IMAGE}`,
+  express.static(path.join(dirNameWithEnv, FOLDER_UPLOAD, FOLDERS.AVATAR), staticCacheOptions),
+)
+app.use(
+  `/${ROUTE_IMAGE}`,
   express.static(path.join(dirNameWithEnv, FOLDER_UPLOAD), staticCacheOptions),
 )
 

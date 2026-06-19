@@ -1,8 +1,8 @@
 import classNames from 'classnames'
-import { motion } from 'framer-motion'
-import { useContext } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, NavLink } from 'react-router'
+import { Link, NavLink, useLocation } from 'react-router'
 import path from 'src/constant/path'
 import MobileAccountNav from 'src/components/MobileAccountNav'
 import { AppContext } from 'src/contexts/app.context'
@@ -268,9 +268,11 @@ const NavItemLink = ({ item, reducedMotion }: NavItemProps) => (
 interface AccordionGroupProps {
   group: NavGroup
   reducedMotion: boolean
+  isOpen: boolean
+  onToggle: () => void
 }
 
-const AccordionGroup = ({ group, reducedMotion }: AccordionGroupProps) => {
+const AccordionGroup = ({ group, reducedMotion, isOpen, onToggle }: AccordionGroupProps) => {
   if (group.directLink) {
     // Direct NavLink — not an accordion toggle
     return (
@@ -309,21 +311,39 @@ const AccordionGroup = ({ group, reducedMotion }: AccordionGroupProps) => {
 
   return (
     <div>
-      {/* Group header — non-interactive, always expanded */}
-      <div
+      {/* Group header — toggles expand/collapse */}
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
         className="flex w-full items-center gap-2 rounded-md px-2 py-2 capitalize
-                      text-gray-700 dark:text-gray-200"
+                      text-gray-700 transition-colors hover:text-gray-900
+                      focus-visible:ring-2 focus-visible:ring-[#ee4d2d]/50 focus-visible:outline-none
+                      dark:text-gray-200 dark:hover:text-white"
       >
         <span className="flex shrink-0 items-center">{group.icon}</span>
-        <span className="flex-1 text-sm font-normal">{group.labelKey}</span>
-      </div>
+        <span className="flex-1 text-left text-sm font-normal">{group.labelKey}</span>
+      </button>
 
-      {/* Always-visible children */}
-      <div className="mt-1 ml-3 flex flex-col gap-0.5 border-l border-gray-200 pl-3 dark:border-slate-600">
-        {group.items?.map((item) => (
-          <NavItemLink key={item.to} item={item} reducedMotion={reducedMotion} />
-        ))}
-      </div>
+      {/* Collapsible children */}
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            key="content"
+            initial={reducedMotion ? undefined : { height: 0, opacity: 0 }}
+            animate={reducedMotion ? undefined : { height: 'auto', opacity: 1 }}
+            exit={reducedMotion ? undefined : { height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
+            style={{ overflow: 'hidden' }}
+          >
+            <div className="mt-1 ml-3 flex flex-col gap-0.5 border-l border-gray-200 pl-3 dark:border-slate-600">
+              {group.items?.map((item) => (
+                <NavItemLink key={item.to} item={item} reducedMotion={reducedMotion} />
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -334,6 +354,7 @@ const UserSideNav = () => {
   const { t } = useTranslation('user')
   const { profile } = useContext(AppContext)
   const reducedMotion = useReducedMotion()
+  const location = useLocation()
 
   // Build nav groups
   const groups: NavGroup[] = [
@@ -432,6 +453,23 @@ const UserSideNav = () => {
     },
   ]
 
+  // Auto-open the group containing the active route
+  function getInitialOpenGroup(): string | null {
+    for (const group of groups) {
+      if (group.directLink) continue
+      if (group.items?.some((item) => location.pathname.startsWith(item.to))) {
+        return group.id
+      }
+    }
+    return null
+  }
+
+  const [openGroupId, setOpenGroupId] = useState<string | null>(getInitialOpenGroup)
+
+  function handleToggle(groupId: string) {
+    setOpenGroupId((prev) => (prev === groupId ? null : groupId))
+  }
+
   return (
     <div>
       {/* Mobile horizontal icon+label tab bar */}
@@ -480,7 +518,13 @@ const UserSideNav = () => {
         {/* Accordion navigation */}
         <nav className="mt-4 flex flex-col gap-1" aria-label={t('sideNav.groupMyAccount')}>
           {groups.map((group) => (
-            <AccordionGroup key={group.id} group={group} reducedMotion={reducedMotion} />
+            <AccordionGroup
+              key={group.id}
+              group={group}
+              reducedMotion={reducedMotion}
+              isOpen={openGroupId === group.id}
+              onToggle={() => handleToggle(group.id)}
+            />
           ))}
         </nav>
       </div>

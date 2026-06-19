@@ -28,11 +28,25 @@ type MockState = Record<DomainKey, boolean>
 // ---------------------------------------------------------------------------
 let cache: MockState = buildDefault()
 
-function buildDefault(): MockState {
+function buildState(value: boolean): MockState {
   return DOMAIN_KEYS.reduce<MockState>((acc, key) => {
-    acc[key] = false
+    acc[key] = value
     return acc
   }, {} as MockState)
+}
+
+// Default = mocks ON. mockControl is only ever imported from enableMocking()
+// (main.tsx), which runs only in dev or when VITE_ENABLE_MOCKS === 'true'.
+// Loading this module therefore already means "mocks are wanted" — every domain
+// should serve mock data by default with no manual toggling required.
+function buildDefault(): MockState {
+  return buildState(true)
+}
+
+// All-OFF — the escape hatch used by reset() and the ?mocks=off query param to
+// silence every mock and let requests passthrough to the real backend.
+function buildAllOff(): MockState {
+  return buildState(false)
 }
 
 function loadFromStorage(): MockState {
@@ -69,15 +83,12 @@ function persist(state: MockState): void {
     const mocks = params.get('mocks')
     if (mocks === 'on') {
       const state = buildDefault()
-      for (const key of DOMAIN_KEYS) {
-        state[key] = true
-      }
       persist(state)
       cache = state
       return
     }
     if (mocks === 'off') {
-      const state = buildDefault()
+      const state = buildAllOff()
       persist(state)
       cache = state
       return
@@ -122,7 +133,7 @@ export function list(): Record<DomainKey, boolean> {
 
 /** Disables all feature mocks and persists. */
 export function reset(): void {
-  cache = buildDefault()
+  cache = buildAllOff()
   persist(cache)
 }
 

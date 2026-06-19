@@ -1,6 +1,7 @@
 import { http, HttpResponse } from 'msw'
 import config from 'src/constant/config'
 import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum'
+import { gated } from 'src/mocks/mockControl'
 import {
   Address,
   AddressFormData,
@@ -10,6 +11,8 @@ import {
   OrderStatus,
   CreateOrderBody,
   CheckoutSummary,
+  InitiatePaymentResponse,
+  PaymentSessionStatusResponse,
 } from 'src/types/checkout.type'
 
 const mockShippingMethods: ShippingMethod[] = [
@@ -243,28 +246,31 @@ const createMockOrder = (body: CreateOrderBody, id: string): Order => {
 }
 
 // Shipping Methods Handlers
-export const getShippingMethodsRequest = http.get(
-  `${config.baseUrl}orders/shipping/methods`,
-  () => {
+export const getShippingMethodsRequest = gated(
+  'checkout',
+  http.get(`${config.baseUrl}orders/shipping/methods`, () => {
     return HttpResponse.json(
       { message: 'Get shipping methods successfully', data: mockShippingMethods },
       { status: HTTP_STATUS_CODE.Ok },
     )
-  },
+  }),
 )
 
 // Payment Methods Handlers
-export const getPaymentMethodsRequest = http.get(`${config.baseUrl}orders/payment/methods`, () => {
-  return HttpResponse.json(
-    { message: 'Get payment methods successfully', data: mockPaymentMethods },
-    { status: HTTP_STATUS_CODE.Ok },
-  )
-})
+export const getPaymentMethodsRequest = gated(
+  'checkout',
+  http.get(`${config.baseUrl}orders/payment/methods`, () => {
+    return HttpResponse.json(
+      { message: 'Get payment methods successfully', data: mockPaymentMethods },
+      { status: HTTP_STATUS_CODE.Ok },
+    )
+  }),
+)
 
 // Checkout Calculate Handler
-export const calculateCheckoutRequest = http.post(
-  `${config.baseUrl}checkout/summary`,
-  async ({ request }) => {
+export const calculateCheckoutRequest = gated(
+  'checkout',
+  http.post(`${config.baseUrl}checkout/summary`, async ({ request }) => {
     const rawBody = (await request.json()) as {
       purchase_ids: string[]
       shipping_method_id?: string
@@ -313,13 +319,13 @@ export const calculateCheckoutRequest = http.post(
       { message: 'Calculate successfully', data: summary },
       { status: HTTP_STATUS_CODE.Ok },
     )
-  },
+  }),
 )
 
 // Order Handlers
-export const createOrderRequest = http.post(
-  `${config.baseUrl}checkout/create-order`,
-  async ({ request }) => {
+export const createOrderRequest = gated(
+  'checkout',
+  http.post(`${config.baseUrl}checkout/create-order`, async ({ request }) => {
     const rawBody = (await request.json()) as {
       purchase_ids: string[]
       shipping_address_id: string
@@ -342,50 +348,88 @@ export const createOrderRequest = http.post(
       body,
       `${Date.now().toString(16)}${Math.random().toString(16).slice(2, 10)}`,
     )
+    // GAP A: return fake client_secret so the credit-card branch in useCheckout fires
+    const responseData = { ...order, client_secret: 'pi_mock_secret_xxx' }
     return HttpResponse.json(
-      { message: 'Create order successfully', data: order },
+      { message: 'Create order successfully', data: responseData },
       { status: HTTP_STATUS_CODE.Created },
     )
-  },
+  }),
 )
 
-export const getOrdersRequest = http.get(`${config.baseUrl}orders`, ({ request }) => {
-  const url = new URL(request.url)
-  const page = Number(url.searchParams.get('page')) || 1
-  const limit = Number(url.searchParams.get('limit')) || 10
+// GAP B: E-wallet initiation mock
+export const initiatePaymentRequest = gated(
+  'checkout',
+  http.post(`${config.baseUrl}checkout/initiate-payment`, () => {
+    const response: InitiatePaymentResponse = {
+      sessionId: `session_mock_${Date.now()}`,
+      payment_url: 'https://mock-payment.example.com/pay/session_mock',
+    }
+    return HttpResponse.json(
+      { message: 'Initiate payment successfully', data: response },
+      { status: HTTP_STATUS_CODE.Ok },
+    )
+  }),
+)
 
-  return HttpResponse.json(
-    {
-      message: 'Get orders successfully',
-      data: {
-        orders: [],
-        pagination: { page, limit, total: 0, totalPages: 0 },
+// GAP C: E-wallet session status mock
+export const getSessionStatusRequest = gated(
+  'checkout',
+  http.get(`${config.baseUrl}checkout/session-status/:id`, () => {
+    const response: PaymentSessionStatusResponse = {
+      status: 'PAID',
+      orderId: `order_mock_${Date.now()}`,
+    }
+    return HttpResponse.json(
+      { message: 'Get session status successfully', data: response },
+      { status: HTTP_STATUS_CODE.Ok },
+    )
+  }),
+)
+
+export const getOrdersRequest = gated(
+  'orders',
+  http.get(`${config.baseUrl}orders`, ({ request }) => {
+    const url = new URL(request.url)
+    const page = Number(url.searchParams.get('page')) || 1
+    const limit = Number(url.searchParams.get('limit')) || 10
+
+    return HttpResponse.json(
+      {
+        message: 'Get orders successfully',
+        data: {
+          orders: [],
+          pagination: { page, limit, total: 0, totalPages: 0 },
+        },
       },
-    },
-    { status: HTTP_STATUS_CODE.Ok },
-  )
-})
+      { status: HTTP_STATUS_CODE.Ok },
+    )
+  }),
+)
 
-export const getOrderByIdRequest = http.get(`${config.baseUrl}orders/:id`, ({ params }) => {
-  const { id } = params
-  const mockOrder = createMockOrder(
-    {
-      purchaseIds: [sampleProduct._id],
-      shippingAddressId: '1',
-      shippingMethodId: 'standard',
-      paymentMethod: 'cod',
-    },
-    id as string,
-  )
-  return HttpResponse.json(
-    { message: 'Get order successfully', data: mockOrder },
-    { status: HTTP_STATUS_CODE.Ok },
-  )
-})
+export const getOrderByIdRequest = gated(
+  'orders',
+  http.get(`${config.baseUrl}orders/:id`, ({ params }) => {
+    const { id } = params
+    const mockOrder = createMockOrder(
+      {
+        purchaseIds: [sampleProduct._id],
+        shippingAddressId: '1',
+        shippingMethodId: 'standard',
+        paymentMethod: 'cod',
+      },
+      id as string,
+    )
+    return HttpResponse.json(
+      { message: 'Get order successfully', data: mockOrder },
+      { status: HTTP_STATUS_CODE.Ok },
+    )
+  }),
+)
 
-export const cancelOrderRequest = http.put(
-  `${config.baseUrl}orders/:id/cancel`,
-  async ({ params }) => {
+export const cancelOrderRequest = gated(
+  'orders',
+  http.put(`${config.baseUrl}orders/:id/cancel`, async ({ params }) => {
     const { id } = params
     const cancelledOrder = createMockOrder(
       {
@@ -401,53 +445,62 @@ export const cancelOrderRequest = http.put(
       { message: 'Cancel order successfully', data: cancelledOrder },
       { status: HTTP_STATUS_CODE.Ok },
     )
-  },
+  }),
 )
 
 // Address Handlers
-export const getAddressesRequest = http.get(`${config.baseUrl}addresses`, () => {
-  return HttpResponse.json(
-    {
-      message: 'Get addresses successfully',
-      data: { addresses: mockAddresses, total: mockAddresses.length },
-    },
-    { status: HTTP_STATUS_CODE.Ok },
-  )
-})
+export const getAddressesRequest = gated(
+  'address',
+  http.get(`${config.baseUrl}addresses`, () => {
+    return HttpResponse.json(
+      {
+        message: 'Get addresses successfully',
+        data: { addresses: mockAddresses, total: mockAddresses.length },
+      },
+      { status: HTTP_STATUS_CODE.Ok },
+    )
+  }),
+)
 
-export const getAddressByIdRequest = http.get(`${config.baseUrl}addresses/:id`, ({ params }) => {
-  const { id } = params
-  const address = mockAddresses.find((a) => a._id === id) || mockAddresses[0]
-  return HttpResponse.json(
-    { message: 'Get address successfully', data: address },
-    { status: HTTP_STATUS_CODE.Ok },
-  )
-})
+export const getAddressByIdRequest = gated(
+  'address',
+  http.get(`${config.baseUrl}addresses/:id`, ({ params }) => {
+    const { id } = params
+    const address = mockAddresses.find((a) => a._id === id) || mockAddresses[0]
+    return HttpResponse.json(
+      { message: 'Get address successfully', data: address },
+      { status: HTTP_STATUS_CODE.Ok },
+    )
+  }),
+)
 
-export const createAddressRequest = http.post(`${config.baseUrl}addresses`, async ({ request }) => {
-  const body = (await request.json()) as AddressFormData
-  const newAddress: Address = {
-    _id: `address_${Date.now()}`,
-    userId: 'user1',
-    fullName: body.fullName,
-    phone: body.phone,
-    province: body.province,
-    district: body.district,
-    ward: body.ward,
-    street: body.street,
-    isDefault: body.isDefault || false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  }
-  return HttpResponse.json(
-    { message: 'Create address successfully', data: newAddress },
-    { status: HTTP_STATUS_CODE.Created },
-  )
-})
+export const createAddressRequest = gated(
+  'address',
+  http.post(`${config.baseUrl}addresses`, async ({ request }) => {
+    const body = (await request.json()) as AddressFormData
+    const newAddress: Address = {
+      _id: `address_${Date.now()}`,
+      userId: 'user1',
+      fullName: body.fullName,
+      phone: body.phone,
+      province: body.province,
+      district: body.district,
+      ward: body.ward,
+      street: body.street,
+      isDefault: body.isDefault || false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
+    return HttpResponse.json(
+      { message: 'Create address successfully', data: newAddress },
+      { status: HTTP_STATUS_CODE.Created },
+    )
+  }),
+)
 
-export const updateAddressRequest = http.put(
-  `${config.baseUrl}addresses/:id`,
-  async ({ params, request }) => {
+export const updateAddressRequest = gated(
+  'address',
+  http.put(`${config.baseUrl}addresses/:id`, async ({ params, request }) => {
     const { id } = params
     const body = (await request.json()) as Partial<AddressFormData>
     const existingAddress = mockAddresses.find((a) => a._id === id) || mockAddresses[0]
@@ -460,19 +513,22 @@ export const updateAddressRequest = http.put(
       { message: 'Update address successfully', data: updatedAddress },
       { status: HTTP_STATUS_CODE.Ok },
     )
-  },
+  }),
 )
 
-export const deleteAddressRequest = http.delete(`${config.baseUrl}addresses/:id`, () => {
-  return HttpResponse.json(
-    { message: 'Delete address successfully', data: { message: 'Delete address successfully' } },
-    { status: HTTP_STATUS_CODE.Ok },
-  )
-})
+export const deleteAddressRequest = gated(
+  'address',
+  http.delete(`${config.baseUrl}addresses/:id`, () => {
+    return HttpResponse.json(
+      { message: 'Delete address successfully', data: { message: 'Delete address successfully' } },
+      { status: HTTP_STATUS_CODE.Ok },
+    )
+  }),
+)
 
-export const setDefaultAddressRequest = http.put(
-  `${config.baseUrl}addresses/:id/default`,
-  ({ params }) => {
+export const setDefaultAddressRequest = gated(
+  'address',
+  http.put(`${config.baseUrl}addresses/:id/default`, ({ params }) => {
     const { id } = params
     const address = mockAddresses.find((a) => a._id === id) || mockAddresses[0]
     const updatedAddress: Address = {
@@ -484,43 +540,59 @@ export const setDefaultAddressRequest = http.put(
       { message: 'Set default address successfully', data: updatedAddress },
       { status: HTTP_STATUS_CODE.Ok },
     )
-  },
+  }),
 )
 
 // Error Handlers
-export const createOrderErrorHandler = http.post(`${config.baseUrl}checkout/create-order`, () => {
-  return HttpResponse.json(
-    { message: 'Error creating order', data: { error: 'Internal Server Error' } },
-    { status: HTTP_STATUS_CODE.InternalServerError },
-  )
-})
+export const createOrderErrorHandler = gated(
+  'checkout',
+  http.post(`${config.baseUrl}checkout/create-order`, () => {
+    return HttpResponse.json(
+      { message: 'Error creating order', data: { error: 'Internal Server Error' } },
+      { status: HTTP_STATUS_CODE.InternalServerError },
+    )
+  }),
+)
 
-export const cancelOrderErrorHandler = http.put(`${config.baseUrl}orders/:id/cancel`, () => {
-  return HttpResponse.json(
-    { message: 'Error cancelling order', data: { error: 'Internal Server Error' } },
-    { status: HTTP_STATUS_CODE.InternalServerError },
-  )
-})
+export const cancelOrderErrorHandler = gated(
+  'orders',
+  http.put(`${config.baseUrl}orders/:id/cancel`, () => {
+    return HttpResponse.json(
+      { message: 'Error cancelling order', data: { error: 'Internal Server Error' } },
+      { status: HTTP_STATUS_CODE.InternalServerError },
+    )
+  }),
+)
 
-export const createAddressErrorHandler = http.post(`${config.baseUrl}addresses`, () => {
-  return HttpResponse.json(
-    { message: 'Error creating address', data: { error: 'Internal Server Error' } },
-    { status: HTTP_STATUS_CODE.InternalServerError },
-  )
-})
+export const createAddressErrorHandler = gated(
+  'address',
+  http.post(`${config.baseUrl}addresses`, () => {
+    return HttpResponse.json(
+      { message: 'Error creating address', data: { error: 'Internal Server Error' } },
+      { status: HTTP_STATUS_CODE.InternalServerError },
+    )
+  }),
+)
 
-export const deleteAddressErrorHandler = http.delete(`${config.baseUrl}addresses/:id`, () => {
-  return HttpResponse.json(
-    { message: 'Error deleting address', data: { error: 'Internal Server Error' } },
-    { status: HTTP_STATUS_CODE.InternalServerError },
-  )
-})
+export const deleteAddressErrorHandler = gated(
+  'address',
+  http.delete(`${config.baseUrl}addresses/:id`, () => {
+    return HttpResponse.json(
+      { message: 'Error deleting address', data: { error: 'Internal Server Error' } },
+      { status: HTTP_STATUS_CODE.InternalServerError },
+    )
+  }),
+)
 
+// Registration order:
+// - All other literal 2-segment orders/* paths also before orders/:id
 const checkoutRequests = [
   getShippingMethodsRequest,
   getPaymentMethodsRequest,
   calculateCheckoutRequest,
   createOrderRequest,
+  initiatePaymentRequest,
+  getSessionStatusRequest,
   getOrdersRequest,
   getOrderByIdRequest,
   cancelOrderRequest,

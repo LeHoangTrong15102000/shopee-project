@@ -3,6 +3,7 @@
 import { http, HttpResponse } from 'msw'
 import config from 'src/constant/config'
 import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum'
+import { gated } from 'src/mocks/mockControl'
 
 export const access_token_1s =
   'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZTBmMDM4NmQ3YzYyMDM0MDg1MGU2ZSIsImVtYWlsIjoibGFuZ3R1cHJvMDQ1NkBnbWFpbC5jb20iLCJyb2xlcyI6WyJVc2VyIl0sImNyZWF0ZWRfYXQiOiIyMDI0LTAxLTAzVDA3OjU4OjEzLjI1MVoiLCJpYXQiOjE3MDQyNjg2OTMsImV4cCI6MTcwNDI2ODY5NH0.zMLnzrH-oOGnzs3-XQBtBU_RQYiPB4w_OPX00e2UVVc'
@@ -47,17 +48,23 @@ const refreshTokenRes = {
   },
 }
 
-export const loginRequest = http.post(`${config.baseUrl}login`, () => {
-  // return res(ctx.status(HTTP_STATUS_CODE.Ok), ctx.json(loginRes))
-  return HttpResponse.json(loginRes, { status: HTTP_STATUS_CODE.Ok })
-})
+export const loginRequest = gated(
+  'auth',
+  http.post(`${config.baseUrl}login`, () => {
+    // return res(ctx.status(HTTP_STATUS_CODE.Ok), ctx.json(loginRes))
+    return HttpResponse.json(loginRes, { status: HTTP_STATUS_CODE.Ok })
+  }),
+)
 
 // Tạo thêm Refresh Token ở đây luôn
 
-export const refreshToken = http.post(`${config.baseUrl}refresh-access-token`, () => {
-  // return res(ctx.status(HTTP_STATUS_CODE.Ok), ctx.json(refreshTokenRes))
-  return HttpResponse.json(refreshTokenRes, { status: HTTP_STATUS_CODE.Ok })
-})
+export const refreshToken = gated(
+  'auth',
+  http.post(`${config.baseUrl}refresh-access-token`, () => {
+    // return res(ctx.status(HTTP_STATUS_CODE.Ok), ctx.json(refreshTokenRes))
+    return HttpResponse.json(refreshTokenRes, { status: HTTP_STATUS_CODE.Ok })
+  }),
+)
 
 const authRequests = [loginRequest, refreshToken]
 

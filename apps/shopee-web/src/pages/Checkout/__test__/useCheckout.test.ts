@@ -5,20 +5,54 @@ import React from 'react'
 import { useCheckout } from '../useCheckout'
 import { toast } from 'react-toastify'
 import checkoutApi from 'src/apis/checkout.api'
+import type { Address, CreateOrderResponse, ShippingMethod } from 'src/types/checkout.type'
 import * as cartStore from 'src/stores/cart.store'
 import * as useReducedMotionHook from 'src/hooks/useReducedMotion'
 import * as utils from 'src/utils/utils'
 
+// Hoisted mock instances — shared across mock factories and test bodies
+// so tests can inspect and configure them per-test.
+const { mockConfirmCardPayment, mockGetElement, mockIsCheckoutMockActive } = vi.hoisted(() => ({
+  mockConfirmCardPayment: vi.fn(),
+  mockGetElement: vi.fn(),
+  mockIsCheckoutMockActive: vi.fn(() => false),
+}))
+
 vi.mock('@stripe/react-stripe-js', () => ({
   useStripe: () => ({
-    confirmCardPayment: vi.fn(),
+    confirmCardPayment: mockConfirmCardPayment,
     createPaymentMethod: vi.fn(),
   }),
   useElements: () => ({
-    getElement: vi.fn(),
+    getElement: mockGetElement,
   }),
   CardElement: () => null,
-  Elements: ({ children }: any) => children,
+  Elements: ({ children }: { children: React.ReactNode }) => children,
+}))
+
+// Allow tests to control isCheckoutMockActive() per-test
+vi.mock('src/mocks/mockControl', () => ({
+  isCheckoutMockActive: mockIsCheckoutMockActive,
+  // Export other symbols used at module level (imported but not called in most tests)
+  setWorkerActive: vi.fn(),
+  enable: vi.fn(),
+  disable: vi.fn(),
+  toggle: vi.fn(),
+  list: vi.fn(() => ({})),
+  reset: vi.fn(),
+  isMockEnabled: vi.fn(() => false),
+  workerActive: false,
+  DOMAIN_KEYS: [
+    'orders',
+    'auth',
+    'cart',
+    'user',
+    'address',
+    'notification',
+    'wishlist',
+    'checkout',
+  ],
+  MOCK_STORAGE_KEY: '__shopee_mocks__',
 }))
 
 vi.mock('react-router', () => ({
@@ -71,6 +105,9 @@ describe('useCheckout', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks()
+    // Restore defaults cleared by vi.clearAllMocks()
+    mockIsCheckoutMockActive.mockReturnValue(false)
+    mockGetElement.mockReturnValue(null)
     const reactRouter = await import('react-router')
     vi.mocked(reactRouter.useNavigate).mockReturnValue(mockNavigate)
 
@@ -828,5 +865,96 @@ describe('useCheckout', () => {
     })
 
     expect(result.current.selectedPaymentMethod).toBe('credit_card')
+  })
+
+  // -------------------------------------------------------------------------
+  // Task 8.2 — Stripe bypass: when isCheckoutMockActive() is true, skip
+  // the real confirmCardPayment and navigate to payment-success directly.
+  // -------------------------------------------------------------------------
+  it('skips confirmCardPayment and navigates to payment-success when checkout mock is active (task 8.2)', async () => {
+    // Arrange: checkout mock is active (worker running + checkout ON)
+    mockIsCheckoutMockActive.mockReturnValue(true)
+    // Provide a valid card element so the null-check in the hook passes
+    mockGetElement.mockReturnValue({ /* fake CardElement */ _id: 'card-el' })
+
+    vi.mocked(checkoutApi.createOrder).mockResolvedValue({
+      data: {
+        data: {
+          _id: 'order_mock_001',
+          client_secret: 'pi_mock_secret_xxx',
+        } satisfies Pick<CreateOrderResponse, '_id' | 'client_secret'>,
+      },
+    } as Awaited<ReturnType<typeof checkoutApi.createOrder>>)
+
+    const { result } = renderHook(() => useCheckout(), { wrapper: createWrapper() })
+
+    act(() => {
+      result.current.handleAddressSelect({ _id: 'addr1' } as Address)
+      result.current.handleShippingSelect({ _id: 'ship1' } as ShippingMethod)
+      result.current.handlePaymentSelect({ type: 'credit_card' })
+    })
+
+    act(() => {
+      result.current.handlePlaceOrder()
+    })
+
+    await waitFor(() => {
+      // The real Stripe call must NOT have been invoked
+      expect(mockConfirmCardPayment).not.toHaveBeenCalled()
+      // Navigation to payment-success must have happened with the order id
+      expect(mockNavigate).toHaveBeenCalledWith(
+        expect.stringContaining('/payment/success?orderId=order_mock_001'),
+      )
+    })
+  })
+
+  // -------------------------------------------------------------------------
+  // Task 8.3 — Stripe real call: when isCheckoutMockActive() is false,
+  // confirmCardPayment IS called with the client_secret from the order.
+  // -------------------------------------------------------------------------
+  it('calls real confirmCardPayment with client_secret when checkout mock is inactive (task 8.3)', async () => {
+    // Arrange: checkout mock is NOT active (default: mockIsCheckoutMockActive returns false)
+    mockIsCheckoutMockActive.mockReturnValue(false)
+    // Provide a valid card element
+    mockGetElement.mockReturnValue({ _id: 'card-el' })
+
+    const clientSecret = 'pi_real_secret_abc123'
+    vi.mocked(checkoutApi.createOrder).mockResolvedValue({
+      data: {
+        data: {
+          _id: 'order_real_001',
+          client_secret: clientSecret,
+        } satisfies Pick<CreateOrderResponse, '_id' | 'client_secret'>,
+      },
+    } as Awaited<ReturnType<typeof checkoutApi.createOrder>>)
+
+    // confirmCardPayment returns a successful result so navigation fires
+    mockConfirmCardPayment.mockResolvedValue({
+      paymentIntent: { status: 'succeeded' },
+    })
+
+    const { result } = renderHook(() => useCheckout(), { wrapper: createWrapper() })
+
+    act(() => {
+      result.current.handleAddressSelect({ _id: 'addr1' } as Address)
+      result.current.handleShippingSelect({ _id: 'ship1' } as ShippingMethod)
+      result.current.handlePaymentSelect({ type: 'credit_card' })
+    })
+
+    act(() => {
+      result.current.handlePlaceOrder()
+    })
+
+    await waitFor(() => {
+      // The real Stripe call MUST have been invoked with the client_secret
+      expect(mockConfirmCardPayment).toHaveBeenCalledWith(
+        clientSecret,
+        expect.objectContaining({ payment_method: expect.anything() }),
+      )
+      // The guard did NOT synthesise the result — navigation via real Stripe succeeded
+      expect(mockNavigate).toHaveBeenCalledWith(
+        expect.stringContaining('/payment/success?orderId=order_real_001'),
+      )
+    })
   })
 })

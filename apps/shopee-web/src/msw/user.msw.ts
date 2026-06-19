@@ -2,6 +2,7 @@ import { HttpResponse, http } from 'msw'
 import config from 'src/constant/config'
 import HttpStatusCode from 'src/constant/httpStatusCode.enum'
 import { access_token_1s } from './auth.msw'
+import { gated } from 'src/mocks/mockControl'
 // import { Request } from 'polyfill-that-msw-uses'
 
 const meRes = {
@@ -20,46 +21,49 @@ const meRes = {
   },
 }
 
-const meRequest = http.get(`${config.baseUrl}me`, ({ request }) => {
-  const access_token = request.headers.get('authorization')
-  // const { token } = cookies
-  console.log('Checkkk access_token >>> ')
-  if (access_token === access_token_1s) {
-    // return res(
-    //   ctx.status(HttpStatusCode.Unauthorized),
-    //   ctx.json({
-    //     message: 'Lỗi',
-    //     data: {
-    //       message: 'Token hết hạn',
-    //       name: 'EXPIRED_TOKEN'
-    //     }
-    //   })
-    // )
-    return HttpResponse.json(
-      {
-        message: 'Lỗi',
-        data: {
-          // message: response.message,
-          name: 'EXPIRED_TOKEN',
+const meRequest = gated(
+  'user',
+  http.get(`${config.baseUrl}me`, ({ request }) => {
+    const access_token = request.headers.get('authorization')
+    // const { token } = cookies
+    console.log('Checkkk access_token >>> ')
+    if (access_token === access_token_1s) {
+      // return res(
+      //   ctx.status(HttpStatusCode.Unauthorized),
+      //   ctx.json({
+      //     message: 'Lỗi',
+      //     data: {
+      //       message: 'Token hết hạn',
+      //       name: 'EXPIRED_TOKEN'
+      //     }
+      //   })
+      // )
+      return HttpResponse.json(
+        {
+          message: 'Lỗi',
+          data: {
+            // message: response.message,
+            name: 'EXPIRED_TOKEN',
+          },
         },
-      },
-      {
-        status: HttpStatusCode.Unauthorized,
-        headers: {
-          'Content-Type': 'application/json',
+        {
+          status: HttpStatusCode.Unauthorized,
+          headers: {
+            'Content-Type': 'application/json',
+          },
         },
-      },
-    )
-  }
-  // return res(ctx.status(HttpStatusCode.Ok), ctx.json(meRes))
+      )
+    }
+    // return res(ctx.status(HttpStatusCode.Ok), ctx.json(meRes))
 
-  return HttpResponse.json(meRes, {
-    status: HttpStatusCode.Ok,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-})
+    return HttpResponse.json(meRes, {
+      status: HttpStatusCode.Ok,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  }),
+)
 
 const userRequests = [meRequest]
 

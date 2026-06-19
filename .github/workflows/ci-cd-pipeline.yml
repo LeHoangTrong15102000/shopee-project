@@ -59,6 +59,7 @@ jobs:
               VITE_SOCKET_URL=${{ vars.VITE_SOCKET_URL_PROD }}
               VITE_SITE_URL=${{ vars.VITE_SITE_URL_PROD }}
               VITE_STRIPE_PUBLISHABLE_KEY=${{ vars.VITE_STRIPE_PUBLISHABLE_KEY_PROD }}
+              VITE_ENABLE_MOCKS=${{ vars.VITE_ENABLE_MOCKS_PROD }}
           - app: shopee-admin
             dockerfile: apps/shopee-admin/Dockerfile
             build-args: |

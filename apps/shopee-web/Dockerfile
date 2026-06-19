@@ -33,12 +33,14 @@ ARG VITE_API_BASE_URL
 ARG VITE_SOCKET_URL
 ARG VITE_SITE_URL
 ARG VITE_STRIPE_PUBLISHABLE_KEY
+ARG VITE_ENABLE_MOCKS
 
 # Forward build args to ENV so Vite picks them up during vite build
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 ENV VITE_SOCKET_URL=$VITE_SOCKET_URL
 ENV VITE_SITE_URL=$VITE_SITE_URL
 ENV VITE_STRIPE_PUBLISHABLE_KEY=$VITE_STRIPE_PUBLISHABLE_KEY
+ENV VITE_ENABLE_MOCKS=$VITE_ENABLE_MOCKS
 
 # Copy the root base tsconfig — apps/shopee-web/tsconfig.json (and the shared
 # libs it imports) extend ../../tsconfig.base.json, which resolves to

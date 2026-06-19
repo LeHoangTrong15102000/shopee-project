@@ -1,6 +1,7 @@
 import { http, HttpResponse } from 'msw'
 import config from 'src/constant/config'
 import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum'
+import { gated } from 'src/mocks/mockControl'
 
 const sampleProduct = {
   _id: '60afb2426ef5b902180aacb9',
@@ -146,9 +147,9 @@ const paymentMethods = [
 ]
 
 // Success handlers
-export const addToCartRequest = http.post(
-  `${config.baseUrl}purchases/add-to-cart`,
-  async ({ request }) => {
+export const addToCartRequest = gated(
+  'cart',
+  http.post(`${config.baseUrl}purchases/add-to-cart`, async ({ request }) => {
     const body = (await request.json()) as { product_id: string; buy_count: number }
     const newPurchase = {
       _id: `purchase_${Date.now()}`,
@@ -165,19 +166,22 @@ export const addToCartRequest = http.post(
       { message: 'Thêm sản phẩm vào giỏ hàng thành công', data: newPurchase },
       { status: HTTP_STATUS_CODE.Ok },
     )
-  },
+  }),
 )
 
-export const getPurchasesRequest = http.get(`${config.baseUrl}purchases`, () => {
-  return HttpResponse.json(
-    { message: 'Lấy đơn mua thành công', data: samplePurchases },
-    { status: HTTP_STATUS_CODE.Ok },
-  )
-})
+export const getPurchasesRequest = gated(
+  'cart',
+  http.get(`${config.baseUrl}purchases`, () => {
+    return HttpResponse.json(
+      { message: 'Lấy đơn mua thành công', data: samplePurchases },
+      { status: HTTP_STATUS_CODE.Ok },
+    )
+  }),
+)
 
-export const updatePurchaseRequest = http.put(
-  `${config.baseUrl}purchases/update-purchase`,
-  async ({ request }) => {
+export const updatePurchaseRequest = gated(
+  'cart',
+  http.put(`${config.baseUrl}purchases/update-purchase`, async ({ request }) => {
     const body = (await request.json()) as { product_id: string; buy_count: number }
     const updatedPurchase = {
       ...samplePurchases[0],
@@ -188,82 +192,103 @@ export const updatePurchaseRequest = http.put(
       { message: 'Cập nhật đơn thành công', data: updatedPurchase },
       { status: HTTP_STATUS_CODE.Ok },
     )
-  },
+  }),
 )
 
-export const deletePurchasesRequest = http.delete(`${config.baseUrl}purchases`, () => {
-  return HttpResponse.json(
-    { message: 'Xoá đơn thành công', data: { deleted_count: 1 } },
-    { status: HTTP_STATUS_CODE.Ok },
-  )
-})
+export const deletePurchasesRequest = gated(
+  'cart',
+  http.delete(`${config.baseUrl}purchases`, () => {
+    return HttpResponse.json(
+      { message: 'Xoá đơn thành công', data: { deleted_count: 1 } },
+      { status: HTTP_STATUS_CODE.Ok },
+    )
+  }),
+)
 
-export const createOrderRequest = http.post(`${config.baseUrl}orders`, async ({ request }) => {
-  const body = (await request.json()) as {
-    purchase_ids: string[]
-    shipping_method: string
-    payment_method: string
-  }
-  const order = {
-    _id: `order_${Date.now()}`,
-    purchases: samplePurchases.filter((p) => body.purchase_ids?.includes(p._id)),
-    shipping_method: body.shipping_method,
-    payment_method: body.payment_method,
-    status: 1,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  }
-  return HttpResponse.json(
-    { message: 'Đặt hàng thành công', data: order },
-    { status: HTTP_STATUS_CODE.Created },
-  )
-})
+export const createOrderRequest = gated(
+  'cart',
+  http.post(`${config.baseUrl}orders`, async ({ request }) => {
+    const body = (await request.json()) as {
+      purchase_ids: string[]
+      shipping_method: string
+      payment_method: string
+    }
+    const order = {
+      _id: `order_${Date.now()}`,
+      purchases: samplePurchases.filter((p) => body.purchase_ids?.includes(p._id)),
+      shipping_method: body.shipping_method,
+      payment_method: body.payment_method,
+      status: 1,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
+    return HttpResponse.json(
+      { message: 'Đặt hàng thành công', data: order },
+      { status: HTTP_STATUS_CODE.Created },
+    )
+  }),
+)
 
-export const getShippingMethodsRequest = http.get(`${config.baseUrl}shipping/methods`, () => {
-  return HttpResponse.json(
-    { message: 'Lấy phương thức vận chuyển thành công', data: shippingMethods },
-    { status: HTTP_STATUS_CODE.Ok },
-  )
-})
+export const getShippingMethodsRequest = gated(
+  'cart',
+  http.get(`${config.baseUrl}shipping/methods`, () => {
+    return HttpResponse.json(
+      { message: 'Lấy phương thức vận chuyển thành công', data: shippingMethods },
+      { status: HTTP_STATUS_CODE.Ok },
+    )
+  }),
+)
 
-export const getPaymentMethodsRequest = http.get(`${config.baseUrl}payment/methods`, () => {
-  return HttpResponse.json(
-    { message: 'Lấy phương thức thanh toán thành công', data: paymentMethods },
-    { status: HTTP_STATUS_CODE.Ok },
-  )
-})
+export const getPaymentMethodsRequest = gated(
+  'cart',
+  http.get(`${config.baseUrl}payment/methods`, () => {
+    return HttpResponse.json(
+      { message: 'Lấy phương thức thanh toán thành công', data: paymentMethods },
+      { status: HTTP_STATUS_CODE.Ok },
+    )
+  }),
+)
 
 // Error handlers for testing error scenarios
-export const addToCartErrorHandler = http.post(`${config.baseUrl}purchases/add-to-cart`, () => {
-  return HttpResponse.json(
-    { message: 'Lỗi khi thêm sản phẩm vào giỏ hàng', data: { error: 'Internal Server Error' } },
-    { status: HTTP_STATUS_CODE.InternalServerError },
-  )
-})
+export const addToCartErrorHandler = gated(
+  'cart',
+  http.post(`${config.baseUrl}purchases/add-to-cart`, () => {
+    return HttpResponse.json(
+      { message: 'Lỗi khi thêm sản phẩm vào giỏ hàng', data: { error: 'Internal Server Error' } },
+      { status: HTTP_STATUS_CODE.InternalServerError },
+    )
+  }),
+)
 
-export const updatePurchaseErrorHandler = http.put(
-  `${config.baseUrl}purchases/update-purchase`,
-  () => {
+export const updatePurchaseErrorHandler = gated(
+  'cart',
+  http.put(`${config.baseUrl}purchases/update-purchase`, () => {
     return HttpResponse.json(
       { message: 'Lỗi khi cập nhật đơn hàng', data: { error: 'Internal Server Error' } },
       { status: HTTP_STATUS_CODE.InternalServerError },
     )
-  },
+  }),
 )
 
-export const deletePurchaseErrorHandler = http.delete(`${config.baseUrl}purchases`, () => {
-  return HttpResponse.json(
-    { message: 'Lỗi khi xoá đơn hàng', data: { error: 'Internal Server Error' } },
-    { status: HTTP_STATUS_CODE.InternalServerError },
-  )
-})
+export const deletePurchaseErrorHandler = gated(
+  'cart',
+  http.delete(`${config.baseUrl}purchases`, () => {
+    return HttpResponse.json(
+      { message: 'Lỗi khi xoá đơn hàng', data: { error: 'Internal Server Error' } },
+      { status: HTTP_STATUS_CODE.InternalServerError },
+    )
+  }),
+)
 
-export const createOrderErrorHandler = http.post(`${config.baseUrl}orders`, () => {
-  return HttpResponse.json(
-    { message: 'Lỗi khi đặt hàng', data: { error: 'Internal Server Error' } },
-    { status: HTTP_STATUS_CODE.InternalServerError },
-  )
-})
+export const createOrderErrorHandler = gated(
+  'cart',
+  http.post(`${config.baseUrl}orders`, () => {
+    return HttpResponse.json(
+      { message: 'Lỗi khi đặt hàng', data: { error: 'Internal Server Error' } },
+      { status: HTTP_STATUS_CODE.InternalServerError },
+    )
+  }),
+)
 
 const cartRequests = [
   addToCartRequest,

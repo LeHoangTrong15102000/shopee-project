@@ -60,7 +60,20 @@ async function enableMocking(): Promise<void> {
     return
   }
   const { worker } = await import('./mocks/browser')
+  const { setWorkerActive, enable, disable, toggle, list, reset } =
+    await import('./mocks/mockControl')
   await worker.start({ onUnhandledRequest: 'bypass' })
+  setWorkerActive()
+  // Expose console API for QA and engineers
+  window.__mocks__ = { enable, disable, toggle, list, reset }
+
+  // Mount the dev toggle panel in a dedicated root so it is tree-shaken
+  // out of any build where this function never runs
+  const { default: MockTogglePanel } = await import('./mocks/MockTogglePanel')
+  const panelContainer = document.createElement('div')
+  panelContainer.id = '__mock-panel__'
+  document.body.appendChild(panelContainer)
+  ReactDOM.createRoot(panelContainer).render(<MockTogglePanel />)
 }
 
 enableMocking().then(() => {

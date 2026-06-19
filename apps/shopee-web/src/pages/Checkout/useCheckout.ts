@@ -19,6 +19,7 @@ import path from 'src/constant/path'
 import { scrollToTop } from 'src/utils/utils'
 import { useReducedMotion } from 'src/hooks/useReducedMotion'
 import useSocket from 'src/hooks/useSocket'
+import { isCheckoutMockActive } from 'src/mocks/mockControl'
 
 const CHECKOUT_SESSION_KEY = 'checkout_items'
 
@@ -171,10 +172,15 @@ export const useCheckout = () => {
         // Store the order ID so the socket listener can match the incoming event
         setPendingOrderId(orderData._id)
         try {
-          const { error, paymentIntent } = await stripe.confirmCardPayment(
-            orderData.client_secret,
-            { payment_method: { card: cardElement } },
-          )
+          // GAP E: bypass real Stripe call when checkout mocks are active.
+          // isCheckoutMockActive() requires both workerActive=true AND isMockEnabled('checkout')=true,
+          // preventing a stale localStorage flag from faking payments in a flag-off production build.
+          const stripeResult = isCheckoutMockActive()
+            ? { error: undefined, paymentIntent: { status: 'succeeded' as const } }
+            : await stripe.confirmCardPayment(orderData.client_secret, {
+                payment_method: { card: cardElement },
+              })
+          const { error, paymentIntent } = stripeResult
 
           if (error) {
             const code = error.code || ''

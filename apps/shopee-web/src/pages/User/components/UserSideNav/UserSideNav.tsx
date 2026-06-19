@@ -1,8 +1,8 @@
 import classNames from 'classnames'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useContext, useState } from 'react'
+import { motion } from 'framer-motion'
+import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, NavLink, useLocation } from 'react-router'
+import { Link, NavLink } from 'react-router'
 import path from 'src/constant/path'
 import MobileAccountNav from 'src/components/MobileAccountNav'
 import { AppContext } from 'src/contexts/app.context'
@@ -77,22 +77,6 @@ const IconWrench = () => (
       strokeLinejoin="round"
       d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"
     />
-  </svg>
-)
-
-const IconChevron = ({ open }: { open: boolean }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    className={classNames('h-4 w-4 shrink-0 transition-transform duration-200', {
-      'rotate-180': open,
-    })}
-    aria-hidden="true"
-  >
-    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
   </svg>
 )
 
@@ -273,7 +257,7 @@ const NavItemLink = ({ item, reducedMotion }: NavItemProps) => (
           <div className="absolute inset-0 rounded-md bg-[#ee4d2d]/5" />
         )}
         <span className="relative z-10 flex shrink-0 items-center">{item.icon}</span>
-        <span className="relative z-10 text-sm font-medium capitalize">{item.labelKey}</span>
+        <span className="relative z-10 text-sm font-normal capitalize">{item.labelKey}</span>
       </>
     )}
   </NavLink>
@@ -283,12 +267,10 @@ const NavItemLink = ({ item, reducedMotion }: NavItemProps) => (
 
 interface AccordionGroupProps {
   group: NavGroup
-  isOpen: boolean
-  onToggle: () => void
   reducedMotion: boolean
 }
 
-const AccordionGroup = ({ group, isOpen, onToggle, reducedMotion }: AccordionGroupProps) => {
+const AccordionGroup = ({ group, reducedMotion }: AccordionGroupProps) => {
   if (group.directLink) {
     // Direct NavLink — not an accordion toggle
     return (
@@ -318,7 +300,7 @@ const AccordionGroup = ({ group, isOpen, onToggle, reducedMotion }: AccordionGro
               <div className="absolute inset-0 rounded-md bg-[#ee4d2d]/5" />
             )}
             <span className="relative z-10 flex shrink-0 items-center">{group.icon}</span>
-            <span className="relative z-10 text-sm font-semibold">{group.labelKey}</span>
+            <span className="relative z-10 text-sm font-normal">{group.labelKey}</span>
           </>
         )}
       </NavLink>
@@ -327,39 +309,21 @@ const AccordionGroup = ({ group, isOpen, onToggle, reducedMotion }: AccordionGro
 
   return (
     <div>
-      {/* Accordion header / toggle */}
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left capitalize transition-colors
-                   text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white
-                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ee4d2d]/50"
+      {/* Group header — non-interactive, always expanded */}
+      <div
+        className="flex w-full items-center gap-2 rounded-md px-2 py-2 capitalize
+                      text-gray-700 dark:text-gray-200"
       >
         <span className="flex shrink-0 items-center">{group.icon}</span>
-        <span className="flex-1 text-sm font-semibold">{group.labelKey}</span>
-        <IconChevron open={isOpen} />
-      </button>
+        <span className="flex-1 text-sm font-normal">{group.labelKey}</span>
+      </div>
 
-      {/* Animated children */}
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            key="content"
-            initial={reducedMotion ? undefined : { height: 0, opacity: 0 }}
-            animate={reducedMotion ? undefined : { height: 'auto', opacity: 1 }}
-            exit={reducedMotion ? undefined : { height: 0, opacity: 0 }}
-            transition={{ duration: 0.2, ease: 'easeInOut' }}
-            style={{ overflow: 'hidden' }}
-          >
-            <div className="mt-1 ml-3 flex flex-col gap-0.5 border-l border-gray-200 pl-3 dark:border-slate-600">
-              {group.items?.map((item) => (
-                <NavItemLink key={item.to} item={item} reducedMotion={reducedMotion} />
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Always-visible children */}
+      <div className="mt-1 ml-3 flex flex-col gap-0.5 border-l border-gray-200 pl-3 dark:border-slate-600">
+        {group.items?.map((item) => (
+          <NavItemLink key={item.to} item={item} reducedMotion={reducedMotion} />
+        ))}
+      </div>
     </div>
   )
 }
@@ -370,7 +334,6 @@ const UserSideNav = () => {
   const { t } = useTranslation('user')
   const { profile } = useContext(AppContext)
   const reducedMotion = useReducedMotion()
-  const location = useLocation()
 
   // Build nav groups
   const groups: NavGroup[] = [
@@ -469,23 +432,6 @@ const UserSideNav = () => {
     },
   ]
 
-  // Determine which group the current route belongs to (for auto-open)
-  function getInitialOpenGroup(): string | null {
-    for (const group of groups) {
-      if (group.directLink) continue
-      if (group.items?.some((item) => location.pathname.startsWith(item.to))) {
-        return group.id
-      }
-    }
-    return null
-  }
-
-  const [openGroupId, setOpenGroupId] = useState<string | null>(getInitialOpenGroup)
-
-  function handleToggle(groupId: string) {
-    setOpenGroupId((prev) => (prev === groupId ? null : groupId))
-  }
-
   return (
     <div>
       {/* Mobile horizontal icon+label tab bar */}
@@ -534,13 +480,7 @@ const UserSideNav = () => {
         {/* Accordion navigation */}
         <nav className="mt-4 flex flex-col gap-1" aria-label={t('sideNav.groupMyAccount')}>
           {groups.map((group) => (
-            <AccordionGroup
-              key={group.id}
-              group={group}
-              isOpen={openGroupId === group.id}
-              onToggle={() => handleToggle(group.id)}
-              reducedMotion={reducedMotion}
-            />
+            <AccordionGroup key={group.id} group={group} reducedMotion={reducedMotion} />
           ))}
         </nav>
       </div>

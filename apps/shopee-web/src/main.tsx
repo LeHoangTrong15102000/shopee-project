@@ -69,7 +69,7 @@ async function enableMocking(): Promise<void> {
   window.__mocks__ = { enable, disable, toggle, list, reset }
 }
 
-enableMocking().then(() => {
+function renderApp(): void {
   ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
       <BrowserRouter>
@@ -101,4 +101,17 @@ enableMocking().then(() => {
       </BrowserRouter>
     </React.StrictMode>,
   )
-})
+}
+
+// Render the app regardless of whether mock setup succeeds. If enableMocking()
+// rejects (e.g. service-worker registration races/fails on the very first load),
+// we must NOT leave the page blank — render anyway so requests fall through to
+// the real backend. Without this catch, a rejected promise would skip render()
+// entirely, producing the "blank on first visit, works after refresh" bug.
+enableMocking()
+  .catch((error) => {
+    console.error('Mock setup failed, rendering app without mocks:', error)
+  })
+  .finally(() => {
+    renderApp()
+  })

@@ -2,19 +2,80 @@ import { http, HttpResponse } from 'msw'
 import config from 'src/constant/config'
 import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum'
 import { gated } from 'src/mocks/mockControl'
+import { Address } from 'src/types/checkout.type'
 
-const sampleAddresses = [
+const sampleAddresses: Address[] = [
   {
-    _id: 'addr-1',
-    name: 'Nguyễn Văn A',
+    _id: '1',
+    userId: 'user1',
+    fullName: 'Nguyễn Văn A',
     phone: '0901234567',
-    address: '126/13 đường 17, khu phố 5',
-    ward: 'Phường Linh Trung',
-    district: 'Thành phố Thủ Đức',
-    city: 'Hồ Chí Minh',
-    is_default: true,
+    province: 'Hồ Chí Minh',
+    district: 'Quận 1',
+    ward: 'Phường Bến Nghé',
+    street: '123 Đường Lê Lợi',
+    addressType: 'home',
+    isDefault: true,
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
+  },
+  {
+    _id: '2',
+    userId: 'user1',
+    fullName: 'Nguyễn Văn A',
+    phone: '0909876543',
+    province: 'Hồ Chí Minh',
+    district: 'Quận 7',
+    ward: 'Phường Tân Phú',
+    street: '456 Đường Nguyễn Văn Linh',
+    addressType: 'home',
+    isDefault: false,
+    createdAt: '2024-01-02T00:00:00.000Z',
+    updatedAt: '2024-01-02T00:00:00.000Z',
+  },
+  {
+    _id: '3',
+    userId: 'user1',
+    fullName: 'Trần Thị B',
+    phone: '0912345678',
+    province: 'Hà Nội',
+    district: 'Quận Cầu Giấy',
+    ward: 'Phường Dịch Vọng',
+    street: '789 Đường Xuân Thủy',
+    addressType: 'office',
+    label: 'Văn phòng công ty',
+    isDefault: false,
+    createdAt: '2024-01-03T00:00:00.000Z',
+    updatedAt: '2024-01-03T00:00:00.000Z',
+  },
+  {
+    _id: '4',
+    userId: 'user1',
+    fullName: 'Lê Văn C',
+    phone: '0923456789',
+    province: 'Đà Nẵng',
+    district: 'Quận Hải Châu',
+    ward: 'Phường Thạch Thang',
+    street: '321 Đường Nguyễn Văn Linh',
+    addressType: 'home',
+    isDefault: false,
+    createdAt: '2024-01-04T00:00:00.000Z',
+    updatedAt: '2024-01-04T00:00:00.000Z',
+  },
+  {
+    _id: '5',
+    userId: 'user1',
+    fullName: 'Phạm Thị D',
+    phone: '0934567890',
+    province: 'Cần Thơ',
+    district: 'Quận Ninh Kiều',
+    ward: 'Phường An Hòa',
+    street: '654 Đường 30 Tháng 4',
+    addressType: 'other',
+    label: 'Nhà bà ngoại',
+    isDefault: false,
+    createdAt: '2024-01-05T00:00:00.000Z',
+    updatedAt: '2024-01-05T00:00:00.000Z',
   },
 ]
 
@@ -22,7 +83,10 @@ const getAddressesRequest = gated(
   'address',
   http.get(`${config.baseUrl}addresses`, () => {
     return HttpResponse.json(
-      { message: 'Lấy danh sách địa chỉ thành công', data: sampleAddresses },
+      {
+        message: 'Lấy danh sách địa chỉ thành công',
+        data: { addresses: sampleAddresses, total: sampleAddresses.length },
+      },
       { status: HTTP_STATUS_CODE.Ok },
     )
   }),

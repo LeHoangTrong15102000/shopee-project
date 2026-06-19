@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { StripeProvider } from '../stripe.context'
 
@@ -30,6 +30,10 @@ vi.mock('@stripe/stripe-js', () => ({
 }))
 
 describe('StripeProvider', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs()
+  })
+
   it('renders children inside the Stripe Elements wrapper', () => {
     render(
       <StripeProvider>
@@ -58,7 +62,11 @@ describe('StripeProvider', () => {
     expect(elements.getAttribute('data-locale')).toBe('vi')
   })
 
-  it('passes a stripe promise to Elements', () => {
+  it('passes a stripe promise to Elements when a valid publishable key is set', () => {
+    // The guard inside StripeProvider only calls loadStripe when the key looks
+    // real (starts with "pk_" and is not the "pk_test_..." placeholder). Stub a
+    // valid-looking key so the provider produces a non-null promise.
+    vi.stubEnv('VITE_STRIPE_PUBLISHABLE_KEY', 'pk_test_validkey123')
     render(
       <StripeProvider>
         <span>test</span>
@@ -67,6 +75,19 @@ describe('StripeProvider', () => {
     const elements = screen.getByTestId('stripe-elements')
     // The stripe prop is a Promise (not null), so data-has-stripe should be true
     expect(elements.getAttribute('data-has-stripe')).toBe('true')
+  })
+
+  it('passes stripe={null} to Elements when the key is the placeholder', () => {
+    // "pk_test_..." is the placeholder shipped in .env. The guard must treat it
+    // as missing and pass null so Stripe.js never fires a network request.
+    vi.stubEnv('VITE_STRIPE_PUBLISHABLE_KEY', 'pk_test_...')
+    render(
+      <StripeProvider>
+        <span>test</span>
+      </StripeProvider>,
+    )
+    const elements = screen.getByTestId('stripe-elements')
+    expect(elements.getAttribute('data-has-stripe')).toBe('false')
   })
 
   it('renders multiple children correctly', () => {

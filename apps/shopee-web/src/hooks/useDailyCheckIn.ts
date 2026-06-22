@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import checkinApi from 'src/apis/checkin.api'
+import checkinApi, { type HistoryResponse } from 'src/apis/checkin.api'
 import {
   CheckInDay,
   CheckInReward,
@@ -42,6 +42,32 @@ const areConsecutiveDays = (date1: string, date2: string): boolean => {
 // Helper to check if date is today
 const isToday = (date: string): boolean => {
   return date === getTodayDate()
+}
+
+const normalizeHistoryDate = (date: string): string => {
+  return date.split('T')[0]
+}
+
+const getCheckInRewardType = (type: string): CheckInReward['type'] => {
+  switch (type) {
+    case 'voucher':
+    case 'points':
+      return type
+    case 'coins':
+    default:
+      return 'coins'
+  }
+}
+
+const mapHistoryToCheckInDays = (history: HistoryResponse['data']): CheckInDay[] => {
+  return history.map((day) => ({
+    date: normalizeHistoryDate(day.date),
+    checked: true,
+    reward: {
+      type: getCheckInRewardType(day.reward_type),
+      value: day.reward_value,
+    },
+  }))
 }
 
 export const useDailyCheckIn = () => {
@@ -90,13 +116,22 @@ export const useDailyCheckIn = () => {
       try {
         const response = await checkinApi.getStreak()
         const streakData = response.data.data
+        let history: CheckInDay[] = []
+
+        try {
+          const historyResponse = await checkinApi.getHistory({ limit: 365 })
+          history = mapHistoryToCheckInDays(historyResponse.data.data.data)
+        } catch {
+          history = []
+        }
+
         const newState: CheckInState = {
           streak: {
             current: streakData.current_streak,
             longest: streakData.longest_streak,
             lastCheckIn: streakData.last_checkin_date,
           },
-          history: [], // History loaded separately if needed
+          history,
           totalCoins: streakData.total_coins,
           canCheckInToday: streakData.can_checkin_today,
         }

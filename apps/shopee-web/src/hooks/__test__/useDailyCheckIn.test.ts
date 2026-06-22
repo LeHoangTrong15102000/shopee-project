@@ -6,6 +6,7 @@ import checkinApi from 'src/apis/checkin.api'
 vi.mock('src/apis/checkin.api', () => ({
   default: {
     getStreak: vi.fn(),
+    getHistory: vi.fn(),
     checkIn: vi.fn(),
   },
 }))
@@ -34,6 +35,31 @@ function makeStreakResponse(
   }
 }
 
+function makeHistoryResponse(
+  days: Array<{ date: string; reward_type?: string; reward_value?: number }>,
+) {
+  return {
+    data: {
+      data: {
+        data: days.map((day, index) => ({
+          _id: `history-${index}`,
+          user_id: 'user-1',
+          date: day.date,
+          streak_day: index + 1,
+          reward_type: day.reward_type ?? 'coins',
+          reward_value: day.reward_value ?? 10,
+        })),
+        pagination: {
+          page: 1,
+          limit: 365,
+          page_size: days.length,
+          total: days.length,
+        },
+      },
+    },
+  }
+}
+
 describe('useDailyCheckIn', () => {
   beforeEach(() => {
     localStorage.clear()
@@ -54,6 +80,7 @@ describe('useDailyCheckIn', () => {
     vi.mocked(checkinApi.getStreak).mockResolvedValue(
       makeStreakResponse(5, 10, '2026-03-15', 100, true),
     )
+    vi.mocked(checkinApi.getHistory).mockResolvedValue(makeHistoryResponse([]))
 
     const { result } = renderHook(() => useDailyCheckIn())
 
@@ -64,6 +91,36 @@ describe('useDailyCheckIn', () => {
     expect(result.current.streak.longest).toBe(10)
     expect(result.current.totalCoins).toBe(100)
     expect(result.current.canCheckInToday).toBe(true)
+  })
+
+  it('loads checked calendar days from API history', async () => {
+    vi.mocked(checkinApi.getStreak).mockResolvedValue(
+      makeStreakResponse(5, 10, '2026-03-15', 100, true),
+    )
+    vi.mocked(checkinApi.getHistory).mockResolvedValue(
+      makeHistoryResponse([
+        { date: '2026-03-01T12:00:00.000Z', reward_type: 'coins', reward_value: 10 },
+        { date: '2026-03-02', reward_type: 'voucher', reward_value: 20 },
+      ]),
+    )
+
+    const { result } = renderHook(() => useDailyCheckIn())
+
+    await waitFor(() => {
+      expect(result.current.getMonthCalendar(2026, 2)[0].checked).toBe(true)
+    })
+
+    const calendar = result.current.getMonthCalendar(2026, 2)
+    expect(calendar[0]).toMatchObject({
+      date: '2026-03-01',
+      checked: true,
+      reward: { type: 'coins', value: 10 },
+    })
+    expect(calendar[1]).toMatchObject({
+      date: '2026-03-02',
+      checked: true,
+      reward: { type: 'voucher', value: 20 },
+    })
   })
 
   it('falls back to localStorage when API fails', async () => {
@@ -99,6 +156,7 @@ describe('useDailyCheckIn', () => {
 
   it('getMonthCalendar returns array of days', async () => {
     vi.mocked(checkinApi.getStreak).mockResolvedValue(makeStreakResponse(0, 0, null, 0, true))
+    vi.mocked(checkinApi.getHistory).mockResolvedValue(makeHistoryResponse([]))
 
     const { result } = renderHook(() => useDailyCheckIn())
 
@@ -139,6 +197,7 @@ describe('useDailyCheckIn — streakProgress.progress formula', () => {
 
   it.each(cases)('streak %i → progress ≈ %f%', async (streak, expectedProgress) => {
     vi.mocked(checkinApi.getStreak).mockResolvedValue(makeStreakResponse(streak))
+    vi.mocked(checkinApi.getHistory).mockResolvedValue(makeHistoryResponse([]))
 
     const { result } = renderHook(() => useDailyCheckIn())
 
@@ -151,6 +210,7 @@ describe('useDailyCheckIn — streakProgress.progress formula', () => {
 
   it('streak 0 → progress is exactly 0', async () => {
     vi.mocked(checkinApi.getStreak).mockResolvedValue(makeStreakResponse(0))
+    vi.mocked(checkinApi.getHistory).mockResolvedValue(makeHistoryResponse([]))
 
     const { result } = renderHook(() => useDailyCheckIn())
 
@@ -163,6 +223,7 @@ describe('useDailyCheckIn — streakProgress.progress formula', () => {
 
   it('progress never exceeds 100 for any streak', async () => {
     vi.mocked(checkinApi.getStreak).mockResolvedValue(makeStreakResponse(9999))
+    vi.mocked(checkinApi.getHistory).mockResolvedValue(makeHistoryResponse([]))
 
     const { result } = renderHook(() => useDailyCheckIn())
 
@@ -175,6 +236,7 @@ describe('useDailyCheckIn — streakProgress.progress formula', () => {
 
   it('streakProgress retains required shape fields', async () => {
     vi.mocked(checkinApi.getStreak).mockResolvedValue(makeStreakResponse(5))
+    vi.mocked(checkinApi.getHistory).mockResolvedValue(makeHistoryResponse([]))
 
     const { result } = renderHook(() => useDailyCheckIn())
 
@@ -198,6 +260,7 @@ describe('useDailyCheckIn — mount-once effect (no loop)', () => {
 
   it('calls checkinApi.getStreak() exactly once on mount', async () => {
     vi.mocked(checkinApi.getStreak).mockResolvedValue(makeStreakResponse(3))
+    vi.mocked(checkinApi.getHistory).mockResolvedValue(makeHistoryResponse([]))
 
     const { result } = renderHook(() => useDailyCheckIn())
 
@@ -212,6 +275,7 @@ describe('useDailyCheckIn — mount-once effect (no loop)', () => {
 
   it('subsequent state updates do not trigger additional getStreak() calls', async () => {
     vi.mocked(checkinApi.getStreak).mockResolvedValue(makeStreakResponse(3))
+    vi.mocked(checkinApi.getHistory).mockResolvedValue(makeHistoryResponse([]))
 
     const { result, rerender } = renderHook(() => useDailyCheckIn())
 

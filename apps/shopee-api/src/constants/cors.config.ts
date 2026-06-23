@@ -15,6 +15,7 @@ const ALLOWED_ORIGINS_PROD = [
   'https://lehoangtrong.com',
   'https://www.lehoangtrong.com',
   'https://shop-admin.lehoangtrong.com',
+  'https://shop.lehoangtrong.com',
   // Localhost origins cho development/testing (kể cả khi chạy prod mode)
   'http://localhost:3000',
   'http://localhost:4000',

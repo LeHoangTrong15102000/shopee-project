@@ -1,4 +1,4 @@
-export const API_URL = 'https://api-ecom.duthanhduoc.com'
+export const API_URL = 'https://api-ecom.lehoangtrong.com'
 
 export function paginate<T>(items: T[], page: number, limit: number) {
   const start = (page - 1) * limit

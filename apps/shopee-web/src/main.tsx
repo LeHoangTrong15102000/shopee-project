@@ -61,36 +61,26 @@ if ('serviceWorker' in navigator && import.meta.env.PROD && !mocksEnabled) {
   })
 }
 
-function startMocking(): void {
+async function startMocking(): Promise<void> {
   if (!mocksEnabled) {
     return
   }
-  // Import mock-control synchronously-from-async so window.__mocks__ is
-  // available before the first render. Worker startup runs in the background;
-  // a slow or failing first-load service-worker activation must never keep
-  // #root blank.
-  void import('./mocks/mockControl').then(
-    ({ setWorkerActive, enable, disable, toggle, list, reset }) => {
-      // Expose console API immediately — mocks are ON by default once this
-      // module loads; use window.__mocks__.disable('<domain>') to opt out.
-      window.__mocks__ = { enable, disable, toggle, list, reset }
+  // Import mock-control first so the window.__mocks__ console API is available
+  // before the first render even when worker.start() is slow.
+  const { setWorkerActive, enable, disable, toggle, list, reset } =
+    await import('./mocks/mockControl')
+  // Expose console API immediately — mocks are ON by default once this module
+  // loads; use window.__mocks__.disable('<domain>') to opt out.
+  window.__mocks__ = { enable, disable, toggle, list, reset }
 
-      import('./mocks/browser')
-        .then(({ worker }) => worker.start({ onUnhandledRequest: 'bypass' }))
-        .then(() => {
-          setWorkerActive()
-          // The app renders before worker.start() resolves, so any query that
-          // fired during that window already resolved against the real backend
-          // (or failed) and React Query cached that result. Invalidate every
-          // active query now that the worker is intercepting so they refetch
-          // through the mock handlers instead of showing stale empty data.
-          void queryClient.invalidateQueries()
-        })
-        .catch((error: unknown) => {
-          console.error('MSW worker startup failed, requests will use real backend:', error)
-        })
-    },
-  )
+  const { worker } = await import('./mocks/browser')
+  await worker.start({ onUnhandledRequest: 'bypass' })
+  setWorkerActive()
+  // If the bootstrap timeout below already rendered the app, its first wave of
+  // queries raced worker activation and resolved against the real backend (or
+  // failed). Invalidate every active query now that the worker is intercepting
+  // so they refetch through the mock handlers instead of showing empty data.
+  void queryClient.invalidateQueries()
 }
 
 function renderApp(): void {
@@ -127,9 +117,40 @@ function renderApp(): void {
   )
 }
 
-// Render immediately so #root is never left blank due to a slow or stuck
-// first-load MSW service-worker activation. MSW starts asynchronously in
-// the background; requests that race with worker activation fall through to
-// the real backend and are re-intercepted once the worker is ready.
-startMocking()
-renderApp()
+// Render after the MSW worker is intercepting so the first wave of queries
+// (orders, addresses, notifications, payment methods) hits the mock handlers
+// instead of racing worker activation and resolving against the real backend.
+// A bounded timeout guarantees the app still mounts if worker startup is slow
+// or stuck — a stalled first-load service-worker activation must never keep
+// #root blank. startMocking() keeps invalidating queries once the worker is
+// finally ready, so the timeout path still recovers mock data.
+const WORKER_STARTUP_TIMEOUT_MS = 3000
+
+function bootstrap(): void {
+  if (!mocksEnabled) {
+    renderApp()
+    return
+  }
+
+  let rendered = false
+  const renderOnce = (): void => {
+    if (rendered) {
+      return
+    }
+    rendered = true
+    renderApp()
+  }
+
+  const timeout = new Promise<void>((resolve) => {
+    setTimeout(resolve, WORKER_STARTUP_TIMEOUT_MS)
+  })
+
+  void Promise.race([
+    startMocking().catch((error: unknown) => {
+      console.error('MSW worker startup failed, requests will use real backend:', error)
+    }),
+    timeout,
+  ]).finally(renderOnce)
+}
+
+bootstrap()

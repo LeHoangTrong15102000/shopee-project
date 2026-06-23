@@ -61,6 +61,7 @@ export function useAddressForm(address: Address | null, onSuccess: () => void) {
   const { watch, setValue, trigger } = form
   const watchedProvinceId = watch('provinceId')
   const watchedDistrictId = watch('districtId')
+  const watchedWardId = watch('wardId')
   const watchedStreet = watch('street')
   const watchedAddressType = watch('addressType')
   const watchedProvince = watch('province')
@@ -73,36 +74,50 @@ export function useAddressForm(address: Address | null, onSuccess: () => void) {
   useEffect(() => {
     if (watchedProvinceId) {
       setIsLoadingDistricts(true)
-      setTimeout(() => {
-        const newDistricts = getDistrictsByProvince(watchedProvinceId)
+      const triggeredByProvinceId = watchedProvinceId
+      const timerId = setTimeout(() => {
+        const newDistricts = getDistrictsByProvince(triggeredByProvinceId)
         setDistricts(newDistricts)
         setIsLoadingDistricts(false)
         if (!isEditing) {
-          setValue('districtId', '')
-          setValue('district', '')
-          setValue('wardId', '')
-          setValue('ward', '')
-          setWards([])
+          // Only reset child selections if province hasn't changed again since this timer started
+          if (form.getValues('provinceId') === triggeredByProvinceId) {
+            setValue('districtId', '')
+            setValue('district', '')
+            setValue('wardId', '')
+            setValue('ward', '')
+            setWards([])
+          }
         }
       }, 300)
+      return () => clearTimeout(timerId)
     }
-  }, [watchedProvinceId, setValue, isEditing])
+  }, [watchedProvinceId, setValue, isEditing, form])
 
   // Load wards when district changes
   useEffect(() => {
     if (watchedProvinceId && watchedDistrictId) {
       setIsLoadingWards(true)
-      setTimeout(() => {
-        const newWards = getWardsByDistrict(watchedProvinceId, watchedDistrictId)
+      const triggeredByDistrictId = watchedDistrictId
+      const timerId = setTimeout(() => {
+        const newWards = getWardsByDistrict(watchedProvinceId, triggeredByDistrictId)
         setWards(newWards)
         setIsLoadingWards(false)
         if (!isEditing) {
-          setValue('wardId', '')
-          setValue('ward', '')
+          // Only reset ward if the district hasn't changed again and the user
+          // hasn't already selected a ward since this timer was scheduled.
+          if (
+            form.getValues('districtId') === triggeredByDistrictId &&
+            form.getValues('wardId') === ''
+          ) {
+            setValue('wardId', '')
+            setValue('ward', '')
+          }
         }
       }, 300)
+      return () => clearTimeout(timerId)
     }
-  }, [watchedProvinceId, watchedDistrictId, setValue, isEditing])
+  }, [watchedProvinceId, watchedDistrictId, setValue, isEditing, form])
 
   // Filter street suggestions
   useEffect(() => {
@@ -208,7 +223,20 @@ export function useAddressForm(address: Address | null, onSuccess: () => void) {
   })
 
   const onSubmit = (data: AddressSchemaFormData) => {
-    const formData = data as unknown as AddressFormData
+    const formData: AddressFormData = {
+      fullName: data.fullName,
+      phone: data.phone,
+      province: data.province,
+      provinceId: data.provinceId,
+      district: data.district,
+      districtId: data.districtId,
+      ward: data.ward,
+      wardId: data.wardId,
+      street: data.street,
+      addressType: data.addressType,
+      label: data.label,
+      isDefault: data.isDefault,
+    }
     if (isEditing) {
       updateMutation.mutate(formData)
     } else {
@@ -232,6 +260,7 @@ export function useAddressForm(address: Address | null, onSuccess: () => void) {
     filteredStreetSuggestions,
     watchedProvinceId,
     watchedDistrictId,
+    watchedWardId,
     watchedAddressType,
     addressPreview,
     stepProgress,

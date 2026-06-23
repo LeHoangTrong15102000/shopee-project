@@ -117,12 +117,12 @@ function renderApp(): void {
   )
 }
 
-// Render after the MSW worker is intercepting so the first wave of queries
-// (orders, addresses, notifications, payment methods) hits the mock handlers
-// instead of racing worker activation and resolving against the real backend.
-// A bounded timeout guarantees the app still mounts if worker startup is slow
-// or stuck — a stalled first-load service-worker activation must never keep
-// #root blank. startMocking() keeps invalidating queries once the worker is
+// Render only after the MSW worker is intercepting so the first wave of
+// queries (orders, addresses, notifications, payment methods) hits the mock
+// handlers instead of racing worker activation and resolving against the real
+// backend. A bounded timeout guarantees the app still mounts if worker startup
+// is slow or stuck — a stalled service-worker activation must never keep
+// #root blank. startMocking() invalidates all queries once the worker is
 // finally ready, so the timeout path still recovers mock data.
 const WORKER_STARTUP_TIMEOUT_MS = 3000
 
@@ -134,23 +134,21 @@ function bootstrap(): void {
 
   let rendered = false
   const renderOnce = (): void => {
-    if (rendered) {
-      return
-    }
+    if (rendered) return
     rendered = true
     renderApp()
   }
 
-  const timeout = new Promise<void>((resolve) => {
-    setTimeout(resolve, WORKER_STARTUP_TIMEOUT_MS)
-  })
+  const timeout = setTimeout(renderOnce, WORKER_STARTUP_TIMEOUT_MS)
 
-  void Promise.race([
-    startMocking().catch((error: unknown) => {
+  void startMocking()
+    .catch((error: unknown) => {
       console.error('MSW worker startup failed, requests will use real backend:', error)
-    }),
-    timeout,
-  ]).finally(renderOnce)
+    })
+    .finally(() => {
+      clearTimeout(timeout)
+      renderOnce()
+    })
 }
 
 bootstrap()

@@ -29,6 +29,7 @@ function AddressForm({ address, onClose, onSuccess }: AddressFormProps) {
     filteredStreetSuggestions,
     watchedProvinceId,
     watchedDistrictId,
+    watchedWardId,
     watchedAddressType,
     addressPreview,
     stepProgress,
@@ -82,6 +83,7 @@ function AddressForm({ address, onClose, onSuccess }: AddressFormProps) {
                 isLoadingWards={isLoadingWards}
                 watchedProvinceId={watchedProvinceId}
                 watchedDistrictId={watchedDistrictId}
+                watchedWardId={watchedWardId}
                 onProvinceChange={handleProvinceChange}
                 onDistrictChange={handleDistrictChange}
                 onWardChange={handleWardChange}

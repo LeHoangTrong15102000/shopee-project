@@ -12,6 +12,7 @@ interface LocationStepProps {
   isLoadingWards: boolean
   watchedProvinceId: string
   watchedDistrictId: string
+  watchedWardId: string
   onProvinceChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
   onDistrictChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
   onWardChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
@@ -47,6 +48,7 @@ export default function LocationStep({
   isLoadingWards,
   watchedProvinceId,
   watchedDistrictId,
+  watchedWardId,
   onProvinceChange,
   onDistrictChange,
   onWardChange,
@@ -54,7 +56,6 @@ export default function LocationStep({
   const { t } = useTranslation('address')
   const {
     register,
-    watch,
     formState: { errors },
   } = form
 
@@ -146,7 +147,7 @@ export default function LocationStep({
           </label>
           <div className="relative">
             <select
-              value={watch('wardId') || ''}
+              value={watchedWardId || ''}
               onChange={onWardChange}
               disabled={!watchedDistrictId || isLoadingWards}
               className={`w-full appearance-none rounded-lg border bg-white px-3 py-2.5 pr-10 transition-colors focus:outline-hidden disabled:cursor-not-allowed disabled:bg-gray-100 dark:bg-slate-700 dark:text-gray-100 dark:disabled:bg-slate-600 ${

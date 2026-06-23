@@ -1,7 +1,7 @@
 import axios, { AxiosError, type AxiosInstance, type AxiosRequestConfig } from 'axios'
 import { createAuthStorage } from '@shopee/shared-utils'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'https://api-ecom.duthanhduoc.com/'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'https://api-ecom.lehoangtrong.com/'
 
 const URL_LOGIN = 'login'
 const URL_REFRESH_TOKEN = 'refresh-access-token'

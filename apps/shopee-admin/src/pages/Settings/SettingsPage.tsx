@@ -521,7 +521,7 @@ export default function SettingsPage() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm font-mono break-all">
-                      {import.meta.env.VITE_API_BASE_URL ?? 'https://api-ecom.duthanhduoc.com/'}
+                      {import.meta.env.VITE_API_BASE_URL ?? 'https://api-ecom.lehoangtrong.com/'}
                     </p>
                   </CardContent>
                 </Card>

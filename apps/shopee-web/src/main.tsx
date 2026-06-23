@@ -46,8 +46,14 @@ if (import.meta.env.PROD) {
   })
 }
 
-// Register Service Worker - only in production to avoid HMR conflicts
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
+// Mocks are enabled in dev or when VITE_ENABLE_MOCKS=true is set explicitly.
+// This single boolean is the source of truth used by both startMocking() and
+// the sw.js registration guard below so the two can never disagree.
+const mocksEnabled = import.meta.env.DEV || import.meta.env.VITE_ENABLE_MOCKS === 'true'
+
+// Register Service Worker - only in production and only when mocks are not
+// active, because both cannot control the page at the same scope simultaneously.
+if ('serviceWorker' in navigator && import.meta.env.PROD && !mocksEnabled) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch((error) => {
       console.error('Service Worker registration failed:', error)
@@ -56,7 +62,7 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
 }
 
 function startMocking(): void {
-  if (!import.meta.env.DEV && import.meta.env.VITE_ENABLE_MOCKS !== 'true') {
+  if (!mocksEnabled) {
     return
   }
   // Import mock-control synchronously-from-async so window.__mocks__ is

@@ -48,7 +48,14 @@ self.addEventListener('fetch', (event) => {
         })
         .catch(() => {
           return caches.match(request).then((cachedResponse) => {
-            return cachedResponse || caches.match('/offline.html')
+            if (cachedResponse) return cachedResponse
+            return caches
+              .match('/offline.html')
+              .then(
+                (offlineResponse) =>
+                  offlineResponse ||
+                  new Response('', { status: 504, statusText: 'Gateway Timeout' }),
+              )
           })
         }),
     )
@@ -95,7 +102,12 @@ self.addEventListener('fetch', (event) => {
 
   event.respondWith(
     fetch(request).catch(() => {
-      return caches.match(request)
+      return caches
+        .match(request)
+        .then(
+          (cachedResponse) =>
+            cachedResponse || new Response('', { status: 504, statusText: 'Gateway Timeout' }),
+        )
     }),
   )
 })

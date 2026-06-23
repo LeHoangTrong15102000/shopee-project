@@ -73,6 +73,12 @@ function startMocking(): void {
         .then(({ worker }) => worker.start({ onUnhandledRequest: 'bypass' }))
         .then(() => {
           setWorkerActive()
+          // The app renders before worker.start() resolves, so any query that
+          // fired during that window already resolved against the real backend
+          // (or failed) and React Query cached that result. Invalidate every
+          // active query now that the worker is intercepting so they refetch
+          // through the mock handlers instead of showing stale empty data.
+          void queryClient.invalidateQueries()
         })
         .catch((error: unknown) => {
           console.error('MSW worker startup failed, requests will use real backend:', error)

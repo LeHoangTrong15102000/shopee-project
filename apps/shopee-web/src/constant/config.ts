@@ -1,5 +1,12 @@
+// MSW handlers build URLs by concatenating `${config.baseUrl}path` (no slash
+// between base and path), so baseUrl MUST end in exactly one trailing slash or
+// every mock handler URL becomes malformed (e.g. `...comorders`) and silently
+// bypasses to the real backend. axios is unaffected (combineURLs normalizes
+// slashes), so we normalize here once as the single source of truth.
+const rawBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'https://api-ecom.lehoangtrong.com/'
+
 const config = {
-  baseUrl: import.meta.env.VITE_API_BASE_URL ?? 'https://api-ecom.lehoangtrong.com/',
+  baseUrl: rawBaseUrl.replace(/\/+$/, '') + '/',
   // baseUrl: 'http://localhost:3000/',
   socketUrl: import.meta.env.VITE_SOCKET_URL ?? 'https://api-ecom.lehoangtrong.com',
   // socketUrl: 'http://localhost:3000',

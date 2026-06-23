@@ -36,6 +36,11 @@ const LOGIN_REDIRECT_URL =
     ? 'http://localhost:4000/login'
     : `${config.siteUrl.replace(/\/+$/, '')}/login`)
 
+// Cooldown duration (ms) to hold the completed refresh promise so that
+// late-arriving 401s coalesce onto the same refresh result instead of
+// starting a second refresh immediately after the first one settles.
+const REFRESH_COOLDOWN_MS = 1500
+
 interface HttpOptions {
   redirectOnTokenExpiry?: boolean
 }
@@ -47,6 +52,7 @@ export class Http {
   private accessToken: string
   private refreshToken: string
   private refreshTokenRequest: Promise<string> | null
+  private refreshCooldownTimer: ReturnType<typeof setTimeout> | null
   private redirectOnTokenExpiry: boolean
   private redirectTimer: ReturnType<typeof setTimeout> | null
 
@@ -61,6 +67,7 @@ export class Http {
     this.accessToken = getAccessTokenFromLS()
     this.refreshToken = getRefreshTokenFromLS()
     this.refreshTokenRequest = null
+    this.refreshCooldownTimer = null
     this.redirectOnTokenExpiry = options?.redirectOnTokenExpiry ?? true
     this.redirectTimer = null
     this.instance = axios.create({
@@ -143,11 +150,39 @@ export class Http {
 
           // Nếu đã là lỗi 401 thì kiểm tra tiếp có phải là access_token hết hạn hay không
           if (isAxiosExpiredTokenError(error) && url !== URL_REFRESH_TOKEN) {
-            this.refreshTokenRequest = this.refreshTokenRequest
-              ? this.refreshTokenRequest
-              : this.handleRefreshToken().finally(() => {
+            // Re-read localStorage before issuing a refresh. If another tab already
+            // refreshed, the stored token will differ from the one that was sent on
+            // this (now-failed) request. In that case, retry directly with the
+            // current LS token, skipping the /refresh-token call entirely.
+            // Tokens are stored WITH the 'Bearer ' prefix (see login handler above),
+            // so we compare prefix-to-prefix.
+            const lsToken = getAccessTokenFromLS()
+            const sentToken = (config.headers as Record<string, string> | undefined)?.authorization
+
+            if (lsToken && sentToken && lsToken !== sentToken) {
+              // Another tab already refreshed — sync in-memory token and retry.
+              // Must update this.accessToken so the request interceptor doesn't
+              // overwrite the header back to the old (expired) token on the retry.
+              this.accessToken = lsToken
+              return this.instance({
+                ...config,
+                headers: { ...(config.headers || {}), authorization: lsToken },
+              })
+            }
+
+            // Token unchanged — proceed with the normal refresh flow.
+            // Keep the in-flight promise so concurrent 401s coalesce onto one refresh.
+            if (!this.refreshTokenRequest) {
+              this.refreshTokenRequest = this.handleRefreshToken().finally(() => {
+                // Hold the promise for a short cooldown so late-arriving 401s
+                // reuse this result rather than starting a second refresh.
+                if (this.refreshCooldownTimer) clearTimeout(this.refreshCooldownTimer)
+                this.refreshCooldownTimer = setTimeout(() => {
                   this.refreshTokenRequest = null
-                })
+                  this.refreshCooldownTimer = null
+                }, REFRESH_COOLDOWN_MS)
+              })
+            }
 
             return this.refreshTokenRequest.then((access_token) => {
               return this.instance({

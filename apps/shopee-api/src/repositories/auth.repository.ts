@@ -65,6 +65,13 @@ export class AuthRepository implements IAuthRepository {
     )
   }
 
+  async findActiveChildByRotatedFromJti(jti: string): Promise<IRefreshToken | null> {
+    return RefreshTokenModel.findOne({
+      rotatedFromJti: jti,
+      revokedAt: null,
+    }).lean<IRefreshToken | null>()
+  }
+
   async deleteExpiredTokens(): Promise<number> {
     const now = new Date()
     const result = await RefreshTokenModel.deleteMany({ expiresAt: { $lt: now } })

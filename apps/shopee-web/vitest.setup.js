@@ -2,7 +2,6 @@
 
 import React from 'react'
 import { afterAll, afterEach, beforeAll, expect } from 'vitest'
-import { setupServer } from 'msw/node'
 import { cleanup } from '@testing-library/react'
 import '@testing-library/jest-dom/vitest'
 import { http, HttpResponse } from 'msw'
@@ -69,6 +68,7 @@ import orderRequests from './src/msw/order.msw'
 import wishlistRequests from './src/msw/wishlist.msw'
 import notificationRequests from './src/msw/notification.msw'
 import addressRequests from './src/msw/address.msw'
+import { setupServer } from 'msw/node'
 
 // Simple localStorage mock implementation
 const localStorageMock = (() => {
@@ -329,6 +329,10 @@ const server = setupServer(
   ...addressRequests,
   ...additionalMocks,
 )
+
+// Expose the server globally so individual test files can call server.use()
+// to override handlers for specific scenarios without creating a second server.
+globalThis.__mswServer = server
 
 // Start server before all tests — unhandled requests sẽ log warning (không throw để tránh phá teardown)
 beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }))

@@ -1,7 +1,7 @@
 import crypto from 'crypto'
 import { OAuth2Client } from 'google-auth-library'
 import { IUser, IPayloadToken } from '../@types/models.type'
-import { IAuthRepository } from '@repositories/interfaces/auth.repository.interface'
+import { IAuthRepository, IRefreshToken } from '@repositories/interfaces/auth.repository.interface'
 import { IUserRepository } from '@repositories/interfaces/user.repository.interface'
 import { BaseService, ValidationError, UnauthorizedError, ConflictError } from './base.service'
 import { hashValue, compareValue } from '@utils/crypt'
@@ -311,6 +311,97 @@ export class AuthService extends BaseService {
   }
 
   /**
+   * Resolve a lost CAS race or an already-revoked-token case.
+   *
+   * Looks up the active child token the winner created (`rotatedFromJti = oldJti`,
+   * `revokedAt = null`). If the child exists, is unexpired, and was created within
+   * `config.REFRESH_TOKEN_GRACE_MS` of now → mint a new access token and return the
+   * child's refresh token (no cascade revocation, user stays logged in).
+   *
+   * Otherwise (no child, child expired, or past the grace window) → cascade-revoke
+   * all tokens for the user and throw 401.
+   */
+  private async resolveLostRace(
+    oldJti: string,
+    userId: string,
+    tokenConfig: TokenConfig,
+  ): Promise<{
+    access_token: string
+    refresh_token: string
+    expires: number
+    expires_refresh_token: number
+    accessJti: string
+    refreshJti: string
+  }> {
+    // The winner of the CAS race may not have persisted the child token yet when the loser
+    // arrives here. Poll briefly so we don't fail-fast before the child is visible.
+    const POLL_INTERVAL_MS = 50
+    const POLL_MAX_ATTEMPTS = 6 // up to ~300 ms total wait
+    let child: IRefreshToken | null = null
+    for (let attempt = 0; attempt < POLL_MAX_ATTEMPTS; attempt++) {
+      child = await this.authRepository.findActiveChildByRotatedFromJti(oldJti)
+      if (child !== null) break
+      if (attempt < POLL_MAX_ATTEMPTS - 1) {
+        await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS))
+      }
+    }
+
+    const now = Date.now()
+    const isGraceValid =
+      child !== null &&
+      child.expiresAt !== undefined &&
+      child.expiresAt > new Date(now) &&
+      child.createdAt !== undefined &&
+      now - child.createdAt.getTime() <= config.REFRESH_TOKEN_GRACE_MS
+
+    if (!isGraceValid) {
+      Logger.apiWarn('auth.refresh.reuse_detected', {
+        userId,
+        jti: oldJti,
+        reason: 'grace window expired or no valid child',
+      })
+      await this.authRepository.revokeAllUserTokens(userId)
+      throw new UnauthorizedError('Refresh token đã hết hạn — toàn bộ session đã bị thu hồi')
+    }
+
+    // Grace valid — mint a new access token only; hand back the winner's child refresh token
+    const user = await this.userRepository.findById(userId)
+    if (!user) {
+      throw new UnauthorizedError('User không tồn tại')
+    }
+
+    const payload: IPayloadToken = {
+      id: user._id!.toString(),
+      email: user.email,
+      roles: user.roles || [ROLE.USER],
+      created_at: new Date().toISOString(),
+    }
+
+    const accessJti = this.generateJti()
+    const accessPayload: IPayloadToken = { ...payload, jti: accessJti }
+    const accessToken = (await signToken(
+      accessPayload,
+      config.SECRET_KEY,
+      tokenConfig.expireAccessToken,
+    )) as string
+
+    Logger.apiInfo('auth.refresh.grace_resolved', {
+      userId,
+      oldJti,
+      childJti: child!.jti,
+    })
+
+    return {
+      access_token: 'Bearer ' + accessToken,
+      refresh_token: child!.token,
+      expires: tokenConfig.expireAccessToken,
+      expires_refresh_token: tokenConfig.expireRefreshToken,
+      accessJti,
+      refreshJti: child!.jti ?? '',
+    }
+  }
+
+  /**
    * Refresh token rotation with reuse detection.
    *
    * Flow:
@@ -362,19 +453,24 @@ export class AuthService extends BaseService {
       }
 
       if (tokenDoc.revokedAt) {
-        // jti exists but already revoked — reuse detected
+        // jti exists but already revoked — could be a benign concurrent rotation race
         Logger.apiWarn('auth.refresh.reuse_detected', {
           userId,
           jti: oldJti,
           revokedAt: tokenDoc.revokedAt,
         })
-        // Security: revoke ALL tokens for this user (token theft assumed)
-        await this.authRepository.revokeAllUserTokens(userId)
-        throw new UnauthorizedError('Refresh token đã hết hạn — toàn bộ session đã bị thu hồi')
+        // Route through the grace path — will cascade-revoke if outside the window
+        return this.resolveLostRace(oldJti, userId, tokenConfig)
       }
 
-      // Revoke the old token (soft delete) before issuing new one
-      await this.authRepository.revokeRefreshTokenByJti(oldJti)
+      // Revoke the old token (soft delete) before issuing new one.
+      // This is a CAS: returns true when this request wins the race, false when another
+      // concurrent request already revoked the same JTI.
+      const revoked = await this.authRepository.revokeRefreshTokenByJti(oldJti)
+      if (!revoked) {
+        // Lost the CAS race — another concurrent request already rotated this JTI
+        return this.resolveLostRace(oldJti, userId, tokenConfig)
+      }
     }
 
     const payload: IPayloadToken = {

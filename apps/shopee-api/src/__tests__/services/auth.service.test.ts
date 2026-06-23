@@ -28,6 +28,7 @@ jest.mock('@constants/config', () => ({
     EXPIRE_REFRESH_TOKEN: 2592000, // 30 days
     AUTH_STRICT_MODE: false,
     GOOGLE_CLIENT_ID: 'test-client-id.apps.googleusercontent.com',
+    REFRESH_TOKEN_GRACE_MS: 30000,
   },
 }))
 
@@ -77,6 +78,7 @@ describe('AuthService', () => {
       findRefreshToken: jest.fn(),
       findRefreshTokenByJti: jest.fn(),
       deleteExpiredTokens: jest.fn(),
+      findActiveChildByRotatedFromJti: jest.fn(),
     } as unknown as jest.Mocked<IAuthRepository>
 
     mockUserRepository = {
@@ -362,7 +364,8 @@ describe('AuthService', () => {
     const oldJti = 'old-jti-uuid'
     const oldRefreshToken = 'old_refresh_token_jwt'
 
-    it('6.2 — should issue new tokens with new jti and revoke old jti', async () => {
+    // --- Task 6.5: Single happy-path rotation (A→B) ---
+    it('6.5 — single refresh: issues new tokens with new jti and revokes old jti', async () => {
       // Given: user exists and old token is active
       mockUserRepository.findById.mockResolvedValue(mockUser as any)
       mockAuthRepository.findRefreshTokenByJti.mockResolvedValue({
@@ -397,16 +400,79 @@ describe('AuthService', () => {
         expect.any(Date), // expiresAt
         oldJti, // rotatedFromJti for audit
       )
+
+      // Grace path must NOT be invoked on a clean win
+      expect(mockAuthRepository.findActiveChildByRotatedFromJti).not.toHaveBeenCalled()
     })
 
-    it('6.3 — should revoke all user tokens and return 401 when replaying already-rotated token', async () => {
-      // Given: user exists but token jti is already revoked (reuse detected)
+    // --- Task 6.1: Concurrent refreshes — both get winner's child, no revokeAllUserTokens ---
+    it('6.1 — concurrent rotation: CAS loser within grace window gets winner child tokens', async () => {
+      const childJti = 'child-jti-uuid'
+      const childToken = 'child_refresh_token_jwt'
+      const now = new Date()
+      const recentCreatedAt = new Date(now.getTime() - 1000) // 1s ago — within 30s grace
+
       mockUserRepository.findById.mockResolvedValue(mockUser as any)
       mockAuthRepository.findRefreshTokenByJti.mockResolvedValue({
+        _id: new Types.ObjectId(),
         jti: oldJti,
         token: oldRefreshToken,
         user_id: validObjectId,
-        revokedAt: new Date(), // already revoked!
+        revokedAt: null,
+      } as any)
+      // CAS returns false — this request lost the race
+      mockAuthRepository.revokeRefreshTokenByJti.mockResolvedValue(false)
+      // Winner's child exists, unexpired, created within grace window
+      mockAuthRepository.findActiveChildByRotatedFromJti.mockResolvedValue({
+        jti: childJti,
+        token: childToken,
+        user_id: validObjectId,
+        revokedAt: null,
+        expiresAt: new Date(now.getTime() + 3600 * 1000), // 1h future
+        createdAt: recentCreatedAt,
+      } as any)
+
+      const result = await authService.refreshTokenWithRotation(
+        validObjectId.toString(),
+        oldRefreshToken,
+        oldJti,
+        tokenConfig,
+      )
+
+      // Should get winner's child refresh token back
+      expect(result.refresh_token).toBe(childToken)
+      expect(result.access_token).toContain('Bearer')
+      expect(result.refreshJti).toBe(childJti)
+
+      // No cascade revocation
+      expect(mockAuthRepository.revokeAllUserTokens).not.toHaveBeenCalled()
+      // No new RT row created
+      expect(mockAuthRepository.createRefreshTokenWithJti).not.toHaveBeenCalled()
+    })
+
+    // --- Task 6.2: Reuse past the grace window → revokeAllUserTokens + 401 ---
+    it('6.2 — CAS loser past grace window: cascade-revokes and throws 401', async () => {
+      const childJti = 'child-jti-uuid'
+      const childToken = 'child_refresh_token_jwt'
+      const now = new Date()
+      const oldCreatedAt = new Date(now.getTime() - 60_000) // 60s ago — outside 30s grace
+
+      mockUserRepository.findById.mockResolvedValue(mockUser as any)
+      mockAuthRepository.findRefreshTokenByJti.mockResolvedValue({
+        _id: new Types.ObjectId(),
+        jti: oldJti,
+        token: oldRefreshToken,
+        user_id: validObjectId,
+        revokedAt: null,
+      } as any)
+      mockAuthRepository.revokeRefreshTokenByJti.mockResolvedValue(false)
+      mockAuthRepository.findActiveChildByRotatedFromJti.mockResolvedValue({
+        jti: childJti,
+        token: childToken,
+        user_id: validObjectId,
+        revokedAt: null,
+        expiresAt: new Date(now.getTime() + 3600 * 1000),
+        createdAt: oldCreatedAt, // past grace window
       } as any)
       mockAuthRepository.revokeAllUserTokens.mockResolvedValue(undefined)
 
@@ -419,12 +485,11 @@ describe('AuthService', () => {
         ),
       ).rejects.toThrow(UnauthorizedError)
 
-      // All user tokens should be revoked
       expect(mockAuthRepository.revokeAllUserTokens).toHaveBeenCalledWith(validObjectId.toString())
     })
 
-    it('6.3 — should revoke all user tokens when jti not found in DB (expired/unknown)', async () => {
-      // Given: jti not found in DB at all
+    // --- Task 6.3: Unknown JTI → revokeAllUserTokens + 401 ---
+    it('6.3 — unknown JTI: cascade-revokes and throws 401 (token theft assumed)', async () => {
       mockUserRepository.findById.mockResolvedValue(mockUser as any)
       mockAuthRepository.findRefreshTokenByJti.mockResolvedValue(null)
       mockAuthRepository.revokeAllUserTokens.mockResolvedValue(undefined)
@@ -439,9 +504,69 @@ describe('AuthService', () => {
       ).rejects.toThrow(UnauthorizedError)
 
       expect(mockAuthRepository.revokeAllUserTokens).toHaveBeenCalledWith(validObjectId.toString())
+      // Grace path must NOT be triggered for an unknown JTI
+      expect(mockAuthRepository.findActiveChildByRotatedFromJti).not.toHaveBeenCalled()
     })
 
-    it('should handle legacy tokens (no jti) by looking up by token string', async () => {
+    // --- Task 6.4: Revoked-within-grace but no valid child → revokeAllUserTokens + 401 ---
+    it('6.4 — already-revoked token with no active child: cascade-revokes and throws 401', async () => {
+      mockUserRepository.findById.mockResolvedValue(mockUser as any)
+      mockAuthRepository.findRefreshTokenByJti.mockResolvedValue({
+        jti: oldJti,
+        token: oldRefreshToken,
+        user_id: validObjectId,
+        revokedAt: new Date(), // already revoked
+      } as any)
+      // No active child exists
+      mockAuthRepository.findActiveChildByRotatedFromJti.mockResolvedValue(null)
+      mockAuthRepository.revokeAllUserTokens.mockResolvedValue(undefined)
+
+      await expect(
+        authService.refreshTokenWithRotation(
+          validObjectId.toString(),
+          oldRefreshToken,
+          oldJti,
+          tokenConfig,
+        ),
+      ).rejects.toThrow(UnauthorizedError)
+
+      expect(mockAuthRepository.revokeAllUserTokens).toHaveBeenCalledWith(validObjectId.toString())
+    })
+
+    it('6.4 — already-revoked token with expired child: cascade-revokes and throws 401', async () => {
+      const now = new Date()
+      mockUserRepository.findById.mockResolvedValue(mockUser as any)
+      mockAuthRepository.findRefreshTokenByJti.mockResolvedValue({
+        jti: oldJti,
+        token: oldRefreshToken,
+        user_id: validObjectId,
+        revokedAt: new Date(),
+      } as any)
+      // Child exists but is expired
+      mockAuthRepository.findActiveChildByRotatedFromJti.mockResolvedValue({
+        jti: 'child-jti',
+        token: 'child_token',
+        user_id: validObjectId,
+        revokedAt: null,
+        expiresAt: new Date(now.getTime() - 1000), // expired 1s ago
+        createdAt: new Date(now.getTime() - 500),
+      } as any)
+      mockAuthRepository.revokeAllUserTokens.mockResolvedValue(undefined)
+
+      await expect(
+        authService.refreshTokenWithRotation(
+          validObjectId.toString(),
+          oldRefreshToken,
+          oldJti,
+          tokenConfig,
+        ),
+      ).rejects.toThrow(UnauthorizedError)
+
+      expect(mockAuthRepository.revokeAllUserTokens).toHaveBeenCalledWith(validObjectId.toString())
+    })
+
+    // --- Task 6.6: Legacy token without jti → legacy path unchanged ---
+    it('6.6 — legacy token without jti: looks up by token string', async () => {
       mockUserRepository.findById.mockResolvedValue(mockUser as any)
       mockAuthRepository.findRefreshToken.mockResolvedValue({
         token: oldRefreshToken,
@@ -459,6 +584,9 @@ describe('AuthService', () => {
 
       expect(result.access_token).toContain('Bearer')
       expect(mockAuthRepository.deleteRefreshToken).toHaveBeenCalledWith(oldRefreshToken)
+      // JTI-based paths must NOT be invoked
+      expect(mockAuthRepository.findRefreshTokenByJti).not.toHaveBeenCalled()
+      expect(mockAuthRepository.findActiveChildByRotatedFromJti).not.toHaveBeenCalled()
     })
 
     it('should throw UnauthorizedError when user not found', async () => {

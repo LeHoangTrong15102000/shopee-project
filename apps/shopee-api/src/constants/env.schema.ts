@@ -99,6 +99,12 @@ const envSchema = z.object({
   // MoMo refund status polling interval in milliseconds (default 300000 = 5 minutes)
   MOMO_REFUND_POLL_INTERVAL_MS: z.coerce.number().int().positive().default(300000),
 
+  // Grace window for concurrent refresh-token rotation (milliseconds).
+  // A CAS loser that presents a just-rotated JTI may resolve to the winner's child
+  // token, provided the child was created within this window. Default: 30 000 ms.
+  // Set to 0 to disable the grace path and revert to strict reuse-detection behavior.
+  REFRESH_TOKEN_GRACE_MS: z.coerce.number().int().min(0).default(30000),
+
   // Firebase Admin SDK credentials for FCM push notifications
   // Provide either the JSON string or a file path — both are optional
   FIREBASE_SERVICE_ACCOUNT_JSON: z.string().optional(),
@@ -202,6 +208,7 @@ export function validateEnv(rawEnv: NodeJS.ProcessEnv = process.env): Env {
       FLASH_SALE_CHECK_INTERVAL: 60,
       REFUND_REQUEST_DEADLINE_DAYS: 7,
       MOMO_REFUND_POLL_INTERVAL_MS: 300000,
+      REFRESH_TOKEN_GRACE_MS: 30000,
       FIREBASE_SERVICE_ACCOUNT_JSON: undefined,
       FIREBASE_SERVICE_ACCOUNT_PATH: undefined,
       BULL_BOARD_ENABLED: true,

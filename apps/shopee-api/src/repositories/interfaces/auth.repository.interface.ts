@@ -87,6 +87,12 @@ export interface IAuthRepository {
   isRefreshTokenValid(token: string): Promise<boolean>
 
   /**
+   * Find the active (revokedAt: null) child token whose rotatedFromJti matches the given jti.
+   * Returns null when no such token exists. Backed by the existing sparse index on rotatedFromJti.
+   */
+  findActiveChildByRotatedFromJti(jti: string): Promise<IRefreshToken | null>
+
+  /**
    * Rotate refresh token (delete old, create new)
    */
   rotateRefreshToken(

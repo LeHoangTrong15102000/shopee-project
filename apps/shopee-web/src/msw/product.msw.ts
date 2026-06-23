@@ -305,6 +305,8 @@ export const searchHistoryRequest = http.get(`${config.baseUrl}products/search/h
   )
 })
 
-const productRequests = [productsRequest, productDetailRequest, searchHistoryRequest]
+// Registration order: searchHistoryRequest (literal path) must appear before
+// productDetailRequest (:id wildcard) so MSW matches the specific route first.
+const productRequests = [productsRequest, searchHistoryRequest, productDetailRequest]
 
 export default productRequests

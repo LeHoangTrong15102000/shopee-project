@@ -43,7 +43,7 @@ function buildDefault(): MockState {
   return buildState(true)
 }
 
-// All-OFF — the escape hatch used by reset() and the ?mocks=off query param to
+// All-OFF — the escape hatch used by the ?mocks=off query param to
 // silence every mock and let requests passthrough to the real backend.
 function buildAllOff(): MockState {
   return buildState(false)
@@ -53,12 +53,24 @@ function loadFromStorage(): MockState {
   try {
     const raw = localStorage.getItem(MOCK_STORAGE_KEY)
     if (!raw) return buildDefault()
-    const parsed = JSON.parse(raw) as Partial<MockState>
+    const parsed = JSON.parse(raw) as Partial<Record<string, unknown>>
+    // Normalize: start from the enabled default so any missing or unrecognised
+    // keys are filled in. Only apply persisted values that are booleans and
+    // belong to the known domain set — everything else is considered stale.
     const state = buildDefault()
     for (const key of DOMAIN_KEYS) {
       if (typeof parsed[key] === 'boolean') {
-        state[key] = parsed[key]
+        state[key] = parsed[key] as boolean
       }
+    }
+    // Recovery: if every domain ended up OFF, the persisted state is either
+    // stale (e.g., from a previous reset() call) or was set accidentally.
+    // Self-heal to the enabled default and re-persist so the next load is clean.
+    const allOff = DOMAIN_KEYS.every((k) => state[k] === false)
+    if (allOff) {
+      const recovered = buildDefault()
+      persist(recovered)
+      return recovered
     }
     return state
   } catch {
@@ -131,9 +143,9 @@ export function list(): Record<DomainKey, boolean> {
   return { ...cache }
 }
 
-/** Disables all feature mocks and persists. */
+/** Resets all feature mocks to the enabled default and persists. */
 export function reset(): void {
-  cache = buildAllOff()
+  cache = buildDefault()
   persist(cache)
 }
 

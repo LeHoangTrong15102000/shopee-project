@@ -392,19 +392,232 @@ export const getSessionStatusRequest = gated(
   }),
 )
 
+const sampleOrders: Order[] = [
+  // pending
+  {
+    _id: '65a1b2c3d4e5f6a7b8c9d0e1',
+    userId: 'user1',
+    items: [
+      {
+        product: sampleProduct,
+        buyCount: 2,
+        price: sampleProduct.price,
+        priceBeforeDiscount: sampleProduct.price_before_discount,
+      },
+    ],
+    shippingAddress: mockAddresses[0],
+    shippingMethod: mockShippingMethods[2], // express
+    paymentMethod: 'cod',
+    subtotal: sampleProduct.price * 2,
+    shippingFee: mockShippingMethods[2].price,
+    discount: 50000,
+    coinsUsed: 0,
+    coinsDiscount: 0,
+    total: sampleProduct.price * 2 + mockShippingMethods[2].price - 50000,
+    status: 'pending' as OrderStatus,
+    createdAt: '2024-02-10T08:30:00.000Z',
+    updatedAt: '2024-02-10T08:30:00.000Z',
+  },
+  {
+    _id: '65a1b2c3d4e5f6a7b8c9d0e2',
+    userId: 'user1',
+    items: [
+      {
+        product: sampleProduct,
+        buyCount: 1,
+        price: sampleProduct.price,
+        priceBeforeDiscount: sampleProduct.price_before_discount,
+      },
+    ],
+    shippingAddress: mockAddresses[1],
+    shippingMethod: mockShippingMethods[3], // economy
+    paymentMethod: 'bank_transfer',
+    subtotal: sampleProduct.price,
+    shippingFee: mockShippingMethods[3].price,
+    discount: 0,
+    coinsUsed: 100,
+    coinsDiscount: 10000,
+    total: sampleProduct.price + mockShippingMethods[3].price - 10000,
+    status: 'pending' as OrderStatus,
+    createdAt: '2024-02-09T14:20:00.000Z',
+    updatedAt: '2024-02-09T14:20:00.000Z',
+  },
+  // confirmed
+  {
+    _id: '65b2c3d4e5f6a7b8c9d0e1f2',
+    userId: 'user1',
+    items: [
+      {
+        product: sampleProduct,
+        buyCount: 1,
+        price: sampleProduct.price,
+        priceBeforeDiscount: sampleProduct.price_before_discount,
+      },
+    ],
+    shippingAddress: mockAddresses[2],
+    shippingMethod: mockShippingMethods[0], // instant
+    paymentMethod: 'cod',
+    subtotal: sampleProduct.price,
+    shippingFee: mockShippingMethods[0].price,
+    discount: 30000,
+    coinsUsed: 0,
+    coinsDiscount: 0,
+    total: sampleProduct.price + mockShippingMethods[0].price - 30000,
+    status: 'confirmed' as OrderStatus,
+    createdAt: '2024-02-08T10:15:00.000Z',
+    updatedAt: '2024-02-08T12:00:00.000Z',
+  },
+  // shipping
+  {
+    _id: '65c3d4e5f6a7b8c9d0e1f2a3',
+    userId: 'user1',
+    items: [
+      {
+        product: sampleProduct,
+        buyCount: 1,
+        price: sampleProduct.price,
+        priceBeforeDiscount: sampleProduct.price_before_discount,
+      },
+    ],
+    shippingAddress: mockAddresses[3],
+    shippingMethod: mockShippingMethods[1], // bulky
+    paymentMethod: 'cod',
+    subtotal: sampleProduct.price,
+    shippingFee: mockShippingMethods[1].price,
+    discount: 0,
+    coinsUsed: 0,
+    coinsDiscount: 0,
+    total: sampleProduct.price + mockShippingMethods[1].price,
+    status: 'shipping' as OrderStatus,
+    createdAt: '2024-02-05T09:00:00.000Z',
+    updatedAt: '2024-02-06T14:00:00.000Z',
+  },
+  // delivered
+  {
+    _id: '65d4e5f6a7b8c9d0e1f2a3b4',
+    userId: 'user1',
+    items: [
+      {
+        product: sampleProduct,
+        buyCount: 1,
+        price: sampleProduct.price,
+        priceBeforeDiscount: sampleProduct.price_before_discount,
+      },
+    ],
+    shippingAddress: mockAddresses[0],
+    shippingMethod: mockShippingMethods[2],
+    paymentMethod: 'cod',
+    subtotal: sampleProduct.price,
+    shippingFee: mockShippingMethods[2].price,
+    discount: 0,
+    coinsUsed: 0,
+    coinsDiscount: 0,
+    total: sampleProduct.price + mockShippingMethods[2].price,
+    status: 'delivered' as OrderStatus,
+    createdAt: '2024-01-28T15:00:00.000Z',
+    updatedAt: '2024-02-01T10:30:00.000Z',
+  },
+  {
+    _id: '65d4e5f6a7b8c9d0e1f2a3b5',
+    userId: 'user1',
+    items: [
+      {
+        product: sampleProduct,
+        buyCount: 3,
+        price: sampleProduct.price,
+        priceBeforeDiscount: sampleProduct.price_before_discount,
+      },
+    ],
+    shippingAddress: mockAddresses[1],
+    shippingMethod: mockShippingMethods[3],
+    paymentMethod: 'bank_transfer',
+    subtotal: sampleProduct.price * 3,
+    shippingFee: 0,
+    discount: 150000,
+    coinsUsed: 300,
+    coinsDiscount: 30000,
+    total: sampleProduct.price * 3 - 150000 - 30000,
+    status: 'delivered' as OrderStatus,
+    createdAt: '2024-01-20T08:45:00.000Z',
+    updatedAt: '2024-01-23T16:00:00.000Z',
+  },
+  // cancelled
+  {
+    _id: '65e5f6a7b8c9d0e1f2a3b4c5',
+    userId: 'user1',
+    items: [
+      {
+        product: sampleProduct,
+        buyCount: 1,
+        price: sampleProduct.price,
+        priceBeforeDiscount: sampleProduct.price_before_discount,
+      },
+    ],
+    shippingAddress: mockAddresses[4],
+    shippingMethod: mockShippingMethods[4], // pickup
+    paymentMethod: 'bank_transfer',
+    subtotal: sampleProduct.price,
+    shippingFee: mockShippingMethods[4].price,
+    discount: 0,
+    coinsUsed: 0,
+    coinsDiscount: 0,
+    total: sampleProduct.price + mockShippingMethods[4].price,
+    status: 'cancelled' as OrderStatus,
+    note: 'Đổi ý không muốn mua nữa',
+    createdAt: '2024-02-01T10:00:00.000Z',
+    updatedAt: '2024-02-01T12:30:00.000Z',
+  },
+  // returned
+  {
+    _id: '65f6a7b8c9d0e1f2a3b4c5d6',
+    userId: 'user1',
+    items: [
+      {
+        product: sampleProduct,
+        buyCount: 1,
+        price: sampleProduct.price,
+        priceBeforeDiscount: sampleProduct.price_before_discount,
+      },
+    ],
+    shippingAddress: mockAddresses[0],
+    shippingMethod: mockShippingMethods[3],
+    paymentMethod: 'cod',
+    subtotal: sampleProduct.price,
+    shippingFee: mockShippingMethods[3].price,
+    discount: 0,
+    coinsUsed: 0,
+    coinsDiscount: 0,
+    total: sampleProduct.price + mockShippingMethods[3].price,
+    status: 'returned' as OrderStatus,
+    note: 'Sản phẩm không đúng mô tả',
+    createdAt: '2024-01-10T09:00:00.000Z',
+    updatedAt: '2024-01-14T11:00:00.000Z',
+  },
+]
+
 export const getOrdersRequest = gated(
   'orders',
   http.get(`${config.baseUrl}orders`, ({ request }) => {
     const url = new URL(request.url)
-    const page = Number(url.searchParams.get('page')) || 1
-    const limit = Number(url.searchParams.get('limit')) || 10
+    const page = Math.max(1, Number(url.searchParams.get('page')) || 1)
+    const limit = Math.max(1, Number(url.searchParams.get('limit')) || 10)
+    const status = url.searchParams.get('status') || ''
+
+    // Apply status filter — empty string or 'all' returns every order
+    const filtered =
+      status && status !== 'all' ? sampleOrders.filter((o) => o.status === status) : sampleOrders
+
+    const total = filtered.length
+    const totalPages = total === 0 ? 1 : Math.ceil(total / limit)
+    const startIndex = (page - 1) * limit
+    const orders = filtered.slice(startIndex, startIndex + limit)
 
     return HttpResponse.json(
       {
         message: 'Get orders successfully',
         data: {
-          orders: [],
-          pagination: { page, limit, total: 0, totalPages: 0 },
+          orders,
+          pagination: { page, limit, total, totalPages },
         },
       },
       { status: HTTP_STATUS_CODE.Ok },

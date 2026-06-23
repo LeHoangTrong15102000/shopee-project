@@ -55,18 +55,30 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
   })
 }
 
-async function enableMocking(): Promise<void> {
+function startMocking(): void {
   if (!import.meta.env.DEV && import.meta.env.VITE_ENABLE_MOCKS !== 'true') {
     return
   }
-  const { worker } = await import('./mocks/browser')
-  const { setWorkerActive, enable, disable, toggle, list, reset } =
-    await import('./mocks/mockControl')
-  await worker.start({ onUnhandledRequest: 'bypass' })
-  setWorkerActive()
-  // Expose console API for QA and engineers. Mocks are ON by default once the
-  // worker starts; use window.__mocks__.disable('<domain>') to opt a domain out.
-  window.__mocks__ = { enable, disable, toggle, list, reset }
+  // Import mock-control synchronously-from-async so window.__mocks__ is
+  // available before the first render. Worker startup runs in the background;
+  // a slow or failing first-load service-worker activation must never keep
+  // #root blank.
+  void import('./mocks/mockControl').then(
+    ({ setWorkerActive, enable, disable, toggle, list, reset }) => {
+      // Expose console API immediately — mocks are ON by default once this
+      // module loads; use window.__mocks__.disable('<domain>') to opt out.
+      window.__mocks__ = { enable, disable, toggle, list, reset }
+
+      import('./mocks/browser')
+        .then(({ worker }) => worker.start({ onUnhandledRequest: 'bypass' }))
+        .then(() => {
+          setWorkerActive()
+        })
+        .catch((error: unknown) => {
+          console.error('MSW worker startup failed, requests will use real backend:', error)
+        })
+    },
+  )
 }
 
 function renderApp(): void {
@@ -103,15 +115,9 @@ function renderApp(): void {
   )
 }
 
-// Render the app regardless of whether mock setup succeeds. If enableMocking()
-// rejects (e.g. service-worker registration races/fails on the very first load),
-// we must NOT leave the page blank — render anyway so requests fall through to
-// the real backend. Without this catch, a rejected promise would skip render()
-// entirely, producing the "blank on first visit, works after refresh" bug.
-enableMocking()
-  .catch((error) => {
-    console.error('Mock setup failed, rendering app without mocks:', error)
-  })
-  .finally(() => {
-    renderApp()
-  })
+// Render immediately so #root is never left blank due to a slow or stuck
+// first-load MSW service-worker activation. MSW starts asynchronously in
+// the background; requests that race with worker activation fall through to
+// the real backend and are re-intercepted once the worker is ready.
+startMocking()
+renderApp()

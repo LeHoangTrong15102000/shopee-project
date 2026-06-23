@@ -7,6 +7,7 @@ import addressRequests from 'src/msw/address.msw'
 import notificationRequests from 'src/msw/notification.msw'
 import wishlistRequests from 'src/msw/wishlist.msw'
 import checkoutRequests from 'src/msw/checkout.msw'
+import productRequests from 'src/msw/product.msw'
 
 export const worker = setupWorker(
   ...orderRequests,
@@ -17,4 +18,8 @@ export const worker = setupWorker(
   ...notificationRequests,
   ...wishlistRequests,
   ...checkoutRequests,
+  // Product handlers registered last; within productRequests the more-specific
+  // /products/search/history route appears before the parameterised /products/:id
+  // handler, preserving route specificity.
+  ...productRequests,
 )

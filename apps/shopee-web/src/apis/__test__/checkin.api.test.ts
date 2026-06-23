@@ -52,7 +52,7 @@ describe('Checkin API', () => {
 
   describe('getHistory', () => {
     it('should call http.get on success', async () => {
-      const mockResponse = { data: { message: 'ok', data: { data: [], pagination: {} } } }
+      const mockResponse = { data: { message: 'ok', data: { history: [], pagination: {} } } }
       vi.mocked(http.get).mockResolvedValue(mockResponse as any)
       const result = await checkinApi.getHistory()
       expect(http.get).toHaveBeenCalled()

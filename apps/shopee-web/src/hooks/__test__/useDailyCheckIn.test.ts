@@ -41,7 +41,7 @@ function makeHistoryResponse(
   return {
     data: {
       data: {
-        data: days.map((day, index) => ({
+        history: days.map((day, index) => ({
           _id: `history-${index}`,
           user_id: 'user-1',
           date: day.date,

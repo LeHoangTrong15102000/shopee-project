@@ -24,7 +24,7 @@ interface HistoryParams {
 }
 
 interface HistoryResponse {
-  data: Array<{
+  history: Array<{
     _id: string
     user_id: string
     date: string

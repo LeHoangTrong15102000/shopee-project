@@ -59,7 +59,7 @@ const getCheckInRewardType = (type: string): CheckInReward['type'] => {
   }
 }
 
-const mapHistoryToCheckInDays = (history: HistoryResponse['data']): CheckInDay[] => {
+const mapHistoryToCheckInDays = (history: HistoryResponse['history']): CheckInDay[] => {
   return history.map((day) => ({
     date: normalizeHistoryDate(day.date),
     checked: true,
@@ -120,7 +120,7 @@ export const useDailyCheckIn = () => {
 
         try {
           const historyResponse = await checkinApi.getHistory({ limit: 365 })
-          history = mapHistoryToCheckInDays(historyResponse.data.data.data)
+          history = mapHistoryToCheckInDays(historyResponse.data.data.history)
         } catch {
           history = []
         }

@@ -33,17 +33,6 @@ const sampleOrders = [
   },
 ]
 
-// GET purchases — domain owner: cart (overlap with cart.msw.ts)
-const getOrdersRequest = gated(
-  'cart',
-  http.get(`${config.baseUrl}purchases`, () => {
-    return HttpResponse.json(
-      { message: 'Lấy danh sách đơn hàng thành công', data: sampleOrders },
-      { status: HTTP_STATUS_CODE.Ok },
-    )
-  }),
-)
-
 // GET orders/:id — domain owner: orders (overlap with checkout.msw.ts)
 const getOrderDetailRequest = gated(
   'orders',
@@ -156,7 +145,6 @@ const getPendingPaymentRequest = gated(
 // Registration order: literal 2-segment paths BEFORE generic orders/:id
 // to avoid MSW first-match-wins shadowing.
 const orderRequests = [
-  getOrdersRequest,
   getOrderTrackingRequest,
   getPendingPaymentRequest,
   getOrderDetailRequest,

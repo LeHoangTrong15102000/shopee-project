@@ -75,10 +75,5 @@
     "vite-plugin-compression": "^0.5.1",
     "vitest": "^4.0.18"
   },
-  "packageManager": "pnpm@10.12.1",
-  "msw": {
-    "workerDirectory": [
-      "public"
-    ]
-  }
+  "packageManager": "pnpm@10.12.1"
 }

@@ -24,13 +24,6 @@ function WebVitalsTracker() {
   return null
 }
 
-async function enableMocking() {
-  const { worker } = await import('./mocks/browser')
-  return worker.start({ onUnhandledRequest: 'bypass' })
-}
-
-const shouldEnableMocks = import.meta.env.DEV || import.meta.env.VITE_ENABLE_MOCKS === 'true'
-
 const startApp = () => {
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
@@ -43,6 +36,9 @@ const startApp = () => {
   )
 }
 
+// MSW browser mocks have been removed entirely. On startup we proactively
+// unregister any stale MSW service worker left over from older builds so it
+// can no longer intercept real API requests, then render the app.
 const unregisterStaleServiceWorkers = async () => {
   if (!('serviceWorker' in navigator)) return
   try {
@@ -53,8 +49,4 @@ const unregisterStaleServiceWorkers = async () => {
   }
 }
 
-if (shouldEnableMocks) {
-  enableMocking().then(startApp)
-} else {
-  unregisterStaleServiceWorkers().finally(startApp)
-}
+unregisterStaleServiceWorkers().finally(startApp)

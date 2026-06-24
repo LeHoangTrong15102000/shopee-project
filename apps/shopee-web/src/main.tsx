@@ -46,10 +46,13 @@ if (import.meta.env.PROD) {
   })
 }
 
-// Mocks are enabled in dev or when VITE_ENABLE_MOCKS=true is set explicitly.
-// This single boolean is the source of truth used by both startMocking() and
+// Mocks are hard-disabled in production builds regardless of any env var.
+// In non-production builds, mocks run when DEV mode is active or when
+// VITE_ENABLE_MOCKS=true is set explicitly.
+// This single boolean is the source of truth used by startMocking() and
 // the sw.js registration guard below so the two can never disagree.
-const mocksEnabled = import.meta.env.DEV || import.meta.env.VITE_ENABLE_MOCKS === 'true'
+const mocksEnabled =
+  !import.meta.env.PROD && (import.meta.env.DEV || import.meta.env.VITE_ENABLE_MOCKS === 'true')
 
 // Register Service Worker - only in production and only when mocks are not
 // active, because both cannot control the page at the same scope simultaneously.

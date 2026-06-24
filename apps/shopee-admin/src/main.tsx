@@ -43,8 +43,18 @@ const startApp = () => {
   )
 }
 
+const unregisterStaleServiceWorkers = async () => {
+  if (!('serviceWorker' in navigator)) return
+  try {
+    const registrations = await navigator.serviceWorker.getRegistrations()
+    await Promise.all(registrations.map((r) => r.unregister()))
+  } catch {
+    // swallow — never block app startup
+  }
+}
+
 if (shouldEnableMocks) {
   enableMocking().then(startApp)
 } else {
-  startApp()
+  unregisterStaleServiceWorkers().finally(startApp)
 }

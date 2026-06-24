@@ -10,10 +10,15 @@ export interface IAddressItem {
   full_name: string
   phone: string
   province: string
+  province_id?: string
   district: string
+  district_id?: string
   ward: string
+  ward_id?: string
   street: string
   is_default: boolean
+  address_type?: string
+  label?: string
   createdAt?: Date
   updatedAt?: Date
 }
@@ -26,10 +31,15 @@ export interface CreateAddressDTO {
   full_name: string
   phone: string
   province: string
+  province_id?: string
   district: string
+  district_id?: string
   ward: string
+  ward_id?: string
   street: string
   is_default?: boolean
+  address_type?: string
+  label?: string
 }
 
 /**
@@ -39,10 +49,15 @@ export interface UpdateAddressDTO {
   full_name?: string
   phone?: string
   province?: string
+  province_id?: string
   district?: string
+  district_id?: string
   ward?: string
+  ward_id?: string
   street?: string
   is_default?: boolean
+  address_type?: string
+  label?: string
 }
 
 /**

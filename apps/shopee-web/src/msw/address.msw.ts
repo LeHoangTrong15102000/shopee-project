@@ -2,7 +2,7 @@ import { http, HttpResponse } from 'msw'
 import config from 'src/constant/config'
 import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum'
 import { gated } from 'src/mocks/mockControl'
-import { Address } from 'src/types/checkout.type'
+import { Address, AddressFormData } from 'src/types/checkout.type'
 
 const sampleAddresses: Address[] = [
   {
@@ -92,12 +92,37 @@ const getAddressesRequest = gated(
   }),
 )
 
+const getAddressByIdRequest = gated(
+  'address',
+  http.get(`${config.baseUrl}addresses/:id`, ({ params }) => {
+    const { id } = params
+    const address = sampleAddresses.find((a) => a._id === id) || sampleAddresses[0]
+    return HttpResponse.json(
+      { message: 'Get address successfully', data: address },
+      { status: HTTP_STATUS_CODE.Ok },
+    )
+  }),
+)
+
 const createAddressRequest = gated(
   'address',
   http.post(`${config.baseUrl}addresses`, async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>
+    const body = (await request.json()) as AddressFormData
+    const newAddress: Address = {
+      _id: `address_${Date.now()}`,
+      userId: 'user1',
+      fullName: body.fullName,
+      phone: body.phone,
+      province: body.province,
+      district: body.district,
+      ward: body.ward,
+      street: body.street,
+      isDefault: body.isDefault || false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
     return HttpResponse.json(
-      { message: 'Thêm địa chỉ thành công', data: { _id: `addr_${Date.now()}`, ...body } },
+      { message: 'Thêm địa chỉ thành công', data: newAddress },
       { status: HTTP_STATUS_CODE.Created },
     )
   }),
@@ -105,10 +130,17 @@ const createAddressRequest = gated(
 
 const updateAddressRequest = gated(
   'address',
-  http.put(`${config.baseUrl}addresses/:id`, async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>
+  http.put(`${config.baseUrl}addresses/:id`, async ({ params, request }) => {
+    const { id } = params
+    const body = (await request.json()) as Partial<AddressFormData>
+    const existingAddress = sampleAddresses.find((a) => a._id === id) || sampleAddresses[0]
+    const updatedAddress: Address = {
+      ...existingAddress,
+      ...body,
+      updatedAt: new Date().toISOString(),
+    }
     return HttpResponse.json(
-      { message: 'Cập nhật địa chỉ thành công', data: { ...sampleAddresses[0], ...body } },
+      { message: 'Cập nhật địa chỉ thành công', data: updatedAddress },
       { status: HTTP_STATUS_CODE.Ok },
     )
   }),
@@ -124,11 +156,30 @@ const deleteAddressRequest = gated(
   }),
 )
 
+const setDefaultAddressRequest = gated(
+  'address',
+  http.put(`${config.baseUrl}addresses/:id/default`, ({ params }) => {
+    const { id } = params
+    const address = sampleAddresses.find((a) => a._id === id) || sampleAddresses[0]
+    const updatedAddress: Address = {
+      ...address,
+      isDefault: true,
+      updatedAt: new Date().toISOString(),
+    }
+    return HttpResponse.json(
+      { message: 'Set default address successfully', data: updatedAddress },
+      { status: HTTP_STATUS_CODE.Ok },
+    )
+  }),
+)
+
 const addressRequests = [
   getAddressesRequest,
+  getAddressByIdRequest,
   createAddressRequest,
   updateAddressRequest,
   deleteAddressRequest,
+  setDefaultAddressRequest,
 ]
 
 export default addressRequests

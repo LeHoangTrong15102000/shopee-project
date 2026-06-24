@@ -5,10 +5,15 @@ interface IAddress {
   full_name: string
   phone: string
   province: string
+  province_id?: string
   district: string
+  district_id?: string
   ward: string
+  ward_id?: string
   street: string
   is_default: boolean
+  address_type?: string
+  label?: string
 }
 
 const AddressSchema = new Schema<IAddress>(
@@ -34,15 +39,27 @@ const AddressSchema = new Schema<IAddress>(
       required: true,
       maxlength: 100,
     },
+    province_id: {
+      type: String,
+      maxlength: 50,
+    },
     district: {
       type: String,
       required: true,
       maxlength: 100,
     },
+    district_id: {
+      type: String,
+      maxlength: 50,
+    },
     ward: {
       type: String,
       required: true,
       maxlength: 100,
+    },
+    ward_id: {
+      type: String,
+      maxlength: 50,
     },
     street: {
       type: String,
@@ -52,6 +69,15 @@ const AddressSchema = new Schema<IAddress>(
     is_default: {
       type: Boolean,
       default: false,
+    },
+    address_type: {
+      type: String,
+      maxlength: 20,
+      default: 'home',
+    },
+    label: {
+      type: String,
+      maxlength: 100,
     },
   },
   {

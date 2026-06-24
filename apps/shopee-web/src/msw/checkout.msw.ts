@@ -4,7 +4,6 @@ import HTTP_STATUS_CODE from 'src/constant/httpStatusCode.enum'
 import { gated } from 'src/mocks/mockControl'
 import {
   Address,
-  AddressFormData,
   ShippingMethod,
   PaymentMethod,
   Order,
@@ -119,9 +118,9 @@ const mockPaymentMethods: PaymentMethod[] = [
   },
 ]
 
-// Kept in sync with sampleAddresses in address.msw.ts. address.msw.ts wins the
-// shared /addresses routes (registered first in browser.ts), while this list
-// serves GET /addresses/:id, PUT /addresses/:id/default and createMockOrder.
+// Kept in sync with sampleAddresses in address.msw.ts.
+// Used here only for createMockOrder and sampleOrders fixtures; all /addresses*
+// route handlers now live exclusively in address.msw.ts.
 // Both lists share _id '1'..'5', so the data MUST match or the same id would
 // resolve to a different person across handlers.
 const mockAddresses: Address[] = [
@@ -666,101 +665,6 @@ export const cancelOrderRequest = gated(
   }),
 )
 
-// Address Handlers
-export const getAddressesRequest = gated(
-  'address',
-  http.get(`${config.baseUrl}addresses`, () => {
-    return HttpResponse.json(
-      {
-        message: 'Get addresses successfully',
-        data: { addresses: mockAddresses, total: mockAddresses.length },
-      },
-      { status: HTTP_STATUS_CODE.Ok },
-    )
-  }),
-)
-
-export const getAddressByIdRequest = gated(
-  'address',
-  http.get(`${config.baseUrl}addresses/:id`, ({ params }) => {
-    const { id } = params
-    const address = mockAddresses.find((a) => a._id === id) || mockAddresses[0]
-    return HttpResponse.json(
-      { message: 'Get address successfully', data: address },
-      { status: HTTP_STATUS_CODE.Ok },
-    )
-  }),
-)
-
-export const createAddressRequest = gated(
-  'address',
-  http.post(`${config.baseUrl}addresses`, async ({ request }) => {
-    const body = (await request.json()) as AddressFormData
-    const newAddress: Address = {
-      _id: `address_${Date.now()}`,
-      userId: 'user1',
-      fullName: body.fullName,
-      phone: body.phone,
-      province: body.province,
-      district: body.district,
-      ward: body.ward,
-      street: body.street,
-      isDefault: body.isDefault || false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }
-    return HttpResponse.json(
-      { message: 'Create address successfully', data: newAddress },
-      { status: HTTP_STATUS_CODE.Created },
-    )
-  }),
-)
-
-export const updateAddressRequest = gated(
-  'address',
-  http.put(`${config.baseUrl}addresses/:id`, async ({ params, request }) => {
-    const { id } = params
-    const body = (await request.json()) as Partial<AddressFormData>
-    const existingAddress = mockAddresses.find((a) => a._id === id) || mockAddresses[0]
-    const updatedAddress: Address = {
-      ...existingAddress,
-      ...body,
-      updatedAt: new Date().toISOString(),
-    }
-    return HttpResponse.json(
-      { message: 'Update address successfully', data: updatedAddress },
-      { status: HTTP_STATUS_CODE.Ok },
-    )
-  }),
-)
-
-export const deleteAddressRequest = gated(
-  'address',
-  http.delete(`${config.baseUrl}addresses/:id`, () => {
-    return HttpResponse.json(
-      { message: 'Delete address successfully', data: { message: 'Delete address successfully' } },
-      { status: HTTP_STATUS_CODE.Ok },
-    )
-  }),
-)
-
-export const setDefaultAddressRequest = gated(
-  'address',
-  http.put(`${config.baseUrl}addresses/:id/default`, ({ params }) => {
-    const { id } = params
-    const address = mockAddresses.find((a) => a._id === id) || mockAddresses[0]
-    const updatedAddress: Address = {
-      ...address,
-      isDefault: true,
-      updatedAt: new Date().toISOString(),
-    }
-    return HttpResponse.json(
-      { message: 'Set default address successfully', data: updatedAddress },
-      { status: HTTP_STATUS_CODE.Ok },
-    )
-  }),
-)
-
 // Error Handlers
 export const createOrderErrorHandler = gated(
   'checkout',
@@ -782,26 +686,6 @@ export const cancelOrderErrorHandler = gated(
   }),
 )
 
-export const createAddressErrorHandler = gated(
-  'address',
-  http.post(`${config.baseUrl}addresses`, () => {
-    return HttpResponse.json(
-      { message: 'Error creating address', data: { error: 'Internal Server Error' } },
-      { status: HTTP_STATUS_CODE.InternalServerError },
-    )
-  }),
-)
-
-export const deleteAddressErrorHandler = gated(
-  'address',
-  http.delete(`${config.baseUrl}addresses/:id`, () => {
-    return HttpResponse.json(
-      { message: 'Error deleting address', data: { error: 'Internal Server Error' } },
-      { status: HTTP_STATUS_CODE.InternalServerError },
-    )
-  }),
-)
-
 // Registration order:
 // - All other literal 2-segment orders/* paths also before orders/:id
 const checkoutRequests = [
@@ -814,12 +698,6 @@ const checkoutRequests = [
   getOrdersRequest,
   getOrderByIdRequest,
   cancelOrderRequest,
-  getAddressesRequest,
-  getAddressByIdRequest,
-  createAddressRequest,
-  updateAddressRequest,
-  deleteAddressRequest,
-  setDefaultAddressRequest,
 ]
 
 export default checkoutRequests

@@ -58,6 +58,19 @@ export const useAddressBook = () => {
       const addedAddresses = rawAddresses.filter((a) => !existingIds.has(a._id))
       const remainingAddresses = orderedAddresses.filter((a) => newIds.has(a._id))
       setOrderedAddresses([...addedAddresses, ...remainingAddresses])
+    } else if (orderedAddresses.length > 0) {
+      // Same length: content may have changed (e.g. set-default flips isDefault,
+      // or an edit updates fields) without changing the array size. Remap each
+      // ordered item to its latest rawAddresses copy by _id so the displayed
+      // list reflects fresh server data while preserving the user's drag order.
+      const rawById = new Map(rawAddresses.map((a) => [a._id, a]))
+      const hasContentChange = orderedAddresses.some((a) => {
+        const fresh = rawById.get(a._id)
+        return fresh && fresh !== a
+      })
+      if (hasContentChange) {
+        setOrderedAddresses(orderedAddresses.map((a) => rawById.get(a._id) ?? a))
+      }
     }
   }, [rawAddresses, orderedAddresses])
 

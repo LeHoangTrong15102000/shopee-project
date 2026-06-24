@@ -180,7 +180,6 @@ const AddressCard = ({
             {!isDefault && (
               <Button
                 onClick={() => onSetDefault(address._id)}
-                variant="outline"
                 size="sm"
                 animated={false}
                 className="inline-flex items-center gap-1 rounded-lg border border-orange/30 bg-orange/5 px-2.5 py-1.5 text-xs font-medium text-orange transition-all hover:border-orange hover:bg-orange hover:text-white! sm:gap-1.5 sm:px-3 sm:text-sm dark:border-orange-400/30 dark:bg-orange-400/10 dark:text-orange-400 dark:hover:border-orange-400 dark:hover:bg-orange-400 dark:hover:text-white!"

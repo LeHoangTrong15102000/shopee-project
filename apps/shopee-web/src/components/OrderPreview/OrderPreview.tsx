@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { formatCurrency } from 'src/utils/utils'
@@ -9,6 +10,7 @@ import { staggerContainer, staggerItem, STAGGER_DELAY } from 'src/styles/animati
 import ImageWithFallback from 'src/components/ImageWithFallback'
 import Button from 'src/components/Button'
 import { ShippingIcon, PaymentIcon } from 'src/components/Icons'
+import { StripeCardForm } from 'src/components/StripeCardForm'
 
 interface OrderPreviewProps {
   items: ExtendedPurchase[]
@@ -83,6 +85,15 @@ function OrderPreview({
   })()
 
   const totalItemCount = items.reduce((count, item) => count + item.buy_count, 0)
+
+  const [cardComplete, setCardComplete] = useState(false)
+  const isCardPayment = selectedPaymentMethod === 'credit_card'
+  const cardBlocked = isCardPayment && !cardComplete
+
+  const handlePlaceOrderClick = () => {
+    if (cardBlocked) return
+    onPlaceOrder()
+  }
 
   return (
     <motion.div
@@ -258,6 +269,21 @@ function OrderPreview({
         ) : (
           <p className="text-gray-500 dark:text-gray-400">{t('order:preview.noPayment')}</p>
         )}
+        {selectedPaymentMethod === 'credit_card' && (
+          <div className="mt-4">
+            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+              {t('payment:creditCard.enterCardInfo')}
+            </p>
+            <div className="rounded-xl bg-gray-50 p-4 ring-1 ring-gray-200 dark:bg-slate-800/50 dark:ring-slate-700">
+              <StripeCardForm disabled={isPlacingOrder} onValidityChange={setCardComplete} />
+            </div>
+            {!cardComplete && (
+              <p className="mt-2 text-sm text-orange/80 dark:text-amber-400/80">
+                {t('payment:creditCard.completeCardHint')}
+              </p>
+            )}
+          </div>
+        )}
       </SectionWrapper>
 
       {/* Section 5: Ghi chú */}
@@ -382,8 +408,8 @@ function OrderPreview({
           </span>
         </Button>
         <Button
-          onClick={onPlaceOrder}
-          disabled={isPlacingOrder}
+          onClick={handlePlaceOrderClick}
+          disabled={isPlacingOrder || cardBlocked}
           isLoading={isPlacingOrder}
           className="flex-1 rounded-xl bg-linear-to-r from-orange via-orange to-amber-500 py-3 font-semibold text-white shadow-lg shadow-orange/30 transition-all hover:from-orange-600 hover:via-orange-500 hover:to-amber-400 hover:shadow-xl hover:shadow-orange/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none md:flex-2"
         >

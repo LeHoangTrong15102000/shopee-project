@@ -62,6 +62,8 @@
   "buttons.pay": "Thanh toán",
   "bankTransfer.expired": "Đã hết hạn chuyển khoản",
   "creditCard.cvvTooltip": "Mã 3 chữ số ở mặt sau thẻ",
+  "creditCard.enterCardInfo": "Nhập thông tin thẻ",
+  "creditCard.completeCardHint": "Vui lòng nhập đầy đủ thông tin thẻ để tiếp tục đặt hàng",
   "method.cod": "Thanh toán khi nhận hàng (COD)",
   "method.codDesc": "Thanh toán bằng tiền mặt khi nhận hàng",
   "method.bankTransfer": "Chuyển khoản ngân hàng",

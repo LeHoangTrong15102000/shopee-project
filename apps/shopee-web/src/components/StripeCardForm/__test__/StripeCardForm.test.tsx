@@ -1,21 +1,72 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
+import type { StripeCardElementChangeEvent } from '@stripe/stripe-js'
 import { StripeCardForm } from '../StripeCardForm'
 
+// Extended CardElement mock:
+// - The <input data-testid="card-input"> fires change events with only an error field
+//   (preserving the original test contract for onError tests).
+// - The <button data-testid="card-complete-true"> fires a complete:true change event.
+// - The <button data-testid="card-complete-false"> fires a complete:false change event.
 vi.mock('@stripe/react-stripe-js', () => ({
-  CardElement: ({ onChange, options }: any) => (
+  CardElement: ({
+    onChange,
+    options,
+  }: {
+    onChange?: (event: StripeCardElementChangeEvent) => void
+    options?: { disabled?: boolean }
+  }) => (
     <div data-testid="card-element" data-disabled={options?.disabled}>
       <input
         data-testid="card-input"
         onChange={(e) =>
           onChange?.({
-            error: e.target.value ? { message: e.target.value } : undefined,
-          })
+            complete: false,
+            error: e.target.value
+              ? { message: e.target.value, type: 'validation_error', code: 'invalid_number' }
+              : undefined,
+            elementType: 'card',
+            empty: !e.target.value,
+            value: { postalCode: '' },
+            brand: 'unknown',
+          } as StripeCardElementChangeEvent)
         }
       />
+      <button
+        data-testid="card-complete-true"
+        onClick={() =>
+          onChange?.({
+            complete: true,
+            error: undefined,
+            elementType: 'card',
+            empty: false,
+            value: { postalCode: '' },
+            brand: 'visa',
+          } as StripeCardElementChangeEvent)
+        }
+      >
+        simulate complete
+      </button>
+      <button
+        data-testid="card-complete-false"
+        onClick={() =>
+          onChange?.({
+            complete: false,
+            error: undefined,
+            elementType: 'card',
+            empty: false,
+            value: { postalCode: '' },
+            brand: 'visa',
+          } as StripeCardElementChangeEvent)
+        }
+      >
+        simulate incomplete
+      </button>
     </div>
   ),
-  Elements: ({ children }: any) => <div data-testid="stripe-elements">{children}</div>,
+  Elements: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="stripe-elements">{children}</div>
+  ),
   useStripe: vi.fn(),
   useElements: vi.fn(),
 }))
@@ -100,5 +151,29 @@ describe('StripeCardForm', () => {
     fireEvent.change(input, { target: { value: 'Expired card.' } })
     const alert = screen.getByRole('alert')
     expect(alert.tagName.toLowerCase()).toBe('p')
+  })
+
+  // onValidityChange tests
+  it('calls onValidityChange with true when CardElement fires complete:true', () => {
+    const onValidityChange = vi.fn()
+    render(<StripeCardForm onValidityChange={onValidityChange} />)
+    fireEvent.click(screen.getByTestId('card-complete-true'))
+    expect(onValidityChange).toHaveBeenCalledTimes(1)
+    expect(onValidityChange).toHaveBeenCalledWith(true)
+  })
+
+  it('calls onValidityChange with false when CardElement fires complete:false', () => {
+    const onValidityChange = vi.fn()
+    render(<StripeCardForm onValidityChange={onValidityChange} />)
+    fireEvent.click(screen.getByTestId('card-complete-false'))
+    expect(onValidityChange).toHaveBeenCalledTimes(1)
+    expect(onValidityChange).toHaveBeenCalledWith(false)
+  })
+
+  it('does not throw when onValidityChange is not provided and a change event fires', () => {
+    expect(() => {
+      render(<StripeCardForm />)
+      fireEvent.click(screen.getByTestId('card-complete-true'))
+    }).not.toThrow()
   })
 })

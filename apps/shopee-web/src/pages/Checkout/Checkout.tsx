@@ -147,7 +147,6 @@ const Checkout = () => {
               voucherDiscount={voucherDiscount}
               coinsUsed={coinsUsed}
               note={note}
-              isConfirmingPayment={isConfirmingPayment}
               onAddressSelect={handleAddressSelect}
               onShippingSelect={handleShippingSelect}
               onPaymentSelect={handlePaymentSelect}

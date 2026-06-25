@@ -24,6 +24,7 @@ const CARD_ELEMENT_OPTIONS = {
 interface StripeCardFormProps {
   disabled?: boolean
   onError?: (error: string | null) => void
+  onValidityChange?: (complete: boolean) => void
 }
 
 /**
@@ -32,13 +33,18 @@ interface StripeCardFormProps {
  * No forwardRef or useImperativeHandle needed — useCheckout.ts accesses the card
  * element directly via useElements().getElement(CardElement).
  */
-export function StripeCardForm({ disabled = false, onError }: StripeCardFormProps) {
+export function StripeCardForm({
+  disabled = false,
+  onError,
+  onValidityChange,
+}: StripeCardFormProps) {
   const [cardError, setCardError] = useState<string | null>(null)
 
   const handleChange = (event: StripeCardElementChangeEvent) => {
     const error = event.error?.message ?? null
     setCardError(error)
     onError?.(error)
+    onValidityChange?.(event.complete)
   }
 
   return (

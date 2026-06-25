@@ -33,7 +33,6 @@ interface CheckoutFormSectionsProps {
   voucherDiscount: number
   coinsUsed: number
   note: string
-  isConfirmingPayment?: boolean
   onAddressSelect: (address: Address) => void
   onShippingSelect: (method: ShippingMethod) => void
   onPaymentSelect: (method: { type: PaymentMethodType }) => void
@@ -53,7 +52,6 @@ export const CheckoutFormSections = ({
   voucherDiscount,
   coinsUsed,
   note,
-  isConfirmingPayment = false,
   onAddressSelect,
   onShippingSelect,
   onPaymentSelect,
@@ -105,7 +103,6 @@ export const CheckoutFormSections = ({
         <PaymentMethodSelector
           selectedMethodType={selectedPaymentMethod}
           onSelect={onPaymentSelect}
-          isConfirmingPayment={isConfirmingPayment}
           selectedEWalletProvider={selectedEWalletProvider}
           onEWalletProviderSelect={onEWalletProviderSelect}
         />

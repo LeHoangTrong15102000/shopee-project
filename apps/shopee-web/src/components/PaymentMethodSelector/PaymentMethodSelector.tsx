@@ -1,16 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { PaymentMethod, PaymentMethodType, EWalletProvider } from 'src/types/checkout.type'
 import checkoutApi from 'src/apis/checkout.api'
 import { PaymentIcon } from 'src/components/Icons'
 import Button from 'src/components/Button'
-import { StripeCardForm } from 'src/components/StripeCardForm'
 
 interface PaymentMethodSelectorProps {
   selectedMethodType: PaymentMethodType | null
   onSelect: (method: PaymentMethod) => void
-  isConfirmingPayment?: boolean
   selectedEWalletProvider?: EWalletProvider | null
   onEWalletProviderSelect?: (provider: EWalletProvider) => void
 }
@@ -18,7 +16,6 @@ interface PaymentMethodSelectorProps {
 function PaymentMethodSelector({
   selectedMethodType,
   onSelect,
-  isConfirmingPayment = false,
   selectedEWalletProvider,
   onEWalletProviderSelect,
 }: PaymentMethodSelectorProps) {
@@ -178,22 +175,6 @@ function PaymentMethodSelector({
           </div>
         </motion.div>
       )}
-
-      <AnimatePresence>
-        {selectedMethodType === 'credit_card' && (
-          <motion.div
-            key="stripe-card-form"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden"
-          >
-            <div className="rounded-xl bg-gray-50 p-4 ring-1 ring-gray-200 dark:bg-slate-800/50 dark:ring-slate-700">
-              <StripeCardForm disabled={isConfirmingPayment} />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   )
 }

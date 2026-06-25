@@ -62,6 +62,8 @@
   "buttons.pay": "Pay",
   "bankTransfer.expired": "Transfer expired",
   "creditCard.cvvTooltip": "3-digit code on the back of your card",
+  "creditCard.enterCardInfo": "Enter card details",
+  "creditCard.completeCardHint": "Please enter complete card details to place your order",
   "method.cod": "Cash on Delivery (COD)",
   "method.codDesc": "Pay with cash upon delivery",
   "method.bankTransfer": "Bank Transfer",

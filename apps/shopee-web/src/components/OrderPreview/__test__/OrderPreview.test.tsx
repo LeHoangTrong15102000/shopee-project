@@ -7,11 +7,23 @@ vi.mock('src/hooks/useReducedMotion', () => ({
 }))
 
 vi.mock('src/components/ImageWithFallback', () => ({
-  default: ({ src, alt }: any) => <img src={src} alt={alt} />,
+  default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
 }))
 
 vi.mock('src/components/Button', () => ({
-  default: ({ children, onClick, disabled, isLoading, className }: any) => (
+  default: ({
+    children,
+    onClick,
+    disabled,
+    isLoading,
+    className,
+  }: {
+    children: React.ReactNode
+    onClick?: () => void
+    disabled?: boolean
+    isLoading?: boolean
+    className?: string
+  }) => (
     <button onClick={onClick} disabled={disabled || isLoading} className={className}>
       {isLoading ? 'Đang xử lý...' : children}
     </button>
@@ -19,8 +31,26 @@ vi.mock('src/components/Button', () => ({
 }))
 
 vi.mock('src/components/Icons', () => ({
-  ShippingIcon: ({ type }: any) => <div data-testid="shipping-icon">{type}</div>,
-  PaymentIcon: ({ type }: any) => <div data-testid="payment-icon">{type}</div>,
+  ShippingIcon: ({ type }: { type: string }) => <div data-testid="shipping-icon">{type}</div>,
+  PaymentIcon: ({ type }: { type: string }) => <div data-testid="payment-icon">{type}</div>,
+}))
+
+// StripeCardForm mock: renders a button that calls onValidityChange(true) so tests
+// can drive the card-complete state without touching the real Stripe integration.
+vi.mock('src/components/StripeCardForm', () => ({
+  StripeCardForm: ({
+    onValidityChange,
+  }: {
+    disabled?: boolean
+    onValidityChange?: (complete: boolean) => void
+    onError?: (error: string | null) => void
+  }) => (
+    <div data-testid="stripe-card-form-mock">
+      <button data-testid="stripe-complete-btn" onClick={() => onValidityChange?.(true)}>
+        Mark card complete
+      </button>
+    </div>
+  ),
 }))
 
 const mockItems = [
@@ -209,5 +239,64 @@ describe('OrderPreview', () => {
   it('does not render note section when note is empty string', () => {
     render(<OrderPreview {...defaultProps} note="" />)
     expect(screen.queryByText('Ghi chú đơn hàng')).not.toBeInTheDocument()
+  })
+
+  // credit_card payment gating tests
+  describe('credit_card payment method', () => {
+    const creditCardProps = { ...defaultProps, selectedPaymentMethod: 'credit_card' as const }
+
+    it('initial render: Place Order button is disabled and hint text is shown when card is incomplete', () => {
+      render(<OrderPreview {...creditCardProps} />)
+      const placeOrderButton = screen.getByText('Đặt hàng')
+      expect(placeOrderButton).toBeDisabled()
+      expect(
+        screen.getByText('Vui lòng nhập đầy đủ thông tin thẻ để tiếp tục đặt hàng'),
+      ).toBeInTheDocument()
+    })
+
+    it('Place Order button becomes enabled and hint disappears after onValidityChange(true)', () => {
+      render(<OrderPreview {...creditCardProps} />)
+      fireEvent.click(screen.getByTestId('stripe-complete-btn'))
+      const placeOrderButton = screen.getByText('Đặt hàng')
+      expect(placeOrderButton).not.toBeDisabled()
+      expect(
+        screen.queryByText('Vui lòng nhập đầy đủ thông tin thẻ để tiếp tục đặt hàng'),
+      ).not.toBeInTheDocument()
+    })
+
+    it('clicking Place Order while card is incomplete does NOT call onPlaceOrder', () => {
+      const onPlaceOrder = vi.fn()
+      render(<OrderPreview {...creditCardProps} onPlaceOrder={onPlaceOrder} />)
+      // Card is incomplete initially; fire click on the button directly
+      const placeOrderButton = screen.getByText('Đặt hàng')
+      fireEvent.click(placeOrderButton)
+      expect(onPlaceOrder).not.toHaveBeenCalled()
+    })
+
+    it('clicking Place Order after card is complete DOES call onPlaceOrder', () => {
+      const onPlaceOrder = vi.fn()
+      render(<OrderPreview {...creditCardProps} onPlaceOrder={onPlaceOrder} />)
+      fireEvent.click(screen.getByTestId('stripe-complete-btn'))
+      fireEvent.click(screen.getByText('Đặt hàng'))
+      expect(onPlaceOrder).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  // Regression: COD must not be affected by card gating
+  describe('cod payment method (regression)', () => {
+    it('Place Order button is enabled without any card interaction', () => {
+      render(<OrderPreview {...defaultProps} selectedPaymentMethod="cod" />)
+      const placeOrderButton = screen.getByText('Đặt hàng')
+      expect(placeOrderButton).not.toBeDisabled()
+    })
+
+    it('clicking Place Order with cod calls onPlaceOrder', () => {
+      const onPlaceOrder = vi.fn()
+      render(
+        <OrderPreview {...defaultProps} selectedPaymentMethod="cod" onPlaceOrder={onPlaceOrder} />,
+      )
+      fireEvent.click(screen.getByText('Đặt hàng'))
+      expect(onPlaceOrder).toHaveBeenCalledTimes(1)
+    })
   })
 })

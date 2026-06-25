@@ -98,13 +98,16 @@ describe('User Controller', () => {
 
   describe('getUsers', () => {
     it('should return all users', async () => {
-      mockUserService.getUsers.mockResolvedValue([mockUser] as any)
+      mockUserService.getUsers.mockResolvedValue({
+        data: [mockUser],
+        pagination: { page: 1, limit: 10, page_size: 1, total: 1 },
+      } as any)
       const req = createMockRequest({ jwtDecoded })
       const res = createMockResponse()
 
       await userController.getUsers(req as any, res as Response)
 
-      expect(mockUserService.getUsers).toHaveBeenCalled()
+      expect(mockUserService.getUsers).toHaveBeenCalledWith({ page: 1, limit: 10 })
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
     })
   })

@@ -1086,20 +1086,8 @@ export class OrderService extends BaseService {
     return order ?? null
   }
 
-  async adminGetOrderCountByStatus() {
-    const counts = await OrderModel.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }])
-
-    const total = await OrderModel.countDocuments()
-
-    const statusMap: Record<string, number> = { total }
-    for (const status of Object.values(ORDER_STATUS)) {
-      statusMap[status] = 0
-    }
-    for (const item of counts) {
-      statusMap[item._id] = item.count
-    }
-
-    return statusMap
+  async adminGetOrderCountByStatus(): Promise<Array<{ _id: string; count: number }>> {
+    return OrderModel.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }])
   }
 
   /**

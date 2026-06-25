@@ -5,6 +5,8 @@ import { ErrorHandler, responseSuccess } from '@utils/response'
 import { uploadFile } from '@utils/upload'
 import { Request, Response } from 'express'
 import { userService } from '../container'
+import type { PaginatedResult } from '@repositories/interfaces/base.repository.interface'
+import { IUser } from '../@types/models.type'
 type Req = Request<Record<string, string>>
 
 // Local type definitions for this file only
@@ -58,10 +60,21 @@ const addUser = async (req: CustomRequest, res: Response) => {
 }
 
 const getUsers = async (req: CustomRequest, res: Response) => {
-  const users = await userService.getUsers()
+  const { page = 1, limit = 10 } = req.query
+  const result = await userService.getUsers({ page: Number(page), limit: Number(limit) })
+  const paginated = result as PaginatedResult<IUser>
   const response = {
     message: 'Lấy người dùng thành công',
-    data: users,
+    data: {
+      items: paginated.data,
+      pagination: {
+        page: paginated.pagination.page,
+        limit: paginated.pagination.limit,
+        page_size: paginated.pagination.page_size,
+        total: paginated.pagination.total,
+        total_pages: paginated.pagination.page_size,
+      },
+    },
   }
   return responseSuccess(res, response)
 }

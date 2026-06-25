@@ -330,11 +330,22 @@ export const adminGetOrders = async (req: Request, res: Response) => {
     start_date,
     end_date,
   } = req.query as any
-  const data = await orderService.adminGetOrders(
+  const result = await orderService.adminGetOrders(
     { status, payment_method, user_id, search, start_date, end_date },
     { page: Number(page) || 1, limit: Number(limit) || 20, sort_by, order },
   )
-  return responseSuccess(res, { message: 'Lấy danh sách đơn hàng thành công', data })
+  return responseSuccess(res, {
+    message: 'Lấy danh sách đơn hàng thành công',
+    data: {
+      orders: result.data,
+      pagination: {
+        page: result.pagination.page,
+        limit: result.pagination.limit,
+        total: result.pagination.total,
+        totalPages: result.pagination.page_size,
+      },
+    },
+  })
 }
 
 export const adminBulkUpdateStatus = async (req: Request, res: Response) => {

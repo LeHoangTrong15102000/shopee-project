@@ -22,14 +22,18 @@ export const socketAuthMiddleware = async (
   next: (err?: ExtendedError) => void,
 ): Promise<void> => {
   try {
-    const token = socket.handshake.auth?.token as string
+    const rawToken = socket.handshake.auth?.token as string
 
-    if (!token) {
+    if (!rawToken) {
       Logger.apiWarn('Socket connection rejected: No token provided', {
         socketId: socket.id,
       })
       return next(new Error(SOCKET_ERRORS.AUTH_ERROR))
     }
+
+    // Strip the "Bearer " prefix before verifying — clients store and send the
+    // access token with the prefix baked in, mirroring the REST auth middleware.
+    const token = rawToken.replace('Bearer ', '')
 
     // Verify JWT token — pure stateless verification, no database lookup
     const decoded = (await verifyToken(token, config.SECRET_KEY)) as {

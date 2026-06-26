@@ -7,9 +7,24 @@ type EventCallback<T = unknown> = (data: T) => void
 class SocketClient {
   private socket: Socket | null = null
   private listeners: Map<string, Set<EventCallback>> = new Map()
+  private currentToken: string = ''
+  private tokenRefresher: (() => Promise<string | null>) | null = null
+  private refreshAttemptedForToken: string = ''
 
   connect(token: string): void {
-    if (this.socket?.connected) return
+    // Already connected with the same token — nothing to do
+    if (this.socket?.connected && this.currentToken === token) return
+
+    // If a socket instance exists (e.g. stuck in "reconnecting" with a stale
+    // token, or connected with a different token), tear it down fully so
+    // socket.io-client does not return the cached/multiplexed instance.
+    if (this.socket) {
+      this.socket.removeAllListeners()
+      this.socket.disconnect()
+      this.socket = null
+    }
+
+    this.currentToken = token
 
     this.socket = io(SOCKET_URL, {
       auth: { token },
@@ -19,9 +34,14 @@ class SocketClient {
       reconnectionDelay: 1000,
       reconnectionDelayMax: 30000,
       randomizationFactor: 0.5,
+      forceNew: true,
     })
 
     this.socket.on('connect', () => {
+      // Successful connection — reset the refresh guard so future token issues
+      // can self-heal again.
+      this.refreshAttemptedForToken = ''
+
       // Re-attach all registered listeners after reconnect
       this.listeners.forEach((callbacks, event) => {
         callbacks.forEach((cb) => {
@@ -29,13 +49,43 @@ class SocketClient {
         })
       })
     })
+
+    this.socket.on('connect_error', () => {
+      // Self-heal path: mirrors REST's 401 → refresh → retry flow.
+      // Only attempt one refresh per bad token value to prevent infinite loops.
+      if (!this.tokenRefresher) return
+      if (this.refreshAttemptedForToken === this.currentToken) return
+
+      this.refreshAttemptedForToken = this.currentToken
+
+      this.tokenRefresher().then((newToken) => {
+        if (!newToken || newToken === this.currentToken) {
+          // Refresh failed or returned the same (still-bad) token — stop.
+          return
+        }
+
+        // Apply the fresh token and retry the connection.
+        this.currentToken = newToken
+        if (this.socket) {
+          this.socket.auth = { token: newToken }
+          this.socket.connect()
+        }
+      })
+    })
   }
 
   disconnect(): void {
     if (this.socket) {
+      this.socket.removeAllListeners()
       this.socket.disconnect()
       this.socket = null
     }
+    this.currentToken = ''
+    this.refreshAttemptedForToken = ''
+  }
+
+  setTokenRefresher(fn: () => Promise<string | null>): void {
+    this.tokenRefresher = fn
   }
 
   subscribe<T = unknown>(event: string, callback: EventCallback<T>): () => void {

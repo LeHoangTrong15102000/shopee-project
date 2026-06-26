@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useAuthStore } from 'src/stores/auth.store'
 import { socketClient } from 'src/lib/socket'
+import { useAuthStore } from 'src/stores/auth.store'
+import http, { getRefreshTokenFromLS, URL_REFRESH_TOKEN } from 'src/utils/http'
 
 export type SocketStatus = 'connected' | 'reconnecting' | 'disconnected'
 
@@ -20,6 +21,24 @@ export function useSocket(): SocketStatus {
       setStatus('disconnected')
       return
     }
+
+    // Register the token refresher so the socket can self-heal using the same
+    // refresh-access-token flow that the REST layer uses.
+    socketClient.setTokenRefresher(async () => {
+      try {
+        const refreshToken = getRefreshTokenFromLS()
+        if (!refreshToken) return null
+        const res = await http.post<{ data: { access_token: string } }>(URL_REFRESH_TOKEN, {
+          refresh_token: refreshToken,
+        })
+        const newToken = res.data.data.access_token
+        useAuthStore.getState().setTokens(newToken)
+        return newToken
+      } catch {
+        useAuthStore.getState().logout()
+        return null
+      }
+    })
 
     socketClient.connect(accessToken)
     setStatus(socketClient.status)

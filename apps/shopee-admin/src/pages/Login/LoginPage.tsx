@@ -88,7 +88,13 @@ export default function LoginPage() {
       navigate(from, { replace: true })
     } catch (err) {
       const error = err as AxiosError<{ message: string }>
-      if (error.response?.status === 401) {
+      // The API returns 422 (Unprocessable Entity) for invalid login credentials
+      // and 401 for unauthorized. Client-side zod already guarantees a valid email
+      // format and password length before submit, so a server-side 422 here means
+      // the email/password combination was rejected — show a friendly message
+      // instead of a generic "server error".
+      const status = error.response?.status
+      if (status === 401 || status === 422) {
         setError('root', { message: t('errors.invalidCredentials') })
       } else {
         setError('root', { message: t('errors.serverError') })

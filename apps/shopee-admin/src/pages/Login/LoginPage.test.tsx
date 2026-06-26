@@ -78,6 +78,26 @@ describe('LoginPage', () => {
     loginSpy.mockRestore()
   })
 
+  it('shows invalid credentials message on 422 (server validation error)', async () => {
+    // Backend returns 422 (Unprocessable Entity) for wrong email/password, with
+    // the field error nested under data. The UI must show a friendly message,
+    // not a generic "server error".
+    const loginSpy = vi.spyOn(authApi, 'login').mockRejectedValueOnce({
+      response: {
+        status: 422,
+        data: { message: 'Lỗi', data: { password: 'Email hoặc mật khẩu không đúng' } },
+      },
+    })
+    const { user } = renderWithProviders(<LoginPage />)
+    await user.type(screen.getByLabelText('form.email'), 'admin@shopee.com')
+    await user.type(screen.getByLabelText('form.password'), 'wrongpass1')
+    await user.click(screen.getByRole('button', { name: /form.signIn/i }))
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent('errors.invalidCredentials')
+    })
+    loginSpy.mockRestore()
+  })
+
   it('shows server error for non-401 errors', async () => {
     const loginSpy = vi.spyOn(authApi, 'login').mockRejectedValueOnce({
       response: { status: 500, data: { message: 'Server error' } },

@@ -697,6 +697,44 @@ describe('ProductListPage', () => {
     })
   })
 
+  it('pagination next-page button is enabled when API returns total_pages > 1', async () => {
+    server.use(
+      http.get(`${API_URL}/admin/products`, () => {
+        return HttpResponse.json({
+          message: 'OK',
+          data: {
+            products: [
+              {
+                _id: 'p-1',
+                name: 'Product Page One',
+                price: 10000,
+                price_before_discount: 12000,
+                quantity: 10,
+                sold: 1,
+                rating: 4.0,
+                image: 'https://example.com/p1.jpg',
+                category: 'cat-1',
+                location: 'HCM',
+              },
+            ],
+            pagination: { page: 1, limit: 1, total: 3, total_pages: 3 },
+          },
+        })
+      }),
+    )
+    renderWithProviders(<ProductListPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument()
+    })
+    // The total rows count should reflect the value from total
+    await waitFor(() => {
+      expect(screen.getByText(/3.*pagination\.totalRows/)).toBeInTheDocument()
+    })
+    // The next-page button must be enabled because pageCount (total_pages=3) > pageIndex+1 (1)
+    const nextButton = screen.getByRole('button', { name: /pagination\.nextPage/i })
+    expect(nextButton).not.toBeDisabled()
+  })
+
   it('closes individual delete dialog via cancel button (onOpenChange false branch)', async () => {
     const { user } = renderWithProviders(<ProductListPage />)
     await waitFor(() => {

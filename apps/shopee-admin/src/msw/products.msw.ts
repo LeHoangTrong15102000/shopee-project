@@ -18,7 +18,13 @@ const productsHandlers = [
       message: 'Lấy danh sách sản phẩm thành công',
       data: {
         products: paginated,
-        pagination: { page, limit, page_size: Math.ceil(filtered.length / limit) || 1 },
+        pagination: {
+          page,
+          limit,
+          page_size: Math.ceil(filtered.length / limit) || 1,
+          total: filtered.length,
+          total_pages: Math.ceil(filtered.length / limit) || 1,
+        },
       },
     })
   }),

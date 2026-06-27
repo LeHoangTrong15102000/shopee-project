@@ -104,6 +104,8 @@ const getProducts = async (req: Request, res: Response) => {
         page: result.pagination.page,
         limit: result.pagination.limit,
         page_size: result.pagination.page_size,
+        total: result.pagination.total,
+        total_pages: result.pagination.page_size,
       },
     },
   }

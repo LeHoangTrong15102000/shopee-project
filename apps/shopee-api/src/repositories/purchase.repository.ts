@@ -298,4 +298,71 @@ export class PurchaseRepository implements IPurchaseRepository {
     )
     return result.deletedCount
   }
+
+  async switchCartItemSku(
+    userId: string | Types.ObjectId,
+    productId: string | Types.ObjectId,
+    currentSkuId: string | Types.ObjectId,
+    targetSkuId: string | Types.ObjectId,
+    price: number,
+    priceBeforeDiscount: number,
+  ): Promise<IPurchase | null> {
+    return PurchaseModel.findOneAndUpdate(
+      {
+        user: new Types.ObjectId(userId.toString()),
+        product: new Types.ObjectId(productId.toString()),
+        sku: new Types.ObjectId(currentSkuId.toString()),
+        status: STATUS_PURCHASE.IN_CART,
+      },
+      {
+        sku: new Types.ObjectId(targetSkuId.toString()),
+        price,
+        price_before_discount: priceBeforeDiscount,
+      },
+      { new: true },
+    )
+      .populate({ path: 'user', select: USER_SELECT_FIELDS })
+      .populate({ path: 'product', select: PRODUCT_SELECT_FIELDS })
+      .populate({ path: 'sku', select: SKU_SELECT_FIELDS })
+      .lean<IPurchase | null>()
+  }
+
+  async mergeAndDeleteSourceLine(
+    userId: string | Types.ObjectId,
+    productId: string | Types.ObjectId,
+    sourceSkuId: string | Types.ObjectId,
+    targetSkuId: string | Types.ObjectId,
+    mergedBuyCount: number,
+    price: number,
+    priceBeforeDiscount: number,
+  ): Promise<IPurchase | null> {
+    // Step 1: Write the merged buy_count + new price to the existing target-SKU line.
+    // This must complete before the source delete so a crash leaves a re-mergeable state.
+    const merged = await PurchaseModel.findOneAndUpdate(
+      {
+        user: new Types.ObjectId(userId.toString()),
+        product: new Types.ObjectId(productId.toString()),
+        sku: new Types.ObjectId(targetSkuId.toString()),
+        status: STATUS_PURCHASE.IN_CART,
+      },
+      { buy_count: mergedBuyCount, price, price_before_discount: priceBeforeDiscount },
+      { new: true },
+    )
+      .populate({ path: 'user', select: USER_SELECT_FIELDS })
+      .populate({ path: 'product', select: PRODUCT_SELECT_FIELDS })
+      .populate({ path: 'sku', select: SKU_SELECT_FIELDS })
+      .lean<IPurchase | null>()
+
+    if (!merged) return null
+
+    // Step 2: Delete the source line only after the merged write has succeeded.
+    await PurchaseModel.deleteOne({
+      user: new Types.ObjectId(userId.toString()),
+      product: new Types.ObjectId(productId.toString()),
+      sku: new Types.ObjectId(sourceSkuId.toString()),
+      status: STATUS_PURCHASE.IN_CART,
+    })
+
+    return merged
+  }
 }

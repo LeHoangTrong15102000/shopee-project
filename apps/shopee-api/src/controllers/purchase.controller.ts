@@ -56,7 +56,24 @@ export const addToCart = async (req: Request, res: Response) => {
 
 export const updatePurchase = async (req: Request, res: Response) => {
   try {
-    const { product_id, buy_count, sku_id }: PurchaseBody = req.body
+    const { product_id, buy_count, sku_id, target_sku_id }: PurchaseBody = req.body
+
+    // Route to variant switch when a target SKU is present and different from the current SKU
+    if (target_sku_id && sku_id && target_sku_id !== sku_id) {
+      const data = await purchaseService.switchCartItemVariant(
+        req.jwtDecoded.id,
+        product_id,
+        sku_id,
+        target_sku_id,
+      )
+      emitCartUpdate(req.jwtDecoded.id, 'update', product_id)
+      return responseSuccess(res, {
+        message: PURCHASE_MESSAGES.UPDATE_SUCCESS,
+        data,
+      })
+    }
+
+    // Existing quantity-update path
     const data = await purchaseService.updateCartItem(
       req.jwtDecoded.id,
       product_id,

@@ -167,4 +167,34 @@ export interface IPurchaseRepository extends IBaseRepository<
     status: PurchaseStatus,
     options?: { session?: ClientSession },
   ): Promise<number>
+
+  /**
+   * Switch a cart line's SKU and price in place.
+   * Locates the line by (user, product, currentSkuId, IN_CART) and updates
+   * its sku, price, and price_before_discount fields.
+   */
+  switchCartItemSku(
+    userId: string | Types.ObjectId,
+    productId: string | Types.ObjectId,
+    currentSkuId: string | Types.ObjectId,
+    targetSkuId: string | Types.ObjectId,
+    price: number,
+    priceBeforeDiscount: number,
+  ): Promise<IPurchase | null>
+
+  /**
+   * Merge the source line into an existing target-SKU line:
+   * 1. Update the existing target-SKU line's buy_count to mergedBuyCount.
+   * 2. Delete the source line (identified by sourceSkuId).
+   * The merged write must complete before the delete so a crash leaves a re-mergeable state.
+   */
+  mergeAndDeleteSourceLine(
+    userId: string | Types.ObjectId,
+    productId: string | Types.ObjectId,
+    sourceSkuId: string | Types.ObjectId,
+    targetSkuId: string | Types.ObjectId,
+    mergedBuyCount: number,
+    price: number,
+    priceBeforeDiscount: number,
+  ): Promise<IPurchase | null>
 }

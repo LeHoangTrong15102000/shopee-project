@@ -1,19 +1,24 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
+import { useQuery } from '@tanstack/react-query'
 import Button from 'src/components/Button'
 import ImageWithFallback from 'src/components/ImageWithFallback'
 import QuantityController from 'src/components/QuantityController'
 import { InlineStockAlert } from 'src/components/RealTimeStockAlert'
 import ShopeeCheckbox from 'src/components/ShopeeCheckbox'
 import StockBadge from 'src/components/StockBadge'
+import ProductVariantSelector from 'src/components/ProductVariantSelector'
 import { useIsMobile } from 'src/hooks/useIsMobile'
 import { useSwipeGesture } from 'src/hooks/useSwipeGesture'
+import { useOptimisticSwitchVariant } from 'src/hooks/optimistic'
 import { MOBILE_GESTURE } from 'src/styles/animations/motion.config'
 import { swipeToDelete } from 'src/styles/animations/variants'
 import { Purchase } from 'src/types/purchases.type'
+import { ProductVariantCombination } from 'src/types/variant.type'
+import productApi from 'src/apis/product.api'
 import { ExtendedPurchase, InlineStockAlertState } from '../types'
 
 /**
@@ -29,6 +34,143 @@ function getVariantLabel(purchase: Pick<Purchase, 'sku'>): string | null {
     return Object.values(sku.variant_values).join(', ')
   }
   return null
+}
+
+/**
+ * VariantSelectorPanel
+ *
+ * Fetches the full product detail when mounted (to get variants + skus),
+ * then renders a ProductVariantSelector seeded with the line's current
+ * variant_values. When the user completes a new selection, it fires
+ * useOptimisticSwitchVariant and calls onClose.
+ */
+interface VariantSelectorPanelProps {
+  purchase: ExtendedPurchase
+  onClose: () => void
+}
+
+function VariantSelectorPanel({ purchase, onClose }: VariantSelectorPanelProps) {
+  const { t } = useTranslation('cart')
+  const switchVariantMutation = useOptimisticSwitchVariant()
+
+  // Fetch product detail to get variants + skus (not available on cart line)
+  const { data: productDetailData, isLoading } = useQuery({
+    queryKey: ['product', purchase.product._id],
+    queryFn: () => productApi.getProductDetail(purchase.product._id),
+    staleTime: 60_000,
+  })
+
+  const product = productDetailData?.data?.data
+  const variants = product?.variants ?? []
+  const skus = product?.skus ?? []
+
+  // Initialise selectedValues from the current cart line's sku.variant_values
+  const initialValues = purchase.sku?.variant_values ?? {}
+  const [selectedValues, setSelectedValues] = useState<Record<string, string>>(initialValues)
+
+  // Build ProductVariantCombination array from skus so ProductVariantSelector
+  // can show available/unavailable options correctly
+  const combinations: ProductVariantCombination[] = skus.map((sku) => ({
+    _id: sku._id,
+    variant_values: sku.variant_values,
+    price: sku.price,
+    price_before_discount: purchase.product.price_before_discount,
+    quantity: sku.stock,
+    sku: sku.value,
+    image: sku.image,
+  }))
+
+  const handleSelect = (type: string, value: string) => {
+    const next = { ...selectedValues, [type]: value }
+    setSelectedValues(next)
+
+    // Check if all variant types now have a selection
+    if (variants.length === 0) return
+    const allSelected = variants.every((v) => next[v.type] !== undefined)
+    if (!allSelected) return
+
+    // Find the matching SKU
+    const matchedSku = skus.find((sku) => {
+      return variants.every((v) => sku.variant_values[v.type] === next[v.type])
+    })
+
+    if (!matchedSku) return
+
+    const currentSkuId = purchase.sku?._id
+    if (!currentSkuId) return
+
+    // No-op when the user selects the same variant
+    if (matchedSku._id === currentSkuId) {
+      onClose()
+      return
+    }
+
+    switchVariantMutation.mutate({
+      product_id: purchase.product._id,
+      sku_id: currentSkuId,
+      target_sku_id: matchedSku._id,
+      buy_count: purchase.buy_count,
+    })
+
+    onClose()
+  }
+
+  // Overlay ref for click-outside-to-close
+  const overlayRef = useRef<HTMLDivElement>(null)
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === overlayRef.current) onClose()
+  }
+
+  return (
+    <div
+      ref={overlayRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={t('variantSelector.title', 'Select Variant')}
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center"
+      onClick={handleOverlayClick}
+    >
+      <div className="w-full max-w-md rounded-t-xl bg-white p-4 shadow-xl sm:rounded-xl dark:bg-slate-800">
+        <div className="mb-3 flex items-center justify-between">
+          <span className="text-sm font-medium text-gray-800 dark:text-gray-100">
+            {t('variantSelector.title', 'Select Variant')}
+          </span>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-slate-700"
+            aria-label={t('variantSelector.close', 'Close')}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="h-5 w-5"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {isLoading && (
+          <div className="flex items-center justify-center py-6 text-sm text-gray-400">
+            {t('variantSelector.loading', 'Loading...')}
+          </div>
+        )}
+
+        {!isLoading && variants.length > 0 && (
+          <ProductVariantSelector
+            variants={variants}
+            combinations={combinations}
+            selectedValues={selectedValues}
+            onSelect={handleSelect}
+          />
+        )}
+      </div>
+    </div>
+  )
 }
 
 interface CartItemListProps {
@@ -55,6 +197,7 @@ interface MobileCartItemProps {
   inlineAlerts: Map<string, InlineStockAlertState>
   revealedItemId: string | null
   setRevealedItemId: (id: string | null) => void
+  setSelectorOpenForId: (id: string | null) => void
   handleChecked: (purchaseIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => void
   handleQuantity: (purchaseIndex: number, value: number, enabled: boolean) => void
   handleTypeQuantity: (purchaseIndex: number) => (value: number) => void
@@ -74,6 +217,7 @@ const MobileCartItem = ({
   inlineAlerts,
   revealedItemId,
   setRevealedItemId,
+  setSelectorOpenForId,
   handleChecked,
   handleQuantity,
   handleTypeQuantity,
@@ -196,9 +340,29 @@ const MobileCartItem = ({
             </Link>
 
             {getVariantLabel(purchase) !== null && (
-              <span className="mt-0.5 inline-block rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 dark:bg-slate-700 dark:text-gray-300">
+              <button
+                type="button"
+                onClick={() => setSelectorOpenForId(purchase._id)}
+                className="mt-0.5 inline-flex cursor-pointer items-center gap-0.5 rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 transition-colors hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600"
+                aria-label={t('variantSelector.change', 'Change variant')}
+              >
                 {getVariantLabel(purchase)}
-              </span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  className="h-3 w-3 shrink-0"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                  />
+                </svg>
+              </button>
             )}
 
             <div className="mt-1">
@@ -343,6 +507,13 @@ const CartItemList = ({
   const { t } = useTranslation('cart')
   const isMobile = useIsMobile()
   const [revealedItemId, setRevealedItemId] = useState<string | null>(null)
+  // Track which purchase (by _id) has the variant selector open; null = none
+  const [selectorOpenForId, setSelectorOpenForId] = useState<string | null>(null)
+
+  const selectorPurchase =
+    selectorOpenForId !== null
+      ? (extendedPurchases.find((p) => p._id === selectorOpenForId) ?? null)
+      : null
 
   return (
     <div className="overflow-auto">
@@ -418,9 +589,29 @@ const CartItemList = ({
                             {purchase.product.name}
                           </Link>
                           {getVariantLabel(purchase) !== null && (
-                            <span className="mt-0.5 inline-block rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 dark:bg-slate-700 dark:text-gray-300">
+                            <button
+                              type="button"
+                              onClick={() => setSelectorOpenForId(purchase._id)}
+                              className="mt-0.5 inline-flex cursor-pointer items-center gap-0.5 rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 transition-colors hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600"
+                              aria-label={t('variantSelector.change', 'Change variant')}
+                            >
                               {getVariantLabel(purchase)}
-                            </span>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                                className="h-3 w-3 shrink-0"
+                                aria-hidden="true"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                                />
+                              </svg>
+                            </button>
                           )}
                           <div className="mt-1">
                             <StockBadge
@@ -559,6 +750,7 @@ const CartItemList = ({
                 inlineAlerts={inlineAlerts}
                 revealedItemId={revealedItemId}
                 setRevealedItemId={setRevealedItemId}
+                setSelectorOpenForId={setSelectorOpenForId}
                 handleChecked={handleChecked}
                 handleQuantity={handleQuantity}
                 handleTypeQuantity={handleTypeQuantity}
@@ -574,6 +766,14 @@ const CartItemList = ({
           </div>
         )}
       </div>
+
+      {/* Variant selector panel — rendered as a fixed overlay when open */}
+      {selectorPurchase !== null && (
+        <VariantSelectorPanel
+          purchase={selectorPurchase}
+          onClose={() => setSelectorOpenForId(null)}
+        />
+      )}
     </div>
   )
 }

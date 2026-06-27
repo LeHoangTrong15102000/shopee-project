@@ -30,6 +30,7 @@ jest.mock('../../container', () => ({
   purchaseService: {
     addToCart: jest.fn(),
     updateCartItem: jest.fn(),
+    switchCartItemVariant: jest.fn(),
     getPurchases: jest.fn(),
     removeFromCart: jest.fn(),
   },
@@ -87,6 +88,7 @@ jest.mock('@database/database', () => ({
 }))
 
 import { purchaseService } from '../../container'
+import { emitCartUpdate } from '../../socket/utils/cart-emit'
 import {
   addToCart,
   updatePurchase,
@@ -527,6 +529,121 @@ describe('Purchase Controller', () => {
       await deletePurchases(req as Request, res as Response)
 
       expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+    })
+  })
+
+  // Task 8.3 — controller routing tests for variant switch
+  describe('updatePurchase — variant switch routing', () => {
+    it('should route to switchCartItemVariant when target_sku_id is present and differs from sku_id', async () => {
+      ;(mockPurchaseService as any).switchCartItemVariant.mockResolvedValue(mockPurchase as any)
+      const req = createMockRequest({
+        body: {
+          product_id: 'product_1',
+          buy_count: 2,
+          sku_id: 'sku_A',
+          target_sku_id: 'sku_B',
+        },
+      })
+      const res = createMockResponse()
+
+      await updatePurchase(req as Request, res as Response)
+
+      expect((mockPurchaseService as any).switchCartItemVariant).toHaveBeenCalledWith(
+        'user_1',
+        'product_1',
+        'sku_A',
+        'sku_B',
+      )
+      expect(mockPurchaseService.updateCartItem).not.toHaveBeenCalled()
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+    })
+
+    it('should emit emitCartUpdate(userId, update, product_id) after variant switch', async () => {
+      ;(mockPurchaseService as any).switchCartItemVariant.mockResolvedValue(mockPurchase as any)
+      const req = createMockRequest({
+        body: {
+          product_id: 'product_1',
+          buy_count: 2,
+          sku_id: 'sku_A',
+          target_sku_id: 'sku_B',
+        },
+      })
+      const res = createMockResponse()
+
+      await updatePurchase(req as Request, res as Response)
+
+      expect(emitCartUpdate).toHaveBeenCalledWith('user_1', 'update', 'product_1')
+    })
+
+    it('should route to updateCartItem (not switchCartItemVariant) when no target_sku_id', async () => {
+      mockPurchaseService.updateCartItem.mockResolvedValue(mockPurchase as any)
+      const req = createMockRequest({
+        body: { product_id: 'product_1', buy_count: 3, sku_id: 'sku_A' },
+      })
+      const res = createMockResponse()
+
+      await updatePurchase(req as Request, res as Response)
+
+      expect(mockPurchaseService.updateCartItem).toHaveBeenCalledWith(
+        'user_1',
+        'product_1',
+        3,
+        'sku_A',
+      )
+      expect((mockPurchaseService as any).switchCartItemVariant).not.toHaveBeenCalled()
+      expect(res.status).toHaveBeenCalledWith(STATUS.OK)
+    })
+
+    it('should route to updateCartItem when target_sku_id equals sku_id (no-op guard at controller level)', async () => {
+      mockPurchaseService.updateCartItem.mockResolvedValue(mockPurchase as any)
+      const req = createMockRequest({
+        body: { product_id: 'product_1', buy_count: 2, sku_id: 'sku_A', target_sku_id: 'sku_A' },
+      })
+      const res = createMockResponse()
+
+      await updatePurchase(req as Request, res as Response)
+
+      // target_sku_id === sku_id → controller condition is false → falls through to updateCartItem
+      expect(mockPurchaseService.updateCartItem).toHaveBeenCalled()
+      expect((mockPurchaseService as any).switchCartItemVariant).not.toHaveBeenCalled()
+    })
+
+    it('should throw NotFoundError (mapped) when switchCartItemVariant throws NotFoundError', async () => {
+      ;(mockPurchaseService as any).switchCartItemVariant.mockRejectedValue(
+        new NotFoundError('Cart item'),
+      )
+      const req = createMockRequest({
+        body: {
+          product_id: 'product_1',
+          buy_count: 1,
+          sku_id: 'sku_A',
+          target_sku_id: 'sku_B',
+        },
+      })
+      const res = createMockResponse()
+
+      await expect(updatePurchase(req as Request, res as Response)).rejects.toMatchObject({
+        status: STATUS.NOT_FOUND,
+      })
+    })
+
+    it('should throw ValidationError (mapped) when switchCartItemVariant throws ValidationError', async () => {
+      ;(mockPurchaseService as any).switchCartItemVariant.mockRejectedValue(
+        new ValidationError('Stock exceeded'),
+      )
+      const req = createMockRequest({
+        body: {
+          product_id: 'product_1',
+          buy_count: 10,
+          sku_id: 'sku_A',
+          target_sku_id: 'sku_B',
+        },
+      })
+      const res = createMockResponse()
+
+      await expect(updatePurchase(req as Request, res as Response)).rejects.toMatchObject({
+        status: STATUS.NOT_ACCEPTABLE,
+      })
     })
   })
 })

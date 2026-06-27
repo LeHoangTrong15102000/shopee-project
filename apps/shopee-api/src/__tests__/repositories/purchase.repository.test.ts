@@ -66,6 +66,14 @@ jest.mock('@database/models/purchase.model', () => {
   mockModel.updateMany = jest.fn()
   mockModel.exists = jest.fn()
   mockModel.aggregate = jest.fn()
+  mockModel.findOneAndUpdate = jest.fn().mockReturnValue({
+    populate: jest.fn().mockReturnValue({
+      populate: jest.fn().mockReturnValue({
+        populate: jest.fn().mockReturnValue({ lean: jest.fn() }),
+      }),
+    }),
+  })
+  mockModel.deleteOne = jest.fn().mockResolvedValue({ deletedCount: 1 })
   return { PurchaseModel: mockModel }
 })
 
@@ -720,6 +728,147 @@ describe('PurchaseRepository', () => {
       const updatePayload = (PurchaseModel.findByIdAndUpdate as jest.Mock).mock.calls[0][1]
       expect(updatePayload).toHaveProperty('buy_count', 7)
       expect(updatePayload).not.toHaveProperty('sku')
+    })
+  })
+
+  // switchCartItemSku and mergeAndDeleteSourceLine tests
+  describe('switchCartItemSku', () => {
+    const buildFindOneAndUpdateChain = (returnVal: any) => {
+      const mockLean = jest.fn().mockResolvedValue(returnVal)
+      const mockPopulate3 = jest.fn().mockReturnValue({ lean: mockLean })
+      const mockPopulate2 = jest.fn().mockReturnValue({ populate: mockPopulate3 })
+      const mockPopulate1 = jest.fn().mockReturnValue({ populate: mockPopulate2 })
+      ;(PurchaseModel.findOneAndUpdate as jest.Mock).mockReturnValue({ populate: mockPopulate1 })
+    }
+
+    it('should update sku, price, and price_before_discount on the matching line', async () => {
+      const switched = {
+        ...mockPurchaseData,
+        sku: '507f1f77bcf86cd799439099',
+        price: 200,
+        price_before_discount: 250,
+      }
+      buildFindOneAndUpdateChain(switched)
+
+      const result = await repository.switchCartItemSku(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439013',
+        '507f1f77bcf86cd799439020',
+        '507f1f77bcf86cd799439099',
+        200,
+        250,
+      )
+
+      expect(result).toEqual(switched)
+      const [filter, update] = (PurchaseModel.findOneAndUpdate as jest.Mock).mock.calls[0]
+      // Filter must match by current sku and IN_CART status
+      expect(filter.sku.toString()).toBe('507f1f77bcf86cd799439020')
+      expect(filter.status).toBe(-1)
+      // Update must write target sku and both price fields
+      expect(update.sku.toString()).toBe('507f1f77bcf86cd799439099')
+      expect(update.price).toBe(200)
+      expect(update.price_before_discount).toBe(250)
+    })
+
+    it('should return null when no matching line exists', async () => {
+      buildFindOneAndUpdateChain(null)
+
+      const result = await repository.switchCartItemSku(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439013',
+        '507f1f77bcf86cd799439020',
+        '507f1f77bcf86cd799439099',
+        200,
+        250,
+      )
+
+      expect(result).toBeNull()
+    })
+  })
+
+  describe('mergeAndDeleteSourceLine', () => {
+    const buildFindOneAndUpdateChain = (returnVal: any) => {
+      const mockLean = jest.fn().mockResolvedValue(returnVal)
+      const mockPopulate3 = jest.fn().mockReturnValue({ lean: mockLean })
+      const mockPopulate2 = jest.fn().mockReturnValue({ populate: mockPopulate3 })
+      const mockPopulate1 = jest.fn().mockReturnValue({ populate: mockPopulate2 })
+      ;(PurchaseModel.findOneAndUpdate as jest.Mock).mockReturnValue({ populate: mockPopulate1 })
+    }
+
+    it('should write merged buy_count to target line then delete source line', async () => {
+      const mergedLine = { ...mockPurchaseData, buy_count: 5 }
+      buildFindOneAndUpdateChain(mergedLine)
+      ;(PurchaseModel.deleteOne as jest.Mock).mockResolvedValue({ deletedCount: 1 })
+
+      const result = await repository.mergeAndDeleteSourceLine(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439013',
+        '507f1f77bcf86cd799439020',
+        '507f1f77bcf86cd799439099',
+        5,
+        200,
+        250,
+      )
+
+      expect(result).toEqual(mergedLine)
+      // Step 1: findOneAndUpdate targets the TARGET sku line
+      const [filter, update] = (PurchaseModel.findOneAndUpdate as jest.Mock).mock.calls[0]
+      expect(filter.sku.toString()).toBe('507f1f77bcf86cd799439099')
+      expect(update.buy_count).toBe(5)
+      expect(update.price).toBe(200)
+      expect(update.price_before_discount).toBe(250)
+      // Step 2: deleteOne targets the SOURCE sku line
+      const deleteFilter = (PurchaseModel.deleteOne as jest.Mock).mock.calls[0][0]
+      expect(deleteFilter.sku.toString()).toBe('507f1f77bcf86cd799439020')
+    })
+
+    it('should return null and not call deleteOne when target line not found', async () => {
+      buildFindOneAndUpdateChain(null)
+      ;(PurchaseModel.deleteOne as jest.Mock).mockResolvedValue({ deletedCount: 0 })
+
+      const result = await repository.mergeAndDeleteSourceLine(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439013',
+        '507f1f77bcf86cd799439020',
+        '507f1f77bcf86cd799439099',
+        5,
+        200,
+        250,
+      )
+
+      expect(result).toBeNull()
+      expect(PurchaseModel.deleteOne).not.toHaveBeenCalled()
+    })
+
+    it('should complete merged write before source delete (ordering assertion)', async () => {
+      const callOrder: string[] = []
+      const mergedLine = { ...mockPurchaseData, buy_count: 7 }
+
+      const mockLean = jest.fn().mockImplementation(() => {
+        callOrder.push('findOneAndUpdate')
+        return Promise.resolve(mergedLine)
+      })
+      const mockPopulate3 = jest.fn().mockReturnValue({ lean: mockLean })
+      const mockPopulate2 = jest.fn().mockReturnValue({ populate: mockPopulate3 })
+      const mockPopulate1 = jest.fn().mockReturnValue({ populate: mockPopulate2 })
+      ;(PurchaseModel.findOneAndUpdate as jest.Mock).mockReturnValue({ populate: mockPopulate1 })
+      ;(PurchaseModel.deleteOne as jest.Mock).mockImplementation(() => {
+        callOrder.push('deleteOne')
+        return Promise.resolve({ deletedCount: 1 })
+      })
+
+      await repository.mergeAndDeleteSourceLine(
+        '507f1f77bcf86cd799439012',
+        '507f1f77bcf86cd799439013',
+        '507f1f77bcf86cd799439020',
+        '507f1f77bcf86cd799439099',
+        7,
+        200,
+        250,
+      )
+
+      // Merged write must happen before source delete
+      expect(callOrder).toEqual(['findOneAndUpdate', 'deleteOne'])
     })
   })
 })

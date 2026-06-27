@@ -113,6 +113,95 @@ export class PurchaseService extends BaseService {
     return this.purchaseRepository.findCart(userId)
   }
 
+  /**
+   * Switch a cart line from currentSkuId to targetSkuId in place.
+   * Validates target SKU existence, same-product ownership, and stock.
+   * Detects collision and merges if a line for target SKU already exists.
+   * Treating switching to the same SKU as a no-op.
+   */
+  async switchCartItemVariant(
+    userId: string,
+    productId: string,
+    currentSkuId: string,
+    targetSkuId: string,
+    buyCount?: number,
+  ): Promise<IPurchase> {
+    // No-op: same SKU requested
+    if (currentSkuId === targetSkuId) {
+      const cartItem = await this.purchaseRepository.findCartItem(userId, productId, currentSkuId)
+      if (!cartItem) throw new NotFoundError('Cart item')
+      return cartItem
+    }
+
+    if (!this.skuRepository) {
+      throw new ValidationError('SKU repository not available')
+    }
+
+    // Validate target SKU exists
+    const targetSku = await this.skuRepository.findById(targetSkuId)
+    if (!targetSku) throw new NotFoundError('SKU', targetSkuId)
+
+    // Validate target SKU belongs to the same product
+    const targetSkuProductId =
+      targetSku.product instanceof Object && '_id' in (targetSku.product as object)
+        ? (targetSku.product as { _id: { toString(): string } })._id.toString()
+        : targetSku.product.toString()
+    if (targetSkuProductId !== productId) {
+      throw new ValidationError('Target SKU does not belong to the same product')
+    }
+
+    // Load product for price_before_discount
+    const product = await this.productRepository.findById(productId)
+    if (!product) throw new NotFoundError('Product', productId)
+
+    // Locate the source line
+    const sourceLine = await this.purchaseRepository.findCartItem(userId, productId, currentSkuId)
+    if (!sourceLine) throw new NotFoundError('Cart item')
+
+    const effectiveBuyCount = buyCount ?? sourceLine.buy_count
+
+    // Detect collision: does a line for (user, product, target sku, IN_CART) already exist?
+    const existingTargetLine = await this.purchaseRepository.findCartItem(
+      userId,
+      productId,
+      targetSkuId,
+    )
+
+    if (existingTargetLine) {
+      // Merge path: sum buy_counts, validate against target stock
+      const mergedBuyCount = effectiveBuyCount + existingTargetLine.buy_count
+      if (mergedBuyCount > targetSku.stock) {
+        throw new ValidationError('Số lượng hợp nhất vượt quá tồn kho SKU đích')
+      }
+      const merged = await this.purchaseRepository.mergeAndDeleteSourceLine(
+        userId,
+        productId,
+        currentSkuId,
+        targetSkuId,
+        mergedBuyCount,
+        targetSku.price,
+        product.price_before_discount,
+      )
+      if (!merged) throw new NotFoundError('Cart item')
+      return merged
+    } else {
+      // Switch-in-place path: validate stock for current buy_count
+      if (effectiveBuyCount > targetSku.stock) {
+        throw new ValidationError('Số lượng mua vượt quá tồn kho SKU đích')
+      }
+      const switched = await this.purchaseRepository.switchCartItemSku(
+        userId,
+        productId,
+        currentSkuId,
+        targetSkuId,
+        targetSku.price,
+        product.price_before_discount,
+      )
+      if (!switched) throw new NotFoundError('Cart item')
+      return switched
+    }
+  }
+
   async getCartItemsByIds(userId: string, purchaseIds: string[]): Promise<IPurchase[]> {
     if (!this.isValidObjectId(userId)) {
       throw new ValidationError('Invalid user ID format')

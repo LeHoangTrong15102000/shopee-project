@@ -50,13 +50,45 @@ describe('addToCartSchema', () => {
 })
 
 describe('updatePurchaseSchema', () => {
-  it('should be the same reference as addToCartSchema', () => {
-    expect(updatePurchaseSchema).toBe(addToCartSchema)
+  it('should be a distinct schema from addToCartSchema (schemas were intentionally separated)', () => {
+    // updatePurchaseSchema was split from addToCartSchema to accept the optional
+    // target_sku_id field for variant switching. They are no longer the same reference.
+    expect(updatePurchaseSchema).not.toBe(addToCartSchema)
   })
 
-  it('should pass with valid data', () => {
+  it('should parse a full variant-switch payload with target_sku_id', () => {
+    const result = updatePurchaseSchema.safeParse({
+      body: {
+        product_id: VALID_ID,
+        buy_count: 2,
+        sku_id: VALID_ID,
+        target_sku_id: VALID_ID_2,
+      },
+    })
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.body.target_sku_id).toBe(VALID_ID_2)
+    }
+  })
+
+  it('should pass with quantity-only payload (no target_sku_id) — existing path unchanged', () => {
     const result = updatePurchaseSchema.safeParse({ body: { product_id: VALID_ID, buy_count: 5 } })
     expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.body.target_sku_id).toBeUndefined()
+    }
+  })
+
+  it('addToCartSchema should not carry target_sku_id through (field is not in its shape)', () => {
+    // addToCartSchema strips unknown fields (no .strict()) so target_sku_id is dropped.
+    const result = addToCartSchema.safeParse({
+      body: { product_id: VALID_ID, buy_count: 1, target_sku_id: VALID_ID_2 },
+    })
+    expect(result.success).toBe(true)
+    if (result.success) {
+      // target_sku_id is not in addToCartSchema's body shape — it should be absent from output
+      expect((result.data.body as Record<string, unknown>).target_sku_id).toBeUndefined()
+    }
   })
 
   it('should fail when product_id is invalid', () => {
@@ -66,6 +98,13 @@ describe('updatePurchaseSchema', () => {
 
   it('should fail when buy_count is 0', () => {
     const result = updatePurchaseSchema.safeParse({ body: { product_id: VALID_ID, buy_count: 0 } })
+    expect(result.success).toBe(false)
+  })
+
+  it('should fail when target_sku_id is malformed', () => {
+    const result = updatePurchaseSchema.safeParse({
+      body: { product_id: VALID_ID, buy_count: 1, sku_id: VALID_ID, target_sku_id: 'not-an-id' },
+    })
     expect(result.success).toBe(false)
   })
 })

@@ -6,6 +6,7 @@ export {
   useOptimisticAddToCart,
   useOptimisticUpdateQuantity,
   useOptimisticRemoveFromCart,
+  useOptimisticSwitchVariant,
 } from './cart'
 
 // Review-related optimistic hooks
@@ -21,6 +22,8 @@ export { useOptimisticNotification } from './notification'
 export type {
   AddToCartPayload,
   UpdateQuantityPayload,
+  SwitchVariantPayload,
+  SwitchVariantContext,
   AddToCartContext,
   UpdateQuantityContext,
   RemoveFromCartContext,

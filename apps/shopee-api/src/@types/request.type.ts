@@ -42,6 +42,9 @@ export interface PurchaseBody {
   product_id: string
   buy_count: number
   sku_id?: string
+  /** Present only on variant-switch requests. When set (and different from sku_id),
+   *  the update endpoint switches the cart line from sku_id to target_sku_id. */
+  target_sku_id?: string
 }
 
 export interface BuyProductItem {

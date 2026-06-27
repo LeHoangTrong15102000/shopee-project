@@ -38,12 +38,31 @@ export interface UpdateQuantityPayload {
   sku_id?: string
 }
 
+/** Payload for in-cart variant switch. sku_id is the current (locating) SKU;
+ *  target_sku_id is the destination SKU. buy_count is preserved from the source line. */
+export interface SwitchVariantPayload {
+  product_id: string
+  sku_id: string
+  target_sku_id: string
+  /** Optional — if omitted the hook uses the source line's existing buy_count. */
+  buy_count?: number
+  /** Price of the target SKU — used for the optimistic switch-in-place price update. */
+  target_price?: number
+  /** price_before_discount of the target SKU (mirrors product.price_before_discount). */
+  target_price_before_discount?: number
+}
+
 export interface AddToCartContext extends OptimisticContext {
   previousPurchases?: PurchasesQueryData | undefined
   optimisticPurchase?: Purchase | undefined
 }
 
 export interface UpdateQuantityContext extends OptimisticContext {
+  previousData?: PurchasesQueryData | undefined
+  product_id?: string
+}
+
+export interface SwitchVariantContext extends OptimisticContext {
   previousData?: PurchasesQueryData | undefined
   product_id?: string
 }

@@ -46,9 +46,36 @@ export const addToCartSchema = z.object({
 })
 
 /**
- * Update purchase schema (same as add to cart)
+ * Update purchase schema — extends add-to-cart with an optional target_sku_id
+ * for in-cart variant switching. When target_sku_id is present and different
+ * from sku_id, the request is a variant switch; otherwise it is a quantity update.
  */
-export const updatePurchaseSchema = addToCartSchema
+export const updatePurchaseSchema = z.object({
+  body: z.object({
+    product_id: z
+      .string()
+      .min(1, 'product_id không được để trống')
+      .refine((val) => /^[0-9a-fA-F]{24}$/.test(val), {
+        message: 'product_id không đúng định dạng',
+      }),
+    buy_count: z.coerce
+      .number()
+      .int('buy_count phải là số nguyên lớn hơn 0')
+      .min(1, 'buy_count phải là số nguyên lớn hơn 0'),
+    sku_id: z
+      .string()
+      .refine((val) => /^[0-9a-fA-F]{24}$/.test(val), {
+        message: 'sku_id không đúng định dạng',
+      })
+      .optional(),
+    target_sku_id: z
+      .string()
+      .refine((val) => /^[0-9a-fA-F]{24}$/.test(val), {
+        message: 'target_sku_id không đúng định dạng',
+      })
+      .optional(),
+  }),
+})
 
 /**
  * Buy products schema

@@ -15,6 +15,12 @@ export interface Purchase {
   status: PurchaseStatus
   user: string
   product: Product
+  sku?: {
+    _id: string
+    value?: string
+    image?: string
+    variant_values?: Record<string, string>
+  }
   createdAt: string
   updatedAt: string
 }

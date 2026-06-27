@@ -132,11 +132,12 @@ export interface IPurchaseRepository extends IBaseRepository<
   }>
 
   /**
-   * Find existing cart item for product
+   * Find existing cart item for product (and optional sku variant)
    */
   findCartItem(
     userId: string | Types.ObjectId,
     productId: string | Types.ObjectId,
+    skuId?: string | null,
   ): Promise<IPurchase | null>
 
   /**

@@ -28,4 +28,7 @@ PurchaseSchema.index({ user: 1, status: 1 })
 // Index for sorting purchases by creation date
 PurchaseSchema.index({ createdAt: -1 })
 
+// Compound index for variant-aware cart-line identity lookup (user + product + sku + status)
+PurchaseSchema.index({ user: 1, product: 1, sku: 1, status: 1 })
+
 export const PurchaseModel = mongoose.model('purchases', PurchaseSchema)

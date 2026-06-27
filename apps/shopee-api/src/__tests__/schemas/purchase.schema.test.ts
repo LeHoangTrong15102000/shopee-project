@@ -99,6 +99,52 @@ describe('buyProductsSchema', () => {
     })
     expect(result.success).toBe(false)
   })
+
+  // Task 8.3 — sku_id validation tests
+  it('should pass when item has a valid sku_id', () => {
+    const result = buyProductsSchema.safeParse({
+      body: [{ product_id: VALID_ID, buy_count: 1, sku_id: VALID_ID_2 }],
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('should pass when sku_id is absent (non-variant item)', () => {
+    const result = buyProductsSchema.safeParse({
+      body: [{ product_id: VALID_ID, buy_count: 1 }],
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('should fail when sku_id is malformed (not a 24-hex ObjectId)', () => {
+    const result = buyProductsSchema.safeParse({
+      body: [{ product_id: VALID_ID, buy_count: 1, sku_id: 'not-a-valid-id' }],
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('should fail when sku_id is an empty string', () => {
+    const result = buyProductsSchema.safeParse({
+      body: [{ product_id: VALID_ID, buy_count: 1, sku_id: '' }],
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('should fail when sku_id is too short (< 24 hex chars)', () => {
+    const result = buyProductsSchema.safeParse({
+      body: [{ product_id: VALID_ID, buy_count: 1, sku_id: '507f1f77bcf86cd79943' }],
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('should preserve sku_id in parsed output when valid', () => {
+    const result = buyProductsSchema.safeParse({
+      body: [{ product_id: VALID_ID, buy_count: 1, sku_id: VALID_ID_2 }],
+    })
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.body[0].sku_id).toBe(VALID_ID_2)
+    }
+  })
 })
 
 describe('deletePurchasesSchema', () => {

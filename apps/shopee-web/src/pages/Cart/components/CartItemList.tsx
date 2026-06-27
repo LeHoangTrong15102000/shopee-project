@@ -16,6 +16,21 @@ import { swipeToDelete } from 'src/styles/animations/variants'
 import { Purchase } from 'src/types/purchases.type'
 import { ExtendedPurchase, InlineStockAlertState } from '../types'
 
+/**
+ * Derive a human-readable variant label from the populated sku.
+ * Returns null when there is no sku (non-variant line) so the caller can
+ * omit the element entirely — no empty placeholder.
+ */
+function getVariantLabel(purchase: Pick<Purchase, 'sku'>): string | null {
+  const sku = purchase.sku
+  if (!sku) return null
+  if (sku.value) return sku.value
+  if (sku.variant_values && Object.keys(sku.variant_values).length > 0) {
+    return Object.values(sku.variant_values).join(', ')
+  }
+  return null
+}
+
 interface CartItemListProps {
   extendedPurchases: ExtendedPurchase[]
   purchasesInCart: Purchase[] | undefined
@@ -179,6 +194,12 @@ const MobileCartItem = ({
             >
               {purchase.product.name}
             </Link>
+
+            {getVariantLabel(purchase) !== null && (
+              <span className="mt-0.5 inline-block rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 dark:bg-slate-700 dark:text-gray-300">
+                {getVariantLabel(purchase)}
+              </span>
+            )}
 
             <div className="mt-1">
               <StockBadge
@@ -396,6 +417,11 @@ const CartItemList = ({
                           >
                             {purchase.product.name}
                           </Link>
+                          {getVariantLabel(purchase) !== null && (
+                            <span className="mt-0.5 inline-block rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 dark:bg-slate-700 dark:text-gray-300">
+                              {getVariantLabel(purchase)}
+                            </span>
+                          )}
                           <div className="mt-1">
                             <StockBadge
                               availableStock={purchase.product.quantity}

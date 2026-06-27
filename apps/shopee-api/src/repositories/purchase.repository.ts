@@ -15,12 +15,14 @@ import { PaginatedResult, PaginationOptions } from './interfaces/base.repository
 const USER_SELECT_FIELDS = '_id name email avatar'
 const PRODUCT_SELECT_FIELDS =
   '_id name image images price price_before_discount quantity sold rating category createdAt updatedAt'
+const SKU_SELECT_FIELDS = 'value variant_values image price'
 
 export class PurchaseRepository implements IPurchaseRepository {
   async findById(id: string | Types.ObjectId): Promise<IPurchase | null> {
     return PurchaseModel.findById(id)
       .populate({ path: 'user', select: USER_SELECT_FIELDS })
       .populate({ path: 'product', select: PRODUCT_SELECT_FIELDS })
+      .populate({ path: 'sku', select: SKU_SELECT_FIELDS })
       .lean<IPurchase | null>()
   }
 
@@ -28,6 +30,7 @@ export class PurchaseRepository implements IPurchaseRepository {
     return PurchaseModel.findOne(filter)
       .populate({ path: 'user', select: USER_SELECT_FIELDS })
       .populate({ path: 'product', select: PRODUCT_SELECT_FIELDS })
+      .populate({ path: 'sku', select: SKU_SELECT_FIELDS })
       .lean<IPurchase | null>()
   }
 
@@ -35,6 +38,7 @@ export class PurchaseRepository implements IPurchaseRepository {
     return PurchaseModel.find(filter, null, options)
       .populate({ path: 'user', select: USER_SELECT_FIELDS })
       .populate({ path: 'product', select: PRODUCT_SELECT_FIELDS })
+      .populate({ path: 'sku', select: SKU_SELECT_FIELDS })
       .lean<IPurchase[]>()
   }
 
@@ -49,6 +53,7 @@ export class PurchaseRepository implements IPurchaseRepository {
       PurchaseModel.find(filter)
         .populate({ path: 'user', select: USER_SELECT_FIELDS })
         .populate({ path: 'product', select: PRODUCT_SELECT_FIELDS })
+        .populate({ path: 'sku', select: SKU_SELECT_FIELDS })
         .sort(sort || { createdAt: -1 })
         .skip(skip)
         .limit(limit)
@@ -80,6 +85,7 @@ export class PurchaseRepository implements IPurchaseRepository {
     return PurchaseModel.findByIdAndUpdate(id, data, { new: true })
       .populate({ path: 'user', select: USER_SELECT_FIELDS })
       .populate({ path: 'product', select: PRODUCT_SELECT_FIELDS })
+      .populate({ path: 'sku', select: SKU_SELECT_FIELDS })
       .lean<IPurchase | null>()
   }
 
@@ -137,14 +143,11 @@ export class PurchaseRepository implements IPurchaseRepository {
     priceBeforeDiscount: number,
     skuId?: string | Types.ObjectId,
   ): Promise<IPurchase> {
-    const existing = await this.findCartItem(userId, productId)
+    const existing = await this.findCartItem(userId, productId, skuId?.toString() ?? null)
     if (existing) {
       const updateData: UpdatePurchaseDTO = {
         buy_count: existing.buy_count + buyCount,
-      }
-      if (skuId) {
-        updateData.sku = skuId
-        updateData.price = price
+        price,
       }
       const updated = await this.updateById(existing._id!.toString(), updateData)
       return updated!
@@ -246,11 +249,14 @@ export class PurchaseRepository implements IPurchaseRepository {
   async findCartItem(
     userId: string | Types.ObjectId,
     productId: string | Types.ObjectId,
+    skuId?: string | null,
   ): Promise<IPurchase | null> {
+    const skuFilter = skuId ? { sku: new Types.ObjectId(skuId) } : { sku: null }
     return this.findOne({
       user: new Types.ObjectId(userId.toString()),
       product: new Types.ObjectId(productId.toString()),
       status: STATUS_PURCHASE.IN_CART,
+      ...skuFilter,
     })
   }
 

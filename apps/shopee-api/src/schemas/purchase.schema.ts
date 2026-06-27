@@ -12,6 +12,12 @@ const cartItemSchema = z.object({
     .number()
     .int('buy_count phải là số nguyên lớn hơn 0')
     .min(1, 'buy_count phải là số nguyên lớn hơn 0'),
+  sku_id: z
+    .string()
+    .refine((val) => /^[0-9a-fA-F]{24}$/.test(val), {
+      message: 'sku_id không đúng định dạng',
+    })
+    .optional(),
 })
 
 /**

@@ -1,5 +1,4 @@
-import { Types } from 'mongoose'
-import { IPurchase, IProduct } from '../@types/models.type'
+import { IPurchase } from '../@types/models.type'
 import {
   IPurchaseRepository,
   PurchaseStatus,
@@ -75,7 +74,7 @@ export class PurchaseService extends BaseService {
     buyCount: number,
     skuId?: string,
   ): Promise<IPurchase> {
-    const cartItem = await this.purchaseRepository.findCartItem(userId, productId)
+    const cartItem = await this.purchaseRepository.findCartItem(userId, productId, skuId ?? null)
     if (!cartItem) {
       throw new NotFoundError('Cart item')
     }
@@ -165,7 +164,11 @@ export class PurchaseService extends BaseService {
       }
 
       // Check if item exists in cart
-      const cartItem = await this.purchaseRepository.findCartItem(userId, item.product_id)
+      const cartItem = await this.purchaseRepository.findCartItem(
+        userId,
+        item.product_id,
+        item.sku_id ?? null,
+      )
 
       let purchase: IPurchase | null
       if (cartItem) {

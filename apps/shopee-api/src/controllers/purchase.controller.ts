@@ -8,7 +8,7 @@ import { startSession } from '@database/database'
 import { ErrorHandler, responseSuccess, NotFoundError as HttpNotFoundError } from '@utils/response'
 import { handleImageProduct } from './product.controller'
 import { cloneDeep } from 'lodash'
-import { FilterQuery } from 'mongoose'
+import { FilterQuery, Types } from 'mongoose'
 import { IProduct, IPurchase, ISKU } from '../@types/models.type'
 import { PurchaseBody, BuyProductItem } from '../@types/request.type'
 import { PURCHASE_MESSAGES, PRODUCT_MESSAGES } from '@constants/messages'
@@ -115,7 +115,7 @@ export const buyProducts = async (req: Request, res: Response) => {
         }
       }
 
-      const updateFields: Record<string, any> = {
+      const updateFields: { buy_count: number; status: number; sku?: string; price?: number } = {
         buy_count: item.buy_count,
         status: STATUS_PURCHASE.WAIT_FOR_CONFIRMATION,
       }
@@ -128,9 +128,8 @@ export const buyProducts = async (req: Request, res: Response) => {
         {
           user: req.jwtDecoded.id,
           status: STATUS_PURCHASE.IN_CART,
-          product: {
-            _id: item.product_id,
-          },
+          product: new Types.ObjectId(item.product_id),
+          sku: item.sku_id ? new Types.ObjectId(item.sku_id) : null,
         },
         updateFields,
         {
@@ -147,7 +146,15 @@ export const buyProducts = async (req: Request, res: Response) => {
         .lean<IPurchasePopulated | null>()
 
       if (!data) {
-        const purchase: Record<string, any> = {
+        const purchase: {
+          user: string
+          product: string
+          buy_count: number
+          price: number
+          price_before_discount: number
+          status: number
+          sku?: string
+        } = {
           user: req.jwtDecoded.id,
           product: item.product_id,
           buy_count: item.buy_count,

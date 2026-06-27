@@ -9,6 +9,7 @@ import {
   PurchasesQueryData,
   QUERY_KEYS,
 } from '../shared/types'
+import { cartLineMatches } from '../shared/cartLineEquality'
 import { updatePurchasesCache, showErrorToast, logOptimisticError } from '../shared/utils'
 import { TOAST_MESSAGES } from '../shared/constants'
 import { useQueryInvalidation } from '../../useQueryInvalidation'
@@ -23,6 +24,7 @@ export const useOptimisticUpdateQuantity = () => {
     onMutate: async ({
       product_id,
       buy_count,
+      sku_id,
     }: UpdateQuantityPayload): Promise<UpdateQuantityContext> => {
       // Hủy queries đang chờ
       await queryClient.cancelQueries({
@@ -31,14 +33,14 @@ export const useOptimisticUpdateQuantity = () => {
 
       const previousData = queryClient.getQueryData(QUERY_KEYS.PURCHASES_IN_CART)
 
-      // Cập nhật cache optimistically
+      // Cập nhật cache optimistically — target only the line matching product AND sku
       updatePurchasesCache(queryClient, QUERY_KEYS.PURCHASES_IN_CART, (old) => ({
         ...old,
         data: {
           ...old.data,
           data:
             old.data?.data?.map((purchase: Purchase) =>
-              purchase.product._id === product_id ? { ...purchase, buy_count } : purchase,
+              cartLineMatches(purchase, product_id, sku_id) ? { ...purchase, buy_count } : purchase,
             ) || [],
         },
       }))

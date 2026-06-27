@@ -655,4 +655,144 @@ describe('useOptimisticAddToCart', () => {
       )
     })
   })
+
+  // Task 8.4 — variant-aware add-to-cart tests
+  describe('Variant-aware — sku_id routing', () => {
+    test('adding a new variant of an existing product creates a new cache line', async () => {
+      const mockProduct = createMockProduct({ _id: 'product-v' })
+      const skuRed = { _id: 'sku-red', value: 'Red' }
+
+      // Cart already has a Red variant line
+      const existingRedLine = createMockPurchase({
+        _id: 'purchase-red',
+        product: mockProduct,
+        sku: skuRed,
+        buy_count: 1,
+        status: -1,
+      })
+
+      const newBluePurchase = createMockPurchase({
+        _id: 'purchase-blue',
+        product: mockProduct,
+        sku: { _id: 'sku-blue', value: 'Blue' },
+        buy_count: 1,
+        status: -1,
+      })
+
+      queryClient.setQueryData(QUERY_KEYS.PURCHASES_IN_CART, {
+        data: { data: [existingRedLine] },
+      })
+
+      vi.mocked(purchaseApi.addToCart).mockResolvedValue({
+        data: { data: newBluePurchase, message: 'Success' },
+      } as any)
+
+      const { result } = renderHook(() => useOptimisticAddToCart(), {
+        wrapper: createWrapper(),
+      })
+
+      await act(async () => {
+        // Add a Blue variant (different sku_id from Red)
+        result.current.mutate({ product_id: 'product-v', buy_count: 1, sku_id: 'sku-blue' })
+      })
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+      // The API should be called with the blue sku_id so the backend creates a separate line
+      expect(purchaseApi.addToCart).toHaveBeenCalledWith(
+        expect.objectContaining({ product_id: 'product-v', buy_count: 1, sku_id: 'sku-blue' }),
+        expect.anything(),
+      )
+    })
+
+    test('adding the same variant increments the existing cache line', async () => {
+      const mockProduct = createMockProduct({ _id: 'product-v2' })
+      const skuRed = { _id: 'sku-red2', value: 'Red' }
+
+      // Cart already has a Red variant line with buy_count 2
+      const existingRedLine = createMockPurchase({
+        _id: 'purchase-red2',
+        product: mockProduct,
+        sku: skuRed,
+        buy_count: 2,
+        status: -1,
+      })
+
+      const updatedRedLine = { ...existingRedLine, buy_count: 3 }
+
+      queryClient.setQueryData(QUERY_KEYS.PURCHASES_IN_CART, {
+        data: { data: [existingRedLine] },
+      })
+
+      vi.mocked(purchaseApi.addToCart).mockResolvedValue({
+        data: { data: updatedRedLine, message: 'Success' },
+      } as any)
+
+      const { result } = renderHook(() => useOptimisticAddToCart(), {
+        wrapper: createWrapper(),
+      })
+
+      await act(async () => {
+        // Add another Red (same sku_id) — should merge
+        result.current.mutate({ product_id: 'product-v2', buy_count: 1, sku_id: 'sku-red2' })
+      })
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+      // API receives the sku_id so backend can find-and-merge the right line
+      expect(purchaseApi.addToCart).toHaveBeenCalledWith(
+        expect.objectContaining({ product_id: 'product-v2', buy_count: 1, sku_id: 'sku-red2' }),
+        expect.anything(),
+      )
+    })
+
+    test('adding without sku_id does not affect variant lines for the same product', async () => {
+      const mockProduct = createMockProduct({ _id: 'product-v3' })
+
+      // Cart has a variant line for this product
+      const variantLine = createMockPurchase({
+        _id: 'purchase-var3',
+        product: mockProduct,
+        sku: { _id: 'sku-v3', value: 'Green' },
+        buy_count: 1,
+        status: -1,
+      })
+
+      const nonVariantResponse = createMockPurchase({
+        _id: 'purchase-nv3',
+        product: mockProduct,
+        buy_count: 1,
+        status: -1,
+      })
+
+      queryClient.setQueryData(QUERY_KEYS.PURCHASES_IN_CART, {
+        data: { data: [variantLine] },
+      })
+
+      vi.mocked(purchaseApi.addToCart).mockResolvedValue({
+        data: { data: nonVariantResponse, message: 'Success' },
+      } as any)
+
+      const { result } = renderHook(() => useOptimisticAddToCart(), {
+        wrapper: createWrapper(),
+      })
+
+      await act(async () => {
+        // No sku_id — should NOT merge with the variant line
+        result.current.mutate({ product_id: 'product-v3', buy_count: 1 })
+      })
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+      // API is called without sku_id, creating a separate non-variant line
+      expect(purchaseApi.addToCart).toHaveBeenCalledWith(
+        expect.objectContaining({ product_id: 'product-v3', buy_count: 1 }),
+        expect.anything(),
+      )
+      expect(purchaseApi.addToCart).toHaveBeenCalledWith(
+        expect.not.objectContaining({ sku_id: expect.anything() }),
+        expect.anything(),
+      )
+    })
+  })
 })

@@ -377,4 +377,91 @@ describe('PurchaseService', () => {
       expect(result.length).toBe(1)
     })
   })
+
+  // Task 8.2 — variant-aware service tests
+  describe('updateCartItem — variant-aware', () => {
+    it('should pass skuId to findCartItem so only the matching variant line is targeted', async () => {
+      const skuId = new Types.ObjectId().toString()
+      const variantPurchase = { ...mockPurchase, sku: new Types.ObjectId(skuId) }
+      mockPurchaseRepository.findCartItem.mockResolvedValue(variantPurchase as any)
+      mockProductRepository.findById.mockResolvedValue(mockProduct as any)
+      mockPurchaseRepository.updateCartItem.mockResolvedValue({
+        ...variantPurchase,
+        buy_count: 4,
+      } as any)
+
+      const result = await purchaseService.updateCartItem(validUserId, validProductId, 4, skuId)
+
+      // findCartItem must receive the skuId so it targets only this variant line
+      expect(mockPurchaseRepository.findCartItem).toHaveBeenCalledWith(
+        validUserId,
+        validProductId,
+        skuId,
+      )
+      expect(result.buy_count).toBe(4)
+    })
+
+    it('should pass null to findCartItem when no skuId (non-variant line)', async () => {
+      mockPurchaseRepository.findCartItem.mockResolvedValue(mockPurchase as any)
+      mockProductRepository.findById.mockResolvedValue(mockProduct as any)
+      mockPurchaseRepository.updateCartItem.mockResolvedValue({
+        ...mockPurchase,
+        buy_count: 3,
+      } as any)
+
+      await purchaseService.updateCartItem(validUserId, validProductId, 3)
+
+      expect(mockPurchaseRepository.findCartItem).toHaveBeenCalledWith(
+        validUserId,
+        validProductId,
+        null,
+      )
+    })
+  })
+
+  describe('buyProducts — variant-aware', () => {
+    it('should pass skuId to findCartItem when buying a variant item', async () => {
+      const skuId = new Types.ObjectId().toString()
+      const variantPurchase = { ...mockPurchase, sku: new Types.ObjectId(skuId), status: -1 }
+      mockProductRepository.findById.mockResolvedValue(mockProduct as any)
+      mockPurchaseRepository.findCartItem.mockResolvedValue(variantPurchase as any)
+      mockPurchaseRepository.updateById.mockResolvedValue({
+        ...variantPurchase,
+        status: 1,
+      } as any)
+      mockProductRepository.decrementQuantity.mockResolvedValue(undefined)
+      mockProductRepository.incrementSold.mockResolvedValue(undefined)
+
+      await purchaseService.buyProducts(validUserId, [
+        { product_id: validProductId, buy_count: 2, sku_id: skuId },
+      ])
+
+      // findCartItem must be called with the sku_id to avoid matching the wrong variant line
+      expect(mockPurchaseRepository.findCartItem).toHaveBeenCalledWith(
+        validUserId,
+        validProductId,
+        skuId,
+      )
+      // updateById transitions the correct line — create must not be called
+      expect(mockPurchaseRepository.updateById).toHaveBeenCalled()
+      expect(mockPurchaseRepository.create).not.toHaveBeenCalled()
+    })
+
+    it('should use null skuId in findCartItem for non-variant items', async () => {
+      mockProductRepository.findById.mockResolvedValue(mockProduct as any)
+      mockPurchaseRepository.findCartItem.mockResolvedValue(null)
+      mockPurchaseRepository.create.mockResolvedValue(mockPurchase as any)
+      mockProductRepository.decrementQuantity.mockResolvedValue(undefined)
+      mockProductRepository.incrementSold.mockResolvedValue(undefined)
+
+      await purchaseService.buyProducts(validUserId, [{ product_id: validProductId, buy_count: 1 }])
+
+      // No sku_id provided → findCartItem receives null so it only matches null-sku lines
+      expect(mockPurchaseRepository.findCartItem).toHaveBeenCalledWith(
+        validUserId,
+        validProductId,
+        null,
+      )
+    })
+  })
 })

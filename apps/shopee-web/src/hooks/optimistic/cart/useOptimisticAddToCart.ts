@@ -7,6 +7,7 @@ import { Purchase } from 'src/types/purchases.type'
 import { useQueryInvalidation } from '../../useQueryInvalidation'
 import { TOAST_MESSAGES } from '../shared/constants'
 import { AddToCartContext, AddToCartPayload, PurchasesQueryData, QUERY_KEYS } from '../shared/types'
+import { cartLineMatches } from '../shared/cartLineEquality'
 import {
   createExtendedPurchase,
   createOptimisticPurchase,
@@ -45,7 +46,8 @@ export const useOptimisticAddToCart = () => {
           previousPurchases as PurchasesQueryData | undefined
         )?.data?.data?.find(
           (item: Purchase) =>
-            item.product?._id === newItem.product_id && item.status === purchasesStatus.inCart,
+            cartLineMatches(item, newItem.product_id, newItem.sku_id) &&
+            item.status === purchasesStatus.inCart,
         )
 
         if (existingInCache) {
@@ -130,9 +132,9 @@ export const useOptimisticAddToCart = () => {
             if (item._id.startsWith('temp-')) return realPurchase
             // Update existing items (sản phẩm đã có trong cart, server trả về cùng _id)
             if (item._id === realPurchase._id) return realPurchase
-            // Cũng match theo product_id cho trường hợp optimistic update đã cập nhật quantity
+            // Cũng match theo product_id + sku_id cho trường hợp optimistic update đã cập nhật quantity
             if (
-              item.product?._id === variables.product_id &&
+              cartLineMatches(item, variables.product_id, variables.sku_id) &&
               item.status === purchasesStatus.inCart
             ) {
               return realPurchase

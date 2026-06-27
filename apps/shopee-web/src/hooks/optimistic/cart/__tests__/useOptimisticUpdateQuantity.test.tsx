@@ -807,4 +807,92 @@ describe('useOptimisticUpdateQuantity', () => {
       expect(toast.error).toHaveBeenCalled()
     })
   })
+
+  // Task 8.4 — variant-aware quantity update tests
+  describe('Variant-aware — sku_id routing', () => {
+    test('updating a variant line only changes that line in the cache, not the other variant', async () => {
+      const mockProduct = createMockProduct({ _id: 'product-v' })
+      const skuRed = { _id: 'sku-red', value: 'Red' }
+      const skuBlue = { _id: 'sku-blue', value: 'Blue' }
+
+      const redLine = createMockPurchase({
+        _id: 'purchase-red',
+        product: mockProduct,
+        sku: skuRed,
+        buy_count: 1,
+      })
+      const blueLine = createMockPurchase({
+        _id: 'purchase-blue',
+        product: mockProduct,
+        sku: skuBlue,
+        buy_count: 1,
+      })
+
+      useCartStore.setState({
+        items: [
+          createMockExtendedPurchase({ ...redLine }),
+          createMockExtendedPurchase({ ...blueLine }),
+        ],
+      })
+
+      queryClient.setQueryData(QUERY_KEYS.PURCHASES_IN_CART, {
+        data: { data: [redLine, blueLine] },
+      })
+
+      vi.mocked(purchaseApi.updatePurchase).mockResolvedValue({
+        data: { data: { ...redLine, buy_count: 3 }, message: 'Success' },
+      } as any)
+
+      const { result } = renderHook(() => useOptimisticUpdateQuantity(), {
+        wrapper: createWrapper(),
+      })
+
+      await act(async () => {
+        result.current.mutate({ product_id: 'product-v', buy_count: 3, sku_id: 'sku-red' })
+      })
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+      // Verify the API was called with the correct sku_id
+      expect(purchaseApi.updatePurchase).toHaveBeenCalledWith(
+        expect.objectContaining({ product_id: 'product-v', buy_count: 3, sku_id: 'sku-red' }),
+        expect.anything(),
+      )
+    })
+
+    test('updating without sku_id only changes the non-variant line in the cache', async () => {
+      const mockProduct = createMockProduct({ _id: 'product-nv' })
+      const nonVariantLine = createMockPurchase({
+        _id: 'purchase-nv',
+        product: mockProduct,
+        buy_count: 2,
+        // no sku
+      })
+
+      useCartStore.setState({ items: [createMockExtendedPurchase({ ...nonVariantLine })] })
+
+      queryClient.setQueryData(QUERY_KEYS.PURCHASES_IN_CART, {
+        data: { data: [nonVariantLine] },
+      })
+
+      vi.mocked(purchaseApi.updatePurchase).mockResolvedValue({
+        data: { data: { ...nonVariantLine, buy_count: 5 }, message: 'Success' },
+      } as any)
+
+      const { result } = renderHook(() => useOptimisticUpdateQuantity(), {
+        wrapper: createWrapper(),
+      })
+
+      await act(async () => {
+        result.current.mutate({ product_id: 'product-nv', buy_count: 5 })
+      })
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+      expect(purchaseApi.updatePurchase).toHaveBeenCalledWith(
+        expect.objectContaining({ product_id: 'product-nv', buy_count: 5 }),
+        expect.anything(),
+      )
+    })
+  })
 })

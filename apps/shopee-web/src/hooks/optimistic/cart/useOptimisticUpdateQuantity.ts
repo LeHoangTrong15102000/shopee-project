@@ -59,11 +59,13 @@ export const useOptimisticUpdateQuantity = () => {
 
       // Rollback context state (variant-aware)
       if (context?.previousData && context?.product_id) {
+        const productId = context.product_id
+        const skuId = context.sku_id
         const originalItem = (
           context.previousData as PurchasesQueryData | undefined
-        )?.data?.data?.find((p: Purchase) => cartLineMatches(p, context.product_id, context.sku_id))
+        )?.data?.data?.find((p: Purchase) => cartLineMatches(p, productId, skuId))
         if (originalItem) {
-          updateQuantity(context.product_id, originalItem.buy_count, context.sku_id ?? null)
+          updateQuantity(productId, originalItem.buy_count, skuId ?? null)
         }
       }
 

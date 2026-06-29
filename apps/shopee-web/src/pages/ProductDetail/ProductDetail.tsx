@@ -47,7 +47,6 @@ import { staggerContainer, sectionEntrance, STAGGER_DELAY } from 'src/styles/ani
 import Button from 'src/components/Button'
 import { ProductVariant, ProductVariantCombination } from 'src/types/variant.type'
 import { ProductSKU } from 'src/types/product.type'
-import { getMockVariants, getMockSKUs } from 'src/utils/mockVariantData'
 
 /**
  * ProductDetail Component với Query Cancellation
@@ -142,21 +141,10 @@ const ProductDetail = () => {
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({})
   const [selectedSKU, setSelectedSKU] = useState<ProductSKU | null>(null)
 
-  // Convert backend variants to ProductVariant format, or use mock data
-  const variants: ProductVariant[] = (() => {
-    if (product?.variants && product.variants.length > 0) {
-      return product.variants
-    }
-    return product ? getMockVariants(product.category?.name || '', product.name) : []
-  })()
-
-  // Convert backend SKUs to ProductVariantCombination format, or use mock data
-  const skus: ProductSKU[] = (() => {
-    if (product?.skus && product.skus.length > 0) {
-      return product.skus
-    }
-    return product ? getMockSKUs(product.price, product.category?.name || '', product.name) : []
-  })()
+  // Variants & SKUs come directly from the backend product response.
+  // A product with no variants simply renders no variant selector.
+  const variants: ProductVariant[] = product?.variants ?? []
+  const skus: ProductSKU[] = product?.skus ?? []
 
   // Convert SKUs to combinations for the selector component
   const combinations: ProductVariantCombination[] = skus.map((sku, i) => ({

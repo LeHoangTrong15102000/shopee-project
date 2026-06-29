@@ -22,14 +22,19 @@ const createMockProduct = (overrides: Partial<Product> = {}): Product =>
     ...overrides,
   }) as Product
 
-const createMockCartItem = (productId: string, buyCount: number): ExtendedPurchase => ({
-  _id: `purchase-${productId}`,
+const createMockCartItem = (
+  productId: string,
+  buyCount: number,
+  skuId?: string,
+): ExtendedPurchase => ({
+  _id: `purchase-${productId}-${skuId ?? 'no-sku'}`,
   buy_count: buyCount,
   price: 100000,
   price_before_discount: 120000,
   status: -1,
   user: 'user-1',
   product: createMockProduct({ _id: productId }),
+  ...(skuId ? { sku: { _id: skuId } } : {}),
   createdAt: '2024-01-01T00:00:00.000Z',
   updatedAt: '2024-01-01T00:00:00.000Z',
   disabled: false,
@@ -69,5 +74,50 @@ describe('getProductQuantityInCart', () => {
   it('handles buy_count of 0', () => {
     const cartItems = [createMockCartItem('product-1', 0)]
     expect(getProductQuantityInCart('product-1', cartItems)).toBe(0)
+  })
+
+  describe('sku-aware matching', () => {
+    it('returns the quantity for a specific sku line when skuId is provided', () => {
+      const cartItems = [
+        createMockCartItem('product-1', 2, 'sku-red'),
+        createMockCartItem('product-1', 5, 'sku-blue'),
+      ]
+      expect(getProductQuantityInCart('product-1', cartItems, 'sku-red')).toBe(2)
+      expect(getProductQuantityInCart('product-1', cartItems, 'sku-blue')).toBe(5)
+    })
+
+    it('counts the same product with different skus as separate lines', () => {
+      const cartItems = [
+        createMockCartItem('product-1', 2, 'sku-red'),
+        createMockCartItem('product-1', 3, 'sku-blue'),
+      ]
+      // Each variant line is independent — not summed together.
+      expect(getProductQuantityInCart('product-1', cartItems, 'sku-red')).toBe(2)
+      expect(getProductQuantityInCart('product-1', cartItems, 'sku-blue')).toBe(3)
+    })
+
+    it('returns 0 when the requested sku is not in the cart', () => {
+      const cartItems = [createMockCartItem('product-1', 2, 'sku-red')]
+      expect(getProductQuantityInCart('product-1', cartItems, 'sku-green')).toBe(0)
+    })
+
+    it('matches a null-sku line when skuId is explicitly null', () => {
+      const cartItems = [
+        createMockCartItem('product-1', 4),
+        createMockCartItem('product-1', 7, 'sku-blue'),
+      ]
+      expect(getProductQuantityInCart('product-1', cartItems, null)).toBe(4)
+    })
+
+    it('does not match a sku line when skuId is null', () => {
+      const cartItems = [createMockCartItem('product-1', 7, 'sku-blue')]
+      expect(getProductQuantityInCart('product-1', cartItems, null)).toBe(0)
+    })
+
+    it('falls back to product-only match when skuId is undefined', () => {
+      const cartItems = [createMockCartItem('product-1', 6, 'sku-red')]
+      // undefined skuId → first matching product line regardless of sku.
+      expect(getProductQuantityInCart('product-1', cartItems)).toBe(6)
+    })
   })
 })

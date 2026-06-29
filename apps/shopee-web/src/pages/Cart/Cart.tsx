@@ -212,7 +212,7 @@ const Cart = () => {
   const handleTypeQuantity = (purchaseIndex: number) => (value: number) => {
     const purchase = extendedPurchases[purchaseIndex]
     if (purchase) {
-      updateQuantity(purchase.product._id, value)
+      updateQuantity(purchase.product._id, value, purchase.sku?._id ?? null)
     }
   }
 
@@ -224,6 +224,7 @@ const Cart = () => {
       updatePurchaseMutation.mutate({
         product_id: purchase.product._id,
         buy_count: value,
+        ...(purchase.sku?._id ? { sku_id: purchase.sku._id } : {}),
       })
     }
   }

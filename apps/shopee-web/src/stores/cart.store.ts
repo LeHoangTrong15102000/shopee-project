@@ -13,7 +13,7 @@ interface CartActions {
   setItems: (items: ExtendedPurchase[]) => void
   toggleCheck: (purchaseIndex: number, checked: boolean) => void
   selectAll: (checked: boolean) => void
-  updateQuantity: (productId: string, quantity: number) => void
+  updateQuantity: (productId: string, quantity: number, skuId?: string | null) => void
   addOptimisticItem: (item: ExtendedPurchase) => void
   replaceTempItems: (realPurchase: Purchase) => void
   removeTempItems: () => void
@@ -50,9 +50,16 @@ export const useCartStore = create<CartStore>()(
         })
       }),
 
-    updateQuantity: (productId, quantity) =>
+    updateQuantity: (productId, quantity, skuId) =>
       set((state) => {
-        const item = state.items.find((p) => p.product._id === productId)
+        // Match by product AND sku so distinct variants of the same product
+        // are targeted independently. When skuId is omitted (undefined), fall
+        // back to product-only match for non-variant callers.
+        const item = state.items.find((p) => {
+          if (p.product._id !== productId) return false
+          if (skuId === undefined) return true
+          return (p.sku?._id ?? null) === (skuId ?? null)
+        })
         if (item) {
           item.buy_count = quantity
           item.disabled = false

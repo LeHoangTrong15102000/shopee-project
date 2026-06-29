@@ -45,10 +45,10 @@ export const useOptimisticUpdateQuantity = () => {
         },
       }))
 
-      // Cập nhật context state optimistically
-      updateQuantity(product_id, buy_count)
+      // Cập nhật context state optimistically (variant-aware)
+      updateQuantity(product_id, buy_count, sku_id ?? null)
 
-      return { previousData: previousData as PurchasesQueryData | undefined, product_id }
+      return { previousData: previousData as PurchasesQueryData | undefined, product_id, sku_id }
     },
 
     onError: (err, _variables, context) => {
@@ -57,13 +57,13 @@ export const useOptimisticUpdateQuantity = () => {
         queryClient.setQueryData(QUERY_KEYS.PURCHASES_IN_CART, context.previousData)
       }
 
-      // Rollback context state
+      // Rollback context state (variant-aware)
       if (context?.previousData && context?.product_id) {
         const originalItem = (
           context.previousData as PurchasesQueryData | undefined
-        )?.data?.data?.find((p: Purchase) => p.product._id === context.product_id)
+        )?.data?.data?.find((p: Purchase) => cartLineMatches(p, context.product_id, context.sku_id))
         if (originalItem) {
-          updateQuantity(context.product_id, originalItem.buy_count)
+          updateQuantity(context.product_id, originalItem.buy_count, context.sku_id ?? null)
         }
       }
 

@@ -102,6 +102,42 @@ describe('useCartStore', () => {
       useCartStore.getState().updateQuantity('non-existent', 5)
       expect(useCartStore.getState().items[0].buy_count).toBe(1)
     })
+
+    it('should update only the matching sku line for the same product', () => {
+      const redLine: ExtendedPurchase = {
+        ...mockItem,
+        _id: 'line-red',
+        sku: { _id: 'sku-red' },
+      }
+      const blueLine: ExtendedPurchase = {
+        ...mockItem,
+        _id: 'line-blue',
+        buy_count: 2,
+        sku: { _id: 'sku-blue' },
+      }
+      useCartStore.getState().setItems([redLine, blueLine])
+      useCartStore.getState().updateQuantity('product-1', 5, 'sku-blue')
+
+      const items = useCartStore.getState().items
+      expect(items.find((i) => i._id === 'line-red')?.buy_count).toBe(1)
+      expect(items.find((i) => i._id === 'line-blue')?.buy_count).toBe(5)
+    })
+
+    it('should match the null-sku line when skuId is null', () => {
+      const noSkuLine: ExtendedPurchase = { ...mockItem, _id: 'line-none' }
+      const skuLine: ExtendedPurchase = {
+        ...mockItem,
+        _id: 'line-red',
+        buy_count: 2,
+        sku: { _id: 'sku-red' },
+      }
+      useCartStore.getState().setItems([noSkuLine, skuLine])
+      useCartStore.getState().updateQuantity('product-1', 9, null)
+
+      const items = useCartStore.getState().items
+      expect(items.find((i) => i._id === 'line-none')?.buy_count).toBe(9)
+      expect(items.find((i) => i._id === 'line-red')?.buy_count).toBe(2)
+    })
   })
 
   describe('addOptimisticItem', () => {

@@ -65,8 +65,8 @@ export const useOptimisticAddToCart = () => {
             },
           }))
 
-          // Cập nhật store quantity
-          updateQuantity(newItem.product_id, newQuantity)
+          // Cập nhật store quantity (variant-aware)
+          updateQuantity(newItem.product_id, newQuantity, newItem.sku_id ?? null)
         } else {
           // Sản phẩm chưa có → tạo optimistic item mới
           const optimisticPurchase = createOptimisticPurchase(
@@ -146,8 +146,8 @@ export const useOptimisticAddToCart = () => {
 
       // Cập nhật context với data thật
       replaceTempItems(realPurchase)
-      // Sync quantity cho existing items
-      updateQuantity(variables.product_id, realPurchase.buy_count)
+      // Sync quantity cho existing items (variant-aware)
+      updateQuantity(variables.product_id, realPurchase.buy_count, variables.sku_id ?? null)
     },
 
     onSettled: (_data, _error, variables) => {

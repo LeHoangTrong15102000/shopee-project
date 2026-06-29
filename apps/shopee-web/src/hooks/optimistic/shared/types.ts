@@ -61,6 +61,7 @@ export interface AddToCartContext extends OptimisticContext {
 export interface UpdateQuantityContext extends OptimisticContext {
   previousData?: PurchasesQueryData | undefined
   product_id?: string
+  sku_id?: string
 }
 
 export interface SwitchVariantContext extends OptimisticContext {

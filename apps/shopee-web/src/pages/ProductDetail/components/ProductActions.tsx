@@ -80,7 +80,11 @@ const ProductActions = ({
   const cartItems = useCartItems()
 
   const effectiveStock = selectedSKU?.stock ?? product.quantity
-  const existingQuantity = getProductQuantityInCart(product._id, cartItems)
+  const existingQuantity = getProductQuantityInCart(
+    product._id,
+    cartItems,
+    hasVariants ? (selectedSKU?._id ?? null) : undefined,
+  )
   const availableToAdd = Math.max(effectiveStock - existingQuantity, 0)
   const isOutOfStock = hasVariants && selectedSKU != null && selectedSKU.stock === 0
   const needsVariantSelection = hasVariants && !selectedSKU

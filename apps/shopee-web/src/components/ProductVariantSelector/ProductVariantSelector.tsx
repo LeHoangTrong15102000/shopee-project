@@ -41,6 +41,12 @@ interface ProductVariantSelectorProps {
   onSelect: (type: string, value: string) => void
   className?: string
   showValidationError?: boolean
+  /**
+   * How color variants are presented:
+   * - 'swatch' (default): gradient color chips with image preview — used on the product page.
+   * - 'text': Shopee-cart style text buttons (e.g. "ĐEN", "TRẮNG") matching the in-cart popover.
+   */
+  colorDisplay?: 'swatch' | 'text'
 }
 
 export default function ProductVariantSelector({
@@ -50,6 +56,7 @@ export default function ProductVariantSelector({
   onSelect,
   className,
   showValidationError,
+  colorDisplay = 'swatch',
 }: ProductVariantSelectorProps) {
   const { t } = useTranslation('product')
   const baseId = useId()
@@ -186,47 +193,65 @@ export default function ProductVariantSelector({
   const renderSizeOption = (variant: ProductVariant, index: number) => {
     const labelId = `${baseId}-size-label-${index}`
     return (
-      <div key={variant._id} className="mb-4" role="group" aria-labelledby={labelId}>
-        <div id={labelId} className="mb-2 text-sm text-gray-600 dark:text-gray-400">
+      <div
+        key={variant._id}
+        className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-3"
+        role="group"
+        aria-labelledby={labelId}
+      >
+        <div
+          id={labelId}
+          className="shrink-0 pt-1.5 text-sm text-gray-500 sm:w-16 dark:text-gray-400"
+        >
           {variant.name}
         </div>
-        <div className="flex flex-wrap gap-2" role="radiogroup" aria-labelledby={labelId}>
+        <div className="flex flex-1 flex-wrap gap-2" role="radiogroup" aria-labelledby={labelId}>
           {variant.options.map((option) => {
             const isSelected = isOptionSelected(variant.type, option.value)
             const isAvailable = isOptionAvailable(variant.type, option.value)
 
             return (
-              <div key={option.value} className="group relative">
-                <Button
-                  animated={false}
-                  type="button"
-                  role="radio"
-                  onClick={() => handleOptionClick(variant.type, option.value)}
-                  disabled={!isAvailable}
-                  className={classNames(
-                    'min-h-[44px] min-w-[50px] rounded-sm border px-3 py-2 text-sm transition-all motion-reduce:transition-none',
-                    {
-                      'border-orange bg-orange/10 text-orange': isSelected,
-                      'border-gray-300 bg-white text-gray-700 hover:border-orange dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300':
-                        !isSelected && isAvailable,
-                      'cursor-not-allowed border-gray-300 bg-gray-50 text-gray-500 line-through dark:border-gray-700 dark:bg-gray-900 dark:text-gray-500':
-                        !isAvailable,
-                    },
-                  )}
-                  aria-label={getAriaLabel(option.name, isSelected)}
-                  aria-checked={isSelected}
-                  aria-disabled={!isAvailable}
-                >
-                  {option.name}
-                </Button>
-                {/* Decorative hover hint - not a semantic tooltip */}
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute -top-8 left-1/2 z-10 -translate-x-1/2 rounded-sm bg-tooltip-bg px-2 py-1 text-xs whitespace-nowrap text-tooltip-text opacity-0 transition-opacity motion-reduce:transition-none group-hover:opacity-100"
-                >
-                  {option.name}
-                </div>
-              </div>
+              <Button
+                key={option.value}
+                animated={false}
+                type="button"
+                role="radio"
+                onClick={() => handleOptionClick(variant.type, option.value)}
+                disabled={!isAvailable}
+                className={classNames(
+                  'relative min-h-[2.25rem] min-w-[3.5rem] overflow-hidden rounded-sm border bg-white px-3 py-1.5 text-sm leading-tight transition-colors motion-reduce:transition-none dark:bg-slate-800',
+                  {
+                    'border-orange text-orange': isSelected,
+                    'border-gray-300 text-gray-700 hover:border-orange hover:text-orange dark:border-gray-600 dark:text-gray-200':
+                      !isSelected && isAvailable,
+                    'cursor-not-allowed border-gray-200 bg-gray-50 text-gray-300 line-through dark:border-gray-700 dark:bg-slate-900 dark:text-gray-600':
+                      !isAvailable,
+                  },
+                )}
+                aria-label={getAriaLabel(option.name, isSelected)}
+                aria-checked={isSelected}
+                aria-disabled={!isAvailable}
+              >
+                {option.name}
+                {isSelected && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute -right-px -bottom-px h-0 w-0 border-r-[16px] border-b-[16px] border-r-orange border-b-orange"
+                  >
+                    <svg
+                      className="absolute -right-[15px] -bottom-[1px] h-2 w-2 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                )}
+              </Button>
             )
           })}
         </div>
@@ -235,7 +260,7 @@ export default function ProductVariantSelector({
   }
 
   const renderVariant = (variant: ProductVariant, index: number) => {
-    if (variant.type === 'color') {
+    if (variant.type === 'color' && colorDisplay === 'swatch') {
       return renderColorOption(variant, index)
     }
     return renderSizeOption(variant, index)

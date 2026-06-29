@@ -130,7 +130,7 @@ function VariantSelectorPanel({ purchase, onClose }: VariantSelectorPanelProps) 
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center"
       onClick={handleOverlayClick}
     >
-      <div className="w-full max-w-md rounded-t-xl bg-white p-4 shadow-xl sm:rounded-xl dark:bg-slate-800">
+      <div className="max-h-[80vh] w-full max-w-lg overflow-y-auto rounded-t-xl bg-white p-5 shadow-xl sm:max-w-xl sm:rounded-xl dark:bg-slate-800">
         <div className="mb-3 flex items-center justify-between">
           <span className="text-sm font-medium text-gray-800 dark:text-gray-100">
             {t('variantSelector.title', 'Select Variant')}
@@ -166,6 +166,7 @@ function VariantSelectorPanel({ purchase, onClose }: VariantSelectorPanelProps) 
             combinations={combinations}
             selectedValues={selectedValues}
             onSelect={handleSelect}
+            colorDisplay="text"
           />
         )}
       </div>

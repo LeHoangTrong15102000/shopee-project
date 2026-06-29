@@ -521,7 +521,7 @@ const CartItemList = ({
       <div className="hidden lg:block">
         {/* Tiêu đề của các sản phẩm trong cart */}
         <div className="my-2 grid grid-cols-12 rounded-md bg-white px-9 py-5 text-sm text-gray-500 capitalize shadow-sm dark:bg-slate-800 dark:text-gray-300 dark:shadow-slate-900/50">
-          <div className="col-span-6">
+          <div className="col-span-4">
             <div className="flex items-center select-none">
               <div className="flex shrink-0 items-center justify-center pr-3">
                 <ShopeeCheckbox checked={isAllChecked} onChange={handleCheckedAll} size="md" />
@@ -529,8 +529,9 @@ const CartItemList = ({
               <div className="flex grow text-black dark:text-gray-100">{t('list.product')}</div>
             </div>
           </div>
-          <div className="col-span-6">
-            <div className="grid grid-cols-6 text-center text-[#888] dark:text-gray-400">
+          <div className="col-span-8">
+            <div className="grid grid-cols-8 text-center text-[#888] dark:text-gray-400">
+              <div className="col-span-2">{t('list.variation')}</div>
               <div className="col-span-2">{t('list.unitPrice')}</div>
               <div className="col-span-2">{t('list.quantity')}</div>
               <div className="col-span-1">{t('list.amount')}</div>
@@ -549,7 +550,7 @@ const CartItemList = ({
                 transition={isMobile ? undefined : { duration: 0.3, delay: index * 0.1 }}
                 className="mt-5 grid grid-cols-12 items-center rounded-xs border border-[rgba(0,0,0,.09)] bg-white px-9 py-5 text-sm text-gray-500 transition-shadow first:mt-0 hover:shadow-md dark:border-slate-700 dark:bg-slate-800 dark:text-gray-300 dark:hover:shadow-slate-900/50"
               >
-                <div className="col-span-6">
+                <div className="col-span-4">
                   <div className="flex items-center select-none">
                     <div className="flex shrink-0 items-center justify-center pr-3">
                       <ShopeeCheckbox
@@ -588,31 +589,6 @@ const CartItemList = ({
                           >
                             {purchase.product.name}
                           </Link>
-                          {getVariantLabel(purchase) !== null && (
-                            <button
-                              type="button"
-                              onClick={() => setSelectorOpenForId(purchase._id)}
-                              className="mt-0.5 inline-flex cursor-pointer items-center gap-0.5 rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 transition-colors hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600"
-                              aria-label={t('variantSelector.change', 'Change variant')}
-                            >
-                              {getVariantLabel(purchase)}
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth={2}
-                                className="h-3 w-3 shrink-0"
-                                aria-hidden="true"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                                />
-                              </svg>
-                            </button>
-                          )}
                           <div className="mt-1">
                             <StockBadge
                               availableStock={purchase.product.quantity}
@@ -635,8 +611,37 @@ const CartItemList = ({
                     </div>
                   </div>
                 </div>
-                <div className="col-span-6">
-                  <div className="grid grid-cols-6 items-center">
+                <div className="col-span-8">
+                  <div className="grid grid-cols-8 items-center">
+                    <div className="col-span-2 flex items-center justify-center">
+                      {getVariantLabel(purchase) !== null ? (
+                        <button
+                          type="button"
+                          onClick={() => setSelectorOpenForId(purchase._id)}
+                          className="inline-flex cursor-pointer items-center gap-0.5 rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 transition-colors hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600"
+                          aria-label={t('variantSelector.change', 'Change variant')}
+                        >
+                          {getVariantLabel(purchase)}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                            className="h-3 w-3 shrink-0"
+                            aria-hidden="true"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                            />
+                          </svg>
+                        </button>
+                      ) : (
+                        <div />
+                      )}
+                    </div>
                     <div className="col-span-2">
                       <div className="flex items-center justify-center gap-1 text-[15px]">
                         <span className="truncate text-gray-500 line-through dark:text-gray-400">

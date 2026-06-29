@@ -1,16 +1,16 @@
-import { IPurchase } from '../@types/models.type'
-import {
-  IPurchaseRepository,
-  PurchaseStatus,
-} from '@repositories/interfaces/purchase.repository.interface'
-import { IProductRepository } from '@repositories/interfaces/product.repository.interface'
-import { ISKURepository } from '@repositories/interfaces/sku.repository.interface'
+import { STATUS_PURCHASE } from '@constants/purchase'
 import {
   PaginatedResult,
   PaginationOptions,
 } from '@repositories/interfaces/base.repository.interface'
+import { IProductRepository } from '@repositories/interfaces/product.repository.interface'
+import {
+  IPurchaseRepository,
+  PurchaseStatus,
+} from '@repositories/interfaces/purchase.repository.interface'
+import { ISKURepository } from '@repositories/interfaces/sku.repository.interface'
+import { IPurchase } from '../@types/models.type'
 import { BaseService, NotFoundError, ValidationError } from './base.service'
-import { STATUS_PURCHASE } from '@constants/purchase'
 
 export interface AddToCartDTO {
   product_id: string
@@ -214,12 +214,8 @@ export class PurchaseService extends BaseService {
   async removeFromCart(userId: string, purchaseIds: string[]): Promise<number> {
     let deletedCount = 0
     for (const purchaseId of purchaseIds) {
-      const purchase = await this.purchaseRepository.findById(purchaseId)
-      if (
-        purchase &&
-        purchase.user?.toString() === userId &&
-        purchase.status === STATUS_PURCHASE.IN_CART
-      ) {
+      const purchase = await this.purchaseRepository.findByIdAndUser(purchaseId, userId)
+      if (purchase && purchase.status === STATUS_PURCHASE.IN_CART) {
         const removed = await this.purchaseRepository.removeFromCart(purchaseId)
         if (removed) deletedCount++
       }

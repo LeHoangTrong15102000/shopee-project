@@ -1,9 +1,12 @@
 import { describe, it, expect } from 'vitest'
 import { QUERY_KEYS } from '../types'
+import { purchasesStatus } from 'src/constant/purchase'
 
 describe('QUERY_KEYS', () => {
   it('should have PURCHASES_IN_CART with correct structure', () => {
-    expect(QUERY_KEYS.PURCHASES_IN_CART).toEqual(['purchases', { status: 'inCart' }])
+    // Must use the numeric inCart status (-1) so the optimistic cache key deep-equals
+    // the Cart page / invalidateCart() key. A string 'inCart' would silently mismatch.
+    expect(QUERY_KEYS.PURCHASES_IN_CART).toEqual(['purchases', { status: purchasesStatus.inCart }])
   })
 
   it('should have PRODUCT_REVIEWS function that returns correct key with productId', () => {

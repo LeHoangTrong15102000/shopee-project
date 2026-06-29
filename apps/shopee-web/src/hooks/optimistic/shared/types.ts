@@ -1,6 +1,7 @@
 import { Purchase } from 'src/types/purchases.type'
 import { Review } from 'src/types/review.type'
 import { SuccessResponseApi } from 'src/types/utils.type'
+import { purchasesStatus } from 'src/constant/purchase'
 
 // Cache-shape interfaces for React Query data
 export interface PurchasesQueryData {
@@ -112,7 +113,7 @@ export interface ToastConfig {
 
 // Query keys
 export const QUERY_KEYS = {
-  PURCHASES_IN_CART: ['purchases', { status: 'inCart' }] as readonly unknown[],
+  PURCHASES_IN_CART: ['purchases', { status: purchasesStatus.inCart }] as readonly unknown[],
   PRODUCT_REVIEWS: (productId: string) => ['product-reviews', productId] as readonly unknown[],
   PRODUCTS: ['products'] as readonly unknown[],
   PRODUCT: ['product'] as readonly unknown[],

@@ -51,6 +51,12 @@ export interface SwitchVariantPayload {
   target_price?: number
   /** price_before_discount of the target SKU (mirrors product.price_before_discount). */
   target_price_before_discount?: number
+  /** Display label of the target SKU (sku.value) — keeps the cart line label in sync. */
+  target_value?: string
+  /** Image of the target SKU — keeps the cart line thumbnail in sync. */
+  target_image?: string
+  /** variant_values of the target SKU — drives the variant label shown in the cart row. */
+  target_variant_values?: Record<string, string>
 }
 
 export interface AddToCartContext extends OptimisticContext {

@@ -110,6 +110,11 @@ function VariantSelectorPanel({ purchase, onClose }: VariantSelectorPanelProps) 
       sku_id: currentSkuId,
       target_sku_id: matchedSku._id,
       buy_count: purchase.buy_count,
+      target_price: matchedSku.price,
+      target_price_before_discount: purchase.product.price_before_discount,
+      target_value: matchedSku.value,
+      target_image: matchedSku.image,
+      target_variant_values: matchedSku.variant_values,
     })
 
     onClose()
@@ -344,17 +349,20 @@ const MobileCartItem = ({
               <button
                 type="button"
                 onClick={() => setSelectorOpenForId(purchase._id)}
-                className="mt-0.5 inline-flex cursor-pointer items-center gap-0.5 rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 transition-colors hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600"
+                className="group mt-1 inline-flex max-w-full cursor-pointer items-center gap-1 rounded-sm bg-gray-50 px-2 py-1 text-xs text-gray-500 transition-colors hover:bg-gray-100 dark:bg-slate-700/60 dark:text-gray-300 dark:hover:bg-slate-700"
                 aria-label={t('variantSelector.change', 'Change variant')}
               >
-                {getVariantLabel(purchase)}
+                <span className="shrink-0 text-gray-400 dark:text-gray-500">
+                  {t('list.variation')}:
+                </span>
+                <span className="truncate">{getVariantLabel(purchase)}</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth={2}
-                  className="h-3 w-3 shrink-0"
+                  className="h-3 w-3 shrink-0 text-gray-400 transition-colors group-hover:text-[#ee4d2d]"
                   aria-hidden="true"
                 >
                   <path
@@ -619,17 +627,20 @@ const CartItemList = ({
                         <button
                           type="button"
                           onClick={() => setSelectorOpenForId(purchase._id)}
-                          className="inline-flex cursor-pointer items-center gap-0.5 rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 transition-colors hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600"
+                          className="group inline-flex max-w-full cursor-pointer items-center gap-1 rounded-sm bg-gray-50 px-2 py-1 text-xs text-gray-500 transition-colors hover:bg-gray-100 dark:bg-slate-700/60 dark:text-gray-300 dark:hover:bg-slate-700"
                           aria-label={t('variantSelector.change', 'Change variant')}
                         >
-                          {getVariantLabel(purchase)}
+                          <span className="shrink-0 text-gray-400 dark:text-gray-500">
+                            {t('list.variation')}:
+                          </span>
+                          <span className="truncate">{getVariantLabel(purchase)}</span>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
                             strokeWidth={2}
-                            className="h-3 w-3 shrink-0"
+                            className="h-3 w-3 shrink-0 text-gray-400 transition-colors group-hover:text-[#ee4d2d]"
                             aria-hidden="true"
                           >
                             <path

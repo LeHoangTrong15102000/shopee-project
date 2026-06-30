@@ -69,9 +69,17 @@ export const useOptimisticSwitchVariant = () => {
               ...(payload.target_price_before_discount !== undefined
                 ? { price_before_discount: payload.target_price_before_discount }
                 : {}),
-              sku: p.sku
-                ? { ...p.sku, _id: payload.target_sku_id }
-                : { _id: payload.target_sku_id },
+              // Rewrite the sku so the cart row reflects the new variant immediately.
+              // _id locates the line; value/image/variant_values drive the visible label.
+              sku: {
+                ...(p.sku ?? {}),
+                _id: payload.target_sku_id,
+                ...(payload.target_value !== undefined ? { value: payload.target_value } : {}),
+                ...(payload.target_image !== undefined ? { image: payload.target_image } : {}),
+                ...(payload.target_variant_values !== undefined
+                  ? { variant_values: payload.target_variant_values }
+                  : {}),
+              },
             }
           })
         }

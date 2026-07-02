@@ -51,7 +51,9 @@ export async function saveSearchHistory(keyword: string) {
 }
 
 export async function deleteHistoryItem(keyword: string) {
-  const res = await http.delete<ApiResponse<unknown>>(`products/search/history/${encodeURIComponent(keyword)}`)
+  const res = await http.delete<ApiResponse<unknown>>(
+    `products/search/history/${encodeURIComponent(keyword)}`
+  )
   return res.data
 }
 

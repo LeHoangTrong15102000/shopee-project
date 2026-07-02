@@ -13,12 +13,6 @@ export interface SearchSuggestion {
   keyword: string
 }
 
-export interface SearchHistoryItem {
-  _id: string
-  keyword: string
-  createdAt: string
-}
-
 // ─── Search API ───────────────────────────────────────────────────────────────
 
 export async function searchProducts(params: {
@@ -47,21 +41,21 @@ export async function getSearchSuggestions(keyword: string) {
 }
 
 export async function getSearchHistory() {
-  const res = await http.get<ApiResponse<SearchHistoryItem[]>>('search/history')
+  const res = await http.get<ApiResponse<string[]>>('products/search/history')
   return res.data
 }
 
 export async function saveSearchHistory(keyword: string) {
-  const res = await http.post<ApiResponse<SearchHistoryItem>>('search/history', { keyword })
+  const res = await http.post<ApiResponse<unknown>>('products/search/save-history', { keyword })
   return res.data
 }
 
-export async function deleteHistoryItem(id: string) {
-  const res = await http.delete<ApiResponse<unknown>>(`search/history/${id}`)
+export async function deleteHistoryItem(keyword: string) {
+  const res = await http.delete<ApiResponse<unknown>>(`products/search/history/${encodeURIComponent(keyword)}`)
   return res.data
 }
 
 export async function clearSearchHistory() {
-  const res = await http.delete<ApiResponse<unknown>>('search/history')
+  const res = await http.delete<ApiResponse<unknown>>('products/search/history')
   return res.data
 }

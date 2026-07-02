@@ -78,7 +78,7 @@ export function useSaveSearchHistory() {
 export function useDeleteHistoryItem() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (id: string) => deleteHistoryItem(id),
+    mutationFn: (keyword: string) => deleteHistoryItem(keyword),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: searchKeys.history() })
     },

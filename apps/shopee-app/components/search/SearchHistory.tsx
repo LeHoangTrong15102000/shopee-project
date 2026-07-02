@@ -3,13 +3,12 @@ import { View, FlatList, Pressable } from 'react-native'
 import { Clock, X } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
 import { useColors } from '@/hooks/useColors'
-import { AppText, AppButton } from '@/components/ui'
-import { type SearchHistoryItem } from '@/apis/search.api'
+import { AppText } from '@/components/ui'
 
 interface SearchHistoryProps {
-  items: SearchHistoryItem[]
+  items: string[]
   onSelect: (keyword: string) => void
-  onDelete: (id: string) => void
+  onDelete: (keyword: string) => void
   onClearAll: () => void
 }
 
@@ -38,23 +37,23 @@ export default function SearchHistory({
       </View>
       <FlatList
         data={items}
-        keyExtractor={(item) => item._id}
+        keyExtractor={(item, index) => item + index}
         scrollEnabled={false}
         renderItem={({ item }) => (
           <Pressable
-            onPress={() => onSelect(item.keyword)}
+            onPress={() => onSelect(item)}
             className="flex-row items-center gap-3 py-2.5"
             accessibilityRole="button"
-            accessibilityLabel={`Search for ${item.keyword}`}>
+            accessibilityLabel={`Search for ${item}`}>
             <Clock size={16} color={colors.neutrals400} />
             <AppText raw variant="body" className="flex-1">
-              {item.keyword}
+              {item}
             </AppText>
             <Pressable
-              onPress={() => onDelete(item._id)}
+              onPress={() => onDelete(item)}
               hitSlop={{ top: 4, bottom: 4, left: 8, right: 8 }}
               accessibilityRole="button"
-              accessibilityLabel={`Remove ${item.keyword} from history`}>
+              accessibilityLabel={`Remove ${item} from history`}>
               <X size={16} color={colors.neutrals400} />
             </Pressable>
           </Pressable>

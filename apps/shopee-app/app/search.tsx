@@ -1,10 +1,10 @@
-import React, { useState, useRef, useCallback } from 'react'
+import React, { useState, useRef } from 'react'
 import { View, FlatList, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { SlidersHorizontal, ArrowUpDown } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
-import { AppText, AppButton, EmptyState, Chip } from '@/components/ui'
+import { AppText, EmptyState, Chip } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import ProductCard, { CARD_GAP } from '@/components/home/ProductCard'
 import SearchBar from '@/components/search/SearchBar'
@@ -133,6 +133,8 @@ export default function SearchScreen() {
     return null
   }
 
+  const priceChipLabel = getPriceChipLabel()
+
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
       <SearchBar
@@ -195,7 +197,7 @@ export default function SearchScreen() {
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{ gap: 8, flexDirection: 'row' }}
                 style={{ flex: 1 }}>
-                {getPriceChipLabel() != null && (
+                {priceChipLabel != null && (
                   <Chip
                     variant="primary"
                     size="sm"
@@ -208,7 +210,7 @@ export default function SearchScreen() {
                         return next
                       })
                     }>
-                    {getPriceChipLabel()!}
+                    {priceChipLabel}
                   </Chip>
                 )}
                 {filters.rating != null && (

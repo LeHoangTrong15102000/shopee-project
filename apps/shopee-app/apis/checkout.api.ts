@@ -100,12 +100,12 @@ export async function getCheckoutSummary(body: CheckoutSummaryBody) {
 }
 
 export async function getShippingMethods() {
-  const res = await http.get<ApiResponse<ShippingMethod[]>>('shipping-methods')
+  const res = await http.get<ApiResponse<ShippingMethod[]>>('orders/shipping/methods')
   return res.data
 }
 
 export async function getPaymentMethods() {
-  const res = await http.get<ApiResponse<PaymentMethod[]>>('payment-methods')
+  const res = await http.get<ApiResponse<PaymentMethod[]>>('orders/payment/methods')
   return res.data
 }
 

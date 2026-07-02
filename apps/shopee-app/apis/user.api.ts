@@ -22,12 +22,12 @@ export async function getProfile() {
 }
 
 export async function updateProfile(body: UpdateProfileBody) {
-  const res = await http.put<ApiResponse<User>>('user', body)
+  const res = await http.put<ApiResponse<User>>('me', body)
   return res.data
 }
 
 export async function uploadAvatar(formData: FormData) {
-  const res = await http.post<ApiResponse<{ avatar: string }>>('user/upload-avatar', formData, {
+  const res = await http.post<ApiResponse<{ avatar: string }>>('me/upload-avatar', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
   return res.data

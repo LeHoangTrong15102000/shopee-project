@@ -57,7 +57,7 @@ export async function cancelOrder(orderId: string) {
 }
 
 export async function confirmReceived(orderId: string) {
-  const res = await http.put<ApiResponse<Order>>(`orders/${orderId}/confirm`)
+  const res = await http.put<ApiResponse<Order>>(`orders/${orderId}/confirm-received`)
   return res.data
 }
 

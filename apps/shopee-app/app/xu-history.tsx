@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, FlatList, ActivityIndicator, Alert } from 'react-native'
+import { View, FlatList, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack } from 'expo-router'
 import { Coins } from 'lucide-react-native'

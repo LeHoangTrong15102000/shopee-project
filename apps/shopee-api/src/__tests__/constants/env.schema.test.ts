@@ -62,6 +62,9 @@ describe('ENV validation schema', () => {
         STRIPE_WEBHOOK_SECRET: 'whsec_placeholder',
         TWO_FACTOR_ENCRYPTION_KEY: '0'.repeat(64),
         GOOGLE_CLIENT_ID: 'my-app.apps.googleusercontent.com',
+        GOOGLE_CLIENT_SECRET: 'test-secret',
+        GOOGLE_REDIRECT_URI: 'http://localhost:4000/auth/google/callback',
+        GOOGLE_CLIENT_REDIRECT_URI: 'http://localhost:3000/auth/callback',
       }
       const result = validateEnv(env)
       expect(result.SECRET_KEY_JWT).toBe('a_valid_secret_that_is_exactly_32_chars_long')
@@ -79,6 +82,9 @@ describe('ENV validation schema', () => {
         STRIPE_WEBHOOK_SECRET: 'whsec_placeholder',
         TWO_FACTOR_ENCRYPTION_KEY: '0'.repeat(64),
         GOOGLE_CLIENT_ID: 'my-app.apps.googleusercontent.com',
+        GOOGLE_CLIENT_SECRET: 'test-secret',
+        GOOGLE_REDIRECT_URI: 'http://localhost:4000/auth/google/callback',
+        GOOGLE_CLIENT_REDIRECT_URI: 'http://localhost:3000/auth/callback',
         JWT_ACCESS_TTL: '1800',
         JWT_REFRESH_TTL: '86400',
       }
@@ -109,6 +115,9 @@ describe('ENV validation schema', () => {
         STRIPE_WEBHOOK_SECRET: 'whsec_placeholder',
         TWO_FACTOR_ENCRYPTION_KEY: '0'.repeat(64),
         GOOGLE_CLIENT_ID: 'my-app.apps.googleusercontent.com',
+        GOOGLE_CLIENT_SECRET: 'test-secret',
+        GOOGLE_REDIRECT_URI: 'http://localhost:4000/auth/google/callback',
+        GOOGLE_CLIENT_REDIRECT_URI: 'http://localhost:3000/auth/callback',
       }
       const envTrue: any = {
         ...requiredFields,
@@ -132,6 +141,9 @@ describe('ENV validation schema', () => {
       STRIPE_PUBLISHABLE_KEY: 'pk_test_placeholder',
       STRIPE_WEBHOOK_SECRET: 'whsec_placeholder',
       TWO_FACTOR_ENCRYPTION_KEY: '0'.repeat(64),
+      GOOGLE_CLIENT_SECRET: 'test-secret',
+      GOOGLE_REDIRECT_URI: 'http://localhost:4000/auth/google/callback',
+      GOOGLE_CLIENT_REDIRECT_URI: 'http://localhost:3000/auth/callback',
     }
 
     it('6.2 — should throw (exit) when GOOGLE_CLIENT_ID is missing', () => {

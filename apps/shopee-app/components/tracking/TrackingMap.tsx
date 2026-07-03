@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Animated } from 'react-native'
 import MapView, { Marker, Polyline, AnimatedRegion } from 'react-native-maps'
 import { TrackingUpdate } from '@/types/tracking.type'
 
@@ -41,6 +41,7 @@ export default function TrackingMap({
         longitudeDelta: 0,
         duration: 500,
         useNativeDriver: false,
+        toValue: 0,
       })
       .start()
 
@@ -101,7 +102,12 @@ export default function TrackingMap({
 
       {/* Animated driver marker */}
       <Marker.Animated
-        coordinate={driverCoord.current}
+        coordinate={
+          driverCoord.current as unknown as Animated.WithAnimatedObject<{
+            latitude: number
+            longitude: number
+          }>
+        }
         title={tracking.driverName}
         description={tracking.vehicleInfo}
       />

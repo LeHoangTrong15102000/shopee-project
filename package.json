@@ -8,7 +8,9 @@
     "lint": "nx run-many -t lint",
     "test": "nx run-many -t test",
     "docker:start": "docker compose up -d",
-    "docker:stop": "docker compose down"
+    "docker:stop": "docker compose down",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "devDependencies": {
     "@nx/eslint": "21.4.0",
@@ -41,5 +43,10 @@
       "react-native-nitro-modules",
       "unrs-resolver"
     ]
+  },
+  "dependencies": {
+    "expo": "~54.0.34",
+    "react": "19.1.0",
+    "react-native": "0.81.5"
   }
 }

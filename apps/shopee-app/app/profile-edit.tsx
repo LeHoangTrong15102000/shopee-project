@@ -48,7 +48,7 @@ export default function ProfileEditScreen() {
   const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile()
   const { mutate: uploadAvatar, isPending: isUploadingAvatar } = useUploadAvatar()
 
-  const user = profileData?.data?.data
+  const user = profileData?.data
 
   const [avatarUri, setAvatarUri] = useState<string | null>(null)
   const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null)
@@ -250,7 +250,7 @@ export default function ProfileEditScreen() {
                     paddingVertical: 12,
                     backgroundColor: colors.background,
                   }}>
-                  <AppText raw variant="body" color={dateOfBirth ? 'foreground' : 'muted'}>
+                  <AppText raw variant="body" color={dateOfBirth ? 'default' : 'muted'}>
                     {dateOfBirth
                       ? dateOfBirth.toLocaleDateString('vi-VN')
                       : t('profileEdit.field.birthdayPlaceholder')}

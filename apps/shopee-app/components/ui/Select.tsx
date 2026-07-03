@@ -172,23 +172,24 @@ export default function Select({
     (optionValue: string | number) => {
       if (multiple) {
         // For multiple selection, toggle the selected value
-        const newValue = selectedValues.includes(optionValue)
-          ? selectedValues.filter((v) => v !== optionValue)
-          : [...selectedValues, optionValue]
+        const currentValues: (string | number)[] = Array.isArray(value) ? value : []
+        const newValue: (string | number)[] = currentValues.includes(optionValue)
+          ? currentValues.filter((v) => v !== optionValue)
+          : [...currentValues, optionValue]
 
-        onValueChange(newValue as any)
+        ;(onValueChange as (value: (string | number)[]) => void)(newValue)
       } else {
         // For single selection, just set the value and dismiss
-        onValueChange(optionValue as any)
+        ;(onValueChange as (value: string | number) => void)(optionValue)
         bottomSheetModalRef.current?.dismiss()
         setSearchQuery('')
       }
     },
-    [multiple, onValueChange, selectedValues]
+    [multiple, onValueChange, selectedValues, value]
   )
 
   const renderBackdrop = useCallback(
-    (props: any) => (
+    (props: React.ComponentProps<typeof BottomSheetBackdrop>) => (
       <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.5} />
     ),
     []
@@ -232,10 +233,13 @@ export default function Select({
           <Text className={cn(labelVariants({ size, required }), labelClassName)}>{label}</Text>
         )}
         {renderSelector ? (
-          React.cloneElement(renderSelector as any, {
-            onPress: handlePresentModalPress,
-            disabled,
-          })
+          React.cloneElement(
+            renderSelector as React.ReactElement<{ onPress: () => void; disabled: boolean }>,
+            {
+              onPress: handlePresentModalPress,
+              disabled,
+            }
+          )
         ) : (
           <>
             <Pressable

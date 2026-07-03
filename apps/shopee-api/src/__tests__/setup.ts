@@ -11,6 +11,16 @@ process.env.NODE_ENV = 'test'
 
 import { Request, Response } from 'express'
 
+// Hard mock for resend — prevents any real HTTP calls to the Resend API
+// (Resend quota is exhausted; this ensures no test can accidentally hit the live service)
+jest.mock('resend', () => ({
+  Resend: jest.fn().mockImplementation(() => ({
+    emails: {
+      send: jest.fn().mockResolvedValue({ data: { id: 'mock' }, error: null }),
+    },
+  })),
+}))
+
 // Mock MongoDB connection
 jest.mock('@database/database', () => ({
   connectMongoDB: jest.fn(),

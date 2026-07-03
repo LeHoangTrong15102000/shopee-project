@@ -1,7 +1,6 @@
 import React from 'react'
 import { render, fireEvent } from '@testing-library/react-native'
 import OrderTabs from '../OrderTabs'
-import type { OrderStatusTab } from '../OrderTabs'
 
 jest.mock('@/hooks/useColors', () => ({
   useColors: () => ({

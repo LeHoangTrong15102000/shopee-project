@@ -121,8 +121,7 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
         transparent
         animationType="fade"
         onRequestClose={() => setFullscreenVisible(false)}
-        accessibilityViewIsModal={true}
-        accessibilityRole="dialog">
+        accessibilityViewIsModal={true}>
         <View style={{ flex: 1, backgroundColor: colors.background }}>
           <TouchableOpacity
             onPress={() => setFullscreenVisible(false)}

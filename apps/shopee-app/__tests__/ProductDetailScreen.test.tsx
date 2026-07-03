@@ -5,10 +5,11 @@ import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import ProductDetailScreen from '../components/product-detail/ProductDetailScreen'
 
-const API_BASE = 'https://api-ecom.duthanhduoc.com'
+const API_BASE = 'https://api-ecom.lehoangtrong.com'
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: 'en' } }),
+  initReactI18next: { type: '3rdParty', init: jest.fn() },
 }))
 
 const mockToast = {
@@ -43,23 +44,25 @@ jest.mock('@gorhom/bottom-sheet', () => {
   const RN = require('react-native')
   const R = require('react')
   return {
-    BottomSheetModal: R.forwardRef((_: any, ref: any) => {
+    BottomSheetModal: R.forwardRef((_: Record<string, unknown>, ref: React.Ref<unknown>) => {
       R.useImperativeHandle(ref, () => ({ present: jest.fn(), dismiss: jest.fn() }))
       return null
     }),
-    BottomSheetModalProvider: ({ children }: any) => <RN.View>{children}</RN.View>,
-    BottomSheetView: ({ children }: any) => <RN.View>{children}</RN.View>,
+    BottomSheetModalProvider: ({ children }: { children: React.ReactNode }) => (
+      <RN.View>{children}</RN.View>
+    ),
+    BottomSheetView: ({ children }: { children: React.ReactNode }) => <RN.View>{children}</RN.View>,
   }
 })
 
 // Mock heavy child components to isolate screen logic
 jest.mock('../components/product-detail/ImageGallery', () => {
   const { Text } = require('react-native')
-  return ({ images }: any) => <Text>ImageGallery:{images?.length}</Text>
+  return ({ images }: { images: unknown[] }) => <Text>ImageGallery:{images?.length}</Text>
 })
 jest.mock('../components/product-detail/ProductInfo', () => {
   const { Text } = require('react-native')
-  return ({ product }: any) => <Text>{product.name}</Text>
+  return ({ product }: { product: { name: string } }) => <Text>{product.name}</Text>
 })
 jest.mock('../components/product-detail/ProductDescription', () => {
   const { Text } = require('react-native')

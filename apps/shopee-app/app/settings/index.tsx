@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { Bell, Shield } from 'lucide-react-native'
-import { MenuList, AppText } from '@/components/ui'
+import { MenuList } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import CustomScreenHeader from '@/components/navigation/ScreenHeader'
 

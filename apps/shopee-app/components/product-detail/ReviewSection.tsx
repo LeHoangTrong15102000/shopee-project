@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, TouchableOpacity } from 'react-native'
+import { View } from 'react-native'
 import { Star } from 'lucide-react-native'
 import { AppText, AppButton } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
@@ -58,7 +58,7 @@ export default function ReviewSection({
   stats,
   hasNextPage,
   onLoadMore,
-  onWriteReview,
+  onWriteReview: _onWriteReview,
   onToggleLike,
   productId,
 }: ReviewSectionProps) {

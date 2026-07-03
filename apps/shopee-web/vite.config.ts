@@ -249,11 +249,12 @@ Sitemap: ${SITE_URL}/sitemap.xml
         testTimeout: 10000,
         hookTimeout: 10000,
         teardownTimeout: 3000,
-        pool: 'vmForks',
+        pool: 'forks',
+        execArgv: ['--max-old-space-size=4096'],
         maxWorkers: 2,
+        minWorkers: 1,
         fileParallelism: true,
         isolate: true,
-        memoryLimit: process.env.CI ? '512MB' : undefined,
         include: [
           'src/**/*.test.{ts,tsx}', // Unit tests
           'test/**/*.test.{ts,tsx}', // Integration & E2E tests

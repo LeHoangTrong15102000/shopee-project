@@ -141,8 +141,8 @@ describe('Admin Management Flow E2E', () => {
         .get('/admin/users')
         .set('Authorization', `Bearer ${adminAuth.access_token}`)
       expect(usersRes.status).toBe(200)
-      expect(Array.isArray(usersRes.body.data)).toBe(true)
-      expect(usersRes.body.data.length).toBeGreaterThan(0)
+      expect(Array.isArray(usersRes.body.data.items)).toBe(true)
+      expect(usersRes.body.data.items.length).toBeGreaterThan(0)
     })
 
     it('should deny access to non-admin users', async () => {

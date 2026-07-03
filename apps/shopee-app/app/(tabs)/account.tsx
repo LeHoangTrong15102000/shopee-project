@@ -28,7 +28,7 @@ export default function AccountScreen() {
   const languagePickerRef = useRef<BottomSheetModal>(null)
 
   const { data: profileData, isLoading, refetch, isRefetching } = useProfile()
-  const user = profileData?.data?.data ?? null
+  const user = profileData?.data ?? null
 
   const handleLogout = () => {
     showConfirm(

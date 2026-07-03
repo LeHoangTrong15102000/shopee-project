@@ -124,6 +124,10 @@ export default function ShopScreen() {
     )
   }
 
+  if (!shop) {
+    return null
+  }
+
   const products = data?.products ?? []
 
   return (

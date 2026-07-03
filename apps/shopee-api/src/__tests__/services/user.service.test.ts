@@ -314,7 +314,7 @@ describe('UserService', () => {
 
       const result = await userService.updateProfile(validObjectId, { name: 'New Name' })
 
-      expect(result.name).toBe('New Name')
+      expect(result.user.name).toBe('New Name')
       expect(hashValue).not.toHaveBeenCalled()
     })
   })
@@ -343,7 +343,7 @@ describe('UserService', () => {
 
     it('6.3 — calls revokeAllSessionsIncludingCurrent after password change when sessionService wired', async () => {
       const mockSessionService = {
-        revokeAllSessionsIncludingCurrent: jest.fn().mockResolvedValue(1),
+        revokeAllSessions: jest.fn().mockResolvedValue(1),
       }
       userService.sessionService = mockSessionService as any
 
@@ -357,14 +357,12 @@ describe('UserService', () => {
         new_password: 'newpassword',
       })
 
-      expect(mockSessionService.revokeAllSessionsIncludingCurrent).toHaveBeenCalledWith(
-        validObjectId,
-      )
+      expect(mockSessionService.revokeAllSessions).toHaveBeenCalledWith(validObjectId, undefined)
     })
 
     it('6.3 — does NOT call revokeAllSessionsIncludingCurrent when no password change', async () => {
       const mockSessionService = {
-        revokeAllSessionsIncludingCurrent: jest.fn().mockResolvedValue(0),
+        revokeAllSessions: jest.fn().mockResolvedValue(0),
       }
       userService.sessionService = mockSessionService as any
 
@@ -372,7 +370,7 @@ describe('UserService', () => {
 
       await userService.updateProfile(validObjectId, { name: 'Updated' })
 
-      expect(mockSessionService.revokeAllSessionsIncludingCurrent).not.toHaveBeenCalled()
+      expect(mockSessionService.revokeAllSessions).not.toHaveBeenCalled()
     })
 
     it('6.3 — does NOT stamp passwordChangedAt when no password change', async () => {
@@ -388,9 +386,10 @@ describe('UserService', () => {
   describe('setPassword — stamps passwordChangedAt and revokes sessions', () => {
     it('6.3 — calls updatePassword (which stamps passwordChangedAt) and revokeAllSessionsIncludingCurrent', async () => {
       const mockSessionService = {
-        revokeAllSessionsIncludingCurrent: jest.fn().mockResolvedValue(1),
+        revokeAllSessions: jest.fn().mockResolvedValue(1),
       }
       userService.sessionService = mockSessionService as any
+      mockUserRepository.findById.mockResolvedValue(mockUser as any)
       mockUserRepository.updatePassword = jest.fn().mockResolvedValue(true)
 
       await userService.setPassword(validObjectId, 'newpassword123')
@@ -401,9 +400,7 @@ describe('UserService', () => {
         'hashed_newpassword123',
         true,
       )
-      expect(mockSessionService.revokeAllSessionsIncludingCurrent).toHaveBeenCalledWith(
-        validObjectId,
-      )
+      expect(mockSessionService.revokeAllSessions).toHaveBeenCalledWith(validObjectId, undefined)
     })
 
     it('6.3 — throws NotFoundError when user not found during setPassword', async () => {

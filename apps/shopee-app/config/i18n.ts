@@ -67,7 +67,7 @@ export const changeLanguage = async (languageCode: LanguageCode): Promise<void> 
 }
 
 export const getAvailableLanguages = () => {
-  return Object.entries(LANGUAGES).map(([code, info]) => ({
+  return Object.entries(LANGUAGES).map(([_code, info]) => ({
     ...info,
   }))
 }

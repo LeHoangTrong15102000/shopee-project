@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useStripe } from '@stripe/stripe-react-native'
 import { useRouter } from 'expo-router'
 import { useToast } from '@/components/ui/ToastProvider'

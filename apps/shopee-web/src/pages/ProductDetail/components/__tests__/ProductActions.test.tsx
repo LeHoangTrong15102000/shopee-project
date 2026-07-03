@@ -418,8 +418,11 @@ describe('ProductActions - Variant Selection (Task 15.9)', () => {
 
   it('validates cart quantity against SKU stock when variant selected', async () => {
     const { toast } = await import('react-toastify')
-    // SKU has stock of 15, add 15 items to cart
-    useCartStore.getState().setItems([createMockCartItem('product-1', 15)])
+    // SKU has stock of 15, add 15 items to cart — item must carry the matching sku._id
+    // so getProductQuantityInCart(..., skuId) finds the exact line instead of returning 0
+    useCartStore
+      .getState()
+      .setItems([{ ...createMockCartItem('product-1', 15), sku: { _id: mockSKU._id } }])
     renderWithProviders(
       <ProductActions
         product={mockProduct as any}

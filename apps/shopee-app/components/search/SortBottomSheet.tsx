@@ -1,9 +1,9 @@
-import React, { useRef, useCallback } from 'react'
-import { View, FlatList, Pressable } from 'react-native'
+import React, { useCallback } from 'react'
+import { View, Pressable } from 'react-native'
 import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
 import { useTranslation } from 'react-i18next'
 import { useColors } from '@/hooks/useColors'
-import { AppText, AppButton } from '@/components/ui'
+import { AppText } from '@/components/ui'
 import { Check } from 'lucide-react-native'
 
 export type SortOption = {
@@ -13,7 +13,7 @@ export type SortOption = {
 }
 
 interface SortBottomSheetProps {
-  bottomSheetRef: React.RefObject<BottomSheetModal>
+  bottomSheetRef: React.RefObject<BottomSheetModal | null>
   selectedSort: SortOption
   onSelect: (option: SortOption) => void
 }
@@ -34,7 +34,7 @@ export default function SortBottomSheet({
   ]
 
   const renderBackdrop = useCallback(
-    (props: any) => (
+    (props: React.ComponentProps<typeof BottomSheetBackdrop>) => (
       <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.5} />
     ),
     []

@@ -21,6 +21,8 @@ const mockAddress: Address = {
   district: 'District 1',
   city: 'Ho Chi Minh City',
   is_default: true,
+  createdAt: '2024-01-01T00:00:00.000Z',
+  updatedAt: '2024-01-01T00:00:00.000Z',
 }
 
 describe('AddressSection', () => {

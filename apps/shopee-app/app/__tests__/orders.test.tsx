@@ -10,7 +10,7 @@ const mockUseConfirmReceived = jest.fn(() => ({ mutate: jest.fn() }))
 const mockUseReturnOrder = jest.fn(() => ({ mutate: jest.fn() }))
 
 jest.mock('@/hooks/useOrders', () => ({
-  useOrders: (...args: any[]) => mockUseOrders(...args),
+  useOrders: (...args: unknown[]) => mockUseOrders(...args),
   useCancelOrder: () => mockUseCancelOrder(),
   useConfirmReceived: () => mockUseConfirmReceived(),
   useReturnOrder: () => mockUseReturnOrder(),
@@ -49,7 +49,7 @@ jest.mock('expo-router', () => ({
   }),
   useLocalSearchParams: () => ({}),
   Stack: {
-    Screen: ({ children }: any) => children ?? null,
+    Screen: ({ children }: { children?: React.ReactNode }) => children ?? null,
   },
 }))
 
@@ -57,7 +57,8 @@ jest.mock('@/components/navigation/ScreenHeader', () => {
   const React = require('react')
   return {
     __esModule: true,
-    default: (props: any) => React.createElement('View', { testID: 'screen-header', ...props }),
+    default: (props: Record<string, unknown>) =>
+      React.createElement('View', { testID: 'screen-header', ...props }),
   }
 })
 
@@ -111,32 +112,32 @@ describe('OrdersScreen', () => {
 
   // ─── Tab → API status mapping ───────────────────────────────────────────
 
-  it('calls useOrders with undefined for "Tất cả" tab (default)', () => {
+  it('calls useOrders with undefined for "All" tab (default)', () => {
     render(<OrdersScreen />)
     expect(mockUseOrders).toHaveBeenCalledWith(undefined)
   })
 
-  it('calls useOrders with ORDER_STATUS.PENDING when "Chờ xác nhận" tab is pressed', () => {
+  it('calls useOrders with ORDER_STATUS.PENDING when "Pending" tab is pressed', () => {
     const { getByText } = render(<OrdersScreen />)
-    fireEvent.press(getByText('Chờ xác nhận'))
+    fireEvent.press(getByText('Pending'))
     expect(mockUseOrders).toHaveBeenCalledWith(ORDER_STATUS.PENDING)
   })
 
-  it('calls useOrders with ORDER_STATUS.SHIPPING when "Đang giao" tab is pressed', () => {
+  it('calls useOrders with ORDER_STATUS.SHIPPING when "Shipping" tab is pressed', () => {
     const { getByText } = render(<OrdersScreen />)
-    fireEvent.press(getByText('Đang giao'))
+    fireEvent.press(getByText('Shipping'))
     expect(mockUseOrders).toHaveBeenCalledWith(ORDER_STATUS.SHIPPING)
   })
 
-  it('calls useOrders with ORDER_STATUS.DELIVERED when "Đã giao" tab is pressed', () => {
+  it('calls useOrders with ORDER_STATUS.DELIVERED when "Delivered" tab is pressed', () => {
     const { getByText } = render(<OrdersScreen />)
-    fireEvent.press(getByText('Đã giao'))
+    fireEvent.press(getByText('Delivered'))
     expect(mockUseOrders).toHaveBeenCalledWith(ORDER_STATUS.DELIVERED)
   })
 
-  it('calls useOrders with ORDER_STATUS.CANCELLED when "Đã hủy" tab is pressed', () => {
+  it('calls useOrders with ORDER_STATUS.CANCELLED when "Cancelled" tab is pressed', () => {
     const { getByText } = render(<OrdersScreen />)
-    fireEvent.press(getByText('Đã hủy'))
+    fireEvent.press(getByText('Cancelled'))
     expect(mockUseOrders).toHaveBeenCalledWith(ORDER_STATUS.CANCELLED)
   })
 
@@ -145,7 +146,7 @@ describe('OrdersScreen', () => {
   it('renders empty state when no orders exist for the active tab', () => {
     mockUseOrders.mockReturnValue(makeEmptyResult())
     const { getByText } = render(<OrdersScreen />)
-    expect(getByText('Không có đơn hàng nào')).toBeTruthy()
+    expect(getByText('No orders yet')).toBeTruthy()
   })
 
   // ─── Loading state ────────────────────────────────────────────────────────

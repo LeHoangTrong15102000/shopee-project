@@ -94,7 +94,12 @@ const Toast: React.FC<ToastProps> = ({
   }
 
   const animatedStyle = useAnimatedStyle(() => {
-    const style: any = {
+    const style: {
+      transform: { translateY: number }[]
+      opacity: number
+      top?: number
+      bottom?: number
+    } = {
       transform: [{ translateY: translateY.value }],
       opacity: opacity.value,
     }

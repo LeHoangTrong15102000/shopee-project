@@ -66,7 +66,7 @@ export default function VoucherSection({
       )}
       {hasApplied && !errorMessage && (
         <AppText raw variant="labelSmall" style={{ color: colors.success, marginTop: 4 }}>
-          {t('voucherInput.applied', { formattedDiscount: formatPrice(appliedDiscount!) })}
+          {t('voucherInput.applied', { formattedDiscount: formatPrice(appliedDiscount ?? 0) })}
         </AppText>
       )}
     </View>

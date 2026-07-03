@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { View, ScrollView, ActivityIndicator, FlatList } from 'react-native'
+import { View, ActivityIndicator, FlatList } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack } from 'expo-router'
 import { Flame, Coins } from 'lucide-react-native'

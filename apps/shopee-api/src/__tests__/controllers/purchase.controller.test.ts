@@ -241,15 +241,18 @@ describe('Purchase Controller', () => {
   })
 
   describe('buyProducts', () => {
+    const PRODUCT_OID = 'aaaaaaaaaaaaaaaaaaaaaaaa'
+    const SKU_OID = 'bbbbbbbbbbbbbbbbbbbbbbbb'
+
     const mockProduct = {
-      _id: 'product_1',
+      _id: PRODUCT_OID,
       name: 'Test Product',
       price: 100000,
       price_before_discount: 120000,
       quantity: 50,
     }
     const mockSKU = {
-      _id: 'sku_1',
+      _id: SKU_OID,
       value: 'Size S',
       price: 90000,
       stock: 20,
@@ -288,7 +291,7 @@ describe('Purchase Controller', () => {
       ;(ProductModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({})
 
       const req = createMockRequest({
-        body: [{ product_id: 'product_1', buy_count: 2 }],
+        body: [{ product_id: PRODUCT_OID, buy_count: 2 }],
       })
       const res = createMockResponse()
 
@@ -311,7 +314,7 @@ describe('Purchase Controller', () => {
       ;(ProductModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({})
 
       const req = createMockRequest({
-        body: [{ product_id: 'product_1', buy_count: 2, sku_id: 'sku_1' }],
+        body: [{ product_id: PRODUCT_OID, buy_count: 2, sku_id: SKU_OID }],
       })
       const res = createMockResponse()
 
@@ -332,7 +335,7 @@ describe('Purchase Controller', () => {
       ;(ProductModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({})
 
       const req = createMockRequest({
-        body: [{ product_id: 'product_1', buy_count: 1 }],
+        body: [{ product_id: PRODUCT_OID, buy_count: 1 }],
       })
       const res = createMockResponse()
 
@@ -345,7 +348,7 @@ describe('Purchase Controller', () => {
       buildProductFindByIdChain(null)
 
       const req = createMockRequest({
-        body: [{ product_id: 'nonexistent', buy_count: 1 }],
+        body: [{ product_id: PRODUCT_OID, buy_count: 1 }],
       })
       const res = createMockResponse()
 
@@ -360,7 +363,7 @@ describe('Purchase Controller', () => {
       ;(SKUModel.findById as jest.Mock).mockReturnValue({ session: mockSKUSession })
 
       const req = createMockRequest({
-        body: [{ product_id: 'product_1', buy_count: 1, sku_id: 'sku_bad' }],
+        body: [{ product_id: PRODUCT_OID, buy_count: 1, sku_id: SKU_OID }],
       })
       const res = createMockResponse()
 
@@ -376,7 +379,7 @@ describe('Purchase Controller', () => {
       ;(SKUModel.findById as jest.Mock).mockReturnValue({ session: mockSKUSession })
 
       const req = createMockRequest({
-        body: [{ product_id: 'product_1', buy_count: 10, sku_id: 'sku_1' }],
+        body: [{ product_id: PRODUCT_OID, buy_count: 10, sku_id: SKU_OID }],
       })
       const res = createMockResponse()
 
@@ -390,7 +393,7 @@ describe('Purchase Controller', () => {
       buildProductFindByIdChain(lowQtyProduct)
 
       const req = createMockRequest({
-        body: [{ product_id: 'product_1', buy_count: 10 }],
+        body: [{ product_id: PRODUCT_OID, buy_count: 10 }],
       })
       const res = createMockResponse()
 
@@ -412,7 +415,7 @@ describe('Purchase Controller', () => {
       ;(SKUModel.findOneAndUpdate as jest.Mock).mockResolvedValue(null)
 
       const req = createMockRequest({
-        body: [{ product_id: 'product_1', buy_count: 2, sku_id: 'sku_1' }],
+        body: [{ product_id: PRODUCT_OID, buy_count: 2, sku_id: SKU_OID }],
       })
       const res = createMockResponse()
 
@@ -428,8 +431,8 @@ describe('Purchase Controller', () => {
 
       const req = createMockRequest({
         body: [
-          { product_id: 'product_1', buy_count: 1 },
-          { product_id: 'product_1', buy_count: 2 },
+          { product_id: PRODUCT_OID, buy_count: 1 },
+          { product_id: PRODUCT_OID, buy_count: 2 },
         ],
       })
       const res = createMockResponse()

@@ -37,7 +37,7 @@ describe('User Profile Integration Tests', () => {
         .send({ name: 'Updated Name' })
 
       expect(response.status).toBe(200)
-      expect(response.body.data.name).toBe('Updated Name')
+      expect(response.body.data.user.name).toBe('Updated Name')
     })
 
     it('should return 401 when not authenticated', async () => {

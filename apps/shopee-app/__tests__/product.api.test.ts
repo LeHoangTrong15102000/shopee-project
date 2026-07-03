@@ -27,11 +27,11 @@ describe('getProducts', () => {
 
   it('throws on API error', async () => {
     server.use(
-      http.get('https://api-ecom.duthanhduoc.com/products', () => {
+      http.get('https://api-ecom.lehoangtrong.com/products', () => {
         return new HttpResponse(null, { status: 500 })
       })
     )
-    await expect(getProducts({ page: 1, limit: 10 })).rejects.toThrow('HTTP 500')
+    await expect(getProducts({ page: 1, limit: 10 })).rejects.toThrow('status code 500')
   })
 })
 

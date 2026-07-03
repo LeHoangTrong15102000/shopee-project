@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
   AccessibilityInfo,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,

@@ -1,8 +1,9 @@
 import { AppColors } from '@/config/colors'
+import { DimensionValue } from 'react-native'
 
 export interface PasswordStrength {
   level: 'weak' | 'medium' | 'strong'
-  width: string
+  width: DimensionValue
   color: string
   percent: number
 }

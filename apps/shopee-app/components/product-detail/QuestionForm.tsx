@@ -55,10 +55,7 @@ export default function QuestionForm({
       backgroundStyle={{ backgroundColor: colors.background }}
       handleIndicatorStyle={{ backgroundColor: colors.neutrals400 }}
       onDismiss={resetForm}>
-      <BottomSheetView
-        className="px-4 pb-8"
-        accessibilityViewIsModal={true}
-        accessibilityRole="dialog">
+      <BottomSheetView className="px-4 pb-8" accessibilityViewIsModal={true}>
         <AppText raw variant="heading4" weight="bold" className="mb-4">
           {t(titleKey)}
         </AppText>

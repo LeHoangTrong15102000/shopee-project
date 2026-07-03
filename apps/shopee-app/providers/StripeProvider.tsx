@@ -3,7 +3,7 @@ import { StripeProvider as NativeStripeProvider } from '@stripe/stripe-react-nat
 import { STRIPE_PUBLISHABLE_KEY } from '@/config/env'
 
 interface StripeProviderProps {
-  children: React.ReactNode
+  children: React.ReactElement | React.ReactElement[]
 }
 
 /**

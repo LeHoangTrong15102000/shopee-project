@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, TouchableOpacity } from 'react-native'
+import { View } from 'react-native'
 import { Star, Users } from 'lucide-react-native'
 import { AppText, AppButton, AppImage } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'

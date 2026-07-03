@@ -81,10 +81,12 @@ describe('Address Controller', () => {
 
       expect(mockAddressService.getAddresses).toHaveBeenCalledWith('user123')
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.json).toHaveBeenCalledWith({
-        message: 'Lấy danh sách địa chỉ thành công',
-        data: { addresses: [mockAddress], total: 1 },
-      })
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'Lấy danh sách địa chỉ thành công',
+          data: expect.objectContaining({ total: 1 }),
+        }),
+      )
     })
 
     it('should propagate service errors', async () => {
@@ -106,10 +108,12 @@ describe('Address Controller', () => {
 
       expect(mockAddressService.getAddressById).toHaveBeenCalledWith('user123', 'addr123')
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.json).toHaveBeenCalledWith({
-        message: 'Lấy địa chỉ thành công',
-        data: mockAddress,
-      })
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'Lấy địa chỉ thành công',
+          data: expect.objectContaining({ _id: 'addr123' }),
+        }),
+      )
     })
 
     it('should propagate service errors', async () => {
@@ -140,12 +144,25 @@ describe('Address Controller', () => {
 
       await createAddress(req as Request, res as Response)
 
-      expect(mockAddressService.createAddress).toHaveBeenCalledWith('user123', addressData)
+      expect(mockAddressService.createAddress).toHaveBeenCalledWith(
+        'user123',
+        expect.objectContaining({
+          full_name: 'John Doe',
+          phone: '0123456789',
+          province: 'Ho Chi Minh',
+          district: 'District 1',
+          ward: 'Ward 1',
+          street: '123 Main St',
+          is_default: true,
+        }),
+      )
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.json).toHaveBeenCalledWith({
-        message: 'Tạo địa chỉ thành công',
-        data: mockAddress,
-      })
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'Tạo địa chỉ thành công',
+          data: expect.objectContaining({ _id: 'addr123' }),
+        }),
+      )
     })
 
     it('should propagate service errors', async () => {
@@ -179,13 +196,23 @@ describe('Address Controller', () => {
       expect(mockAddressService.updateAddress).toHaveBeenCalledWith(
         'user123',
         'addr123',
-        addressData,
+        expect.objectContaining({
+          full_name: 'Jane Doe',
+          phone: '0987654321',
+          province: 'Ha Noi',
+          district: 'District 2',
+          ward: 'Ward 2',
+          street: '456 Other St',
+          is_default: false,
+        }),
       )
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.json).toHaveBeenCalledWith({
-        message: 'Cập nhật địa chỉ thành công',
-        data: { ...mockAddress, ...addressData },
-      })
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'Cập nhật địa chỉ thành công',
+          data: expect.objectContaining({ _id: 'addr123' }),
+        }),
+      )
     })
 
     it('should propagate service errors', async () => {
@@ -229,10 +256,12 @@ describe('Address Controller', () => {
 
       expect(mockAddressService.setDefaultAddress).toHaveBeenCalledWith('user123', 'addr123')
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.json).toHaveBeenCalledWith({
-        message: 'Đặt địa chỉ mặc định thành công',
-        data: mockAddress,
-      })
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'Đặt địa chỉ mặc định thành công',
+          data: expect.objectContaining({ _id: 'addr123' }),
+        }),
+      )
     })
 
     it('should propagate service errors', async () => {

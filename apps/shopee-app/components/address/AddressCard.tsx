@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, TouchableOpacity } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { AppText, Badge, AppButton } from '@/components/ui'
+import { AppText, Badge } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { type Address } from '@/apis/address.api'
 

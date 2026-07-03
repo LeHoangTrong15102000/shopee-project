@@ -47,7 +47,7 @@ export default function SignUpScreen() {
     validationSchema: signUpSchema,
   })
 
-  const password = watch('password') || ''
+  const password = (watch('password') as string) || ''
   const strength = getPasswordStrength(password)
 
   const onSubmit = handleSubmit(async (data) => {

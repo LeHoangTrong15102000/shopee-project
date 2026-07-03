@@ -8,6 +8,19 @@ vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }))
 
+// Provide a profile with hasPassword: true so ChangePasswordForm (not SetPasswordForm) renders
+vi.mock('src/contexts/app.context', async () => {
+  const React = await vi.importActual<typeof import('react')>('react')
+  return {
+    AppContext: React.createContext({
+      profile: { name: 'Test User', avatar: '', hasPassword: true },
+      isAuthenticated: true,
+      setIsAuthenticated: vi.fn(),
+      setProfile: vi.fn(),
+    }),
+  }
+})
+
 vi.mock('src/i18n/i18n', () => ({
   default: {
     t: (key: string) => {

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { View } from 'react-native'
-import Toast, { ToastProps, ToastType } from './Toast'
+import Toast, { ToastProps } from './Toast'
 import { setToastInstance } from '@/utils/toast'
 
 interface ToastOptions {

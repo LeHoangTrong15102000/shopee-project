@@ -91,7 +91,7 @@ describe('OrderService', () => {
     it('returns array of 3 shipping methods', () => {
       const methods = service.getShippingMethods()
       expect(methods).toHaveLength(3)
-      expect(methods.map((m) => m.id)).toEqual(['standard', 'express', 'same_day'])
+      expect(methods.map((m) => m._id)).toEqual(['standard', 'express', 'same_day'])
       expect(methods.map((m) => m.price)).toEqual([30000, 50000, 80000])
     })
   })
@@ -100,7 +100,7 @@ describe('OrderService', () => {
     it('returns array of 4 payment methods', () => {
       const methods = service.getPaymentMethods()
       expect(methods).toHaveLength(4)
-      expect(methods.map((m) => m.id)).toEqual([
+      expect(methods.map((m) => m._id)).toEqual([
         PAYMENT_METHOD.COD,
         PAYMENT_METHOD.BANK_TRANSFER,
         PAYMENT_METHOD.E_WALLET,

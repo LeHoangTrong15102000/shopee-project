@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import UserSideNav from '../UserSideNav'
 
@@ -50,17 +50,22 @@ describe('UserSideNav', () => {
 
   it('renders all navigation links', () => {
     renderWithRouter()
+    // Items visible at /user/profile: account group is open, orders is a direct link
     expect(screen.getByText('Tài khoản của tôi')).toBeInTheDocument()
     expect(screen.getByText('Đổi mật khẩu')).toBeInTheDocument()
     expect(screen.getByText('Đơn mua')).toBeInTheDocument()
-    expect(screen.getByText('Đơn hàng')).toBeInTheDocument()
-    expect(screen.getByText('Điểm danh')).toBeInTheDocument()
     expect(screen.getByText('Địa chỉ')).toBeInTheDocument()
-    expect(screen.getByText('Thông báo')).toBeInTheDocument()
+    // Utilities group toggle — label is always visible even when group is collapsed
+    expect(screen.getByRole('button', { name: /Tiện ích/ })).toBeInTheDocument()
+    // Notifications group toggle
+    expect(screen.getByRole('button', { name: /Thông báo/ })).toBeInTheDocument()
   })
 
   it('renders conversations link', () => {
     renderWithRouter()
+    // The notifications group starts collapsed — click its toggle to open it
+    const notificationsToggle = screen.getByRole('button', { name: /Thông báo/i })
+    fireEvent.click(notificationsToggle)
     expect(screen.getByText('Lịch sử hội thoại')).toBeInTheDocument()
   })
 

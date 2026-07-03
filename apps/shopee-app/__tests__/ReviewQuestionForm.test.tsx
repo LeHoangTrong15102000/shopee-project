@@ -2,9 +2,19 @@ import React, { createRef } from 'react'
 import { render, fireEvent } from '@testing-library/react-native'
 import ReviewForm from '../components/product-detail/ReviewForm'
 import QuestionForm from '../components/product-detail/QuestionForm'
+import { BottomSheetModal } from '@gorhom/bottom-sheet'
 
 jest.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string, opts?: Record<string, unknown>) => {
+      if (key === 'a11y.rateStars' && opts) {
+        return `Rate ${opts.count} stars`
+      }
+      return key
+    },
+    i18n: { language: 'en', changeLanguage: jest.fn() },
+  }),
+  initReactI18next: { type: '3rdParty', init: jest.fn() },
 }))
 
 jest.mock('@/hooks/useColors', () => ({
@@ -24,7 +34,7 @@ describe('ReviewForm', () => {
   beforeEach(() => onSubmit.mockClear())
 
   it('shows validation error when comment is too short', () => {
-    const ref = createRef<any>()
+    const ref = createRef<BottomSheetModal>()
     const { getByText, getByLabelText } = render(
       <ReviewForm bottomSheetRef={ref} onSubmit={onSubmit} />
     )
@@ -34,7 +44,7 @@ describe('ReviewForm', () => {
   })
 
   it('rejects whitespace-only comment', () => {
-    const ref = createRef<any>()
+    const ref = createRef<BottomSheetModal>()
     const { getByText, getByLabelText } = render(
       <ReviewForm bottomSheetRef={ref} onSubmit={onSubmit} />
     )
@@ -44,7 +54,7 @@ describe('ReviewForm', () => {
   })
 
   it('shows validation error when no rating selected', () => {
-    const ref = createRef<any>()
+    const ref = createRef<BottomSheetModal>()
     const { getByText, getByLabelText } = render(
       <ReviewForm bottomSheetRef={ref} onSubmit={onSubmit} />
     )
@@ -57,7 +67,7 @@ describe('ReviewForm', () => {
   })
 
   it('submits when rating and valid comment provided', () => {
-    const ref = createRef<any>()
+    const ref = createRef<BottomSheetModal>()
     const { getByText, getByLabelText } = render(
       <ReviewForm bottomSheetRef={ref} onSubmit={onSubmit} />
     )
@@ -77,7 +87,7 @@ describe('QuestionForm', () => {
   beforeEach(() => onSubmit.mockClear())
 
   it('shows validation error when question is too short', () => {
-    const ref = createRef<any>()
+    const ref = createRef<BottomSheetModal>()
     const { getByText, getByLabelText } = render(
       <QuestionForm mode="ask" bottomSheetRef={ref} onSubmit={onSubmit} />
     )
@@ -87,7 +97,7 @@ describe('QuestionForm', () => {
   })
 
   it('submits valid question', () => {
-    const ref = createRef<any>()
+    const ref = createRef<BottomSheetModal>()
     const { getByText, getByLabelText } = render(
       <QuestionForm mode="ask" bottomSheetRef={ref} onSubmit={onSubmit} />
     )
@@ -97,7 +107,7 @@ describe('QuestionForm', () => {
   })
 
   it('shows question context in answer mode', () => {
-    const ref = createRef<any>()
+    const ref = createRef<BottomSheetModal>()
     const { getByText } = render(
       <QuestionForm
         mode="answer"
@@ -110,7 +120,7 @@ describe('QuestionForm', () => {
   })
 
   it('validates answer minimum length', () => {
-    const ref = createRef<any>()
+    const ref = createRef<BottomSheetModal>()
     const { getByText, getByLabelText } = render(
       <QuestionForm mode="answer" bottomSheetRef={ref} onSubmit={onSubmit} />
     )

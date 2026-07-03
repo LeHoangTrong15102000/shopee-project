@@ -2,10 +2,6 @@ import React from 'react'
 import { render, fireEvent } from '@testing-library/react-native'
 import QuantitySelector from '../components/product-detail/QuantitySelector'
 
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
-}))
-
 jest.mock('@/hooks/useColors', () => ({
   useColors: () => ({
     primary: '#EE4D2D',

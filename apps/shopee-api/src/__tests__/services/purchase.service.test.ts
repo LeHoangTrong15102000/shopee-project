@@ -282,20 +282,22 @@ describe('PurchaseService', () => {
   describe('removeFromCart', () => {
     it('should remove matching items from cart', async () => {
       const purchase = { ...mockPurchase, user: new Types.ObjectId(validUserId), status: -1 }
-      mockPurchaseRepository.findById.mockResolvedValue(purchase as any)
+      mockPurchaseRepository.findByIdAndUser.mockResolvedValue(purchase as any)
       mockPurchaseRepository.removeFromCart.mockResolvedValue(true)
 
       const result = await purchaseService.removeFromCart(validUserId, [validPurchaseId])
 
-      expect(mockPurchaseRepository.findById).toHaveBeenCalledWith(validPurchaseId)
+      expect(mockPurchaseRepository.findByIdAndUser).toHaveBeenCalledWith(
+        validPurchaseId,
+        validUserId,
+      )
       expect(mockPurchaseRepository.removeFromCart).toHaveBeenCalledWith(validPurchaseId)
       expect(result).toBe(1)
     })
 
-    it('should skip items with wrong user', async () => {
-      const otherUserId = new Types.ObjectId().toString()
-      const purchase = { ...mockPurchase, user: new Types.ObjectId(otherUserId), status: -1 }
-      mockPurchaseRepository.findById.mockResolvedValue(purchase as any)
+    it('should skip items when findByIdAndUser returns null (user mismatch)', async () => {
+      // The repository returns null when the purchase does not belong to the user
+      mockPurchaseRepository.findByIdAndUser.mockResolvedValue(null)
 
       const result = await purchaseService.removeFromCart(validUserId, [validPurchaseId])
 
@@ -305,7 +307,7 @@ describe('PurchaseService', () => {
 
     it('should skip items with wrong status', async () => {
       const purchase = { ...mockPurchase, user: new Types.ObjectId(validUserId), status: 1 }
-      mockPurchaseRepository.findById.mockResolvedValue(purchase as any)
+      mockPurchaseRepository.findByIdAndUser.mockResolvedValue(purchase as any)
 
       const result = await purchaseService.removeFromCart(validUserId, [validPurchaseId])
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, FlatList, ActivityIndicator, RefreshControl } from 'react-native'
+import { FlatList, ActivityIndicator, RefreshControl } from 'react-native'
 import { useColors } from '@/hooks/useColors'
 import OrderCard from './OrderCard'
 import type { Order } from '@/apis/order.api'

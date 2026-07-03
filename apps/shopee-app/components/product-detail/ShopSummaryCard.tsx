@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { View, TouchableOpacity } from 'react-native'
-import { Star, ChevronRight, MessageCircle } from 'lucide-react-native'
+import { Star, ChevronRight } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { AppText, AppButton, AppImage } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'

@@ -14,7 +14,7 @@ export interface FilterOptions {
 }
 
 interface FilterBottomSheetProps {
-  bottomSheetRef: React.RefObject<BottomSheetModal>
+  bottomSheetRef: React.RefObject<BottomSheetModal | null>
   initialFilters: FilterOptions
   onApply: (filters: FilterOptions) => void
 }
@@ -32,7 +32,7 @@ export default function FilterBottomSheet({
   const [inStock, setInStock] = useState(initialFilters.inStock ?? false)
 
   const renderBackdrop = useCallback(
-    (props: any) => (
+    (props: React.ComponentProps<typeof BottomSheetBackdrop>) => (
       <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.5} />
     ),
     []

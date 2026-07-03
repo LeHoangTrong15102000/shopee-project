@@ -31,8 +31,8 @@ describe('Address Integration', () => {
         .send(validAddress)
 
       expect(res.status).toBeLessThan(400)
-      expect(res.body.data.full_name).toBe(validAddress.full_name)
-      expect(res.body.data.is_default).toBe(true)
+      expect(res.body.data.fullName).toBe(validAddress.full_name)
+      expect(res.body.data.isDefault).toBe(true)
     })
 
     it('should fail without auth', async () => {
@@ -105,7 +105,7 @@ describe('Address Integration', () => {
         .set('Authorization', `Bearer ${authToken}`)
         .send({ ...validAddress, full_name: 'Jane Doe' })
       expect(res.status).toBeLessThan(400)
-      expect(res.body.data.full_name).toBe('Jane Doe')
+      expect(res.body.data.fullName).toBe('Jane Doe')
     })
 
     it('should fail with non-existent ID', async () => {
@@ -176,7 +176,7 @@ describe('Address Integration', () => {
         .put(`/addresses/${second.body.data._id}/default`)
         .set('Authorization', `Bearer ${authToken}`)
       expect(res.status).toBeLessThan(400)
-      expect(res.body.data.is_default).toBe(true)
+      expect(res.body.data.isDefault).toBe(true)
     })
 
     it('should fail with non-existent ID', async () => {

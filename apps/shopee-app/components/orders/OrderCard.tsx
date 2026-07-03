@@ -2,7 +2,6 @@ import React from 'react'
 import { View, TouchableOpacity } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { AppText, Badge, AppButton, AppImage } from '@/components/ui'
-import { useColors } from '@/hooks/useColors'
 import { formatPrice } from '@/utils/price'
 import { type Order } from '@/apis/order.api'
 import { ORDER_STATUS, type OrderStatusType } from '@/constants/order'
@@ -47,7 +46,6 @@ export default function OrderCard({
   onReturn,
 }: OrderCardProps) {
   const { t } = useTranslation()
-  const colors = useColors()
   const statusInfo = useStatusBadge(order.status)
   const firstItem = order.items?.[0]
   const extraCount = (order.items?.length ?? 0) - 1

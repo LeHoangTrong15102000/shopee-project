@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo } from 'react'
+import React, { createContext, useContext } from 'react'
 import { Text, View } from 'react-native'
 import { cn } from '@/utils'
 import { FieldValues, FieldPath, UseFormReturn, FieldError } from '@/hooks/useForm'
@@ -19,10 +19,10 @@ type ControllerRenderProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
-  value: any
+  value: string
   onChangeText: (text: string) => void
   onBlur: () => void
-  ref: (instance: any) => void
+  ref: (instance: unknown) => void
   name: TName
 }
 
@@ -65,7 +65,6 @@ export type FormProps<TFieldValues extends FieldValues = FieldValues> = {
 export function Form<TFieldValues extends FieldValues = FieldValues>({
   children,
   className,
-  ...formMethods
 }: FormProps<TFieldValues>) {
   return <View className={cn('w-full', className)}>{children}</View>
 }
@@ -104,7 +103,7 @@ export function FormField<
   }
 
   return (
-    <FormFieldContext.Provider value={{ name, control }}>
+    <FormFieldContext.Provider value={{ name, control } as FormFieldContextValue}>
       {render({ field, fieldState })}
     </FormFieldContext.Provider>
   )
@@ -157,15 +156,15 @@ export type FormControlProps = {
   children: React.ReactElement
 }
 
-export const FormControl = React.forwardRef<View, FormControlProps>(({ children }, ref) => {
+export const FormControl = React.forwardRef<View, FormControlProps>(({ children }) => {
   const { formItemId, formDescriptionId, formMessageId } = useFormField()
 
   return React.cloneElement(children, {
-    ...(children.props as Record<string, any>),
+    ...(children.props as Record<string, unknown>),
     nativeID: formItemId,
     'aria-describedby': formDescriptionId,
     'aria-invalid': formMessageId,
-  } as any)
+  } as React.ComponentProps<React.JSXElementConstructor<Record<string, unknown>>>)
 })
 
 FormControl.displayName = 'FormControl'

@@ -3,7 +3,6 @@ import { View } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { AppButton } from '@/components/ui'
 import { ORDER_STATUS } from '@/constants/order'
-import type { OrderStatusType } from '@/constants/order'
 
 interface OrderActionsProps {
   status: string

@@ -36,7 +36,7 @@ async function setupUserWith2FA(email: string, password: string) {
 
   // Initiate 2FA setup
   const setupRes = await supertest(app)
-    .post('/2fa/setup')
+    .post('/auth/2fa/setup')
     .set('Authorization', `Bearer ${accessToken}`)
   expect(setupRes.status).toBe(200)
 
@@ -48,7 +48,7 @@ async function setupUserWith2FA(email: string, password: string) {
   const validCode = authenticator.generate(secret)
 
   const verifyRes = await supertest(app)
-    .post('/2fa/verify-setup')
+    .post('/auth/2fa/verify-setup')
     .set('Authorization', `Bearer ${accessToken}`)
     .send({ code: validCode })
   expect(verifyRes.status).toBe(200)
@@ -103,7 +103,7 @@ describe('2FA Login Flow (Task 12.1)', () => {
     const totpCode = authenticator.generate(secret)
 
     const completeRes = await supertest(app)
-      .post('/2fa/complete')
+      .post('/auth/2fa/complete')
       .send({ partial_token: partialToken, code: totpCode })
 
     expect(completeRes.status).toBe(200)
@@ -125,7 +125,7 @@ describe('2FA Login Flow (Task 12.1)', () => {
     const totpCode = authenticator.generate(secret)
 
     const completeRes = await supertest(app)
-      .post('/2fa/complete')
+      .post('/auth/2fa/complete')
       .send({ partial_token: partialToken, code: totpCode })
 
     const fullAccessToken = stripBearer(completeRes.body.data.access_token)
@@ -146,7 +146,7 @@ describe('2FA Login Flow (Task 12.1)', () => {
     const partialToken = loginRes.body.data.partial_token
 
     const completeRes = await supertest(app)
-      .post('/2fa/complete')
+      .post('/auth/2fa/complete')
       .send({ partial_token: partialToken, code: '000000' })
 
     expect(completeRes.status).toBeGreaterThanOrEqual(400)
@@ -154,7 +154,7 @@ describe('2FA Login Flow (Task 12.1)', () => {
 
   it('completing 2FA with an expired/invalid partial token returns 401', async () => {
     const completeRes = await supertest(app)
-      .post('/2fa/complete')
+      .post('/auth/2fa/complete')
       .send({ partial_token: 'invalid.partial.token', code: '123456' })
 
     expect(completeRes.status).toBeGreaterThanOrEqual(400)
@@ -175,7 +175,7 @@ describe('Backup Code Login (Task 12.2)', () => {
 
     // Use the first backup code
     const completeRes = await supertest(app)
-      .post('/2fa/complete')
+      .post('/auth/2fa/complete')
       .send({ partial_token: partialToken, code: backupCodes[0] })
 
     expect(completeRes.status).toBe(200)
@@ -195,7 +195,7 @@ describe('Backup Code Login (Task 12.2)', () => {
     const partialToken1 = loginRes1.body.data.partial_token
 
     const complete1 = await supertest(app)
-      .post('/2fa/complete')
+      .post('/auth/2fa/complete')
       .send({ partial_token: partialToken1, code: usedCode })
     expect(complete1.status).toBe(200)
 
@@ -204,7 +204,7 @@ describe('Backup Code Login (Task 12.2)', () => {
     const partialToken2 = loginRes2.body.data.partial_token
 
     const complete2 = await supertest(app)
-      .post('/2fa/complete')
+      .post('/auth/2fa/complete')
       .send({ partial_token: partialToken2, code: usedCode })
     expect(complete2.status).toBeGreaterThanOrEqual(400)
   })
@@ -220,7 +220,7 @@ describe('Backup Code Login (Task 12.2)', () => {
     const partialToken1 = loginRes1.body.data.partial_token
 
     await supertest(app)
-      .post('/2fa/complete')
+      .post('/auth/2fa/complete')
       .send({ partial_token: partialToken1, code: backupCodes[0] })
 
     // Use the second backup code — should still work
@@ -228,7 +228,7 @@ describe('Backup Code Login (Task 12.2)', () => {
     const partialToken2 = loginRes2.body.data.partial_token
 
     const complete2 = await supertest(app)
-      .post('/2fa/complete')
+      .post('/auth/2fa/complete')
       .send({ partial_token: partialToken2, code: backupCodes[1] })
     expect(complete2.status).toBe(200)
   })
@@ -243,7 +243,7 @@ describe('Backup Code Login (Task 12.2)', () => {
     const partialToken = loginRes.body.data.partial_token
 
     const completeRes = await supertest(app)
-      .post('/2fa/complete')
+      .post('/auth/2fa/complete')
       .send({ partial_token: partialToken, code: backupCodes[0] })
 
     const fullAccessToken = stripBearer(completeRes.body.data.access_token)

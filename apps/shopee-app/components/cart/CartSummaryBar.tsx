@@ -2,7 +2,6 @@ import React from 'react'
 import { View } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { AppText, Checkbox, AppButton } from '@/components/ui'
-import { useColors } from '@/hooks/useColors'
 import { formatPrice } from '@/utils/price'
 
 interface CartSummaryBarProps {
@@ -21,7 +20,6 @@ export default function CartSummaryBar({
   onCheckout,
 }: CartSummaryBarProps) {
   const { t } = useTranslation()
-  const colors = useColors()
 
   return (
     <View

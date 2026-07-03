@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react'
 import { z } from 'zod'
 
-export type FieldValues = Record<string, any>
+export type FieldValues = Record<string, unknown>
 
 export type FieldError = {
   type: string
@@ -35,10 +35,10 @@ export type UseFormProps<TFieldValues extends FieldValues> = {
 export type FieldPath<TFieldValues extends FieldValues> = keyof TFieldValues & string
 
 export type UseFormRegisterReturn = {
-  value: any
+  value: string
   onChangeText: (text: string) => void
   onBlur: () => void
-  ref: (instance: any) => void
+  ref: (instance: unknown) => void
 }
 
 export type UseFormReturn<TFieldValues extends FieldValues> = {
@@ -50,21 +50,21 @@ export type UseFormReturn<TFieldValues extends FieldValues> = {
   formState: FormState<TFieldValues>
   setValue: (
     name: FieldPath<TFieldValues>,
-    value: any,
+    value: TFieldValues[FieldPath<TFieldValues>],
     options?: { shouldValidate?: boolean; shouldDirty?: boolean; shouldTouch?: boolean }
   ) => void
-  getValue: (name: FieldPath<TFieldValues>) => any
+  getValue: (name: FieldPath<TFieldValues>) => TFieldValues[FieldPath<TFieldValues>]
   getValues: () => TFieldValues
   setError: (name: FieldPath<TFieldValues>, error: FieldError) => void
   clearErrors: (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[]) => void
   reset: (values?: Partial<TFieldValues>) => void
-  watch: (name?: FieldPath<TFieldValues>) => any
+  watch: (name?: FieldPath<TFieldValues>) => TFieldValues | TFieldValues[FieldPath<TFieldValues>]
   trigger: (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[]) => Promise<boolean>
   control: {
     _formValues: TFieldValues
     _defaultValues: Partial<TFieldValues>
     _formState: FormState<TFieldValues>
-    _fields: Map<string, any>
+    _fields: Map<string, unknown>
     register: (name: FieldPath<TFieldValues>) => UseFormRegisterReturn
     setValue: UseFormReturn<TFieldValues>['setValue']
     getValue: UseFormReturn<TFieldValues>['getValue']
@@ -100,7 +100,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
   const fieldsRef = useRef(new Map())
 
   const validateField = useCallback(
-    async (name: FieldPath<TFieldValues>, value: any): Promise<FieldError | null> => {
+    async (name: FieldPath<TFieldValues>, value: unknown): Promise<FieldError | null> => {
       if (!validationSchema) return null
 
       try {
@@ -152,7 +152,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
   const setValue = useCallback(
     (
       name: FieldPath<TFieldValues>,
-      value: any,
+      value: TFieldValues[FieldPath<TFieldValues>],
       options: { shouldValidate?: boolean; shouldDirty?: boolean; shouldTouch?: boolean } = {}
     ) => {
       const { shouldValidate = false, shouldDirty = true, shouldTouch = false } = options
@@ -265,9 +265,9 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
       }
 
       return {
-        value: formValues[name] ?? '',
+        value: (formValues[name] as string) ?? '',
         onChangeText: (text: string) => {
-          setValue(name, text, {
+          setValue(name, text as TFieldValues[FieldPath<TFieldValues>], {
             shouldValidate: mode === 'onChange' || mode === 'all',
             shouldDirty: true,
           })
@@ -284,7 +284,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues>(
             trigger(name)
           }
         },
-        ref: (instance: any) => {
+        ref: (instance: unknown) => {
           fieldsRef.current.set(name, { ...fieldsRef.current.get(name), ref: instance })
         },
       }

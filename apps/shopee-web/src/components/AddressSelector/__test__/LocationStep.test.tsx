@@ -334,6 +334,7 @@ describe('LocationStep', () => {
         ...defaultProps,
         watchedProvinceId: 'hcm',
         watchedDistrictId: 'q1',
+        watchedWardId: 'ben-nghe',
         wards,
       }
       render(<LocationStep {...props} form={form} />)

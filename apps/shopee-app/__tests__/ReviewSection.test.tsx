@@ -1,17 +1,20 @@
 import React from 'react'
 import { render } from '@testing-library/react-native'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import ReviewSection from '../components/product-detail/ReviewSection'
 import type { Review, ReviewStats } from '../apis/product-detail.api'
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, params?: any) => {
+    t: (key: string, params?: Record<string, unknown>) => {
       if (key === 'PD_RATING_BAR_LABEL') {
-        return `${params.rating} stars: ${params.count} reviews (${params.percent}%)`
+        return `${params?.rating} stars: ${params?.count} reviews (${params?.percent}%)`
       }
       return key
     },
+    i18n: { language: 'en', changeLanguage: jest.fn() },
   }),
+  initReactI18next: { type: '3rdParty', init: jest.fn() },
 }))
 
 jest.mock('@/hooks/useColors', () => ({
@@ -23,6 +26,11 @@ jest.mock('@/hooks/useColors', () => ({
     neutrals800: '#2a2a2a',
   }),
 }))
+
+function renderWithClient(ui: React.ReactElement) {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+  return render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>)
+}
 
 const mockReview: Review = {
   _id: 'r1',
@@ -48,6 +56,7 @@ describe('ReviewSection', () => {
   it('renders empty state when no reviews', () => {
     const { getByText } = render(
       <ReviewSection
+        productId="p1"
         reviews={[]}
         stats={undefined}
         hasNextPage={false}
@@ -60,8 +69,9 @@ describe('ReviewSection', () => {
   })
 
   it('renders review stats with rating breakdown', () => {
-    const { getByText } = render(
+    const { getByLabelText } = renderWithClient(
       <ReviewSection
+        productId="p1"
         reviews={[mockReview]}
         stats={mockStats}
         hasNextPage={false}
@@ -70,7 +80,7 @@ describe('ReviewSection', () => {
         onToggleLike={jest.fn()}
       />
     )
-    expect(getByText('5 stars: 60 reviews (60%)')).toBeTruthy()
-    expect(getByText('4 stars: 20 reviews (20%)')).toBeTruthy()
+    expect(getByLabelText('5 stars: 60 reviews (60%)')).toBeTruthy()
+    expect(getByLabelText('4 stars: 20 reviews (20%)')).toBeTruthy()
   })
 })

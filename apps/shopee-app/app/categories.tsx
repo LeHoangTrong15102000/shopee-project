@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { View, ScrollView, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Stack, useRouter } from 'expo-router'
+import { Stack } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { AppText, EmptyState } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
@@ -16,7 +16,6 @@ import { Product } from '@/types/product.type'
 export default function CategoriesScreen() {
   const { t } = useTranslation()
   const colors = useColors()
-  const router = useRouter()
 
   const { data: categories, isLoading: categoriesLoading } = useCategories()
   const [selectedCategory, setSelectedCategory] = useState<Category | undefined>()

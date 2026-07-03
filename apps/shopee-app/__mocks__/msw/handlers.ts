@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw'
 
-const API_BASE = 'https://api-ecom.duthanhduoc.com'
+const API_BASE = 'https://api-ecom.lehoangtrong.com'
 
 const mockCategories = [
   { _id: 'cat-1', name: 'Áo thun' },

@@ -123,18 +123,24 @@ describe('mockControl — default-ON guarantee', () => {
     expect(isMockEnabled('user')).toBe(true)
   })
 
-  it('reset() turns all keys OFF and persists', async () => {
-    const { reset, isMockEnabled, DOMAIN_KEYS, MOCK_STORAGE_KEY } = await import('../mockControl')
+  it('reset() restores all keys to the enabled default (ON) and persists', async () => {
+    const { reset, disable, isMockEnabled, DOMAIN_KEYS, MOCK_STORAGE_KEY } =
+      await import('../mockControl')
+
+    // Disable a few keys to confirm reset restores them
+    disable('orders')
+    disable('cart')
+    expect(isMockEnabled('orders')).toBe(false)
 
     reset()
 
     for (const key of DOMAIN_KEYS) {
-      expect(isMockEnabled(key), `Expected ${key} to be OFF after reset()`).toBe(false)
+      expect(isMockEnabled(key), `Expected ${key} to be ON after reset()`).toBe(true)
     }
 
     const stored = JSON.parse(localStorage.getItem(MOCK_STORAGE_KEY) ?? '{}')
     for (const key of DOMAIN_KEYS) {
-      expect(stored[key]).toBe(false)
+      expect(stored[key]).toBe(true)
     }
   })
 

@@ -3,7 +3,6 @@ import { View, TextInput, Pressable } from 'react-native'
 import { ArrowLeft, Search, X } from 'lucide-react-native'
 import { useColors } from '@/hooks/useColors'
 import { useTranslation } from 'react-i18next'
-import { AppText } from '@/components/ui'
 
 interface SearchBarProps {
   value: string

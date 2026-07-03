@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Snapshot tests EmptyState matches snapshot 1`] = `
 <View
@@ -37,6 +37,25 @@ exports[`Snapshot tests EmptyState matches snapshot 1`] = `
     className="flex-row items-center justify-center gap-2 rounded-xl bg-primary text-primary-foreground font-semibold h-10 px-3 text-xs"
     collapsable={false}
     focusable={true}
+    jestAnimatedProps={
+      {
+        "value": {},
+      }
+    }
+    jestAnimatedStyle={
+      {
+        "value": {
+          "opacity": 1,
+          "transform": [
+            {
+              "scale": 1,
+            },
+          ],
+        },
+      }
+    }
+    jestInlineStyle={{}}
+    nativeID="1"
     onBlur={[Function]}
     onClick={[Function]}
     onFocus={[Function]}
@@ -46,7 +65,18 @@ exports[`Snapshot tests EmptyState matches snapshot 1`] = `
     onResponderTerminate={[Function]}
     onResponderTerminationRequest={[Function]}
     onStartShouldSetResponder={[Function]}
-    style={{}}
+    style={
+      [
+        {
+          "opacity": 1,
+          "transform": [
+            {
+              "scale": 1,
+            },
+          ],
+        },
+      ]
+    }
   >
     <Text
       className="font-sans-medium text-primary-foreground text-sm"
@@ -94,6 +124,25 @@ exports[`Snapshot tests InlineError matches snapshot 1`] = `
     className="flex-row items-center justify-center gap-2 rounded-xl bg-transparent text-foreground font-semibold border border-neutrals700 hover:bg-neutrals900 h-10 px-3 text-xs"
     collapsable={false}
     focusable={true}
+    jestAnimatedProps={
+      {
+        "value": {},
+      }
+    }
+    jestAnimatedStyle={
+      {
+        "value": {
+          "opacity": 1,
+          "transform": [
+            {
+              "scale": 1,
+            },
+          ],
+        },
+      }
+    }
+    jestInlineStyle={{}}
+    nativeID="0"
     onBlur={[Function]}
     onClick={[Function]}
     onFocus={[Function]}
@@ -103,7 +152,18 @@ exports[`Snapshot tests InlineError matches snapshot 1`] = `
     onResponderTerminate={[Function]}
     onResponderTerminationRequest={[Function]}
     onStartShouldSetResponder={[Function]}
-    style={{}}
+    style={
+      [
+        {
+          "opacity": 1,
+          "transform": [
+            {
+              "scale": 1,
+            },
+          ],
+        },
+      ]
+    }
   >
     <Text
       className="font-sans-medium text-foreground text-sm"
@@ -116,6 +176,31 @@ exports[`Snapshot tests InlineError matches snapshot 1`] = `
 
 exports[`Snapshot tests SkeletonLoader matches snapshot 1`] = `
 <View
+  collapsable={false}
+  jestAnimatedProps={
+    {
+      "value": {},
+    }
+  }
+  jestAnimatedStyle={
+    {
+      "value": {
+        "opacity": 0.3,
+      },
+    }
+  }
+  jestInlineStyle={
+    [
+      {
+        "backgroundColor": "#414240",
+        "borderRadius": 8,
+        "height": 100,
+        "width": 100,
+      },
+      undefined,
+    ]
+  }
+  nativeID="2"
   style={
     [
       {
@@ -124,7 +209,9 @@ exports[`Snapshot tests SkeletonLoader matches snapshot 1`] = `
         "height": 100,
         "width": 100,
       },
-      {},
+      {
+        "opacity": 0.3,
+      },
       undefined,
     ]
   }

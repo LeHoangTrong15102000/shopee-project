@@ -8,7 +8,7 @@ import { formatPrice } from '@/utils/price'
 interface ShippingMethod {
   _id: string
   name: string
-  estimated_days: string
+  estimated_days: number
   fee: number
 }
 

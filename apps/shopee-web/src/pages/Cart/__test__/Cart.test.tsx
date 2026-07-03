@@ -377,7 +377,7 @@ describe('Cart', () => {
     await waitFor(() => {
       const typeQuantityBtn = screen.getByTestId('type-quantity-btn-0')
       fireEvent.click(typeQuantityBtn)
-      expect(mockUpdateQuantity).toHaveBeenCalledWith('product-1', 3)
+      expect(mockUpdateQuantity).toHaveBeenCalledWith('product-1', 3, null)
     })
   })
 

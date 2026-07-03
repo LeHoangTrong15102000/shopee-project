@@ -46,13 +46,13 @@ const Dialog = forwardRef<DialogRef>((_, ref) => {
   const insets = useInsets()
 
   const [dialogs, setDialogs] = useState<DialogInstance[]>([])
-  const dialogRefs = React.useRef<Map<string, React.RefObject<BottomSheetModal>>>(new Map())
+  const dialogRefs = React.useRef<Map<string, React.RefObject<BottomSheetModal | null>>>(new Map())
 
   useImperativeHandle(ref, () => ({
     show: (newOptions: DialogOptions) => {
       const id = `dialog-${Date.now()}-${Math.random()}`
       const dialogRef = React.createRef<BottomSheetModal>()
-      dialogRefs.current.set(id, dialogRef as any)
+      dialogRefs.current.set(id, dialogRef as React.RefObject<BottomSheetModal | null>)
 
       const newDialog: DialogInstance = {
         id,
@@ -146,7 +146,7 @@ const Dialog = forwardRef<DialogRef>((_, ref) => {
   )
 
   const renderBackdrop = useCallback(
-    (dismissable: boolean) => (props: any) => (
+    (dismissable: boolean) => (props: React.ComponentProps<typeof BottomSheetBackdrop>) => (
       <BottomSheetBackdrop
         {...props}
         disappearsOnIndex={-1}

@@ -1,4 +1,14 @@
 /// <reference types="jest" />
+
+// Hard mock for resend — prevents any real HTTP calls to the Resend API.
+// All e2e tests import this file via `import './setup'`, so this mock applies globally
+// to every e2e test, providing defense-in-depth alongside the NODE_ENV guard in sendEmail().
+jest.mock('resend', () => ({
+  Resend: jest.fn().mockImplementation(() => ({
+    emails: { send: jest.fn().mockResolvedValue({ data: { id: 'mock' }, error: null }) },
+  })),
+}))
+
 import { connectTestDB, clearTestDB, disconnectTestDB } from '../helpers/db-setup'
 import { CategoryModel } from '@database/models/category.model'
 import { UserModel } from '@database/models/user.model'

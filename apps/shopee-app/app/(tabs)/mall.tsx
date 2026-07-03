@@ -1,13 +1,5 @@
 import React from 'react'
-import {
-  View,
-  ScrollView,
-  TouchableOpacity,
-  FlatList,
-  ActivityIndicator,
-  Dimensions,
-  Image,
-} from 'react-native'
+import { View, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
@@ -15,7 +7,7 @@ import { useCategories } from '@/hooks/useCategories'
 import { useProducts } from '@/hooks/useProducts'
 import { AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
-import ProductCard, { CARD_GAP, CARD_PADDING } from '@/components/home/ProductCard'
+import ProductCard, { CARD_GAP } from '@/components/home/ProductCard'
 import { Product, Category } from '@/types/product.type'
 
 const SCREEN_WIDTH = Dimensions.get('window').width

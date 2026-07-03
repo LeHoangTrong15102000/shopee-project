@@ -15,7 +15,6 @@ import {
 import NotificationItem from '@/components/notifications/NotificationItem'
 import NotificationSkeleton from '@/components/notifications/NotificationSkeleton'
 import { routeNotification } from '@/utils/notificationRouter'
-import type { Notification } from '@/apis/notification.api'
 
 export default function NotificationsScreen() {
   const { t } = useTranslation()

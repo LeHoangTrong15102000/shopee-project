@@ -19,10 +19,14 @@ import {
   useLikeQuestion,
 } from '../hooks/useProductDetail'
 
-const API_BASE = 'https://api-ecom.duthanhduoc.com'
+const API_BASE = 'https://api-ecom.lehoangtrong.com'
 
 jest.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'en', changeLanguage: jest.fn() },
+  }),
+  initReactI18next: { type: '3rdParty', init: jest.fn() },
 }))
 
 const mockToast = {
@@ -33,6 +37,22 @@ const mockToast = {
 }
 jest.mock('@/components/ui/ToastProvider', () => ({
   useToast: () => mockToast,
+}))
+// Mock the toast singleton so handleMutationError routes through mockToast
+jest.mock('@/utils/toast', () => ({
+  toast: {
+    error: (...args: unknown[]) => mockToast.showError(...(args as [string, string?])),
+    success: (...args: unknown[]) => mockToast.showSuccess(...(args as [string, string?])),
+    warning: (...args: unknown[]) => mockToast.showWarning(...(args as [string, string?])),
+    info: (...args: unknown[]) => mockToast.showInfo(...(args as [string, string?])),
+  },
+}))
+
+jest.mock('@/config/i18n', () => ({
+  __esModule: true,
+  default: {
+    t: (key: string) => key,
+  },
 }))
 
 const mockProduct = {
@@ -260,7 +280,7 @@ describe('useBuyNow', () => {
       result.current.mutate({ product_id: 'p1', buy_count: 1 })
     })
     await waitFor(() => expect(result.current.isError).toBe(true))
-    expect(mockToast.showError).toHaveBeenCalledWith('PD_BUY_NOW_ERROR')
+    expect(mockToast.showError).toHaveBeenCalledWith('errors.genericTitle', 'Error')
   })
 })
 
@@ -319,7 +339,7 @@ describe('useToggleWishlist - optimistic rollback', () => {
       result.current.mutate(false)
     })
     await waitFor(() => expect(result.current.isError).toBe(true))
-    expect(mockToast.showError).toHaveBeenCalledWith('PD_WISHLIST_ERROR')
+    expect(mockToast.showError).toHaveBeenCalledWith('errors.genericTitle', 'Error')
   })
 })
 

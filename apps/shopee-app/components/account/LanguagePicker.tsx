@@ -9,7 +9,7 @@ import { useAppStore } from '@/store/appStore'
 import { LANGUAGES, LanguageCode } from '@/config/i18n'
 
 interface LanguagePickerProps {
-  bottomSheetRef: React.RefObject<BottomSheetModal>
+  bottomSheetRef: React.RefObject<BottomSheetModal | null>
 }
 
 export default function LanguagePicker({ bottomSheetRef }: LanguagePickerProps) {

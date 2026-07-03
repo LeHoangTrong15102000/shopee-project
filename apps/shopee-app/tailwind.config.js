@@ -8,7 +8,7 @@ function toKebab(key) {
 }
 
 const colorsConfig = Object.fromEntries(
-  Object.entries(AppColors).map(([k, v]) => [
+  Object.entries(AppColors).map(([k, _v]) => [
     toKebab(k),
     `rgb(var(--color-${toKebab(k)}) / <alpha-value>)`,
   ])

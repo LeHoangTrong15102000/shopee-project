@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { View, TextInput, TouchableOpacity } from 'react-native'
 import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
 import { Star } from 'lucide-react-native'
@@ -47,10 +47,7 @@ export default function ReviewForm({ onSubmit, loading, bottomSheetRef }: Review
       backgroundStyle={{ backgroundColor: colors.background }}
       handleIndicatorStyle={{ backgroundColor: colors.neutrals400 }}
       onDismiss={resetForm}>
-      <BottomSheetView
-        className="px-4 pb-8"
-        accessibilityViewIsModal={true}
-        accessibilityRole="dialog">
+      <BottomSheetView className="px-4 pb-8" accessibilityViewIsModal={true}>
         <AppText raw variant="heading4" weight="bold" className="mb-4">
           {t('PD_WRITE_REVIEW')}
         </AppText>

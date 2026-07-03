@@ -27,10 +27,9 @@ describe('Address API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await addressApi.getAddresses()
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(addressApi.getAddresses()).rejects.toThrow()
     })
   })
 
@@ -43,10 +42,9 @@ describe('Address API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.get).mockRejectedValue(new Error('Network error'))
-      const result = await addressApi.getAddressById('1')
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(addressApi.getAddressById('1')).rejects.toThrow()
     })
   })
 
@@ -66,17 +64,18 @@ describe('Address API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.post).mockRejectedValue(new Error('Network error'))
-      const result = await addressApi.createAddress({
-        fullName: 'Test',
-        phone: '123',
-        province: 'HCM',
-        district: 'Q1',
-        ward: 'P1',
-        street: 'Street',
-      })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(
+        addressApi.createAddress({
+          fullName: 'Test',
+          phone: '123',
+          province: 'HCM',
+          district: 'Q1',
+          ward: 'P1',
+          street: 'Street',
+        }),
+      ).rejects.toThrow()
     })
   })
 
@@ -89,10 +88,9 @@ describe('Address API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.put).mockRejectedValue(new Error('Network error'))
-      const result = await addressApi.updateAddress('1', { fullName: 'Updated' })
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(addressApi.updateAddress('1', { fullName: 'Updated' })).rejects.toThrow()
     })
   })
 
@@ -105,10 +103,9 @@ describe('Address API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.delete).mockRejectedValue(new Error('Network error'))
-      const result = await addressApi.deleteAddress('1')
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(addressApi.deleteAddress('1')).rejects.toThrow()
     })
   })
 
@@ -121,10 +118,9 @@ describe('Address API', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should return fallback data on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(http.put).mockRejectedValue(new Error('Network error'))
-      const result = await addressApi.setDefaultAddress('1')
-      expect(result.data.message).toEqual(expect.any(String))
+      await expect(addressApi.setDefaultAddress('1')).rejects.toThrow()
     })
   })
 })

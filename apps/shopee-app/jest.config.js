@@ -12,6 +12,7 @@ module.exports = {
     '^react-native-css-interop/jsx-runtime$': 'react/jsx-runtime',
     '^react-native-css-interop/jsx-dev-runtime$': 'react/jsx-dev-runtime',
     '^react-native-css-interop(.*)$': '<rootDir>/__mocks__/react-native-css-interop.js',
+    '^msw/node$': '<rootDir>/../../node_modules/msw/lib/node/index.js',
   },
   testMatch: ['**/__tests__/**/*.(test|spec).(ts|tsx)', '**/*.(test|spec).(ts|tsx)'],
   moduleDirectories: ['node_modules', path.join(__dirname, '../../node_modules')],

@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
-import { AppText, AppInput, AppButton } from '@/components/ui'
+import { AppInput, AppButton } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { useForm } from '@/hooks/useForm'
 import { useAddresses, useCreateAddress, useUpdateAddress } from '@/hooks/useAddresses'
@@ -78,7 +78,7 @@ export default function AddressFormScreen() {
   const onSubmit = handleSubmit((data: AddressFormData) => {
     if (isEditMode) {
       updateAddress(
-        { id: id!, body: data },
+        { id: id ?? '', body: data },
         {
           onSuccess: () => {
             showSuccess(t('addressForm.toast.updateSuccess'))

@@ -19,7 +19,7 @@ export const priceAlertKeys = {
 export function usePriceHistory(productId: string | undefined, days?: number) {
   return useQuery({
     queryKey: priceAlertKeys.history(productId ?? '', days),
-    queryFn: () => getPriceHistory(productId!, days),
+    queryFn: () => getPriceHistory(productId ?? '', days),
     enabled: !!productId,
   })
 }

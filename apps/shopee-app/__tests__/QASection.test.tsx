@@ -4,7 +4,10 @@ import QASection from '../components/product-detail/QASection'
 import type { Question } from '../apis/product-detail.api'
 
 jest.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'en', changeLanguage: jest.fn() },
+  }),
 }))
 
 jest.mock('@/hooks/useColors', () => ({

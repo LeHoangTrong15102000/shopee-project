@@ -92,7 +92,7 @@ export default function VoucherInput({
       {hasApplied && !errorMessage && (
         <View className="mt-1 flex-row items-center justify-between">
           <AppText raw variant="labelSmall" style={{ color: colors.success }}>
-            {t('voucherInput.applied', { formattedDiscount: formatPrice(appliedDiscount!) })}
+            {t('voucherInput.applied', { formattedDiscount: formatPrice(appliedDiscount ?? 0) })}
           </AppText>
           {onRemove && (
             <TouchableOpacity onPress={onRemove} accessibilityRole="button">

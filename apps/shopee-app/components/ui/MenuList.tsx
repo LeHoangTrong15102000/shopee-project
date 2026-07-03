@@ -1,8 +1,6 @@
-import { JSX } from 'react'
+import React, { JSX } from 'react'
 import { Pressable, Text, View } from 'react-native'
-import { ChevronRight } from 'lucide-react-native'
 import Icon from '@/components/ui/Icon.tsx'
-import AppText from '@/components/ui/AppText.tsx'
 
 interface MenuListItem {
   title: string

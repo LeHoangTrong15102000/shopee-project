@@ -15,7 +15,7 @@ import {
 import { createReview } from '../apis/review.api'
 import { checkWishlist, addToWishlist, removeFromWishlist } from '../apis/wishlist.api'
 
-const API_BASE = 'https://api-ecom.duthanhduoc.com'
+const API_BASE = 'https://api-ecom.lehoangtrong.com'
 
 const mockProduct = {
   _id: 'p1',
@@ -203,7 +203,7 @@ describe('Product Detail API', () => {
   })
 
   it('buyNow wraps body in array', async () => {
-    let capturedBody: any
+    let capturedBody: unknown
     server.use(
       http.post(`${API_BASE}/purchases/buy-products`, async ({ request }) => {
         capturedBody = await request.json()
@@ -212,7 +212,7 @@ describe('Product Detail API', () => {
     )
     await buyNow({ product_id: 'p1', buy_count: 1 })
     expect(Array.isArray(capturedBody)).toBe(true)
-    expect(capturedBody[0].product_id).toBe('p1')
+    expect((capturedBody as Array<{ product_id: string }>)[0].product_id).toBe('p1')
   })
 
   it('getRelatedProducts fetches related products', async () => {

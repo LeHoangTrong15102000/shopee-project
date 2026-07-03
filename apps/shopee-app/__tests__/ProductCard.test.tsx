@@ -65,8 +65,8 @@ describe('ProductCard', () => {
   })
 
   it('navigates to product detail on press', () => {
-    const { getByA11yRole } = render(<ProductCard product={mockProduct} />)
-    const card = getByA11yRole('button')
+    const { getByRole } = render(<ProductCard product={mockProduct} />)
+    const card = getByRole('button')
     fireEvent.press(card)
     expect(mockPush).toHaveBeenCalledWith('/product/p1')
   })

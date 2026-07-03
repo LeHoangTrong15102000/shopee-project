@@ -1,10 +1,11 @@
 import React from 'react'
 import { render } from '@testing-library/react-native'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ORDER_STATUS, type OrderStatusType } from '@/constants/order'
 
 // ─── Mocks ──────────────────────────────────────────────────────────────────
 
-const mockOrderData = { data: null as any }
+const mockOrderData: { data: Record<string, unknown> | null } = { data: null }
 
 jest.mock('@/hooks/useOrders', () => ({
   useOrderDetail: () => ({
@@ -14,6 +15,14 @@ jest.mock('@/hooks/useOrders', () => ({
   useCancelOrder: () => ({ mutate: jest.fn(), isPending: false }),
   useConfirmReceived: () => ({ mutate: jest.fn(), isPending: false }),
   useReturnOrder: () => ({ mutate: jest.fn() }),
+}))
+
+jest.mock('@/hooks/useReorder', () => ({
+  useReorder: () => ({ mutate: jest.fn(), isPending: false }),
+}))
+
+jest.mock('@/hooks/useCanReview', () => ({
+  useCanReview: () => ({ data: undefined, isLoading: true }),
 }))
 
 jest.mock('@/hooks/useColors', () => ({
@@ -49,7 +58,7 @@ jest.mock('expo-router', () => ({
   }),
   useLocalSearchParams: () => ({ id: 'test-order-id' }),
   Stack: {
-    Screen: ({ children }: any) => children ?? null,
+    Screen: ({ children }: { children?: React.ReactNode }) => children ?? null,
   },
 }))
 
@@ -57,11 +66,20 @@ jest.mock('@/components/navigation/ScreenHeader', () => {
   const React = require('react')
   return {
     __esModule: true,
-    default: (props: any) => React.createElement('View', { testID: 'screen-header', ...props }),
+    default: (props: Record<string, unknown>) =>
+      React.createElement('View', { testID: 'screen-header', ...props }),
   }
 })
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
+
+function makeQueryClient() {
+  return new QueryClient({ defaultOptions: { queries: { retry: false } } })
+}
+
+function renderWithClient(ui: React.ReactElement) {
+  return render(<QueryClientProvider client={makeQueryClient()}>{ui}</QueryClientProvider>)
+}
 
 function makeOrder(status: OrderStatusType) {
   return {
@@ -107,16 +125,16 @@ describe('OrderDetailScreen', () => {
   // ─── Status badge rendering ─────────────────────────────────────────────
 
   it.each([
-    [ORDER_STATUS.PENDING, 'Chờ xác nhận'],
-    [ORDER_STATUS.CONFIRMED, 'Đã xác nhận'],
-    [ORDER_STATUS.PROCESSING, 'Đang xử lý'],
-    [ORDER_STATUS.SHIPPING, 'Đang giao'],
-    [ORDER_STATUS.DELIVERED, 'Đã giao'],
-    [ORDER_STATUS.CANCELLED, 'Đã hủy'],
-    [ORDER_STATUS.RETURNED, 'Trả hàng'],
+    [ORDER_STATUS.PENDING, 'Pending'],
+    [ORDER_STATUS.CONFIRMED, 'Confirmed'],
+    [ORDER_STATUS.PROCESSING, 'Processing'],
+    [ORDER_STATUS.SHIPPING, 'Shipping'],
+    [ORDER_STATUS.DELIVERED, 'Delivered'],
+    [ORDER_STATUS.CANCELLED, 'Cancelled'],
+    [ORDER_STATUS.RETURNED, 'Returned'],
   ] as [OrderStatusType, string][])('renders badge "%s" → "%s"', (status, label) => {
     setOrder(status)
-    const { getAllByText } = render(<OrderDetailScreen />)
+    const { getAllByText } = renderWithClient(<OrderDetailScreen />)
     expect(getAllByText(label).length).toBeGreaterThanOrEqual(1)
   })
 
@@ -126,8 +144,8 @@ describe('OrderDetailScreen', () => {
     'shows cancel button for %s',
     (status) => {
       setOrder(status)
-      const { getByText } = render(<OrderDetailScreen />)
-      expect(getByText('Hủy đơn hàng')).toBeTruthy()
+      const { getByText } = renderWithClient(<OrderDetailScreen />)
+      expect(getByText('Cancel Order')).toBeTruthy()
     }
   )
 
@@ -139,16 +157,16 @@ describe('OrderDetailScreen', () => {
     ORDER_STATUS.RETURNED,
   ] as OrderStatusType[])('hides cancel button for %s', (status) => {
     setOrder(status)
-    const { queryByText } = render(<OrderDetailScreen />)
-    expect(queryByText('Hủy đơn hàng')).toBeNull()
+    const { queryByText } = renderWithClient(<OrderDetailScreen />)
+    expect(queryByText('Cancel Order')).toBeNull()
   })
 
   // ─── Confirm-received button: visible for SHIPPING only ───────────────
 
   it('shows confirm-received button for SHIPPING', () => {
     setOrder(ORDER_STATUS.SHIPPING)
-    const { getByText } = render(<OrderDetailScreen />)
-    expect(getByText('Đã nhận hàng')).toBeTruthy()
+    const { getByText } = renderWithClient(<OrderDetailScreen />)
+    expect(getByText('Confirm Receipt')).toBeTruthy()
   })
 
   it.each([
@@ -160,17 +178,17 @@ describe('OrderDetailScreen', () => {
     ORDER_STATUS.RETURNED,
   ] as OrderStatusType[])('hides confirm-received button for %s', (status) => {
     setOrder(status)
-    const { queryByText } = render(<OrderDetailScreen />)
-    expect(queryByText('Đã nhận hàng')).toBeNull()
+    const { queryByText } = renderWithClient(<OrderDetailScreen />)
+    expect(queryByText('Confirm Receipt')).toBeNull()
   })
 
   // ─── Return button: visible for DELIVERED only ────────────────────────
 
   it('shows return button for DELIVERED', () => {
     setOrder(ORDER_STATUS.DELIVERED)
-    const { getByText } = render(<OrderDetailScreen />)
-    // "Trả hàng" appears as action button for DELIVERED
-    expect(getByText('Trả hàng')).toBeTruthy()
+    const { getByText } = renderWithClient(<OrderDetailScreen />)
+    // "Return" is the action button label for DELIVERED status
+    expect(getByText('Return')).toBeTruthy()
   })
 
   it.each([
@@ -181,51 +199,53 @@ describe('OrderDetailScreen', () => {
     ORDER_STATUS.CANCELLED,
   ] as OrderStatusType[])('hides return button for %s', (status) => {
     setOrder(status)
-    const { queryByText } = render(<OrderDetailScreen />)
-    expect(queryByText('Trả hàng')).toBeNull()
+    const { queryByText } = renderWithClient(<OrderDetailScreen />)
+    expect(queryByText('Return')).toBeNull()
   })
 
   // ─── Timeline rendering ──────────────────────────────────────────────
 
   it('renders timeline for normal flow statuses', () => {
     setOrder(ORDER_STATUS.SHIPPING)
-    const { getByText } = render(<OrderDetailScreen />)
-    // Timeline should show these steps
-    expect(getByText('Đặt hàng')).toBeTruthy()
-    expect(getByText('Đã xác nhận')).toBeTruthy()
-    expect(getByText('Đang xử lý')).toBeTruthy()
-    expect(getByText('Đang vận chuyển')).toBeTruthy()
-    expect(getByText('Đã giao hàng')).toBeTruthy()
+    const { getByText, getAllByText } = renderWithClient(<OrderDetailScreen />)
+    // Timeline steps (English via global i18n mock)
+    expect(getByText('Order Placed')).toBeTruthy()
+    // "Confirmed", "Processing", "Shipping", "Delivered" may also appear in the status badge,
+    // so use getAllByText to handle multiple occurrences
+    expect(getAllByText('Confirmed').length).toBeGreaterThanOrEqual(1)
+    expect(getAllByText('Processing').length).toBeGreaterThanOrEqual(1)
+    expect(getAllByText('Shipping').length).toBeGreaterThanOrEqual(1)
+    expect(getAllByText('Delivered').length).toBeGreaterThanOrEqual(1)
   })
 
   it('renders cancelled timeline for CANCELLED status', () => {
     setOrder(ORDER_STATUS.CANCELLED)
-    const { getByText, getAllByText } = render(<OrderDetailScreen />)
-    expect(getByText('Đặt hàng')).toBeTruthy()
-    expect(getAllByText('Đã hủy').length).toBeGreaterThanOrEqual(1)
+    const { getByText, getAllByText } = renderWithClient(<OrderDetailScreen />)
+    expect(getByText('Order Placed')).toBeTruthy()
+    expect(getAllByText('Cancelled').length).toBeGreaterThanOrEqual(1)
   })
 
   it('renders returned timeline for RETURNED status', () => {
     setOrder(ORDER_STATUS.RETURNED)
-    const { getByText, getAllByText } = render(<OrderDetailScreen />)
-    expect(getByText('Đặt hàng')).toBeTruthy()
-    expect(getByText('Đã giao hàng')).toBeTruthy()
-    // "Trả hàng" appears in both the badge and the timeline
-    expect(getAllByText('Trả hàng').length).toBeGreaterThanOrEqual(1)
+    const { getByText, getAllByText } = renderWithClient(<OrderDetailScreen />)
+    expect(getByText('Order Placed')).toBeTruthy()
+    expect(getByText('Delivered')).toBeTruthy()
+    // "Returned" appears in both the badge and the timeline
+    expect(getAllByText('Returned').length).toBeGreaterThanOrEqual(1)
   })
 
   // ─── Order info rendering ────────────────────────────────────────────
 
   it('renders order ID and product info', () => {
     setOrder(ORDER_STATUS.PENDING)
-    const { getByText } = render(<OrderDetailScreen />)
+    const { getByText } = renderWithClient(<OrderDetailScreen />)
     expect(getByText('Test Product')).toBeTruthy()
     expect(getByText(/ST-12345/i)).toBeTruthy()
   })
 
   it('renders "not found" when order is null', () => {
     mockOrderData.data = null
-    const { getByText } = render(<OrderDetailScreen />)
-    expect(getByText('Không tìm thấy đơn hàng')).toBeTruthy()
+    const { getByText } = renderWithClient(<OrderDetailScreen />)
+    expect(getByText('Order not found')).toBeTruthy()
   })
 })

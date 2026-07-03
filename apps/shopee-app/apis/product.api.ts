@@ -1,6 +1,5 @@
 import http from '@/utils/http'
 import { type Category, type Product, type ProductListResponse } from '@/types/product.type'
-import { type ApiResponse } from '@/types/api.type'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

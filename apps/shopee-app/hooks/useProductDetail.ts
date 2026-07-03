@@ -90,7 +90,7 @@ export function useWishlistStatus(productId: string) {
 export function useRelatedProducts(categoryId: string | undefined, excludeProductId: string) {
   return useQuery({
     queryKey: ['related-products', categoryId, excludeProductId],
-    queryFn: () => getRelatedProducts(categoryId!, excludeProductId),
+    queryFn: () => getRelatedProducts(categoryId ?? '', excludeProductId),
     enabled: !!categoryId && !!excludeProductId,
   })
 }

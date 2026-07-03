@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { AppText } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
 import { useAppStore } from '@/store/appStore'
-import { ORDER_STATUS, type OrderStatusType } from '@/constants/order'
+import { ORDER_STATUS } from '@/constants/order'
 
 interface TimelineStep {
   label: string
@@ -139,14 +139,15 @@ export default function OrderTimeline({ status, createdAt }: OrderTimelineProps)
   }
 
   // Normal flow: pending → confirmed → processing → shipping → delivered
-  const statusOrder = [
+  type NormalStatus = 'pending' | 'confirmed' | 'processing' | 'shipping' | 'delivered'
+  const statusOrder: NormalStatus[] = [
     ORDER_STATUS.PENDING,
     ORDER_STATUS.CONFIRMED,
     ORDER_STATUS.PROCESSING,
     ORDER_STATUS.SHIPPING,
     ORDER_STATUS.DELIVERED,
   ]
-  const currentIdx = statusOrder.indexOf(status as OrderStatusType)
+  const currentIdx = statusOrder.indexOf(status as NormalStatus)
 
   const steps: TimelineStep[] = [
     {

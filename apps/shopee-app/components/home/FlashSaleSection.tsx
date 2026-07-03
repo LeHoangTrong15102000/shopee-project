@@ -1,23 +1,25 @@
-import React, { useEffect, useState } from 'react'
-import { View, FlatList, TouchableOpacity } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
+import { View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { Zap } from 'lucide-react-native'
-import { AppText, AppImage } from '@/components/ui'
+import { AppText } from '@/components/ui'
+import { ProgressBar } from '@/components/ui'
+import { InlineError } from '@/components/ui'
 import { useColors } from '@/hooks/useColors'
-import { useFlashSale } from '@/hooks/useFlashSale'
-import { formatPrice, getDiscountPercent } from '@/utils/price'
-import { Product } from '@/types/product.type'
+import {
+  useActiveFlashSale,
+  useFlashSaleProducts,
+  useRefetchActiveFlashSale,
+} from '@/hooks/useFlashSaleApi'
+import { formatPrice } from '@/utils/price'
+import type { FlashSaleProduct } from '@/apis/flashSale.api'
 
-const CARD_WIDTH = 120
-const CARD_HEIGHT = 120
+// ─── Countdown ────────────────────────────────────────────────────────────────
 
-// Flash sale ends at midnight each day
-function getSecondsUntilMidnight(): number {
-  const now = new Date()
-  const midnight = new Date(now)
-  midnight.setHours(24, 0, 0, 0)
-  return Math.floor((midnight.getTime() - now.getTime()) / 1000)
+function getSecondsUntil(endTimeIso: string): number {
+  const diff = Math.floor((new Date(endTimeIso).getTime() - Date.now()) / 1000)
+  return Math.max(0, diff)
 }
 
 function formatCountdown(seconds: number): string {
@@ -27,83 +29,114 @@ function formatCountdown(seconds: number): string {
   return [h, m, s].map((v) => String(v).padStart(2, '0')).join(':')
 }
 
-function FlashProductCard({ product }: { product: Product }) {
+// ─── Flash Product Card ───────────────────────────────────────────────────────
+
+const CARD_WIDTH = 120
+
+function FlashProductCard({ item }: { item: FlashSaleProduct }) {
   const { t } = useTranslation()
   const colors = useColors()
-  const router = useRouter()
-  const discount = getDiscountPercent(product.price, product.price_before_discount)
+  const soldPct =
+    item.total_quantity > 0 ? Math.round((item.sold_quantity / item.total_quantity) * 100) : 0
 
   return (
-    <TouchableOpacity
-      onPress={() => router.push(`/product/${product._id}`)}
-      activeOpacity={0.8}
-      style={{ width: CARD_WIDTH, marginRight: 10 }}
-      accessibilityRole="button"
-      accessibilityLabel={t('a11y.viewProduct', { name: product.name })}>
-      <View
-        style={{
-          width: CARD_WIDTH,
-          height: CARD_HEIGHT,
-          borderRadius: 8,
-          overflow: 'hidden',
-          backgroundColor: colors.neutrals900,
-        }}>
-        <AppImage
-          source={{ uri: product.image }}
-          style={{ width: '100%', height: '100%' }}
-          contentFit="cover"
-        />
-        {discount > 0 && (
-          <View
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              backgroundColor: colors.primary,
-              paddingVertical: 2,
-              alignItems: 'center',
-            }}>
-            <AppText raw variant="labelSmall" style={{ color: colors.primaryForeground }}>
-              -{discount}%
-            </AppText>
-          </View>
-        )}
-      </View>
-      <View style={{ marginTop: 4 }}>
-        <AppText raw variant="bodySmall" weight="semibold" style={{ color: colors.primary }}>
-          {formatPrice(product.price)}
-        </AppText>
-        {discount > 0 && (
-          <AppText
-            raw
-            variant="labelSmall"
-            color="muted"
-            style={{ textDecorationLine: 'line-through' }}>
-            {formatPrice(product.price_before_discount)}
-          </AppText>
-        )}
-      </View>
-    </TouchableOpacity>
+    <View
+      style={{
+        width: CARD_WIDTH,
+        marginRight: 10,
+        backgroundColor: colors.neutrals800,
+        borderRadius: 8,
+        padding: 8,
+      }}
+      accessibilityLabel={t('flashSale.a11y.productCard', { price: item.flash_price })}>
+      {/* Flash price */}
+      <AppText raw variant="bodySmall" weight="semibold" style={{ color: colors.primary }}>
+        {formatPrice(item.flash_price)}
+      </AppText>
+      {/* Original price */}
+      <AppText
+        raw
+        variant="labelSmall"
+        color="muted"
+        style={{ textDecorationLine: 'line-through', marginBottom: 6 }}>
+        {formatPrice(item.original_price)}
+      </AppText>
+      {/* Sold / stock progress */}
+      <ProgressBar value={soldPct} variant="primary" size="sm" />
+      <AppText raw variant="labelSmall" color="muted" style={{ marginTop: 2 }}>
+        {t('flashSale.sold', { count: item.sold_quantity })}
+      </AppText>
+    </View>
   )
 }
+
+// ─── Main Section ─────────────────────────────────────────────────────────────
 
 export default function FlashSaleSection() {
   const { t } = useTranslation()
   const colors = useColors()
   const router = useRouter()
-  const { data: products } = useFlashSale()
-  const [secondsLeft, setSecondsLeft] = useState(getSecondsUntilMidnight)
+  const refetchActive = useRefetchActiveFlashSale()
 
+  const { data: sales, isLoading, isError, refetch } = useActiveFlashSale()
+
+  // Use the first active sale
+  const activeSale = sales && sales.length > 0 ? sales[0] : null
+
+  const { data: products } = useFlashSaleProducts(activeSale?._id ?? '')
+
+  const [secondsLeft, setSecondsLeft] = useState<number>(() =>
+    activeSale ? getSecondsUntil(activeSale.endTime) : 0
+  )
+
+  // Sync secondsLeft when activeSale changes
+  const endTimeRef = useRef<string | null>(null)
   useEffect(() => {
-    if (!products || products.length === 0) return
+    if (!activeSale) {
+      setSecondsLeft(0)
+      return
+    }
+    if (endTimeRef.current !== activeSale.endTime) {
+      endTimeRef.current = activeSale.endTime
+      setSecondsLeft(getSecondsUntil(activeSale.endTime))
+    }
+  }, [activeSale])
+
+  // Tick every second; refetch active sale when countdown reaches zero
+  useEffect(() => {
+    if (!activeSale) return
     const timer = setInterval(() => {
-      setSecondsLeft((s) => (s > 0 ? s - 1 : 0))
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          refetchActive()
+          return 0
+        }
+        return prev - 1
+      })
     }, 1000)
     return () => clearInterval(timer)
-  }, [products])
+  }, [activeSale, refetchActive])
 
-  if (!products || products.length === 0) return null
+  // Loading state
+  if (isLoading) {
+    return (
+      <View style={{ paddingVertical: 16, paddingHorizontal: 16 }}>
+        <ActivityIndicator color={colors.primary} />
+      </View>
+    )
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <View style={{ paddingHorizontal: 16 }}>
+        <InlineError message={t('flashSale.errorLoad')} onRetry={() => refetch()} />
+      </View>
+    )
+  }
+
+  // No active sale
+  if (!activeSale) return null
 
   return (
     <View style={{ paddingVertical: 12 }}>
@@ -119,7 +152,7 @@ export default function FlashSaleSection() {
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <Zap size={18} color={colors.primary} fill={colors.primary} />
           <AppText raw variant="heading4" weight="bold" style={{ color: colors.primary }}>
-            {t('flashSale.header.title')}
+            {activeSale.name || t('flashSale.header.title')}
           </AppText>
           <View
             style={{
@@ -137,22 +170,32 @@ export default function FlashSaleSection() {
             </AppText>
           </View>
         </View>
-        <TouchableOpacity onPress={() => router.push('/flash-sale')} accessibilityRole="link">
+        <TouchableOpacity
+          onPress={() => router.push(`/flash-sale?id=${activeSale._id}`)}
+          accessibilityRole="link">
           <AppText raw variant="bodySmall" style={{ color: colors.primary }}>
             {t('flashSale.viewAll')}
           </AppText>
         </TouchableOpacity>
       </View>
 
-      {/* Product list */}
-      <FlatList
-        data={products}
-        keyExtractor={(item) => item._id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16 }}
-        renderItem={({ item }) => <FlashProductCard product={item} />}
-      />
+      {/* Product rail */}
+      {products && products.length > 0 ? (
+        <FlatList
+          data={products}
+          keyExtractor={(item) => item.product_id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 16 }}
+          renderItem={({ item }) => <FlashProductCard item={item} />}
+        />
+      ) : (
+        <View style={{ paddingHorizontal: 16 }}>
+          <AppText raw variant="bodySmall" color="muted">
+            {t('flashSale.noProducts')}
+          </AppText>
+        </View>
+      )}
     </View>
   )
 }

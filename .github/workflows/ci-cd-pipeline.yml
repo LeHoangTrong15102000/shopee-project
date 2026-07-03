@@ -1,12 +1,24 @@
 # =============================================================================
 # ci-cd-pipeline.yml — Single consolidated CI/CD pipeline
 #
-# Push goes straight to master (personal project). This ONE file runs three
-# jobs SEQUENTIALLY, chained via `needs:` so ordering is guaranteed:
+# Push goes straight to master (personal project). This ONE file runs five
+# jobs. Three are chained via `needs:` so ordering is guaranteed:
 #
 #   1. quality          — lint + format check (the gate)
 #   2. build-and-push   — build & push 3 Docker images to Docker Hub
 #   3. deploy           — SSH to VPS, rolling update via deploy.sh
+#
+# One job runs fully independently (no `needs:`, no job depends on it):
+#
+#   test                — run the Nx test suite in parallel with the chain;
+#                         failures mark the run red but never block build/deploy
+#
+# One job runs after the chain with `if: always()` so it fires regardless of
+# whether upstream jobs succeed, fail, or are cancelled:
+#
+#   notify              — post deploy outcome to Telegram via appleboy/telegram-action;
+#                         skipped gracefully when TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID
+#                         secrets are absent, so forks/contributors are never blocked
 #
 # deploy.sh on the VPS runs health-check.sh and auto-rolls-back on failure,
 # so there is no separate post-deploy health job here.
@@ -39,6 +51,19 @@ jobs:
 
       - name: Format check
         run: pnpm nx format:check --all
+
+  # ==================== TEST (independent — runs in parallel) ====================
+  test:
+    name: Test (all projects)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node + pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Run tests
+        run: pnpm nx run-many -t test
 
   # ==================== BUILD & PUSH (Docker Hub) ====================
   build-and-push:
@@ -143,3 +168,63 @@ jobs:
             cd "$HOME/shopee-project" || exit 1
             chmod +x scripts/*.sh
             ./scripts/deploy.sh "$REGISTRY" "$IMAGE_TAG" "shopee-api shopee-web shopee-admin"
+
+  # ==================== NOTIFY (Telegram) ====================
+  notify:
+    name: Notify (Telegram)
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: always()
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    steps:
+      - name: Compute overall result
+        id: result
+        shell: bash
+        run: |
+          deploy="${{ needs.deploy.result }}"
+          build="${{ needs.build-and-push.result }}"
+          quality="${{ needs.quality.result }}"
+
+          # Use deploy result; fall back to build-and-push, then quality when
+          # deploy was skipped because an earlier job failed.
+          if [ "$deploy" = "success" ]; then
+            echo "emoji=✅" >> "$GITHUB_OUTPUT"
+            echo "label=SUCCESS" >> "$GITHUB_OUTPUT"
+          elif [ "$deploy" = "failure" ] || [ "$build" = "failure" ] || [ "$quality" = "failure" ]; then
+            echo "emoji=❌" >> "$GITHUB_OUTPUT"
+            echo "label=FAILURE" >> "$GITHUB_OUTPUT"
+          else
+            echo "emoji=⚠️" >> "$GITHUB_OUTPUT"
+            echo "label=CANCELLED" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Compute short SHA and escape commit subject
+        id: meta
+        shell: bash
+        run: |
+          short_sha="$(echo '${{ github.sha }}' | cut -c1-7)"
+          echo "short_sha=${short_sha}" >> "$GITHUB_OUTPUT"
+
+          # HTML-escape the commit subject so Telegram HTML parse mode never errors
+          subject="${{ github.event.head_commit.message }}"
+          subject="${subject%%$'\n'*}"   # first line only
+          subject="${subject//&/&amp;}"
+          subject="${subject//</&lt;}"
+          subject="${subject//>/&gt;}"
+          echo "subject=${subject}" >> "$GITHUB_OUTPUT"
+
+      - name: Send Telegram notification
+        if: ${{ env.TELEGRAM_BOT_TOKEN != '' && env.TELEGRAM_CHAT_ID != '' }}
+        uses: appleboy/telegram-action@v1.0.1
+        with:
+          to: ${{ env.TELEGRAM_CHAT_ID }}
+          token: ${{ env.TELEGRAM_BOT_TOKEN }}
+          format: html
+          message: |
+            ${{ steps.result.outputs.emoji }} <b>${{ steps.result.outputs.label }}</b> — ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ steps.meta.outputs.short_sha }} — ${{ steps.meta.outputs.subject }}
+            Author: ${{ github.actor }}
+            <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">View run #${{ github.run_number }}</a>

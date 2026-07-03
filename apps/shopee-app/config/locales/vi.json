@@ -731,7 +731,19 @@
       "title": "Flash Sale"
     },
     "countdown": "Kết thúc sau",
-    "viewAll": "Xem tất cả"
+    "viewAll": "Xem tất cả",
+    "sold": "Đã bán {{count}}",
+    "noProducts": "Không có sản phẩm flash sale",
+    "errorLoad": "Không thể tải flash sale",
+    "a11y": {
+      "productCard": "Sản phẩm flash sale, giá {{price}}"
+    }
+  },
+  "cms": {
+    "loading": "Đang tải trang...",
+    "empty": "Trang này chưa có nội dung",
+    "error": "Không thể tải nội dung trang",
+    "notFound": "Không tìm thấy trang"
   },
   "recentlyViewed": {
     "header": {

@@ -19,7 +19,12 @@ import {
 } from '@/components/home'
 import FlashSaleSection from '@/components/home/FlashSaleSection'
 import RecentlyViewedSection from '@/components/home/RecentlyViewedSection'
+import CmsBlockRenderer from '@/components/home/CmsBlockRenderer'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
+import { useHomepageContent } from '@/hooks/useCmsPages'
 import { Product } from '@/types/product.type'
+
+const FEATURE_FLAG_KEYS = ['flash_sale_enabled'] as const
 
 export default function HomeScreen() {
   const { t } = useTranslation()
@@ -42,6 +47,11 @@ export default function HomeScreen() {
     isError: categoriesError,
     refetch: refetchCategories,
   } = useCategories()
+
+  const flags = useFeatureFlags([...FEATURE_FLAG_KEYS])
+  const flashSaleEnabled = flags['flash_sale_enabled'] === true
+
+  const { data: homepageCms } = useHomepageContent()
 
   const products = productsData?.products ?? []
 
@@ -71,11 +81,16 @@ export default function HomeScreen() {
   const ListHeader = useMemo(
     () => (
       <>
+        {/* CMS homepage blocks — rendered above static layout; falls back to nothing on 404 */}
+        {homepageCms && homepageCms.blocks.length > 0 && (
+          <CmsBlockRenderer blocks={homepageCms.blocks} />
+        )}
+
         {/* Banner */}
         {productsLoading ? <BannerSkeleton /> : <BannerCarousel />}
 
-        {/* Flash Sale */}
-        {!productsLoading && <FlashSaleSection />}
+        {/* Flash Sale — gated behind feature flag */}
+        {!productsLoading && flashSaleEnabled && <FlashSaleSection />}
 
         {/* Recently Viewed */}
         {!productsLoading && <RecentlyViewedSection />}
@@ -110,7 +125,9 @@ export default function HomeScreen() {
       </>
     ),
     [
+      homepageCms,
       productsLoading,
+      flashSaleEnabled,
       categoriesLoading,
       categoriesError,
       productsError,

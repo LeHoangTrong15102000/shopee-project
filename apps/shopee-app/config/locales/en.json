@@ -731,7 +731,19 @@
       "title": "Flash Sale"
     },
     "countdown": "Ends in",
-    "viewAll": "View all"
+    "viewAll": "View all",
+    "sold": "{{count}} sold",
+    "noProducts": "No flash sale products",
+    "errorLoad": "Could not load flash sale",
+    "a11y": {
+      "productCard": "Flash sale product, price {{price}}"
+    }
+  },
+  "cms": {
+    "loading": "Loading page...",
+    "empty": "This page has no content",
+    "error": "Could not load page content",
+    "notFound": "Page not found"
   },
   "recentlyViewed": {
     "header": {

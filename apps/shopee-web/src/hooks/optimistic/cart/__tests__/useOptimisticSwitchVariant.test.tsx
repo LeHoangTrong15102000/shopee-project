@@ -9,6 +9,14 @@ import { Purchase } from 'src/types/purchases.type'
 import { Product } from 'src/types/product.type'
 import { QUERY_KEYS } from '../../shared/types'
 
+// ---------------------------------------------------------------------------
+// Hoisted spy for invalidateProductDetail — must be declared before vi.mock
+// so the factory can close over a stable reference.
+// ---------------------------------------------------------------------------
+const { mockInvalidateProductDetail } = vi.hoisted(() => ({
+  mockInvalidateProductDetail: vi.fn(),
+}))
+
 vi.mock('src/apis/purchases.api', () => ({
   default: {
     updatePurchase: vi.fn(),
@@ -24,10 +32,10 @@ vi.mock('react-toastify', () => ({
   },
 }))
 
-vi.mock('../../useQueryInvalidation', () => ({
+vi.mock('../../../useQueryInvalidation', () => ({
   useQueryInvalidation: () => ({
     invalidateCart: vi.fn(),
-    invalidateProductDetail: vi.fn(),
+    invalidateProductDetail: mockInvalidateProductDetail,
     invalidatePurchases: vi.fn(),
   }),
 }))
@@ -435,6 +443,206 @@ describe('useOptimisticSwitchVariant', () => {
       const line = cached?.data?.data?.[0]
       expect(line?.sku?._id).toBe('sku-B')
       expect(line?.buy_count).toBe(4) // preserved from source
+    })
+  })
+
+  // ---------------------------------------------------------------------------
+  // Task 3.1 — onSettled invalidation
+  // ---------------------------------------------------------------------------
+  describe('onSettled invalidation', () => {
+    test('should call invalidateProductDetail with product_id after the switch settles (success path)', async () => {
+      const sourcePurchase = createMockPurchase({
+        _id: 'purchase-1',
+        buy_count: 2,
+        sku: { _id: 'sku-A', value: 'Red', variant_values: { color: 'Red' } },
+      })
+
+      queryClient.setQueryData(QUERY_KEYS.PURCHASES_IN_CART, {
+        data: { data: [sourcePurchase] },
+      })
+
+      vi.mocked(purchaseApi.updatePurchase).mockResolvedValue({
+        data: { data: sourcePurchase, message: 'Success' },
+      } as ReturnType<typeof purchaseApi.updatePurchase>)
+
+      const { result } = renderHook(() => useOptimisticSwitchVariant(), {
+        wrapper: createWrapper(),
+      })
+
+      await act(async () => {
+        result.current.mutate({
+          product_id: 'product-1',
+          sku_id: 'sku-A',
+          target_sku_id: 'sku-B',
+          buy_count: 2,
+        })
+      })
+
+      // Wait for onSettled to fire (it runs after isSuccess settles)
+      await waitFor(() => {
+        expect(mockInvalidateProductDetail).toHaveBeenCalledWith('product-1')
+      })
+      // cart should NOT be invalidated — per onSettled implementation
+      // (invalidateCart is a separate vi.fn() and should not have been called)
+    })
+  })
+
+  // ---------------------------------------------------------------------------
+  // Task 4.1 + 4.2 — stock-exceeded rollback (merge-collision state + 406 error)
+  // ---------------------------------------------------------------------------
+  describe('Stock-exceeded rollback (merge-collision + 406)', () => {
+    test('should restore pre-mutation cache exactly when server rejects with 406', async () => {
+      // Seed a merge-collision state: two in-cart lines for the same product
+      const sourcePurchase = createMockPurchase({
+        _id: 'purchase-src',
+        buy_count: 3,
+        sku: { _id: 'sku-A', value: 'Red', variant_values: { color: 'Red' } },
+      })
+      const targetPurchase = createMockPurchase({
+        _id: 'purchase-tgt',
+        buy_count: 4,
+        sku: { _id: 'sku-B', value: 'Blue', variant_values: { color: 'Blue' } },
+      })
+
+      const preMutationState = { data: { data: [sourcePurchase, targetPurchase] } }
+      queryClient.setQueryData(QUERY_KEYS.PURCHASES_IN_CART, preMutationState)
+
+      // Reject with a 406-shaped error (stock exceeded)
+      vi.mocked(purchaseApi.updatePurchase).mockRejectedValue({
+        response: { status: 406 },
+      })
+
+      const { result } = renderHook(() => useOptimisticSwitchVariant(), {
+        wrapper: createWrapper(),
+      })
+
+      await act(async () => {
+        result.current.mutate({
+          product_id: 'product-1',
+          sku_id: 'sku-A',
+          target_sku_id: 'sku-B',
+          buy_count: 3,
+        })
+      })
+
+      await waitFor(() => expect(result.current.isError).toBe(true))
+
+      // Cache must be restored to the exact pre-mutation snapshot
+      const cached = queryClient.getQueryData<{ data: { data: Purchase[] } }>(
+        QUERY_KEYS.PURCHASES_IN_CART,
+      )
+      const lines = cached?.data?.data ?? []
+      expect(lines).toHaveLength(2)
+      const srcLine = lines.find((l) => l.sku?._id === 'sku-A')
+      const tgtLine = lines.find((l) => l.sku?._id === 'sku-B')
+      expect(srcLine?.buy_count).toBe(3)
+      expect(tgtLine?.buy_count).toBe(4)
+    })
+
+    // Task 4.2 — error toast must fire on the 406 rollback
+    test('should show error toast when server rejects with 406', async () => {
+      const sourcePurchase = createMockPurchase({
+        _id: 'purchase-src',
+        buy_count: 3,
+        sku: { _id: 'sku-A', value: 'Red', variant_values: { color: 'Red' } },
+      })
+      const targetPurchase = createMockPurchase({
+        _id: 'purchase-tgt',
+        buy_count: 4,
+        sku: { _id: 'sku-B', value: 'Blue', variant_values: { color: 'Blue' } },
+      })
+
+      queryClient.setQueryData(QUERY_KEYS.PURCHASES_IN_CART, {
+        data: { data: [sourcePurchase, targetPurchase] },
+      })
+
+      vi.mocked(purchaseApi.updatePurchase).mockRejectedValue({
+        response: { status: 406 },
+      })
+
+      const { result } = renderHook(() => useOptimisticSwitchVariant(), {
+        wrapper: createWrapper(),
+      })
+
+      await act(async () => {
+        result.current.mutate({
+          product_id: 'product-1',
+          sku_id: 'sku-A',
+          target_sku_id: 'sku-B',
+          buy_count: 3,
+        })
+      })
+
+      await waitFor(() => expect(result.current.isError).toBe(true))
+
+      expect(toast.error).toHaveBeenCalled()
+    })
+  })
+
+  // ---------------------------------------------------------------------------
+  // Task 5.1 — rapid successive switches (cache consistency)
+  // ---------------------------------------------------------------------------
+  describe('Rapid successive switches', () => {
+    test('should leave no duplicate or orphaned line after two quick successive switches settle', async () => {
+      // Start: one source line with sku-A
+      const sourcePurchase = createMockPurchase({
+        _id: 'purchase-1',
+        buy_count: 1,
+        sku: { _id: 'sku-A', value: 'Red', variant_values: { color: 'Red' } },
+      })
+
+      queryClient.setQueryData(QUERY_KEYS.PURCHASES_IN_CART, {
+        data: { data: [sourcePurchase] },
+      })
+
+      // Both mutations resolve successfully
+      vi.mocked(purchaseApi.updatePurchase).mockResolvedValue({
+        data: { data: sourcePurchase, message: 'Success' },
+      } as ReturnType<typeof purchaseApi.updatePurchase>)
+
+      const { result } = renderHook(() => useOptimisticSwitchVariant(), {
+        wrapper: createWrapper(),
+      })
+
+      // Fire two switches in quick succession without awaiting each other
+      await act(async () => {
+        result.current.mutate({
+          product_id: 'product-1',
+          sku_id: 'sku-A',
+          target_sku_id: 'sku-B',
+          buy_count: 1,
+        })
+        result.current.mutate({
+          product_id: 'product-1',
+          sku_id: 'sku-A',
+          target_sku_id: 'sku-C',
+          buy_count: 1,
+        })
+      })
+
+      // Wait for all mutations to settle
+      await waitFor(() =>
+        expect(vi.mocked(purchaseApi.updatePurchase).mock.calls.length).toBeGreaterThanOrEqual(1),
+      )
+
+      // Settled cache: no duplicate lines, no orphaned source line for sku-A
+      const cached = queryClient.getQueryData<{ data: { data: Purchase[] } }>(
+        QUERY_KEYS.PURCHASES_IN_CART,
+      )
+      const lines = cached?.data?.data ?? []
+
+      // There must be no duplicate lines (deduped by sku _id)
+      const skuIds = lines.map((l) => l.sku?._id)
+      const uniqueSkuIds = new Set(skuIds)
+      expect(skuIds.length).toBe(uniqueSkuIds.size)
+
+      // Source sku-A line must not remain as an orphan (either switched or removed)
+      const sourceLineRemains = lines.some(
+        (l) => l.sku?._id === 'sku-A' && l._id === 'purchase-1' && l.buy_count === 1,
+      )
+      // After both mutations settled the original source line should be gone
+      // (it was switched to sku-B or sku-C by one of the mutations)
+      expect(sourceLineRemains).toBe(false)
     })
   })
 })

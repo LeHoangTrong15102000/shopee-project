@@ -82,6 +82,49 @@ describe('Purchases API', () => {
         'Network error',
       )
     })
+
+    // Task 1.1 — variant switch: all four contract fields are forwarded in the request body
+    it('should send product_id, buy_count, sku_id, and target_sku_id in the request body when switching variants', async () => {
+      const mockResponse = { data: { message: 'ok', data: { _id: '1' } } }
+      vi.mocked(http.put).mockResolvedValue(
+        mockResponse as unknown as Awaited<ReturnType<typeof purchaseApi.updatePurchase>>,
+      )
+
+      await purchaseApi.updatePurchase({
+        product_id: 'prod-1',
+        buy_count: 3,
+        sku_id: 'sku-A',
+        target_sku_id: 'sku-B',
+      })
+
+      expect(http.put).toHaveBeenCalledOnce()
+      const [_url, body] = vi.mocked(http.put).mock.calls[0] as [string, unknown]
+      expect(body).toMatchObject({
+        product_id: 'prod-1',
+        buy_count: 3,
+        sku_id: 'sku-A',
+        target_sku_id: 'sku-B',
+      })
+    })
+
+    // Task 1.2 — plain quantity update (no target_sku_id): body must NOT contain target_sku_id
+    it('should NOT include target_sku_id in the request body when doing a plain quantity update', async () => {
+      const mockResponse = { data: { message: 'ok', data: { _id: '1' } } }
+      vi.mocked(http.put).mockResolvedValue(
+        mockResponse as unknown as Awaited<ReturnType<typeof purchaseApi.updatePurchase>>,
+      )
+
+      await purchaseApi.updatePurchase({
+        product_id: 'prod-1',
+        buy_count: 5,
+        sku_id: 'sku-A',
+      })
+
+      expect(http.put).toHaveBeenCalledOnce()
+      const [_url, body] = vi.mocked(http.put).mock.calls[0] as [string, unknown]
+      expect(body).toMatchObject({ product_id: 'prod-1', buy_count: 5, sku_id: 'sku-A' })
+      expect((body as Record<string, unknown>).target_sku_id).toBeUndefined()
+    })
   })
 
   describe('deletePurchase', () => {

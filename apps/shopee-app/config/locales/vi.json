@@ -37,6 +37,7 @@
   "AUTH_SIGN_IN_LINK": "Đăng nhập",
   "AUTH_GOOGLE_SIGN_IN": "Đăng nhập với Google",
   "AUTH_GOOGLE_ERROR": "Đăng nhập Google thất bại",
+  "AUTH_GOOGLE_NOT_CONFIGURED": "Đăng nhập Google chưa được cấu hình",
   "AUTH_COMING_SOON": "Tính năng sắp ra mắt",
   "AUTH_LOGIN_SUCCESS": "Đăng nhập thành công",
   "AUTH_REGISTER_SUCCESS": "Đăng ký thành công",

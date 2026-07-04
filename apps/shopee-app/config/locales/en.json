@@ -37,6 +37,7 @@
   "AUTH_SIGN_IN_LINK": "Sign In",
   "AUTH_GOOGLE_SIGN_IN": "Sign in with Google",
   "AUTH_GOOGLE_ERROR": "Google sign-in failed",
+  "AUTH_GOOGLE_NOT_CONFIGURED": "Google login is not configured",
   "AUTH_COMING_SOON": "Coming soon",
   "AUTH_LOGIN_SUCCESS": "Login successful",
   "AUTH_REGISTER_SUCCESS": "Registration successful",

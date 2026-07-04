@@ -75,6 +75,11 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
     <View className="pb-safe-offset-0 flex-row border-t border-neutrals900 bg-background py-2">
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key]
+
+        if ((options as { href?: string | null }).href === null) {
+          return null
+        }
+
         const label =
           options.tabBarLabel !== undefined
             ? options.tabBarLabel

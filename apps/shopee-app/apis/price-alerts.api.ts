@@ -1,5 +1,5 @@
 import http from '@/utils/http'
-import { type ApiResponse } from '@/types/api.type'
+import { type ApiResponse, type Pagination } from '@/types/api.type'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -31,8 +31,11 @@ export async function getPriceHistory(productId: string, days = 30): Promise<Pri
 }
 
 export async function getPriceAlerts(): Promise<PriceAlert[]> {
-  const res = await http.get<ApiResponse<PriceAlert[]>>('price-alerts')
-  return res.data.data
+  const res =
+    await http.get<ApiResponse<{ price_alerts: PriceAlert[]; pagination: Pagination }>>(
+      'price-alerts'
+    )
+  return res.data.data.price_alerts ?? []
 }
 
 export async function createPriceAlert(

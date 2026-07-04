@@ -114,7 +114,7 @@ function AppContent() {
   }
 
   return (
-    <View style={{ flex: 1 }} className={theme === 'dark' ? 'dark' : ''}>
+    <View style={{ flex: 1 }}>
       <GestureHandlerRootView>
         <SafeAreaProvider>
           <BottomSheetModalProvider>

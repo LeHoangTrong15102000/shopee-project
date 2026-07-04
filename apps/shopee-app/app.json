@@ -25,7 +25,11 @@
       ]
     ],
     "extra": {
-      "GOOGLE_CLIENT_ID": "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+      "googleAuth": {
+        "webClientId": "",
+        "androidClientId": "",
+        "iosClientId": ""
+      }
     },
     "orientation": "portrait",
     "icon": "./assets/icon.png",

@@ -13,8 +13,8 @@ import Animated, { FadeInDown } from 'react-native-reanimated'
 import { useTranslation } from 'react-i18next'
 import * as Google from 'expo-auth-session/providers/google'
 import * as WebBrowser from 'expo-web-browser'
-import Constants from 'expo-constants'
 import { useForm } from '@/hooks/useForm'
+import { googleAuthConfig, isGoogleAuthConfigured } from '@/config/googleAuth'
 import { signInSchema, SignInFormData } from '@/schemas/auth.schema'
 import { FormField, FormItem, FormMessage } from '@/components/ui/Form'
 import AppInput from '@/components/ui/AppInput'
@@ -30,8 +30,6 @@ import { AxiosError } from 'axios'
 
 WebBrowser.maybeCompleteAuthSession()
 
-const GOOGLE_CLIENT_ID = Constants.expoConfig?.extra?.GOOGLE_CLIENT_ID ?? ''
-
 export default function SignInScreen() {
   const { t } = useTranslation()
   const router = useRouter()
@@ -44,8 +42,10 @@ export default function SignInScreen() {
   const [reduceMotion, setReduceMotion] = useState(false)
   const passwordRef = useRef<TextInput>(null)
 
-  const [, googleResponse, promptAsync] = Google.useAuthRequest({
-    clientId: GOOGLE_CLIENT_ID,
+  const [request, googleResponse, promptAsync] = Google.useAuthRequest({
+    webClientId: googleAuthConfig.webClientId,
+    androidClientId: googleAuthConfig.androidClientId,
+    iosClientId: googleAuthConfig.iosClientId,
   })
 
   useEffect(() => {
@@ -69,6 +69,14 @@ export default function SignInScreen() {
     },
     [login, router, showError, t]
   )
+
+  const handleGooglePress = useCallback(() => {
+    if (!isGoogleAuthConfigured || !request) {
+      showError(t('AUTH_GOOGLE_NOT_CONFIGURED'))
+      return
+    }
+    promptAsync()
+  }, [request, promptAsync, showError, t])
 
   useEffect(() => {
     if (!googleResponse) return
@@ -224,7 +232,7 @@ export default function SignInScreen() {
             <AppButton
               variant="outline"
               size="lg"
-              onPress={() => promptAsync()}
+              onPress={handleGooglePress}
               loading={googleLoading}
               disabled={googleLoading || loading}
               className="w-full border-white/30"

@@ -156,11 +156,12 @@ export type FormControlProps = {
   children: React.ReactElement
 }
 
-export const FormControl = React.forwardRef<View, FormControlProps>(({ children }) => {
+export const FormControl = React.forwardRef<View, FormControlProps>(({ children }, ref) => {
   const { formItemId, formDescriptionId, formMessageId } = useFormField()
 
   return React.cloneElement(children, {
     ...(children.props as Record<string, unknown>),
+    ref,
     nativeID: formItemId,
     'aria-describedby': formDescriptionId,
     'aria-invalid': formMessageId,

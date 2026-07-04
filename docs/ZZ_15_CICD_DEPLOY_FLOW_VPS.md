@@ -448,11 +448,11 @@ Ngoài `always()`, GitHub còn có `success()` (mặc định), `failure()` (ch�
 
 `if: always()` khiến job chạy trong _mọi_ tình huống, nên bản thân job không biết pipeline đã "thắng" hay "thua". Bước này đọc kết quả của từng job qua context `needs.<job>.result` (mỗi biến nhận một trong các giá trị `success` / `failure` / `cancelled` / `skipped`) rồi quy về **một nhãn duy nhất** để nhét vào tin nhắn:
 
-| Điều kiện                                                    | Kết quả          | Ý nghĩa                                                                       |
-| ----------------------------------------------------------- | ---------------- | ----------------------------------------------------------------------------- |
-| `deploy == success`                                         | ✅ **SUCCESS**   | Deploy chạy trọn vẹn → toàn bộ pipeline OK                                     |
-| `deploy` / `build` / `quality` bất kỳ cái nào `== failure`  | ❌ **FAILURE**   | Có job hỏng ở đâu đó → pipeline thất bại                                       |
-| còn lại (vd bị `cancelled`, hoặc deploy `skipped`)          | ⚠️ **CANCELLED** | Không thành cũng không hỏng rõ ràng → coi như huỷ                             |
+| Điều kiện                                                  | Kết quả          | Ý nghĩa                                           |
+| ---------------------------------------------------------- | ---------------- | ------------------------------------------------- |
+| `deploy == success`                                        | ✅ **SUCCESS**   | Deploy chạy trọn vẹn → toàn bộ pipeline OK        |
+| `deploy` / `build` / `quality` bất kỳ cái nào `== failure` | ❌ **FAILURE**   | Có job hỏng ở đâu đó → pipeline thất bại          |
+| còn lại (vd bị `cancelled`, hoặc deploy `skipped`)         | ⚠️ **CANCELLED** | Không thành cũng không hỏng rõ ràng → coi như huỷ |
 
 Điểm tinh tế: khi `quality` hỏng thì `build-and-push` và `deploy` bị **skip** (không phải `failure`). Vì thế ta không chỉ nhìn `deploy.result` mà **fallback** kiểm tra cả `build` và `quality` — nếu chỉ nhìn `deploy`, một lần lint fail sẽ bị gắn nhầm nhãn ⚠️ CANCELLED thay vì ❌ FAILURE.
 
@@ -464,13 +464,13 @@ Tin nhắn gửi đi ở chế độ `format: html` (Telegram HTML parse mode). 
 
 Bước này xử lý hai việc:
 
-| Dòng                             | Việc                                                                                             |
-| -------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `short_sha="...cut -c1-7"`       | Cắt SHA dài thành 7 ký tự đầu (vd `418a594`) cho gọn — khớp tag image ở Job 2                    |
-| `subject="${subject%%$'\n'*}"`   | Chỉ giữ **dòng đầu** của commit message (bỏ phần thân dài phía sau)                              |
-| `subject="${subject//&/&amp;}"`  | Escape `&` → `&amp;` **(phải làm trước)** để không phá các escape sau                            |
-| `subject="${subject//</&lt;}"`   | Escape `<` → `&lt;`                                                                               |
-| `subject="${subject//>/&gt;}"`   | Escape `>` → `&gt;`                                                                               |
+| Dòng                            | Việc                                                                          |
+| ------------------------------- | ----------------------------------------------------------------------------- |
+| `short_sha="...cut -c1-7"`      | Cắt SHA dài thành 7 ký tự đầu (vd `418a594`) cho gọn — khớp tag image ở Job 2 |
+| `subject="${subject%%$'\n'*}"`  | Chỉ giữ **dòng đầu** của commit message (bỏ phần thân dài phía sau)           |
+| `subject="${subject//&/&amp;}"` | Escape `&` → `&amp;` **(phải làm trước)** để không phá các escape sau         |
+| `subject="${subject//</&lt;}"`  | Escape `<` → `&lt;`                                                           |
+| `subject="${subject//>/&gt;}"`  | Escape `>` → `&gt;`                                                           |
 
 > Thứ tự escape rất quan trọng: **`&` phải escape đầu tiên**. Nếu escape `<` thành `&lt;` trước rồi mới escape `&`, thì dấu `&` vừa sinh ra trong `&lt;` lại bị escape thành `&amp;lt;` → hỏng.
 

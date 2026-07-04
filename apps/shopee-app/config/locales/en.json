@@ -125,6 +125,18 @@
   "PD_RETRY": "Retry",
   "PD_GO_BACK": "Go Back",
 
+  "PD_SIMILAR_PRODUCTS": "Similar Products",
+  "PD_BOUGHT_TOGETHER": "Frequently Bought Together",
+  "PD_BUNDLE_TITLE": "Bundle Deals",
+  "PD_BUNDLE_ITEM_COUNT": "{{count}} items",
+  "PD_BUNDLE_SAVE_PERCENT": "Save {{value}}%",
+  "PD_BUNDLE_SAVE_FIXED": "Save ₫{{value}}",
+  "PD_BUNDLE_BUY_X_GET_Y": "Buy {{min}} get deal",
+  "PD_SHARE_ACTION": "Share",
+  "PD_SHARE_SUCCESS": "Link copied for sharing",
+  "PD_SHARE_ERROR": "Failed to share product",
+  "PD_SHARE_SIGN_IN_PROMPT": "Sign in to share this product",
+
   "auth": {
     "forgotPassword": "Forgot password?"
   },

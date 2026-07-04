@@ -125,6 +125,18 @@
   "PD_RETRY": "Thử lại",
   "PD_GO_BACK": "Quay lại",
 
+  "PD_SIMILAR_PRODUCTS": "Sản phẩm tương tự",
+  "PD_BOUGHT_TOGETHER": "Thường được mua cùng",
+  "PD_BUNDLE_TITLE": "Combo ưu đãi",
+  "PD_BUNDLE_ITEM_COUNT": "{{count}} sản phẩm",
+  "PD_BUNDLE_SAVE_PERCENT": "Tiết kiệm {{value}}%",
+  "PD_BUNDLE_SAVE_FIXED": "Tiết kiệm ₫{{value}}",
+  "PD_BUNDLE_BUY_X_GET_Y": "Mua {{min}} nhận ưu đãi",
+  "PD_SHARE_ACTION": "Chia sẻ",
+  "PD_SHARE_SUCCESS": "Đã sao chép liên kết chia sẻ",
+  "PD_SHARE_ERROR": "Không thể chia sẻ sản phẩm",
+  "PD_SHARE_SIGN_IN_PROMPT": "Đăng nhập để chia sẻ sản phẩm này",
+
   "auth": {
     "forgotPassword": "Quên mật khẩu?"
   },

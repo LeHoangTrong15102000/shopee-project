@@ -25,6 +25,8 @@ import {
   useLikeQuestion,
   useLikeAnswer,
 } from '@/hooks/useProductDetail'
+import { useSimilarProducts, useBoughtTogether } from '@/hooks/useProductRecommendations'
+import { useProductBundles } from '@/hooks/useBundles'
 import { useRecentlyViewedStore } from '@/store/recentlyViewedStore'
 
 import ProductDetailSkeleton from './ProductDetailSkeleton'
@@ -42,6 +44,9 @@ import RelatedProducts from './RelatedProducts'
 import ShopSummaryCard from './ShopSummaryCard'
 import PriceHistoryChart from './PriceHistoryChart'
 import PriceAlertButton from './PriceAlertButton'
+import SimilarProducts from './SimilarProducts'
+import { BoughtTogetherSection, BundleUpsellSection } from './BoughtTogetherSection'
+import ShareButton from './ShareButton'
 
 interface ProductDetailScreenProps {
   productId: string
@@ -70,6 +75,9 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
   const questionsQuery = useProductQuestions(productId)
   const wishlistQuery = useWishlistStatus(productId)
   const relatedQuery = useRelatedProducts(productQuery.data?.data.category._id, productId)
+  const similarQuery = useSimilarProducts(productId)
+  const boughtTogetherQuery = useBoughtTogether(productId)
+  const productBundlesQuery = useProductBundles(productId)
 
   // ─── Mutations ──────────────────────────────────────────────────────────────
   const toggleWishlist = useToggleWishlist(productId)
@@ -91,6 +99,10 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
   const questions = questionsQuery.data?.pages.flatMap((p) => p.data.questions) ?? []
   const relatedProducts = relatedQuery.data?.data.products ?? []
   const inWishlist = wishlistQuery.data?.data.in_wishlist ?? false
+  // Fail-safe: default to empty array on error or loading — sections self-hide when empty
+  const similarProducts = similarQuery.data ?? []
+  const boughtTogetherProducts = boughtTogetherQuery.data ?? []
+  const productBundles = productBundlesQuery.data ?? []
 
   // ─── Track recently viewed ──────────────────────────────────────────────────
   const addRecentlyViewed = useRecentlyViewedStore((state) => state.addProduct)
@@ -225,6 +237,7 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
             <ChevronLeft size={24} color={colors.foreground} />
           </TouchableOpacity>
           <View className="flex-row gap-2">
+            <ShareButton productId={productId} />
             <WishlistButton
               inWishlist={inWishlist}
               onToggle={handleToggleWishlist}
@@ -293,6 +306,27 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
             <>
               <View style={{ height: 8, backgroundColor: colors.neutrals800 }} />
               <RelatedProducts products={relatedProducts} />
+            </>
+          )}
+
+          {similarProducts.length > 0 && (
+            <>
+              <View style={{ height: 8, backgroundColor: colors.neutrals800 }} />
+              <SimilarProducts products={similarProducts} />
+            </>
+          )}
+
+          {boughtTogetherProducts.length > 0 && (
+            <>
+              <View style={{ height: 8, backgroundColor: colors.neutrals800 }} />
+              <BoughtTogetherSection products={boughtTogetherProducts} />
+            </>
+          )}
+
+          {productBundles.length > 0 && (
+            <>
+              <View style={{ height: 8, backgroundColor: colors.neutrals800 }} />
+              <BundleUpsellSection bundles={productBundles} />
             </>
           )}
         </ScrollView>

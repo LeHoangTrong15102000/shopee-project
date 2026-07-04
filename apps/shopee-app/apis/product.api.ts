@@ -14,6 +14,21 @@ interface GetProductsParams {
   category?: string
 }
 
+interface RecommendationResponse {
+  message: string
+  data: Product[]
+}
+
+export interface SharePayload {
+  shareUrl: string
+  shareCount: number
+}
+
+interface ShareResponse {
+  message: string
+  data: SharePayload
+}
+
 // ─── Product API ──────────────────────────────────────────────────────────────
 
 export async function getProducts(
@@ -32,5 +47,20 @@ export async function getProducts(
 
 export async function getCategories(): Promise<Category[]> {
   const res = await http.get<CategoriesResponse>('categories')
+  return res.data.data
+}
+
+export async function getSimilarProducts(id: string): Promise<Product[]> {
+  const res = await http.get<RecommendationResponse>(`products/${id}/similar`)
+  return res.data.data
+}
+
+export async function getBoughtTogether(id: string): Promise<Product[]> {
+  const res = await http.get<RecommendationResponse>(`products/${id}/bought-together`)
+  return res.data.data
+}
+
+export async function shareProduct(id: string): Promise<SharePayload> {
+  const res = await http.post<ShareResponse>(`products/${id}/share`)
   return res.data.data
 }

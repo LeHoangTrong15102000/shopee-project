@@ -16,6 +16,7 @@
    - [Job 1: Quality (lint + format)](#job-1-quality-lint--format)
    - [Job 2: Build & Push (3 Docker images)](#job-2-build--push-3-docker-images)
    - [Job 3: Deploy to VPS](#job-3-deploy-to-vps)
+   - [Job 4: Notify (Telegram)](#job-4-notify-telegram)
 5. [Phần B — deploy.sh (chạy trên VPS), giải thích từng dòng](#5-phần-b--deploysh-chạy-trên-vps-giải-thích-từng-dòng)
 6. [Phần C — health-check.sh giải thích từng dòng](#6-phần-c--health-checksh-giải-thích-từng-dòng)
 7. [Phần D — rollback.sh giải thích từng dòng](#7-phần-d--rollbacksh-giải-thích-từng-dòng)
@@ -35,16 +36,20 @@ Toàn bộ hệ thống deploy được thiết kế theo triết lý ghi ở đ
 Ý tưởng cốt lõi rất đơn giản, gồm đúng **3 bước nối tiếp nhau**:
 
 ```
-Bạn push code  ──►  [1] Kiểm tra chất lượng  ──►  [2] Build + đẩy image  ──►  [3] SSH vào VPS deploy
-   (git push)          (lint + format)             (lên Docker Hub)            (rolling update + health check)
+Bạn push code  ──►  [1] Kiểm tra chất lượng  ──►  [2] Build + đẩy image  ──►  [3] SSH vào VPS deploy  ──►  [4] Báo kết quả về Telegram
+   (git push)          (lint + format)             (lên Docker Hub)            (rolling update + health check)      (notify, luôn chạy)
 ```
 
 Điểm mấu chốt cần nhớ:
 
-- **3 job chạy TUẦN TỰ**, không song song. Job sau chỉ chạy nếu job trước **thành công** (nhờ từ khóa `needs:`).
+- **3 job cốt lõi chạy TUẦN TỰ**, không song song: `quality → build-and-push → deploy`. Job sau chỉ chạy nếu job trước **thành công** (nhờ từ khóa `needs:`).
+- Ngoài ra còn **2 job "vệ tinh"**:
+  - `test` — chạy **song song, độc lập** với chuỗi trên (không có `needs:`, không job nào phụ thuộc nó). Test fail sẽ tô đỏ lần chạy nhưng **không chặn** build/deploy.
+  - `notify` — chạy **sau `deploy`** với `if: always()`, nghĩa là **luôn luôn chạy** dù chuỗi trước thành công, thất bại hay bị hủy, để gửi kết quả về Telegram.
 - **Image được gắn tag theo SHA commit** (ví dụ `sha-418a594`). Tag này là **bất biến (immutable)** — mỗi commit ra một image riêng, không bao giờ ghi đè. Đây là nền tảng để rollback an toàn.
 - VPS **không build code**. VPS chỉ **kéo image đã build sẵn** từ Docker Hub về và chạy. Việc build nặng nề đã xảy ra trên GitHub Actions runner.
 - Sau khi deploy, script tự **health check**. Nếu fail thì tự động **rollback** về phiên bản tốt trước đó. Bạn không cần can thiệp tay.
+- Cuối cùng, dù kết quả ra sao, bạn **nhận được một tin nhắn Telegram** tóm tắt: thành công/thất bại, commit nào, ai push, và link tới lần chạy.
 
 ---
 
@@ -52,7 +57,7 @@ Bạn push code  ──►  [1] Kiểm tra chất lượng  ──►  [2] Build
 
 | Thành phần                   | Vai trò                                                    | Nằm ở đâu                          |
 | ---------------------------- | ---------------------------------------------------------- | ---------------------------------- |
-| `ci-cd-pipeline.yml`         | Định nghĩa toàn bộ pipeline (3 job)                        | `.github/workflows/`               |
+| `ci-cd-pipeline.yml`         | Định nghĩa toàn bộ pipeline (5 job)                        | `.github/workflows/`               |
 | `setup-node-pnpm/action.yml` | Composite action: cài Node 22 + pnpm + cache               | `.github/actions/setup-node-pnpm/` |
 | `Dockerfile` (×3)            | Công thức build image cho api / web / admin                | `apps/shopee-*/`                   |
 | `deploy.sh`                  | Kịch bản deploy chính, chạy **trên VPS**                   | `scripts/`                         |
@@ -61,6 +66,7 @@ Bạn push code  ──►  [1] Kiểm tra chất lượng  ──►  [2] Build
 | `docker-compose.prod.yaml`   | Định nghĩa stack production (3 service + network + volume) | gốc dự án                          |
 | Docker Hub                   | Nơi lưu trữ image đã build                                 | Cloud                              |
 | VPS                          | Máy chủ chạy ứng dụng thật                                 | Cloud (của bạn)                    |
+| Telegram Bot                 | Nhận tin nhắn thông báo kết quả deploy                     | Cloud (Telegram)                   |
 
 **3 service chính:**
 
@@ -86,12 +92,13 @@ Bạn push code  ──►  [1] Kiểm tra chất lượng  ──►  [2] Build
 ┌──────────────────────────────────────────────────────────────────────────┐
 │  GITHUB ACTIONS (runner: ubuntu-latest)                                    │
 │                                                                            │
-│  ┌────────────────────┐                                                    │
-│  │ JOB 1: quality     │  pnpm nx lint + format:check                       │
-│  │ (cổng gác / gate)  │  ─ FAIL ─► dừng toàn bộ, KHÔNG build, KHÔNG deploy │
-│  └─────────┬──────────┘                                                    │
-│            │ needs: quality (chỉ chạy nếu PASS)                            │
-│            ▼                                                                │
+│  ┌────────────────────┐        ┌────────────────────────────────────────┐ │
+│  │ JOB 1: quality     │        │ JOB (song song): test                  │ │
+│  │ (cổng gác / gate)  │        │  pnpm nx run-many -t test              │ │
+│  │  lint + format     │        │  ─ độc lập, KHÔNG có needs:            │ │
+│  └─────────┬──────────┘        │  ─ fail ⇒ tô đỏ run nhưng KHÔNG chặn   │ │
+│            │ needs: quality    │    build/deploy                        │ │
+│            ▼                    └────────────────────────────────────────┘ │
 │  ┌────────────────────────────────────────────────┐                       │
 │  │ JOB 2: build-and-push  (matrix 3 nhánh song song)│                      │
 │  │   ├─ shopee-api   ─► docker build ─► push DockerHub                     │
@@ -105,6 +112,12 @@ Bạn push code  ──►  [1] Kiểm tra chất lượng  ──►  [2] Build
 │  │ JOB 3: deploy      │  appleboy/ssh-action ──SSH──►  VPS                 │
 │  │ (environment: prod)│                                                    │
 │  └─────────┬──────────┘                                                    │
+│            │ needs: deploy  +  if: always()  (luôn chạy dù pass/fail/hủy)  │
+│            ▼                                                                │
+│  ┌────────────────────┐                                                    │
+│  │ JOB 4: notify      │  appleboy/telegram-action ──HTTPS──► Telegram Bot  │
+│  │ (Telegram)         │  gửi: ✅/❌/⚠️ + commit + author + link run       │
+│  └────────────────────┘                                                    │
 └────────────┼───────────────────────────────────────────────────────────────┘
              │ SSH chạy lệnh: ./scripts/deploy.sh <REGISTRY> <TAG> <SERVICES>
              ▼
@@ -357,6 +370,137 @@ Bước `scp-action` dùng SCP để đẩy toàn bộ `scripts/*.sh` từ commi
 | 5    | `./scripts/deploy.sh "$REGISTRY" "$IMAGE_TAG" "shopee-api shopee-web shopee-admin"` | **Gọi deploy.sh** với 3 tham số: registry, tag, danh sách service               |
 
 > Lưu ý: GitHub Actions chỉ chịu trách nhiệm đến bước "gọi `deploy.sh`". Từ đây trở đi, **mọi thứ chạy trên VPS** — phần B bên dưới.
+
+### Job 4: Notify (Telegram)
+
+Ba job trên (`quality` → `build-and-push` → `deploy`) là **luồng lõi**: chúng nối tiếp nhau bằng `needs:` nên nếu một job hỏng, job sau bị bỏ qua. Nhưng khi đó bạn sẽ **không biết** kết quả cuối cùng ra sao trừ khi tự mở tab Actions lên xem. Job `notify` sinh ra để giải quyết đúng vấn đề này: **luôn** gửi một tin nhắn Telegram tóm tắt kết quả, dù pipeline thành công, thất bại hay bị huỷ.
+
+```yaml
+notify:
+  name: Notify (Telegram)
+  runs-on: ubuntu-latest
+  needs: deploy # ← chạy SAU khi deploy kết thúc (dù thành/bại)
+  if: always() # ← điểm mấu chốt: luôn chạy, không bao giờ bị skip
+  env:
+    TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+    TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+  steps:
+    - name: Compute overall result
+      id: result
+      shell: bash
+      run: |
+        deploy="${{ needs.deploy.result }}"
+        build="${{ needs.build-and-push.result }}"
+        quality="${{ needs.quality.result }}"
+
+        if [ "$deploy" = "success" ]; then
+          echo "emoji=✅" >> "$GITHUB_OUTPUT"
+          echo "label=SUCCESS" >> "$GITHUB_OUTPUT"
+        elif [ "$deploy" = "failure" ] || [ "$build" = "failure" ] || [ "$quality" = "failure" ]; then
+          echo "emoji=❌" >> "$GITHUB_OUTPUT"
+          echo "label=FAILURE" >> "$GITHUB_OUTPUT"
+        else
+          echo "emoji=⚠️" >> "$GITHUB_OUTPUT"
+          echo "label=CANCELLED" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Compute short SHA and escape commit subject
+      id: meta
+      shell: bash
+      run: |
+        short_sha="$(echo '${{ github.sha }}' | cut -c1-7)"
+        echo "short_sha=${short_sha}" >> "$GITHUB_OUTPUT"
+
+        subject="${{ github.event.head_commit.message }}"
+        subject="${subject%%$'\n'*}"   # chỉ lấy dòng đầu
+        subject="${subject//&/&amp;}"
+        subject="${subject//</&lt;}"
+        subject="${subject//>/&gt;}"
+        echo "subject=${subject}" >> "$GITHUB_OUTPUT"
+
+    - name: Send Telegram notification
+      if: ${{ env.TELEGRAM_BOT_TOKEN != '' && env.TELEGRAM_CHAT_ID != '' }}
+      uses: appleboy/telegram-action@v1.0.1
+      with:
+        to: ${{ env.TELEGRAM_CHAT_ID }}
+        token: ${{ env.TELEGRAM_BOT_TOKEN }}
+        format: html
+        message: |
+          ${{ steps.result.outputs.emoji }} <b>${{ steps.result.outputs.label }}</b> — ${{ github.repository }}
+          Branch: ${{ github.ref_name }}
+          Commit: ${{ steps.meta.outputs.short_sha }} — ${{ steps.meta.outputs.subject }}
+          Author: ${{ github.actor }}
+          <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">View run #${{ github.run_number }}</a>
+```
+
+#### Vì sao cần `needs: deploy` **và** `if: always()` cùng lúc?
+
+Hai dòng này nghe qua có vẻ mâu thuẫn, nhưng thực ra bổ trợ cho nhau:
+
+- **`needs: deploy`** quyết định **thứ tự** — `notify` phải đợi `deploy` chạy xong (thành công, thất bại, hay skip) mới bắt đầu. Nhờ vậy tin nhắn luôn phản ánh trạng thái _cuối cùng_ của pipeline chứ không gửi sớm.
+- **`if: always()`** quyết định **điều kiện chạy** — ghi đè hành vi mặc định của GitHub Actions. Mặc định, một job có `needs:` sẽ **tự động bị skip** nếu job phụ thuộc (ở đây là `deploy`) không `success`. Nếu không có `if: always()`, đúng vào lúc deploy hỏng — tức lúc bạn **cần** thông báo nhất — thì `notify` lại bị bỏ qua và im lặng.
+
+> **Quy tắc nhớ:** `needs:` = "chạy _sau_ ai"; `if: always()` = "vẫn chạy _dù_ ai đó hỏng". Ghép lại: "đợi deploy xong, rồi báo cáo bất kể kết quả".
+
+Ngoài `always()`, GitHub còn có `success()` (mặc định), `failure()` (chỉ chạy khi có job hỏng), và `cancelled()`. Ở đây ta cần bao trọn cả ba trường hợp nên `always()` là lựa chọn duy nhất đúng.
+
+#### Bước 1 — "Compute overall result": suy ra một trạng thái tổng
+
+`if: always()` khiến job chạy trong _mọi_ tình huống, nên bản thân job không biết pipeline đã "thắng" hay "thua". Bước này đọc kết quả của từng job qua context `needs.<job>.result` (mỗi biến nhận một trong các giá trị `success` / `failure` / `cancelled` / `skipped`) rồi quy về **một nhãn duy nhất** để nhét vào tin nhắn:
+
+| Điều kiện                                                    | Kết quả          | Ý nghĩa                                                                       |
+| ----------------------------------------------------------- | ---------------- | ----------------------------------------------------------------------------- |
+| `deploy == success`                                         | ✅ **SUCCESS**   | Deploy chạy trọn vẹn → toàn bộ pipeline OK                                     |
+| `deploy` / `build` / `quality` bất kỳ cái nào `== failure`  | ❌ **FAILURE**   | Có job hỏng ở đâu đó → pipeline thất bại                                       |
+| còn lại (vd bị `cancelled`, hoặc deploy `skipped`)          | ⚠️ **CANCELLED** | Không thành cũng không hỏng rõ ràng → coi như huỷ                             |
+
+Điểm tinh tế: khi `quality` hỏng thì `build-and-push` và `deploy` bị **skip** (không phải `failure`). Vì thế ta không chỉ nhìn `deploy.result` mà **fallback** kiểm tra cả `build` và `quality` — nếu chỉ nhìn `deploy`, một lần lint fail sẽ bị gắn nhầm nhãn ⚠️ CANCELLED thay vì ❌ FAILURE.
+
+Mỗi nhánh ghi hai biến (`emoji`, `label`) ra `$GITHUB_OUTPUT`. Đây là cơ chế chuẩn của GitHub Actions để **truyền dữ liệu giữa các step** trong cùng job: step sau đọc lại bằng `steps.result.outputs.emoji`.
+
+#### Bước 2 — "Compute short SHA and escape commit subject": chuẩn bị nội dung an toàn
+
+Tin nhắn gửi đi ở chế độ `format: html` (Telegram HTML parse mode). Nghĩa là Telegram sẽ **thông dịch** các thẻ như `<b>`, `<a>`. Vấn đề: tiêu đề commit là chuỗi tuỳ ý do người dùng gõ — nếu nó chứa ký tự `<`, `>` hoặc `&`, Telegram sẽ hiểu nhầm là HTML và **báo lỗi parse**, khiến tin nhắn không gửi được.
+
+Bước này xử lý hai việc:
+
+| Dòng                             | Việc                                                                                             |
+| -------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `short_sha="...cut -c1-7"`       | Cắt SHA dài thành 7 ký tự đầu (vd `418a594`) cho gọn — khớp tag image ở Job 2                    |
+| `subject="${subject%%$'\n'*}"`   | Chỉ giữ **dòng đầu** của commit message (bỏ phần thân dài phía sau)                              |
+| `subject="${subject//&/&amp;}"`  | Escape `&` → `&amp;` **(phải làm trước)** để không phá các escape sau                            |
+| `subject="${subject//</&lt;}"`   | Escape `<` → `&lt;`                                                                               |
+| `subject="${subject//>/&gt;}"`   | Escape `>` → `&gt;`                                                                               |
+
+> Thứ tự escape rất quan trọng: **`&` phải escape đầu tiên**. Nếu escape `<` thành `&lt;` trước rồi mới escape `&`, thì dấu `&` vừa sinh ra trong `&lt;` lại bị escape thành `&amp;lt;` → hỏng.
+
+#### Bước 3 — "Send Telegram notification": gửi tin, nhưng có "chốt chặn"
+
+- **`if: ${{ env.TELEGRAM_BOT_TOKEN != '' && env.TELEGRAM_CHAT_ID != '' }}`** — đây là **secret guard**. Chỉ khi cả hai secret `TELEGRAM_BOT_TOKEN` và `TELEGRAM_CHAT_ID` tồn tại thì step mới chạy. Nhờ vậy, người fork repo hoặc contributor **không có secret** sẽ được **bỏ qua êm ái** thay vì làm cả pipeline đỏ vì thiếu token. Bản thân job `notify` vẫn `success`, chỉ riêng step gửi tin bị skip.
+- **`appleboy/telegram-action@v1.0.1`** — action bọc sẵn lời gọi Telegram Bot API. Ta chỉ cần đưa `token` (bot), `to` (chat ID đích) và `message`.
+- **`format: html`** — kích hoạt HTML parse mode, cho phép in đậm `<b>` và link `<a href>`.
+- **Nội dung `message`** ghép từ dữ liệu hai bước trước + biến sẵn có của GitHub:
+  - `${{ steps.result.outputs.emoji }}` + `label` → dòng trạng thái (✅/❌/⚠️ + SUCCESS/FAILURE/CANCELLED)
+  - `github.ref_name` → tên branch (`master`)
+  - `steps.meta.outputs.short_sha` + `subject` → SHA ngắn + tiêu đề commit
+  - `github.actor` → người đẩy commit
+  - Link `.../actions/runs/${{ github.run_id }}` → bấm vào là mở thẳng trang run để xem log chi tiết
+
+**Tin nhắn thực tế trông như:**
+
+```
+✅ SUCCESS — lehoangtrong/shopee-project
+Branch: master
+Commit: 418a594 — feat(shopee-app): add product recommendations
+Author: lehoangtrong
+View run #142   (đây là link bấm được)
+```
+
+#### Vị trí trong bức tranh lớn
+
+`notify` là **vệ tinh** của luồng lõi, không nằm trên đường deploy: nó không tạo image, không đụng VPS, không ảnh hưởng tới việc app có lên hay không. Nếu Telegram sập hay secret sai, cùng lắm bạn mất tin nhắn — pipeline deploy vẫn nguyên vẹn. Đây là lý do nó được tách thành job riêng với `if: always()` thay vì nhét thành một step cuối trong job `deploy` (nếu nhét vào `deploy`, khi deploy hỏng giữa chừng thì step báo tin cũng không bao giờ chạy tới).
+
+> So sánh nhanh với job `test`: cả hai đều là "vệ tinh" nhưng khác vai. `test` chạy **song song** ngay từ đầu (không `needs:`) và hỏng cũng không chặn deploy; `notify` chạy **cuối cùng** (`needs: deploy`) chỉ để tổng kết. Xem lại Sơ đồ Flow ở mục 3 để thấy rõ hai nhánh này nằm ngoài trục `quality → build → deploy`.
 
 ## 5. Phần B — deploy.sh (chạy trên VPS), Giải Thích Từng Dòng
 
@@ -1333,6 +1477,12 @@ DOCKERHUB_USERNAME=... DOCKERHUB_TOKEN=... ./scripts/rollback.sh
 
 **Hỏi: Làm sao chạy kèm MongoDB/Redis ngay trên VPS?**
 Đáp: Dùng `--profile self-hosted` khi `up`. Khi đó 2 service `mongodb`/`redis` mới khởi động, và `depends_on ... required: false` khiến api đợi chúng healthy. Mặc định (không profile) là chế độ cloud, DB/Redis lấy từ dịch vụ ngoài qua `.env.prod`.
+
+**Hỏi: Không nhận được tin nhắn Telegram dù pipeline chạy xong thì sao?**
+Đáp: Kiểm tra hai secret `TELEGRAM_BOT_TOKEN` và `TELEGRAM_CHAT_ID` đã khai báo trong repo chưa. Step gửi tin có **secret guard** `if: env.TELEGRAM_BOT_TOKEN != '' && env.TELEGRAM_CHAT_ID != ''` — thiếu một trong hai là step bị bỏ qua êm ái (job vẫn xanh, không lỗi). Đây là chủ đích để fork/contributor không có secret vẫn chạy pipeline được. Xem [Job 4](#job-4-notify-telegram).
+
+**Hỏi: Deploy hỏng thì có được báo Telegram không?**
+Đáp: **Có.** Job `notify` dùng `if: always()` nên chạy bất kể `deploy` thành công, thất bại hay bị huỷ — đúng lúc deploy hỏng là lúc bạn cần tin nhắn nhất. Bước "Compute overall result" quy kết quả về ✅ SUCCESS / ❌ FAILURE / ⚠️ CANCELLED trước khi gửi.
 
 ---
 

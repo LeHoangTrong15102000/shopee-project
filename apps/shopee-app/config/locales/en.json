@@ -379,6 +379,8 @@
     },
     "status": {
       "pending": "Pending",
+      "payment_pending": "Awaiting Payment",
+      "payment_failed": "Payment Failed",
       "confirmed": "Confirmed",
       "processing": "Processing",
       "shipping": "Shipping",
@@ -632,6 +634,8 @@
     "status": {
       "all": "All",
       "pending": "Pending",
+      "payment_pending": "Awaiting Payment",
+      "payment_failed": "Payment Failed",
       "confirmed": "Confirmed",
       "processing": "Processing",
       "shipping": "Shipping",
@@ -764,6 +768,85 @@
     },
     "viewAll": "View all",
     "empty": "You haven't viewed any products yet"
+  },
+  "refund": {
+    "section": {
+      "title": "Refund Request"
+    },
+    "list": {
+      "title": "My Refunds",
+      "empty": "You have no refund requests",
+      "orderId": "Order"
+    },
+    "reason": {
+      "DEFECTIVE": "Defective product",
+      "WRONG_ITEM": "Wrong item received",
+      "NOT_AS_DESCRIBED": "Not as described",
+      "CHANGED_MIND": "Changed my mind",
+      "OTHER": "Other"
+    },
+    "form": {
+      "reason": "Reason",
+      "detail": "Details",
+      "detailPlaceholder": "Describe the issue in detail...",
+      "evidence": "Evidence (photos/links)",
+      "evidencePlaceholder": "Paste image URL...",
+      "addEvidence": "Add",
+      "removeEvidence": "Remove evidence",
+      "amount": "Refund amount",
+      "amountPlaceholder": "Enter amount",
+      "submit": "Submit Refund Request"
+    },
+    "validation": {
+      "reasonRequired": "Please select a reason",
+      "detailRequired": "Please describe the issue",
+      "evidenceMax": "Maximum 5 evidence items",
+      "evidenceUrl": "Please enter a valid URL",
+      "amountPositive": "Amount must be greater than 0"
+    },
+    "status": {
+      "title": "Refund Status",
+      "empty": "No refund request for this order",
+      "requestAction": "Request Refund",
+      "cancelAction": "Cancel Request",
+      "approvedAmount": "Approved amount",
+      "rejectionReason": "Rejection reason",
+      "PENDING": "Pending",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "PROCESSING": "Processing",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "toast": {
+      "submitSuccess": "Refund request submitted",
+      "cancelSuccess": "Refund request cancelled"
+    },
+    "error": {
+      "submitFailed": "Could not submit refund request. Please try again."
+    }
+  },
+  "retryPayment": {
+    "section": {
+      "title": "Payment"
+    },
+    "button": {
+      "retry": "Retry Payment"
+    },
+    "error": {
+      "cannotOpen": "Could not open payment page"
+    }
+  },
+  "tracking": {
+    "title": "Live Tracking",
+    "empty": "Tracking information is not available yet",
+    "error": "Could not load tracking information",
+    "retry": "Retry",
+    "status": "Status",
+    "driver": "Driver",
+    "vehicle": "Vehicle",
+    "phone": "Phone",
+    "eta": "Estimated arrival"
   },
   "followedShops": {
     "header": {

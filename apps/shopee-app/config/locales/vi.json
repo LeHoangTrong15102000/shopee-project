@@ -379,6 +379,8 @@
     },
     "status": {
       "pending": "Chờ xác nhận",
+      "payment_pending": "Chờ thanh toán",
+      "payment_failed": "Thanh toán thất bại",
       "confirmed": "Đã xác nhận",
       "processing": "Đang xử lý",
       "shipping": "Đang giao",
@@ -632,6 +634,8 @@
     "status": {
       "all": "Tất cả",
       "pending": "Chờ xác nhận",
+      "payment_pending": "Chờ thanh toán",
+      "payment_failed": "Thanh toán thất bại",
       "confirmed": "Đã xác nhận",
       "processing": "Đang xử lý",
       "shipping": "Đang giao",
@@ -764,6 +768,85 @@
     },
     "viewAll": "Xem tất cả",
     "empty": "Bạn chưa xem sản phẩm nào"
+  },
+  "refund": {
+    "section": {
+      "title": "Yêu cầu hoàn tiền"
+    },
+    "list": {
+      "title": "Yêu cầu hoàn tiền của tôi",
+      "empty": "Bạn chưa có yêu cầu hoàn tiền nào",
+      "orderId": "Đơn hàng"
+    },
+    "reason": {
+      "DEFECTIVE": "Sản phẩm lỗi",
+      "WRONG_ITEM": "Nhận sai sản phẩm",
+      "NOT_AS_DESCRIBED": "Không đúng mô tả",
+      "CHANGED_MIND": "Đổi ý",
+      "OTHER": "Lý do khác"
+    },
+    "form": {
+      "reason": "Lý do",
+      "detail": "Chi tiết",
+      "detailPlaceholder": "Mô tả vấn đề chi tiết...",
+      "evidence": "Bằng chứng (ảnh/liên kết)",
+      "evidencePlaceholder": "Dán URL ảnh...",
+      "addEvidence": "Thêm",
+      "removeEvidence": "Xóa bằng chứng",
+      "amount": "Số tiền hoàn",
+      "amountPlaceholder": "Nhập số tiền",
+      "submit": "Gửi yêu cầu hoàn tiền"
+    },
+    "validation": {
+      "reasonRequired": "Vui lòng chọn lý do",
+      "detailRequired": "Vui lòng mô tả vấn đề",
+      "evidenceMax": "Tối đa 5 bằng chứng",
+      "evidenceUrl": "Vui lòng nhập URL hợp lệ",
+      "amountPositive": "Số tiền phải lớn hơn 0"
+    },
+    "status": {
+      "title": "Trạng thái hoàn tiền",
+      "empty": "Đơn hàng này chưa có yêu cầu hoàn tiền",
+      "requestAction": "Yêu cầu hoàn tiền",
+      "cancelAction": "Hủy yêu cầu",
+      "approvedAmount": "Số tiền được duyệt",
+      "rejectionReason": "Lý do từ chối",
+      "PENDING": "Chờ xử lý",
+      "APPROVED": "Đã duyệt",
+      "REJECTED": "Từ chối",
+      "PROCESSING": "Đang xử lý",
+      "COMPLETED": "Hoàn thành",
+      "CANCELLED": "Đã hủy"
+    },
+    "toast": {
+      "submitSuccess": "Đã gửi yêu cầu hoàn tiền",
+      "cancelSuccess": "Đã hủy yêu cầu hoàn tiền"
+    },
+    "error": {
+      "submitFailed": "Không thể gửi yêu cầu hoàn tiền. Vui lòng thử lại."
+    }
+  },
+  "retryPayment": {
+    "section": {
+      "title": "Thanh toán"
+    },
+    "button": {
+      "retry": "Thử lại thanh toán"
+    },
+    "error": {
+      "cannotOpen": "Không thể mở trang thanh toán"
+    }
+  },
+  "tracking": {
+    "title": "Theo dõi đơn hàng",
+    "empty": "Thông tin theo dõi chưa có",
+    "error": "Không thể tải thông tin theo dõi",
+    "retry": "Thử lại",
+    "status": "Trạng thái",
+    "driver": "Tài xế",
+    "vehicle": "Phương tiện",
+    "phone": "Số điện thoại",
+    "eta": "Dự kiến đến"
   },
   "followedShops": {
     "header": {

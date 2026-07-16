@@ -83,9 +83,8 @@ describe('CartHeader', () => {
     expect(screen.getByText('Trang chủ')).toBeInTheDocument()
   })
 
-  it('renders Shopee logo SVG', () => {
-    const { container } = render(<CartHeader />)
-    const svg = container.querySelector('svg[viewBox="0 0 192 65"]')
-    expect(svg).not.toBeNull()
+  it('renders ShopHub wordmark', () => {
+    render(<CartHeader />)
+    expect(screen.getByText('ShopHub')).toBeInTheDocument()
   })
 })

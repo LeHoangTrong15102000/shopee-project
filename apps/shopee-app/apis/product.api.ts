@@ -1,5 +1,6 @@
 import http from '@/utils/http'
 import { type Category, type Product, type ProductListResponse } from '@/types/product.type'
+import { type ApiResponse } from '@/types/api.type'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -62,5 +63,24 @@ export async function getBoughtTogether(id: string): Promise<Product[]> {
 
 export async function shareProduct(id: string): Promise<SharePayload> {
   const res = await http.post<ShareResponse>(`products/${id}/share`)
+  return res.data.data
+}
+
+// ─── Recently Viewed ──────────────────────────────────────────────────────────
+
+/**
+ * POST products/:id/view — record a product view (auth required).
+ * Fire-and-forget; errors must be swallowed by the caller.
+ */
+export async function recordProductView(id: string): Promise<void> {
+  await http.post<ApiResponse<unknown>>(`products/${id}/view`)
+}
+
+/**
+ * GET products/recently-viewed — get the authenticated user's recently viewed products.
+ * Returns Product[] sorted newest-first (server-side).
+ */
+export async function getRecentlyViewed(): Promise<Product[]> {
+  const res = await http.get<ApiResponse<Product[]>>('products/recently-viewed')
   return res.data.data
 }

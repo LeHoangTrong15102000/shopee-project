@@ -1,6 +1,7 @@
 import http from '@/utils/http'
 import { type OrderStatusType } from '@/constants/order'
 import { type ApiResponse, type Pagination } from '@/types/api.type'
+import { type TrackingUpdate } from '@/types/tracking.type'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -40,7 +41,7 @@ export interface OrdersPage {
 // ─── Order API ────────────────────────────────────────────────────────────────
 
 export async function getOrders(
-  params: { status?: OrderStatusType; page?: number; limit?: number } = {}
+  params: { status?: OrderStatusType; page?: number; limit?: number } = {},
 ) {
   const res = await http.get<ApiResponse<OrdersPage>>('orders', { params })
   return res.data
@@ -85,4 +86,49 @@ export interface ReturnPayload {
 
 export async function requestReturn(orderId: string, payload: ReturnPayload): Promise<void> {
   await http.put<ApiResponse<unknown>>(`orders/${orderId}/return`, payload)
+}
+
+// ─── Payment Retry / Status ───────────────────────────────────────────────────
+
+export interface RetryPaymentResult {
+  paymentUrl: string
+  paymentId: string
+}
+
+export type OrderPaymentStatusValue = 'PENDING' | 'SUCCESS' | 'FAILED' | 'NONE'
+
+export interface OrderPaymentStatus {
+  status: OrderPaymentStatusValue
+  paymentUrl: string | null
+  canRetry: boolean
+  provider: string | null
+}
+
+/**
+ * POST orders/:id/retry-payment — generate a new payment URL for a failed/expired payment.
+ * Returns { paymentUrl, paymentId }.
+ */
+export async function retryOrderPayment(orderId: string): Promise<RetryPaymentResult> {
+  const res = await http.post<ApiResponse<RetryPaymentResult>>(`orders/${orderId}/retry-payment`)
+  return res.data.data
+}
+
+/**
+ * GET orders/:id/payment-status — get current payment status.
+ * Rate-limited to 20 req/min server-side — callers must poll conservatively.
+ */
+export async function getOrderPaymentStatus(orderId: string): Promise<OrderPaymentStatus> {
+  const res = await http.get<ApiResponse<OrderPaymentStatus>>(`orders/${orderId}/payment-status`)
+  return res.data.data
+}
+
+// ─── Order Tracking ───────────────────────────────────────────────────────────
+
+/**
+ * GET orders/:id/tracking — get GPS realtime tracking data.
+ * Already provided by tracking.api.ts; re-exported here for module cohesion.
+ */
+export async function getOrderTracking(orderId: string): Promise<TrackingUpdate> {
+  const res = await http.get<ApiResponse<TrackingUpdate>>(`orders/${orderId}/tracking`)
+  return res.data.data
 }

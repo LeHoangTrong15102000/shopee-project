@@ -28,6 +28,7 @@ import {
 import { useSimilarProducts, useBoughtTogether } from '@/hooks/useProductRecommendations'
 import { useProductBundles } from '@/hooks/useBundles'
 import { useRecentlyViewedStore } from '@/store/recentlyViewedStore'
+import { useRecordProductView } from '@/hooks/useRecentlyViewed'
 
 import ProductDetailSkeleton from './ProductDetailSkeleton'
 import ImageGallery from './ImageGallery'
@@ -47,6 +48,7 @@ import PriceAlertButton from './PriceAlertButton'
 import SimilarProducts from './SimilarProducts'
 import { BoughtTogetherSection, BundleUpsellSection } from './BoughtTogetherSection'
 import ShareButton from './ShareButton'
+import RecentlyViewedRail from './RecentlyViewedRail'
 
 interface ProductDetailScreenProps {
   productId: string
@@ -89,6 +91,7 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
   const answerQuestion = useAnswerQuestion(productId)
   const likeQuestion = useLikeQuestion(productId)
   const likeAnswer = useLikeAnswer(productId)
+  const recordView = useRecordProductView()
 
   const product = productQuery.data?.data
   const isOutOfStock = product ? product.quantity <= 0 : false
@@ -123,6 +126,8 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
         createdAt: product.createdAt,
         updatedAt: product.updatedAt,
       })
+      // Fire-and-forget server-side view record (auth-gated, errors swallowed in the hook)
+      recordView.mutate(product._id)
     }
   }, [product?._id, addRecentlyViewed])
 
@@ -329,6 +334,9 @@ export default function ProductDetailScreen({ productId }: ProductDetailScreenPr
               <BundleUpsellSection bundles={productBundles} />
             </>
           )}
+
+          <View style={{ height: 8, backgroundColor: colors.neutrals800 }} />
+          <RecentlyViewedRail />
         </ScrollView>
 
         <StickyBottomBar

@@ -23,6 +23,10 @@ function useStatusBadge(status: OrderStatusType): {
   switch (status) {
     case ORDER_STATUS.PENDING:
       return { label: t('orderCard.status.pending'), variant: 'warning' }
+    case ORDER_STATUS.PAYMENT_PENDING:
+      return { label: t('orderCard.status.payment_pending'), variant: 'warning' }
+    case ORDER_STATUS.PAYMENT_FAILED:
+      return { label: t('orderCard.status.payment_failed'), variant: 'error' }
     case ORDER_STATUS.CONFIRMED:
       return { label: t('orderCard.status.confirmed'), variant: 'primary' }
     case ORDER_STATUS.PROCESSING:

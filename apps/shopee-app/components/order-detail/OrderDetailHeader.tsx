@@ -13,6 +13,14 @@ type BadgeVariant = 'success' | 'error' | 'primary' | 'warning' | 'default'
 
 const STATUS_CONFIG: Record<OrderStatusType, { labelKey: string; variant: BadgeVariant }> = {
   [ORDER_STATUS.PENDING]: { labelKey: 'orderDetail.status.pending', variant: 'warning' },
+  [ORDER_STATUS.PAYMENT_PENDING]: {
+    labelKey: 'orderDetail.status.payment_pending',
+    variant: 'warning',
+  },
+  [ORDER_STATUS.PAYMENT_FAILED]: {
+    labelKey: 'orderDetail.status.payment_failed',
+    variant: 'error',
+  },
   [ORDER_STATUS.CONFIRMED]: { labelKey: 'orderDetail.status.confirmed', variant: 'primary' },
   [ORDER_STATUS.PROCESSING]: { labelKey: 'orderDetail.status.processing', variant: 'default' },
   [ORDER_STATUS.SHIPPING]: { labelKey: 'orderDetail.status.shipping', variant: 'primary' },

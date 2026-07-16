@@ -230,16 +230,23 @@ jest.mock('expo-localization', () => ({
   isRTL: false,
 }))
 
-// Mock react-native-mmkv
-jest.mock('react-native-mmkv', () => ({
-  MMKV: jest.fn().mockImplementation(() => ({
+// Mock react-native-mmkv (v4: createMMKV factory; MMKV is a type only)
+jest.mock('react-native-mmkv', () => {
+  const createMockInstance = () => ({
     getString: jest.fn(),
     set: jest.fn(),
+    remove: jest.fn(),
     delete: jest.fn(),
     contains: jest.fn(() => false),
     getAllKeys: jest.fn(() => []),
-  })),
-}))
+    clearAll: jest.fn(),
+  })
+  return {
+    createMMKV: jest.fn(() => createMockInstance()),
+    // Keep MMKV exported (as a constructor-like fn) for any legacy references
+    MMKV: jest.fn().mockImplementation(() => createMockInstance()),
+  }
+})
 
 // Mock expo-haptics
 jest.mock('expo-haptics', () => ({

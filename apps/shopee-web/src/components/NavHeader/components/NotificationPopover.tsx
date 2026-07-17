@@ -24,11 +24,7 @@ const NotificationPopover = ({ isAuthenticated, variant = 'full' }: Notification
       <div className="relative h-87.5 w-[280px] cursor-pointer rounded-lg border border-gray-200 bg-white text-sm text-[rgba(0,0,0,.7)] shadow-md transition-all">
         <div className='flex h-full flex-col before:absolute before:top-0 before:left-0 before:h-[15px] before:w-full before:-translate-y-full before:bg-transparent before:content-[""]'>
           <div className="flex grow flex-col items-center justify-center">
-            <img
-              className="h-20 w-20 object-cover"
-              src="https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/assets/99e561e3944805a023e87a81d4869600.png"
-              alt="notification"
-            />
+            <img className="h-20 w-20 object-cover" src="" alt="notification" />
             <span className="mt-5 text-xs">{t('nav.signInToViewNotifications')}</span>
           </div>
           <div className="flex w-full items-center border-0">
@@ -59,11 +55,7 @@ const NotificationPopover = ({ isAuthenticated, variant = 'full' }: Notification
       >
         <div className="flex grow flex-col items-center justify-center">
           <div className="flex items-center">
-            <img
-              className="h-20 w-20 object-cover md:h-25 md:w-25"
-              src="https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/assets/99e561e3944805a023e87a81d4869600.png"
-              alt="anh"
-            />
+            <img className="h-20 w-20 object-cover md:h-25 md:w-25" src="" alt="anh" />
           </div>
           <span className="mt-5 text-xs md:text-sm">{t('nav.signInToViewNotifications')}</span>
         </div>

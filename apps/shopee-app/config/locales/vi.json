@@ -195,7 +195,7 @@
   },
   "mall": {
     "banner": {
-      "superSale": "Siêu Sale Shopee Mall",
+      "superSale": "Siêu Sale ShopHub Mall",
       "flashSale": "Flash Sale hàng ngày",
       "freeShipping": "Miễn phí vận chuyển"
     },
@@ -217,7 +217,7 @@
     }
   },
   "live": {
-    "title": "Shopee Live",
+    "title": "ShopHub Live",
     "empty": "Không có livestream nào đang diễn ra",
     "watching": "đang xem",
     "likes": "lượt thích",
@@ -578,7 +578,7 @@
     }
   },
   "coinsToggle": {
-    "label": "Dùng Shopee Xu",
+    "label": "Dùng Xu",
     "balance": "Số dư: {{coinBalance}} Xu ({{formattedPrice}})"
   },
   "paymentMethod": {

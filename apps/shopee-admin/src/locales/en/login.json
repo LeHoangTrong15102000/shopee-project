@@ -1,11 +1,11 @@
 {
-  "title": "Shopee Admin",
+  "title": "ShopHub Admin",
   "description": "Sign in to your admin account",
   "form": {
     "email": "Email",
     "password": "Password",
     "signIn": "Sign In",
-    "emailPlaceholder": "admin@shopee.com",
+    "emailPlaceholder": "admin@shophub.com",
     "passwordPlaceholder": "••••••"
   },
   "errors": {
@@ -17,7 +17,7 @@
   "dev": {
     "loginSuccess": "Dev login successful",
     "loginButton": "Dev Login (bypass API)",
-    "credentialHint": "Mock credentials: admin@shopee.com / admin123"
+    "credentialHint": "Mock credentials: admin@shophub.com / admin123"
   },
   "forgotPasswordLink": "Forgot Password?",
   "forgotPassword": {

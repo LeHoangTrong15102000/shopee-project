@@ -1,7 +1,7 @@
 {
-  "name": "Shopee Clone - Mua sắm trực tuyến",
-  "short_name": "Shopee Clone",
-  "description": "Ứng dụng mua sắm trực tuyến Shopee Clone",
+  "name": "ShopHub - Mua sắm trực tuyến",
+  "short_name": "ShopHub",
+  "description": "Ứng dụng mua sắm trực tuyến ShopHub",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -30,7 +30,7 @@
     "December"
   ],
   "days": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-  "loyalty.title": "Shopee Coins",
+  "loyalty.title": "Coins",
   "loyalty.history": "History",
   "loyalty.available": "coins available",
   "loyalty.totalPoints": "Total coins",

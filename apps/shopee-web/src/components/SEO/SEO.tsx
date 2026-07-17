@@ -17,9 +17,9 @@ interface SEOProps {
 }
 
 export default function SEO({
-  title = 'Shopee Clone - Mua Sắm Online Số 1 Việt Nam',
-  description = 'Mua sắm trực tuyến hàng triệu sản phẩm ở tất cả ngành hàng. Giá tốt & Ưu đãi. Mua và bán online trong 30 giây. Shopee Đảm Bảo | Freeship Xtra | Hoàn Xu Xtra',
-  image = 'https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/26c9324913c021677768c36975d635ef.png',
+  title = 'ShopHub - Mua Sắm Online',
+  description = 'Mua sắm trực tuyến hàng triệu sản phẩm ở tất cả ngành hàng. Giá tốt & Ưu đãi. Mua và bán online trong 30 giây. Đảm Bảo | Freeship Xtra | Hoàn Xu Xtra',
+  image = '',
   url,
   type = 'website',
   keywords,
@@ -29,8 +29,8 @@ export default function SEO({
   alternateLocales,
 }: SEOProps) {
   const currentUrl = url || (typeof window !== 'undefined' ? window.location.href : '')
-  const fullTitle = title.includes('Shopee Clone') ? title : `${title} | Shopee Clone`
-  const effectiveKeywords = keywords ?? 'mua sắm online, shopee, thương mại điện tử'
+  const fullTitle = title.includes('ShopHub') ? title : `${title} | ShopHub`
+  const effectiveKeywords = keywords ?? 'mua sắm online, shophub, thương mại điện tử'
 
   // Normalize JSON-LD to array
   const jsonLdItems = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : []
@@ -53,7 +53,7 @@ export default function SEO({
       <meta property="og:image" content={image} />
       <meta property="og:url" content={currentUrl} />
       <meta property="og:type" content={type} />
-      <meta property="og:site_name" content="Shopee Clone" />
+      <meta property="og:site_name" content="ShopHub" />
 
       {/* Twitter Card Meta Tags */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -63,7 +63,7 @@ export default function SEO({
 
       {/* Additional Meta Tags */}
       <meta name="keywords" content={effectiveKeywords} />
-      <meta name="author" content="Shopee Clone" />
+      <meta name="author" content="ShopHub" />
       <link rel="canonical" href={currentUrl} />
 
       {/* hreflang alternate links */}

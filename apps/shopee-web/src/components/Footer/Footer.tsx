@@ -101,43 +101,19 @@ const Footer = () => {
                 to="/"
                 className="group cursor-pointer transition-all duration-300 hover:scale-105"
               >
-                <div
-                  className="h-8 w-20 bg-contain bg-no-repeat opacity-85 transition-all duration-300 group-hover:opacity-100 group-hover:drop-shadow-md sm:h-11.25 sm:w-30"
-                  style={{
-                    backgroundImage:
-                      'url(https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/assets/3ce17addcf90b8cd3952b8ae0ffc1299.png)',
-                    backgroundSize: '551.6666666666666% 477.77777777777777%',
-                    backgroundPosition: '14.391143911439114% 99.41176470588235%',
-                  }}
-                />
+                <div className="h-8 w-20 bg-contain bg-no-repeat opacity-85 transition-all duration-300 group-hover:opacity-100 group-hover:drop-shadow-md sm:h-11.25 sm:w-30" />
               </Link>
               <Link
                 to="/"
                 className="group cursor-pointer transition-all duration-300 hover:scale-105"
               >
-                <div
-                  className="h-8 w-20 bg-contain bg-no-repeat opacity-85 transition-all duration-300 group-hover:opacity-100 group-hover:drop-shadow-md sm:h-11.25 sm:w-30"
-                  style={{
-                    backgroundImage:
-                      'url(https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/assets/3ce17addcf90b8cd3952b8ae0ffc1299.png)',
-                    backgroundSize: '551.6666666666666% 477.77777777777777%',
-                    backgroundPosition: '14.391143911439114% 99.41176470588235%',
-                  }}
-                />
+                <div className="h-8 w-20 bg-contain bg-no-repeat opacity-85 transition-all duration-300 group-hover:opacity-100 group-hover:drop-shadow-md sm:h-11.25 sm:w-30" />
               </Link>
               <Link
                 to="/"
                 className="group cursor-pointer transition-all duration-300 hover:scale-105"
               >
-                <div
-                  className="h-8 w-8 bg-contain bg-no-repeat opacity-85 transition-all duration-300 group-hover:opacity-100 group-hover:drop-shadow-md sm:h-12 sm:w-12"
-                  style={{
-                    backgroundImage:
-                      'url(https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/assets/3ce17addcf90b8cd3952b8ae0ffc1299.png)',
-                    backgroundSize: '1379.1666666666667% 447.9166666666667%',
-                    backgroundPosition: '1.6286644951140066% 92.21556886227545%',
-                  }}
-                />
+                <div className="h-8 w-8 bg-contain bg-no-repeat opacity-85 transition-all duration-300 group-hover:opacity-100 group-hover:drop-shadow-md sm:h-12 sm:w-12" />
               </Link>
             </motion.div>
 
@@ -150,7 +126,7 @@ const Footer = () => {
               <div className="mx-auto max-w-4xl space-y-3 border-t border-orange-200/30 px-4 py-6 md:px-8 dark:border-slate-700/40">
                 {/* Company Name */}
                 <div className="text-base font-bold text-orange dark:text-orange-400">
-                  Công ty TNHH Shopee
+                  Công ty TNHH ShopHub
                 </div>
                 <div className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
                   {t('footer.address')}

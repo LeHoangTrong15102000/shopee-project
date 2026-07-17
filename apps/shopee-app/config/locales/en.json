@@ -195,7 +195,7 @@
   },
   "mall": {
     "banner": {
-      "superSale": "Shopee Mall Super Sale",
+      "superSale": "ShopHub Mall Super Sale",
       "flashSale": "Daily Flash Sale",
       "freeShipping": "Free Shipping"
     },
@@ -217,7 +217,7 @@
     }
   },
   "live": {
-    "title": "Shopee Live",
+    "title": "ShopHub Live",
     "empty": "No live streams right now",
     "watching": "watching",
     "likes": "likes",
@@ -578,7 +578,7 @@
     }
   },
   "coinsToggle": {
-    "label": "Use Shopee Coins",
+    "label": "Use Coins",
     "balance": "Balance: {{coinBalance}} Coins ({{formattedPrice}})"
   },
   "paymentMethod": {

@@ -1,11 +1,11 @@
 {
-  "title": "Shopee Admin",
+  "title": "ShopHub Admin",
   "description": "Đăng nhập vào tài khoản quản trị",
   "form": {
     "email": "Email",
     "password": "Mật khẩu",
     "signIn": "Đăng nhập",
-    "emailPlaceholder": "admin@shopee.com",
+    "emailPlaceholder": "admin@shophub.com",
     "passwordPlaceholder": "••••••"
   },
   "errors": {
@@ -17,7 +17,7 @@
   "dev": {
     "loginSuccess": "Đăng nhập dev thành công",
     "loginButton": "Đăng nhập Dev (bỏ qua API)",
-    "credentialHint": "Tài khoản mock: admin@shopee.com / admin123"
+    "credentialHint": "Tài khoản mock: admin@shophub.com / admin123"
   },
   "forgotPasswordLink": "Quên mật khẩu?",
   "forgotPassword": {

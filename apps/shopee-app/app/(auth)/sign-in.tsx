@@ -132,7 +132,7 @@ export default function SignInScreen() {
             entering={reduceMotion ? undefined : FadeInDown.delay(100).duration(600)}
             className="mb-8 items-center">
             <AppText variant="display3" weight="bold" className="text-white" raw>
-              Shopee
+              ShopHub
             </AppText>
             <AppText variant="body" className="mt-2 text-white/70">
               {t('AUTH_SIGN_IN_TITLE')}

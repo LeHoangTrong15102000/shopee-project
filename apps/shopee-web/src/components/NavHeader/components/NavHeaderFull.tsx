@@ -69,7 +69,7 @@ const AuthenticatedLeftSection = () => {
   const { t } = useTranslation('nav')
   return (
     <div className="hidden items-center justify-center md:flex">
-      <Link to="https://banhang.shopee.vn/" className="ml-2 hidden lg:block">
+      <Link to="#" className="ml-2 hidden lg:block">
         <div className="mr-3 flex cursor-pointer items-center py-1 hover:text-white/70">
           <span className="mx-1 text-sm capitalize">{t('header.sellerChannel')}</span>
         </div>
@@ -97,13 +97,13 @@ const UnauthenticatedLeftSection = () => {
   const { t } = useTranslation('nav')
   return (
     <div className="hidden items-center justify-center md:flex">
-      <Link to="https://banhang.shopee.vn/" className="mr-2 ml-2 hidden lg:block">
+      <Link to="#" className="mr-2 ml-2 hidden lg:block">
         <div className="flex cursor-pointer items-center py-1 hover:text-white/70">
           <span className="mx-1 text-sm capitalize">{t('header.sellerChannel')}</span>
         </div>
       </Link>
       <div className="hidden h-4 border-r border-r-white/40 lg:block"></div>
-      <Link to="https://shopee.vn/seller/signup" className="mr-2 ml-1 hidden lg:block">
+      <Link to="#" className="mr-2 ml-1 hidden lg:block">
         <div className="flex cursor-pointer items-center py-1 hover:text-white/70">
           <span className="mx-1 text-sm capitalize">{t('header.becomeSeller')}</span>
         </div>
@@ -129,31 +129,17 @@ const UnauthenticatedLeftSection = () => {
 
 const SocialLinks = () => (
   <div className="flex hidden items-center justify-center lg:flex">
-    <Link
-      to="https://www.facebook.com/ShopeeVN"
-      className="mr-2 h-[16px] w-[16px] overflow-hidden text-center indent-[-9999px]"
-    >
+    <Link to="#" className="mr-2 h-[16px] w-[16px] overflow-hidden text-center indent-[-9999px]">
       <div
         style={{
-          backgroundImage:
-            'url(https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/assets/cab134ca96b0829b591cfaff892ae62c.png)',
-          backgroundSize: '487.5% 293.75%',
-          backgroundPosition: '8.064516129032258% 16.129032258064516%',
           width: '16px',
           height: '16px',
         }}
       ></div>
     </Link>
-    <Link
-      to="https://instagram.com/Shopee_VN"
-      className="mr-2 overflow-hidden text-center indent-[-9999px]"
-    >
+    <Link to="#" className="mr-2 overflow-hidden text-center indent-[-9999px]">
       <div
         style={{
-          backgroundImage:
-            'url(https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/assets/cab134ca96b0829b591cfaff892ae62c.png)',
-          backgroundSize: '487.5% 293.75%',
-          backgroundPosition: '58.064516129032256% 16.129032258064516%',
           width: '16px',
           height: '16px',
         }}

@@ -51,7 +51,8 @@ const sampleNotifications = [
   {
     _id: '5',
     title: 'Đánh giá sản phẩm và nhận xu',
-    content: 'Đánh giá sản phẩm bạn đã mua để nhận xu Shopee. Xu có thể dùng để mua sắm tiếp theo.',
+    content:
+      'Đánh giá sản phẩm bạn đã mua để nhận xu ShopHub. Xu có thể dùng để mua sắm tiếp theo.',
     type: 'other',
     isRead: true,
     createdAt: new Date(Date.now() - 259200000).toISOString(),

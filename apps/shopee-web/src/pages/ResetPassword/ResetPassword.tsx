@@ -80,15 +80,11 @@ const ResetPassword = () => {
 
   return (
     <div className="relative bg-orange">
-      <div
-        className="absolute inset-0 hidden lg:block"
-        style={{
-          backgroundImage: 'url(https://cf.shopee.vn/file/sg-11134004-23020-75qwyq2a7snv15)',
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: 'contain',
-          backgroundPosition: 'center center',
-        }}
-      />
+      <div className="absolute inset-0 hidden items-center lg:flex">
+        <div className="w-3/5 pl-[6%] text-white select-none">
+          <span className="text-6xl font-bold drop-shadow-lg xl:text-7xl">ShopHub</span>
+        </div>
+      </div>
       <SEO
         title={t('resetPassword.meta.title')}
         description={t('resetPassword.meta.description')}

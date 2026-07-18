@@ -121,7 +121,7 @@ function PaymentMethodSelector({
               {t('methodSelector.accountNumber')}: <span className="font-medium">1234567890</span>
             </p>
             <p>
-              {t('methodSelector.accountHolder')}: <span className="font-medium">SHOPEE CLONE</span>
+              {t('methodSelector.accountHolder')}: <span className="font-medium">SHOPHUB</span>
             </p>
             <p className="mt-2 text-xs text-blue-600 dark:text-blue-400">
               * {t('methodSelector.transferNote')}

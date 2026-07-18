@@ -345,7 +345,7 @@ const ProductDetail = () => {
             name: product.name,
             image: product.image,
             description: convert(product.description, { limits: { maxInputLength: 500 } }),
-            brand: { '@type': 'Brand', name: 'Shopee Clone' },
+            brand: { '@type': 'Brand', name: 'ShopHub' },
             offers: {
               '@type': 'Offer',
               url: `${SITE_URL}/${generateNameId({ name: product.name, id: product._id })}`,

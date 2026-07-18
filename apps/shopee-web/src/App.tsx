@@ -52,7 +52,7 @@ function App() {
       <SEO
         jsonLd={{
           '@type': 'Organization',
-          name: 'Shopee Clone',
+          name: 'ShopHub',
           url: SITE_URL,
           logo: `${SITE_URL}/vite.svg`,
         }}

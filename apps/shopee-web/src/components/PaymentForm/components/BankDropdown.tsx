@@ -11,7 +11,7 @@ const BANKS: BankInfo[] = [
     color: 'text-green-700',
     bgColor: 'bg-green-50',
     accountNumber: '1234567890123',
-    accountHolder: 'CONG TY SHOPEE CLONE',
+    accountHolder: 'CONG TY SHOPHUB',
     branch: 'Chi nhánh Hà Nội',
   },
   {
@@ -21,7 +21,7 @@ const BANKS: BankInfo[] = [
     color: 'text-red-600',
     bgColor: 'bg-red-50',
     accountNumber: '19035678901234',
-    accountHolder: 'CONG TY SHOPEE CLONE',
+    accountHolder: 'CONG TY SHOPHUB',
     branch: 'Chi nhánh HCM',
   },
   {
@@ -31,7 +31,7 @@ const BANKS: BankInfo[] = [
     color: 'text-blue-700',
     bgColor: 'bg-blue-50',
     accountNumber: '31410001234567',
-    accountHolder: 'CONG TY SHOPEE CLONE',
+    accountHolder: 'CONG TY SHOPHUB',
     branch: 'Chi nhánh Đống Đa',
   },
   {
@@ -41,7 +41,7 @@ const BANKS: BankInfo[] = [
     color: 'text-blue-800',
     bgColor: 'bg-blue-50',
     accountNumber: '108001234567',
-    accountHolder: 'CONG TY SHOPEE CLONE',
+    accountHolder: 'CONG TY SHOPHUB',
     branch: 'Chi nhánh Cầu Giấy',
   },
   {
@@ -51,7 +51,7 @@ const BANKS: BankInfo[] = [
     color: 'text-purple-700',
     bgColor: 'bg-purple-50',
     accountNumber: '0801234567890',
-    accountHolder: 'CONG TY SHOPEE CLONE',
+    accountHolder: 'CONG TY SHOPHUB',
     branch: 'Chi nhánh Thanh Xuân',
   },
   {
@@ -61,7 +61,7 @@ const BANKS: BankInfo[] = [
     color: 'text-blue-600',
     bgColor: 'bg-blue-50',
     accountNumber: '12345678901',
-    accountHolder: 'CONG TY SHOPEE CLONE',
+    accountHolder: 'CONG TY SHOPHUB',
     branch: 'Chi nhánh Tân Bình',
   },
   {
@@ -71,7 +71,7 @@ const BANKS: BankInfo[] = [
     color: 'text-blue-500',
     bgColor: 'bg-cyan-50',
     accountNumber: '060123456789',
-    accountHolder: 'CONG TY SHOPEE CLONE',
+    accountHolder: 'CONG TY SHOPHUB',
     branch: 'Chi nhánh Quận 1',
   },
   {
@@ -81,7 +81,7 @@ const BANKS: BankInfo[] = [
     color: 'text-purple-600',
     bgColor: 'bg-purple-50',
     accountNumber: '01234567890',
-    accountHolder: 'CONG TY SHOPEE CLONE',
+    accountHolder: 'CONG TY SHOPHUB',
     branch: 'Chi nhánh Hoàn Kiếm',
   },
 ]

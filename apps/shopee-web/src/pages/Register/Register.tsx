@@ -105,15 +105,11 @@ const Register = () => {
 
   return (
     <div className="relative bg-orange">
-      <div
-        className="absolute inset-0 hidden lg:block"
-        style={{
-          backgroundImage: 'url(https://cf.shopee.vn/file/sg-11134004-23020-75qwyq2a7snv15)',
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: 'contain',
-          backgroundPosition: 'center center',
-        }}
-      />
+      <div className="absolute inset-0 hidden items-center lg:flex">
+        <div className="w-3/5 pl-[6%] text-white select-none">
+          <span className="text-6xl font-bold drop-shadow-lg xl:text-7xl">ShopHub</span>
+        </div>
+      </div>
       <SEO title={t('register.meta.title')} description={t('register.meta.description')} />
       <div className="relative container min-h-[60vh]">
         <div className="grid grid-cols-1 py-8 md:grid-cols-3 md:py-16 lg:grid-cols-5 lg:py-32 lg:pr-10">

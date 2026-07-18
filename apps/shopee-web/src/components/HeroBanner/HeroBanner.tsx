@@ -38,7 +38,7 @@ const bannerSlides: BannerSlideType[] = [
   {
     id: 4,
     image: 'https://cf.shopee.vn/file/sg-11134004-7rd4c-ltqjlvx9ht5s0s_xxhdpi',
-    title: 'Shopee Mall',
+    title: 'ShopHub Mall',
     subtitle: 'banner.authenticBrands',
     link: '/shopee-mall',
     backgroundColor: '#d73527',

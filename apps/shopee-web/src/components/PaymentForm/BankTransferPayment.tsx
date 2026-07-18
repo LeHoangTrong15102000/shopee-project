@@ -23,7 +23,7 @@ const PAYMENT_DEADLINE_SECONDS = 24 * 60 * 60
 const LOCAL_STORAGE_KEY = 'shopee_last_selected_bank'
 
 const generateTransferContent = (orderId: string): string => {
-  return `SHOPEE ${orderId.toUpperCase()}`
+  return `SHOPHUB ${orderId.toUpperCase()}`
 }
 
 function BankTransferPayment({

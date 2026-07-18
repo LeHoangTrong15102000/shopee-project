@@ -88,7 +88,7 @@ const Home = () => {
         jsonLd={[
           {
             '@type': 'WebSite',
-            name: 'Shopee Clone',
+            name: 'ShopHub',
             url: SITE_URL,
             potentialAction: {
               '@type': 'SearchAction',

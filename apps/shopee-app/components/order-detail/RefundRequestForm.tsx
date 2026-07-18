@@ -41,7 +41,7 @@ function validate(
   reasonDetail: string,
   evidence: string[],
   requestedAmount: string,
-  t: (key: string) => string,
+  t: (key: string) => string
 ): FormErrors {
   const errors: FormErrors = {}
 
@@ -63,7 +63,11 @@ function validate(
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function RefundRequestForm({ orderId, orderTotal, onSuccess }: RefundRequestFormProps) {
+export default function RefundRequestForm({
+  orderId,
+  orderTotal,
+  onSuccess,
+}: RefundRequestFormProps) {
   const { t } = useTranslation()
   const colors = useColors()
 
@@ -132,7 +136,7 @@ export default function RefundRequestForm({ orderId, orderTotal, onSuccess }: Re
           }
           setServerError(t('refund.error.submitFailed'))
         },
-      },
+      }
     )
   }
 
@@ -232,12 +236,7 @@ export default function RefundRequestForm({ orderId, orderTotal, onSuccess }: Re
               marginBottom: 6,
               gap: 8,
             }}>
-            <AppText
-              raw
-              variant="labelSmall"
-              color="muted"
-              style={{ flex: 1 }}
-              numberOfLines={1}>
+            <AppText raw variant="labelSmall" color="muted" style={{ flex: 1 }} numberOfLines={1}>
               {url}
             </AppText>
             <TouchableOpacity

@@ -50,7 +50,7 @@ export default function OrderDetailScreen() {
   const isDelivered = order?.status === ORDER_STATUS.DELIVERED
   const paymentStatus = useOrderPaymentStatus(
     id,
-    isAwaitingPayment && order?.payment_method !== 'cod',
+    isAwaitingPayment && order?.payment_method !== 'cod'
   )
 
   if (isLoading) {
@@ -77,7 +77,7 @@ export default function OrderDetailScreen() {
       t('orderDetail.dialog.cancelMessage'),
       () => cancelOrder(order._id, { onSuccess: () => router.back() }),
       undefined,
-      'horizontal',
+      'horizontal'
     )
   }
 
@@ -87,7 +87,7 @@ export default function OrderDetailScreen() {
       t('orderDetail.dialog.confirmMessage'),
       () => confirmReceived(order._id, { onSuccess: () => router.back() }),
       undefined,
-      'horizontal',
+      'horizontal'
     )
   }
 
@@ -207,8 +207,7 @@ export default function OrderDetailScreen() {
               <AppButton
                 variant="primary"
                 onPress={() => router.push(`/order/${order._id}/tracking`)}
-                className="w-full"
-              >
+                className="w-full">
                 {t('orderDetail.actions.trackOrder')}
               </AppButton>
               {/* Inline tracking summary — never blocks rest of screen on error */}
@@ -232,8 +231,7 @@ export default function OrderDetailScreen() {
                 variant="primary"
                 onPress={() => reorder(order._id)}
                 loading={isReordering}
-                className="w-full"
-              >
+                className="w-full">
                 {t('orderDetail.actions.reorder')}
               </AppButton>
             </View>

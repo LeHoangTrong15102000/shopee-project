@@ -1,7 +1,7 @@
-import React, { useCallback, useRef, useState } from 'react'
-import { View, FlatList, Dimensions, ViewToken } from 'react-native'
-import { useColors } from '@/hooks/useColors'
 import { AppImage } from '@/components/ui'
+import { useColors } from '@/hooks/useColors'
+import React, { useCallback, useRef, useState } from 'react'
+import { Dimensions, FlatList, View, ViewToken } from 'react-native'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 

@@ -76,7 +76,7 @@ export interface RefundsPage {
  */
 export async function submitRefundRequest(
   orderId: string,
-  payload: SubmitRefundPayload,
+  payload: SubmitRefundPayload
 ): Promise<Refund> {
   const res = await http.post<ApiResponse<Refund>>(`orders/${orderId}/refund-request`, payload)
   return res.data.data

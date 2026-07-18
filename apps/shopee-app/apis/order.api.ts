@@ -41,7 +41,7 @@ export interface OrdersPage {
 // ─── Order API ────────────────────────────────────────────────────────────────
 
 export async function getOrders(
-  params: { status?: OrderStatusType; page?: number; limit?: number } = {},
+  params: { status?: OrderStatusType; page?: number; limit?: number } = {}
 ) {
   const res = await http.get<ApiResponse<OrdersPage>>('orders', { params })
   return res.data

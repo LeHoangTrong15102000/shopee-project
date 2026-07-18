@@ -1,12 +1,12 @@
-import React from 'react'
-import { TouchableOpacity, View, Text } from 'react-native'
-import { BottomTabBarProps } from '@react-navigation/bottom-tabs'
-import { useColors } from '@/hooks/useColors.ts'
-import { Home, ShoppingCart, Radio, Bell, User } from 'lucide-react-native'
 import { AppText } from '@/components/ui'
-import { useTranslation } from 'react-i18next'
-import { useUnreadCount } from '@/hooks/useNotifications'
 import { useCartCount } from '@/hooks/useCartCount'
+import { useColors } from '@/hooks/useColors.ts'
+import { useUnreadCount } from '@/hooks/useNotifications'
+import { BottomTabBarProps } from '@react-navigation/bottom-tabs'
+import { Bell, Home, Radio, ShoppingCart, User } from 'lucide-react-native'
+import React from 'react'
+import { useTranslation } from 'react-i18next'
+import { Text, TouchableOpacity, View } from 'react-native'
 
 interface TabIconProps {
   name: string
